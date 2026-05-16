@@ -1,0 +1,121 @@
+{
+  "version": "0.7",
+  "source": "CoSAI AI Shared Responsibility Framework §3.1, Draft V0.7",
+  "personas": [
+    {
+      "id": "agentic-platform-provider",
+      "name": "Agentic Platform & Framework Providers",
+      "srf_layers": ["L3", "L4"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.5 — AI Partner (tool and framework provider)",
+      "audiences": ["vendor"],
+      "description": "Provides development environments, software frameworks, and orchestration runtimes for agentic AI. Responsible for framework security, sandboxing, secure state management across multi-turn workflows, and defining cognitive architecture.",
+      "responsibilities": [
+        "Ensuring framework security and sandboxing",
+        "Implementing safety controls around tool execution",
+        "Managing state in multi-turn workflows securely",
+        "Integrating APIs securely",
+        "Defining cognitive architecture for AI systems"
+      ]
+    },
+    {
+      "id": "application-developer",
+      "name": "Application Developer",
+      "srf_layers": ["L3"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.2 — AI Provider; also acts as AI Customer (§5.19.4) with respect to upstream model and platform providers",
+      "audiences": ["vendor", "consultant"],
+      "description": "Integrates AI models into applications, products, or services via APIs or embedded models. May perform light customization such as prompt engineering or RAG. Accountable for application-level security controls, input validation, output filtering, and user access management.",
+      "responsibilities": [
+        "Implementing application-level security controls",
+        "Implementing safety controls around tool execution",
+        "Ensuring input validation and output filtering",
+        "Managing user access control mechanisms"
+      ]
+    },
+    {
+      "id": "data-provider",
+      "name": "Data Provider",
+      "srf_layers": ["L2"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.5 — AI Partner (data provider)",
+      "audiences": ["vendor", "customer"],
+      "description": "Supplies training data, evaluation datasets, or inference data to model providers or application developers. Includes data aggregators, data marketplaces, and dataset licensors.",
+      "responsibilities": [
+        "Conducting data quality assurance",
+        "Tracking data provenance and compliance",
+        "Implementing privacy protections in data handling",
+        "Managing data classification"
+      ]
+    },
+    {
+      "id": "ai-system-users",
+      "name": "AI System Users",
+      "srf_layers": ["L1"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.4 — AI Customer (end user sub-role)",
+      "audiences": ["user"],
+      "description": "Uses AI-powered applications or services without developing or deploying the AI components. Relies on application developers and providers for security controls.",
+      "responsibilities": [
+        "Adhering to appropriate use policies",
+        "Reporting issues or anomalies detected during use",
+        "Following usage guidelines to minimize data exposure"
+      ]
+    },
+    {
+      "id": "ai-system-governance",
+      "name": "AI System Governance",
+      "srf_layers": ["L1"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.4 — AI Customer; §5.19.7 — Relevant Authority where regulatory obligations apply",
+      "audiences": ["customer", "consultant"],
+      "description": "Defines security control objectives, measures implementations, and enforces compliance across the AI system lifecycle. Includes AI risk officers, compliance teams, and governance boards.",
+      "responsibilities": [
+        "Establishing security and governance rules including acceptable risk levels",
+        "Evaluating security measure effectiveness across the AI lifecycle",
+        "Ensuring compliance with standards, laws, and company policies",
+        "Managing a risk register with assigned owners and remediation timelines",
+        "Overseeing incident response plans and post-incident analysis"
+      ]
+    },
+    {
+      "id": "model-provider",
+      "name": "Model Provider",
+      "srf_layers": ["L5"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.3 — AI Producer",
+      "audiences": ["vendor"],
+      "description": "Develops, trains, evaluates, and tunes AI/ML models including foundation models, specialized models, and domain-adapted models. Accountable for model architecture security, safety validation, and model card publication.",
+      "responsibilities": [
+        "Secure and responsible model architecture design and training",
+        "Model security, safety, and performance validation",
+        "Publishing model cards with provenance, benchmarks, and intended use",
+        "Maintaining model version and vulnerability disclosures"
+      ]
+    },
+    {
+      "id": "ai-model-serving",
+      "name": "AI Model Serving",
+      "srf_layers": ["L4"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.5 — AI Partner (platform and runtime services provider)",
+      "audiences": ["vendor"],
+      "description": "Provisions, manages, and secures the runtime environment that serves AI and ML model predictions at scale. Distinct from Model Provider (training/registry) and AI Platform Provider (physical infrastructure). Focused on secure orchestration and delivery of the model serving layer.",
+      "responsibilities": [
+        "Managing secure API endpoints, enforcing access policies, and input validation",
+        "Executing models in isolated or confidential computing environments",
+        "Ensuring model and dataset integrity at load-time and during runtime",
+        "Monitoring and validating outputs to prevent unintended disclosures",
+        "Conducting adversarial simulations to test model serving robustness"
+      ]
+    },
+    {
+      "id": "ai-platform-provider",
+      "name": "AI Platform Provider",
+      "srf_layers": ["L4"],
+      "standard_ref": "ISO/IEC 22989:2022 §5.19.5 — AI Partner (infrastructure provider); also acts as AI Provider (§5.19.2) where the platform serves application developers",
+      "audiences": ["vendor"],
+      "description": "Provides infrastructure, compute resources, APIs, and platform services for AI model hosting, training, or inference. Includes cloud providers (AWS, Azure, GCP), MLOps platforms, and model API services.",
+      "responsibilities": [
+        "Securing infrastructure and maintaining high availability",
+        "Maintaining platform-level compliance certifications (SOC 2, ISO 27001, FedRAMP)",
+        "Providing robust IAM primitives for upstream tenants",
+        "Providing configurable data residency, encryption, and region-locking capabilities",
+        "Guaranteeing uptime, incident notification, and SLAs bounding the platform's contribution to incident response"
+      ]
+    }
+  ]
+}

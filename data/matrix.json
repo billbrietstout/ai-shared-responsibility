@@ -1,0 +1,69 @@
+{
+  "version": "0.7",
+  "source": "CoSAI AI Shared Responsibility Framework §3.2, Draft V0.7",
+  "models": [
+    {
+      "id": "AI-SaaS",
+      "name": "AI-Enabled SaaS",
+      "short": "AI-SaaS",
+      "description": "Provider supplies a managed AI application. Customer retains business governance; provider assumes majority of technical responsibilities."
+    },
+    {
+      "id": "AI-PaaS",
+      "name": "AI Platform as a Service",
+      "short": "AI-PaaS",
+      "description": "Provider manages AI platform infrastructure. Balanced shared responsibility with customer building and operating the application layer."
+    },
+    {
+      "id": "Agent-PaaS",
+      "name": "Agentic Platform as a Service",
+      "short": "Agent-PaaS",
+      "description": "Provider manages agentic platform infrastructure including orchestration runtimes. Balanced shared responsibility with customer owning agent definitions and business logic."
+    },
+    {
+      "id": "IaaS",
+      "name": "Infrastructure as a Service",
+      "short": "IaaS",
+      "description": "Maximum customer responsibility. Customer owns and operates application, platform, and model evaluation layers. Provider secures physical infrastructure only."
+    }
+  ],
+  "responsibility_values": {
+    "customer-owned":    { "label": "Customer",         "weight": 3 },
+    "shared":            { "label": "Shared",           "weight": 2 },
+    "provider-managed":  { "label": "Provider",         "weight": 1 },
+    "model-evaluation":  { "label": "Model evaluation", "weight": 2 },
+    "N/A":               { "label": "N/A",              "weight": 0 }
+  },
+  "cells": {
+    "L1": {
+      "AI-SaaS":    { "customer": "shared",         "provider": "provider-managed" },
+      "AI-PaaS":    { "customer": "customer-owned",  "provider": "provider-managed" },
+      "Agent-PaaS": { "customer": "customer-owned",  "provider": "provider-managed" },
+      "IaaS":       { "customer": "customer-owned",  "provider": "provider-managed" }
+    },
+    "L2": {
+      "AI-SaaS":    { "customer": "shared",         "provider": "provider-managed" },
+      "AI-PaaS":    { "customer": "shared",          "provider": "provider-managed" },
+      "Agent-PaaS": { "customer": "shared",          "provider": "provider-managed" },
+      "IaaS":       { "customer": "customer-owned",  "provider": "provider-managed" }
+    },
+    "L3": {
+      "AI-SaaS":    { "customer": "shared",         "provider": "provider-managed" },
+      "AI-PaaS":    { "customer": "shared",          "provider": "provider-managed" },
+      "Agent-PaaS": { "customer": "shared",          "provider": "provider-managed" },
+      "IaaS":       { "customer": "customer-owned",  "provider": "provider-managed" }
+    },
+    "L4": {
+      "AI-SaaS":    { "customer": "shared",         "provider": "provider-managed" },
+      "AI-PaaS":    { "customer": "shared",          "provider": "provider-managed" },
+      "Agent-PaaS": { "customer": "shared",          "provider": "provider-managed" },
+      "IaaS":       { "customer": "customer-owned",  "provider": "provider-managed" }
+    },
+    "L5": {
+      "AI-SaaS":    { "customer": "N/A",            "provider": "provider-managed" },
+      "AI-PaaS":    { "customer": "model-evaluation","provider": "provider-managed" },
+      "Agent-PaaS": { "customer": "shared",          "provider": "provider-managed" },
+      "IaaS":       { "customer": "customer-owned",  "provider": "provider-managed" }
+    }
+  }
+}

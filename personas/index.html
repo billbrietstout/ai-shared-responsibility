@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Personas — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="The eight CoSAI AI SRF stakeholder personas. Find which layers and responsibilities apply to your role as vendor, customer, consultant, or end user."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      /* ---- Filter bar ---- */
+      .filter-bar {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+        margin-bottom: var(--sp-8);
+      }
+      .filter-bar__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin-right: var(--sp-2);
+      }
+      .filter-btn {
+        padding: var(--sp-2) var(--sp-4);
+        border-radius: 999px;
+        font-size: var(--text-sm);
+        font-weight: 500;
+        border: 1px solid var(--slate-200);
+        background: #fff;
+        color: var(--slate-600);
+        cursor: pointer;
+        transition: border-color 0.12s, background 0.12s, color 0.12s;
+      }
+      .filter-btn:hover {
+        border-color: var(--cosai-blue);
+        color: var(--cosai-blue);
+      }
+      .filter-btn--active {
+        background: var(--cosai-navy);
+        border-color: var(--cosai-navy);
+        color: #fff;
+      }
+
+      /* ---- Persona cards ---- */
+      .persona-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--sp-4);
+      }
+      .persona-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s;
+        display: flex;
+        flex-direction: column;
+      }
+      .persona-card:hover {
+        box-shadow: var(--shadow-md);
+      }
+      .persona-card--dimmed {
+        opacity: 0.35;
+        pointer-events: none;
+      }
+      .persona-card__header {
+        padding: var(--sp-5) var(--sp-5) var(--sp-4);
+        border-bottom: 1px solid var(--slate-100);
+        display: flex;
+        gap: var(--sp-3);
+        align-items: flex-start;
+      }
+      .persona-card__layers {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-1);
+        flex-shrink: 0;
+      }
+      .persona-card__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        letter-spacing: -0.01em;
+        line-height: var(--leading-tight);
+        margin-bottom: var(--sp-2);
+      }
+      .persona-card__ref {
+        font-size: 11px;
+        color: var(--slate-400);
+        font-family: var(--font-mono);
+        line-height: 1.4;
+      }
+      .persona-card__body {
+        padding: var(--sp-4) var(--sp-5);
+        flex: 1;
+      }
+      .persona-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-4);
+      }
+      .persona-card__responsibilities h3 {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .resp-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .resp-list li {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        padding-left: var(--sp-4);
+        position: relative;
+        line-height: var(--leading-normal);
+      }
+      .resp-list li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--slate-300);
+      }
+      .persona-card__foot {
+        padding: var(--sp-3) var(--sp-5);
+        border-top: 1px solid var(--slate-100);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+      }
+      .audience-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--slate-200);
+        color: var(--slate-500);
+        background: var(--slate-50);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="personas"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">CoSAI AI SRF &sect;3.1</span>
+        <h1 class="page-hero__title">Personas</h1>
+        <p class="page-hero__lede">
+          Eight stakeholder types across the AI stack. Each persona maps to one
+          or more framework layers and carries a defined set of responsibilities.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div class="filter-bar" role="group" aria-label="Filter personas by audience">
+        <span class="filter-bar__label">Show</span>
+        <button class="filter-btn filter-btn--active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="vendor">Vendor</button>
+        <button class="filter-btn" data-filter="customer">Customer</button>
+        <button class="filter-btn" data-filter="consultant">Consultant</button>
+        <button class="filter-btn" data-filter="user">End user</button>
+      </div>
+
+      <div class="persona-grid" id="persona-grid" aria-live="polite">
+        <!-- Rendered by JS from /data/personas.json -->
+        <p style="color: var(--slate-400); font-size: var(--text-sm);">Loading personas...</p>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script type="module">
+      const LAYER_COLORS = { L1: "l1", L2: "l2", L3: "l3", L4: "l4", L5: "l5" };
+
+      const AUDIENCE_LABELS = {
+        vendor:     "Vendor",
+        customer:   "Customer",
+        consultant: "Consultant",
+        user:       "End user",
+      };
+
+      function layerPill(id) {
+        const cls = LAYER_COLORS[id] || "l1";
+        return `<span class="layer-pill layer-pill--${cls}">
+          <span class="layer-pill__dot" aria-hidden="true"></span>${id}
+        </span>`;
+      }
+
+      function personaCard(p) {
+        const layers = p.srf_layers.map(layerPill).join("");
+        const audiences = p.audiences
+          .map((a) => `<span class="audience-tag">${AUDIENCE_LABELS[a] || a}</span>`)
+          .join("");
+        const resps = p.responsibilities
+          .map((r) => `<li>${r}</li>`)
+          .join("");
+
+        return `
+          <article
+            class="persona-card"
+            data-audiences="${p.audiences.join(",")}"
+            aria-label="${p.name}"
+          >
+            <div class="persona-card__header">
+              <div style="flex:1">
+                <div class="persona-card__name">${p.name}</div>
+                <div class="persona-card__ref">${p.standard_ref}</div>
+              </div>
+              <div class="persona-card__layers">${layers}</div>
+            </div>
+            <div class="persona-card__body">
+              <p class="persona-card__desc">${p.description}</p>
+              <div class="persona-card__responsibilities">
+                <h3>Key responsibilities</h3>
+                <ul class="resp-list">${resps}</ul>
+              </div>
+            </div>
+            <div class="persona-card__foot">${audiences}</div>
+          </article>
+        `;
+      }
+
+      async function init() {
+        const grid = document.getElementById("persona-grid");
+        const params = new URLSearchParams(location.search);
+        let activeFilter = params.get("filter") || "all";
+
+        // Load data
+        let personas;
+        try {
+          const res = await fetch("/data/personas.json");
+          const data = await res.json();
+          personas = data.personas;
+        } catch {
+          grid.innerHTML = `<p style="color:var(--status-bad)">Could not load persona data.</p>`;
+          return;
+        }
+
+        function render(filter) {
+          grid.innerHTML = personas.map(personaCard).join("");
+          if (filter !== "all") {
+            grid.querySelectorAll(".persona-card").forEach((card) => {
+              const audiences = card.dataset.audiences.split(",");
+              card.classList.toggle("persona-card--dimmed", !audiences.includes(filter));
+            });
+          }
+        }
+
+        function setFilter(filter) {
+          activeFilter = filter;
+          // Update buttons
+          document.querySelectorAll(".filter-btn").forEach((btn) => {
+            btn.classList.toggle("filter-btn--active", btn.dataset.filter === filter);
+            btn.setAttribute("aria-pressed", btn.dataset.filter === filter);
+          });
+          // Update URL without reload
+          const url = new URL(location.href);
+          if (filter === "all") {
+            url.searchParams.delete("filter");
+          } else {
+            url.searchParams.set("filter", filter);
+          }
+          history.replaceState(null, "", url);
+          render(filter);
+        }
+
+        // Wire filter buttons
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", () => setFilter(btn.dataset.filter));
+        });
+
+        setFilter(activeFilter);
+      }
+
+      init();
+    </script>
+  </body>
+</html>

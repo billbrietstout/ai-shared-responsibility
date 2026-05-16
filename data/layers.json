@@ -1,0 +1,101 @@
+{
+  "version": "0.7",
+  "source": "CoSAI AI Shared Responsibility Framework, Draft V0.7, OASIS Open / Coalition for Secure AI Workstream 2",
+  "layers": [
+    {
+      "id": "L1",
+      "name": "AI Business & Usage",
+      "short": "Business",
+      "color_var": "--l1",
+      "personas": ["AI System Users", "AI System Governance"],
+      "description": "Governance, strategy, and compliance at the executive and business-unit level. This layer owns regulatory obligations, acceptable-use policy, and incident governance. Cascades security and governance requirements down to all supporting layers.",
+      "components": [
+        "Capabilities & Business Strategy",
+        "Processes & Governance",
+        "Business Units & Accountability"
+      ],
+      "operating_models": {
+        "AI-SaaS":    "shared",
+        "AI-PaaS":    "customer-owned",
+        "Agent-PaaS": "customer-owned",
+        "IaaS":       "customer-owned"
+      }
+    },
+    {
+      "id": "L2",
+      "name": "AI Information",
+      "short": "Information",
+      "color_var": "--l2",
+      "personas": ["Data Provider"],
+      "description": "Data ownership, quality, and privacy. Accountable for training data provenance, master data management, privacy controls, and data classification decisions that constrain what AI systems can access at runtime.",
+      "components": [
+        "Master Data Management",
+        "Privacy Controls & Policies",
+        "AI Training Data"
+      ],
+      "operating_models": {
+        "AI-SaaS":    "shared",
+        "AI-PaaS":    "shared",
+        "Agent-PaaS": "shared",
+        "IaaS":       "customer-owned"
+      }
+    },
+    {
+      "id": "L3",
+      "name": "AI Application",
+      "short": "Application",
+      "color_var": "--l3",
+      "personas": ["Application Developer", "Agentic Platform & Framework Providers"],
+      "description": "Development, integration, and testing of AI-powered applications. Responsible for guardrails, input validation, output filtering, prompt engineering, RAG pipelines, and agent orchestration logic.",
+      "components": [
+        "Agents & Orchestration Models",
+        "APIs & Fine-tuned Models",
+        "Application Platforms"
+      ],
+      "operating_models": {
+        "AI-SaaS":    "shared",
+        "AI-PaaS":    "shared",
+        "Agent-PaaS": "shared",
+        "IaaS":       "customer-owned"
+      }
+    },
+    {
+      "id": "L4",
+      "name": "AI Platform",
+      "short": "Platform",
+      "color_var": "--l4",
+      "personas": ["AI Platform Provider", "AI Model Serving"],
+      "description": "Infrastructure, APIs, and runtime services for hosting, training, and serving AI models. Covers compute, LLM gateways, model routers, guardrail infrastructure, and platform-level IAM. Provides the operating environment that L3 applications run on.",
+      "components": [
+        "Guardrails & Safety Systems",
+        "Compute Infrastructure",
+        "LLM Routers & Gateways"
+      ],
+      "operating_models": {
+        "AI-SaaS":    "shared",
+        "AI-PaaS":    "shared",
+        "Agent-PaaS": "shared",
+        "IaaS":       "customer-owned"
+      }
+    },
+    {
+      "id": "L5",
+      "name": "AI Model Provider",
+      "short": "Model Provider",
+      "color_var": "--l5",
+      "personas": ["Model Provider"],
+      "description": "Foundation models, model governance, and supply-chain provenance. Accountable for model architecture security, model cards, vulnerability disclosure, and governance of model distribution. Responsibility assignment depends on licensing and deployment approach.",
+      "components": [
+        "Model Distribution",
+        "Model Governance",
+        "Foundation Models"
+      ],
+      "operating_models": {
+        "AI-SaaS":    "N/A",
+        "AI-PaaS":    "model-evaluation",
+        "Agent-PaaS": "shared",
+        "IaaS":       "customer-owned"
+      }
+    }
+  ]
+}

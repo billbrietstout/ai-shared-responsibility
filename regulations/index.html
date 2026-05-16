@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Regulations &amp; Standards — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Living reference of AI regulations and standards relevant to the CoSAI Shared Responsibility Framework. NIST AI RMF, EU AI Act, ISO 42001, OWASP, and more."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      /* ---- Filter row ---- */
+      .filter-row {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        flex-wrap: wrap;
+        margin-bottom: var(--sp-6);
+      }
+      .filter-row__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+      }
+      .tag-btn {
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        border: 1px solid var(--slate-200);
+        background: #fff;
+        color: var(--slate-600);
+        cursor: pointer;
+        transition: border-color 0.12s, background 0.12s, color 0.12s;
+        letter-spacing: 0.02em;
+      }
+      .tag-btn:hover { border-color: var(--cosai-blue); color: var(--cosai-blue); }
+      .tag-btn--active {
+        background: var(--cosai-navy);
+        border-color: var(--cosai-navy);
+        color: #fff;
+      }
+
+      /* ---- Count line ---- */
+      .results-line {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+        margin-bottom: var(--sp-5);
+      }
+      .results-line strong { color: var(--slate-800); }
+
+      /* ---- Regulation list ---- */
+      .reg-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+      }
+      .reg-item {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        transition: box-shadow 0.12s;
+      }
+      .reg-item:hover { box-shadow: var(--shadow-md); }
+      .reg-item__main {
+        padding: var(--sp-5);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--sp-4);
+        align-items: start;
+      }
+      .reg-item__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        letter-spacing: -0.01em;
+        margin-bottom: 3px;
+      }
+      .reg-item__meta {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1) var(--sp-3);
+        margin-bottom: var(--sp-3);
+      }
+      .reg-item__meta span::before {
+        content: '';
+      }
+      .reg-item__scope {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-3);
+      }
+      .reg-item__layers {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .reg-item__actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: var(--sp-2);
+        flex-shrink: 0;
+      }
+      .reg-item__link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--cosai-blue);
+        text-decoration: none;
+        padding: var(--sp-2) var(--sp-3);
+        border: 1px solid var(--cosai-blue-soft);
+        border-radius: var(--radius);
+        background: var(--cosai-blue-light);
+        transition: background 0.12s;
+        white-space: nowrap;
+      }
+      .reg-item__link:hover {
+        background: var(--cosai-blue-soft);
+        text-decoration: none;
+      }
+      .freshness {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 2px;
+      }
+      .freshness__date {
+        font-size: 10px;
+        color: var(--slate-400);
+        font-family: var(--font-mono);
+      }
+
+      /* ---- Stale notice ---- */
+      .stale-notice {
+        padding: var(--sp-4) var(--sp-5);
+        background: var(--status-warn-bg);
+        border-top: 1px solid var(--status-warn-br);
+        font-size: var(--text-xs);
+        color: var(--status-warn);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+      }
+      .stale-notice a {
+        color: var(--status-warn);
+        font-weight: 700;
+      }
+
+      /* ---- Contribute callout ---- */
+      .contribute {
+        margin-top: var(--sp-8);
+        padding: var(--sp-5) var(--sp-6);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: var(--slate-50);
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--sp-4);
+        align-items: center;
+      }
+      .contribute h2 {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 4px;
+      }
+      .contribute p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+
+      @media (max-width: 580px) {
+        .reg-item__main { grid-template-columns: 1fr; }
+        .reg-item__actions { align-items: flex-start; }
+        .contribute { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="regulations"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Living reference</span>
+        <h1 class="page-hero__title">Regulations &amp; Standards</h1>
+        <p class="page-hero__lede">
+          Regulations and standards referenced by the CoSAI SRF. Each entry
+          shows which framework layers it touches and when it was last verified.
+          Entries older than 180 days are flagged for review.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+      <div id="root">
+        <p style="color: var(--slate-400); font-size: var(--text-sm);">Loading...</p>
+      </div>
+    </main>
+
+    <site-footer></site-footer>
+
+    <script type="module">
+      const LAYER_COLORS = { L1: "l1", L2: "l2", L3: "l3", L4: "l4", L5: "l5" };
+      const STALE_DAYS = 180;
+
+      function daysSince(dateStr) {
+        return Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+      }
+
+      function layerPill(id) {
+        const cls = LAYER_COLORS[id] || "l1";
+        return `<span class="layer-pill layer-pill--${cls}" title="${id}">
+          <span class="layer-pill__dot" aria-hidden="true"></span>${id}
+        </span>`;
+      }
+
+      function regItem(item, threshold) {
+        const stale = daysSince(item.last_verified) > threshold;
+        const layers = item.srf_layers.map(layerPill).join(" ");
+
+        const staleBlock = stale ? `
+          <div class="stale-notice">
+            This entry was last verified more than ${threshold} days ago.
+            <a href="https://github.com/billbrietstout/cosai-wizards" target="_blank" rel="noopener">
+              Submit a correction on GitHub
+            </a>
+          </div>
+        ` : "";
+
+        return `
+          <article class="reg-item" data-tags="${item.tags.join(",")}" aria-label="${item.name}">
+            <div class="reg-item__main">
+              <div>
+                <div class="reg-item__name">${item.name}</div>
+                <div class="reg-item__meta">
+                  <span>${item.body}</span>
+                  <span>v${item.version}</span>
+                  <span>Published ${item.published}</span>
+                </div>
+                <p class="reg-item__scope">${item.scope}</p>
+                <div class="reg-item__layers">${layers}</div>
+              </div>
+              <div class="reg-item__actions">
+                <a class="reg-item__link" href="${item.url}" target="_blank" rel="noopener">
+                  Source
+                  <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
+                    <path d="M2 1h7v7M9 1 1 9"/>
+                  </svg>
+                </a>
+                <div class="freshness">
+                  <span class="badge ${stale ? "badge--stale" : "badge--fresh"}">
+                    ${stale ? "Verify" : "Current"}
+                  </span>
+                  <span class="freshness__date">Verified ${item.last_verified}</span>
+                </div>
+              </div>
+            </div>
+            ${staleBlock}
+          </article>
+        `;
+      }
+
+      // Collect all unique tags from data
+      function allTags(items) {
+        const set = new Set();
+        items.forEach((i) => i.tags.forEach((t) => set.add(t)));
+        return [...set].sort();
+      }
+
+      function tagLabel(tag) {
+        const map = {
+          governance: "Governance", risk: "Risk", us: "US", eu: "EU",
+          voluntary: "Voluntary", mandatory: "Mandatory", standard: "Standard",
+          regulation: "Regulation", guidance: "Guidance", security: "Security",
+          llm: "LLM", controls: "Controls", cloud: "Cloud", threat: "Threat",
+          financial: "Financial", healthcare: "Healthcare", privacy: "Privacy",
+          draft: "Draft", federal: "Federal", certifiable: "Certifiable",
+          international: "International", "management-system": "Mgmt system",
+          "risk-tier": "Risk tier", terminology: "Terminology",
+        };
+        return map[tag] || tag;
+      }
+
+      async function init() {
+        const root = document.getElementById("root");
+        let data;
+        try {
+          const res = await fetch("/data/regulations.json");
+          data = await res.json();
+        } catch {
+          root.innerHTML = `<p style="color:var(--status-bad)">Could not load regulations data.</p>`;
+          return;
+        }
+
+        const threshold = data.stale_threshold_days || STALE_DAYS;
+        let activeTag = "all";
+
+        function render() {
+          const items = activeTag === "all"
+            ? data.items
+            : data.items.filter((i) => i.tags.includes(activeTag));
+
+          const staleCount = items.filter(
+            (i) => daysSince(i.last_verified) > threshold
+          ).length;
+
+          const tags = ["all", ...allTags(data.items)];
+          const filterBtns = tags.map((t) => `
+            <button
+              class="tag-btn${t === activeTag ? " tag-btn--active" : ""}"
+              data-tag="${t}"
+            >${t === "all" ? "All" : tagLabel(t)}</button>
+          `).join("");
+
+          root.innerHTML = `
+            <div class="filter-row" role="group" aria-label="Filter by tag">
+              <span class="filter-row__label">Filter</span>
+              ${filterBtns}
+            </div>
+            <p class="results-line">
+              Showing <strong>${items.length}</strong> of ${data.items.length} entries
+              ${staleCount > 0 ? `&nbsp;&middot;&nbsp; <span style="color:var(--status-warn)">${staleCount} flagged for verification</span>` : ""}
+            </p>
+            <div class="reg-list" aria-label="Regulations and standards">
+              ${items.length ? items.map((i) => regItem(i, threshold)).join("") : `<p style="color:var(--slate-400);font-size:var(--text-sm)">No entries match that filter.</p>`}
+            </div>
+            <div class="contribute">
+              <div>
+                <h2>Keeping this current</h2>
+                <p>
+                  Each entry has a <code>last_verified</code> date in the source
+                  data file. To update a reference or add a new one, open a pull
+                  request against <code>data/regulations.json</code> in the
+                  GitHub repository.
+                </p>
+              </div>
+              <a
+                class="btn btn--primary"
+                href="https://github.com/billbrietstout/cosai-wizards"
+                target="_blank"
+                rel="noopener"
+              >Edit on GitHub</a>
+            </div>
+          `;
+
+          root.querySelectorAll(".tag-btn").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              activeTag = btn.dataset.tag;
+              render();
+            });
+          });
+        }
+
+        render();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

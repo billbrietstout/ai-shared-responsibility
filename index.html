@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Shared Responsibility — CoSAI SRF</title>
+    <meta
+      name="description"
+      content="The CoSAI AI Shared Responsibility Framework defines who owns each component across the AI stack. Clear accountability for vendors, customers, consultants, and end users."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      /* ---- Hero ---- */
+      .hero {
+        background: var(--cosai-navy);
+        color: #fff;
+        padding: var(--sp-24) var(--page-pad) var(--sp-20);
+      }
+      .hero__inner {
+        max-width: var(--max-w);
+        margin: 0 auto;
+      }
+      .hero__eyebrow {
+        display: inline-block;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #93c5fd;
+        padding: 3px 10px;
+        border: 1px solid rgba(147, 197, 253, 0.3);
+        border-radius: 999px;
+        margin-bottom: var(--sp-6);
+      }
+      .hero__title {
+        font-size: clamp(var(--text-3xl), 6vw, 3.6rem);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+        line-height: 1.1;
+        max-width: 720px;
+        margin-bottom: var(--sp-6);
+      }
+      .hero__title em {
+        font-style: normal;
+        color: #93c5fd;
+      }
+      .hero__lede {
+        font-size: var(--text-lg);
+        color: #cbd5e1;
+        max-width: 560px;
+        line-height: var(--leading-snug);
+        margin-bottom: var(--sp-8);
+      }
+      .hero__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+      }
+
+      /* ---- Problem strip ---- */
+      .problem {
+        padding: var(--sp-16) var(--page-pad);
+        background: var(--slate-50);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .problem__inner {
+        max-width: var(--max-w);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-12);
+        align-items: center;
+      }
+      .problem__copy h2 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-4);
+      }
+      .problem__copy p {
+        font-size: var(--text-base);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-3);
+      }
+      .pain-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+      }
+      .pain-item {
+        display: flex;
+        gap: var(--sp-3);
+        padding: var(--sp-4);
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .pain-item__icon {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        line-height: 1.4;
+      }
+      .pain-item__body { flex: 1; }
+      .pain-item__title {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 2px;
+      }
+      .pain-item__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+
+      /* ---- Layers strip ---- */
+      .layers {
+        padding: var(--sp-16) var(--page-pad);
+      }
+      .layers__inner {
+        max-width: var(--max-w);
+        margin: 0 auto;
+      }
+      .layers__header {
+        margin-bottom: var(--sp-8);
+      }
+      .layers__header h2 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-3);
+      }
+      .layers__header p {
+        font-size: var(--text-base);
+        color: var(--slate-600);
+        max-width: 540px;
+        line-height: var(--leading-normal);
+      }
+      .layer-stack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+      }
+      .layer-row {
+        display: flex;
+        align-items: stretch;
+        border-radius: var(--radius);
+        overflow: hidden;
+        border: 1px solid var(--slate-200);
+        background: #fff;
+        box-shadow: var(--shadow);
+        transition: box-shadow 0.12s, transform 0.12s;
+        text-decoration: none;
+        color: inherit;
+      }
+      .layer-row:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateX(2px);
+        text-decoration: none;
+      }
+      .layer-row__accent {
+        width: 6px;
+        flex-shrink: 0;
+      }
+      .layer-row__content {
+        flex: 1;
+        padding: var(--sp-4) var(--sp-5);
+        display: grid;
+        grid-template-columns: 160px 1fr 200px;
+        align-items: center;
+        gap: var(--sp-4);
+      }
+      .layer-row__id {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+      }
+      .layer-row__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-900);
+      }
+      .layer-row__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+      .layer-row__personas {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+        justify-content: flex-end;
+      }
+      .persona-tag {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--slate-600);
+        background: var(--slate-100);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-sm);
+        padding: 2px 7px;
+        white-space: nowrap;
+      }
+      /* Layer accent colors */
+      .layer-row--l1 .layer-row__accent { background: var(--l1); }
+      .layer-row--l2 .layer-row__accent { background: var(--l2); }
+      .layer-row--l3 .layer-row__accent { background: var(--l3); }
+      .layer-row--l4 .layer-row__accent { background: var(--l4); }
+      .layer-row--l5 .layer-row__accent { background: var(--l5); }
+
+      /* ---- Audience strip ---- */
+      .audience {
+        padding: var(--sp-16) var(--page-pad);
+        background: var(--cosai-navy);
+        color: #fff;
+      }
+      .audience__inner {
+        max-width: var(--max-w);
+        margin: 0 auto;
+      }
+      .audience__header {
+        margin-bottom: var(--sp-8);
+      }
+      .audience__header .section__label { color: #93c5fd; }
+      .audience__header h2 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: #fff;
+        margin-bottom: var(--sp-3);
+      }
+      .audience__header p {
+        font-size: var(--text-base);
+        color: #cbd5e1;
+        max-width: 500px;
+        line-height: var(--leading-normal);
+      }
+      .audience-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: var(--sp-3);
+      }
+      .audience-card {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5);
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.12s, border-color 0.12s;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+      }
+      .audience-card:hover {
+        background: rgba(255, 255, 255, 0.10);
+        border-color: rgba(255, 255, 255, 0.2);
+        text-decoration: none;
+        color: inherit;
+      }
+      .audience-card__role {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: #fff;
+      }
+      .audience-card__desc {
+        font-size: var(--text-sm);
+        color: #94a3b8;
+        line-height: var(--leading-normal);
+        flex: 1;
+      }
+      .audience-card__link {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: #93c5fd;
+        text-decoration: none;
+      }
+
+      /* ---- Wizards strip ---- */
+      .wizards-strip {
+        padding: var(--sp-16) var(--page-pad);
+        border-top: 1px solid var(--slate-200);
+      }
+      .wizards-strip__inner {
+        max-width: var(--max-w);
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-10);
+        align-items: center;
+      }
+      .wizards-strip__copy h2 {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-4);
+      }
+      .wizards-strip__copy p {
+        font-size: var(--text-base);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-3);
+      }
+      .wizard-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+      }
+      .wizard-list-item {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        font-size: var(--text-sm);
+        text-decoration: none;
+        color: var(--slate-700);
+        transition: border-color 0.12s, background 0.12s;
+      }
+      .wizard-list-item:hover {
+        border-color: var(--cosai-blue);
+        background: var(--cosai-blue-light);
+        color: var(--cosai-blue);
+        text-decoration: none;
+      }
+      .wizard-list-item__label { flex: 1; font-weight: 500; }
+      .wizard-list-item__tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+
+      /* ---- Responsive ---- */
+      @media (max-width: 680px) {
+        .problem__inner,
+        .wizards-strip__inner { grid-template-columns: 1fr; }
+        .layer-row__content {
+          grid-template-columns: 1fr;
+        }
+        .layer-row__personas { justify-content: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="home"></site-nav>
+
+    <main id="main">
+
+      <!-- Hero -->
+      <section class="hero">
+        <div class="hero__inner">
+          <span class="hero__eyebrow">OASIS CoSAI Workstream 2</span>
+          <h1 class="hero__title">
+            Who is responsible for<br>
+            <em>your AI system?</em>
+          </h1>
+          <p class="hero__lede">
+            The CoSAI AI Shared Responsibility Framework answers that question
+            across five architecture layers, eight stakeholder roles, and every
+            major cloud operating model.
+          </p>
+          <div class="hero__actions">
+            <a class="btn btn--primary" href="/framework/">Read the framework</a>
+            <a
+              class="btn btn--ghost"
+              href="https://billbrietstout.github.io/cosai-wizards/"
+              target="_blank"
+              rel="noopener"
+            >Open the wizards</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Problem -->
+      <section class="problem" aria-label="Why this matters">
+        <div class="problem__inner">
+          <div class="problem__copy">
+            <h2>Ambiguous ownership is a liability</h2>
+            <p>
+              When an AI incident occurs across a multi-vendor stack, the model
+              provider points to the platform, the platform points to the
+              application team, and the application team cites model limitations.
+              No one fixes anything.
+            </p>
+            <p>
+              The same ambiguity makes regulatory compliance impossible to
+              demonstrate. Auditors need a named owner for each control.
+            </p>
+          </div>
+          <ul class="pain-list" aria-label="Pain points addressed">
+            <li class="pain-item">
+              <span class="pain-item__icon" aria-hidden="true">&#x25CB;</span>
+              <div class="pain-item__body">
+                <div class="pain-item__title">Vendor complexity</div>
+                <div class="pain-item__desc">
+                  One application, multiple model providers, cloud platforms, and
+                  agent frameworks. Isolated contracts create blind spots.
+                </div>
+              </div>
+            </li>
+            <li class="pain-item">
+              <span class="pain-item__icon" aria-hidden="true">&#x25CB;</span>
+              <div class="pain-item__body">
+                <div class="pain-item__title">Incident response</div>
+                <div class="pain-item__desc">
+                  Without explicit owners for detection, containment, and
+                  remediation, teams default to finger-pointing.
+                </div>
+              </div>
+            </li>
+            <li class="pain-item">
+              <span class="pain-item__icon" aria-hidden="true">&#x25CB;</span>
+              <div class="pain-item__body">
+                <div class="pain-item__title">Regulatory compliance</div>
+                <div class="pain-item__desc">
+                  Demonstrating adherence to NIST AI RMF, EU AI Act, or ISO 42001
+                  requires mapping each control to a designated owner.
+                </div>
+              </div>
+            </li>
+            <li class="pain-item">
+              <span class="pain-item__icon" aria-hidden="true">&#x25CB;</span>
+              <div class="pain-item__body">
+                <div class="pain-item__title">Shadow AI</div>
+                <div class="pain-item__desc">
+                  Unsanctioned usage thrives in the gap between IT, business
+                  units, and external vendors.
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Layers -->
+      <section class="layers" aria-labelledby="layers-heading">
+        <div class="layers__inner">
+          <div class="layers__header">
+            <p class="section__label">The framework</p>
+            <h2 id="layers-heading">Five layers. One accountable party each.</h2>
+            <p>
+              Layers are stacked in order of dependency. Governance requirements
+              cascade from the business layer down to the model supply chain.
+            </p>
+          </div>
+          <div class="layer-stack" role="list">
+            <a class="layer-row layer-row--l1" href="/framework/#l1" role="listitem">
+              <div class="layer-row__accent" aria-hidden="true"></div>
+              <div class="layer-row__content">
+                <div>
+                  <div class="layer-row__id">L1</div>
+                  <div class="layer-row__name">AI Business &amp; Usage</div>
+                </div>
+                <div class="layer-row__desc">
+                  Governance, strategy, regulatory compliance. Cascades requirements downward.
+                </div>
+                <div class="layer-row__personas">
+                  <span class="persona-tag">AI System Users</span>
+                  <span class="persona-tag">AI Governance</span>
+                </div>
+              </div>
+            </a>
+            <a class="layer-row layer-row--l2" href="/framework/#l2" role="listitem">
+              <div class="layer-row__accent" aria-hidden="true"></div>
+              <div class="layer-row__content">
+                <div>
+                  <div class="layer-row__id">L2</div>
+                  <div class="layer-row__name">AI Information</div>
+                </div>
+                <div class="layer-row__desc">
+                  Data ownership, quality, privacy, and training data provenance.
+                </div>
+                <div class="layer-row__personas">
+                  <span class="persona-tag">Data Provider</span>
+                </div>
+              </div>
+            </a>
+            <a class="layer-row layer-row--l3" href="/framework/#l3" role="listitem">
+              <div class="layer-row__accent" aria-hidden="true"></div>
+              <div class="layer-row__content">
+                <div>
+                  <div class="layer-row__id">L3</div>
+                  <div class="layer-row__name">AI Application</div>
+                </div>
+                <div class="layer-row__desc">
+                  Development, guardrails, prompt engineering, agent orchestration.
+                </div>
+                <div class="layer-row__personas">
+                  <span class="persona-tag">App Developer</span>
+                  <span class="persona-tag">Agentic Provider</span>
+                </div>
+              </div>
+            </a>
+            <a class="layer-row layer-row--l4" href="/framework/#l4" role="listitem">
+              <div class="layer-row__accent" aria-hidden="true"></div>
+              <div class="layer-row__content">
+                <div>
+                  <div class="layer-row__id">L4</div>
+                  <div class="layer-row__name">AI Platform</div>
+                </div>
+                <div class="layer-row__desc">
+                  Compute, APIs, LLM routers, model serving, platform-level IAM.
+                </div>
+                <div class="layer-row__personas">
+                  <span class="persona-tag">Platform Provider</span>
+                  <span class="persona-tag">Model Serving</span>
+                </div>
+              </div>
+            </a>
+            <a class="layer-row layer-row--l5" href="/framework/#l5" role="listitem">
+              <div class="layer-row__accent" aria-hidden="true"></div>
+              <div class="layer-row__content">
+                <div>
+                  <div class="layer-row__id">L5</div>
+                  <div class="layer-row__name">AI Model Provider</div>
+                </div>
+                <div class="layer-row__desc">
+                  Foundation models, model governance, supply-chain provenance.
+                </div>
+                <div class="layer-row__personas">
+                  <span class="persona-tag">Model Provider</span>
+                </div>
+              </div>
+            </a>
+          </div>
+          <p style="margin-top: var(--sp-5); font-size: var(--text-sm); color: var(--slate-500);">
+            <a href="/framework/">Explore the full framework</a> including the
+            operating model responsibility matrix (IaaS, AI-PaaS, Agent-PaaS, AI-SaaS).
+          </p>
+        </div>
+      </section>
+
+      <!-- Audience -->
+      <section class="audience" aria-labelledby="audience-heading">
+        <div class="audience__inner">
+          <div class="audience__header">
+            <p class="section__label">Where do you fit?</p>
+            <h2 id="audience-heading">The framework applies differently depending on your role.</h2>
+            <p>
+              Select your perspective to see which layers and personas are most
+              relevant to your work.
+            </p>
+          </div>
+          <div class="audience-cards">
+            <a class="audience-card" href="/personas/?filter=vendor">
+              <div class="audience-card__role">Vendor</div>
+              <div class="audience-card__desc">
+                You build models, platforms, or applications. The framework
+                defines what you owe your customers at each layer.
+              </div>
+              <span class="audience-card__link">Model Provider, Platform Provider, App Developer &#x2192;</span>
+            </a>
+            <a class="audience-card" href="/personas/?filter=customer">
+              <div class="audience-card__role">Customer</div>
+              <div class="audience-card__desc">
+                You deploy AI systems in your organization. The framework
+                identifies what you retain regardless of what your vendor manages.
+              </div>
+              <span class="audience-card__link">AI Governance, Data Provider &#x2192;</span>
+            </a>
+            <a class="audience-card" href="/personas/?filter=consultant">
+              <div class="audience-card__role">Consultant</div>
+              <div class="audience-card__desc">
+                You advise on AI governance or implementation. The framework
+                gives you a structured vocabulary for accountability conversations.
+              </div>
+              <span class="audience-card__link">All personas, operating model matrix &#x2192;</span>
+            </a>
+            <a class="audience-card" href="/personas/?filter=user">
+              <div class="audience-card__role">End user</div>
+              <div class="audience-card__desc">
+                You use AI-powered products. The framework explains what the
+                organizations behind those products are accountable for.
+              </div>
+              <span class="audience-card__link">AI System Users &#x2192;</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Wizards -->
+      <section class="wizards-strip" aria-labelledby="wizards-heading">
+        <div class="wizards-strip__inner">
+          <div class="wizards-strip__copy">
+            <h2 id="wizards-heading">Put it to work</h2>
+            <p>
+              Six browser-based assessment tools built on the framework. No
+              account required. Nothing leaves your browser.
+            </p>
+            <p>
+              State is saved in <code>localStorage</code> and exportable as JSON.
+              PDF export is built in.
+            </p>
+            <a
+              class="btn btn--primary"
+              href="https://billbrietstout.github.io/cosai-wizards/"
+              target="_blank"
+              rel="noopener"
+              style="margin-top: var(--sp-2);"
+            >Open the wizards</a>
+          </div>
+          <ul class="wizard-list">
+            <li>
+              <a
+                class="wizard-list-item"
+                href="https://billbrietstout.github.io/cosai-wizards/wizards/security-controls/"
+                target="_blank"
+                rel="noopener"
+              >
+                <span class="wizard-list-item__label">AI Security Controls Assessment</span>
+                <span class="wizard-list-item__tag">PDF</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="wizard-list-item"
+                href="https://billbrietstout.github.io/cosai-wizards/wizards/controls-assessment/"
+                target="_blank"
+                rel="noopener"
+              >
+                <span class="wizard-list-item__label">Controls Assessment (AICM variant)</span>
+                <span class="wizard-list-item__tag">PDF</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="wizard-list-item"
+                href="https://billbrietstout.github.io/cosai-wizards/wizards/regulation-discovery/"
+                target="_blank"
+                rel="noopener"
+              >
+                <span class="wizard-list-item__label">AI Regulation Discovery</span>
+                <span class="wizard-list-item__tag">PDF</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="wizard-list-item"
+                href="https://billbrietstout.github.io/cosai-wizards/wizards/policy-pyramid/"
+                target="_blank"
+                rel="noopener"
+              >
+                <span class="wizard-list-item__label">AI Policy Pyramid</span>
+                <span class="wizard-list-item__tag">JSON / PDF</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="wizard-list-item"
+                href="https://billbrietstout.github.io/cosai-wizards/wizards/layer-matrix/"
+                target="_blank"
+                rel="noopener"
+              >
+                <span class="wizard-list-item__label">Layer Integration Matrix</span>
+                <span class="wizard-list-item__tag">Reference</span>
+              </a>
+            </li>
+            <li>
+              <a
+                class="wizard-list-item"
+                href="https://billbrietstout.github.io/cosai-wizards/wizards/srf-stress/"
+                target="_blank"
+                rel="noopener"
+              >
+                <span class="wizard-list-item__label">SRF Stress Test</span>
+                <span class="wizard-list-item__tag">Scenario</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

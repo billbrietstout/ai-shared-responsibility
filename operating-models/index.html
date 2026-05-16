@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Operating Models — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="How AI responsibility shifts across IaaS, AI-PaaS, Agent-PaaS, and AI-SaaS operating models. The CoSAI five-layer responsibility matrix."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      /* ---- Model selector ---- */
+      .model-tabs {
+        display: flex;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+        margin-bottom: var(--sp-6);
+        border-bottom: 2px solid var(--slate-200);
+        padding-bottom: var(--sp-1);
+      }
+      .model-tab {
+        padding: var(--sp-2) var(--sp-4);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        border: none;
+        background: none;
+        color: var(--slate-500);
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        transition: color 0.12s, border-color 0.12s;
+      }
+      .model-tab:hover { color: var(--slate-800); }
+      .model-tab--active {
+        color: var(--cosai-blue);
+        border-bottom-color: var(--cosai-blue);
+      }
+
+      /* ---- Model description ---- */
+      .model-desc {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        padding: var(--sp-4) var(--sp-5);
+        margin-bottom: var(--sp-6);
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+      .model-desc strong { color: var(--slate-900); }
+
+      /* ---- Matrix table ---- */
+      .matrix-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        margin-bottom: var(--sp-8);
+      }
+      .matrix {
+        width: 100%;
+        min-width: 520px;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+      }
+      .matrix th {
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        padding: var(--sp-3) var(--sp-4);
+        border-bottom: 2px solid var(--slate-200);
+        background: #fff;
+      }
+      .matrix th:not(:first-child) { text-align: center; }
+      .matrix td {
+        padding: var(--sp-3) var(--sp-4);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: middle;
+      }
+      .matrix tr:last-child td { border-bottom: none; }
+
+      /* Layer column */
+      .matrix .col-layer {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+      }
+      .matrix .layer-accent {
+        width: 4px;
+        height: 32px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+      .matrix .layer-info { flex: 1; }
+      .matrix .layer-id {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+      .matrix .layer-name {
+        font-weight: 700;
+        color: var(--slate-900);
+        font-size: var(--text-sm);
+      }
+
+      /* Responsibility cells */
+      .matrix td.col-cell { text-align: center; }
+      .resp-chip {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+      .resp-chip--customer  { background: #dbeafe; color: #1e40af; }
+      .resp-chip--shared    { background: #fef3c7; color: #92400e; }
+      .resp-chip--provider  { background: #f1f5f9; color: var(--slate-600); }
+      .resp-chip--model-eval{ background: #ede9fe; color: #5b21b6; }
+      .resp-chip--na        { color: var(--slate-400); font-size: 10px; letter-spacing: 0.04em; }
+
+      /* Accent colors */
+      .accent--l1 { background: var(--l1); }
+      .accent--l2 { background: var(--l2); }
+      .accent--l3 { background: var(--l3); }
+      .accent--l4 { background: var(--l4); }
+      .accent--l5 { background: var(--l5); }
+
+      /* ---- Legend ---- */
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3) var(--sp-5);
+        margin-bottom: var(--sp-8);
+        padding: var(--sp-4);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+      }
+      .legend__item {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-xs);
+        color: var(--slate-600);
+      }
+
+      /* ---- All-models grid ---- */
+      .all-models {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-8);
+      }
+      .model-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5);
+        background: #fff;
+        box-shadow: var(--shadow);
+        cursor: pointer;
+        transition: border-color 0.12s, box-shadow 0.12s;
+        text-align: left;
+        width: 100%;
+        font-family: var(--font-sans);
+      }
+      .model-card:hover {
+        border-color: var(--cosai-blue);
+        box-shadow: var(--shadow-md);
+      }
+      .model-card__short {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cosai-blue);
+        margin-bottom: var(--sp-1);
+      }
+      .model-card__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-2);
+      }
+      .model-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="operating-models"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">CoSAI AI SRF &sect;3.2</span>
+        <h1 class="page-hero__title">Operating Models</h1>
+        <p class="page-hero__lede">
+          Responsibility shifts significantly depending on whether you are running
+          IaaS, AI-PaaS, Agent-PaaS, or AI-SaaS. Select a model to see the full
+          layer-by-layer breakdown.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div id="root">
+        <p style="color: var(--slate-400); font-size: var(--text-sm);">Loading...</p>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script type="module">
+      const LAYER_NAMES = {
+        L1: "AI Business & Usage",
+        L2: "AI Information",
+        L3: "AI Application",
+        L4: "AI Platform",
+        L5: "AI Model Provider",
+      };
+
+      const CHIP_MAP = {
+        "customer-owned":   ["customer",   "Customer"],
+        "shared":           ["shared",     "Shared"],
+        "provider-managed": ["provider",   "Provider"],
+        "model-evaluation": ["model-eval", "Model evaluation"],
+        "N/A":              ["na",         "N/A"],
+      };
+
+      function chip(value) {
+        const [cls, label] = CHIP_MAP[value] || ["na", value];
+        return `<span class="resp-chip resp-chip--${cls}">${label}</span>`;
+      }
+
+      function matrixTable(data, activeModel) {
+        const model = data.models.find((m) => m.id === activeModel);
+        const layers = ["L1", "L2", "L3", "L4", "L5"];
+
+        const rows = layers.map((id) => {
+          const cell = data.cells[id][activeModel];
+          return `<tr>
+            <td>
+              <div class="col-layer">
+                <div class="layer-accent accent--${id.toLowerCase()}" aria-hidden="true"></div>
+                <div class="layer-info">
+                  <div class="layer-id">${id}</div>
+                  <div class="layer-name">${LAYER_NAMES[id]}</div>
+                </div>
+              </div>
+            </td>
+            <td class="col-cell">${chip(cell.customer)}</td>
+            <td class="col-cell">${chip(cell.provider)}</td>
+          </tr>`;
+        }).join("");
+
+        return `
+          <div class="model-desc">
+            <strong>${model.name}:</strong> ${model.description}
+          </div>
+          <div class="matrix-wrap">
+            <table class="matrix" aria-label="Responsibility matrix for ${model.name}">
+              <thead>
+                <tr>
+                  <th>Layer</th>
+                  <th>Customer responsibility</th>
+                  <th>Provider responsibility</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      function legend() {
+        return `
+          <div class="legend" aria-label="Legend">
+            <div class="legend__item"><span class="resp-chip resp-chip--customer">Customer</span> Customer has full accountability; provider offers no default controls</div>
+            <div class="legend__item"><span class="resp-chip resp-chip--shared">Shared</span> Both parties have defined, complementary obligations</div>
+            <div class="legend__item"><span class="resp-chip resp-chip--provider">Provider</span> Provider owns and operates; customer inherits controls</div>
+            <div class="legend__item"><span class="resp-chip resp-chip--model-eval">Model evaluation</span> Customer evaluates model suitability; provider manages the model itself</div>
+            <div class="legend__item"><span class="resp-chip resp-chip--na">N/A</span> Layer does not apply in this operating model</div>
+          </div>
+        `;
+      }
+
+      function tabs(models, activeModel) {
+        return `<div class="model-tabs" role="tablist" aria-label="Select operating model">
+          ${models.map((m) => `
+            <button
+              class="model-tab${m.id === activeModel ? " model-tab--active" : ""}"
+              role="tab"
+              aria-selected="${m.id === activeModel}"
+              data-model="${m.id}"
+            >${m.short}</button>
+          `).join("")}
+        </div>`;
+      }
+
+      async function init() {
+        const root = document.getElementById("root");
+        const params = new URLSearchParams(location.search);
+
+        let data;
+        try {
+          const res = await fetch("/data/matrix.json");
+          data = await res.json();
+        } catch {
+          root.innerHTML = `<p style="color:var(--status-bad)">Could not load matrix data.</p>`;
+          return;
+        }
+
+        let active = params.get("model") || data.models[0].id;
+        if (!data.models.find((m) => m.id === active)) active = data.models[0].id;
+
+        function render() {
+          root.innerHTML = `
+            ${tabs(data.models, active)}
+            ${matrixTable(data, active)}
+            ${legend()}
+            <div class="callout">
+              <strong>Direction:</strong> Columns read left to right from most provider-managed (AI-SaaS) to most customer-managed (IaaS). Customer responsibility increases as organizations move toward infrastructure-layer deployments.
+            </div>
+          `;
+
+          root.querySelectorAll(".model-tab").forEach((btn) => {
+            btn.addEventListener("click", () => {
+              active = btn.dataset.model;
+              const url = new URL(location.href);
+              url.searchParams.set("model", active);
+              history.replaceState(null, "", url);
+              render();
+            });
+          });
+        }
+
+        render();
+      }
+
+      init();
+    </script>
+  </body>
+</html>
