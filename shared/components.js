@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { id: "framework",        label: "Framework",       href: "/framework/" },
   { id: "personas",         label: "Personas",        href: "/personas/" },
   { id: "operating-models", label: "Operating models",href: "/operating-models/" },
+  { id: "tools",            label: "Tools",           href: "/tools/" },
   { id: "regulations",      label: "Regulations",     href: "/regulations/" },
   { id: "about",            label: "About",           href: "/about/" },
 ];
@@ -19,10 +20,10 @@ const FOOTER_LINKS = [
   { label: "Framework",        href: "/framework/" },
   { label: "Personas",         href: "/personas/" },
   { label: "Operating models", href: "/operating-models/" },
+  { label: "Tools",            href: "/tools/" },
   { label: "Regulations",      href: "/regulations/" },
   { label: "About",            href: "/about/" },
-  { label: "Wizards",          href: "https://billbrietstout.github.io/cosai-wizards/", external: true },
-  { label: "Source",           href: "https://github.com/billbrietstout/cosai-wizards", external: true },
+  { label: "Source",           href: "https://github.com/billbrietstout/ai-shared-responsibility", external: true },
 ];
 
 /* --------------------------------------------------------------------------
@@ -65,11 +66,8 @@ class SiteNav extends HTMLElement {
           </button>
           <ul class="nav__links" id="nav-links" role="list">${links}</ul>
           <div class="nav__cta">
-            <a class="btn btn--ghost" href="https://billbrietstout.github.io/cosai-wizards/" target="_blank" rel="noopener">
-              Open wizards
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true">
-                <path d="M3.5 1H11v7.5M11 1 1 11"/>
-              </svg>
+            <a class="btn btn--ghost" href="/tools/">
+              Tools
             </a>
           </div>
         </div>

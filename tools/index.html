@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tools — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Interactive assessment wizards, machine-readable schemas, and system instructions for the CoSAI AI Shared Responsibility Framework."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .tools-section {
+        margin-bottom: var(--sp-14);
+      }
+      .tools-section__header {
+        display: flex;
+        align-items: baseline;
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-6);
+        padding-bottom: var(--sp-3);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .tools-section__title {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--slate-900);
+        letter-spacing: -0.02em;
+      }
+      .tools-section__count {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+
+      /* Tool grid */
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--sp-4);
+      }
+
+      /* Tool card */
+      .tool-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        transition: box-shadow 0.12s, border-color 0.12s;
+        text-decoration: none;
+        color: inherit;
+      }
+      .tool-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--cosai-blue-soft);
+        text-decoration: none;
+      }
+      .tool-card--coming {
+        opacity: 0.6;
+        pointer-events: none;
+        cursor: default;
+      }
+      .tool-card__body {
+        padding: var(--sp-5);
+        flex: 1;
+      }
+      .tool-card__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--sp-4);
+        flex-shrink: 0;
+      }
+      .tool-card__icon--blue   { background: var(--cosai-blue-light); color: var(--cosai-blue); }
+      .tool-card__icon--navy   { background: #eef1f8; color: var(--cosai-navy); }
+      .tool-card__icon--green  { background: #ecfdf5; color: #059669; }
+      .tool-card__icon--amber  { background: #fffbeb; color: #d97706; }
+      .tool-card__icon--purple { background: #f5f3ff; color: #7c3aed; }
+      .tool-card__icon--slate  { background: var(--slate-100); color: var(--slate-600); }
+
+      .tool-card__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        letter-spacing: -0.01em;
+        margin-bottom: var(--sp-2);
+      }
+      .tool-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+      .tool-card__footer {
+        padding: var(--sp-3) var(--sp-5);
+        border-top: 1px solid var(--slate-100);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .tool-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .tool-card__tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        background: var(--slate-100);
+        border-radius: 999px;
+        padding: 2px 7px;
+      }
+      .tool-card__arrow {
+        color: var(--slate-300);
+        flex-shrink: 0;
+      }
+      .tool-card:hover .tool-card__arrow {
+        color: var(--cosai-blue);
+      }
+      .coming-badge {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        background: var(--slate-100);
+        border-radius: 999px;
+        padding: 2px 8px;
+      }
+
+      /* Phase callout for upcoming tools */
+      .phase-callout {
+        margin-top: var(--sp-8);
+        padding: var(--sp-5) var(--sp-6);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: var(--sp-4);
+        align-items: start;
+      }
+      .phase-callout__num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--cosai-navy);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--text-sm);
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .phase-callout__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-2);
+      }
+      .phase-callout__body {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+
+      @media (max-width: 580px) {
+        .tool-grid { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Interactive tools</span>
+        <h1 class="page-hero__title">Tools</h1>
+        <p class="page-hero__lede">
+          Assessment wizards, machine-readable schemas, and system instructions
+          for operationalizing the CoSAI AI Shared Responsibility Framework.
+          All tools run in your browser. No data leaves your device.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <!-- ── Assessment Wizards ──────────────────────────────── -->
+      <section class="tools-section" aria-labelledby="wizards-heading">
+        <div class="tools-section__header">
+          <h2 class="tools-section__title" id="wizards-heading">Assessment Wizards</h2>
+          <span class="tools-section__count">6 tools</span>
+        </div>
+        <div class="tool-grid">
+
+          <a class="tool-card" href="/tools/regulation-discovery/">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--blue">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <circle cx="8" cy="8" r="5.5"/>
+                  <path d="M13 13l4 4" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">Regulation Discovery</div>
+              <p class="tool-card__desc">
+                Identify which regulations apply to your planned AI system.
+                Answer four questions about jurisdiction, risk tier, and
+                deployment context — get a layer-mapped regulatory profile.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">Compliance</span>
+                <span class="tool-card__tag">All layers</span>
+                <span class="tool-card__tag">PDF export</span>
+              </div>
+              <svg class="tool-card__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/tools/controls-assessment/">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--navy">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <rect x="3" y="3" width="14" height="14" rx="2"/>
+                  <path d="M7 10l2.5 2.5L13 8" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">Controls Assessment (AICM)</div>
+              <p class="tool-card__desc">
+                Five-layer security controls assessment aligned to the CSA AI
+                Controls Matrix v1.0.3. Covers OWASP LLM Top 10, EU AI Act
+                risk tiers, and generates a gap report with PDF export.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">Security</span>
+                <span class="tool-card__tag">AICM</span>
+                <span class="tool-card__tag">PDF export</span>
+              </div>
+              <svg class="tool-card__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/tools/security-controls/">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--green">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <path d="M10 2.5L4 5v5c0 4 2.7 7.3 6 8.3 3.3-1 6-4.3 6-8.3V5L10 2.5z" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">Security Controls Assessment</div>
+              <p class="tool-card__desc">
+                CCI-level security posture assessment across all five CoSAI
+                SRF layers. Focused on defensive controls, threat coverage,
+                and OWASP LLM vulnerability mitigations.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">Security</span>
+                <span class="tool-card__tag">OWASP</span>
+                <span class="tool-card__tag">PDF export</span>
+              </div>
+              <svg class="tool-card__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/tools/policy-pyramid/">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--amber">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <path d="M10 3L2 17h16L10 3z" stroke-linejoin="round"/>
+                  <path d="M10 9v4M10 15h.01" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">AI Policy Pyramid</div>
+              <p class="tool-card__desc">
+                Build your AI governance document hierarchy across the five
+                CoSAI layers: principles, policies, standards, guidelines, and
+                operational baselines. Export as PDF or JSON.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">Governance</span>
+                <span class="tool-card__tag">Policy</span>
+                <span class="tool-card__tag">PDF export</span>
+              </div>
+              <svg class="tool-card__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/tools/layer-matrix/">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--purple">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <rect x="2" y="2" width="7" height="7" rx="1"/>
+                  <rect x="11" y="2" width="7" height="7" rx="1"/>
+                  <rect x="2" y="11" width="7" height="7" rx="1"/>
+                  <rect x="11" y="11" width="7" height="7" rx="1"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">Layer Integration Matrix</div>
+              <p class="tool-card__desc">
+                Cross-layer integration and handoff reference. Shows how
+                controls, data flows, and accountability transfer across the
+                L1 through L5 boundaries for a given deployment.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">Architecture</span>
+                <span class="tool-card__tag">Boundaries</span>
+              </div>
+              <svg class="tool-card__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </div>
+          </a>
+
+          <a class="tool-card" href="/tools/srf-stress/">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--slate">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <path d="M3 10h14M3 5h14M3 15h8" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">Framework Stress Test</div>
+              <p class="tool-card__desc">
+                Apply adversarial scenarios to the CoSAI SRF to find gaps,
+                ambiguous boundaries, and accountability edge cases. Useful
+                for pre-deployment review and tabletop exercises.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">Testing</span>
+                <span class="tool-card__tag">Risk</span>
+              </div>
+              <svg class="tool-card__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
+      <!-- ── Machine-Readable Schemas ───────────────────────── -->
+      <section class="tools-section" aria-labelledby="schema-heading">
+        <div class="tools-section__header">
+          <h2 class="tools-section__title" id="schema-heading">Machine-Readable Schemas</h2>
+          <span class="coming-badge">Phase 1</span>
+        </div>
+        <div class="tool-grid">
+
+          <a class="tool-card tool-card--coming" href="/tools/schema/" aria-disabled="true" tabindex="-1">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--blue">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <path d="M5 4h10a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"/>
+                  <path d="M8 4v12M4 8h12" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">Governance Schema Repository</div>
+              <p class="tool-card__desc">
+                Canonical machine-readable schemas for accountability
+                assignments, evidence manifests, and RACI matrices.
+                JSON, YAML, and graph-ontology formats.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">JSON</span>
+                <span class="tool-card__tag">YAML</span>
+                <span class="tool-card__tag">Ontology</span>
+              </div>
+              <span class="coming-badge">Coming</span>
+            </div>
+          </a>
+
+        </div>
+
+        <div class="phase-callout">
+          <div class="phase-callout__num">1</div>
+          <div>
+            <div class="phase-callout__title">Governance-as-code — Phase 1</div>
+            <p class="phase-callout__body">
+              The v2.0 framework will publish a canonical schema repository
+              covering accountability ontologies, evidence manifests, and
+              governance-as-code templates. These enable GRC platforms, AI
+              gateways, and observability systems to consume the framework
+              programmatically rather than by reading a PDF.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── System Instructions ────────────────────────────── -->
+      <section class="tools-section" aria-labelledby="prompts-heading">
+        <div class="tools-section__header">
+          <h2 class="tools-section__title" id="prompts-heading">System Instructions</h2>
+          <span class="coming-badge">Phase 1</span>
+        </div>
+        <div class="tool-grid">
+
+          <a class="tool-card tool-card--coming" href="/tools/prompts/" aria-disabled="true" tabindex="-1">
+            <div class="tool-card__body">
+              <div class="tool-card__icon tool-card__icon--navy">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                  <path d="M4 6h12M4 10h8M4 14h6" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="tool-card__name">SRF System Instruction Library</div>
+              <p class="tool-card__desc">
+                Versioned, downloadable system prompts that ground AI
+                assistants in the CoSAI SRF. Variants for executive
+                summary, auditor, developer, and legal/procurement modes.
+              </p>
+            </div>
+            <div class="tool-card__footer">
+              <div class="tool-card__tags">
+                <span class="tool-card__tag">LLM</span>
+                <span class="tool-card__tag">Prompts</span>
+                <span class="tool-card__tag">Versioned</span>
+              </div>
+              <span class="coming-badge">Coming</span>
+            </div>
+          </a>
+
+        </div>
+
+        <div class="phase-callout">
+          <div class="phase-callout__num">1</div>
+          <div>
+            <div class="phase-callout__title">AI-native governance — Phase 1</div>
+            <p class="phase-callout__body">
+              The v2.0 framework includes a canonical system instruction that
+              enforces exactly one accountable party per activity, cascades
+              responsibilities from L1 through L5, and requires autonomy
+              classification for agentic systems. Prompt variants for
+              healthcare, finance, and public sector are planned.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

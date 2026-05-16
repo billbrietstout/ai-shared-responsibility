@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layer Integration Matrix — CoSAI / Enterprise Security</title>
+<link rel="stylesheet" href="/shared/styles.css">
+<style>
+:root {
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, ui-sans-serif, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #fafaf9;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-tertiary: #475569;
+  --color-border-primary: #94a3b8;
+  --color-border-secondary: #e2e8f0;
+  --color-border-tertiary: #f1f5f9;
+  --border-radius-md: 8px;
+  --border-radius-lg: 10px;
+  --navy: #0e174d;
+  --navy-accent: #1f4af5;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background-tertiary);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+/* ── PLATFORM HEADER ── */
+.platform-header {
+  background: var(--navy);
+  padding: 0 32px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.platform-header-inner {
+  max-width: 1000px;
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.platform-wordmark {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+}
+.platform-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
+.platform-tool { font-size: 12px; color: rgba(255,255,255,0.6); font-family: var(--font-mono); }
+.platform-back {
+  margin-left: auto;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.15s;
+  font-family: var(--font-mono);
+}
+.platform-back:hover { color: rgba(255,255,255,0.9); }
+
+.page-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+
+.page-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.1em;
+  font-family: var(--font-mono);
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.wrap { font-size: 13px; }
+
+.tab-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 6px 15px;
+  border: 1px solid var(--color-border-secondary);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+  background: var(--color-background-primary);
+  transition: all 0.15s;
+}
+
+.tab.active {
+  background: var(--navy);
+  color: #ffffff;
+  border-color: var(--navy);
+}
+
+.tab:hover:not(.active) {
+  background: var(--color-background-secondary);
+}
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── MATRIX (layers as rows, components as columns) ─── */
+.matrix-scroll {
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-lg);
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--color-background-primary);
+  -webkit-overflow-scrolling: touch;
+}
+.matrix-scroll:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.matrix-grid {
+  display: grid;
+  grid-template-columns: 172px repeat(9, minmax(150px, 1fr));
+  gap: 0;
+  min-width: 1520px;
+  background: var(--color-background-primary);
+}
+
+.mh {
+  background: var(--color-background-secondary);
+  padding: 9px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.mh:last-child { border-right: none; }
+
+.mh.corner { position: sticky; left: 0; z-index: 3; }
+
+.mh-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+/* Layer-label cell on the left of each row (sticky) */
+.rl {
+  padding: 9px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.rl-id {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.rl-name { font-size: 11.5px; }
+
+.mc {
+  padding: 8px 10px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  border-right: 0.5px solid var(--color-border-tertiary);
+  line-height: 1.5;
+  background: var(--color-background-primary);
+}
+
+.mc:last-child { border-right: none; }
+
+.mc.pri { color: var(--color-text-primary); font-weight: 500; }
+.mc.sec { color: var(--color-text-secondary); }
+.mc.na  { color: var(--color-text-tertiary); font-style: italic; }
+
+.mc .sub { font-weight: 400; font-size: 10.5px; }
+.mc.pri .sub { color: var(--color-text-secondary); }
+.mc.sec .sub { color: var(--color-text-tertiary); }
+
+.row-last .rl,
+.row-last .mc { border-bottom: none; }
+
+/* ─── SUPPLY CHAIN ─── */
+.sc-wrap { display: flex; flex-direction: column; gap: 8px; }
+
+.sc-phase {
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-background-primary);
+}
+
+.sc-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--color-background-secondary);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+
+.sc-head:hover { background: var(--color-background-tertiary); }
+
+.sc-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.sc-title { flex: 1; font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.sc-sub   { font-size: 11px; color: var(--color-text-secondary); margin-top: 1px; }
+
+.sc-chev {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  transition: transform 0.2s;
+}
+
+.sc-chev.open { transform: rotate(90deg); }
+
+.sc-body {
+  display: none;
+  padding: 12px 14px;
+  border-top: 0.5px solid var(--color-border-tertiary);
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.sc-body.open { display: grid; }
+
+.sc-col-head {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-tertiary);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.sc-item {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 5px;
+  padding-left: 12px;
+  position: relative;
+  line-height: 1.45;
+}
+
+.sc-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--color-border-secondary);
+}
+
+/* ─── SRF CLARITY VIEW (layer value props) ─── */
+.gaps-intro {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+  line-height: 1.55;
+}
+
+.gaps-srf-outline {
+  margin: 0 0 16px;
+  padding: 12px 14px 12px 28px;
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  background: var(--color-background-secondary);
+  font-size: 10.5px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.gaps-srf-outline li { margin-bottom: 6px; }
+.gaps-srf-outline li:last-child { margin-bottom: 0; }
+.gaps-srf-outline strong { color: var(--color-text-primary); font-weight: 600; }
+
+.gap-layer-block {
+  display: grid;
+  grid-template-columns: minmax(152px, 192px) 1fr;
+  gap: 12px 16px;
+  margin-bottom: 14px;
+  align-items: start;
+}
+
+@media (max-width: 640px) {
+  .gap-layer-block {
+    grid-template-columns: 1fr;
+  }
+  .gap-layer-rail {
+    position: static !important;
+  }
+}
+
+.gap-layer-rail {
+  position: sticky;
+  top: 8px;
+  padding: 12px 12px;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+}
+
+.gap-home {
+  font-size: 10px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.35;
+  margin-bottom: 10px;
+}
+
+.gap-principle {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.gap-principle-label {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: 4px;
+}
+
+.gap-layer-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gap-item {
+  border: 0.5px solid var(--color-border-secondary);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  background: var(--color-background-primary);
+}
+
+.gap-item-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px 0;
+}
+
+.gap-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+
+.gap-title {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1.35;
+}
+
+.gap-catalog {
+  padding: 6px 12px 12px 28px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.gap-catalog .gap-lbl {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: 3px;
+}
+
+/* ─── LEGEND ─── */
+.legend-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+.leg-sq {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.view-note {
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 14px;
+  line-height: 1.55;
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="platform-header">
+  <div class="platform-header-inner">
+    <a href="/tools/" class="platform-wordmark">CoSAI Wizards</a>
+    <div class="platform-sep"></div>
+    <span class="platform-tool">Layer Integration Matrix</span>
+    <a href="/tools/" class="platform-back">
+      <svg width="12" height="12" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9L4.5 6l3-3"/>
+      </svg>
+      Back to wizards
+    </a>
+  </div>
+</header>
+
+<main id="main" class="page-wrap">
+  <div class="page-title">LAYER INTEGRATION MATRIX</div>
+  <div class="wrap">
+    <p class="view-note" style="margin-bottom:16px">This explorer matches the SRF’s idea of a <strong>governance manual for decomposition</strong>: you see <strong>who is accountable</strong> for each slice of the stack, how that follows the <strong>MLOps lifecycle</strong>, and <strong>what each layer is for</strong> as AI scales. That structure helps teams <strong>expand AI faster with less ambiguity</strong>—clearer procurement and vendor boundaries, <strong>stage-gate evidence</strong> aligned to owners, and a path that <strong>scales as systems grow more autonomous</strong>—while still complementing NIST AI RMF, ISO/IEC 42001, and the EU AI Act rather than replacing them.</p>
+    <div class="tab-row">
+      <button type="button" class="tab active" onclick="showView('matrix', this)" aria-label="Responsibility matrix: nine components by SRF layer, primary versus shared">responsibility matrix</button>
+      <button type="button" class="tab" onclick="showView('supply', this)" aria-label="Lifecycle view: CRISP-ML Q phases and which layer is primarily accountable">lifecycle × accountable layer</button>
+      <button type="button" class="tab" onclick="showView('gaps', this)" aria-label="SRF benefit: why layering accountability speeds triage, scaling, and vendor handoffs—what each layer is for">value of layered accountability</button>
+    </div>
+    <p class="view-note" style="margin-top:-10px;margin-bottom:14px;font-size:11px;color:var(--color-text-tertiary)">Three views of one idea: <strong>decompose AI accountability by enterprise layer</strong> so obligations land on a <strong>named owner</strong>—something generic risk frameworks don’t spell out for AI-native, multi-vendor stacks.</p>
+
+    <div id="matrix" class="view active">
+      <p class="view-note">AI responsibility components mapped to the five layers of the <strong>CoSAI AI Shared Responsibility Framework</strong> (V0.7). Cells follow the RACI matrices in §A.1.2 – §A.1.5 of the whitepaper: <em>Primary</em> = accountable owner, <em>Shared</em> = responsible / supports, <em>Inherited</em> = not directly involved or inherited from an upstream layer.</p>
+      <div class="legend-row">
+        <div class="leg"><div class="leg-sq" style="background:#185FA5"></div> primary (accountable)</div>
+        <div class="leg"><div class="leg-sq" style="background:#9FE1CB"></div> shared (responsible / supports)</div>
+        <div class="leg"><div class="leg-sq" style="background:#D3D1C7"></div> inherited / not involved</div>
+      </div>
+      <p class="view-note" style="margin-top:-4px;margin-bottom:10px;font-size:10.5px;color:var(--color-text-tertiary)">Scroll horizontally to see all nine responsibility components. The layer-label column is pinned.</p>
+      <section class="matrix-scroll" tabindex="0" aria-label="Scrollable layer integration matrix">
+        <div class="matrix-grid" id="matrix-grid"></div>
+      </section>
+    </div>
+
+    <div id="supply" class="view">
+      <p class="view-note">CRISP-ML(Q) / MLOps lifecycle, with each phase tagged to the <strong>CoSAI AI SRF</strong> layer that holds primary accountability for the controls in that phase. Useful for mapping evidence (per §A.7 of the whitepaper) to lifecycle stage gates. Click a phase to expand.</p>
+      <div class="sc-wrap" id="sc-phases"></div>
+    </div>
+
+    <div id="gaps" class="view">
+      <p class="gaps-intro">The <strong>CoSAI AI Shared Responsibility Framework</strong> (V0.7) is an <strong>accountability</strong> model: it names <strong>who owns</strong> each part of the AI stack so obligations from NIST AI RMF, ISO/IEC 42001, the EU AI Act, and your internal control sets can land on <strong>one primary party per concern</strong>. It works as a <strong>governance manual for decomposition</strong>—enterprise layers express invariant dependencies while operating models shift who supplies each layer. The outline below summarizes <strong>what each layer clarifies</strong>; the cards give <strong>illustrative AI concerns</strong> that become <strong>assignable and evidential</strong> once you adopt that structure—supporting <strong>faster triage</strong>, <strong>cleaner scaling</strong>, and <strong>repeatable expansion</strong> of new models and use cases.</p>
+      <ol class="gaps-srf-outline">
+        <li><strong>L1 — Business &amp; Usage.</strong> <strong>Strategic accountability:</strong> permitted AI use, risk acceptance, regulatory posture, and lifecycle governance decisions—so requirements <strong>cascade</strong> from business intent to the layers below, matching the framework’s “governance from the Business layer.”</li>
+        <li><strong>L2 — Information.</strong> <strong>Data-as-model-fuel:</strong> provenance, rights, training data, answer-time source stores (including RAG knowledge bases), embeddings, and retrieval boundaries—extending information governance to what models actually ingest and emit.</li>
+        <li><strong>L3 — Application.</strong> <strong>Integration accountability:</strong> how capability meets users and APIs—surfaces, tools, agents, prompts, validation, and human override—where application developers discharge the controls referenced around prompt injection and guardrails in the framework.</li>
+        <li><strong>L4 — Platform.</strong> <strong>Shared runtime accountability:</strong> serving, tenancy, isolation, quotas, monitoring, and operational hardening at scale—including containing blast radius across tenants as in the framework’s layered incident example.</li>
+        <li><strong>L5 — Model provider.</strong> <strong>Artifact &amp; supply-chain accountability:</strong> training provenance, the shipped model, cards and transparency, third-party and fine-tuned change—so model builders and vendors have a clear lane alongside NIST/ISO <em>what</em> to achieve.</li>
+      </ol>
+      <div id="gaps-list"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── RACI matrix: layers are rows, components are columns ── */
+const layers = [
+  { id: 'L1', label: 'AI Business & Usage' },
+  { id: 'L2', label: 'AI Information' },
+  { id: 'L3', label: 'AI Application' },
+  { id: 'L4', label: 'AI Platform' },
+  { id: 'L5', label: 'AI Model Provider' },
+];
+
+const components = [
+  { label: 'Governance, risk register, sector regulation',            color: '#185FA5' },
+  { label: 'User training & acceptable use (incl. shadow AI)',        color: '#0F6E56' },
+  { label: 'Identity & access management',                            color: '#993556' },
+  { label: 'Content filtering & moderation',                          color: '#854F0B' },
+  { label: 'Training data governance, lineage & consent',             color: '#534AB7' },
+  { label: 'Application design, plugins & integration safety',        color: '#993C1D' },
+  { label: 'Agent autonomy, tool use & human override (T1–T5)',       color: '#3B6D11' },
+  { label: 'Model serving runtime & AI compute',                      color: '#185FA5' },
+  { label: 'Model safety, cards, SBOM & vulnerability disclosure',    color: '#0F6E56' },
+];
+
+/* cells[layerIdx][componentIdx] = { type: 'pri'|'sec'|'na', sub?: '...' } */
+const cells = [
+  /* L1 — AI Business & Usage */
+  [
+    { type: 'pri', sub: 'AI risk appetite, sector regs (FDA, SR 11-7, EU AI Act); §A.1.1' },
+    { type: 'pri', sub: 'AUP, training, shadow-AI detection; §A.1.2.3' },
+    { type: 'sec', sub: 'Org defines roles & entitlements' },
+    { type: 'sec', sub: 'Defines acceptable outputs (Responsible)' },
+    { type: 'sec', sub: 'Lawful-basis & consent policy' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Override policy & autonomy classification (Accountable); §A.1.3.3' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Vendor due-diligence cadence' },
+  ],
+  /* L2 — AI Information */
+  [
+    { type: 'sec', sub: 'Data classification policy issuance' },
+    { type: 'sec', sub: 'DLP and tool-data governance' },
+    { type: 'sec', sub: 'Per-tenant data access' },
+    { type: 'sec', sub: 'Output classification' },
+    { type: 'sec', sub: 'Lineage, dataset cards (Data Provider)' },
+    { type: 'sec', sub: 'Scope of data connections' },
+    { type: 'sec', sub: 'Agent memory & retrieval scoping; §A.1.2.2' },
+    { type: 'sec', sub: 'Confidential compute per data class' },
+    { type: 'na' },
+  ],
+  /* L3 — AI Application */
+  [
+    { type: 'na' },
+    { type: 'sec', sub: 'Surface policy in app UI' },
+    { type: 'sec', sub: 'App-level RBAC' },
+    { type: 'sec', sub: 'App-level filters' },
+    { type: 'na' },
+    { type: 'pri', sub: 'App design, AI plugins, safety systems; §A.1.3.1' },
+    { type: 'pri', sub: 'Override mechanisms, agent telemetry, ATLAS tests; §A.1.3.2' },
+    { type: 'sec', sub: 'Inference integration patterns' },
+    { type: 'sec', sub: 'Consume model cards in design' },
+  ],
+  /* L4 — AI Platform */
+  [
+    { type: 'na' },
+    { type: 'na' },
+    { type: 'pri', sub: 'IAM primitives, IdP, MFA; §A.1.2.1, §A.1.4.2' },
+    { type: 'sec', sub: 'Platform safety rails' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Secure API gateway, runtime hardening' },
+    { type: 'sec', sub: 'Rate limit, runtime isolation' },
+    { type: 'pri', sub: 'Model serving, GPU / KV-cache isolation, SOC 2; §A.1.4.1' },
+    { type: 'sec', sub: 'Hosts attestations & model registry' },
+  ],
+  /* L5 — AI Model Provider */
+  [
+    { type: 'sec', sub: 'Vendor evidence per §A.7.4' },
+    { type: 'na' },
+    { type: 'na' },
+    { type: 'pri', sub: 'Built-in model guardrails (Accountable); §A.1.2.1' },
+    { type: 'pri', sub: 'Source verification, bias eval, privacy-preserving training; §A.1.5.1' },
+    { type: 'na' },
+    { type: 'na' },
+    { type: 'sec', sub: 'Model interop standards (Accountable for cross-model)' },
+    { type: 'pri', sub: 'Model cards, SLSA, SBOM-ML, CVE disclosure; §A.1.5.1' },
+  ],
+];
+
+const TYPE_LABEL = { pri: 'Primary', sec: 'Shared', na: 'Inherited' };
+
+function renderMatrix() {
+  const grid = document.getElementById('matrix-grid');
+  if (!grid) return;
+  const parts = [];
+  parts.push('<div class="mh corner">CoSAI SRF layer</div>');
+  components.forEach(c => {
+    parts.push(
+      `<div class="mh"><div class="mh-dot" style="background:${c.color}"></div><div>${c.label}</div></div>`
+    );
+  });
+  layers.forEach((layer, li) => {
+    const isLast = li === layers.length - 1;
+    const rowLast = isLast ? ' row-last' : '';
+    parts.push(
+      `<div class="rl${rowLast}"><div class="rl-id">${layer.id}</div><div class="rl-name">${layer.label}</div></div>`
+    );
+    cells[li].forEach(cell => {
+      const sub = cell.sub ? `<br><span class="sub">${cell.sub}</span>` : '';
+      parts.push(`<div class="mc ${cell.type}${rowLast}">${TYPE_LABEL[cell.type]}${sub}</div>`);
+    });
+  });
+  grid.innerHTML = parts.join('');
+}
+
+renderMatrix();
+
+const phases = [
+  { num:'01', color:'#185FA5', bg:'#E6F1FB', label:'Business understanding', sub:'Define problem, success metrics, feasibility', srf:'L1 — AI Business & Usage',
+    security:['AI risk appetite documented','Use case ethics review','Regulatory mapping (GDPR, HIPAA, AI Act, SR 11-7, FDA AI/ML)','Stakeholder data agreements'],
+    frameworks:['CoSAI AI SRF §A.1.1','NIST AI RMF — Govern','ISO/IEC 42001 AI Mgmt','EU AI Act risk tier'] },
+  { num:'02', color:'#0F6E56', bg:'#E1F5EE', label:'Data understanding', sub:'Collect, explore, assess quality', srf:'L2 — AI Information · L5 — AI Model Provider',
+    security:['Data provenance & lineage tracked','PII/sensitive field inventory','Training data consent verified','Bias & fairness audit'],
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Training Data Governance)','NIST SP 800-53 SI-12','DAMA DMBOK data quality','ISO/IEC 5259 data quality for AI'] },
+  { num:'03', color:'#854F0B', bg:'#FAEEDA', label:'Data preparation', sub:'Clean, transform, feature engineer', srf:'L2 — AI Information · L5 — AI Model Provider',
+    security:['Data poisoning controls','Differential privacy applied','Anonymisation / pseudonymisation','Audit log of transformations'],
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Privacy-Preserving Training)','NIST SP 800-188 de-identification','ISO/IEC 27701 privacy','OWASP ML Top 10 — poisoning'] },
+  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modelling', sub:'Select, train, tune algorithms', srf:'L5 — AI Model Provider',
+    security:['Model card / transparency doc','Adversarial robustness testing','Hyperparameter access controls','Experiment tracking access logs'],
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Model Development Security)','NIST AI RMF — Map & Measure','MITRE ATLAS adversarial ML','Google Model Cards standard'] },
+  { num:'05', color:'#993556', bg:'#FBEAF0', label:'Evaluation', sub:'Validate performance, fairness, safety', srf:'L5 — AI Model Provider · L3 — AI Application (red team)',
+    security:['Red team / adversarial eval','Explainability requirements met','Fairness metrics documented','Approval gate before promotion'],
+    frameworks:['CoSAI AI SRF §A.7 (Evidence — Red Team Reports)','NIST AI RMF — Measure','OWASP LLM Top 10','IEEE 7010 wellbeing impact'] },
+  { num:'06', color:'#3B6D11', bg:'#EAF3DE', label:'Deployment', sub:'Package, release, serve', srf:'L4 — AI Platform · L3 — AI Application',
+    security:['SBOM-ML generated for model + deps (CycloneDX-ML / SPDX)','Container image signed & scanned','Model API auth enforced','Inference environment hardened'],
+    frameworks:['CoSAI AI SRF §A.1.4 (Model Serving)','NIST SSDF SP 800-218','SLSA supply chain levels','CIS Benchmarks — containers'] },
+  { num:'07', color:'#534AB7', bg:'#EEEDFE', label:'Monitoring & maintenance', sub:'Observe drift, retrain, retire', srf:'L4 — AI Platform · L1 — AI Business & Usage (governance review)',
+    security:['Data/model drift alerts','Inference anomaly detection (incl. denial-of-wallet)','Retrain trigger access control','Model retirement & deletion policy'],
+    frameworks:['CoSAI AI SRF §A.4.3 (Operational Maturity)','NIST AI RMF — Manage','NIST SP 800-137 continuous monitoring','ISO/IEC 42001 — operation'] }
+];
+
+const scWrap = document.getElementById('sc-phases');
+phases.forEach((p, i) => {
+  const d = document.createElement('div');
+  d.className = 'sc-phase';
+  d.innerHTML = `
+    <div class="sc-head" onclick="togglePhase(${i})">
+      <div class="sc-num" style="background:${p.bg};color:${p.color}">${p.num}</div>
+      <div style="flex:1">
+        <div class="sc-title">${p.label} <span style="font-weight:400;color:${p.color};margin-left:6px">· ${p.srf}</span></div>
+        <div class="sc-sub">${p.sub}</div>
+      </div>
+      <div class="sc-chev" id="sc-chev-${i}">▶</div>
+    </div>
+    <div class="sc-body" id="sc-body-${i}">
+      <div>
+        <div class="sc-col-head">SECURITY CONTROLS</div>
+        ${p.security.map(s => `<div class="sc-item">${s}</div>`).join('')}
+      </div>
+      <div>
+        <div class="sc-col-head">GOVERNING FRAMEWORKS</div>
+        ${p.frameworks.map(f => `<div class="sc-item">${f}</div>`).join('')}
+      </div>
+    </div>`;
+  scWrap.appendChild(d);
+});
+
+function togglePhase(i) {
+  document.getElementById('sc-body-' + i).classList.toggle('open');
+  document.getElementById('sc-chev-' + i).classList.toggle('open');
+}
+
+const gapLayerBlocks = [
+  {
+    home: 'L1 — AI Business & Usage',
+    color: '#185FA5',
+    bg: '#E6F1FB',
+    principle:
+      'The framework places business intent first: risk appetite, permitted AI use, and regulatory posture <strong>cascade</strong> from here—so every downstream control can trace to an accountable business decision, in line with “governance activities mandated” at the layer that sets policy.',
+    items: [
+      {
+        title: 'AI model governance',
+        clarity:
+          '<strong>L1</strong> creates a home for <strong>model lifecycle governance</strong>—approval, risk tiering, retirement—so AI management and GRM outcomes align with <strong>named owners</strong> before engineering work, rather than living only in generic IT project lists.',
+      },
+      {
+        title: 'Regulatory compliance (EU AI Act, GDPR Art. 22, NIST AI RMF, sectoral)',
+        clarity:
+          '<strong>L1</strong> concentrates <strong>sector and AI-specific mandates</strong> (EU AI Act tiers, automated decision-making, HIPAA, SR 11-7, etc.) where the framework expects <strong>regulatory decomposition</strong>—making it straightforward to show <strong>which accountable party</strong> maps to each obligation.',
+      },
+    ],
+  },
+  {
+    home: 'L2 — AI Information',
+    color: '#0F6E56',
+    bg: '#E1F5EE',
+    principle:
+      'Data is model fuel and model output. The SRF extends information governance to <strong>training sets, retrieval stores, embeddings, and query paths</strong>—the objects models actually consume and emit—alongside classic confidentiality.',
+    items: [
+      {
+        title: 'Training data provenance & consent',
+        clarity:
+          '<strong>L2</strong> elevates <strong>provenance, lawful basis, consent, and lineage</strong> as peer concerns to transit and storage—reflecting <strong>Data Provider</strong>-style accountability in the framework so evidence can attach to the layer that owns the data relationship.',
+      },
+      {
+        title: 'RAG knowledge-base integrity & retrieval-time exfiltration',
+        clarity:
+          '<strong>L2</strong> treats <strong>retrieval knowledge bases</strong> as part of the information domain, so integrity, isolation, and inference-time access are <strong>owned where the data is architected</strong>—setting clean handoffs to application and platform guardrails.',
+      },
+      {
+        title: 'Embedding inversion & memorization leakage',
+        clarity:
+          '<strong>L2</strong> gives <strong>embeddings and data-derived representations</strong> a defined lane, keeping memorization, inversion, and related risks with the <strong>information stewards</strong> who govern training and retrieval—not only the generic “security” label.',
+      },
+    ],
+  },
+  {
+    home: 'L3 — AI Application',
+    color: '#993C1D',
+    bg: '#FAECE7',
+    principle:
+      'Application developers integrate models into products. The framework assigns <strong>guardrails, input validation, output handling, tool use, and human override</strong> here—the layer where <strong>behavior around the model</strong> becomes operational.',
+    items: [
+      {
+        title: 'Adversarial ML — prompt injection, jailbreaks, poisoning',
+        clarity:
+          '<strong>L3</strong> names the <strong>application integrator</strong> as owner of chatbot/app guardrails and input paths, while <strong>L4</strong> contains blast radius and <strong>L5</strong> documents model limitations—turning the framework’s prompt-injection walkthrough into <strong>layered</strong>, non-circular accountability.',
+      },
+      {
+        title: 'Agent / tool-use abuse (excessive agency)',
+        clarity:
+          'For <strong>agentic systems</strong>, the SRF maps <strong>tool execution, sandboxing, and safety</strong> to Application and Platform personas with clear primary/support roles—so autonomous chains gain <strong>named owners</strong> for limits, logging, and recovery.',
+      },
+    ],
+  },
+  {
+    home: 'L4 — AI Platform',
+    color: '#993556',
+    bg: '#FBEAF0',
+    principle:
+      'Inference runs as a shared service. The platform layer carries <strong>multi-tenant hosting, isolation, metering, and monitoring</strong>—the same place <strong>operational containment</strong> lives in the example incident narrative.',
+    items: [
+      {
+        title: 'Inference environment isolation',
+        clarity:
+          '<strong>L4</strong> is where <strong>runtime isolation</strong> (containers, accelerators, caches, tenant boundaries) gains a <strong>primary owner</strong>, complementing CIS-style baselines with <strong>AI-serving outcomes</strong> the whitepaper ties to blast-radius control.',
+      },
+      {
+        title: 'Denial-of-wallet & inference cost attacks',
+        clarity:
+          '<strong>L4</strong> naturally owns <strong>metering, quotas, spend signals, and gateway abuse handling</strong>—operational economics sit beside rate and tenancy controls so finance and SRE can evidence <strong>platform-level</strong> protections.',
+      },
+    ],
+  },
+  {
+    home: 'L5 — AI Model Provider',
+    color: '#3B6D11',
+    bg: '#EAF3DE',
+    principle:
+      'The model is an artifact with a supply chain. The SRF centers <strong>training provenance, shipped weights/adapters, transparency, and change notification</strong> here—parallel to the framework’s description that <strong>model cards and known weaknesses</strong> are owned by the provider role.',
+    items: [
+      {
+        title: 'Model & dataset SBOMs',
+        clarity:
+          '<strong>L5</strong> anchors <strong>model and dataset transparency</strong> (cards, provenance, SPDX / CycloneDX-ML–style artifacts) on the party that <strong>builds or ships</strong> the model—so supply-chain evidence lines up with the same layer that answers for <strong>base-model behavior</strong>.',
+      },
+      {
+        title: 'Third-party model vendor & fine-tune lineage',
+        clarity:
+          '<strong>L5</strong> gives <strong>base-model swaps, adapters, and training composition changes</strong> a <strong>single supply-chain home</strong>, matching the framework’s focus on <strong>vendor complexity</strong> and measurable handoffs between foundation, fine-tune, and deployer.',
+      },
+    ],
+  },
+];
+
+const gapsList = document.getElementById('gaps-list');
+gapLayerBlocks.forEach((block) => {
+  const wrap = document.createElement('div');
+  wrap.className = 'gap-layer-block';
+  const itemsHtml = block.items
+    .map(
+      (it) => `
+    <div class="gap-item">
+      <div class="gap-item-head">
+        <div class="gap-dot" style="background:${block.color}"></div>
+        <div class="gap-title">${it.title}</div>
+      </div>
+      <div class="gap-catalog"><span class="gap-lbl">What the SRF clarifies</span>${it.clarity}</div>
+    </div>`
+    )
+    .join('');
+
+  wrap.innerHTML = `
+    <div class="gap-layer-rail">
+      <div class="gap-home" style="background:${block.bg};color:${block.color};border:0.5px solid ${block.color}40">${block.home}</div>
+      <p class="gap-principle"><span class="gap-principle-label">SRF role</span>${block.principle}</p>
+    </div>
+    <div class="gap-layer-items">${itemsHtml}</div>`;
+  gapsList.appendChild(wrap);
+});
+</script>
+</body>
+</html>
