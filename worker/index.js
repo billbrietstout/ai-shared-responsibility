@@ -12,7 +12,7 @@
  */
 
 const GITHUB_MODELS_URL = "https://models.inference.ai.azure.com/chat/completions";
-const MODEL             = "grok-3-mini";
+const MODEL             = "xai/grok-3-mini";
 const MAX_TOKENS        = 1800;
 const TEMPERATURE       = 0.3;
 
