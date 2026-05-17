@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TSC Presentation · CoSAI AI Shared Responsibility Framework</title>
+  <meta name="description" content="Building the Open Governance Schema for the Agentic Matrix — CoSAI Technical Steering Committee, May 2026." />
+  <link rel="stylesheet" href="/shared/styles.css" />
+  <style>
+    /* ── Slide viewer shell ─────────────────────────────────────── */
+    .deck-controls {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cosai-navy);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.55rem 1.25rem;
+      border-bottom: 2px solid var(--cosai-blue);
+    }
+    .deck-controls .ctrl-btn {
+      background: var(--cosai-blue);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 0.3rem 0.85rem;
+      font-size: var(--text-sm);
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .deck-controls .ctrl-btn:disabled { opacity: 0.35; cursor: default; }
+    .deck-controls .ctrl-btn:hover:not(:disabled) { opacity: 0.85; }
+    .deck-counter {
+      font-size: var(--text-sm);
+      font-family: var(--font-mono);
+      opacity: 0.75;
+      min-width: 4rem;
+      text-align: center;
+    }
+    .ctrl-spacer { flex: 1; }
+    .view-toggle {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.75);
+      border-radius: 5px;
+      padding: 0.28rem 0.75rem;
+      font-size: var(--text-xs);
+      font-family: var(--font-sans);
+      cursor: pointer;
+    }
+    .view-toggle:hover { border-color: #fff; color: #fff; }
+
+    /* ── Slides ────────────────────────────────────────────────── */
+    .deck { outline: none; }
+    .slide { display: none; }
+    .slide.active { display: block; }
+    .deck.view-all .slide { display: block; }
+
+    /* Dark slides */
+    .slide--dark {
+      background: var(--cosai-navy);
+      color: #fff;
+      padding: 3.5rem 1.25rem;
+    }
+    /* Light slides */
+    .slide--light {
+      background: #fff;
+      color: var(--slate-900);
+      padding: 3rem 1.25rem;
+    }
+
+    .slide__inner {
+      max-width: var(--max-w-wide);
+      margin: 0 auto;
+    }
+
+    /* Slide number badge */
+    .slide__num {
+      font-size: var(--text-xs);
+      font-family: var(--font-mono);
+      letter-spacing: 0.08em;
+      opacity: 0.45;
+      margin-bottom: 1.25rem;
+    }
+    .slide--dark .slide__num { color: #fff; }
+    .slide--light .slide__num { color: var(--slate-500); }
+
+    /* Eyebrow */
+    .slide__eyebrow {
+      font-size: var(--text-xs);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 1.2rem;
+    }
+
+    /* Headings */
+    .slide__h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin: 0 0 1rem;
+    }
+    .slide__h2 {
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+    }
+    .slide__h2--light { color: var(--cosai-navy); }
+    .slide__h2--dark  { color: #fff; }
+
+    .slide__sub {
+      font-size: var(--text-base);
+      opacity: 0.75;
+      margin: 0 0 2rem;
+      max-width: 72ch;
+    }
+
+    /* Tagline bar */
+    .slide__tagline {
+      margin-top: 2rem;
+      padding: 0.9rem 1.25rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: var(--text-sm);
+      line-height: 1.5;
+    }
+    .slide--dark .slide__tagline {
+      background: rgba(45,91,227,0.25);
+      border: 1px solid var(--cosai-blue);
+      color: #c7d2fe;
+    }
+    .slide--light .slide__tagline {
+      background: var(--cosai-blue-light);
+      border-left: 4px solid var(--cosai-blue);
+      color: var(--cosai-navy);
+    }
+
+    /* Pull quote (dark slides) */
+    .slide__quote {
+      border: 1.5px solid var(--cosai-blue);
+      background: rgba(45,91,227,0.12);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.5rem;
+      font-size: 1.05rem;
+      font-style: italic;
+      color: #c7d2fe;
+      max-width: 64ch;
+      margin: 2rem 0 1.5rem;
+    }
+
+    /* ── Slide 2: Progression ───────────────────────────────────── */
+    .progression {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: 1.5rem 0;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .prog-step {
+      flex: 1 1 140px;
+      background: var(--slate-50);
+      border-right: 1px solid var(--slate-200);
+      padding: 1rem 0.85rem;
+      position: relative;
+    }
+    .prog-step:last-child { border-right: none; }
+    .prog-step--active { background: var(--cosai-blue-light); }
+    .prog-step__num {
+      font-size: var(--text-xs);
+      font-family: var(--font-mono);
+      color: var(--cosai-blue);
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+    .prog-step__label {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--cosai-navy);
+      margin-bottom: 0.25rem;
+    }
+    .prog-step__desc {
+      font-size: var(--text-xs);
+      color: var(--slate-500);
+    }
+    .prog-step--active .prog-step__label { color: var(--cosai-blue); }
+
+    /* ── Slide 3: Dual matrices ─────────────────────────────────── */
+    .matrix-pair {
+      display: flex;
+      gap: 1.5rem;
+      align-items: flex-start;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    .matrix-pair__arrow {
+      font-size: 2rem;
+      color: var(--cosai-blue);
+      align-self: center;
+      flex-shrink: 0;
+      padding: 0 0.25rem;
+    }
+    .matrix-wrap { flex: 1 1 280px; }
+    .matrix-title {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--cosai-blue);
+      margin-bottom: 0.5rem;
+    }
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+    }
+    .matrix-table th {
+      background: var(--cosai-navy);
+      color: #fff;
+      padding: 0.35rem 0.4rem;
+      text-align: center;
+      font-weight: 600;
+    }
+    .matrix-table th.row-head { background: #1a2d52; text-align: left; }
+    .matrix-table td {
+      padding: 0.3rem 0.4rem;
+      text-align: center;
+      font-weight: 600;
+      border: 1px solid var(--slate-200);
+    }
+    .matrix-table tr td:first-child {
+      background: #eef2ff;
+      color: var(--cosai-navy);
+      text-align: left;
+      font-weight: 700;
+    }
+    .cell-c  { background: #dbeafe; color: #1d4ed8; }
+    .cell-p  { background: #f1f5f9; color: #475569; }
+    .cell-s  { background: #f3e8ff; color: #7c3aed; }
+    .matrix-legend {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .matrix-legend span {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 3px;
+    }
+
+    /* ── Slide 4: Agent chain ───────────────────────────────────── */
+    .agent-chain {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1.75rem 0;
+      flex-wrap: wrap;
+    }
+    .agent-node {
+      background: var(--cosai-blue-light);
+      border: 2px solid var(--cosai-blue);
+      border-radius: var(--radius);
+      padding: 0.85rem 1.25rem;
+      text-align: center;
+      flex: 1 1 140px;
+    }
+    .agent-node__name { font-weight: 700; color: var(--cosai-navy); font-size: var(--text-sm); }
+    .agent-node__sub  { font-size: var(--text-xs); color: var(--slate-500); margin-top: 0.2rem; }
+    .agent-arrow { font-size: 1.4rem; color: var(--cosai-blue); flex-shrink: 0; }
+
+    /* ── Slide 5: Layer attention ───────────────────────────────── */
+    .layer-attention { display: flex; gap: 1.5rem; flex-wrap: wrap; margin: 1.5rem 0; }
+    .layer-stack { flex: 1 1 280px; display: flex; flex-direction: column; gap: 0.4rem; }
+    .layer-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.9rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--slate-200);
+    }
+    .layer-row--red    { background: #fef2f2; border-color: #fca5a5; }
+    .layer-row--blue   { background: var(--cosai-blue-light); border-color: var(--cosai-blue-soft); }
+    .layer-row--amber  { background: #fffbeb; border-color: #fcd34d; }
+    .layer-row--slate  { background: var(--slate-50); border-color: var(--slate-200); }
+    .layer-row__id { font-size: var(--text-xs); font-family: var(--font-mono); font-weight: 700; min-width: 1.8rem; color: var(--slate-500); }
+    .layer-row__name { font-weight: 700; font-size: var(--text-sm); color: var(--cosai-navy); min-width: 5rem; }
+    .layer-row__desc { font-size: var(--text-xs); color: var(--slate-600); flex: 1; }
+    .layer-pill {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pill--red   { background: #dc2626; color: #fff; }
+    .pill--blue  { background: var(--cosai-blue); color: #fff; }
+    .pill--amber { background: #d97706; color: #fff; }
+    .pill--slate { background: #475569; color: #fff; }
+    .consequence-col { flex: 1 1 240px; display: flex; flex-direction: column; gap: 0.75rem; }
+    .consequence-box {
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius);
+      border-left: 4px solid;
+    }
+    .consequence-box--red   { background: #fef2f2; border-color: #dc2626; }
+    .consequence-box--amber { background: #fffbeb; border-color: #d97706; }
+    .consequence-box--green { background: #f0fdf4; border-color: #15803d; }
+    .consequence-box__title { font-weight: 700; font-size: var(--text-sm); margin-bottom: 0.3rem; }
+    .consequence-box--red   .consequence-box__title { color: #b91c1c; }
+    .consequence-box--amber .consequence-box__title { color: #92400e; }
+    .consequence-box--green .consequence-box__title { color: #14532d; }
+    .consequence-box__body  { font-size: var(--text-xs); color: var(--slate-600); line-height: 1.5; }
+
+    /* ── Slide 6: Schema table ──────────────────────────────────── */
+    .schema-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-sm);
+      margin: 1.5rem 0;
+    }
+    .schema-table th {
+      background: var(--cosai-navy);
+      color: #fff;
+      padding: 0.55rem 0.75rem;
+      text-align: left;
+      font-size: var(--text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .schema-table td {
+      padding: 0.75rem;
+      border-bottom: 1px solid var(--slate-100);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    .schema-table tr:nth-child(even) td { background: var(--slate-50); }
+    .schema-table td:first-child { font-weight: 700; color: var(--cosai-navy); white-space: nowrap; }
+    .owner-main { font-weight: 700; color: var(--cosai-navy); }
+    .owner-sub  { font-size: var(--text-xs); color: var(--slate-500); }
+
+    /* ── Slide 7: Two-column contrast ──────────────────────────── */
+    .contrast-cols {
+      display: flex;
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+    }
+    .contrast-col {
+      flex: 1 1 240px;
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .contrast-col--bad  { background: #fef2f2; border: 1px solid #fca5a5; }
+    .contrast-col--good { background: #f0fdf4; border: 1px solid #86efac; }
+    .contrast-col__title {
+      font-weight: 700;
+      font-size: var(--text-sm);
+      margin-bottom: 0.85rem;
+    }
+    .contrast-col--bad  .contrast-col__title { color: #b91c1c; }
+    .contrast-col--good .contrast-col__title { color: #15803d; }
+    .contrast-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+    .contrast-list li { font-size: var(--text-sm); line-height: 1.45; display: flex; gap: 0.5rem; }
+    .contrast-list li::before { flex-shrink: 0; margin-top: 0.05rem; }
+    .contrast-col--bad  .contrast-list li::before { content: "✕"; color: #b91c1c; font-weight: 700; }
+    .contrast-col--good .contrast-list li::before { content: "✓"; color: #15803d; font-weight: 700; }
+
+    /* ── Slide 8: Runtime items ─────────────────────────────────── */
+    .runtime-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.85rem;
+      margin: 1.75rem 0;
+    }
+    .runtime-item {
+      background: rgba(45,91,227,0.12);
+      border: 1px solid rgba(45,91,227,0.35);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+    }
+    .runtime-item__label {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      color: #93c5fd;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      margin-bottom: 0.3rem;
+    }
+    .runtime-item__desc {
+      font-size: var(--text-sm);
+      color: #e2e8f0;
+    }
+
+    /* ── Slide 10: Roadmap ──────────────────────────────────────── */
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+    .phase-card {
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .phase-card__header {
+      background: var(--cosai-navy);
+      color: #fff;
+      padding: 0.5rem 0.75rem;
+      font-size: var(--text-xs);
+      font-weight: 700;
+    }
+    .phase-card__period {
+      font-size: var(--text-xs);
+      color: #93c5fd;
+      font-weight: 400;
+      display: block;
+      margin-top: 0.15rem;
+    }
+    .phase-card__body {
+      padding: 0.65rem 0.75rem;
+      font-size: var(--text-xs);
+      color: var(--slate-600);
+      line-height: 1.5;
+    }
+
+    /* ── Slide 11: Stakeholder grid ─────────────────────────────── */
+    .stakeholder-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0.75rem;
+      margin: 1.5rem 0;
+    }
+    .stakeholder-card {
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      background: var(--slate-50);
+    }
+    .stakeholder-card__role {
+      font-weight: 700;
+      font-size: var(--text-sm);
+      color: var(--cosai-blue);
+      margin-bottom: 0.35rem;
+    }
+    .stakeholder-card__value {
+      font-size: var(--text-xs);
+      color: var(--slate-600);
+      line-height: 1.5;
+    }
+
+    /* ── Slide 12: Bullet list (dark) ───────────────────────────── */
+    .impact-list {
+      list-style: none;
+      padding: 0;
+      margin: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .impact-list li {
+      display: flex;
+      gap: 0.75rem;
+      font-size: var(--text-base);
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+    .impact-list li::before {
+      content: "→";
+      color: var(--cosai-blue);
+      flex-shrink: 0;
+      font-weight: 700;
+      margin-top: 0.05rem;
+    }
+
+    /* ── Slide 13: Long text ────────────────────────────────────── */
+    .prose-dark {
+      font-size: var(--text-base);
+      line-height: 1.75;
+      color: #cbd5e1;
+      max-width: 76ch;
+    }
+    .prose-dark p { margin: 0 0 1rem; }
+    .prose-dark p:last-child { margin-bottom: 0; }
+    .prose-dark strong { color: #fff; }
+
+    /* ── Slide 14: Three asks ───────────────────────────────────── */
+    .ask-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1.75rem 0;
+    }
+    .ask-item {
+      display: flex;
+      gap: 1.25rem;
+      align-items: flex-start;
+      background: rgba(45,91,227,0.12);
+      border: 1px solid rgba(45,91,227,0.35);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+    }
+    .ask-num {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--cosai-blue);
+      line-height: 1;
+      flex-shrink: 0;
+      min-width: 1.5rem;
+    }
+    .ask-content__title {
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.3rem;
+      font-size: var(--text-base);
+    }
+    .ask-content__body {
+      font-size: var(--text-sm);
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    /* ── Built-list ─────────────────────────────────────────────── */
+    .built-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .built-list li {
+      font-size: var(--text-sm);
+      color: var(--slate-600);
+      display: flex;
+      gap: 0.6rem;
+    }
+    .built-list li::before { content: "✓"; color: var(--status-good); font-weight: 700; flex-shrink: 0; }
+
+    /* ── Keyboard hint ──────────────────────────────────────────── */
+    .key-hint {
+      text-align: center;
+      font-size: var(--text-xs);
+      color: rgba(255,255,255,0.35);
+      padding: 0.5rem 1rem 0.75rem;
+      background: var(--cosai-navy);
+    }
+    .key-hint kbd {
+      background: rgba(255,255,255,0.15);
+      border-radius: 3px;
+      padding: 0.05rem 0.35rem;
+      font-size: 0.7rem;
+    }
+
+    @media (max-width: 640px) {
+      .matrix-pair { flex-direction: column; }
+      .matrix-pair__arrow { transform: rotate(90deg); align-self: center; }
+      .layer-attention { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <script type="module" src="/shared/components.js"></script>
+  <site-nav current="presentation"></site-nav>
+
+  <div class="deck-controls" aria-label="Slide controls">
+    <button class="ctrl-btn" id="prevBtn" aria-label="Previous slide">← Prev</button>
+    <span class="deck-counter" id="counter" aria-live="polite">1 / 14</span>
+    <button class="ctrl-btn" id="nextBtn" aria-label="Next slide">Next →</button>
+    <span class="ctrl-spacer"></span>
+    <button class="view-toggle" id="viewToggle">View all</button>
+  </div>
+
+  <main class="deck" id="deck" tabindex="0" aria-label="Presentation slides">
+
+    <!-- ── Slide 1 ─────────────────────────────────────────────── -->
+    <section class="slide slide--dark active" id="slide-1" aria-label="Slide 1 of 14">
+      <div class="slide__inner">
+        <p class="slide__eyebrow">CoSAI · AI Shared Responsibility Framework · Technical Steering Committee</p>
+        <h1 class="slide__h1">Building the Open Governance Schema<br>for the Agentic Matrix</h1>
+        <p class="slide__sub">From Shared Responsibility to Machine-Speed AI Governance</p>
+        <blockquote class="slide__quote">
+          The future of AI will not be limited by intelligence, but by governability.
+        </blockquote>
+        <p style="font-size:var(--text-sm);opacity:0.5;margin-top:2rem;">May 2026 &nbsp;·&nbsp; aisharedresponsibility.com</p>
+      </div>
+    </section>
+
+    <!-- ── Slide 2 ─────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-2" aria-label="Slide 2 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">02 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">AI Is Transitioning From Tools to Infrastructure</h2>
+        <p class="slide__sub">Each stage adds autonomy, operational complexity, and accountability surface.</p>
+        <div class="progression">
+          <div class="prog-step">
+            <div class="prog-step__num">1</div>
+            <div class="prog-step__label">SaaS AI</div>
+            <div class="prog-step__desc">Human triggers every action</div>
+          </div>
+          <div class="prog-step">
+            <div class="prog-step__num">2</div>
+            <div class="prog-step__label">AI Copilots</div>
+            <div class="prog-step__desc">AI assists, human decides</div>
+          </div>
+          <div class="prog-step">
+            <div class="prog-step__num">3</div>
+            <div class="prog-step__label">Agentic Workflows</div>
+            <div class="prog-step__desc">AI executes multi-step tasks</div>
+          </div>
+          <div class="prog-step">
+            <div class="prog-step__num">4</div>
+            <div class="prog-step__label">Autonomous Systems</div>
+            <div class="prog-step__desc">AI acts without per-step approval</div>
+          </div>
+          <div class="prog-step">
+            <div class="prog-step__num">5</div>
+            <div class="prog-step__label">Multi-Agent Ecosystems</div>
+            <div class="prog-step__desc">Agents coordinate across orgs</div>
+          </div>
+          <div class="prog-step prog-step--active">
+            <div class="prog-step__num">6</div>
+            <div class="prog-step__label">Agentic Matrix</div>
+            <div class="prog-step__desc">AI is operational infrastructure</div>
+          </div>
+        </div>
+        <div class="slide__tagline">
+          We are entering the agentic matrix. Human-scale governance cannot supervise machine-scale autonomy.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 3 ─────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-3" aria-label="Slide 3 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">03 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">Shared Responsibility Accelerated Cloud Adoption</h2>
+        <p class="slide__sub">Both frameworks define who owns what — by stack layer, by operating model. The analogy is structural, not just rhetorical.</p>
+        <div class="matrix-pair">
+          <div class="matrix-wrap">
+            <p class="matrix-title">Cloud SRM</p>
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th class="row-head">← Layer</th>
+                  <th>IaaS</th><th>PaaS</th><th>SaaS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Data &amp; Identity</td><td class="cell-c">Customer</td><td class="cell-c">Customer</td><td class="cell-c">Customer</td></tr>
+                <tr><td>Application</td>         <td class="cell-c">Customer</td><td class="cell-c">Customer</td><td class="cell-p">Provider</td></tr>
+                <tr><td>OS / Middleware</td>     <td class="cell-c">Customer</td><td class="cell-p">Provider</td><td class="cell-p">Provider</td></tr>
+                <tr><td>Infrastructure</td>      <td class="cell-p">Provider</td><td class="cell-p">Provider</td><td class="cell-p">Provider</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:var(--text-xs);color:var(--slate-400);text-align:center;margin-top:0.4rem;">Operating Model →</p>
+          </div>
+          <div class="matrix-pair__arrow" aria-hidden="true">→</div>
+          <div class="matrix-wrap">
+            <p class="matrix-title">AI Shared Responsibility Framework</p>
+            <table class="matrix-table">
+              <thead>
+                <tr>
+                  <th class="row-head">← Layer</th>
+                  <th>IaaS</th><th>AI-PaaS</th><th>Agent-PaaS</th><th>AI-SaaS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>L1 Business</td>      <td class="cell-c">Customer</td><td class="cell-c">Customer</td><td class="cell-c">Customer</td><td class="cell-s">Shared</td></tr>
+                <tr><td>L2 Information</td>   <td class="cell-c">Customer</td><td class="cell-s">Shared</td>  <td class="cell-s">Shared</td>  <td class="cell-s">Shared</td></tr>
+                <tr><td>L3 Application</td>   <td class="cell-c">Customer</td><td class="cell-c">Customer</td><td class="cell-s">Shared</td>  <td class="cell-p">Provider</td></tr>
+                <tr><td>L4 Platform</td>      <td class="cell-s">Shared</td>  <td class="cell-p">Provider</td><td class="cell-p">Provider</td><td class="cell-p">Provider</td></tr>
+                <tr><td>L5 Model Provider</td><td class="cell-c">Customer</td><td class="cell-s">Shared</td>  <td class="cell-s">Shared</td>  <td class="cell-p">Provider</td></tr>
+              </tbody>
+            </table>
+            <p style="font-size:var(--text-xs);color:var(--slate-400);text-align:center;margin-top:0.4rem;">Operating Model →</p>
+          </div>
+        </div>
+        <div class="matrix-legend">
+          <span style="background:#dbeafe;color:#1d4ed8;">Customer</span>
+          <span style="background:#f3e8ff;color:#7c3aed;">Shared</span>
+          <span style="background:#f1f5f9;color:#475569;">Provider</span>
+        </div>
+        <div class="slide__tagline" style="margin-top:1rem;">
+          Both frameworks: stack layer on the Y axis, operating model on the X axis. Responsibility shifts as you move across columns.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 4 ─────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-4" aria-label="Slide 4 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">04 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">The Accountability Gap Is the Primary Blocker</h2>
+        <div class="agent-chain">
+          <div class="agent-node">
+            <div class="agent-node__name">Agent A</div>
+            <div class="agent-node__sub">Company X<br>orchestrator</div>
+          </div>
+          <div class="agent-arrow" aria-hidden="true">→</div>
+          <div class="agent-node">
+            <div class="agent-node__name">Agent B</div>
+            <div class="agent-node__sub">Vendor Y<br>service</div>
+          </div>
+          <div class="agent-arrow" aria-hidden="true">→</div>
+          <div class="agent-node">
+            <div class="agent-node__name">Agent C</div>
+            <div class="agent-node__sub">3rd-party<br>tool</div>
+          </div>
+        </div>
+        <div class="slide__tagline" style="margin-bottom:1.5rem;">
+          When an action three hops down the chain causes harm — who is accountable? Current answer: nobody knows.
+        </div>
+        <ul class="contrast-list" style="gap:0.65rem;">
+          <li style="display:flex;gap:0.6rem;font-size:var(--text-sm);color:var(--slate-700);line-height:1.5;"><span style="color:var(--cosai-blue);font-weight:700;flex-shrink:0;">→</span>Agents operate within their own system prompt. No governance context transfers with the delegation.</li>
+          <li style="display:flex;gap:0.6rem;font-size:var(--text-sm);color:var(--slate-700);line-height:1.5;"><span style="color:var(--cosai-blue);font-weight:700;flex-shrink:0;">→</span>Contracts between organizations do not cover liability for actions taken by subordinate agents.</li>
+          <li style="display:flex;gap:0.6rem;font-size:var(--text-sm);color:var(--slate-700);line-height:1.5;"><span style="color:var(--cosai-blue);font-weight:700;flex-shrink:0;">→</span>Incident response teams investigating multi-agent failures have no accountability graph to follow.</li>
+        </ul>
+        <div class="slide__tagline" style="margin-top:1.5rem;">
+          The missing party in every agentic failure is not a bad actor. It is an unassigned owner.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 5 ─────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-5" aria-label="Slide 5 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">05 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">Agents Execute. L1 Must Define.</h2>
+        <p class="slide__sub">The industry concentrates attention at L3 and L4. The obligations that govern agent behavior originate at L1 and L2.</p>
+        <div class="layer-attention">
+          <div class="layer-stack">
+            <div class="layer-row layer-row--red">
+              <span class="layer-row__id">L1</span>
+              <span class="layer-row__name">AI Business &amp; Usage</span>
+              <span class="layer-row__desc">Business processes, use case authorization, risk tolerance, override policy</span>
+              <span class="layer-pill pill--red">Underinvested</span>
+            </div>
+            <div class="layer-row layer-row--red">
+              <span class="layer-row__id">L2</span>
+              <span class="layer-row__name">AI Information</span>
+              <span class="layer-row__desc">Data classification, consent, retention rules, information flows</span>
+              <span class="layer-pill pill--red">Underinvested</span>
+            </div>
+            <div class="layer-row layer-row--blue">
+              <span class="layer-row__id">L3</span>
+              <span class="layer-row__name">AI Application</span>
+              <span class="layer-row__desc">Agent orchestration, tool calls, prompt logic, workflow execution</span>
+              <span class="layer-pill pill--blue">Developer focus</span>
+            </div>
+            <div class="layer-row layer-row--amber">
+              <span class="layer-row__id">L4</span>
+              <span class="layer-row__name">AI Platform</span>
+              <span class="layer-row__desc">Access controls, infrastructure security, runtime isolation</span>
+              <span class="layer-pill pill--amber">Security focus</span>
+            </div>
+            <div class="layer-row layer-row--slate">
+              <span class="layer-row__id">L5</span>
+              <span class="layer-row__name">AI Model Provider</span>
+              <span class="layer-row__desc">Model supply chain, training governance, capability attestation</span>
+              <span class="layer-pill pill--slate">Emerging focus</span>
+            </div>
+          </div>
+          <div class="consequence-col">
+            <div class="consequence-box consequence-box--red">
+              <p class="consequence-box__title">Vibe coding at L3</p>
+              <p class="consequence-box__body">Developers encode business logic without L1 authorization. Agents execute processes nobody formally approved.</p>
+            </div>
+            <div class="consequence-box consequence-box--amber">
+              <p class="consequence-box__title">Security starts too late</p>
+              <p class="consequence-box__body">Hardening L4 access controls cannot compensate for obligations that were never defined at L1.</p>
+            </div>
+            <div class="consequence-box consequence-box--green">
+              <p class="consequence-box__title">The correct order</p>
+              <p class="consequence-box__body">L1 defines what agents are authorized to do. L2 defines what data they can use. L3 executes within those bounds.</p>
+            </div>
+          </div>
+        </div>
+        <div class="slide__tagline">
+          An agent executing an undefined business process is not a governance failure at L3. It is a missing obligation at L1.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 6 ─────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-6" aria-label="Slide 6 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">06 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">What the Schema Encodes</h2>
+        <p class="slide__sub">For every activity in the agentic stack, three fields. Stacked across five layers, four operating models, and autonomy levels L0 through L5.</p>
+        <table class="schema-table">
+          <thead>
+            <tr><th>Activity</th><th>Obligation</th><th>Control</th><th>Owner</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Tool call safety</td>
+              <td>All tool outputs must be validated before use in downstream context</td>
+              <td>Output filtering enforced at the L3 application boundary</td>
+              <td><span class="owner-main">Application Developer</span> <span class="owner-sub">(accountable)</span><br><span class="owner-sub">Agentic Provider (responsible)</span></td>
+            </tr>
+            <tr>
+              <td>Model switching</td>
+              <td>Customer must approve model substitutions above the contracted autonomy level</td>
+              <td>Model registry check at L4/L5 boundary with override log</td>
+              <td><span class="owner-main">Platform Provider</span> <span class="owner-sub">(accountable)</span><br><span class="owner-sub">Model Provider (informed)</span></td>
+            </tr>
+            <tr>
+              <td>Data retention</td>
+              <td>Agent memory must not persist regulated data beyond session without explicit consent</td>
+              <td>Memory lifecycle policy enforced at L2/L3 handoff</td>
+              <td><span class="owner-main">Data Owner</span> <span class="owner-sub">(accountable)</span><br><span class="owner-sub">App Developer (responsible)</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="slide__tagline">
+          The human sets policy. The schema enforces it. Human review moves from approving individual actions to defining the governance envelope.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 7 ─────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-7" aria-label="Slide 7 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">07 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">Why Open Matters</h2>
+        <div class="contrast-cols">
+          <div class="contrast-col contrast-col--bad">
+            <p class="contrast-col__title">Today: Proprietary fragmentation</p>
+            <ul class="contrast-list">
+              <li>Every major AI platform has its own internal accountability model</li>
+              <li>Enterprise deployments build ad hoc governance in system prompts and policy docs</li>
+              <li>No interoperability between platforms or organizations</li>
+              <li>Each provider's definition of ownership is incompatible with the next</li>
+              <li>Regulators, auditors, and procurement teams have no common reference</li>
+            </ul>
+          </div>
+          <div class="contrast-col contrast-col--good">
+            <p class="contrast-col__title">Open schema: common surface</p>
+            <ul class="contrast-list">
+              <li>GRC platforms ingest it once, support all compliant deployments</li>
+              <li>AI gateways enforce it at the boundary without custom integration</li>
+              <li>Procurement teams require conformance as a standard contract clause</li>
+              <li>Regulators cite it as the accountability reference</li>
+              <li>Agent-to-agent handoffs carry portable governance context</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide__tagline">Apache 2.0. Vendor-neutral. Maintained under OASIS open standards process.</div>
+      </div>
+    </section>
+
+    <!-- ── Slide 8 ─────────────────────────────────────────────── -->
+    <section class="slide slide--dark" id="slide-8" aria-label="Slide 8 of 14">
+      <div class="slide__inner">
+        <p class="slide__num" style="color:#fff;opacity:0.4;">08 / 14</p>
+        <p class="slide__eyebrow">The next step</p>
+        <h2 class="slide__h2 slide__h2--dark" style="font-size:clamp(1.4rem,3.5vw,2.2rem);margin-bottom:0.75rem;">From Governance Documents<br>to Runtime Accountability</h2>
+        <p class="slide__sub">Static governance cannot supervise continuous, autonomous, cross-org agent execution. The governance layer must operate at the speed of the AI layer.</p>
+        <div class="runtime-grid">
+          <div class="runtime-item"><p class="runtime-item__label">Prompt lineage</p><p class="runtime-item__desc">Every prompt tracked to its source</p></div>
+          <div class="runtime-item"><p class="runtime-item__label">Tool provenance</p><p class="runtime-item__desc">Tool invocations logged with context</p></div>
+          <div class="runtime-item"><p class="runtime-item__label">Agent identity</p><p class="runtime-item__desc">Verified origin per action</p></div>
+          <div class="runtime-item"><p class="runtime-item__label">Memory access</p><p class="runtime-item__desc">What data each agent touched</p></div>
+          <div class="runtime-item"><p class="runtime-item__label">Override events</p><p class="runtime-item__desc">When autonomy bounds were crossed</p></div>
+          <div class="runtime-item"><p class="runtime-item__label">Policy violations</p><p class="runtime-item__desc">Real-time escalation routing</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 9 ─────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-9" aria-label="Slide 9 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">09 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">Governance Can Become an Accelerator, Not a Blocker</h2>
+        <p class="slide__sub">The perception that governance slows AI adoption is based on what governance looks like today, not what it can become.</p>
+        <div class="contrast-cols">
+          <div class="contrast-col contrast-col--bad">
+            <p class="contrast-col__title">Without clear accountability</p>
+            <ul class="contrast-list">
+              <li>Procurement cycles stall on vendor liability questions</li>
+              <li>Incident response is slow when ownership is unclear</li>
+              <li>Regulators apply precautionary restrictions to fill the gap</li>
+              <li>Enterprises limit autonomy to reduce unquantifiable risk</li>
+              <li>Insurers price AI exposure as a black box</li>
+            </ul>
+          </div>
+          <div class="contrast-col contrast-col--good">
+            <p class="contrast-col__title">With machine-readable governance</p>
+            <ul class="contrast-list">
+              <li>Procurement teams verify conformance in hours, not weeks</li>
+              <li>Incident response follows the accountability graph immediately</li>
+              <li>Regulators cite the schema as the standard reference</li>
+              <li>Safer autonomy becomes achievable with defined bounds</li>
+              <li>Insurers quantify and price AI risk accurately</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide__tagline">
+          Clear accountability reduces friction. The cloud scaled because shared responsibility created trust. AI can scale the same way.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 10 ────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-10" aria-label="Slide 10 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">10 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">Foundation and Roadmap</h2>
+        <h3 style="font-size:var(--text-sm);font-weight:700;color:var(--cosai-blue);margin:1.25rem 0 0.6rem;text-transform:uppercase;letter-spacing:0.06em;">Already built</h3>
+        <ul class="built-list">
+          <li>Educational site at aisharedresponsibility.com</li>
+          <li>Five-layer framework, persona matrix, operating model responsibility tables</li>
+          <li>Living regulations reference (13 standards, staleness detection)</li>
+          <li>Six browser-based assessment wizards — no account, no server, Apache 2.0</li>
+          <li>Offered as a prospective contribution to CoSAI</li>
+        </ul>
+        <h3 style="font-size:var(--text-sm);font-weight:700;color:var(--cosai-blue);margin:0 0 0.75rem;text-transform:uppercase;letter-spacing:0.06em;">The four phases</h3>
+        <div class="phase-grid">
+          <div class="phase-card">
+            <div class="phase-card__header">Phase 1 <span class="phase-card__period">0 – 3 months</span></div>
+            <div class="phase-card__body">Schema design, system instruction, governance ontology</div>
+          </div>
+          <div class="phase-card">
+            <div class="phase-card__header">Phase 2 <span class="phase-card__period">3 – 6 months</span></div>
+            <div class="phase-card__body">Responsibility Mapper wizard, governance templates, telemetry</div>
+          </div>
+          <div class="phase-card">
+            <div class="phase-card__header">Phase 3 <span class="phase-card__period">6 – 12 months</span></div>
+            <div class="phase-card__body">Runtime integrations, governance APIs, ecosystem pilots</div>
+          </div>
+          <div class="phase-card">
+            <div class="phase-card__header">Phase 4 <span class="phase-card__period">12 – 24 months</span></div>
+            <div class="phase-card__body">Industry adoption, interoperability standards, continuous assurance</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 11 ────────────────────────────────────────────── -->
+    <section class="slide slide--light" id="slide-11" aria-label="Slide 11 of 14">
+      <div class="slide__inner">
+        <p class="slide__num">11 / 14</p>
+        <h2 class="slide__h2 slide__h2--light">Why This Matters to the Entire AI Ecosystem</h2>
+        <p class="slide__sub">A shared accountability schema creates network effects. Each party that adopts it reduces friction for every other party.</p>
+        <div class="stakeholder-grid">
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Enterprises</p><p class="stakeholder-card__value">Clear vendor accountability before contract signature</p></div>
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Model Providers</p><p class="stakeholder-card__value">Defined supply chain obligations reduce liability surface</p></div>
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Platform Vendors</p><p class="stakeholder-card__value">Schema conformance becomes a differentiator, not a burden</p></div>
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Regulators</p><p class="stakeholder-card__value">Common reference replaces bespoke audit frameworks</p></div>
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Auditors</p><p class="stakeholder-card__value">Evidence manifests map directly to accountability assignments</p></div>
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Insurers</p><p class="stakeholder-card__value">Quantifiable risk model replaces opaque exposure estimates</p></div>
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Agent Frameworks</p><p class="stakeholder-card__value">Portable governance context travels with each delegation</p></div>
+          <div class="stakeholder-card"><p class="stakeholder-card__role">Observability Vendors</p><p class="stakeholder-card__value">Telemetry standards create an addressable integration layer</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 12 ────────────────────────────────────────────── -->
+    <section class="slide slide--dark" id="slide-12" aria-label="Slide 12 of 14">
+      <div class="slide__inner">
+        <p class="slide__num" style="color:#fff;opacity:0.4;">12 / 14</p>
+        <p class="slide__eyebrow">The strategic opportunity</p>
+        <h2 class="slide__h2 slide__h2--dark" style="font-size:clamp(1.4rem,3.5vw,2.1rem);margin-bottom:1rem;">CoSAI Can Define the Operational<br>Governance Layer for AI</h2>
+        <p class="slide__sub">OpenTelemetry became the interoperability standard for observability not because one vendor built it, but because the industry needed a shared surface and someone stepped forward to define it.</p>
+        <ul class="impact-list">
+          <li>Vendor-neutral accountability schema ingested by every GRC and security platform</li>
+          <li>Runtime governance interoperability layer across agent frameworks and AI gateways</li>
+          <li>The trust infrastructure that enables responsible AI to operate at global scale</li>
+        </ul>
+        <div class="slide__tagline">
+          This is the opportunity to define how AI systems coordinate accountability at global scale.
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 13 ────────────────────────────────────────────── -->
+    <section class="slide slide--dark" id="slide-13" aria-label="Slide 13 of 14">
+      <div class="slide__inner">
+        <p class="slide__num" style="color:#fff;opacity:0.4;">13 / 14</p>
+        <h2 class="slide__h2 slide__h2--dark" style="margin-bottom:1.5rem;">"Operational Civilization Infrastructure"</h2>
+        <div class="prose-dark">
+          <p>AI agents are moving from assistants to autonomous infrastructure. They will execute transactions, coordinate logistics, process claims, manage infrastructure, and make delegated decisions at a scale and velocity that has no historical parallel.</p>
+          <p>When that happens, governance, interoperability, runtime accountability, and institutional trust become as important as raw model capability.</p>
+          <p>The organizations that operate AI at scale long-term will not simply be the ones with the smartest models. They will be the ones with systems that are <strong>governable, observable, and accountable</strong> to the humans and institutions that depend on them.</p>
+          <p>Major AI platform providers have independently reached the same conclusion: enterprise trust is the binding constraint on adoption, not capability.</p>
+          <p>Without a shared accountability model, every platform risks becoming the default owner of every failure in the systems built on top of it. That is not a sustainable position at scale.</p>
+          <p>The SRF governance schema addresses that directly. A vendor-neutral, open, machine-readable accountability standard that travels with agent actions across organizational and platform boundaries becomes the connective tissue of safe large-scale agentic deployment.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Slide 14 ────────────────────────────────────────────── -->
+    <section class="slide slide--dark" id="slide-14" aria-label="Slide 14 of 14">
+      <div class="slide__inner">
+        <p class="slide__num" style="color:#fff;opacity:0.4;">14 / 14</p>
+        <h2 class="slide__h2 slide__h2--dark" style="margin-bottom:1.75rem;">Three Things from This Committee</h2>
+        <div class="ask-list">
+          <div class="ask-item">
+            <div class="ask-num">1</div>
+            <div>
+              <p class="ask-content__title">Endorse the v2.0 development plan</p>
+              <p class="ask-content__body">Adopt the schema-first roadmap as the official CoSAI Workstream 2 direction. Four phases, 24 months, public beta in 4 to 6 months.</p>
+            </div>
+          </div>
+          <div class="ask-item">
+            <div class="ask-num">2</div>
+            <div>
+              <p class="ask-content__title">Accept the open-source contribution</p>
+              <p class="ask-content__body">AISharedResponsibility.com, the six assessment wizards, and the data files. Offered as a CoSAI community resource under Apache 2.0.</p>
+            </div>
+          </div>
+          <div class="ask-item">
+            <div class="ask-num">3</div>
+            <div>
+              <p class="ask-content__title">Prioritize the schema repository as Phase 1</p>
+              <p class="ask-content__body">A machine-readable accountability ontology published to GitHub unlocks every downstream deliverable. This is the critical path.</p>
+            </div>
+          </div>
+        </div>
+        <div class="slide__tagline">
+          The window is real. The foundation is built. The question is whether CoSAI defines the standard or inherits someone else's.
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="key-hint" id="keyHint">
+    <kbd>←</kbd> <kbd>→</kbd> to navigate &nbsp;·&nbsp; <kbd>Esc</kbd> to exit full view
+  </div>
+
+  <site-footer></site-footer>
+
+  <script>
+    const TOTAL = 14;
+    let current = 1;
+    let viewAll = false;
+
+    const deck    = document.getElementById('deck');
+    const counter = document.getElementById('counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const toggle  = document.getElementById('viewToggle');
+    const keyHint = document.getElementById('keyHint');
+
+    function showSlide(n) {
+      n = Math.max(1, Math.min(TOTAL, n));
+      document.querySelectorAll('.slide').forEach((s, i) => {
+        s.classList.toggle('active', i + 1 === n);
+      });
+      current = n;
+      counter.textContent = `${n} / ${TOTAL}`;
+      prevBtn.disabled = n === 1;
+      nextBtn.disabled = n === TOTAL;
+
+      // Update URL hash without scroll
+      history.replaceState(null, '', `#slide-${n}`);
+    }
+
+    function toggleViewAll() {
+      viewAll = !viewAll;
+      deck.classList.toggle('view-all', viewAll);
+      toggle.textContent  = viewAll ? 'Slide view' : 'View all';
+      keyHint.hidden      = viewAll;
+      prevBtn.disabled    = viewAll;
+      nextBtn.disabled    = viewAll;
+      counter.style.opacity = viewAll ? '0.3' : '1';
+      if (!viewAll) showSlide(current);
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(current - 1));
+    nextBtn.addEventListener('click', () => showSlide(current + 1));
+    toggle.addEventListener('click', toggleViewAll);
+
+    deck.addEventListener('keydown', (e) => {
+      if (viewAll) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); showSlide(current + 1); }
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); showSlide(current - 1); }
+    });
+
+    // Honour incoming hash
+    const hash = location.hash.match(/slide-(\d+)/);
+    showSlide(hash ? parseInt(hash[1], 10) : 1);
+  </script>
+</body>
+</html>

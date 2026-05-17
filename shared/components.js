@@ -13,7 +13,8 @@ const NAV_LINKS = [
   { id: "operating-models", label: "Operating models",href: "/operating-models/" },
   { id: "tools",            label: "Tools",           href: "/tools/" },
   { id: "regulations",      label: "Regulations",     href: "/regulations/" },
-  { id: "about",            label: "About",           href: "/about/" },
+  { id: "presentation",    label: "Presentation",    href: "/presentation/" },
+  { id: "about",           label: "About",           href: "/about/" },
 ];
 
 const FOOTER_LINKS = [
@@ -22,7 +23,8 @@ const FOOTER_LINKS = [
   { label: "Operating models", href: "/operating-models/" },
   { label: "Tools",            href: "/tools/" },
   { label: "Regulations",      href: "/regulations/" },
-  { label: "About",            href: "/about/" },
+  { label: "Presentation",    href: "/presentation/" },
+  { label: "About",           href: "/about/" },
   { label: "Source",           href: "https://github.com/billbrietstout/ai-shared-responsibility", external: true },
 ];
 
