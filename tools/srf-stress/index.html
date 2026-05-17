@@ -775,18 +775,22 @@ const ANALYSIS_PRESETS = {
   }
 };
 
+// Worker URL — set after deploying worker/index.js to Cloudflare.
+// Override at runtime: window.__COSAI_ANALYZE_URL__ = 'https://your-worker.workers.dev'
+const WORKER_URL = 'https://srf-analyze.aisharedresponsibility.workers.dev';
+
 function getAnalyzeUrl() {
   if (typeof window !== 'undefined' && window.__COSAI_ANALYZE_URL__) {
     return String(window.__COSAI_ANALYZE_URL__);
   }
-  return new URL('/api/analyze', window.location.origin).href;
+  return WORKER_URL;
 }
 
 function setOfflineNote(active) {
   const el = document.getElementById('offlineNote');
   if (!el) return;
   if (active) {
-    el.textContent = 'This run used built-in assessment text (GitHub Pages and other static hosts cannot POST to /api/analyze). For live model output, host an analyze endpoint and set window.__COSAI_ANALYZE_URL__ to its URL before running.';
+    el.textContent = 'Live analysis unavailable — the worker may not be deployed yet. Showing built-in assessment text instead.';
     el.classList.add('visible');
   } else {
     el.textContent = '';
@@ -794,12 +798,14 @@ function setOfflineNote(active) {
   }
 }
 
+// Parses an OpenAI-format response envelope from GitHub Models.
+// choices[0].message.content holds the JSON string the model returned.
 function parseRemoteAnalyzePayload(data) {
-  if (!data || !Array.isArray(data.content) || data.content.length === 0) {
-    throw new Error('Unexpected response format from server.');
+  const content = data?.choices?.[0]?.message?.content;
+  if (typeof content !== 'string' || content.length === 0) {
+    throw new Error('Unexpected response format from GitHub Models.');
   }
-  const raw = data.content.map(c => (c && typeof c.text === 'string' ? c.text : '')).join('');
-  const clean = raw.replace(/```json\s*|```/g, '').trim();
+  const clean = content.replace(/```json\s*|```/g, '').trim();
   return JSON.parse(clean);
 }
 
