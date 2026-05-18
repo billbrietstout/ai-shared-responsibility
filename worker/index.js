@@ -12,7 +12,7 @@
  */
 
 const GITHUB_MODELS_URL = "https://models.inference.ai.azure.com/chat/completions";
-const MODEL             = "xai/grok-3-mini";
+const MODEL             = "gpt-4o-mini"; // swap for xai/grok-3-mini when available on GitHub Models
 const MAX_TOKENS        = 1800;
 const TEMPERATURE       = 0.3;
 
