@@ -133,7 +133,7 @@
       host.innerHTML = DATA.controls[layer]
         .map((c) => {
           const aml = c.aml
-            ? c.aml.split(',').map((a) => `<span class="badge-aml">${escapeHtml(a.trim())}</span>`).join('')
+            ? c.aml.split(',').map((a) => `<a class="badge-aml" href="https://atlas.mitre.org/techniques/${escapeHtml(a.trim())}" target="_blank" rel="noopener">${escapeHtml(a.trim())}</a>`).join('')
             : '';
           const phases = c.phases.map((p) => `<span class="badge-phase ${p}">${phaseLabel(p)}</span>`).join('');
           return `
@@ -176,7 +176,7 @@
     host.innerHTML = DATA.owasp
       .map((r) => {
         const aml = r.aml.length
-          ? `<div class="owasp-aml-row">${r.aml.map((a) => `<span class="badge-aml">${escapeHtml(a)}</span>`).join('')}</div>`
+          ? `<div class="owasp-aml-row">${r.aml.map((a) => `<a class="badge-aml" href="https://atlas.mitre.org/techniques/${escapeHtml(a)}" target="_blank" rel="noopener">${escapeHtml(a)}</a>`).join('')}</div>`
           : '';
         return `
           <div class="owasp-item" id="oi-${r.id}">
