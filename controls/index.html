@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Controls — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="AI security and governance controls assessments mapped to the CoSAI SRF layers — CSA AICM, OWASP LLM Top 10, and MITRE ATLAS adversarial technique crosswalks."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-10);
+      }
+      .tool-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      }
+      .tool-card:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--cosai-blue-soft);
+        transform: translateY(-3px);
+        text-decoration: none;
+        color: inherit;
+      }
+      .tool-card__accent {
+        height: 4px;
+      }
+      .tool-card--assessment .tool-card__accent { background: var(--cosai-blue); }
+      .tool-card--security .tool-card__accent { background: var(--l4); }
+      .tool-card__body { padding: var(--sp-6); flex: 1; display: flex; flex-direction: column; gap: var(--sp-3); }
+      .tool-card__name { font-size: var(--text-lg); font-weight: 800; color: var(--slate-900); letter-spacing: -0.02em; }
+      .tool-card__desc { font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); flex: 1; }
+      .tool-card__tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+      .tool-tag {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+        padding: 2px 8px; border-radius: 999px; border: 1px solid;
+      }
+      .tool-tag--blue { color: var(--cosai-blue); background: var(--cosai-blue-light); border-color: var(--cosai-blue-soft); }
+      .tool-tag--slate { color: var(--slate-500); background: var(--slate-100); border-color: var(--slate-200); }
+      .tool-tag--orange { color: #c2410c; background: #fff7ed; border-color: #fed7aa; }
+      .tool-card__footer {
+        padding: var(--sp-4) var(--sp-6);
+        border-top: 1px solid var(--slate-100);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--slate-50);
+      }
+      .tool-card__cta { font-size: var(--text-sm); font-weight: 700; color: var(--cosai-blue); }
+
+      .crosswalk-strip {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sp-6);
+      }
+      .crosswalk-item__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .crosswalk-item__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: var(--sp-1);
+      }
+      .crosswalk-item__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0;
+      }
+      @media (max-width: 640px) {
+        .crosswalk-strip { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="controls"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Controls</span>
+        <h1 class="page-hero__title">Assess your AI controls</h1>
+        <p class="page-hero__lede">
+          Structured assessments mapped to the CoSAI SRF layers, with
+          crosswalks to CSA AICM, OWASP LLM Top 10, and MITRE ATLAS
+          adversarial technique IDs. Export a gap analysis as PDF.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div class="tool-grid">
+
+        <a class="tool-card tool-card--assessment" href="/controls/assessment/">
+          <div class="tool-card__accent"></div>
+          <div class="tool-card__body">
+            <div class="tool-card__name">Controls Assessment</div>
+            <p class="tool-card__desc">
+              Work through controls mapped to each SRF layer using the CSA
+              AI Controls Matrix (AICM v1.0.3) as the authority — 243 controls
+              across 18 domains. Each control shows its AICM ID, lifecycle
+              phase, and linked MITRE ATLAS technique IDs where applicable.
+              Mark Implemented / Partial / Not done / N/A and export a
+              complete gap report.
+            </p>
+            <div class="tool-card__tags">
+              <span class="tool-tag tool-tag--blue">CSA AICM v1.0.3</span>
+              <span class="tool-tag tool-tag--orange">MITRE ATLAS</span>
+              <span class="tool-tag tool-tag--slate">PDF export</span>
+            </div>
+          </div>
+          <div class="tool-card__footer">
+            <span class="tool-card__cta">Start assessment →</span>
+          </div>
+        </a>
+
+        <a class="tool-card tool-card--security" href="/controls/security/">
+          <div class="tool-card__accent"></div>
+          <div class="tool-card__body">
+            <div class="tool-card__name">AI Security Controls</div>
+            <p class="tool-card__desc">
+              Layer-by-layer security controls assessment using the SRF
+              5-layer model. Includes the OWASP LLM Top 10 with adversarial
+              threat mapping to MITRE ATLAS techniques (AML.Txxxx) — each
+              technique links directly to the ATLAS catalogue. Export a
+              security posture report.
+            </p>
+            <div class="tool-card__tags">
+              <span class="tool-tag tool-tag--blue">OWASP LLM Top 10</span>
+              <span class="tool-tag tool-tag--orange">MITRE ATLAS</span>
+              <span class="tool-tag tool-tag--slate">PDF export</span>
+            </div>
+          </div>
+          <div class="tool-card__footer">
+            <span class="tool-card__cta">Start assessment →</span>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- Crosswalk reference -->
+      <p class="section__label">Taxonomy crosswalks included</p>
+      <div class="crosswalk-strip">
+        <div class="crosswalk-item">
+          <div class="crosswalk-item__label">Controls</div>
+          <div class="crosswalk-item__name">CSA AICM v1.0.3</div>
+          <p class="crosswalk-item__desc">243 controls across 18 domains with EU AI Act, ISO 42001, NIST AI 600-1, and BSI AI C4 crosswalks.</p>
+        </div>
+        <div class="crosswalk-item">
+          <div class="crosswalk-item__label">Adversarial threats</div>
+          <div class="crosswalk-item__name">MITRE ATLAS</div>
+          <p class="crosswalk-item__desc">Adversarial ML technique IDs (AML.Txxxx) linked directly to atlas.mitre.org for each relevant control.</p>
+        </div>
+        <div class="crosswalk-item">
+          <div class="crosswalk-item__label">LLM risks</div>
+          <div class="crosswalk-item__name">OWASP LLM Top 10</div>
+          <p class="crosswalk-item__desc">The ten most critical LLM application risks mapped to SRF accountability layers and ATLAS techniques.</p>
+        </div>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

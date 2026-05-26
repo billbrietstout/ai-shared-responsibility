@@ -6,12 +6,59 @@
     <title>The Framework — AI Shared Responsibility</title>
     <meta
       name="description"
-      content="The CoSAI five-layer AI enterprise architecture framework. One accountable party per component across AI Business, Information, Application, Platform, and Model Provider layers."
+      content="The CoSAI AI Shared Responsibility Framework — five layers, eight personas, and four operating models. One accountable party per activity."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
-      /* ---- Principle callout ---- */
+
+      /* ── Tab bar ─────────────────────────────────────────────────── */
+      .fw-tabs {
+        display: flex;
+        gap: 0;
+        border-bottom: 2px solid var(--slate-200);
+        margin-bottom: var(--sp-8);
+      }
+      .fw-tab {
+        padding: var(--sp-3) var(--sp-5);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        border: none;
+        background: none;
+        color: var(--slate-500);
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        transition: color 0.12s, border-color 0.12s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+      }
+      .fw-tab:hover { color: var(--slate-800); text-decoration: none; }
+      .fw-tab--active {
+        color: var(--cosai-blue);
+        border-bottom-color: var(--cosai-blue);
+      }
+      .fw-tab__count {
+        font-size: 0.65rem;
+        font-weight: 700;
+        background: var(--slate-100);
+        color: var(--slate-500);
+        border-radius: 999px;
+        padding: 1px 6px;
+      }
+      .fw-tab--active .fw-tab__count {
+        background: var(--cosai-blue-light);
+        color: var(--cosai-blue);
+      }
+
+      /* Tab panels */
+      .fw-panel { display: none; }
+      .fw-panel--active { display: block; }
+
+      /* ── Layers panel ────────────────────────────────────────────── */
       .principle {
         background: var(--cosai-navy);
         color: #fff;
@@ -37,8 +84,6 @@
         line-height: var(--leading-snug);
         font-style: italic;
       }
-
-      /* ---- Layer sections ---- */
       .layer-section {
         border: 1px solid var(--slate-200);
         border-radius: var(--radius-lg);
@@ -54,114 +99,47 @@
         padding: var(--sp-5) var(--sp-6);
         border-bottom: 1px solid var(--slate-100);
       }
-      .layer-section__accent {
-        width: 4px;
-        height: 48px;
-        border-radius: 2px;
-        flex-shrink: 0;
-      }
+      .layer-section__accent { width: 4px; height: 48px; border-radius: 2px; flex-shrink: 0; }
       .layer-section__id {
-        font-size: var(--text-xs);
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--slate-400);
-        margin-bottom: 2px;
+        font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--slate-400); margin-bottom: 2px;
       }
-      .layer-section__name {
-        font-size: var(--text-xl);
-        font-weight: 700;
-        letter-spacing: -0.01em;
-        color: var(--slate-900);
-      }
-      .layer-section__personas {
-        margin-left: auto;
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--sp-2);
-        justify-content: flex-end;
-      }
+      .layer-section__name { font-size: var(--text-xl); font-weight: 700; letter-spacing: -0.01em; color: var(--slate-900); }
+      .layer-section__personas { margin-left: auto; display: flex; flex-wrap: wrap; gap: var(--sp-2); justify-content: flex-end; }
       .layer-section__body {
         padding: var(--sp-5) var(--sp-6);
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--sp-6);
+        display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-6);
       }
-      .layer-section__desc {
-        font-size: var(--text-base);
-        color: var(--slate-600);
-        line-height: var(--leading-normal);
-      }
+      .layer-section__desc { font-size: var(--text-base); color: var(--slate-600); line-height: var(--leading-normal); }
       .layer-section__components h3 {
-        font-size: var(--text-xs);
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--slate-400);
-        margin-bottom: var(--sp-3);
+        font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--slate-400); margin-bottom: var(--sp-3);
       }
-      .component-list {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: var(--sp-2);
-      }
+      .component-list { list-style: none; display: flex; flex-direction: column; gap: var(--sp-2); }
       .component-list li {
-        font-size: var(--text-sm);
-        color: var(--slate-700);
+        font-size: var(--text-sm); color: var(--slate-700);
         padding: var(--sp-2) var(--sp-3);
-        background: var(--slate-50);
-        border: 1px solid var(--slate-200);
-        border-radius: var(--radius);
+        background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius);
       }
-
-      /* Layer accent colors */
       .layer-section--l1 .layer-section__accent { background: var(--l1); }
       .layer-section--l2 .layer-section__accent { background: var(--l2); }
       .layer-section--l3 .layer-section__accent { background: var(--l3); }
       .layer-section--l4 .layer-section__accent { background: var(--l4); }
       .layer-section--l5 .layer-section__accent { background: var(--l5); }
 
-      /* ---- Cascade diagram ---- */
-      .cascade {
-        margin: var(--sp-8) 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0;
-      }
+      .cascade { margin: var(--sp-8) 0; display: flex; flex-direction: column; align-items: center; gap: 0; }
       .cascade-box {
-        width: 100%;
-        max-width: 480px;
-        padding: var(--sp-3) var(--sp-5);
-        border-radius: var(--radius);
-        text-align: center;
-        font-size: var(--text-sm);
-        font-weight: 700;
-        color: #fff;
-        position: relative;
+        width: 100%; max-width: 480px; padding: var(--sp-3) var(--sp-5);
+        border-radius: var(--radius); text-align: center;
+        font-size: var(--text-sm); font-weight: 700; color: #fff; position: relative;
       }
-      .cascade-box__sub {
-        font-weight: 400;
-        font-size: var(--text-xs);
-        opacity: 0.8;
-        margin-top: 2px;
-      }
+      .cascade-box__sub { font-weight: 400; font-size: var(--text-xs); opacity: 0.8; margin-top: 2px; }
       .cascade-arrow {
-        width: 1px;
-        height: 16px;
-        background: var(--slate-300);
-        margin: 0 auto;
-        position: relative;
+        width: 1px; height: 16px; background: var(--slate-300); margin: 0 auto; position: relative;
       }
       .cascade-arrow::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        border-left: 5px solid transparent;
-        border-right: 5px solid transparent;
+        content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+        border-left: 5px solid transparent; border-right: 5px solid transparent;
         border-top: 6px solid var(--slate-300);
       }
       .cascade-box--l1 { background: var(--l1); }
@@ -170,37 +148,147 @@
       .cascade-box--l4 { background: var(--l4); max-width: 360px; }
       .cascade-box--l5 { background: var(--l5); max-width: 320px; }
 
-      /* ---- Relationship table ---- */
-      .relation-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: var(--text-sm);
-        margin-top: var(--sp-6);
-      }
+      .relation-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin-top: var(--sp-6); }
       .relation-table th {
-        text-align: left;
-        font-size: var(--text-xs);
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--slate-500);
-        padding: var(--sp-2) var(--sp-3);
-        border-bottom: 2px solid var(--slate-200);
+        text-align: left; font-size: var(--text-xs); font-weight: 700;
+        letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate-500);
+        padding: var(--sp-2) var(--sp-3); border-bottom: 2px solid var(--slate-200);
       }
       .relation-table td {
-        padding: var(--sp-3);
-        border-bottom: 1px solid var(--slate-100);
-        vertical-align: top;
-        color: var(--slate-700);
-        line-height: var(--leading-normal);
+        padding: var(--sp-3); border-bottom: 1px solid var(--slate-100);
+        vertical-align: top; color: var(--slate-700); line-height: var(--leading-normal);
       }
       .relation-table tr:last-child td { border-bottom: none; }
       .relation-table td:first-child { font-weight: 600; color: var(--slate-900); white-space: nowrap; }
 
+      /* ── Personas panel ──────────────────────────────────────────── */
+      .filter-bar {
+        display: flex; align-items: center; gap: var(--sp-2);
+        flex-wrap: wrap; margin-bottom: var(--sp-8);
+      }
+      .filter-bar__label {
+        font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--slate-500); margin-right: var(--sp-2);
+      }
+      .filter-btn {
+        padding: var(--sp-2) var(--sp-4); border-radius: 999px; font-size: var(--text-sm);
+        font-weight: 500; border: 1px solid var(--slate-200); background: #fff;
+        color: var(--slate-600); cursor: pointer;
+        transition: border-color 0.12s, background 0.12s, color 0.12s;
+      }
+      .filter-btn:hover { border-color: var(--cosai-blue); color: var(--cosai-blue); }
+      .filter-btn--active { background: var(--cosai-navy); border-color: var(--cosai-navy); color: #fff; }
+      .persona-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--sp-4);
+      }
+      .persona-card {
+        border: 1px solid var(--slate-200); border-radius: var(--radius-lg);
+        background: #fff; box-shadow: var(--shadow); overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s; display: flex; flex-direction: column;
+      }
+      .persona-card:hover { box-shadow: var(--shadow-md); }
+      .persona-card--dimmed { opacity: 0.35; pointer-events: none; }
+      .persona-card__header {
+        padding: var(--sp-5) var(--sp-5) var(--sp-4); border-bottom: 1px solid var(--slate-100);
+        display: flex; gap: var(--sp-3); align-items: flex-start;
+      }
+      .persona-card__layers { display: flex; flex-direction: column; gap: var(--sp-1); flex-shrink: 0; }
+      .persona-card__name {
+        font-size: var(--text-base); font-weight: 700; color: var(--slate-900);
+        letter-spacing: -0.01em; line-height: var(--leading-tight); margin-bottom: var(--sp-2);
+      }
+      .persona-card__ref { font-size: 11px; color: var(--slate-400); font-family: var(--font-mono); line-height: 1.4; }
+      .persona-card__body { padding: var(--sp-4) var(--sp-5); flex: 1; }
+      .persona-card__desc { font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-4); }
+      .persona-card__responsibilities h3 {
+        font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--slate-400); margin-bottom: var(--sp-2);
+      }
+      .resp-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+      .resp-list li {
+        font-size: var(--text-sm); color: var(--slate-700);
+        padding-left: var(--sp-4); position: relative; line-height: var(--leading-normal);
+      }
+      .resp-list li::before {
+        content: ''; position: absolute; left: 0; top: 9px;
+        width: 5px; height: 5px; border-radius: 50%; background: var(--slate-300);
+      }
+      .persona-card__foot {
+        padding: var(--sp-3) var(--sp-5); border-top: 1px solid var(--slate-100);
+        display: flex; flex-wrap: wrap; gap: var(--sp-2);
+      }
+      .audience-tag {
+        font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+        padding: 2px 8px; border-radius: 999px; border: 1px solid var(--slate-200);
+        color: var(--slate-500); background: var(--slate-50);
+      }
+
+      /* ── Operating models panel ──────────────────────────────────── */
+      .model-tabs {
+        display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-6);
+        border-bottom: 2px solid var(--slate-200); padding-bottom: var(--sp-1);
+      }
+      .model-tab {
+        padding: var(--sp-2) var(--sp-4); font-size: var(--text-sm); font-weight: 600;
+        border: none; background: none; color: var(--slate-500); cursor: pointer;
+        border-bottom: 3px solid transparent; margin-bottom: -2px;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        transition: color 0.12s, border-color 0.12s;
+      }
+      .model-tab:hover { color: var(--slate-800); }
+      .model-tab--active { color: var(--cosai-blue); border-bottom-color: var(--cosai-blue); }
+      .model-desc {
+        background: var(--slate-50); border: 1px solid var(--slate-200);
+        border-radius: var(--radius); padding: var(--sp-4) var(--sp-5);
+        margin-bottom: var(--sp-6); font-size: var(--text-sm);
+        color: var(--slate-600); line-height: var(--leading-normal);
+      }
+      .model-desc strong { color: var(--slate-900); }
+      .matrix-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: var(--sp-8); }
+      .matrix {
+        width: 100%; min-width: 520px; border-collapse: collapse; font-size: var(--text-sm);
+      }
+      .matrix th {
+        text-align: left; font-size: var(--text-xs); font-weight: 700;
+        letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate-500);
+        padding: var(--sp-3) var(--sp-4); border-bottom: 2px solid var(--slate-200); background: #fff;
+      }
+      .matrix th:not(:first-child) { text-align: center; }
+      .matrix td { padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--slate-100); vertical-align: middle; }
+      .matrix tr:last-child td { border-bottom: none; }
+      .matrix .col-layer { display: flex; align-items: center; gap: var(--sp-3); }
+      .matrix .layer-accent { width: 4px; height: 32px; border-radius: 2px; flex-shrink: 0; }
+      .matrix .layer-info { flex: 1; }
+      .matrix .layer-id { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate-400); }
+      .matrix .layer-name { font-weight: 700; color: var(--slate-900); font-size: var(--text-sm); }
+      .matrix td.col-cell { text-align: center; }
+      .resp-chip {
+        display: inline-block; padding: 3px 10px; border-radius: 999px;
+        font-size: 11px; font-weight: 600; white-space: nowrap;
+      }
+      .resp-chip--customer  { background: #dbeafe; color: #1e40af; }
+      .resp-chip--shared    { background: #fef3c7; color: #92400e; }
+      .resp-chip--provider  { background: #f1f5f9; color: var(--slate-600); }
+      .resp-chip--model-eval{ background: #ede9fe; color: #5b21b6; }
+      .resp-chip--na        { color: var(--slate-400); font-size: 10px; letter-spacing: 0.04em; }
+      .accent--l1 { background: var(--l1); }
+      .accent--l2 { background: var(--l2); }
+      .accent--l3 { background: var(--l3); }
+      .accent--l4 { background: var(--l4); }
+      .accent--l5 { background: var(--l5); }
+      .legend {
+        display: flex; flex-wrap: wrap; gap: var(--sp-3) var(--sp-5);
+        margin-bottom: var(--sp-8); padding: var(--sp-4);
+        background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius);
+      }
+      .legend__item { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--text-xs); color: var(--slate-600); }
+
+      /* ── Responsive ──────────────────────────────────────────────── */
       @media (max-width: 640px) {
         .layer-section__body { grid-template-columns: 1fr; }
         .layer-section__personas { justify-content: flex-start; margin-left: 0; margin-top: var(--sp-2); }
         .layer-section__header { flex-wrap: wrap; }
+        .fw-tab { padding: var(--sp-2) var(--sp-3); font-size: var(--text-xs); }
       }
     </style>
   </head>
@@ -214,298 +302,383 @@
         <span class="page-hero__eyebrow">CoSAI AI SRF Draft V0.7</span>
         <h1 class="page-hero__title">The Framework</h1>
         <p class="page-hero__lede">
-          Five enterprise architecture layers, each with exactly one accountable
-          party. Governance requirements cascade from the business layer down
-          to the model supply chain.
+          Five architecture layers, eight stakeholder personas, and four
+          operating models. One accountable party per activity — shifting
+          with your deployment model.
         </p>
       </div>
     </header>
 
     <main id="main" class="page-body">
 
-      <section aria-labelledby="what-heading">
-        <h2 id="what-heading" class="section__label">What it is</h2>
-        <div class="prose">
-          <p>
-            The AI Shared Responsibility Framework is an accountability framework.
-            It answers <em>who</em> is responsible for each component across the AI
-            stack. It does not replace existing control and management frameworks:
-            NIST AI RMF defines <em>what</em> governance outcomes to achieve,
-            ISO/IEC 42001 defines <em>how</em> to manage an AI management system,
-            and the EU AI Act defines <em>which</em> regulatory obligations apply
-            by risk tier. The SRF answers the prior question of who owns each piece.
+      <!-- Tab bar -->
+      <div class="fw-tabs" role="tablist" aria-label="Framework sections">
+        <button class="fw-tab fw-tab--active" role="tab" aria-selected="true"  data-tab="layers" aria-controls="panel-layers">
+          Layers <span class="fw-tab__count">5</span>
+        </button>
+        <button class="fw-tab" role="tab" aria-selected="false" data-tab="personas" aria-controls="panel-personas">
+          Personas <span class="fw-tab__count">8</span>
+        </button>
+        <button class="fw-tab" role="tab" aria-selected="false" data-tab="operating-models" aria-controls="panel-operating-models">
+          Operating models <span class="fw-tab__count">4</span>
+        </button>
+      </div>
+
+      <!-- ── LAYERS PANEL ──────────────────────────────────────────── -->
+      <div id="panel-layers" class="fw-panel fw-panel--active" role="tabpanel" aria-labelledby="">
+
+        <section aria-labelledby="what-heading">
+          <h2 id="what-heading" class="section__label">What it is</h2>
+          <div class="prose">
+            <p>
+              The AI Shared Responsibility Framework is an accountability framework.
+              It answers <em>who</em> is responsible for each component across the AI
+              stack. It does not replace existing control and management frameworks:
+              NIST AI RMF defines <em>what</em> governance outcomes to achieve,
+              ISO/IEC 42001 defines <em>how</em> to manage an AI management system,
+              and the EU AI Act defines <em>which</em> regulatory obligations apply
+              by risk tier. The SRF answers the prior question of who owns each piece.
+            </p>
+            <p>
+              Because organizational structures vary widely, the framework uses
+              enterprise architecture layers rather than job titles. The layers encode
+              dependencies that hold constant regardless of how any particular
+              organization is structured.
+            </p>
+          </div>
+          <div class="principle" role="note">
+            <span class="principle__label">Principle</span>
+            <span class="principle__text">
+              There should be exactly one accountable party per activity to prevent overlaps.
+            </span>
+          </div>
+        </section>
+
+        <section aria-labelledby="diagram-heading">
+          <h2 id="diagram-heading" class="section__label" style="margin-bottom: var(--sp-4);">Order of dependency</h2>
+          <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 500px; margin-bottom: var(--sp-4);">
+            Layers are stacked in dependency order. L1 sets the rules; each layer
+            below inherits those constraints and adds its own.
           </p>
-          <p>
-            Because organizational structures vary widely, the framework uses
-            enterprise architecture layers rather than job titles. The layers encode
-            dependencies that hold constant regardless of how any particular
-            organization is structured.
+          <div class="cascade" aria-label="Five-layer dependency diagram">
+            <div class="cascade-box cascade-box--l1">L1 — AI Business &amp; Usage<div class="cascade-box__sub">Governance, Strategy, Compliance</div></div>
+            <div class="cascade-arrow" aria-hidden="true"></div>
+            <div class="cascade-box cascade-box--l2">L2 — AI Information<div class="cascade-box__sub">Data Management, Quality, Privacy</div></div>
+            <div class="cascade-arrow" aria-hidden="true"></div>
+            <div class="cascade-box cascade-box--l3">L3 — AI Application<div class="cascade-box__sub">Development, Integration, Testing</div></div>
+            <div class="cascade-arrow" aria-hidden="true"></div>
+            <div class="cascade-box cascade-box--l4">L4 — AI Platform<div class="cascade-box__sub">Infrastructure, APIs, Tooling</div></div>
+            <div class="cascade-arrow" aria-hidden="true"></div>
+            <div class="cascade-box cascade-box--l5">L5 — AI Model Provider<div class="cascade-box__sub">Models, Training, Supply Chain</div></div>
+          </div>
+        </section>
+
+        <hr class="divider" />
+
+        <section aria-labelledby="layers-heading">
+          <h2 id="layers-heading" class="section__label" style="margin-bottom: var(--sp-6);">Layer detail</h2>
+
+          <div id="l1" class="layer-section layer-section--l1">
+            <div class="layer-section__header">
+              <div class="layer-section__accent" aria-hidden="true"></div>
+              <div><div class="layer-section__id">L1</div><div class="layer-section__name">AI Business &amp; Usage</div></div>
+              <div class="layer-section__personas">
+                <span class="layer-pill layer-pill--l1"><span class="layer-pill__dot" aria-hidden="true"></span>AI System Users</span>
+                <span class="layer-pill layer-pill--l1"><span class="layer-pill__dot" aria-hidden="true"></span>AI Governance</span>
+              </div>
+            </div>
+            <div class="layer-section__body">
+              <p class="layer-section__desc">Governance, strategy, and compliance at the executive and business-unit level. This layer owns regulatory obligations, acceptable-use policy, and incident governance. Security and governance requirements set here cascade down to all supporting layers. Industry-specific constraints such as healthcare, finance, and public sector requirements enter the stack at L1.</p>
+              <div class="layer-section__components"><h3>Components</h3><ul class="component-list"><li>Capabilities &amp; Business Strategy</li><li>Processes &amp; Governance</li><li>Business Units &amp; Accountability</li></ul></div>
+            </div>
+          </div>
+
+          <div id="l2" class="layer-section layer-section--l2">
+            <div class="layer-section__header">
+              <div class="layer-section__accent" aria-hidden="true"></div>
+              <div><div class="layer-section__id">L2</div><div class="layer-section__name">AI Information</div></div>
+              <div class="layer-section__personas">
+                <span class="layer-pill layer-pill--l2"><span class="layer-pill__dot" aria-hidden="true"></span>Data Provider</span>
+              </div>
+            </div>
+            <div class="layer-section__body">
+              <p class="layer-section__desc">Data ownership, quality, and privacy. Accountable for training data provenance, master data management, and privacy controls. Data classification decisions made at this layer constrain what AI systems can access at runtime. The EU AI Act's data governance requirements and GDPR Article 22 obligations land here.</p>
+              <div class="layer-section__components"><h3>Components</h3><ul class="component-list"><li>Master Data Management</li><li>Privacy Controls &amp; Policies</li><li>AI Training Data</li></ul></div>
+            </div>
+          </div>
+
+          <div id="l3" class="layer-section layer-section--l3">
+            <div class="layer-section__header">
+              <div class="layer-section__accent" aria-hidden="true"></div>
+              <div><div class="layer-section__id">L3</div><div class="layer-section__name">AI Application</div></div>
+              <div class="layer-section__personas">
+                <span class="layer-pill layer-pill--l3"><span class="layer-pill__dot" aria-hidden="true"></span>App Developer</span>
+                <span class="layer-pill layer-pill--l3"><span class="layer-pill__dot" aria-hidden="true"></span>Agentic Provider</span>
+              </div>
+            </div>
+            <div class="layer-section__body">
+              <p class="layer-section__desc">Development, integration, and testing of AI-powered applications. Responsible for guardrails, input validation, output filtering, prompt engineering, RAG pipelines, and agent orchestration. This is where most OWASP LLM Top 10 risks are mitigated. The layer spans both traditional AI applications and agentic systems.</p>
+              <div class="layer-section__components"><h3>Components</h3><ul class="component-list"><li>Agents &amp; Orchestration Models</li><li>APIs &amp; Fine-tuned Models</li><li>Application Platforms</li></ul></div>
+            </div>
+          </div>
+
+          <div id="l4" class="layer-section layer-section--l4">
+            <div class="layer-section__header">
+              <div class="layer-section__accent" aria-hidden="true"></div>
+              <div><div class="layer-section__id">L4</div><div class="layer-section__name">AI Platform</div></div>
+              <div class="layer-section__personas">
+                <span class="layer-pill layer-pill--l4"><span class="layer-pill__dot" aria-hidden="true"></span>Platform Provider</span>
+                <span class="layer-pill layer-pill--l4"><span class="layer-pill__dot" aria-hidden="true"></span>Model Serving</span>
+              </div>
+            </div>
+            <div class="layer-section__body">
+              <p class="layer-section__desc">Infrastructure, compute, APIs, and runtime services for hosting, training, and serving AI models. Covers LLM gateways, model routers, guardrail infrastructure, and platform-level IAM. Cloud providers, MLOps platforms, and model API services operate here. AI Model Serving is distinct from the Platform Provider: it focuses on secure orchestration and delivery rather than physical compute.</p>
+              <div class="layer-section__components"><h3>Components</h3><ul class="component-list"><li>Guardrails &amp; Safety Systems</li><li>Compute Infrastructure</li><li>LLM Routers &amp; Gateways</li></ul></div>
+            </div>
+          </div>
+
+          <div id="l5" class="layer-section layer-section--l5">
+            <div class="layer-section__header">
+              <div class="layer-section__accent" aria-hidden="true"></div>
+              <div><div class="layer-section__id">L5</div><div class="layer-section__name">AI Model Provider</div></div>
+              <div class="layer-section__personas">
+                <span class="layer-pill layer-pill--l5"><span class="layer-pill__dot" aria-hidden="true"></span>Model Provider</span>
+              </div>
+            </div>
+            <div class="layer-section__body">
+              <p class="layer-section__desc">Foundation models, model governance, and supply-chain provenance. Accountable for model architecture security, model cards, vulnerability disclosure, and the governance of model distribution. Responsibility assignment at this layer depends on the licensing and deployment approach chosen at L4. SR 26-2 model risk management and FDA AI/ML validation requirements cascade from L1 through this layer.</p>
+              <div class="layer-section__components"><h3>Components</h3><ul class="component-list"><li>Model Distribution</li><li>Model Governance</li><li>Foundation Models</li></ul></div>
+            </div>
+          </div>
+        </section>
+
+        <hr class="divider" />
+
+        <section aria-labelledby="relations-heading">
+          <h2 id="relations-heading" class="section__label">Relationship to other frameworks</h2>
+          <p style="font-size: var(--text-base); color: var(--slate-600); max-width: 580px; margin-bottom: var(--sp-4); line-height: var(--leading-normal);">
+            The SRF answers <em>who</em> is accountable. Other frameworks define what to achieve, how to manage, and which obligations apply.
+            <a href="/compare/" style="margin-left: 6px;">Full comparison →</a>
           </p>
-        </div>
+          <table class="relation-table">
+            <thead><tr><th>Framework</th><th>What it answers</th><th>How it relates to the SRF</th></tr></thead>
+            <tbody>
+              <tr><td>NIST AI RMF</td><td><em>What</em> governance outcomes to achieve</td><td>SRF assigns who implements each RMF function at each layer</td></tr>
+              <tr><td>ISO/IEC 42001</td><td><em>How</em> to manage an AI management system</td><td>SRF layer model maps into 42001 organizational and technical controls</td></tr>
+              <tr><td>EU AI Act</td><td><em>Which</em> obligations apply by risk tier</td><td>SRF assigns who discharges each EU AI Act obligation</td></tr>
+              <tr><td>OWASP LLM Top 10</td><td><em>What</em> application security risks exist</td><td>Most LLM risks are mitigated at L3; some require L4 and L5 action</td></tr>
+              <tr><td>CSA AICM</td><td><em>What</em> controls apply across 18 domains</td><td>AICM ownership tiers (MP/OSP/AP) map to CoSAI L5, L4, and L3</td></tr>
+            </tbody>
+          </table>
+        </section>
 
-        <div class="principle" role="note">
-          <span class="principle__label">Principle</span>
-          <span class="principle__text">
-            There should be exactly one accountable party per activity to prevent overlaps.
-          </span>
-        </div>
-      </section>
+      </div><!-- /panel-layers -->
 
-      <!-- Cascade diagram -->
-      <section aria-labelledby="diagram-heading">
-        <h2 id="diagram-heading" class="section__label" style="margin-bottom: var(--sp-4);">Order of dependency</h2>
-        <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 500px; margin-bottom: var(--sp-4);">
-          Layers are stacked in dependency order. L1 sets the rules; each layer
-          below inherits those constraints and adds its own.
+      <!-- ── PERSONAS PANEL ────────────────────────────────────────── -->
+      <div id="panel-personas" class="fw-panel" role="tabpanel">
+        <p style="font-size: var(--text-base); color: var(--slate-600); max-width: 580px; margin-bottom: var(--sp-6); line-height: var(--leading-normal);">
+          Eight stakeholder types across the AI stack. Each persona maps to one or more framework layers and carries a defined set of responsibilities.
         </p>
-        <div class="cascade" aria-label="Five-layer dependency diagram">
-          <div class="cascade-box cascade-box--l1">
-            L1 &mdash; AI Business &amp; Usage
-            <div class="cascade-box__sub">Governance, Strategy, Compliance</div>
-          </div>
-          <div class="cascade-arrow" aria-hidden="true"></div>
-          <div class="cascade-box cascade-box--l2">
-            L2 &mdash; AI Information
-            <div class="cascade-box__sub">Data Management, Quality, Privacy</div>
-          </div>
-          <div class="cascade-arrow" aria-hidden="true"></div>
-          <div class="cascade-box cascade-box--l3">
-            L3 &mdash; AI Application
-            <div class="cascade-box__sub">Development, Integration, Testing</div>
-          </div>
-          <div class="cascade-arrow" aria-hidden="true"></div>
-          <div class="cascade-box cascade-box--l4">
-            L4 &mdash; AI Platform
-            <div class="cascade-box__sub">Infrastructure, APIs, Tooling</div>
-          </div>
-          <div class="cascade-arrow" aria-hidden="true"></div>
-          <div class="cascade-box cascade-box--l5">
-            L5 &mdash; AI Model Provider
-            <div class="cascade-box__sub">Models, Training, Supply Chain</div>
-          </div>
+        <div class="filter-bar" role="group" aria-label="Filter personas by audience">
+          <span class="filter-bar__label">Show</span>
+          <button class="filter-btn filter-btn--active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="vendor">Vendor</button>
+          <button class="filter-btn" data-filter="customer">Customer</button>
+          <button class="filter-btn" data-filter="consultant">Consultant</button>
+          <button class="filter-btn" data-filter="user">End user</button>
         </div>
-      </section>
-
-      <hr class="divider" />
-
-      <!-- Layer detail sections -->
-      <section aria-labelledby="layers-heading">
-        <h2 id="layers-heading" class="section__label" style="margin-bottom: var(--sp-6);">Layer detail</h2>
-
-        <div id="l1" class="layer-section layer-section--l1">
-          <div class="layer-section__header">
-            <div class="layer-section__accent" aria-hidden="true"></div>
-            <div>
-              <div class="layer-section__id">L1</div>
-              <div class="layer-section__name">AI Business &amp; Usage</div>
-            </div>
-            <div class="layer-section__personas">
-              <span class="layer-pill layer-pill--l1"><span class="layer-pill__dot" aria-hidden="true"></span>AI System Users</span>
-              <span class="layer-pill layer-pill--l1"><span class="layer-pill__dot" aria-hidden="true"></span>AI Governance</span>
-            </div>
-          </div>
-          <div class="layer-section__body">
-            <p class="layer-section__desc">
-              Governance, strategy, and compliance at the executive and
-              business-unit level. This layer owns regulatory obligations,
-              acceptable-use policy, and incident governance. Security and
-              governance requirements set here cascade down to all supporting
-              layers. Industry-specific constraints such as healthcare, finance,
-              and public sector requirements enter the stack at L1.
-            </p>
-            <div class="layer-section__components">
-              <h3>Components</h3>
-              <ul class="component-list">
-                <li>Capabilities &amp; Business Strategy</li>
-                <li>Processes &amp; Governance</li>
-                <li>Business Units &amp; Accountability</li>
-              </ul>
-            </div>
-          </div>
+        <div class="persona-grid" id="persona-grid" aria-live="polite">
+          <p style="color: var(--slate-400); font-size: var(--text-sm);">Loading personas…</p>
         </div>
+      </div><!-- /panel-personas -->
 
-        <div id="l2" class="layer-section layer-section--l2">
-          <div class="layer-section__header">
-            <div class="layer-section__accent" aria-hidden="true"></div>
-            <div>
-              <div class="layer-section__id">L2</div>
-              <div class="layer-section__name">AI Information</div>
-            </div>
-            <div class="layer-section__personas">
-              <span class="layer-pill layer-pill--l2"><span class="layer-pill__dot" aria-hidden="true"></span>Data Provider</span>
-            </div>
-          </div>
-          <div class="layer-section__body">
-            <p class="layer-section__desc">
-              Data ownership, quality, and privacy. Accountable for training
-              data provenance, master data management, and privacy controls.
-              Data classification decisions made at this layer constrain what
-              AI systems can access at runtime. The EU AI Act's data governance
-              requirements and GDPR Article 22 obligations land here.
-            </p>
-            <div class="layer-section__components">
-              <h3>Components</h3>
-              <ul class="component-list">
-                <li>Master Data Management</li>
-                <li>Privacy Controls &amp; Policies</li>
-                <li>AI Training Data</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div id="l3" class="layer-section layer-section--l3">
-          <div class="layer-section__header">
-            <div class="layer-section__accent" aria-hidden="true"></div>
-            <div>
-              <div class="layer-section__id">L3</div>
-              <div class="layer-section__name">AI Application</div>
-            </div>
-            <div class="layer-section__personas">
-              <span class="layer-pill layer-pill--l3"><span class="layer-pill__dot" aria-hidden="true"></span>App Developer</span>
-              <span class="layer-pill layer-pill--l3"><span class="layer-pill__dot" aria-hidden="true"></span>Agentic Provider</span>
-            </div>
-          </div>
-          <div class="layer-section__body">
-            <p class="layer-section__desc">
-              Development, integration, and testing of AI-powered applications.
-              Responsible for guardrails, input validation, output filtering,
-              prompt engineering, RAG pipelines, and agent orchestration. This
-              is where most OWASP LLM Top 10 risks are mitigated. The layer
-              spans both traditional AI applications and agentic systems.
-            </p>
-            <div class="layer-section__components">
-              <h3>Components</h3>
-              <ul class="component-list">
-                <li>Agents &amp; Orchestration Models</li>
-                <li>APIs &amp; Fine-tuned Models</li>
-                <li>Application Platforms</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div id="l4" class="layer-section layer-section--l4">
-          <div class="layer-section__header">
-            <div class="layer-section__accent" aria-hidden="true"></div>
-            <div>
-              <div class="layer-section__id">L4</div>
-              <div class="layer-section__name">AI Platform</div>
-            </div>
-            <div class="layer-section__personas">
-              <span class="layer-pill layer-pill--l4"><span class="layer-pill__dot" aria-hidden="true"></span>Platform Provider</span>
-              <span class="layer-pill layer-pill--l4"><span class="layer-pill__dot" aria-hidden="true"></span>Model Serving</span>
-            </div>
-          </div>
-          <div class="layer-section__body">
-            <p class="layer-section__desc">
-              Infrastructure, compute, APIs, and runtime services for hosting,
-              training, and serving AI models. Covers LLM gateways, model
-              routers, guardrail infrastructure, and platform-level IAM. Cloud
-              providers, MLOps platforms, and model API services operate here.
-              AI Model Serving is distinct from the Platform Provider: it focuses
-              on secure orchestration and delivery rather than physical compute.
-            </p>
-            <div class="layer-section__components">
-              <h3>Components</h3>
-              <ul class="component-list">
-                <li>Guardrails &amp; Safety Systems</li>
-                <li>Compute Infrastructure</li>
-                <li>LLM Routers &amp; Gateways</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div id="l5" class="layer-section layer-section--l5">
-          <div class="layer-section__header">
-            <div class="layer-section__accent" aria-hidden="true"></div>
-            <div>
-              <div class="layer-section__id">L5</div>
-              <div class="layer-section__name">AI Model Provider</div>
-            </div>
-            <div class="layer-section__personas">
-              <span class="layer-pill layer-pill--l5"><span class="layer-pill__dot" aria-hidden="true"></span>Model Provider</span>
-            </div>
-          </div>
-          <div class="layer-section__body">
-            <p class="layer-section__desc">
-              Foundation models, model governance, and supply-chain provenance.
-              Accountable for model architecture security, model cards,
-              vulnerability disclosure, and the governance of model distribution.
-              Responsibility assignment at this layer depends on the licensing
-              and deployment approach chosen at L4. SR 26-2 model risk management
-              and FDA AI/ML validation requirements cascade from L1 through this layer.
-            </p>
-            <div class="layer-section__components">
-              <h3>Components</h3>
-              <ul class="component-list">
-                <li>Model Distribution</li>
-                <li>Model Governance</li>
-                <li>Foundation Models</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <hr class="divider" />
-
-      <!-- Relationship to other frameworks -->
-      <section aria-labelledby="relations-heading">
-        <h2 id="relations-heading" class="section__label">Relationship to other frameworks</h2>
-        <p style="font-size: var(--text-base); color: var(--slate-600); max-width: 580px; margin-bottom: var(--sp-4); line-height: var(--leading-normal);">
-          The SRF answers <em>who</em> is accountable. Other frameworks define
-          what to achieve, how to manage, and which obligations apply.
+      <!-- ── OPERATING MODELS PANEL ────────────────────────────────── -->
+      <div id="panel-operating-models" class="fw-panel" role="tabpanel">
+        <p style="font-size: var(--text-base); color: var(--slate-600); max-width: 580px; margin-bottom: var(--sp-6); line-height: var(--leading-normal);">
+          Responsibility shifts significantly depending on whether you are running IaaS, AI-PaaS, Agent-PaaS, or AI-SaaS. Select a model to see the full layer-by-layer breakdown.
         </p>
-        <table class="relation-table">
-          <thead>
-            <tr>
-              <th>Framework</th>
-              <th>What it answers</th>
-              <th>How it relates to the SRF</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>NIST AI RMF</td>
-              <td><em>What</em> governance outcomes to achieve</td>
-              <td>SRF assigns who implements each RMF function at each layer</td>
-            </tr>
-            <tr>
-              <td>ISO/IEC 42001</td>
-              <td><em>How</em> to manage an AI management system</td>
-              <td>SRF layer model maps into 42001 organizational and technical controls</td>
-            </tr>
-            <tr>
-              <td>EU AI Act</td>
-              <td><em>Which</em> obligations apply by risk tier</td>
-              <td>SRF assigns who discharges each EU AI Act obligation</td>
-            </tr>
-            <tr>
-              <td>OWASP LLM Top 10</td>
-              <td><em>What</em> application security risks exist</td>
-              <td>Most LLM risks are mitigated at L3; some require L4 and L5 action</td>
-            </tr>
-            <tr>
-              <td>CSA AICM</td>
-              <td><em>What</em> controls apply across 18 domains</td>
-              <td>AICM ownership tiers (MP/OSP/AP) map to CoSAI L5, L4, and L3</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-
-      <hr class="divider" />
-
-      <nav aria-label="Next steps" style="display: flex; gap: var(--sp-4); flex-wrap: wrap;">
-        <a class="btn btn--primary" href="/personas/">See the eight personas</a>
-        <a class="btn btn--primary" href="/operating-models/">Responsibility by operating model</a>
-        <a class="btn btn--primary" href="/regulations/">Regulations reference</a>
-      </nav>
+        <div id="op-root">
+          <p style="color: var(--slate-400); font-size: var(--text-sm);">Loading…</p>
+        </div>
+      </div><!-- /panel-operating-models -->
 
     </main>
 
     <site-footer></site-footer>
+
+    <script type="module">
+
+      /* ── Tab routing ─────────────────────────────────────────────── */
+      const TABS   = ["layers", "personas", "operating-models"];
+      const panels = Object.fromEntries(TABS.map(id => [id, document.getElementById(`panel-${id}`)]));
+      const btns   = Object.fromEntries([...document.querySelectorAll(".fw-tab")].map(b => [b.dataset.tab, b]));
+
+      let personasLoaded = false;
+      let opModelsLoaded  = false;
+
+      function activateTab(tab) {
+        if (!TABS.includes(tab)) tab = "layers";
+        TABS.forEach(id => {
+          panels[id].classList.toggle("fw-panel--active", id === tab);
+          btns[id].classList.toggle("fw-tab--active", id === tab);
+          btns[id].setAttribute("aria-selected", id === tab);
+        });
+        if (tab === "personas"         && !personasLoaded)  { loadPersonas();   personasLoaded  = true; }
+        if (tab === "operating-models" && !opModelsLoaded)  { loadOpModels();   opModelsLoaded  = true; }
+        history.replaceState(null, "", `#${tab}`);
+      }
+
+      document.querySelectorAll(".fw-tab").forEach(btn => {
+        btn.addEventListener("click", () => activateTab(btn.dataset.tab));
+      });
+
+      // Hash routing on load
+      const initial = location.hash.replace("#", "") || "layers";
+      activateTab(initial);
+
+      /* ── Personas ────────────────────────────────────────────────── */
+      const LAYER_COLORS   = { L1:"l1", L2:"l2", L3:"l3", L4:"l4", L5:"l5" };
+      const AUDIENCE_LABELS = { vendor:"Vendor", customer:"Customer", consultant:"Consultant", user:"End user" };
+
+      function layerPill(id) {
+        const cls = LAYER_COLORS[id] || "l1";
+        return `<span class="layer-pill layer-pill--${cls}"><span class="layer-pill__dot" aria-hidden="true"></span>${id}</span>`;
+      }
+
+      function personaCard(p) {
+        return `<article class="persona-card" data-audiences="${p.audiences.join(",")}" aria-label="${p.name}">
+          <div class="persona-card__header">
+            <div style="flex:1">
+              <div class="persona-card__name">${p.name}</div>
+              <div class="persona-card__ref">${p.standard_ref}</div>
+            </div>
+            <div class="persona-card__layers">${p.srf_layers.map(layerPill).join("")}</div>
+          </div>
+          <div class="persona-card__body">
+            <p class="persona-card__desc">${p.description}</p>
+            <div class="persona-card__responsibilities">
+              <h3>Key responsibilities</h3>
+              <ul class="resp-list">${p.responsibilities.map(r => `<li>${r}</li>`).join("")}</ul>
+            </div>
+          </div>
+          <div class="persona-card__foot">${p.audiences.map(a => `<span class="audience-tag">${AUDIENCE_LABELS[a]||a}</span>`).join("")}</div>
+        </article>`;
+      }
+
+      async function loadPersonas() {
+        const grid = document.getElementById("persona-grid");
+        let personas;
+        try {
+          personas = (await (await fetch("/data/personas.json")).json()).personas;
+        } catch {
+          grid.innerHTML = `<p style="color:var(--status-bad)">Could not load persona data.</p>`;
+          return;
+        }
+
+        let activeFilter = "all";
+
+        function render(filter) {
+          grid.innerHTML = personas.map(personaCard).join("");
+          if (filter !== "all") {
+            grid.querySelectorAll(".persona-card").forEach(card => {
+              card.classList.toggle("persona-card--dimmed", !card.dataset.audiences.split(",").includes(filter));
+            });
+          }
+        }
+
+        function setFilter(filter) {
+          activeFilter = filter;
+          document.querySelectorAll(".filter-btn").forEach(btn => {
+            btn.classList.toggle("filter-btn--active", btn.dataset.filter === filter);
+            btn.setAttribute("aria-pressed", btn.dataset.filter === filter);
+          });
+          render(filter);
+        }
+
+        document.querySelectorAll(".filter-btn").forEach(btn => {
+          btn.addEventListener("click", () => setFilter(btn.dataset.filter));
+        });
+
+        setFilter(activeFilter);
+      }
+
+      /* ── Operating models ────────────────────────────────────────── */
+      const LAYER_NAMES = {
+        L1:"AI Business & Usage", L2:"AI Information",
+        L3:"AI Application",      L4:"AI Platform", L5:"AI Model Provider",
+      };
+      const CHIP_MAP = {
+        "customer-owned":   ["customer",   "Customer"],
+        "shared":           ["shared",     "Shared"],
+        "provider-managed": ["provider",   "Provider"],
+        "model-evaluation": ["model-eval", "Model evaluation"],
+        "N/A":              ["na",         "N/A"],
+      };
+
+      function chip(value) {
+        const [cls, label] = CHIP_MAP[value] || ["na", value];
+        return `<span class="resp-chip resp-chip--${cls}">${label}</span>`;
+      }
+
+      async function loadOpModels() {
+        const root = document.getElementById("op-root");
+        let data;
+        try {
+          data = await (await fetch("/data/matrix.json")).json();
+        } catch {
+          root.innerHTML = `<p style="color:var(--status-bad)">Could not load matrix data.</p>`;
+          return;
+        }
+
+        const params = new URLSearchParams(location.search);
+        let active = params.get("model") || data.models[0].id;
+        if (!data.models.find(m => m.id === active)) active = data.models[0].id;
+
+        function render() {
+          const model = data.models.find(m => m.id === active);
+          const rows = ["L1","L2","L3","L4","L5"].map(id => {
+            const cell = data.cells[id][active];
+            return `<tr>
+              <td><div class="col-layer">
+                <div class="layer-accent accent--${id.toLowerCase()}" aria-hidden="true"></div>
+                <div class="layer-info">
+                  <div class="layer-id">${id}</div>
+                  <div class="layer-name">${LAYER_NAMES[id]}</div>
+                </div>
+              </div></td>
+              <td class="col-cell">${chip(cell.customer)}</td>
+              <td class="col-cell">${chip(cell.provider)}</td>
+            </tr>`;
+          }).join("");
+
+          root.innerHTML = `
+            <div class="model-tabs" role="tablist" aria-label="Select operating model">
+              ${data.models.map(m => `<button class="model-tab${m.id===active?" model-tab--active":""}" role="tab" aria-selected="${m.id===active}" data-model="${m.id}">${m.short}</button>`).join("")}
+            </div>
+            <div class="model-desc"><strong>${model.name}:</strong> ${model.description}</div>
+            <div class="matrix-wrap">
+              <table class="matrix" aria-label="Responsibility matrix for ${model.name}">
+                <thead><tr><th>Layer</th><th>Customer responsibility</th><th>Provider responsibility</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+            </div>
+            <div class="legend" aria-label="Legend">
+              <div class="legend__item"><span class="resp-chip resp-chip--customer">Customer</span> Full accountability; provider offers no default controls</div>
+              <div class="legend__item"><span class="resp-chip resp-chip--shared">Shared</span> Both parties have defined, complementary obligations</div>
+              <div class="legend__item"><span class="resp-chip resp-chip--provider">Provider</span> Provider owns and operates; customer inherits controls</div>
+              <div class="legend__item"><span class="resp-chip resp-chip--model-eval">Model evaluation</span> Customer evaluates suitability; provider manages the model</div>
+              <div class="legend__item"><span class="resp-chip resp-chip--na">N/A</span> Layer does not apply in this operating model</div>
+            </div>
+            <div class="callout"><strong>Direction:</strong> Columns read left to right from most provider-managed (AI-SaaS) to most customer-managed (IaaS). Customer responsibility increases as organizations move toward infrastructure-layer deployments.</div>
+          `;
+
+          root.querySelectorAll(".model-tab").forEach(btn => {
+            btn.addEventListener("click", () => { active = btn.dataset.model; render(); });
+          });
+        }
+
+        render();
+      }
+    </script>
   </body>
 </html>

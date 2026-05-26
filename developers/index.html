@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Developers — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Machine-readable CoSAI SRF resources for developers and AI systems — canonical system prompts, structured schema, and JSON artifacts for integrating the framework into your tooling."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .dev-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-10);
+      }
+      @media (max-width: 640px) { .dev-grid { grid-template-columns: 1fr; } }
+
+      .dev-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      }
+      .dev-card:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--cosai-blue-soft);
+        transform: translateY(-2px);
+        text-decoration: none;
+        color: inherit;
+      }
+      .dev-card__head {
+        background: var(--slate-900);
+        padding: var(--sp-5) var(--sp-6);
+        font-family: var(--font-mono);
+        font-size: var(--text-sm);
+        color: #94a3b8;
+        line-height: 1.7;
+        min-height: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .dev-card__head-keyword { color: #93c5fd; }
+      .dev-card__head-string  { color: #86efac; }
+      .dev-card__head-key     { color: #f0abfc; }
+      .dev-card__body { padding: var(--sp-5) var(--sp-6); flex: 1; display: flex; flex-direction: column; gap: var(--sp-3); }
+      .dev-card__name { font-size: var(--text-base); font-weight: 700; color: var(--slate-900); }
+      .dev-card__desc { font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); flex: 1; }
+      .dev-card__footer {
+        padding: var(--sp-3) var(--sp-6);
+        border-top: 1px solid var(--slate-100);
+        background: var(--slate-50);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .dev-card__tag {
+        font-size: 0.65rem; font-weight: 700; letter-spacing: .07em;
+        text-transform: uppercase; color: var(--slate-400);
+      }
+      .dev-card__arrow { font-size: var(--text-sm); color: var(--cosai-blue); font-weight: 700; }
+
+      .coming-soon {
+        background: var(--slate-50);
+        border: 1px dashed var(--slate-300);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-8);
+        text-align: center;
+      }
+      .coming-soon__label {
+        font-size: var(--text-xs); font-weight: 700; letter-spacing: .1em;
+        text-transform: uppercase; color: var(--slate-400); margin-bottom: var(--sp-3);
+      }
+      .coming-soon__title {
+        font-size: var(--text-lg); font-weight: 700;
+        color: var(--slate-700); margin-bottom: var(--sp-3);
+      }
+      .coming-soon__desc {
+        font-size: var(--text-sm); color: var(--slate-500);
+        max-width: 480px; margin: 0 auto; line-height: var(--leading-normal);
+      }
+      .coming-soon__items {
+        display: flex; gap: var(--sp-3); flex-wrap: wrap;
+        justify-content: center; margin-top: var(--sp-5);
+      }
+      .coming-item {
+        font-size: var(--text-xs); font-weight: 600;
+        color: var(--slate-600); background: #fff;
+        border: 1px solid var(--slate-200); border-radius: var(--radius);
+        padding: var(--sp-2) var(--sp-3);
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="developers"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Developers</span>
+        <h1 class="page-hero__title">Machine-readable SRF resources</h1>
+        <p class="page-hero__lede">
+          Canonical system prompts, structured schemas, and JSON artifacts
+          for integrating the CoSAI SRF into your tooling, AI assistants,
+          and governance pipelines. Open source, Apache 2.0.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div class="dev-grid">
+
+        <a class="dev-card" href="/developers/prompts/">
+          <div class="dev-card__head" aria-hidden="true">
+            <div><span class="dev-card__head-keyword">SYSTEM</span></div>
+            <div><span class="dev-card__head-string">"You are an AI governance assistant"</span></div>
+            <div><span class="dev-card__head-key">accountability_rule:</span> one party per layer</div>
+            <div><span class="dev-card__head-key">cascade:</span> L1 → L5</div>
+            <div><span class="dev-card__head-key">operating_model:</span> required</div>
+          </div>
+          <div class="dev-card__body">
+            <div class="dev-card__name">SRF System Prompts <span style="font-size:0.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#92400e;background:#fde68a;border:1px solid #fcd34d;border-radius:3px;padding:2px 6px;vertical-align:middle;margin-left:6px;">Coming in v2.0</span></div>
+            <p class="dev-card__desc">
+              Canonical system instructions for LLMs and AI assistants that enforce
+              the SRF accountability rules — one accountable party per layer,
+              responsibility cascades from L1 to L5, operating model required for
+              all assignments.
+            </p>
+          </div>
+          <div class="dev-card__footer">
+            <span class="dev-card__tag">Plain text · JSON</span>
+            <span class="dev-card__arrow">→</span>
+          </div>
+        </a>
+
+        <a class="dev-card" href="/developers/schema/">
+          <div class="dev-card__head" aria-hidden="true">
+            <div><span class="dev-card__head-key">"layers"</span>: [</div>
+            <div>&nbsp;&nbsp;{ <span class="dev-card__head-key">"id"</span>: <span class="dev-card__head-string">"L3"</span>,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dev-card__head-key">"name"</span>: <span class="dev-card__head-string">"AI Application"</span>,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dev-card__head-key">"accountable"</span>: {</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dev-card__head-string">"ai_paas"</span>: <span class="dev-card__head-string">"customer"</span> } }</div>
+          </div>
+          <div class="dev-card__body">
+            <div class="dev-card__name">SRF Schema Viewer <span style="font-size:0.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#92400e;background:#fde68a;border:1px solid #fcd34d;border-radius:3px;padding:2px 6px;vertical-align:middle;margin-left:6px;">Coming in v2.0</span></div>
+            <p class="dev-card__desc">
+              Machine-readable SRF schema — layers, operating models,
+              accountability assignments, and persona definitions as structured
+              JSON. A foundation for governance tooling, GRC integrations, and
+              automated accountability checks.
+            </p>
+          </div>
+          <div class="dev-card__footer">
+            <span class="dev-card__tag">JSON · Structured data</span>
+            <span class="dev-card__arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+
+      <!-- Coming soon -->
+      <div class="coming-soon">
+        <p class="coming-soon__label">Coming in v2.0</p>
+        <h2 class="coming-soon__title">OTel-inspired governance schema</h2>
+        <p class="coming-soon__desc">
+          A machine-readable policy-as-code format modeled on OpenTelemetry semantic
+          conventions — define accountability thresholds, evidence requirements,
+          and autonomy ceilings per layer and business vertical. Consumable by
+          AI gateways, GRC tools, and runtime observability platforms.
+        </p>
+        <div class="coming-soon__items">
+          <span class="coming-item">YAML / JSON-LD schema</span>
+          <span class="coming-item">Business vertical profiles</span>
+          <span class="coming-item">Evidence artifact registry</span>
+          <span class="coming-item">Provider conformance attestation</span>
+          <span class="coming-item">Runtime integration hooks</span>
+        </div>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

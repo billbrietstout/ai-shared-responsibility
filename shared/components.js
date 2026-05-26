@@ -8,24 +8,25 @@
  */
 
 const NAV_LINKS = [
-  { id: "framework",        label: "Framework",       href: "/framework/" },
-  { id: "personas",         label: "Personas",        href: "/personas/" },
-  { id: "operating-models", label: "Operating models",href: "/operating-models/" },
-  { id: "tools",            label: "Tools",           href: "/tools/" },
-  { id: "regulations",      label: "Regulations",     href: "/regulations/" },
-  { id: "presentation",    label: "Presentation",    href: "/presentation/" },
-  { id: "about",           label: "About",           href: "/about/" },
+  { id: "framework",   label: "Framework",   href: "/framework/" },
+  { id: "assess",      label: "Assess",      href: "/assess/" },
+  { id: "controls",    label: "Controls",    href: "/controls/" },
+  { id: "regulations", label: "Regulations", href: "/regulations/" },
+  { id: "compare",     label: "Compare",     href: "/compare/" },
+  { id: "developers",  label: "Developers",  href: "/developers/" },
+  { id: "about",       label: "About",       href: "/about/" },
 ];
 
 const FOOTER_LINKS = [
-  { label: "Framework",        href: "/framework/" },
-  { label: "Personas",         href: "/personas/" },
-  { label: "Operating models", href: "/operating-models/" },
-  { label: "Tools",            href: "/tools/" },
-  { label: "Regulations",      href: "/regulations/" },
-  { label: "Presentation",    href: "/presentation/" },
-  { label: "About",           href: "/about/" },
-  { label: "Source",           href: "https://github.com/billbrietstout/ai-shared-responsibility", external: true },
+  { label: "Framework",   href: "/framework/" },
+  { label: "Assess",      href: "/assess/" },
+  { label: "Controls",    href: "/controls/" },
+  { label: "Regulations", href: "/regulations/" },
+  { label: "Compare",     href: "/compare/" },
+  { label: "Developers",  href: "/developers/" },
+  { label: "Presentation",href: "/presentation/" },
+  { label: "About",       href: "/about/" },
+  { label: "Source",      href: "https://github.com/billbrietstout/ai-shared-responsibility", external: true },
 ];
 
 /* --------------------------------------------------------------------------

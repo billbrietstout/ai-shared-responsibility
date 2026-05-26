@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Assess — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Interactive accountability assessment tools for the CoSAI AI Shared Responsibility Framework. AI-powered scenario analysis, responsibility mapping, and policy building."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .featured-card {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        gap: var(--sp-10);
+        align-items: center;
+        background: var(--cosai-navy);
+        border-radius: var(--radius-xl);
+        padding: var(--sp-8) var(--sp-10);
+        margin-bottom: var(--sp-10);
+        position: relative;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.14s;
+      }
+      .featured-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 80% 50%, rgba(45,91,227,0.3) 0%, transparent 60%);
+        pointer-events: none;
+      }
+      .featured-card:hover { transform: translateY(-2px); text-decoration: none; color: inherit; }
+      .featured-card__badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #4ade80;
+        padding: 3px 10px;
+        border: 1px solid rgba(74,222,128,0.3);
+        border-radius: 999px;
+        margin-bottom: var(--sp-4);
+        width: fit-content;
+      }
+      .featured-card__badge-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: #4ade80;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+      .featured-card__title {
+        font-size: var(--text-2xl);
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.02em;
+        line-height: var(--leading-tight);
+        margin-bottom: var(--sp-3);
+      }
+      .featured-card__desc {
+        font-size: var(--text-base);
+        color: #94a3b8;
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-5);
+      }
+      .featured-card__cta {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-3) var(--sp-5);
+        background: var(--cosai-blue);
+        color: #fff;
+        border-radius: var(--radius);
+        font-size: var(--text-sm);
+        font-weight: 700;
+      }
+      .featured-demo {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+      }
+      .featured-demo__bar {
+        background: rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding: var(--sp-2) var(--sp-3);
+        display: flex;
+        gap: 5px;
+        align-items: center;
+      }
+      .featured-demo__dot { width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.15); }
+      .featured-demo__body { padding: var(--sp-3) var(--sp-4); color: #94a3b8; line-height: 1.7; }
+      .featured-demo__q { color: #e2e8f0; margin-bottom: var(--sp-2); padding-bottom: var(--sp-2); border-bottom: 1px solid rgba(255,255,255,0.07); }
+      .featured-demo__label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: .1em; color: #4ade80; margin-bottom: 3px; }
+      .featured-demo__row { display:flex; justify-content:space-between; margin-bottom:3px; }
+      .featured-demo__key { color: #7dd3fc; }
+      .featured-demo__val { color: #f0abfc; }
+      .featured-demo__warn { margin-top: var(--sp-2); color: #fbbf24; font-size: 0.68rem; }
+
+      .tool-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-4);
+      }
+      .tool-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      }
+      .tool-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--cosai-blue-soft);
+        transform: translateY(-2px);
+        text-decoration: none;
+        color: inherit;
+      }
+      .tool-card__body { padding: var(--sp-5); flex: 1; display: flex; flex-direction: column; gap: var(--sp-3); }
+      .tool-card__name { font-size: var(--text-base); font-weight: 700; color: var(--slate-900); }
+      .tool-card__desc { font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); flex: 1; }
+      .tool-card__footer {
+        padding: var(--sp-3) var(--sp-5);
+        border-top: 1px solid var(--slate-100);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .tool-card__tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+      .tool-card__arrow { font-size: var(--text-sm); color: var(--cosai-blue); }
+
+      @media (max-width: 680px) {
+        .featured-card { grid-template-columns: 1fr; }
+        .featured-demo { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="assess"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Assess</span>
+        <h1 class="page-hero__title">Map and analyze accountability</h1>
+        <p class="page-hero__lede">
+          Interactive tools for assigning accountability across your AI stack —
+          from AI-powered scenario analysis to visual responsibility matrices.
+          Nothing leaves your browser.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <!-- Featured: SRF Stress Test -->
+      <a class="featured-card" href="/assess/srf-stress/">
+        <div style="position:relative;z-index:1;">
+          <span class="featured-card__badge">
+            <span class="featured-card__badge-dot" aria-hidden="true"></span>
+            AI-powered
+          </span>
+          <h2 class="featured-card__title">SRF Stress Test</h2>
+          <p class="featured-card__desc">
+            Describe any AI deployment in plain language — operating model,
+            vendors, use case — and get a layered accountability breakdown,
+            gap analysis, and risk flags from GPT-4o in seconds.
+          </p>
+          <span class="featured-card__cta">Open Stress Test →</span>
+        </div>
+        <div class="featured-demo" aria-hidden="true">
+          <div class="featured-demo__bar">
+            <div class="featured-demo__dot"></div>
+            <div class="featured-demo__dot"></div>
+            <div class="featured-demo__dot"></div>
+          </div>
+          <div class="featured-demo__body">
+            <div class="featured-demo__q">
+              <div class="featured-demo__label">Scenario</div>
+              OpenAI API · patient triage · nurses<br>
+              interact directly · we own the RAG
+            </div>
+            <div class="featured-demo__label">Accountability</div>
+            <div class="featured-demo__row"><span class="featured-demo__key">L1 governance</span><span class="featured-demo__val">Customer</span></div>
+            <div class="featured-demo__row"><span class="featured-demo__key">L3 RAG / prompts</span><span class="featured-demo__val">Customer</span></div>
+            <div class="featured-demo__row"><span class="featured-demo__key">L4 API runtime</span><span class="featured-demo__val">OpenAI</span></div>
+            <div class="featured-demo__row"><span class="featured-demo__key">L5 model</span><span class="featured-demo__val">OpenAI</span></div>
+            <div class="featured-demo__warn">⚠ HIPAA BAA required · human oversight at L3</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- Other assess tools -->
+      <p class="section__label">More tools</p>
+      <div class="tool-grid">
+
+        <a class="tool-card" href="/assess/layer-matrix/">
+          <div class="tool-card__body">
+            <div class="tool-card__name">Layer Integration Matrix</div>
+            <p class="tool-card__desc">
+              Interactive responsibility matrix showing who owns what across
+              all four operating models (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
+              and all five SRF layers. Filter by layer or operating model.
+            </p>
+          </div>
+          <div class="tool-card__footer">
+            <span class="tool-card__tag">Reference · Interactive</span>
+            <span class="tool-card__arrow">→</span>
+          </div>
+        </a>
+
+        <a class="tool-card" href="/assess/policy-pyramid/">
+          <div class="tool-card__body">
+            <div class="tool-card__name">AI Policy Pyramid</div>
+            <p class="tool-card__desc">
+              Map your existing governance documents to the SRF layer
+              hierarchy. Surface gaps in policy coverage across all five
+              layers and export a structured summary.
+            </p>
+          </div>
+          <div class="tool-card__footer">
+            <span class="tool-card__tag">JSON · PDF export</span>
+            <span class="tool-card__arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>
