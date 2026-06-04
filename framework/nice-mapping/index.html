@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SRF → NICE Framework Mapping — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="How the CoSAI AI Shared Responsibility Framework informs NICE AI work roles — crosswalk of SRF responsibilities to candidate NICE Tasks, and a strawman AI Security Work Role Category."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Hero insert ─────────────────────────────────────────────── */
+      .insight {
+        background: var(--cosai-navy);
+        color: #fff;
+        border-radius: var(--radius-xl);
+        padding: var(--sp-8) var(--sp-10);
+        margin-bottom: var(--sp-10);
+        position: relative;
+        overflow: hidden;
+      }
+      .insight::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 80% 50%, rgba(45,91,227,0.25) 0%, transparent 65%);
+        pointer-events: none;
+      }
+      .insight__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.5);
+        margin-bottom: var(--sp-3);
+      }
+      .insight__heading {
+        font-size: var(--text-2xl);
+        font-weight: 800;
+        line-height: 1.2;
+        margin-bottom: var(--sp-4);
+        color: #fff;
+      }
+      .insight__heading em {
+        font-style: normal;
+        color: #93b4f7;
+      }
+      .insight__body {
+        font-size: var(--text-base);
+        line-height: 1.7;
+        color: rgba(255,255,255,0.82);
+        max-width: 680px;
+        margin: 0;
+      }
+
+      /* ── Section prose ───────────────────────────────────────────── */
+      .prose {
+        max-width: 760px;
+        font-size: var(--text-base);
+        line-height: 1.75;
+        color: var(--slate-700);
+        margin-bottom: var(--sp-8);
+      }
+      .prose p { margin: 0 0 var(--sp-4); }
+      .prose ul { margin: 0 0 var(--sp-4); padding-left: var(--sp-6); }
+      .prose li { margin-bottom: var(--sp-2); }
+      .prose strong { color: var(--slate-800); }
+
+      /* ── Callout box ─────────────────────────────────────────────── */
+      .callout {
+        border-left: 4px solid var(--cosai-blue);
+        background: var(--cosai-blue-light);
+        border-radius: 0 var(--radius) var(--radius) 0;
+        padding: var(--sp-4) var(--sp-6);
+        margin-bottom: var(--sp-8);
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: 1.65;
+        max-width: 760px;
+      }
+      .callout strong { color: var(--cosai-blue); }
+
+      /* ── Layer section headings ──────────────────────────────────── */
+      .layer-heading {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-3);
+        margin: var(--sp-10) 0 var(--sp-4);
+      }
+      .layer-badge {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 3px var(--sp-3);
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .layer-badge--l1 { background: #dbeafe; color: #1d4ed8; }
+      .layer-badge--l2 { background: #d1fae5; color: #065f46; }
+      .layer-badge--l3 { background: #fef3c7; color: #92400e; }
+      .layer-badge--l4 { background: #ede9fe; color: #5b21b6; }
+      .layer-badge--l5 { background: #fce7f3; color: #9d174d; }
+      .layer-heading h3 {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin: 0;
+      }
+
+      /* ── Crosswalk table ─────────────────────────────────────────── */
+      .table-wrap {
+        overflow-x: auto;
+        margin-bottom: var(--sp-8);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--slate-200);
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+      }
+      .xwalk-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        background: #fff;
+      }
+      .xwalk-table th {
+        background: var(--slate-50);
+        padding: var(--sp-3) var(--sp-4);
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .xwalk-table td {
+        padding: var(--sp-3) var(--sp-4);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: top;
+        color: var(--slate-700);
+        line-height: 1.55;
+      }
+      .xwalk-table tr:last-child td { border-bottom: none; }
+      .xwalk-table td.persona {
+        font-weight: 600;
+        color: var(--slate-800);
+        white-space: nowrap;
+      }
+      .xwalk-table td.task {
+        color: var(--slate-600);
+      }
+      .xwalk-table td.task em {
+        font-style: normal;
+        font-weight: 600;
+        color: var(--cosai-blue);
+      }
+
+      /* ── Work role cards ─────────────────────────────────────────── */
+      .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-10);
+      }
+      .role-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        padding: var(--sp-5) var(--sp-6);
+        position: relative;
+        overflow: hidden;
+      }
+      .role-card::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+      }
+      .role-card--1::before { background: #2d5be3; }
+      .role-card--2::before { background: #059669; }
+      .role-card--3::before { background: #d97706; }
+      .role-card--4::before { background: #7c3aed; }
+      .role-card--5::before { background: #db2777; }
+      .role-card__num {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .role-card__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: var(--sp-3);
+        line-height: 1.35;
+      }
+      .role-card__aor {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        margin-bottom: var(--sp-4);
+        line-height: 1.55;
+      }
+      .role-card__section {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+        margin-top: var(--sp-4);
+      }
+      .role-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .role-tag {
+        font-size: 0.7rem;
+        padding: 2px var(--sp-2);
+        border-radius: 999px;
+        background: var(--slate-100);
+        color: var(--slate-600);
+        font-weight: 500;
+      }
+
+      /* ── Existing roles update list ──────────────────────────────── */
+      .update-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 var(--sp-10);
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--sp-4);
+      }
+      .update-list li {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: var(--sp-4) var(--sp-5);
+      }
+      .update-list__role {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: var(--sp-2);
+      }
+      .update-list__add {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: 1.55;
+      }
+
+      /* ── Scope note ──────────────────────────────────────────────── */
+      .scope-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-10);
+      }
+      @media (max-width: 640px) { .scope-grid { grid-template-columns: 1fr; } }
+      .scope-card {
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+        font-size: var(--text-sm);
+        line-height: 1.65;
+      }
+      .scope-card--yes {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        color: #14532d;
+      }
+      .scope-card--no {
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        color: #7c2d12;
+      }
+      .scope-card__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: var(--sp-3);
+        opacity: 0.7;
+      }
+      .scope-card__heading {
+        font-size: var(--text-base);
+        font-weight: 700;
+        margin-bottom: var(--sp-2);
+      }
+
+    </style>
+  </head>
+  <body>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="framework"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Workforce Alignment</span>
+        <h1 class="page-hero__title">SRF → NIST NICE Framework</h1>
+        <p class="page-hero__lede">
+          The NICE Workforce Framework for Cybersecurity is updating existing work roles and
+          creating new AI-specific ones. The CoSAI AI SRF is structured to inform that effort
+          directly — its accountability responsibilities translate naturally into NICE Task
+          statements.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div class="insight">
+        <p class="insight__label">Why this alignment works</p>
+        <h2 class="insight__heading">
+          The SRF is a security accountability substrate —
+          <em>useful input to frameworks that share its structure.</em>
+        </h2>
+        <p class="insight__body">
+          The SRF's core claim is precise: one accountable party per component, across five
+          layers of the AI stack. That precision is what makes it a reliable source for other
+          frameworks to draw from. NICE defines a Work Role as an "area of responsibility"
+          composed of Tasks, Knowledge, and Skills — a structure that happens to align well
+          with how the SRF decomposes
+          <strong style="color:#93b4f7">accountability across the AI stack</strong>.
+          The SRF therefore provides useful raw material for NICE's AI work-role effort,
+          without extending into workforce territory itself.
+        </p>
+      </div>
+
+      <!-- Methodology callout -->
+      <div class="callout">
+        <strong>How to read this mapping.</strong>
+        This is an <em>informing</em> relationship, not an extension. The SRF stays in its lane —
+        security accountability across the AI stack — and that focus is precisely what makes it
+        a credible input to other frameworks. The material below is a contribution input, a
+        strawman to give NICE's community-review process a running start. NICE owns and drives
+        authoritative Task, Knowledge, and Skill (TKS) statements through its established
+        process. Four points govern interpretation:
+        (1) SRF responsibilities map most cleanly to <em>candidate Tasks</em>, not whole Work
+        Roles; (2) SRF personas are organizational/contractual parties, not human job roles —
+        they scope and cluster candidate roles but are never transcribed one-to-one; (3)
+        specific responsibilities below are illustrative and should be reconciled against the
+        SRF v1.0 text; (4) scope is <em>Security of AI</em> — the SRF does not materially
+        cover <em>Security through AI</em>, which needs separate inputs.
+      </div>
+
+      <!-- ── PART A: Crosswalk ── -->
+      <p class="section-label">Part A — Crosswalk</p>
+      <h2 class="content-heading">SRF responsibilities → candidate NICE Tasks</h2>
+      <p class="prose" style="margin-bottom:var(--sp-6)">
+        Grouped by SRF layer and persona. Task statements are phrased in NICE style —
+        action verb + object + context — for direct reuse by NICE authors.
+      </p>
+
+      <!-- L1 -->
+      <div class="layer-heading">
+        <span class="layer-badge layer-badge--l1">L1</span>
+        <h3>AI Business &amp; Usage layer</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="xwalk-table" aria-label="AI Business & Usage layer crosswalk">
+          <thead>
+            <tr>
+              <th>SRF Persona</th>
+              <th>SRF Responsibility</th>
+              <th>Candidate NICE Task</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="persona">AI System Governance</td>
+              <td>Map accountability and maintain a risk register</td>
+              <td class="task">Maintain an accountability mapping and risk register for AI systems, with assigned owners and timelines</td>
+            </tr>
+            <tr>
+              <td class="persona">AI System Governance</td>
+              <td>Set acceptable risk and authorize autonomy</td>
+              <td class="task">Define acceptable-risk thresholds and authorize AI system autonomy levels based on system importance</td>
+            </tr>
+            <tr>
+              <td class="persona">AI System Governance</td>
+              <td>Coordinate AI incident response</td>
+              <td class="task">Coordinate cross-layer AI security incident response and post-incident review</td>
+            </tr>
+            <tr>
+              <td class="persona">AI System Governance</td>
+              <td>Define and collect assurance evidence</td>
+              <td class="task">Define and collect evidence demonstrating AI security control effectiveness across the lifecycle</td>
+            </tr>
+            <tr>
+              <td class="persona">AI System Governance</td>
+              <td>Assure vendors and contracts</td>
+              <td class="task">Evaluate AI vendor security posture and establish contractual security, evidence, and accountability requirements</td>
+            </tr>
+            <tr>
+              <td class="persona">AI System Users</td>
+              <td>Use AI appropriately and report issues</td>
+              <td class="task">Recognize AI system limitations and report anomalous or unsafe AI behavior through established channels</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- L2 -->
+      <div class="layer-heading">
+        <span class="layer-badge layer-badge--l2">L2</span>
+        <h3>AI Information layer</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="xwalk-table" aria-label="AI Information layer crosswalk">
+          <thead>
+            <tr>
+              <th>SRF Persona</th>
+              <th>SRF Responsibility</th>
+              <th>Candidate NICE Task</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="persona">Data Provider</td>
+              <td>Track data provenance and lineage</td>
+              <td class="task">Establish and maintain provenance and lineage tracking for training, fine-tuning, and retrieval data</td>
+            </tr>
+            <tr>
+              <td class="persona">Data Provider</td>
+              <td>Defend against data poisoning</td>
+              <td class="task">Assess and mitigate data poisoning and integrity risks across AI data pipelines</td>
+            </tr>
+            <tr>
+              <td class="persona">Data Provider</td>
+              <td>Classify and control data access</td>
+              <td class="task">Classify and apply access controls to data used by AI systems, including retrieval (RAG) sources</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- L3 -->
+      <div class="layer-heading">
+        <span class="layer-badge layer-badge--l3">L3</span>
+        <h3>AI Application layer</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="xwalk-table" aria-label="AI Application layer crosswalk">
+          <thead>
+            <tr>
+              <th>SRF Persona</th>
+              <th>SRF Responsibility</th>
+              <th>Candidate NICE Task</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="persona">Application Developer</td>
+              <td>Defend against prompt injection</td>
+              <td class="task">Implement and test input validation and prompt-injection defenses for AI application interfaces</td>
+            </tr>
+            <tr>
+              <td class="persona">Application Developer</td>
+              <td>Control output and data leakage</td>
+              <td class="task">Implement output filtering and data-loss-prevention controls for AI application responses</td>
+            </tr>
+            <tr>
+              <td class="persona">Application Developer</td>
+              <td>Configure and maintain guardrails</td>
+              <td class="task">Configure, test, and maintain application-layer guardrails and content controls</td>
+            </tr>
+            <tr>
+              <td class="persona">Application Developer</td>
+              <td>Securely integrate models and platform services</td>
+              <td class="task">Securely integrate AI models and platform services, including credential and data-access management</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- L4 -->
+      <div class="layer-heading">
+        <span class="layer-badge layer-badge--l4">L4</span>
+        <h3>AI Platform layer</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="xwalk-table" aria-label="AI Platform layer crosswalk">
+          <thead>
+            <tr>
+              <th>SRF Persona</th>
+              <th>SRF Responsibility</th>
+              <th>Candidate NICE Task</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="persona">AI Platform Provider</td>
+              <td>Enforce tenant isolation</td>
+              <td class="task">Design and verify tenant isolation controls for multi-tenant AI platforms</td>
+            </tr>
+            <tr>
+              <td class="persona">AI Platform Provider</td>
+              <td>Provide platform security telemetry</td>
+              <td class="task">Implement platform-level security telemetry and logging for AI workloads</td>
+            </tr>
+            <tr>
+              <td class="persona">AI Platform Provider</td>
+              <td>Define platform incident-response boundaries</td>
+              <td class="task">Define and document platform security responsibilities and incident-response SLAs</td>
+            </tr>
+            <tr>
+              <td class="persona">Agentic Platform / Framework Provider</td>
+              <td>Mediate agent tool invocation</td>
+              <td class="task">Implement controls that mediate agent tool invocation and authorize external actions</td>
+            </tr>
+            <tr>
+              <td class="persona">Agentic Platform / Framework Provider</td>
+              <td>Establish agent identity and secure inter-agent comms</td>
+              <td class="task">Establish agent identity, authentication, and secure inter-agent communication mechanisms</td>
+            </tr>
+            <tr>
+              <td class="persona">Agentic Platform / Framework Provider</td>
+              <td>Provide human override/escalation</td>
+              <td class="task">Design human-in-the-loop override and escalation controls appropriate to the agent's autonomy level</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- L5 -->
+      <div class="layer-heading">
+        <span class="layer-badge layer-badge--l5">L5</span>
+        <h3>AI Model Provider layer</h3>
+      </div>
+      <div class="table-wrap">
+        <table class="xwalk-table" aria-label="AI Model Provider layer crosswalk">
+          <thead>
+            <tr>
+              <th>SRF Persona</th>
+              <th>SRF Responsibility</th>
+              <th>Candidate NICE Task</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="persona">Model Provider</td>
+              <td>Document provenance, training-data lineage, evaluations, intended use</td>
+              <td class="task">Produce and maintain model documentation (model cards) capturing provenance, training-data lineage, evaluation results, and intended-use constraints</td>
+            </tr>
+            <tr>
+              <td class="persona">Model Provider</td>
+              <td>Harden base models against adversarial manipulation and theft</td>
+              <td class="task">Assess and harden foundation models against adversarial evasion, model extraction, and inversion attacks</td>
+            </tr>
+            <tr>
+              <td class="persona">Model Provider</td>
+              <td>Disclose model versions and known vulnerabilities</td>
+              <td class="task">Publish and maintain model version and vulnerability disclosures for downstream consumers</td>
+            </tr>
+            <tr>
+              <td class="persona">Model Provider</td>
+              <td>Protect model weights and artifacts</td>
+              <td class="task">Implement integrity, signing, and access controls protecting model weights and artifacts across the supply chain</td>
+            </tr>
+            <tr>
+              <td class="persona">AI Model Serving</td>
+              <td>Secure inference endpoints</td>
+              <td class="task">Secure model-serving and inference endpoints, including authentication, rate limiting, and abuse detection</td>
+            </tr>
+            <tr>
+              <td class="persona">AI Model Serving</td>
+              <td>Enforce served-artifact integrity</td>
+              <td class="task">Validate the integrity and provenance of served model artifacts at deployment</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ── PART B: New Work Role Category ── -->
+      <p class="section-label" style="margin-top:var(--sp-12)">Part B — Strawman</p>
+      <h2 class="content-heading">Proposed Work Role Category: Artificial Intelligence Security</h2>
+      <p class="prose">
+        A category grouping the Work Roles that secure AI systems across the stack. The five
+        candidate roles below cluster the Part A Tasks by the human capability needed to
+        perform them — deliberately collapsing the SRF's organizational personas into roles
+        a single person could plausibly hold. Knowledge and Skill statements are first-pass
+        seeds for NICE to refine through its community and public-comment process.
+      </p>
+
+      <div class="role-grid">
+
+        <div class="role-card role-card--1">
+          <p class="role-card__num">Work Role 1</p>
+          <p class="role-card__title">AI Security Governance &amp; Assurance Lead</p>
+          <p class="role-card__aor"><strong>Area of responsibility:</strong> Accountability, risk acceptance, assurance, and incident coordination for AI systems.</p>
+          <p class="role-card__section">Illustrative Tasks</p>
+          <p style="font-size:var(--text-sm);color:var(--slate-600);line-height:1.55;margin:0 0 var(--sp-4)">
+            Accountability mapping and risk register · acceptable-risk and autonomy authorization · AI incident-response coordination · evidence and audit definition · vendor and contract assurance
+          </p>
+          <p class="role-card__section">Knowledge (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">NIST AI RMF</span>
+            <span class="role-tag">ISO/IEC 42001</span>
+            <span class="role-tag">Shared-responsibility models</span>
+            <span class="role-tag">AI assurance &amp; audit</span>
+            <span class="role-tag">EU AI Act</span>
+            <span class="role-tag">Sector regulation</span>
+          </div>
+          <p class="role-card__section">Skills (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">AI accountability / RACI mapping</span>
+            <span class="role-tag">Evidence requirements</span>
+            <span class="role-tag">AI vendor security assessment</span>
+          </div>
+        </div>
+
+        <div class="role-card role-card--2">
+          <p class="role-card__num">Work Role 2</p>
+          <p class="role-card__title">AI Data Security Steward</p>
+          <p class="role-card__aor"><strong>Area of responsibility:</strong> Security and integrity of data used by AI systems. <em style="font-style:italic;font-size:var(--text-xs);color:var(--slate-500)">Candidate to extend existing data-security roles rather than stand fully alone.</em></p>
+          <p class="role-card__section">Illustrative Tasks</p>
+          <p style="font-size:var(--text-sm);color:var(--slate-600);line-height:1.55;margin:0 0 var(--sp-4)">
+            Data provenance and lineage · data-poisoning defense · classification and access control for AI and RAG data
+          </p>
+          <p class="role-card__section">Knowledge (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">Data poisoning attack vectors</span>
+            <span class="role-tag">Provenance &amp; lineage tooling</span>
+            <span class="role-tag">Data governance</span>
+            <span class="role-tag">RAG security</span>
+          </div>
+          <p class="role-card__section">Skills (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">AI data-integrity risk assessment</span>
+            <span class="role-tag">Provenance tracking</span>
+            <span class="role-tag">AI data access controls</span>
+          </div>
+        </div>
+
+        <div class="role-card role-card--3">
+          <p class="role-card__num">Work Role 3</p>
+          <p class="role-card__title">AI Application Security Engineer</p>
+          <p class="role-card__aor"><strong>Area of responsibility:</strong> Security of applications built on AI models — interface, integration, and runtime controls.</p>
+          <p class="role-card__section">Illustrative Tasks</p>
+          <p style="font-size:var(--text-sm);color:var(--slate-600);line-height:1.55;margin:0 0 var(--sp-4)">
+            Input validation and prompt-injection defense · output filtering and DLP · guardrail configuration and testing · secure integration of models and platform services
+          </p>
+          <p class="role-card__section">Knowledge (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">OWASP LLM Top 10</span>
+            <span class="role-tag">MITRE ATLAS</span>
+            <span class="role-tag">LLM app patterns (RAG, tool use, agents)</span>
+            <span class="role-tag">AI-adapted secure SDLC</span>
+          </div>
+          <p class="role-card__section">Skills (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">Prompt-injection defense &amp; testing</span>
+            <span class="role-tag">Guardrail validation</span>
+            <span class="role-tag">AI application red-teaming</span>
+          </div>
+        </div>
+
+        <div class="role-card role-card--4">
+          <p class="role-card__num">Work Role 4</p>
+          <p class="role-card__title">AI Platform &amp; Agentic Runtime Security Engineer</p>
+          <p class="role-card__aor"><strong>Area of responsibility:</strong> Security of the platform and agent runtime — isolation, mediation, identity, and telemetry.</p>
+          <p class="role-card__section">Illustrative Tasks</p>
+          <p style="font-size:var(--text-sm);color:var(--slate-600);line-height:1.55;margin:0 0 var(--sp-4)">
+            Tenant isolation · platform security telemetry · agent tool-invocation mediation · agent identity and inter-agent communication security · human override/escalation controls
+          </p>
+          <p class="role-card__section">Knowledge (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">Multi-tenant isolation</span>
+            <span class="role-tag">Agent frameworks &amp; orchestration</span>
+            <span class="role-tag">Agent identity &amp; authorization</span>
+            <span class="role-tag">AI security telemetry schemas</span>
+          </div>
+          <p class="role-card__section">Skills (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">Tenant isolation verification</span>
+            <span class="role-tag">Agent action authorization</span>
+            <span class="role-tag">Agentic telemetry instrumentation</span>
+          </div>
+        </div>
+
+        <div class="role-card role-card--5">
+          <p class="role-card__num">Work Role 5</p>
+          <p class="role-card__title">AI Model Security Engineer</p>
+          <p class="role-card__aor"><strong>Area of responsibility:</strong> Security of the model itself and its serving path — robustness, integrity, provenance, and secure inference.</p>
+          <p class="role-card__section">Illustrative Tasks</p>
+          <p style="font-size:var(--text-sm);color:var(--slate-600);line-height:1.55;margin:0 0 var(--sp-4)">
+            Model documentation / cards · adversarial hardening · model artifact integrity and supply-chain protection · inference-endpoint security · served-artifact integrity validation
+          </p>
+          <p class="role-card__section">Knowledge (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">Foundation model &amp; ML architectures</span>
+            <span class="role-tag">Adversarial ML (evasion, extraction, inversion)</span>
+            <span class="role-tag">Model provenance &amp; attestation</span>
+            <span class="role-tag">Secure MLOps</span>
+          </div>
+          <p class="role-card__section">Skills (seed)</p>
+          <div class="role-card__tags">
+            <span class="role-tag">Adversarial robustness testing</span>
+            <span class="role-tag">Model artifact signing &amp; integrity</span>
+            <span class="role-tag">Inference endpoint security</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="callout">
+        <strong>Cross-cutting note — AI System Users.</strong>
+        The SRF's end-user responsibilities (recognizing limitations, reporting anomalies)
+        are best handled as AI-related TKS added to existing general-workforce and
+        security-awareness roles, not as a dedicated Work Role.
+      </div>
+
+      <!-- ── Existing roles to update ── -->
+      <p class="section-label" style="margin-top:var(--sp-12)">Existing roles</p>
+      <h2 class="content-heading">NICE Work Roles to update with AI-related TKS</h2>
+      <p class="prose">
+        Many SRF responsibilities extend disciplines that already have NICE Work Roles.
+        These roles gain AI-specific Task, Knowledge, and Skill statements rather than
+        warranting entirely new roles.
+      </p>
+
+      <ul class="update-list">
+        <li>
+          <p class="update-list__role">Secure Software Development</p>
+          <p class="update-list__add">Add AI application-security Tasks: prompt-injection defense, guardrails, output controls.</p>
+        </li>
+        <li>
+          <p class="update-list__role">Security Architecture / Systems Security Engineering</p>
+          <p class="update-list__add">Add AI model- and platform-security architecture Tasks: isolation, agent mediation, model integrity.</p>
+        </li>
+        <li>
+          <p class="update-list__role">Systems Security Analysis / Vulnerability Analysis</p>
+          <p class="update-list__add">Add adversarial-ML testing and AI red-teaming.</p>
+        </li>
+        <li>
+          <p class="update-list__role">Incident Response</p>
+          <p class="update-list__add">Add AI-specific handling: prompt-injection events, model compromise, agent boundary violations.</p>
+        </li>
+        <li>
+          <p class="update-list__role">Risk Management / Authorizing Official</p>
+          <p class="update-list__add">Add AI risk and autonomy-level authorization.</p>
+        </li>
+        <li>
+          <p class="update-list__role">Data Security / Data Governance</p>
+          <p class="update-list__add">Add AI data provenance and poisoning defense — where Work Role 2 Tasks may land if not stood up independently.</p>
+        </li>
+      </ul>
+
+      <!-- ── Agentic net-new ── -->
+      <p class="section-label" style="margin-top:var(--sp-12)">The agentic case</p>
+      <h2 class="content-heading">Net-new work introduced by agentic AI</h2>
+      <div class="prose">
+        <p>
+          The strongest justification for a new Work Role Category is the SRF's agentic
+          content: autonomy levels L0–L5, tool-invocation mediation, agent identity,
+          inter-agent communication, and human-override design. This describes work that
+          has <strong>no clear home in current NICE Work Roles</strong>.
+        </p>
+        <p>
+          Unlike application or platform security — which extend existing disciplines —
+          securing autonomous agent behavior is a genuinely new task family. This is the
+          strongest case for the new category and, potentially, for a dedicated agentic-AI
+          security Work Role within it. The SRF can supply the initial Task inventory for
+          that role.
+        </p>
+      </div>
+
+      <!-- ── Scope note ── -->
+      <p class="section-label" style="margin-top:var(--sp-12)">Scope</p>
+      <h2 class="content-heading">Security of AI vs. Security through AI</h2>
+      <div class="scope-grid">
+        <div class="scope-card scope-card--yes">
+          <p class="scope-card__label">Covered by the SRF</p>
+          <p class="scope-card__heading">Security of AI</p>
+          <p>Securing AI systems — the models, platforms, applications, data, and governance structures. The SRF informs this dimension thoroughly and can supply Task inventory for all five proposed Work Roles.</p>
+        </div>
+        <div class="scope-card scope-card--no">
+          <p class="scope-card__label">Not covered by the SRF</p>
+          <p class="scope-card__heading">Security through AI</p>
+          <p>Using AI to perform cybersecurity work — AI-assisted detection, analysis, or response. NICE's broader AI effort includes this dimension, but it needs different source material. The SRF is largely silent here.</p>
+        </div>
+      </div>
+
+      <!-- disclaimer -->
+      <p style="font-size:var(--text-sm);color:var(--slate-400);line-height:1.65;max-width:680px;margin-bottom:var(--sp-16)">
+        This mapping is analytical input intended for NICE's consideration. The CoSAI AI SRF
+        (OASIS Open Project, Workstream 2, v1.0 approved May 2026) and the NICE Workforce
+        Framework for Cybersecurity (NIST SP 800-181 Rev. 1) are independent works; this
+        alignment is not a formal position of either body.
+      </p>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>
