@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Finance - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="The SRF finance controls schema operationalizes SR 26-2 for AI and agentic systems: 40 controls across five layers, mapped to FINOS AIGF, OWASP LLM Top 10, and the EU AI Act."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Stat strip ───────────────────────────────────────────────── */
+      .stat-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--slate-200);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: var(--sp-10);
+      }
+      .stat-cell {
+        background: #fff;
+        padding: var(--sp-5) var(--sp-6);
+        text-align: center;
+      }
+      .stat-cell__num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--cosai-navy);
+        line-height: 1;
+        margin-bottom: var(--sp-2);
+      }
+      .stat-cell__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+
+      /* ── Section label ────────────────────────────────────────────── */
+      .section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-5);
+      }
+
+      /* ── Context block ────────────────────────────────────────────── */
+      .context-block {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        margin-bottom: var(--sp-10);
+      }
+      .context-block p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+        max-width: 680px;
+      }
+      .context-block p:last-child { margin-bottom: 0; }
+      .context-block strong { color: var(--slate-800); }
+
+      /* ── Card grid ────────────────────────────────────────────────── */
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-12);
+      }
+      .page-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      }
+      .page-card:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--cosai-blue-soft);
+        transform: translateY(-3px);
+        text-decoration: none;
+        color: inherit;
+      }
+      .page-card__accent { height: 4px; }
+      .page-card__accent--blue  { background: var(--cosai-blue); }
+      .page-card__accent--green { background: var(--l1); }
+      .page-card__accent--purple{ background: var(--l4); }
+      .page-card__body {
+        padding: var(--sp-6);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+      }
+      .page-card__icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-bottom: var(--sp-1);
+      }
+      .page-card__icon--blue   { background: var(--cosai-blue-light); }
+      .page-card__icon--green  { background: var(--l1-bg); }
+      .page-card__icon--purple { background: var(--l4-bg); }
+      .page-card__icon svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .page-card__icon--blue   svg { stroke: var(--cosai-blue); }
+      .page-card__icon--green  svg { stroke: var(--l1); }
+      .page-card__icon--purple svg { stroke: var(--l4); }
+      .page-card__name {
+        font-size: var(--text-lg);
+        font-weight: 800;
+        color: var(--slate-900);
+        letter-spacing: -0.02em;
+      }
+      .page-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        flex: 1;
+      }
+      .page-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-top: var(--sp-1);
+      }
+      .tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid;
+      }
+      .tag--blue   { color: var(--cosai-blue); background: var(--cosai-blue-light); border-color: var(--cosai-blue-soft); }
+      .tag--green  { color: var(--l1-text); background: var(--l1-bg); border-color: var(--l1-border); }
+      .tag--slate  { color: var(--slate-500); background: var(--slate-100); border-color: var(--slate-200); }
+      .tag--purple { color: var(--l4-text); background: var(--l4-bg); border-color: var(--l4-border); }
+      .page-card__footer {
+        padding: var(--sp-4) var(--sp-6);
+        border-top: 1px solid var(--slate-100);
+        background: var(--slate-50);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .page-card__cta {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--cosai-blue);
+      }
+
+      /* ── Schema strip ─────────────────────────────────────────────── */
+      .schema-strip {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sp-6);
+        margin-bottom: var(--sp-10);
+      }
+      .schema-item__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .schema-item__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: var(--sp-1);
+      }
+      .schema-item__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0;
+      }
+
+      /* ── Layer reference ──────────────────────────────────────────── */
+      .layer-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-10);
+      }
+      .layer-row {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        align-items: center;
+        gap: var(--sp-4);
+        padding: var(--sp-4) var(--sp-5);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+      }
+      .layer-badge {
+        font-size: var(--text-xs);
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        text-align: center;
+      }
+      .layer-badge--l1 { color: var(--l1-text); background: var(--l1-bg); border: 1px solid var(--l1-border); }
+      .layer-badge--l2 { color: var(--l2-text); background: var(--l2-bg); border: 1px solid var(--l2-border); }
+      .layer-badge--l3 { color: var(--l3-text); background: var(--l3-bg); border: 1px solid var(--l3-border); }
+      .layer-badge--l4 { color: var(--l4-text); background: var(--l4-bg); border: 1px solid var(--l4-border); }
+      .layer-badge--l5 { color: var(--l5-text); background: var(--l5-bg); border: 1px solid var(--l5-border); }
+      .layer-row__text { min-width: 0; }
+      .layer-row__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: 2px;
+      }
+      .layer-row__desc {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        line-height: var(--leading-snug);
+      }
+      .layer-row__count {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--slate-400);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* ── Responsive ───────────────────────────────────────────────── */
+      @media (max-width: 640px) {
+        .stat-strip { grid-template-columns: repeat(2, 1fr); }
+        .schema-strip { grid-template-columns: 1fr; }
+        .layer-row { grid-template-columns: 72px 1fr; }
+        .layer-row__count { display: none; }
+        .context-block { padding: var(--sp-4) var(--sp-5); }
+      }
+
+      /* ── Breadcrumb ───────────────────────────────────────────────── */
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: var(--sp-4);
+      }
+      .breadcrumb a { color: rgba(255,255,255,0.7); text-decoration: none; }
+      .breadcrumb a:hover { opacity: 1; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+      .breadcrumb__current { opacity: 0.9; }
+
+    </style>
+  </head>
+  <body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+    <site-nav current="industries"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span class="breadcrumb__current">Financial Services</span>
+        </nav>
+        <span class="page-hero__eyebrow">Finance vertical · SR 26-2 · FINOS AIGF · OCSF v1.8.0</span>
+        <h1 class="page-hero__title">AI shared responsibility for financial services</h1>
+        <p class="page-hero__lede">
+          SR 26-2 applies existing MRM principles to AI by materiality but leaves
+          the mechanics to each institution. This schema fills that gap: 40 controls
+          across five SRF layers, each with a named accountable party, a measurable
+          threshold, and an OCSF telemetry pointer.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <!-- Stat strip -->
+      <div class="stat-strip" role="region" aria-label="Schema at a glance">
+        <div class="stat-cell">
+          <div class="stat-cell__num">40</div>
+          <div class="stat-cell__label">Controls</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">5</div>
+          <div class="stat-cell__label">SRF layers</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">4</div>
+          <div class="stat-cell__label">MRM lifecycle stages</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">5</div>
+          <div class="stat-cell__label">Regulatory crosswalks</div>
+        </div>
+      </div>
+
+      <!-- Context -->
+      <div class="context-block" role="note">
+        <p>
+          <strong>The SR 26-2 gap.</strong> The Federal Reserve, OCC, and FDIC issued SR 26-2
+          in April 2026, explicitly placing generative and agentic AI out of scope while
+          directing institutions to apply existing MRM principles by materiality. That
+          instruction is necessary but not sufficient: it tells institutions what standard
+          applies, not how to operationalize it for systems that produce text, make autonomous
+          decisions, or execute transactions.
+          SR 26-2 supersedes SR 11-7 (2011) and SR 21-8 (2021) as the governing model risk
+          management standard for Federal Reserve-supervised institutions.
+          <a href="https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm"
+             target="_blank" rel="noopener" style="font-size:var(--text-xs);white-space:nowrap;">Read the letter ↗</a>
+        </p>
+        <p>
+          <strong>What the schema provides.</strong> Each control in this schema maps an SRF
+          layer to a specific MRM lifecycle stage (development, independent validation,
+          ongoing monitoring, effective challenge), names the accountable persona, and
+          specifies the OCSF telemetry stream that proves the control is functioning.
+          The same schema applies to a community bank and a GSIB; only the tier parameter
+          table differs.
+        </p>
+        <p>
+          <strong>Agent-PaaS coverage.</strong> All 40 controls apply to Agent-PaaS deployments,
+          which carry the largest surface area under SR 26-2's by-analogy application of
+          MRM principles. L3 and L4 controls address agent authorization gates, memory store
+          integrity, guardrail bypass monitoring, and runtime verification: the controls
+          SR 26-2 would require if agentic AI were explicitly in scope.
+        </p>
+      </div>
+
+      <!-- Pages in this section -->
+      <p class="section-label">In this section</p>
+      <nav class="card-grid" aria-label="Finance section pages">
+
+        <a class="page-card" href="/finance/how-to/">
+          <div class="page-card__accent page-card__accent--blue"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+            </div>
+            <div class="page-card__name">How to use the schema</div>
+            <p class="page-card__desc">
+              Five-step workflow for model risk validators: operating model selection,
+              persona mapping, tier parameter setting, OCSF evidence collection, and
+              effective challenge documentation. Includes a downloadable workpaper template.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--blue">Validators guide</span>
+              <span class="tag tag--slate">XLSX template</span>
+              <span class="tag tag--slate">SR 26-2</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Read the guide →</span>
+          </div>
+        </a>
+
+        <a class="page-card" href="/finance/controls/">
+          <div class="page-card__accent page-card__accent--green"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--green" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <div class="page-card__name">Controls browser</div>
+            <p class="page-card__desc">
+              Browse, filter, and inspect all 40 controls. Filter by SRF layer, MRM stage,
+              operating model, or accountable persona. View threshold details, OCSF evidence
+              pointers, and regulatory mappings for each control.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--slate">40 controls</span>
+              <span class="tag tag--slate">Filter by layer</span>
+              <span class="tag tag--green">Live</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Browse controls →</span>
+          </div>
+        </a>
+
+        <a class="page-card" href="/data/finance-controls.json" download="finance-controls.json">
+          <div class="page-card__accent page-card__accent--purple"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </div>
+            <div class="page-card__name">Raw schema (JSON)</div>
+            <p class="page-card__desc">
+              Machine-readable controls schema. Includes all 40 controls with thresholds,
+              OCSF evidence pointers, regulatory mappings, and persona accountability
+              assignments. Use as input for tooling, validators, or policy-as-code pipelines.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--slate">finance-controls.json</span>
+              <span class="tag tag--slate">40 controls</span>
+              <span class="tag tag--slate">Apache-2.0</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Download JSON →</span>
+          </div>
+        </a>
+
+      </nav>
+
+      <!-- Schema reference -->
+      <p class="section-label">Schema design</p>
+      <div class="schema-strip" role="region" aria-label="Schema design reference">
+        <div class="schema-item">
+          <div class="schema-item__label">Accountability plane</div>
+          <div class="schema-item__name">SRF layers and personas</div>
+          <p class="schema-item__desc">
+            Each control names one accountable persona. Five layers map to the MRM
+            lifecycle: governance, data, application, platform, and model.
+            One accountable party per control, regardless of operating model.
+          </p>
+        </div>
+        <div class="schema-item">
+          <div class="schema-item__label">Control plane</div>
+          <div class="schema-item__name">Thresholds and parameters</div>
+          <p class="schema-item__desc">
+            Controls define the metric, operator, and parameter name. Institutions
+            supply the values per tier. Zero-tolerance and verification controls
+            carry fixed values by design.
+          </p>
+        </div>
+        <div class="schema-item">
+          <div class="schema-item__label">Evidence plane</div>
+          <div class="schema-item__name">OCSF v1.8.0 telemetry pointers</div>
+          <p class="schema-item__desc">
+            Each threshold names the OCSF event class and attribute that proves
+            the control is operating. Continuous, machine-readable evidence;
+            not annual attestations.
+          </p>
+        </div>
+      </div>
+
+      <!-- Layer reference -->
+      <p class="section-label">Coverage by layer</p>
+      <div class="layer-list" role="list" aria-label="Controls by SRF layer">
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l1">L1</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Governance and processes</div>
+            <div class="layer-row__desc">
+              Risk appetite statement, model inventory policy, agent authorization governance,
+              AUP enforcement, governance review cadence, effective challenge oversight.
+              Accountable persona: <code>ai-system-governance</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">9 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l2">L2</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Data and training</div>
+            <div class="layer-row__desc">
+              Data provenance documentation, classification coverage, bias and quality
+              validation, input drift monitoring (PSI), agent memory store integrity.
+              Accountable persona: <code>data-provider</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">8 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l3">L3</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Application and agent</div>
+            <div class="layer-row__desc">
+              Input validation and prompt injection defense, output filtering, adversarial
+              red-team validation, injection detection monitoring, output filter bypass rate.
+              Accountable persona: <code>application-developer</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">8 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l4">L4</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Platform and infrastructure</div>
+            <div class="layer-row__desc">
+              Guardrail configuration baseline, gateway authentication and authorization,
+              load-time artifact integrity, bypass rate monitoring, authz failure monitoring,
+              runtime guardrail verification. Accountable persona: <code>ai-platform-provider</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">8 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l5">L5</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Model</div>
+            <div class="layer-row__desc">
+              Model card completeness, artifact signing and supply-chain provenance,
+              pre-deployment safety evaluation, independent validation, load-time
+              verification, CVE monitoring and disclosure SLA.
+              Accountable persona: <code>model-provider</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">7 controls</span>
+        </div>
+
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

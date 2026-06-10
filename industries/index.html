@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Industries - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Industry-specific implementations of the CoSAI AI Shared Responsibility Framework: controls schemas, regulatory crosswalks, and practitioner guides for finance, healthcare, insurance, and government."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Hero ─────────────────────────────────────────────────────── */
+      .hero {
+        padding: var(--sp-14) 0 var(--sp-10);
+      }
+      .hero__eyebrow {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--cosai-blue);
+        margin-bottom: var(--sp-3);
+      }
+      .hero__title {
+        font-size: clamp(1.9rem, 4vw, 2.8rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--cosai-navy);
+        line-height: 1.15;
+        margin-bottom: var(--sp-5);
+        max-width: 640px;
+      }
+      .hero__lead {
+        font-size: var(--text-lg);
+        color: var(--slate-600);
+        max-width: 600px;
+        line-height: var(--leading-normal);
+      }
+
+      /* ── Section label ────────────────────────────────────────────── */
+      .section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-6);
+      }
+
+      /* ── Vertical card grid ───────────────────────────────────────── */
+      .vertical-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-14);
+      }
+
+      .v-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      }
+      .v-card:not(.v-card--coming):hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--cosai-blue-soft);
+        transform: translateY(-3px);
+        text-decoration: none;
+        color: inherit;
+      }
+      .v-card--coming {
+        opacity: 0.6;
+        cursor: default;
+        pointer-events: none;
+      }
+
+      .v-card__accent { height: 5px; }
+      .v-card__accent--finance  { background: #1a56db; }
+      .v-card__accent--health   { background: #057a55; }
+      .v-card__accent--insure   { background: #7e3af2; }
+      .v-card__accent--gov      { background: #c27803; }
+
+      .v-card__body {
+        padding: var(--sp-7);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+      .v-card__icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: var(--sp-4);
+        font-size: 1.1rem;
+      }
+      .v-card__icon--finance  { background: #eff6ff; }
+      .v-card__icon--health   { background: #ecfdf5; }
+      .v-card__icon--insure   { background: #f5f3ff; }
+      .v-card__icon--gov      { background: #fffbeb; }
+
+      .v-card__status {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 20px;
+        margin-bottom: var(--sp-4);
+        width: fit-content;
+      }
+      .v-card__status--live {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .v-card__status--coming {
+        background: var(--slate-100);
+        color: var(--slate-500);
+      }
+      .v-card__status--dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+      }
+
+      .v-card__title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin-bottom: var(--sp-2);
+      }
+      .v-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        flex: 1;
+        margin-bottom: var(--sp-5);
+      }
+
+      .v-card__regs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+      }
+      .v-card__reg-tag {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        padding: 2px 7px;
+        border-radius: 4px;
+        background: var(--slate-100);
+        color: var(--slate-600);
+      }
+
+      .v-card__footer {
+        padding: var(--sp-4) var(--sp-7);
+        border-top: 1px solid var(--slate-100);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+      }
+      .v-card__footer-link {
+        font-weight: 600;
+        color: var(--cosai-blue);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* ── Why verticals callout ────────────────────────────────────── */
+      .why-block {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-7) var(--sp-8);
+        margin-bottom: var(--sp-14);
+        max-width: 720px;
+      }
+      .why-block__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin-bottom: var(--sp-3);
+      }
+      .why-block p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+      }
+      .why-block p:last-child { margin-bottom: 0; }
+
+    </style>
+  </head>
+  <body>
+    <site-nav current="industries"></site-nav>
+
+    <main class="page-body">
+
+      <!-- Hero -->
+      <section class="hero">
+        <p class="hero__eyebrow">CoSAI SRF · Industry Verticals</p>
+        <h1 class="hero__title">AI shared responsibility by industry</h1>
+        <p class="hero__lead">
+          The CoSAI SRF provides a foundation for AI risk accountability across operating models
+          and personas. These vertical schemas translate that foundation into industry-specific
+          controls, regulatory crosswalks, and practitioner guides.
+        </p>
+      </section>
+
+      <!-- Why verticals -->
+      <div class="why-block">
+        <p class="why-block__title">Why industry-specific schemas?</p>
+        <p>
+          The base SRF defines who is accountable and for what. It does not resolve how a
+          hospital, a bank, or a federal agency should implement those accountabilities under
+          their specific regulatory regimes. Each vertical closes that gap.
+        </p>
+        <p>
+          Every vertical schema adds: a regulatory crosswalk to the sector's primary AI or model
+          governance standard, tier parameters calibrated to the sector's risk appetite, and
+          evidence specifications aligned to the sector's audit and examination practices.
+        </p>
+      </div>
+
+      <!-- Vertical cards -->
+      <p class="section-label">Available verticals</p>
+      <div class="vertical-grid">
+
+        <!-- Finance: live -->
+        <a class="v-card" href="/finance/">
+          <div class="v-card__accent v-card__accent--finance"></div>
+          <div class="v-card__body">
+            <div class="v-card__icon v-card__icon--finance">🏦</div>
+            <span class="v-card__status v-card__status--live">
+              <span class="v-card__status--dot"></span>Live
+            </span>
+            <p class="v-card__title">Financial Services</p>
+            <p class="v-card__desc">
+              40 controls across five SRF layers, calibrated for banks, asset managers,
+              and fintechs. Addresses the SR 26-2 gap for agentic AI, with FINOS AIGF and
+              OWASP LLM Top 10 crosswalks.
+            </p>
+            <div class="v-card__regs">
+              <span class="v-card__reg-tag">SR 26-2</span>
+              <span class="v-card__reg-tag">FINOS AIGF</span>
+              <span class="v-card__reg-tag">OWASP LLM Top 10</span>
+              <span class="v-card__reg-tag">EU AI Act</span>
+            </div>
+          </div>
+          <div class="v-card__footer">
+            <span>40 controls · 4 MRM stages</span>
+            <span class="v-card__footer-link">
+              Explore
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6.75 1.5l4.5 4.5-4.5 4.5M1.5 6h9.75" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Healthcare: coming -->
+        <div class="v-card v-card--coming" aria-disabled="true">
+          <div class="v-card__accent v-card__accent--health"></div>
+          <div class="v-card__body">
+            <div class="v-card__icon v-card__icon--health">🏥</div>
+            <span class="v-card__status v-card__status--coming">Coming soon</span>
+            <p class="v-card__title">Healthcare</p>
+            <p class="v-card__desc">
+              Controls for clinical decision support, AI-assisted diagnostics, and agentic
+              care coordination. Maps to FDA SaMD guidance, ONC interoperability rules, and
+              HIPAA minimum-necessary obligations.
+            </p>
+            <div class="v-card__regs">
+              <span class="v-card__reg-tag">FDA SaMD</span>
+              <span class="v-card__reg-tag">HIPAA</span>
+              <span class="v-card__reg-tag">ONC HTI-1</span>
+              <span class="v-card__reg-tag">21 CFR Part 820</span>
+            </div>
+          </div>
+          <div class="v-card__footer">
+            <span>In development</span>
+          </div>
+        </div>
+
+        <!-- Insurance: coming -->
+        <div class="v-card v-card--coming" aria-disabled="true">
+          <div class="v-card__accent v-card__accent--insure"></div>
+          <div class="v-card__body">
+            <div class="v-card__icon v-card__icon--insure">📋</div>
+            <span class="v-card__status v-card__status--coming">Coming soon</span>
+            <p class="v-card__title">Insurance</p>
+            <p class="v-card__desc">
+              Underwriting, claims adjudication, and fraud scoring controls aligned to NAIC
+              model bulletin requirements and the actuarial accountability tradition. Addresses
+              the fairness and disparate-impact dimension directly.
+            </p>
+            <div class="v-card__regs">
+              <span class="v-card__reg-tag">NAIC AI Model Bulletin</span>
+              <span class="v-card__reg-tag">ASOP</span>
+              <span class="v-card__reg-tag">State AI laws</span>
+            </div>
+          </div>
+          <div class="v-card__footer">
+            <span>In development</span>
+          </div>
+        </div>
+
+        <!-- Government: coming -->
+        <div class="v-card v-card--coming" aria-disabled="true">
+          <div class="v-card__accent v-card__accent--gov"></div>
+          <div class="v-card__body">
+            <div class="v-card__icon v-card__icon--gov">🏛️</div>
+            <span class="v-card__status v-card__status--coming">Coming soon</span>
+            <p class="v-card__title">Government / Federal</p>
+            <p class="v-card__desc">
+              ATO-aligned controls for federal agencies and contractors. Bridges the NIST AI
+              RMF's non-prescriptive guidance to named system-owner accountability and
+              FedRAMP-compatible evidence collection.
+            </p>
+            <div class="v-card__regs">
+              <span class="v-card__reg-tag">OMB M-24-10</span>
+              <span class="v-card__reg-tag">NIST AI RMF</span>
+              <span class="v-card__reg-tag">FedRAMP</span>
+              <span class="v-card__reg-tag">EO 14110</span>
+            </div>
+          </div>
+          <div class="v-card__footer">
+            <span>In development</span>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

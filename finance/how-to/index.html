@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to Use the Finance Controls Schema - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="How financial institutions use the SRF finance controls schema to operationalize SR 26-2 effective challenge, collect OCSF evidence, and document independent validation."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Breadcrumb ───────────────────────────────────────────────── */
+      .breadcrumb {
+        font-size: var(--text-xs);
+        color: #93c5fd;
+        margin-bottom: var(--sp-4);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+      }
+      .breadcrumb a {
+        color: #93c5fd;
+        text-decoration: none;
+        opacity: 0.75;
+      }
+      .breadcrumb a:hover { opacity: 1; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+      .breadcrumb__current { opacity: 0.9; }
+
+      /* ── Audience badge ───────────────────────────────────────────── */
+      .audience-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-3);
+        background: rgba(45, 91, 227, 0.18);
+        border: 1px solid rgba(45, 91, 227, 0.35);
+        border-radius: var(--radius);
+        padding: var(--sp-2) var(--sp-4);
+        margin-top: var(--sp-5);
+        flex-wrap: wrap;
+      }
+      .audience-badge__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #93c5fd;
+      }
+      .audience-badge__text {
+        font-size: var(--text-sm);
+        color: #cbd5e1;
+      }
+
+      /* ── Page body ────────────────────────────────────────────────── */
+      .page-body {
+        max-width: var(--max-w);
+        margin: 0 auto;
+        padding: var(--sp-12) var(--page-pad) var(--sp-20);
+      }
+
+      /* ── Intro prose ──────────────────────────────────────────────── */
+      .intro-box {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        margin-bottom: var(--sp-10);
+      }
+      .intro-box p {
+        font-size: var(--text-base);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+      }
+      .intro-box p:last-child { margin-bottom: 0; }
+
+      /* ── Steps section header ─────────────────────────────────────── */
+      .steps-eyebrow {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-6);
+      }
+
+      /* ── Step layout ──────────────────────────────────────────────── */
+      .step {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 0 var(--sp-5);
+        margin-bottom: 0;
+      }
+      .step__spine {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .step__num {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: var(--cosai-blue);
+        color: #fff;
+        font-size: var(--text-base);
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        box-shadow: var(--shadow-md);
+      }
+      .step__line {
+        width: 2px;
+        background: var(--slate-200);
+        flex: 1;
+        min-height: var(--sp-8);
+        margin-top: var(--sp-2);
+      }
+      .step:last-child .step__line { display: none; }
+      .step__body {
+        padding-bottom: var(--sp-10);
+      }
+      .step__title {
+        font-size: var(--text-xl);
+        font-weight: 700;
+        color: var(--slate-900);
+        letter-spacing: -0.02em;
+        margin: var(--sp-2) 0 var(--sp-3);
+        line-height: var(--leading-tight);
+      }
+      .step__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-4);
+        max-width: 640px;
+      }
+
+      /* ── Layer tags ───────────────────────────────────────────────── */
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-4);
+      }
+      .layer-tag {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid;
+      }
+      .layer-tag--l1 { color: var(--l1-text); background: var(--l1-bg); border-color: var(--l1-border); }
+      .layer-tag--l2 { color: var(--l2-text); background: var(--l2-bg); border-color: var(--l2-border); }
+      .layer-tag--l3 { color: var(--l3-text); background: var(--l3-bg); border-color: var(--l3-border); }
+      .layer-tag--l4 { color: var(--l4-text); background: var(--l4-bg); border-color: var(--l4-border); }
+      .layer-tag--l5 { color: var(--l5-text); background: var(--l5-bg); border-color: var(--l5-border); }
+      .tag-plain {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-600);
+        background: var(--slate-100);
+        border: 1px solid var(--slate-200);
+        border-radius: 999px;
+        padding: 3px 10px;
+      }
+
+      /* ── Data table ───────────────────────────────────────────────── */
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin-bottom: var(--sp-4);
+      }
+      .data-table th {
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        padding: var(--sp-2) var(--sp-3) var(--sp-3) 0;
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .data-table td {
+        padding: var(--sp-3) var(--sp-3) var(--sp-3) 0;
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-700);
+        vertical-align: top;
+      }
+      .data-table tr:last-child td { border-bottom: none; }
+      .data-table code {
+        font-family: var(--font-mono);
+        font-size: 0.82em;
+        color: var(--slate-600);
+        background: var(--slate-100);
+        padding: 1px 5px;
+        border-radius: var(--radius-sm);
+      }
+
+      /* ── Control card ─────────────────────────────────────────────── */
+      .control-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: var(--sp-4);
+      }
+      .control-card__accent {
+        height: 4px;
+        background: var(--l4);
+      }
+      .control-card__accent--l1 { background: var(--l1); }
+      .control-card__accent--l2 { background: var(--l2); }
+      .control-card__accent--l3 { background: var(--l3); }
+      .control-card__accent--l4 { background: var(--l4); }
+      .control-card__accent--l5 { background: var(--l5); }
+      .control-card__body {
+        padding: var(--sp-5) var(--sp-6);
+      }
+      .control-card__id {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-1);
+      }
+      .control-card__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-4);
+      }
+      .control-card__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: var(--sp-3) var(--sp-5);
+      }
+      .control-field__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: 3px;
+      }
+      .control-field__val {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        font-family: var(--font-mono);
+      }
+
+      /* ── Callout boxes ────────────────────────────────────────────── */
+      .callout {
+        border-left: 3px solid;
+        padding: var(--sp-3) var(--sp-4);
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-4);
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .callout p { margin: 0 0 var(--sp-2); }
+      .callout p:last-child { margin: 0; }
+      .callout--blue {
+        border-color: var(--cosai-blue);
+        background: var(--cosai-blue-light);
+        color: var(--l2-text);
+      }
+      .callout--green {
+        border-color: var(--status-good);
+        background: var(--status-good-bg);
+        color: var(--l1-text);
+      }
+      .callout--amber {
+        border-color: var(--status-warn);
+        background: var(--status-warn-bg);
+        color: #713f12;
+      }
+
+      /* ── Tier table ───────────────────────────────────────────────── */
+      .tier-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin-bottom: var(--sp-4);
+      }
+      .tier-table th {
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        padding: var(--sp-2) var(--sp-4) var(--sp-3) 0;
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .tier-table td {
+        padding: var(--sp-3) var(--sp-4) var(--sp-3) 0;
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-700);
+        vertical-align: top;
+      }
+      .tier-table tr:last-child td { border-bottom: none; }
+
+      /* ── Workpaper row ────────────────────────────────────────────── */
+      .workpaper-dl {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-5);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+        margin-bottom: var(--sp-4);
+      }
+      .workpaper-dl__icon {
+        width: 44px;
+        height: 44px;
+        background: var(--cosai-blue-light);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .workpaper-dl__icon svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--cosai-blue);
+        fill: none;
+        stroke-width: 1.75;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .workpaper-dl__text { flex: 1; }
+      .workpaper-dl__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 2px;
+      }
+      .workpaper-dl__meta {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+      }
+
+      /* ── Bottom nav ───────────────────────────────────────────────── */
+      .page-nav {
+        margin-top: var(--sp-12);
+        padding-top: var(--sp-8);
+        border-top: 1px solid var(--slate-200);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--sp-4);
+      }
+      .page-nav__link {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--cosai-blue);
+        text-decoration: none;
+      }
+      .page-nav__link:hover { text-decoration: underline; }
+      .page-nav__link svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        flex-shrink: 0;
+      }
+
+      /* ── Responsive ───────────────────────────────────────────────── */
+      @media (max-width: 600px) {
+        .step {
+          grid-template-columns: 36px 1fr;
+          gap: 0 var(--sp-3);
+        }
+        .step__num { width: 36px; height: 36px; font-size: var(--text-sm); }
+        .intro-box { padding: var(--sp-4) var(--sp-5); }
+        .control-card__grid { grid-template-columns: 1fr 1fr; }
+        .workpaper-dl { flex-direction: column; align-items: flex-start; gap: var(--sp-3); }
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <site-nav current="industries"></site-nav>
+
+    <!-- ── Hero ─────────────────────────────────────────────────────── -->
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <div class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <a href="/finance/">Financial Services</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span class="breadcrumb__current">How to use the schema</span>
+        </div>
+        <span class="page-hero__eyebrow">Finance vertical · SR 26-2 · FINOS AIGF</span>
+        <h1 class="page-hero__title">How to use the finance controls schema</h1>
+        <p class="page-hero__lede">
+          A workflow guide for financial institutions: from operating model selection
+          through OCSF evidence collection to documented effective challenge.
+        </p>
+        <div class="audience-badge" role="note" aria-label="Intended audience">
+          <span class="audience-badge__label">Audience</span>
+          <span class="audience-badge__text">
+            Model risk managers · MRM validators · Internal audit · Compliance · OCC / Fed examiners
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Body ─────────────────────────────────────────────────────── -->
+    <main id="main" class="page-body">
+
+      <!-- Intro -->
+      <div class="intro-box" role="note">
+        <p>
+          SR 26-2 (April 2026) directs institutions to apply existing model risk management
+          principles to AI systems by materiality, but leaves the mechanics to each institution.
+          The SRF finance schema operationalizes those mechanics: 40 controls across five layers,
+          each with a named accountable persona, a measurable threshold, and a pointer to the
+          OCSF telemetry stream that proves the control is functioning.
+        </p>
+        <p>
+          Institutions and their counterparties are moving away from point-in-time attestations
+          toward continuous, verifiable evidence that controls are operating. The OCSF evidence
+          plane in this schema is built for exactly that standard.
+        </p>
+        <p style="font-size:var(--text-xs);color:var(--slate-500);margin-top:var(--sp-2);border-top:1px solid var(--slate-200);padding-top:var(--sp-3);">
+          SR 26-2 supersedes SR 11-7 (<em>Guidance on Model Risk Management</em>, 2011) and
+          SR 21-8 (<em>Interagency Statement on Model Risk Management for BSA/AML</em>, 2021),
+          issued jointly by the Federal Reserve, OCC, and FDIC.
+          <a href="https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm"
+             target="_blank" rel="noopener">Read SR 26-2 ↗</a>
+        </p>
+      </div>
+
+      <p class="steps-eyebrow">Five-step workflow</p>
+
+      <!-- ── Step 1 ──────────────────────────────────────────────────── -->
+      <div class="step">
+        <div class="step__spine">
+          <div class="step__num" aria-hidden="true">1</div>
+          <div class="step__line" aria-hidden="true"></div>
+        </div>
+        <div class="step__body">
+          <h2 class="step__title">Identify your operating model</h2>
+          <p class="step__desc">
+            The schema covers four operating models. Filter to the ones relevant to your
+            deployment before beginning any control mapping. Controls not tagged for your
+            model do not apply and need not appear in your workpaper.
+          </p>
+          <div class="tag-row" aria-label="Operating models">
+            <span class="tag-plain">AI-SaaS</span>
+            <span class="tag-plain">AI-PaaS</span>
+            <span class="tag-plain">Agent-PaaS</span>
+            <span class="tag-plain">IaaS</span>
+          </div>
+          <div class="callout callout--blue">
+            <p>
+              <strong>Agent-PaaS deployments carry the largest control surface.</strong>
+              SR 26-2 places agentic AI formally out of scope but directs institutions to apply
+              existing MRM principles. SRF L3 and L4 controls address that gap directly, covering
+              agent authorization, tool execution limits, guardrail bypass monitoring, and
+              runtime integrity verification.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 2 ──────────────────────────────────────────────────── -->
+      <div class="step">
+        <div class="step__spine">
+          <div class="step__num" aria-hidden="true">2</div>
+          <div class="step__line" aria-hidden="true"></div>
+        </div>
+        <div class="step__body">
+          <h2 class="step__title">Map personas to internal owners</h2>
+          <p class="step__desc">
+            Each control names an <code>accountable_persona</code>. Map every schema persona
+            to the team or role in your institution that owns it. This mapping becomes the RACI
+            column in your validation workpaper and establishes who must produce evidence for
+            each control.
+          </p>
+          <table class="tier-table" aria-label="Persona to internal owner mapping">
+            <thead>
+              <tr>
+                <th>Schema persona</th>
+                <th>Typical internal owner</th>
+                <th>Layers</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ai-system-governance</code></td>
+                <td>AI risk officer / model risk committee</td>
+                <td>
+                  <span class="layer-tag layer-tag--l1">L1</span>
+                </td>
+              </tr>
+              <tr>
+                <td><code>data-provider</code></td>
+                <td>Data engineering / data steward</td>
+                <td>
+                  <span class="layer-tag layer-tag--l2">L2</span>
+                </td>
+              </tr>
+              <tr>
+                <td><code>application-developer</code></td>
+                <td>Model development team</td>
+                <td>
+                  <span class="layer-tag layer-tag--l3">L3</span>
+                </td>
+              </tr>
+              <tr>
+                <td><code>ai-platform-provider</code></td>
+                <td>MLOps / cloud platform team or vendor</td>
+                <td>
+                  <span class="layer-tag layer-tag--l4">L4</span>
+                </td>
+              </tr>
+              <tr>
+                <td><code>model-provider</code></td>
+                <td>Foundation model vendor (external) or ML science team</td>
+                <td>
+                  <span class="layer-tag layer-tag--l5">L5</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="step__desc" style="margin-top: var(--sp-3);">
+            For vendor-sourced AI components (AI-SaaS, AI-PaaS), the accountable persona
+            is still mapped to the internal team responsible for vendor oversight, not to
+            the vendor itself. Accountability does not transfer with the contract.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Step 3 ──────────────────────────────────────────────────── -->
+      <div class="step">
+        <div class="step__spine">
+          <div class="step__num" aria-hidden="true">3</div>
+          <div class="step__line" aria-hidden="true"></div>
+        </div>
+        <div class="step__body">
+          <h2 class="step__title">Set your tier parameters</h2>
+          <p class="step__desc">
+            Controls with <code>param_type: "tier-defined"</code> carry no fixed values.
+            Your institution fills them based on SR 26-2's materiality approach. Maintain
+            a single institutional tier table and reference it across all workpapers rather
+            than duplicating values per model.
+          </p>
+          <table class="tier-table" aria-label="Example tier parameter table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Example model types</th>
+                <th>Drift threshold (L2-MON-002)</th>
+                <th>Review cadence (L1-MON-003)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Tier 1</strong>: Critical</td>
+                <td>Credit decisioning, fraud detection, trading algorithms</td>
+                <td>PSI &lt; 0.10, 30-day window</td>
+                <td>30 days</td>
+              </tr>
+              <tr>
+                <td><strong>Tier 2</strong>: Non-critical</td>
+                <td>Document summarization, internal Q&amp;A, report generation</td>
+                <td>PSI &lt; 0.25, 60-day window</td>
+                <td>60 days</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="callout callout--green">
+            <p>
+              Controls with <code>param_type: "zero-tolerance"</code> or
+              <code>param_type: "verification"</code> carry fixed values by design and
+              require no tier parameterization. Any unauthorized write to an agent memory
+              store is a breach regardless of model tier; a load-time integrity check either
+              passes or it does not.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 4 ──────────────────────────────────────────────────── -->
+      <div class="step">
+        <div class="step__spine">
+          <div class="step__num" aria-hidden="true">4</div>
+          <div class="step__line" aria-hidden="true"></div>
+        </div>
+        <div class="step__body">
+          <h2 class="step__title">Confirm OCSF evidence streams</h2>
+          <p class="step__desc">
+            Before beginning validation, confirm with your platform team that the event types
+            required by in-scope controls are being emitted. Each control's
+            <code>threshold.evidence</code> block names an OCSF event class, an attribute,
+            and the schema version.
+          </p>
+
+          <!-- Example control card -->
+          <div class="control-card" aria-label="Example control: SRF-L4-MON-001">
+            <div class="control-card__accent control-card__accent--l4"></div>
+            <div class="control-card__body">
+              <p class="control-card__id">SRF-L4-MON-001 · L4 Guardrails &amp; Safety · Ongoing monitoring</p>
+              <p class="control-card__title">Runtime guardrail bypass rate monitoring</p>
+              <div class="control-card__grid">
+                <div>
+                  <p class="control-field__label">OCSF class</p>
+                  <p class="control-field__val">ai_operation
+                    <span style="font-size:0.75em; font-family:var(--font-sans); color:var(--status-warn); background:var(--status-warn-bg); border:1px solid var(--status-warn-br); border-radius:var(--radius-sm); padding:1px 5px; margin-left:4px;">
+                      unverified-proposal
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <p class="control-field__label">Attribute</p>
+                  <p class="control-field__val">guardrail_bypass_flag</p>
+                </div>
+                <div>
+                  <p class="control-field__label">Operator · param type</p>
+                  <p class="control-field__val">&lt;= · zero-tolerance</p>
+                </div>
+                <div>
+                  <p class="control-field__label">Window</p>
+                  <p class="control-field__val">24h</p>
+                </div>
+                <div>
+                  <p class="control-field__label">Breach action</p>
+                  <p class="control-field__val">escalate-l1-governance</p>
+                </div>
+                <div>
+                  <p class="control-field__label">OCSF version</p>
+                  <p class="control-field__val">1.8.0</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout callout--amber">
+            <p>
+              <strong>Note on <code>ai_operation</code>:</strong>
+              This OCSF class is a proposal in v1.8.0, pending final ratification. Controls
+              using it carry <code>ocsf_class_status: "unverified-proposal"</code>. Until
+              ratified, validate against your vendor's equivalent event schema and note the
+              substitution in your workpaper.
+            </p>
+          </div>
+
+          <p class="step__desc">
+            Controls at L1 (governance artifacts, board minutes, policy records) do not
+            produce streaming OCSF events. Their <code>ocsf_class</code> fields are
+            prefixed <code>TBD:</code> with a note on the artifact type. Validate these
+            against the relevant records management system or GRC platform.
+          </p>
+        </div>
+      </div>
+
+      <!-- ── Step 5 ──────────────────────────────────────────────────── -->
+      <div class="step">
+        <div class="step__spine">
+          <div class="step__num" aria-hidden="true">5</div>
+          <div class="step__line" aria-hidden="true"></div>
+        </div>
+        <div class="step__body">
+          <h2 class="step__title">Perform and document effective challenge</h2>
+          <p class="step__desc">
+            For each in-scope control, query the evidence stream for the specified window,
+            compare the observed metric against your tier parameter, and record the result.
+            The workpaper should be self-contained: an examiner reading it cold must be able
+            to trace each control to its SR 26-2 principle without additional lookup.
+          </p>
+
+          <table class="data-table" aria-label="Workpaper column structure">
+            <thead>
+              <tr>
+                <th>Column</th>
+                <th>Source</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Control ID and title</td>
+                <td><code>id</code> and <code>title</code></td>
+                <td>Copy verbatim from the schema</td>
+              </tr>
+              <tr>
+                <td>Accountable party</td>
+                <td>Your persona-to-team mapping (step 2)</td>
+                <td>Internal team name, not the schema persona ID</td>
+              </tr>
+              <tr>
+                <td>Tier parameter value</td>
+                <td>Your institutional tier table (step 3)</td>
+                <td>Reference your tier table by version, not by copying values</td>
+              </tr>
+              <tr>
+                <td>Observed metric and window</td>
+                <td>OCSF query result</td>
+                <td>Include query timestamp and event count</td>
+              </tr>
+              <tr>
+                <td>Pass / Fail</td>
+                <td>Operator comparison</td>
+                <td>For zero-tolerance controls, any non-zero value is a Fail</td>
+              </tr>
+              <tr>
+                <td>SR 26-2 principle addressed</td>
+                <td><code>mappings.sr26_2</code></td>
+                <td>Gives examiners a direct traceability chain to the letter text</td>
+              </tr>
+              <tr>
+                <td>Escalation taken (if breach)</td>
+                <td><code>breach_action</code></td>
+                <td>Record date, recipient, and resolution status</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout--green">
+            <p>
+              The <code>mappings.sr26_2</code> and <code>mappings.finos_aigf</code> fields
+              on each control provide the traceability chain examiners expect: control to
+              existing MRM principle to regulatory text. For controls where the SR 26-2
+              mapping is still marked TBD, verify against the letter text at
+              <a href="https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm"
+                 target="_blank" rel="noopener">federalreserve.gov</a>
+              before including in examiner-facing documentation.
+            </p>
+          </div>
+
+          <!-- Workpaper download -->
+          <div class="workpaper-dl" role="region" aria-label="Workpaper template download">
+            <div class="workpaper-dl__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 18 15 15"/>
+              </svg>
+            </div>
+            <div class="workpaper-dl__text">
+              <p class="workpaper-dl__name">Effective challenge workpaper: example template</p>
+              <p class="workpaper-dl__meta">
+                XLSX · Pre-populated with representative controls from each SRF layer ·
+                Includes persona mapping worksheet and tier parameter table
+              </p>
+            </div>
+            <a
+              href="/finance/how-to/effective-challenge-workpaper-example.xlsx"
+              class="btn"
+              download
+              aria-label="Download effective challenge workpaper example template (XLSX)"
+            >
+              Download example
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Bottom nav ──────────────────────────────────────────────── -->
+      <nav class="page-nav" aria-label="Page navigation">
+        <a href="/finance/" class="page-nav__link">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Finance overview
+        </a>
+        <div style="display: flex; gap: var(--sp-4); flex-wrap: wrap; align-items: center;">
+          <a href="/finance/controls/" class="page-nav__link">
+            Browse all 40 controls
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </a>
+        </div>
+      </nav>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

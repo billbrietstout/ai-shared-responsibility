@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Finance Controls Browser - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Browse all 40 finance controls in the CoSAI SRF. Filter by layer, MRM stage, persona, and operating model."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Layout ───────────────────────────────────────────────────── */
+      .browser-layout {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: var(--sp-8);
+        align-items: start;
+        padding-top: var(--sp-8);
+        padding-bottom: var(--sp-20);
+      }
+      @media (max-width: 820px) {
+        .browser-layout { grid-template-columns: 1fr; }
+        .filter-sidebar { position: static !important; }
+      }
+
+      /* ── Filter sidebar ───────────────────────────────────────────── */
+      .filter-sidebar {
+        position: sticky;
+        top: 72px;
+      }
+      .filter-group {
+        margin-bottom: var(--sp-6);
+      }
+      .filter-group__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+        display: block;
+      }
+      .filter-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: var(--radius);
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        font-family: inherit;
+        line-height: 1.8;
+        transition: background 0.1s;
+      }
+      .filter-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+      .filter-btn.active {
+        background: var(--cosai-navy);
+        color: #fff;
+        font-weight: 600;
+      }
+      .filter-btn .count {
+        float: right;
+        font-size: 0.7rem;
+        opacity: 0.6;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .filter-divider {
+        border: none;
+        border-top: 1px solid var(--slate-200);
+        margin: var(--sp-4) 0;
+      }
+      .clear-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: var(--sp-2) 0;
+        border-radius: var(--radius);
+        border: 1px solid var(--slate-200);
+        background: none;
+        cursor: pointer;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-500);
+        font-family: inherit;
+        transition: background 0.1s, color 0.1s;
+      }
+      .clear-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+
+      /* ── Results panel ────────────────────────────────────────────── */
+      .results-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-5);
+        flex-wrap: wrap;
+      }
+      .results-count {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--cosai-navy);
+      }
+      .results-count span { color: var(--slate-400); font-weight: 400; }
+      .search-input {
+        padding: var(--sp-2) var(--sp-3);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        font-size: var(--text-sm);
+        font-family: inherit;
+        color: var(--slate-800);
+        background: #fff;
+        width: 200px;
+        outline: none;
+        transition: border-color 0.1s;
+      }
+      .search-input:focus { border-color: var(--cosai-blue); }
+
+      /* ── Control card ─────────────────────────────────────────────── */
+      .control-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+      }
+      .ctrl-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        overflow: hidden;
+        cursor: pointer;
+        transition: box-shadow 0.12s, border-color 0.12s;
+      }
+      .ctrl-card:hover { box-shadow: var(--shadow); border-color: var(--cosai-blue-soft); }
+      .ctrl-card.open { box-shadow: var(--shadow-lg); border-color: var(--cosai-blue-soft); }
+
+      .ctrl-card__header {
+        display: grid;
+        grid-template-columns: 44px 1fr auto;
+        gap: var(--sp-4);
+        align-items: center;
+        padding: var(--sp-4) var(--sp-5);
+      }
+      .ctrl-card__layer-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        flex-shrink: 0;
+      }
+      .ctrl-card__meta { min-width: 0; }
+      .ctrl-card__id {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        font-family: var(--font-mono, monospace);
+        opacity: 0.7;
+        margin-bottom: 2px;
+      }
+      .ctrl-card__title {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--cosai-navy);
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ctrl-card__pills {
+        display: flex;
+        gap: var(--sp-2);
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .pill {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        padding: 2px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+      .pill--stage { background: var(--slate-100); color: var(--slate-600); }
+      .pill--agent { background: #fef3c7; color: #92400e; }
+
+      /* ── Control detail (expanded) ────────────────────────────────── */
+      .ctrl-card__detail {
+        display: none;
+        border-top: 1px solid var(--slate-100);
+        padding: var(--sp-5) var(--sp-6) var(--sp-6);
+      }
+      .ctrl-card.open .ctrl-card__detail { display: block; }
+
+      .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-4) var(--sp-8);
+        margin-bottom: var(--sp-5);
+      }
+      @media (max-width: 600px) { .detail-grid { grid-template-columns: 1fr; } }
+
+      .detail-field__label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-1);
+      }
+      .detail-field__value {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+      }
+      .detail-field__value code {
+        font-family: var(--font-mono, monospace);
+        font-size: 0.8em;
+        background: var(--slate-100);
+        padding: 1px 5px;
+        border-radius: 3px;
+        color: var(--cosai-navy);
+      }
+
+      .ctrl-desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-5);
+        padding: var(--sp-3) var(--sp-4);
+        background: var(--slate-50);
+        border-radius: var(--radius);
+        border-left: 3px solid var(--slate-200);
+      }
+
+      .threshold-block {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-bottom: var(--sp-4);
+      }
+      .threshold-block__head {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        background: var(--slate-50);
+        padding: var(--sp-2) var(--sp-4);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .threshold-block__body {
+        padding: var(--sp-3) var(--sp-4);
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: var(--sp-3) var(--sp-6);
+      }
+
+      .evidence-block {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+      .evidence-block__head {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        background: var(--slate-50);
+        padding: var(--sp-2) var(--sp-4);
+        border-bottom: 1px solid var(--slate-200);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+      }
+      .evidence-block__body {
+        padding: var(--sp-3) var(--sp-4);
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+      }
+      .ocsf-warning {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        background: #fef3c7;
+        color: #92400e;
+        letter-spacing: 0.04em;
+        margin-left: var(--sp-2);
+      }
+
+      /* ── Layer colors ─────────────────────────────────────────────── */
+      .layer-L1 { background: #eef2ff; color: #4338ca; }
+      .layer-L2 { background: #e0f2fe; color: #0369a1; }
+      .layer-L3 { background: #d1fae5; color: #065f46; }
+      .layer-L4 { background: #fef3c7; color: #92400e; }
+      .layer-L5 { background: #fee2e2; color: #991b1b; }
+      .dot-L1 { color: #6366f1; }
+      .dot-L2 { color: #0ea5e9; }
+      .dot-L3 { color: #10b981; }
+      .dot-L4 { color: #f59e0b; }
+      .dot-L5 { color: #ef4444; }
+
+      /* ── Hero ─────────────────────────────────────────────────────── */
+      .controls-hero {
+        padding: var(--sp-10) 0 0;
+      }
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-4);
+      }
+      .breadcrumb a { color: var(--slate-500); text-decoration: none; }
+      .breadcrumb a:hover { color: var(--cosai-blue); text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+      .controls-hero__title {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: var(--cosai-navy);
+        margin-bottom: var(--sp-2);
+      }
+      .controls-hero__sub {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+        margin-bottom: 0;
+      }
+
+      /* ── Empty state ──────────────────────────────────────────────── */
+      .empty-state {
+        text-align: center;
+        padding: var(--sp-16) var(--sp-8);
+        color: var(--slate-400);
+        font-size: var(--text-sm);
+      }
+      .empty-state strong { display: block; font-size: var(--text-base); color: var(--slate-600); margin-bottom: var(--sp-2); }
+
+    </style>
+  </head>
+  <body>
+    <site-nav current="industries"></site-nav>
+
+    <div class="page-body">
+
+      <div class="controls-hero">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <a href="/finance/">Financial Services</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span>Controls browser</span>
+        </nav>
+        <h1 class="controls-hero__title">Finance controls browser</h1>
+        <p class="controls-hero__sub">40 controls across 5 SRF layers · Filter by layer, stage, persona, or operating model</p>
+        <p style="font-size:var(--text-xs);color:var(--slate-500);margin-top:var(--sp-3);">
+          SR 26-2 mappings reference the
+          <a href="https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm"
+             target="_blank" rel="noopener">April 2026 letter</a>
+          issued jointly by the Federal Reserve, OCC, and FDIC, which supersedes
+          SR 11-7 (2011) and SR 21-8 (2021).
+        </p>
+      </div>
+
+      <div class="browser-layout">
+
+        <!-- Sidebar filters -->
+        <aside class="filter-sidebar" aria-label="Filters">
+
+          <div class="filter-group">
+            <span class="filter-group__label">Layer</span>
+            <button class="filter-btn active" data-filter="layer" data-value="all">
+              All layers <span class="count" id="count-layer-all"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L1">
+              L1 Governance <span class="count" id="count-layer-L1"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L2">
+              L2 Data <span class="count" id="count-layer-L2"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L3">
+              L3 Application <span class="count" id="count-layer-L3"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L4">
+              L4 Platform <span class="count" id="count-layer-L4"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L5">
+              L5 Model <span class="count" id="count-layer-L5"></span>
+            </button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">MRM stage</span>
+            <button class="filter-btn active" data-filter="stage" data-value="all">All stages</button>
+            <button class="filter-btn" data-filter="stage" data-value="development">Development</button>
+            <button class="filter-btn" data-filter="stage" data-value="independent-validation">Ind. validation</button>
+            <button class="filter-btn" data-filter="stage" data-value="ongoing-monitoring">Ongoing monitoring</button>
+            <button class="filter-btn" data-filter="stage" data-value="effective-challenge">Effective challenge</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Persona</span>
+            <button class="filter-btn active" data-filter="persona" data-value="all">All personas</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance">AI Governance</button>
+            <button class="filter-btn" data-filter="persona" data-value="data-provider">Data Provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="application-developer">App Developer</button>
+            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider">Agentic Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider">AI Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="model-provider">Model Provider</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Operating model</span>
+            <button class="filter-btn active" data-filter="opmodel" data-value="all">All models</button>
+            <button class="filter-btn" data-filter="opmodel" data-value="AI-SaaS">AI-SaaS</button>
+            <button class="filter-btn" data-filter="opmodel" data-value="AI-PaaS">AI-PaaS</button>
+            <button class="filter-btn" data-filter="opmodel" data-value="Agent-PaaS">Agent-PaaS</button>
+            <button class="filter-btn" data-filter="opmodel" data-value="IaaS">IaaS</button>
+          </div>
+
+          <hr class="filter-divider" />
+          <button class="clear-btn" id="clear-filters">Clear all filters</button>
+
+        </aside>
+
+        <!-- Results -->
+        <section aria-label="Controls list">
+
+          <div class="results-header">
+            <p class="results-count" id="results-count">Loading…</p>
+            <input
+              type="search"
+              class="search-input"
+              id="search-input"
+              placeholder="Search controls…"
+              aria-label="Search controls"
+            />
+          </div>
+
+          <div class="control-list" id="control-list">
+            <div class="empty-state"><strong>Loading controls…</strong></div>
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+    <script>
+(function () {
+  "use strict";
+
+  // ── State ──────────────────────────────────────────────────────────────
+  let allControls = [];
+  let filters = { layer: "all", stage: "all", persona: "all", opmodel: "all" };
+  let searchQuery = "";
+
+  // ── Layer metadata ─────────────────────────────────────────────────────
+  const LAYER_LABELS = {
+    L1: "Governance", L2: "Data", L3: "Application/Agent",
+    L4: "Platform", L5: "Model"
+  };
+
+  const STAGE_LABELS = {
+    "development": "Development",
+    "independent-validation": "Ind. validation",
+    "ongoing-monitoring": "Ongoing monitoring",
+    "effective-challenge": "Effective challenge"
+  };
+
+  // ── Fetch data ─────────────────────────────────────────────────────────
+  fetch("/data/finance-controls.json")
+    .then(r => r.json())
+    .then(data => {
+      allControls = data.controls;
+      updateCounts();
+      render();
+    })
+    .catch(() => {
+      document.getElementById("control-list").innerHTML =
+        `<div class="empty-state"><strong>Could not load controls</strong>Make sure the dev server is running and /data/finance-controls.json is accessible.</div>`;
+    });
+
+  // ── Filter logic ───────────────────────────────────────────────────────
+  function filtered() {
+    return allControls.filter(c => {
+      if (filters.layer !== "all" && c.layer !== filters.layer) return false;
+      if (filters.stage !== "all" && c.mrm_stage !== filters.stage) return false;
+      if (filters.persona !== "all" && c.accountable_persona !== filters.persona) return false;
+      if (filters.opmodel !== "all" && !c.operating_models.includes(filters.opmodel)) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        return (
+          c.id.toLowerCase().includes(q) ||
+          c.title.toLowerCase().includes(q) ||
+          c.description.toLowerCase().includes(q) ||
+          c.component.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }
+
+  function updateCounts() {
+    document.getElementById("count-layer-all").textContent = allControls.length;
+    ["L1","L2","L3","L4","L5"].forEach(l => {
+      const el = document.getElementById("count-layer-" + l);
+      if (el) el.textContent = allControls.filter(c => c.layer === l).length;
+    });
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────
+  function render() {
+    const results = filtered();
+    const list = document.getElementById("control-list");
+    const countEl = document.getElementById("results-count");
+
+    countEl.innerHTML = `<strong>${results.length}</strong> <span>of ${allControls.length} controls</span>`;
+
+    if (results.length === 0) {
+      list.innerHTML = `<div class="empty-state"><strong>No controls match</strong>Try adjusting the filters or clearing your search.</div>`;
+      return;
+    }
+
+    list.innerHTML = results.map(c => cardHTML(c)).join("");
+
+    // Expand/collapse
+    list.querySelectorAll(".ctrl-card").forEach(card => {
+      card.querySelector(".ctrl-card__header").addEventListener("click", () => {
+        card.classList.toggle("open");
+      });
+    });
+  }
+
+  function osfcWarning(ocsf_class) {
+    if (!ocsf_class || ocsf_class.startsWith("TBD")) return "";
+    if (ocsf_class.toLowerCase().includes("ai_operation")) {
+      return `<span class="ocsf-warning">⚠ Unverified proposal</span>`;
+    }
+    return "";
+  }
+
+  function escHtml(str) {
+    if (!str) return "";
+    return str.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
+
+  function cardHTML(c) {
+    const t = c.threshold || {};
+    const ev = t.evidence || {};
+    const isAgentPaaS = c.operating_models.includes("Agent-PaaS");
+    const stagePill = `<span class="pill pill--stage">${STAGE_LABELS[c.mrm_stage] || c.mrm_stage}</span>`;
+    const agentPill = isAgentPaaS ? `<span class="pill pill--agent">Agent-PaaS</span>` : "";
+
+    const opModels = (c.operating_models || []).map(m => `<code>${escHtml(m)}</code>`).join(" ");
+
+    const mappingRows = Object.entries(c.mappings || {})
+      .filter(([,v]) => v && !v.startsWith("TBD"))
+      .map(([k,v]) => `<div class="detail-field">
+        <div class="detail-field__label">${escHtml(k.replace(/_/g," "))}</div>
+        <div class="detail-field__value">${escHtml(v)}</div>
+      </div>`).join("");
+
+    const thresholdHTML = t.metric ? `
+      <div class="threshold-block">
+        <div class="threshold-block__head">Threshold</div>
+        <div class="threshold-block__body">
+          <div class="detail-field">
+            <div class="detail-field__label">Metric</div>
+            <div class="detail-field__value"><code>${escHtml(t.metric)}</code></div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-field__label">Operator / Param</div>
+            <div class="detail-field__value"><code>${escHtml(t.operator)} ${escHtml(String(t.param))}</code></div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-field__label">Window</div>
+            <div class="detail-field__value"><code>${escHtml(t.window)}</code></div>
+          </div>
+          ${t.param_type ? `<div class="detail-field">
+            <div class="detail-field__label">Param type</div>
+            <div class="detail-field__value"><code>${escHtml(t.param_type)}</code></div>
+          </div>` : ""}
+        </div>
+      </div>` : "";
+
+    const evidenceClass = ev.ocsf_class && !ev.ocsf_class.startsWith("TBD")
+      ? `<code>${escHtml(ev.ocsf_class)}</code> ${osfcWarning(ev.ocsf_class)}`
+      : `<span style="color:var(--slate-400);font-style:italic">No OCSF mapping yet</span>`;
+
+    const evidenceHTML = `
+      <div class="evidence-block">
+        <div class="evidence-block__head">
+          OCSF Evidence
+          ${ev.ocsf_version ? `<span style="font-size:0.65rem;opacity:0.6;font-weight:400">v${escHtml(ev.ocsf_version)}</span>` : ""}
+        </div>
+        <div class="evidence-block__body">
+          <div class="detail-field" style="margin-bottom:var(--sp-2)">
+            <div class="detail-field__label">Class</div>
+            <div class="detail-field__value">${evidenceClass}</div>
+          </div>
+          ${ev.attribute && !ev.attribute.startsWith("TBD") ? `
+          <div class="detail-field">
+            <div class="detail-field__label">Attribute / collection notes</div>
+            <div class="detail-field__value" style="font-size:0.8rem">${escHtml(ev.attribute)}</div>
+          </div>` : ""}
+        </div>
+      </div>`;
+
+    return `
+      <article class="ctrl-card" data-id="${escHtml(c.id)}">
+        <div class="ctrl-card__header">
+          <div class="ctrl-card__layer-badge layer-${escHtml(c.layer)}">${escHtml(c.layer)}</div>
+          <div class="ctrl-card__meta">
+            <div class="ctrl-card__id">${escHtml(c.id)}</div>
+            <div class="ctrl-card__title">${escHtml(c.title)}</div>
+          </div>
+          <div class="ctrl-card__pills">
+            ${stagePill}
+            ${agentPill}
+          </div>
+        </div>
+        <div class="ctrl-card__detail">
+          <p class="ctrl-desc">${escHtml(c.description)}</p>
+          <div class="detail-grid">
+            <div class="detail-field">
+              <div class="detail-field__label">Component</div>
+              <div class="detail-field__value">${escHtml(c.component)}</div>
+            </div>
+            <div class="detail-field">
+              <div class="detail-field__label">Accountable persona</div>
+              <div class="detail-field__value"><code>${escHtml(c.accountable_persona)}</code></div>
+            </div>
+            <div class="detail-field">
+              <div class="detail-field__label">Operating models</div>
+              <div class="detail-field__value">${opModels}</div>
+            </div>
+            <div class="detail-field">
+              <div class="detail-field__label">MRM stage</div>
+              <div class="detail-field__value">${escHtml(STAGE_LABELS[c.mrm_stage] || c.mrm_stage)}</div>
+            </div>
+            ${mappingRows}
+            ${t.breach_action ? `<div class="detail-field" style="grid-column:1/-1">
+              <div class="detail-field__label">Breach action</div>
+              <div class="detail-field__value">${escHtml(t.breach_action)}</div>
+            </div>` : ""}
+          </div>
+          ${thresholdHTML}
+          ${evidenceHTML}
+        </div>
+      </article>`;
+  }
+
+  // ── Filter button wiring ───────────────────────────────────────────────
+  document.querySelectorAll("[data-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const group = btn.dataset.filter;
+      const value = btn.dataset.value;
+      filters[group] = value;
+      document.querySelectorAll(`[data-filter="${group}"]`).forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      render();
+    });
+  });
+
+  document.getElementById("clear-filters").addEventListener("click", () => {
+    filters = { layer: "all", stage: "all", persona: "all", opmodel: "all" };
+    searchQuery = "";
+    document.getElementById("search-input").value = "";
+    document.querySelectorAll("[data-filter]").forEach(b => {
+      b.classList.toggle("active", b.dataset.value === "all");
+    });
+    render();
+  });
+
+  document.getElementById("search-input").addEventListener("input", e => {
+    searchQuery = e.target.value.trim();
+    render();
+  });
+
+})();
+    </script>
+  </body>
+</html>
