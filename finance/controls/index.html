@@ -380,6 +380,15 @@
         </p>
       </div>
 
+      <!-- Status notice -->
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:24px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+        extension of the CoSAI Shared Responsibility Framework, developed independently to
+        demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
+        by CoSAI or any regulator. Cards show only verified regulatory mappings; entries
+        marked TBD in the underlying schema are hidden pending verification.
+      </div>
+
       <div class="browser-layout">
 
         <!-- Sidebar filters -->
@@ -552,8 +561,14 @@
 
     // Expand/collapse
     list.querySelectorAll(".ctrl-card").forEach(card => {
-      card.querySelector(".ctrl-card__header").addEventListener("click", () => {
+      const header = card.querySelector(".ctrl-card__header");
+      const toggle = () => {
         card.classList.toggle("open");
+        header.setAttribute("aria-expanded", card.classList.contains("open") ? "true" : "false");
+      };
+      header.addEventListener("click", toggle);
+      header.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
       });
     });
   }
@@ -635,7 +650,7 @@
 
     return `
       <article class="ctrl-card" data-id="${escHtml(c.id)}">
-        <div class="ctrl-card__header">
+        <div class="ctrl-card__header" role="button" tabindex="0" aria-expanded="false">
           <div class="ctrl-card__layer-badge layer-${escHtml(c.layer)}">${escHtml(c.layer)}</div>
           <div class="ctrl-card__meta">
             <div class="ctrl-card__id">${escHtml(c.id)}</div>

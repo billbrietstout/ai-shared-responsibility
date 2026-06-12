@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Finance - AI Shared Responsibility - CoSAI SRF</title>
+    <title>Healthcare - AI Shared Responsibility - CoSAI SRF</title>
     <meta
       name="description"
-      content="The SRF finance controls schema operationalizes SR 26-2 for AI and agentic systems: 40 controls across five layers, mapped to FINOS AIGF, OWASP LLM Top 10, and the EU AI Act."
+      content="The SRF healthcare controls schema operationalizes FDA TPLC and PCCP guidance for clinical AI: 40 controls across five layers, mapped to ONC HTI-1, HIPAA, EU AI Act, IEC 62304, and ISO 14971, with HL7 FHIR evidence pointers."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -32,7 +32,7 @@
         font-size: 2.2rem;
         font-weight: 800;
         letter-spacing: -0.04em;
-        color: var(--cosai-navy);
+        color: #065f46;
         line-height: 1;
         margin-bottom: var(--sp-2);
       }
@@ -93,15 +93,15 @@
       }
       .page-card:hover {
         box-shadow: var(--shadow-lg);
-        border-color: var(--cosai-blue-soft);
+        border-color: #6ee7b7;
         transform: translateY(-3px);
         text-decoration: none;
         color: inherit;
       }
       .page-card__accent { height: 4px; }
-      .page-card__accent--blue  { background: var(--cosai-blue); }
-      .page-card__accent--green { background: var(--l1); }
-      .page-card__accent--purple{ background: var(--l4); }
+      .page-card__accent--green  { background: #057a55; }
+      .page-card__accent--teal   { background: #0694a2; }
+      .page-card__accent--indigo { background: #5145cd; }
       .page-card__body {
         padding: var(--sp-6);
         flex: 1;
@@ -119,9 +119,9 @@
         flex-shrink: 0;
         margin-bottom: var(--sp-1);
       }
-      .page-card__icon--blue   { background: var(--cosai-blue-light); }
-      .page-card__icon--green  { background: var(--l1-bg); }
-      .page-card__icon--purple { background: var(--l4-bg); }
+      .page-card__icon--green  { background: #d1fae5; }
+      .page-card__icon--teal   { background: #d0f2ff; }
+      .page-card__icon--indigo { background: #e5edff; }
       .page-card__icon svg {
         width: 18px;
         height: 18px;
@@ -130,9 +130,9 @@
         stroke-linejoin: round;
         fill: none;
       }
-      .page-card__icon--blue   svg { stroke: var(--cosai-blue); }
-      .page-card__icon--green  svg { stroke: var(--l1); }
-      .page-card__icon--purple svg { stroke: var(--l4); }
+      .page-card__icon--green  svg { stroke: #057a55; }
+      .page-card__icon--teal   svg { stroke: #0694a2; }
+      .page-card__icon--indigo svg { stroke: #5145cd; }
       .page-card__name {
         font-size: var(--text-lg);
         font-weight: 800;
@@ -160,10 +160,10 @@
         border-radius: 999px;
         border: 1px solid;
       }
-      .tag--blue   { color: var(--cosai-blue); background: var(--cosai-blue-light); border-color: var(--cosai-blue-soft); }
-      .tag--green  { color: var(--l1-text); background: var(--l1-bg); border-color: var(--l1-border); }
+      .tag--green  { color: #065f46; background: #d1fae5; border-color: #6ee7b7; }
+      .tag--teal   { color: #05505c; background: #d0f2ff; border-color: #7edce2; }
+      .tag--indigo { color: #362f78; background: #e5edff; border-color: #b4c6fc; }
       .tag--slate  { color: var(--slate-500); background: var(--slate-100); border-color: var(--slate-200); }
-      .tag--purple { color: var(--l4-text); background: var(--l4-bg); border-color: var(--l4-border); }
       .page-card__footer {
         padding: var(--sp-4) var(--sp-6);
         border-top: 1px solid var(--slate-100);
@@ -175,7 +175,7 @@
       .page-card__cta {
         font-size: var(--text-sm);
         font-weight: 700;
-        color: var(--cosai-blue);
+        color: #057a55;
       }
 
       /* ── Schema strip ─────────────────────────────────────────────── */
@@ -261,13 +261,33 @@
         flex-shrink: 0;
       }
 
-      /* ── Responsive ───────────────────────────────────────────────── */
-      @media (max-width: 640px) {
-        .stat-strip { grid-template-columns: repeat(2, 1fr); }
-        .schema-strip { grid-template-columns: 1fr; }
-        .layer-row { grid-template-columns: 72px 1fr; }
-        .layer-row__count { display: none; }
-        .context-block { padding: var(--sp-4) var(--sp-5); }
+      /* ── Reg crosswalk strip ──────────────────────────────────────── */
+      .reg-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-10);
+      }
+      .reg-pill {
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-4) var(--sp-5);
+        min-width: 160px;
+        flex: 1;
+      }
+      .reg-pill__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: 2px;
+      }
+      .reg-pill__role {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        line-height: var(--leading-snug);
       }
 
       /* ── Breadcrumb ───────────────────────────────────────────────── */
@@ -285,6 +305,15 @@
       .breadcrumb__sep { opacity: 0.4; }
       .breadcrumb__current { opacity: 0.9; }
 
+      /* ── Responsive ───────────────────────────────────────────────── */
+      @media (max-width: 640px) {
+        .stat-strip { grid-template-columns: repeat(2, 1fr); }
+        .schema-strip { grid-template-columns: 1fr; }
+        .layer-row { grid-template-columns: 72px 1fr; }
+        .layer-row__count { display: none; }
+        .context-block { padding: var(--sp-4) var(--sp-5); }
+      }
+
     </style>
   </head>
   <body>
@@ -292,20 +321,21 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <site-nav current="industries"></site-nav>
 
-    <header class="page-hero">
+    <header class="page-hero" style="background: linear-gradient(135deg, #064e3b 0%, #065f46 60%, #047857 100%);">
       <div class="page-hero__inner">
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/industries/">Industries</a>
           <span class="breadcrumb__sep" aria-hidden="true">›</span>
-          <span class="breadcrumb__current">Financial Services</span>
+          <span class="breadcrumb__current">Healthcare</span>
         </nav>
-        <span class="page-hero__eyebrow">Finance vertical · SR 26-2 · FINOS AIGF · OCSF v1.8.0</span>
-        <h1 class="page-hero__title">AI shared responsibility for financial services</h1>
+        <span class="page-hero__eyebrow">Healthcare vertical · FDA TPLC · ONC HTI-1 · HL7 FHIR R4</span>
+        <h1 class="page-hero__title">AI shared responsibility for healthcare</h1>
         <p class="page-hero__lede">
-          SR 26-2 applies existing MRM principles to AI by materiality but leaves
-          the mechanics to each institution. This schema fills that gap: 40 controls
-          across five SRF layers, each with a named accountable party, a measurable
-          threshold, and an OCSF telemetry pointer.
+          FDA's 2025 TPLC draft guidance and final PCCP guidance establish a lifecycle
+          accountability framework for clinical AI, but leave implementation mechanics to
+          each organization. This schema fills that gap: 40 controls across five SRF layers,
+          each with a named accountable persona, a measurable threshold, and an HL7 FHIR
+          AuditEvent evidence pointer.
         </p>
       </div>
     </header>
@@ -317,8 +347,8 @@
         <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
         extension of the CoSAI Shared Responsibility Framework, developed independently to
         demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
-        by CoSAI or any regulator. Regulatory mappings marked TBD await verification against
-        the source documents.
+        by CoSAI, the FDA, or any regulator. Verify regulatory section references against the
+        source documents before use.
       </div>
 
       <!-- Stat strip -->
@@ -333,61 +363,50 @@
         </div>
         <div class="stat-cell">
           <div class="stat-cell__num">4</div>
-          <div class="stat-cell__label">MRM lifecycle stages</div>
+          <div class="stat-cell__label">Clinical lifecycle stages</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-cell__num">5</div>
-          <div class="stat-cell__label">Crosswalk targets</div>
+          <div class="stat-cell__num">7</div>
+          <div class="stat-cell__label">Regulatory crosswalks</div>
         </div>
       </div>
 
       <!-- Context -->
       <div class="context-block" role="note">
         <p>
-          <strong>The SR 26-2 gap.</strong> The Federal Reserve, OCC, and FDIC issued SR 26-2
-          in April 2026, explicitly placing generative and agentic AI out of scope while
-          directing institutions to apply existing MRM principles by materiality. That
-          instruction is necessary but not sufficient: it tells institutions what standard
-          applies, not how to operationalize it for systems that produce text, make autonomous
-          decisions, or execute transactions.
-          SR 26-2 supersedes SR 11-7 (2011) and SR 21-8 (2021) as the governing model risk
-          management standard for Federal Reserve-supervised institutions.
-          <a href="https://www.federalreserve.gov/supervisionreg/srletters/SR2602.htm"
-             target="_blank" rel="noopener" style="font-size:var(--text-xs);white-space:nowrap;">Read the letter ↗</a>
+          <strong>The FDA TPLC gap.</strong> The FDA's January 2025 draft guidance on
+          lifecycle management for AI-enabled device software functions and the August 2025
+          final PCCP guidance establish what clinical AI systems must do across their
+          lifecycle. They do not resolve how a hospital system, a medtech manufacturer,
+          or a health IT developer implements those accountabilities under HIPAA, ONC
+          certification requirements, and EU AI Act obligations simultaneously.
+          <a href="https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-aiml-enabled-medical-devices"
+             target="_blank" rel="noopener" style="font-size:var(--text-xs);white-space:nowrap;">FDA AI/ML SaMD resources ↗</a>
         </p>
         <p>
-          <strong>What the schema provides.</strong> Each control in this schema maps an SRF
-          layer to a specific MRM lifecycle stage (development, independent validation,
-          ongoing monitoring, effective challenge), names the accountable persona, and
-          specifies the OCSF telemetry stream that proves the control is functioning.
-          The same schema applies to a community bank and a GSIB; only the tier parameter
-          table differs.
+          <strong>What the schema provides.</strong> Each control maps an SRF layer to a
+          specific clinical lifecycle stage (design and development, verification and validation,
+          post-market surveillance, human oversight and review), names the accountable
+          persona, and specifies the HL7 FHIR resource and attribute that proves the control
+          is functioning. FHIR AuditEvent, MeasureReport, Provenance, and Device resources
+          replace annual attestations with continuous, machine-readable evidence.
         </p>
         <p>
-          <strong>Mapping status.</strong> The schema targets five crosswalks: SR 26-2,
-          FINOS AIGF, CSA AICM, OWASP LLM Top 10, and the EU AI Act. OWASP mappings are
-          populated where applicable; SR 26-2, FINOS AIGF, AICM, and most EU AI Act entries
-          are marked TBD pending verification against the source documents. OCSF evidence
-          pointers are verified for 13 of 40 controls; the rest are marked TBD. The controls
-          browser shows only verified mappings.
-        </p>
-        <p>
-          <strong>Agent-PaaS coverage.</strong> All 40 controls apply to Agent-PaaS deployments,
-          which carry the largest surface area under SR 26-2's by-analogy application of
-          MRM principles. L3 and L4 controls address agent authorization gates, memory store
-          integrity, guardrail bypass monitoring, and runtime verification: the controls
-          SR 26-2 would require if agentic AI were explicitly in scope.
+          <strong>Agentic clinical AI coverage.</strong> All 40 controls apply to Agent-Clinical
+          deployments, which carry the largest surface area under FDA TPLC and HIPAA minimum-necessary
+          obligations. L3 and L4 controls address human-in-the-loop gates, SMART on FHIR scope
+          enforcement, prompt injection defense, and agentic task boundary monitoring.
         </p>
       </div>
 
       <!-- Pages in this section -->
       <p class="section-label">In this section</p>
-      <nav class="card-grid" aria-label="Finance section pages">
+      <nav class="card-grid" aria-label="Healthcare section pages">
 
-        <a class="page-card" href="/finance/how-to/">
-          <div class="page-card__accent page-card__accent--blue"></div>
+        <a class="page-card" href="/medical/how-to/">
+          <div class="page-card__accent page-card__accent--green"></div>
           <div class="page-card__body">
-            <div class="page-card__icon page-card__icon--blue" aria-hidden="true">
+            <div class="page-card__icon page-card__icon--green" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <path d="M9 11l3 3L22 4"/>
                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
@@ -395,14 +414,14 @@
             </div>
             <div class="page-card__name">How to use the schema</div>
             <p class="page-card__desc">
-              Five-step workflow for model risk validators: operating model selection,
-              persona mapping, tier parameter setting, OCSF evidence collection, and
-              effective challenge documentation. Includes a downloadable workpaper template.
+              Five-step workflow for clinical AI officers, compliance leads, and developers:
+              SaMD risk classification, operating model selection, persona mapping,
+              FHIR evidence collection, and FDA submission documentation.
             </p>
             <div class="page-card__tags">
-              <span class="tag tag--blue">Validators guide</span>
-              <span class="tag tag--slate">XLSX template</span>
-              <span class="tag tag--slate">SR 26-2</span>
+              <span class="tag tag--green">Practitioners guide</span>
+              <span class="tag tag--slate">FDA TPLC</span>
+              <span class="tag tag--slate">PCCP</span>
             </div>
           </div>
           <div class="page-card__footer">
@@ -410,10 +429,10 @@
           </div>
         </a>
 
-        <a class="page-card" href="/finance/controls/">
-          <div class="page-card__accent page-card__accent--green"></div>
+        <a class="page-card" href="/medical/controls/">
+          <div class="page-card__accent page-card__accent--teal"></div>
           <div class="page-card__body">
-            <div class="page-card__icon page-card__icon--green" aria-hidden="true">
+            <div class="page-card__icon page-card__icon--teal" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <rect x="3" y="3" width="7" height="7"/>
                 <rect x="14" y="3" width="7" height="7"/>
@@ -423,14 +442,14 @@
             </div>
             <div class="page-card__name">Controls browser</div>
             <p class="page-card__desc">
-              Browse, filter, and inspect all 40 controls. Filter by SRF layer, MRM stage,
-              operating model, or accountable persona. View threshold details, OCSF evidence
-              pointers, and regulatory mappings for each control.
+              Browse, filter, and inspect all 40 controls. Filter by SRF layer, clinical
+              lifecycle stage, operating model, or accountable persona. View threshold details,
+              FHIR evidence pointers, and regulatory mappings for each control.
             </p>
             <div class="page-card__tags">
               <span class="tag tag--slate">40 controls</span>
               <span class="tag tag--slate">Filter by layer</span>
-              <span class="tag tag--green">Live</span>
+              <span class="tag tag--teal">Live</span>
             </div>
           </div>
           <div class="page-card__footer">
@@ -438,10 +457,10 @@
           </div>
         </a>
 
-        <a class="page-card" href="/data/finance-controls.json" download="finance-controls.json">
-          <div class="page-card__accent page-card__accent--purple"></div>
+        <a class="page-card" href="/data/medical-controls.json" download="medical-controls.json">
+          <div class="page-card__accent page-card__accent--indigo"></div>
           <div class="page-card__body">
-            <div class="page-card__icon page-card__icon--purple" aria-hidden="true">
+            <div class="page-card__icon page-card__icon--indigo" aria-hidden="true">
               <svg viewBox="0 0 24 24">
                 <polyline points="16 18 22 12 16 6"/>
                 <polyline points="8 6 2 12 8 18"/>
@@ -450,11 +469,11 @@
             <div class="page-card__name">Raw schema (JSON)</div>
             <p class="page-card__desc">
               Machine-readable controls schema. Includes all 40 controls with thresholds,
-              OCSF evidence pointers, regulatory mappings, and persona accountability
+              FHIR evidence pointers, regulatory crosswalks, and persona accountability
               assignments. Use as input for tooling, validators, or policy-as-code pipelines.
             </p>
             <div class="page-card__tags">
-              <span class="tag tag--slate">finance-controls.json</span>
+              <span class="tag tag--slate">medical-controls.json</span>
               <span class="tag tag--slate">40 controls</span>
               <span class="tag tag--slate">Apache-2.0</span>
             </div>
@@ -471,31 +490,63 @@
       <div class="schema-strip" role="region" aria-label="Schema design reference">
         <div class="schema-item">
           <div class="schema-item__label">Accountability plane</div>
-          <div class="schema-item__name">SRF layers and personas</div>
+          <div class="schema-item__name">SRF layers and clinical personas</div>
           <p class="schema-item__desc">
-            Each control names one accountable persona. Five layers map to the MRM
-            lifecycle: governance, data, application, platform, and model.
-            One accountable party per control, regardless of operating model.
+            Each control names one accountable persona. Five layers map to the clinical AI
+            lifecycle: governance, data, application, platform, and model. One accountable
+            party per control, regardless of operating model.
           </p>
         </div>
         <div class="schema-item">
           <div class="schema-item__label">Control plane</div>
-          <div class="schema-item__name">Thresholds and parameters</div>
+          <div class="schema-item__name">Safety thresholds and FDA tier parameters</div>
           <p class="schema-item__desc">
-            Controls define the metric, operator, and parameter name. Institutions
-            supply the values per tier. Zero-tolerance and verification controls
-            carry fixed values by design.
+            Controls define the metric, operator, and parameter name. Organizations set
+            values per SaMD risk tier (Class I, II, III). Zero-tolerance and verification
+            controls carry fixed values by design.
           </p>
         </div>
         <div class="schema-item">
           <div class="schema-item__label">Evidence plane</div>
-          <div class="schema-item__name">OCSF v1.8.0 telemetry pointers</div>
+          <div class="schema-item__name">HL7 FHIR R4 resource pointers</div>
           <p class="schema-item__desc">
-            Each threshold names the OCSF event class and attribute that proves
-            the control is operating: verified for 13 of 40 controls so far, TBD
-            for the rest. Continuous, machine-readable evidence;
-            not annual attestations.
+            Each threshold names the FHIR resource type and attribute that proves the control
+            is operating: AuditEvent, MeasureReport, Provenance, Device, DeviceMetric.
+            Continuous, machine-readable evidence; not annual attestations.
           </p>
+        </div>
+      </div>
+
+      <!-- Regulatory crosswalks -->
+      <p class="section-label">Regulatory crosswalks</p>
+      <div class="reg-strip" role="region" aria-label="Regulatory frameworks covered">
+        <div class="reg-pill">
+          <span class="reg-pill__name">FDA TPLC Guidance</span>
+          <span class="reg-pill__role">Total product lifecycle management for AI/ML SaMD (January 2025 draft)</span>
+        </div>
+        <div class="reg-pill">
+          <span class="reg-pill__name">FDA PCCP</span>
+          <span class="reg-pill__role">Predetermined Change Control Plan final guidance (August 2025); crosswalk follows the 2023 FDA, Health Canada, and MHRA guiding principles</span>
+        </div>
+        <div class="reg-pill">
+          <span class="reg-pill__name">ONC HTI-1</span>
+          <span class="reg-pill__role">Algorithmic transparency for certified health IT (effective January 2025)</span>
+        </div>
+        <div class="reg-pill">
+          <span class="reg-pill__name">HIPAA Security Rule</span>
+          <span class="reg-pill__role">45 CFR Part 164 Subpart C: PHI access control, audit, encryption</span>
+        </div>
+        <div class="reg-pill">
+          <span class="reg-pill__name">EU AI Act</span>
+          <span class="reg-pill__role">High-risk AI obligations for clinical AI (full compliance August 2026)</span>
+        </div>
+        <div class="reg-pill">
+          <span class="reg-pill__name">IEC 62304</span>
+          <span class="reg-pill__role">Medical device software lifecycle processes (Edition 2 expected 2026)</span>
+        </div>
+        <div class="reg-pill">
+          <span class="reg-pill__name">ISO 14971</span>
+          <span class="reg-pill__role">Risk management for medical devices: risk file and residual risk</span>
         </div>
       </div>
 
@@ -508,9 +559,10 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Governance and processes</div>
             <div class="layer-row__desc">
-              Risk appetite statement, model inventory policy, agent authorization governance,
-              AUP enforcement, governance review cadence, effective challenge oversight.
-              Accountable persona: <code>ai-system-governance</code>.
+              SaMD risk classification policy, clinical AI system registry, ethics committee charter,
+              governance review cadence, acceptable use policy, clinician override documentation,
+              FDA filing currency, MDR reporting readiness, PCCP change governance.
+              Accountable persona: <code>clinical-ai-governance</code>.
             </div>
           </div>
           <span class="layer-row__count">9 controls</span>
@@ -521,9 +573,11 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Data and training</div>
             <div class="layer-row__desc">
-              Data provenance documentation, classification coverage, bias and quality
-              validation, input drift monitoring (PSI), agent memory store integrity.
-              Accountable persona: <code>data-provider</code>.
+              Training data provenance and consent, demographic representation assessment,
+              PHI isolation in non-production environments, external validation dataset independence,
+              subgroup performance equivalence, input drift monitoring (PSI), real-world data quality,
+              agent context store integrity.
+              Accountable persona: <code>clinical-data-steward</code>.
             </div>
           </div>
           <span class="layer-row__count">8 controls</span>
@@ -534,10 +588,11 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Application and agent</div>
             <div class="layer-row__desc">
-              Input validation and prompt injection defense, output filtering, adversarial
-              red-team validation, injection detection monitoring, agent authorization gates.
-              Accountable personas: <code>application-developer</code> (6 controls) and
-              <code>agentic-platform-provider</code> (2 controls).
+              Human-in-the-loop gate for high-stakes outputs, AI explanation coverage (ONC HTI-1),
+              adversarial robustness testing, clinical workflow usability validation, prompt injection
+              defense, clinician override rate monitoring, safety-critical output filter bypass rate,
+              agentic task boundary enforcement.
+              Accountable persona: <code>clinical-application-developer</code>.
             </div>
           </div>
           <span class="layer-row__count">8 controls</span>
@@ -548,9 +603,11 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Platform and infrastructure</div>
             <div class="layer-row__desc">
-              Guardrail configuration baseline, gateway authentication and authorization,
-              load-time artifact integrity, bypass rate monitoring, authz failure monitoring,
-              runtime guardrail verification. Accountable persona: <code>ai-platform-provider</code>.
+              SMART on FHIR authentication and scoped authorization, FHIR AuditEvent logging
+              completeness, PHI encryption at rest and in transit, platform security assessment,
+              clinical guardrail configuration verification, unauthorized access monitoring,
+              platform availability SLA, runtime model artifact integrity.
+              Accountable persona: <code>health-platform-provider</code>.
             </div>
           </div>
           <span class="layer-row__count">8 controls</span>
@@ -561,9 +618,10 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Model</div>
             <div class="layer-row__desc">
-              Model card completeness, artifact signing and supply-chain provenance,
-              pre-deployment safety evaluation, independent validation, load-time
-              verification, CVE monitoring and disclosure SLA.
+              Model card and SaMD definition statement, SOUP documentation (IEC 62304 §8),
+              ISO 14971 pre-deployment safety evaluation, independent clinical validation,
+              model artifact signing and supply-chain provenance, post-market performance
+              monitoring plan (PCCP-aligned), CVE patch response SLA.
               Accountable persona: <code>model-provider</code>.
             </div>
           </div>

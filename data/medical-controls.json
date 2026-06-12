@@ -1,0 +1,1532 @@
+{
+  "schema_version": "0.1",
+  "srf_version": "1.0",
+  "industry": "healthcare",
+  "description": "Healthcare-sector control schema for the CoSAI AI Shared Responsibility Framework. Maps SRF layers and accountable clinical personas to the FDA AI/ML SaMD lifecycle (design & development, verification & validation, post-market surveillance, human oversight & review), with safety thresholds and HL7 FHIR AuditEvent evidence pointers per control.",
+  "regulatory_context": "The FDA's January 2025 draft guidance on lifecycle management for AI-enabled device software functions (TPLC) and the August 2025 final guidance on Predetermined Change Control Plans establish the primary governance framework for AI-enabled medical devices. PCCP crosswalk references in this schema follow the five guiding principles published by FDA, Health Canada, and MHRA in 2023. ONC's HTI-1 Final Rule (effective January 2025) adds algorithmic transparency requirements for AI embedded in certified health IT. The EU AI Act classifies clinical AI as high-risk with full compliance obligations from August 2026. This schema operationalizes those frameworks across all five SRF layers.",
+  "scaling_rule": "The schema defines measurement methods and parameter names; it does not encode fixed values. Each organization sets parameter values per SaMD risk tier (Class I / Class II / Class III per FDA; low / high risk per EU AI Act). The same schema applies to a rural critical-access hospital and an academic medical center; only the tier parameter table differs. Exception: zero-tolerance controls (where any non-zero value is a control failure) and verification controls (binary pass/fail) carry fixed param values by design. These are identified by param_type 'zero-tolerance' or 'verification'.",
+  "id_convention": "SRF-{layer}-{stage: DEV|VV|PMS|HOR}-{seq}",
+  "evidence_framework": "HL7 FHIR R4: AuditEvent, Device, DeviceMetric, MeasureReport, Observation, Provenance, DocumentReference, and AdverseEvent resources provide machine-readable, continuous evidence. FHIR audit events replace annual attestations as the primary evidence signal.",
+  "operating_models": {
+    "SaMD-Cloud": "Cloud-hosted Software as a Medical Device; regulated under FDA SaMD guidance and EU MDR/IVDR as applicable",
+    "EHR-Embedded": "AI embedded in ONC-certified health IT (EHR); subject to ONC HTI-1 algorithmic transparency requirements",
+    "Agent-Clinical": "Agentic AI performing autonomous clinical workflow tasks (prior auth, care coordination, order entry support); highest surface area under FDA TPLC and HIPAA",
+    "On-Premise": "Hospital-deployed AI on local infrastructure; institution retains platform accountability"
+  },
+  "clinical_lifecycle_stages": {
+    "DEV": "Design & Development: controls established before first clinical use",
+    "VV": "Verification & Validation: controls verified by a party independent of the development team",
+    "PMS": "Post-Market Surveillance: continuous monitoring controls active in production",
+    "HOR": "Human Oversight & Review: governance controls ensuring clinician accountability and challenge"
+  },
+  "controls": [
+    {
+      "id": "SRF-L1-DEV-001",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Clinical AI Risk Classification Policy",
+      "description": "The organization must publish a board- or executive-approved policy assigning FDA SaMD risk tiers (Class I, II, or III) and EU AI Act risk levels (limited, high) to all AI-enabled clinical systems. The policy must name a specific senior executive accountable for clinical AI risk and require tier re-classification upon any significant algorithm change.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 3.1: Intended Use and Device Description",
+        "fda_pccp": "Principle 1: Focused scope with verifiable modifications",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9: Risk management system",
+        "iec_62304": "§4.3: Software safety classification",
+        "iso_14971": "§4: Risk analysis"
+      },
+      "threshold": {
+        "metric": "risk_classification_policy_approved",
+        "description": "Binary: board- or executive-approved AI risk classification policy exists, names an accountable executive, and covers all AI-enabled clinical systems in production.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "status == 'current' AND category.code == 'clinical-ai-policy'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "block-new-ai-system-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L1-DEV-002",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Clinical AI System Inventory and Registry",
+      "description": "The organization must maintain a complete registry of all AI-enabled clinical systems, including SaMD tier, intended use statement, FDA clearance or approval status, accountable clinician, and deployment date. New systems must be registered before clinical use.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 3.2: Device Description and Specifications",
+        "fda_pccp": "N/A",
+        "onc_hti1": "§170.315(b)(11): Decision support interventions",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 51: Registration of high-risk AI systems",
+        "iec_62304": "§5.1: Software development planning",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "ai_system_registry_completeness",
+        "description": "Binary: all AI-enabled clinical systems have a registry entry with required fields before first clinical use.",
+        "evidence": {
+          "fhir_resource": "Device",
+          "attribute": "status, deviceName, version, owner, identifier (FDA 510k/De Novo number)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-system-onboarding",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L1-DEV-003",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Clinical AI Ethics Committee and Oversight Charter",
+      "description": "The organization must establish a clinical AI governance body (ethics committee, AI review board, or equivalent) with a named chairperson and clear CMO or CMIO accountability. The charter must define scope, meeting cadence, escalation criteria, and authority to suspend AI-enabled clinical systems.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 4.1: Organizational governance",
+        "fda_pccp": "Principle 3: Evidence-based with appropriate oversight",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9: Risk management; Art. 14: Human oversight",
+        "iec_62304": "§4.1: Quality management",
+        "iso_14971": "§3: General requirements"
+      },
+      "threshold": {
+        "metric": "ai_governance_body_chartered",
+        "description": "Binary: clinical AI governance body exists with approved charter, named chairperson, and documented CMO/CMIO accountability.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "status == 'current' AND category.code == 'governance-charter'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "escalate-to-board"
+      }
+    },
+    {
+      "id": "SRF-L1-HOR-001",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Clinical AI Governance Review Cadence",
+      "description": "The clinical AI governance body must convene on the approved cadence (minimum quarterly for high-risk SaMD, annually for low-risk) and produce documented reviews of system performance, adverse events, and algorithm change requests. Missed reviews constitute a control failure.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "human-oversight-review",
+      "mappings": {
+        "fda_tplc": "Section 4.1: Lifecycle management governance",
+        "fda_pccp": "Principle 5: Lifecycle-oriented oversight",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9(6): Risk management review",
+        "iec_62304": "§4.1: Quality system review",
+        "iso_14971": "§3.4: Risk management review"
+      },
+      "threshold": {
+        "metric": "governance_review_completed_on_cadence",
+        "description": "Binary per review period: governance review meeting occurred, quorum met, and minutes archived within the approved cadence.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'governance-review' AND outcome == '0' (success)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-approved-cadence",
+        "breach_action": "escalate-to-cmo"
+      }
+    },
+    {
+      "id": "SRF-L1-HOR-002",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Acceptable Use Policy for Clinical AI",
+      "description": "The organization must publish and enforce an acceptable use policy (AUP) covering all clinical AI systems in use. The AUP must address: permitted use cases, prohibited uses, required training for clinical staff, and consequences of misuse. Policy currency must be verified annually.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "human-oversight-review",
+      "mappings": {
+        "fda_tplc": "Section 2.4: User interface and intended use",
+        "fda_pccp": "N/A",
+        "onc_hti1": "§170.315(b)(11)(vi): Transparency disclosures",
+        "hipaa": "45 CFR §164.308(a)(5): Security awareness training",
+        "eu_ai_act": "Art. 13: Transparency; Art. 4: AI literacy",
+        "iec_62304": "N/A",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "aup_current_and_enforced",
+        "description": "Binary: AUP published, covers all deployed AI systems, and clinical staff acknowledgment rate meets threshold.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "status == 'current' AND category.code == 'acceptable-use-policy'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "suspend-ai-clinical-access"
+      }
+    },
+    {
+      "id": "SRF-L1-HOR-003",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Clinician Override Documentation Policy",
+      "description": "The organization must maintain a policy requiring clinicians to document when they override an AI recommendation, including the clinical rationale. Override events must be captured in the EHR audit log and reviewed as part of the governance cadence defined in SRF-L1-HOR-001.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "human-oversight-review",
+      "mappings": {
+        "fda_tplc": "Section 4.3: Post-market performance feedback",
+        "fda_pccp": "Principle 2: Risk-based with patient safety focus",
+        "onc_hti1": "§170.315(b)(11): DSI transparency including override tracking",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 14(4): Human oversight measures",
+        "iec_62304": "N/A",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "override_documentation_policy_enforced",
+        "description": "Binary: override documentation policy exists, is enforced in EHR workflow, and override events are captured in AuditEvent.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'ai-recommendation-override' AND purposeOfEvent captured",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "continuous",
+        "breach_action": "escalate-to-cmo-and-governance-body"
+      }
+    },
+    {
+      "id": "SRF-L1-PMS-001",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "FDA Regulatory Filing Currency",
+      "description": "All SaMD in clinical production must have current FDA marketing authorization (510(k), De Novo, or PMA as applicable) or be classified as non-device clinical decision support (CDS) under the 21st Century Cures Act with documented rationale. Filing status must be tracked in the system registry and reviewed at each governance cycle.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 3: Marketing authorization and lifecycle",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 43: Conformity assessment",
+        "iec_62304": "§4.3: Regulatory compliance",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "regulatory_filing_current",
+        "description": "Binary: all production SaMD have current FDA marketing authorization or documented CDS non-device determination.",
+        "evidence": {
+          "fhir_resource": "Device",
+          "attribute": "identifier (FDA 510k/De Novo number), property (authorization status)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "continuous",
+        "breach_action": "escalate-to-legal-and-suspend-system"
+      }
+    },
+    {
+      "id": "SRF-L1-PMS-002",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Medical Device Adverse Event Reporting Readiness",
+      "description": "The organization must maintain a documented process for detecting, evaluating, and reporting AI-related adverse events to FDA per 21 CFR Part 803 (Medical Device Reporting). The process must be tested annually with a tabletop exercise, and all AI-related adverse events must be logged in FHIR AdverseEvent.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4.4: Adverse event reporting",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 73: Reporting of serious incidents",
+        "iec_62304": "§6.2: Problem resolution process",
+        "iso_14971": "§10: Post-production information"
+      },
+      "threshold": {
+        "metric": "mdr_reporting_process_tested",
+        "description": "Binary: MDR reporting process documented, tested annually, and all AI-related adverse events captured in FHIR AdverseEvent.",
+        "evidence": {
+          "fhir_resource": "AdverseEvent",
+          "attribute": "actuality, seriousness, suspectEntity (device reference)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-test",
+        "breach_action": "escalate-to-quality-and-compliance"
+      }
+    },
+    {
+      "id": "SRF-L1-PMS-003",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "PCCP Algorithm Change Governance",
+      "description": "For AI systems with an FDA-approved Predetermined Change Control Plan, the organization must operate a change governance process that ensures all algorithm updates fall within the approved PCCP modification scope. Changes outside PCCP scope require a new FDA submission before deployment.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4: Total lifecycle change management",
+        "fda_pccp": "All five principles",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 43: Conformity of substantially modified systems",
+        "iec_62304": "§6: Software maintenance",
+        "iso_14971": "§10: Post-production feedback"
+      },
+      "threshold": {
+        "metric": "pccp_change_governance_active",
+        "description": "Binary: PCCP-aligned change review occurs before each algorithm update; unauthorized out-of-scope updates are blocked.",
+        "evidence": {
+          "fhir_resource": "Provenance",
+          "attribute": "entity (model version), activity.code == 'pccp-change-review', agent (reviewer)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-each-model-update",
+        "breach_action": "rollback-and-escalate-to-regulatory"
+      }
+    },
+    {
+      "id": "SRF-L2-DEV-001",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "Training Data Provenance and Consent Documentation",
+      "description": "All training datasets must have documented provenance including source institution(s), collection period, IRB approval or waiver, HIPAA authorization or de-identification certification per 45 CFR §164.514, and applicable data use agreements. Provenance must be archived and linkable to the deployed model version.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 2.2: Data management for AI/ML SaMD",
+        "fda_pccp": "Principle 3: Evidence-based",
+        "onc_hti1": "§170.315(b)(11)(iii): Training data description",
+        "hipaa": "45 CFR §164.514: De-identification standards",
+        "eu_ai_act": "Art. 10: Data and data governance",
+        "iec_62304": "N/A",
+        "iso_14971": "§4.2: Risk analysis data"
+      },
+      "threshold": {
+        "metric": "training_data_provenance_documented",
+        "description": "Binary: all training datasets have complete provenance records including source, IRB/HIPAA authorization, and de-identification certification, linked to the model version in production.",
+        "evidence": {
+          "fhir_resource": "Provenance",
+          "attribute": "entity (dataset), agent (source institution, IRB), recorded (date)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-model-development",
+        "breach_action": "block-model-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L2-DEV-002",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "Demographic Representation Assessment",
+      "description": "Training data for clinical AI systems must meet minimum representation thresholds for demographic groups (age, sex, race/ethnicity, geographic region) proportionate to the intended patient population. Assessment results must be disclosed per ONC HTI-1 transparency requirements.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 2.3: Bias, fairness, and representation",
+        "fda_pccp": "N/A",
+        "onc_hti1": "§170.315(b)(11)(ii): Inclusivity and bias description",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 10(2)(f): Appropriate data governance including bias examination",
+        "iec_62304": "N/A",
+        "iso_14971": "§4.3: Intended use analysis"
+      },
+      "threshold": {
+        "metric": "demographic_representation_rate",
+        "description": "Minimum representation fraction for each protected demographic group in training data, relative to the intended deployment population.",
+        "evidence": {
+          "fhir_resource": "MeasureReport",
+          "attribute": "measure (demographic-representation), group.stratifier (age, sex, race), measureScore",
+          "fhir_version": "R4"
+        },
+        "operator": ">=",
+        "param": "{min_representation_fraction}",
+        "param_type": "tier-configurable",
+        "window": "at-model-development",
+        "breach_action": "block-model-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L2-DEV-003",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "PHI Isolation in Non-Production Environments",
+      "description": "Protected Health Information must not appear in development, test, or staging environments unless those environments meet full HIPAA Security Rule requirements. Automated PHI scanning must run on all non-production data stores, and any detection is an immediate zero-tolerance breach.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "N/A",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.312(a)(1): Access control; §164.308(a)(3): Workforce access",
+        "eu_ai_act": "Art. 10(5): Special categories data in testing",
+        "iec_62304": "§5.7: Software testing (data handling)",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "phi_detected_in_nonprod_rate",
+        "description": "Zero tolerance: PHI detected in any non-HIPAA-compliant non-production environment.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == '110110' (PHI access event in nonprod) AND outcome != '0'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "immediate-environment-lockdown-and-incident-response"
+      }
+    },
+    {
+      "id": "SRF-L2-VV-001",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "External Validation Dataset Independence",
+      "description": "Clinical AI validation must use a cohort that is geographically and demographically distinct from the training dataset, collected from a different institution or time period. The independence of the validation cohort must be documented in the validation report and archived with the regulatory submission package.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 3.4: Performance testing and validation",
+        "fda_pccp": "Principle 4: Transparent with regulator",
+        "onc_hti1": "§170.315(b)(11)(iv): External validation process",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 10(3): Testing data relevance and appropriateness",
+        "iec_62304": "§5.7: System and software testing",
+        "iso_14971": "§7: Risk evaluation"
+      },
+      "threshold": {
+        "metric": "validation_cohort_independence_documented",
+        "description": "Binary: validation cohort documented as geographically and demographically distinct from training data, from at least one external institution.",
+        "evidence": {
+          "fhir_resource": "MeasureReport",
+          "attribute": "measure (external-validation), reporter (external institution), period",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L2-VV-002",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "Subgroup Performance Equivalence",
+      "description": "Model performance (primary metric) must not degrade beyond the configured threshold across protected demographic subgroups (age, sex, race/ethnicity). Subgroup analysis must be included in the validation report and disclosed per ONC HTI-1 transparency requirements.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 3.4: Subgroup analysis",
+        "fda_pccp": "N/A",
+        "onc_hti1": "§170.315(b)(11)(ii): Bias description and fairness",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 10(2)(f): Bias examination; Art. 15: Accuracy across groups",
+        "iec_62304": "N/A",
+        "iso_14971": "§5: Risk estimation"
+      },
+      "threshold": {
+        "metric": "subgroup_performance_gap_rate",
+        "description": "Maximum allowable performance degradation (e.g., AUC drop, sensitivity drop) for any protected subgroup relative to overall model performance.",
+        "evidence": {
+          "fhir_resource": "MeasureReport",
+          "attribute": "measure (subgroup-performance), group.stratifier (demographic), measureScore",
+          "fhir_version": "R4"
+        },
+        "operator": "<=",
+        "param": "{max_subgroup_performance_gap}",
+        "param_type": "tier-configurable",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment-and-remediate-bias"
+      }
+    },
+    {
+      "id": "SRF-L2-PMS-001",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "Input Distribution Drift Monitoring",
+      "description": "Production clinical AI systems must monitor for significant shifts in the distribution of input data relative to the training distribution. Population Stability Index (PSI) or equivalent metric must be computed continuously and trigger re-validation when the threshold is exceeded.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4.3: Real-world performance monitoring",
+        "fda_pccp": "Principle 5: Lifecycle-oriented; monitoring plan required",
+        "onc_hti1": "§170.315(b)(11)(v): Ongoing maintenance",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 72: Post-market monitoring obligations",
+        "iec_62304": "§6.2: Problem and modification process",
+        "iso_14971": "§10: Post-production activities"
+      },
+      "threshold": {
+        "metric": "psi_score",
+        "description": "Population Stability Index score for primary input features. PSI > 0.25 signals significant distribution shift requiring re-validation.",
+        "evidence": {
+          "fhir_resource": "Observation",
+          "attribute": "code.code == 'psi-score', value[x], effectiveDateTime",
+          "fhir_version": "R4"
+        },
+        "operator": "<=",
+        "param": "{max_psi_score}",
+        "param_type": "tier-configurable",
+        "window": "rolling-30d",
+        "breach_action": "trigger-revalidation-and-notify-governance"
+      }
+    },
+    {
+      "id": "SRF-L2-PMS-002",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "Real-World Data Quality Scoring",
+      "description": "Production inference inputs must be scored for data quality (completeness, value range validity, temporal consistency) on every inference cycle. Inferences on inputs below the data quality threshold must be flagged to the clinician before the AI recommendation is surfaced.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4.2: Real-world data quality",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 10(3): Testing data relevance in production",
+        "iec_62304": "§6.2: Software problem resolution",
+        "iso_14971": "§10.2: Information from post-production phase"
+      },
+      "threshold": {
+        "metric": "data_completeness_rate",
+        "description": "Fraction of required input features present and within valid range for each inference request.",
+        "evidence": {
+          "fhir_resource": "MeasureReport",
+          "attribute": "measure (data-quality-score), measureScore, period",
+          "fhir_version": "R4"
+        },
+        "operator": ">=",
+        "param": "{min_data_completeness_rate}",
+        "param_type": "tier-configurable",
+        "window": "per-inference",
+        "breach_action": "flag-recommendation-to-clinician-with-data-quality-warning"
+      }
+    },
+    {
+      "id": "SRF-L2-PMS-003",
+      "layer": "L2",
+      "component": "Data & Training",
+      "title": "Agent Context Store Integrity",
+      "description": "For agentic clinical AI systems that maintain session memory or patient context stores (e.g., FHIR-backed context), the integrity of context data must be verified at each use. Context stores must be audited for unauthorized modification, and audit records must reference the source FHIR Provenance.",
+      "accountable_persona": "clinical-data-steward",
+      "operating_models": [
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4.2: Data integrity in production",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.312(c)(1): Integrity controls",
+        "eu_ai_act": "Art. 9: Risk management for agentic AI",
+        "iec_62304": "§5.7: Data integrity verification",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "context_store_integrity_verified",
+        "description": "Binary per session: context store integrity hash check passes before each agent inference use.",
+        "evidence": {
+          "fhir_resource": "Provenance",
+          "attribute": "entity (context store), signature, recorded",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-agent-session",
+        "breach_action": "invalidate-session-and-alert-clinical-staff"
+      }
+    },
+    {
+      "id": "SRF-L3-DEV-001",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "Human-in-the-Loop Gate for High-Stakes Outputs",
+      "description": "Clinical AI outputs classified as high-risk (diagnosis, treatment selection, medication dosing, procedure recommendation) must be surfaced as advisory only and require explicit clinician confirmation before any downstream action is taken. The confirmation step must be logged in the EHR AuditEvent.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 2.4: Human-machine interface design",
+        "fda_pccp": "N/A",
+        "onc_hti1": "§170.315(b)(11): DSI transparency and clinician review",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 14: Human oversight; Art. 14(4)(e): Intervention capability",
+        "iec_62304": "§5.2: Software requirements (user interface safety)",
+        "iso_14971": "§6: Risk control (human oversight as control)"
+      },
+      "threshold": {
+        "metric": "hitl_gate_enforced",
+        "description": "Binary: high-risk AI recommendations require and record explicit clinician confirmation before any clinical action.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'ai-recommendation-confirmed', agent (clinician), purposeOfEvent",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-high-risk-inference",
+        "breach_action": "block-autonomous-action-and-alert-developer"
+      }
+    },
+    {
+      "id": "SRF-L3-DEV-002",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "AI Explanation Coverage for Clinical Decisions",
+      "description": "Clinical AI systems must provide a human-interpretable rationale with each recommendation, meeting ONC HTI-1 transparency requirements for certified health IT. Explanation coverage rate (fraction of inferences with an explanation surfaced to the clinician) must meet the configured threshold.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 2.4: Transparency of AI outputs",
+        "fda_pccp": "Principle 4: Transparent",
+        "onc_hti1": "§170.315(b)(11)(vi)(A): DSI transparency; rationale disclosure",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 13: Transparency and provision of information",
+        "iec_62304": "§5.2: Software requirements (output transparency)",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "explanation_coverage_rate",
+        "description": "Fraction of clinical AI inferences for which a human-interpretable rationale is surfaced to the clinician at the point of care.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "extension (ai-explanation-provided == true), type.code == 'ai-inference'",
+          "fhir_version": "R4"
+        },
+        "operator": ">=",
+        "param": "{min_explanation_coverage_rate}",
+        "param_type": "tier-configurable",
+        "window": "rolling-7d",
+        "breach_action": "alert-product-team-and-notify-governance"
+      }
+    },
+    {
+      "id": "SRF-L3-DEV-003",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "Adversarial Robustness Testing Before Clinical Deployment",
+      "description": "Clinical AI systems must undergo adversarial input testing (red-team exercises) before first deployment to identify failure modes under atypical or manipulated inputs. For LLM-based clinical tools, testing must include prompt injection, jailbreak attempts, and clinical misinformation scenarios. Results must be documented and critical findings remediated before deployment.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 3.3: Algorithmic testing including corner cases",
+        "fda_pccp": "Principle 2: Risk-based",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9(5)(b): Testing of high-risk AI systems",
+        "iec_62304": "§5.7: Software testing",
+        "iso_14971": "§6.4: Risk control verification"
+      },
+      "threshold": {
+        "metric": "adversarial_testing_completed",
+        "description": "Binary: adversarial/red-team testing completed and critical findings remediated before first clinical deployment.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "category.code == 'adversarial-test-report', status == 'current'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L3-VV-001",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "Clinical Workflow Usability Validation",
+      "description": "Clinical AI applications must undergo usability testing with representative clinical end users (clinicians, nurses, pharmacists as applicable) before deployment, following FDA Human Factors guidance and IEC 62366. Usability issues rated as safety-critical must be resolved before deployment.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 2.4: Human-machine interface; Human Factors guidance",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 14(4): Measures for human oversight",
+        "iec_62304": "§5.7: System testing",
+        "iso_14971": "§5.6: Usability risk analysis (per IEC 62366)"
+      },
+      "threshold": {
+        "metric": "usability_study_completed",
+        "description": "Binary: usability study with representative clinical users completed; safety-critical issues resolved before deployment.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "category.code == 'usability-study-report', status == 'current'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L3-VV-002",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "Prompt Injection and Input Manipulation Defense",
+      "description": "LLM-based clinical AI tools must implement and validate defenses against prompt injection, jailbreak, and adversarial input manipulation before clinical deployment. Defense mechanisms must be verified through structured testing and must be validated as part of the V&V package.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 3.3: Generative AI-specific testing",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.308(a)(1): Security risk analysis",
+        "eu_ai_act": "Art. 9(5)(b): Testing including cybersecurity",
+        "iec_62304": "§5.7: Software testing (security)",
+        "iso_14971": "§6.4: Risk control verification"
+      },
+      "threshold": {
+        "metric": "injection_defense_validated",
+        "description": "Binary: prompt injection and input manipulation defenses validated through structured testing before clinical deployment of any LLM-based clinical tool.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'injection-detection', outcome (detection successful)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L3-PMS-001",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "Clinician Override Rate Monitoring",
+      "description": "The rate at which clinicians override or dismiss AI recommendations must be monitored continuously. Override rates exceeding the threshold signal poor model calibration or alert fatigue and must trigger a governance review. Override rate data must be stratified by recommendation type, care setting, and clinician role.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4.3: Real-world performance monitoring",
+        "fda_pccp": "Principle 5: Lifecycle monitoring",
+        "onc_hti1": "§170.315(b)(11)(v): Ongoing maintenance assessment",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 72: Post-market monitoring",
+        "iec_62304": "§6.2: Problem and modification process",
+        "iso_14971": "§10.2: Post-production information"
+      },
+      "threshold": {
+        "metric": "clinician_override_rate",
+        "description": "Fraction of AI recommendations dismissed or overridden by clinicians within a rolling 30-day window. High override rates indicate poor model fit or alert fatigue.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'ai-recommendation-override', agent (clinician), period",
+          "fhir_version": "R4"
+        },
+        "operator": "<=",
+        "param": "{max_clinician_override_rate}",
+        "param_type": "tier-configurable",
+        "window": "rolling-30d",
+        "breach_action": "trigger-governance-review-and-consider-model-revalidation"
+      }
+    },
+    {
+      "id": "SRF-L3-PMS-002",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "Safety-Critical Output Filter Bypass Rate",
+      "description": "Clinical AI systems with safety-critical output filters (e.g., filters blocking lethal drug dose recommendations, filters enforcing contraindication checks) must maintain a zero-tolerance bypass rate. Any filter bypass must be treated as a patient safety incident.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4.3: Safety monitoring",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9: Risk management system; Art. 15: Accuracy and robustness",
+        "iec_62304": "§6.2: Problem resolution",
+        "iso_14971": "§9: Residual risk evaluation"
+      },
+      "threshold": {
+        "metric": "output_filter_bypass_rate",
+        "description": "Zero tolerance: any safety-critical output filter bypass constitutes an immediate patient safety incident.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'safety-filter-bypass', outcome != '0'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "immediate-patient-safety-escalation-and-system-suspend"
+      }
+    },
+    {
+      "id": "SRF-L3-PMS-003",
+      "layer": "L3",
+      "component": "Application & Agent",
+      "title": "Agentic Task Boundary Enforcement",
+      "description": "Agentic clinical AI systems must be limited to authorized FHIR endpoint scopes defined at deployment. Scope creep, accessing FHIR resources or patient data outside the authorized SMART on FHIR scope, must be detected and blocked in real time.",
+      "accountable_persona": "clinical-application-developer",
+      "operating_models": [
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 2.4: Intended use boundary enforcement",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.312(a)(1): Minimum necessary access",
+        "eu_ai_act": "Art. 9: Risk management for autonomous AI",
+        "iec_62304": "N/A",
+        "iso_14971": "§6: Risk control (scope limitation)"
+      },
+      "threshold": {
+        "metric": "unauthorized_scope_access_rate",
+        "description": "Zero tolerance: agentic AI accessing FHIR resources outside authorized SMART on FHIR scopes.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'unauthorized-scope-access', outcome != '0'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "terminate-agent-session-and-revoke-token"
+      }
+    },
+    {
+      "id": "SRF-L4-DEV-001",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "SMART on FHIR Authentication and Scoped Authorization",
+      "description": "All clinical AI integrations with EHR systems must use OAuth 2.0 with SMART on FHIR scopes. Service accounts must not hold over-privileged resource-level access. Scope grants must be reviewed at each governance cycle and reduced to minimum necessary per HIPAA minimum necessary standard.",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "N/A",
+        "fda_pccp": "N/A",
+        "onc_hti1": "§170.315(g)(10): Standardized API (SMART on FHIR)",
+        "hipaa": "45 CFR §164.312(d): Person authentication; §164.312(a)(1): Access control",
+        "eu_ai_act": "Art. 9: Risk management (access security)",
+        "iec_62304": "§5.2: Software requirements (authentication)",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "smart_fhir_auth_enforced",
+        "description": "Binary: all clinical AI integrations authenticate via OAuth2/SMART on FHIR; no over-privileged service accounts in production.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == '110114' (User Authentication), outcome == '0'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "continuous",
+        "breach_action": "revoke-access-and-alert-security"
+      }
+    },
+    {
+      "id": "SRF-L4-DEV-002",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "FHIR AuditEvent Logging Completeness",
+      "description": "All AI-assisted clinical decisions, recommendation events, override events, and PHI access events must generate FHIR AuditEvent records. Audit log completeness rate (fraction of qualifying events with a corresponding AuditEvent) must meet the configured threshold, per 21 CFR Part 11 and HIPAA audit controls.",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "N/A",
+        "fda_pccp": "N/A",
+        "onc_hti1": "§170.315(d)(2): Auditing actions on health information",
+        "hipaa": "45 CFR §164.312(b): Audit controls",
+        "eu_ai_act": "Art. 12: Record-keeping",
+        "iec_62304": "N/A",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "audit_log_completeness_rate",
+        "description": "Fraction of qualifying clinical AI events (inferences, overrides, PHI access) with a corresponding FHIR AuditEvent record.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "coverage metric (qualifying events with AuditEvent / total qualifying events)",
+          "fhir_version": "R4"
+        },
+        "operator": ">=",
+        "param": "{min_audit_completeness_rate}",
+        "param_type": "tier-configurable",
+        "window": "rolling-24h",
+        "breach_action": "alert-platform-team-and-escalate-to-compliance"
+      }
+    },
+    {
+      "id": "SRF-L4-DEV-003",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "PHI Encryption at Rest and in Transit",
+      "description": "All PHI processed by clinical AI systems must be encrypted at rest (minimum AES-256) and in transit (minimum TLS 1.2). Encryption configuration must be verified at deployment and monitored continuously. Any unencrypted PHI transmission is a zero-tolerance HIPAA Security Rule violation.",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "N/A",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.312(a)(2)(iv): Encryption; §164.312(e)(2)(ii): Encryption in transit",
+        "eu_ai_act": "Art. 9: Risk management (data security)",
+        "iec_62304": "§5.2: Software requirements (data security)",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "phi_encryption_enforced",
+        "description": "Binary: all PHI encrypted at rest (AES-256) and in transit (TLS 1.2+); any unencrypted PHI transmission is zero-tolerance.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == '110112' (Query), security.label (encryption status)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "continuous",
+        "breach_action": "immediate-breach-response-and-hipaa-incident-declaration"
+      }
+    },
+    {
+      "id": "SRF-L4-VV-001",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "Platform Security Assessment Before Clinical Deployment",
+      "description": "Clinical AI platforms must undergo a penetration test and vulnerability scan before clinical deployment. Critical and high-severity findings must be remediated before go-live. Results must be archived with the regulatory submission package and reviewed at each governance cycle.",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 3.2: Cybersecurity considerations",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.308(a)(8): Evaluation standard",
+        "eu_ai_act": "Art. 9(5)(b): Testing including cybersecurity",
+        "iec_62304": "§5.7: Software testing (security)",
+        "iso_14971": "§6.4: Risk control verification"
+      },
+      "threshold": {
+        "metric": "platform_pentest_completed",
+        "description": "Binary: penetration test and vulnerability scan completed before clinical deployment; critical and high findings remediated.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "category.code == 'security-assessment-report', status == 'current'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L4-VV-002",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "Clinical Guardrail Configuration Baseline Verification",
+      "description": "All clinical safety guardrails (contraindication checks, dosing limits, clinical alert thresholds, content safety filters) must be verified as active and correctly configured at platform deployment. Verification must be automated and produce a signed baseline record.",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 3.2: Safety controls verification",
+        "fda_pccp": "Principle 1: Focused and verifiable",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9: Risk management controls active",
+        "iec_62304": "§5.7: System testing (guardrail verification)",
+        "iso_14971": "§6.4: Risk control verification"
+      },
+      "threshold": {
+        "metric": "guardrail_configuration_verified",
+        "description": "Binary: all clinical safety guardrails verified active at deployment; signed baseline record produced.",
+        "evidence": {
+          "fhir_resource": "DeviceMetric",
+          "attribute": "operationalStatus == 'on', calibration.time, source (device reference)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-deployment",
+        "breach_action": "block-clinical-activation"
+      }
+    },
+    {
+      "id": "SRF-L4-PMS-001",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "Unauthorized Access Attempt Monitoring",
+      "description": "Unauthorized access attempts to clinical AI systems or PHI held by the platform must be detected and alerted in real time. Any confirmed unauthorized access is a zero-tolerance HIPAA Security Incident requiring documented breach assessment per 45 CFR §164.308(a)(6).",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4: Post-market cybersecurity monitoring",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.308(a)(6)(ii): Response and reporting",
+        "eu_ai_act": "Art. 72: Post-market monitoring including security",
+        "iec_62304": "N/A",
+        "iso_14971": "§10.2: Post-production information"
+      },
+      "threshold": {
+        "metric": "confirmed_unauthorized_access_rate",
+        "description": "Zero tolerance: any confirmed unauthorized access to clinical AI systems or PHI requires immediate breach assessment.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == '110113' (Security Alert), outcome != '0'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "immediate-security-incident-response-and-hipaa-breach-assessment"
+      }
+    },
+    {
+      "id": "SRF-L4-PMS-002",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "Clinical AI Platform Availability SLA",
+      "description": "Clinical AI platforms integrated into clinical workflows must meet an availability SLA calibrated to the clinical dependency risk tier. Systems supporting emergency or critical-care decisions require a higher SLA than administrative AI tools. Downtime must be logged and root cause documented.",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4: Post-market performance",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.312(a)(2)(ii): Emergency access; §164.310(a)(2)(i): Contingency plan",
+        "eu_ai_act": "Art. 15: Accuracy, robustness, and cybersecurity",
+        "iec_62304": "N/A",
+        "iso_14971": "§6: Risk control (availability)"
+      },
+      "threshold": {
+        "metric": "platform_availability_rate",
+        "description": "Fraction of scheduled uptime during which the clinical AI platform is available, measured over a rolling 30-day period.",
+        "evidence": {
+          "fhir_resource": "OperationOutcome",
+          "attribute": "issue.severity (for downtime events), diagnostics (root cause)",
+          "fhir_version": "R4"
+        },
+        "operator": ">=",
+        "param": "{min_platform_availability_rate}",
+        "param_type": "tier-configurable",
+        "window": "rolling-30d",
+        "breach_action": "alert-operations-and-review-contingency-plan"
+      }
+    },
+    {
+      "id": "SRF-L4-PMS-003",
+      "layer": "L4",
+      "component": "Platform & Infrastructure",
+      "title": "Runtime Model Artifact Integrity Verification",
+      "description": "The cryptographic hash of the deployed model artifact must be verified at each model load. A hash mismatch between the loaded artifact and the signed baseline must trigger an immediate alert, prevent the model from serving clinical inferences, and initiate incident response.",
+      "accountable_persona": "health-platform-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4: Post-market integrity assurance",
+        "fda_pccp": "Principle 1: Verifiable modification scope",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.312(c)(1): Integrity",
+        "eu_ai_act": "Art. 9: Risk management (integrity controls)",
+        "iec_62304": "§6.3: Software modification process",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "model_artifact_integrity_verified",
+        "description": "Binary per model load: cryptographic hash of loaded model artifact matches signed baseline.",
+        "evidence": {
+          "fhir_resource": "Provenance",
+          "attribute": "entity (model artifact), signature (hash), recorded",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-each-model-load",
+        "breach_action": "block-model-serve-and-initiate-incident-response"
+      }
+    },
+    {
+      "id": "SRF-L5-DEV-001",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Model Card and SaMD Definition Statement",
+      "description": "Every clinical AI model must have a model card documenting: intended use and patient population, contraindications, training data summary, performance characteristics (sensitivity, specificity, AUC by subgroup), known limitations, and update history. The model card must map to the IEC 62304 §5.2 software requirements specification and be included in the FDA marketing submission.",
+      "accountable_persona": "model-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 2.1: Device description and labeling",
+        "fda_pccp": "Principle 4: Transparent documentation",
+        "onc_hti1": "§170.315(b)(11)(i): DSI source attributes disclosure",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 11: Technical documentation; Art. 13: Transparency",
+        "iec_62304": "§5.2: Software requirements specification",
+        "iso_14971": "§4.2: Intended use description"
+      },
+      "threshold": {
+        "metric": "model_card_complete",
+        "description": "Binary: model card exists with all required fields, linked to the deployed model version, and available for regulatory inspection.",
+        "evidence": {
+          "fhir_resource": "Device",
+          "attribute": "deviceName, version, property (intended-use, training-data-summary, performance-characteristics), note",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-model-development",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L5-DEV-002",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Software of Unknown Provenance (SOUP) Documentation",
+      "description": "All third-party AI components used in clinical AI systems, including pre-trained foundation models, inference frameworks, and data preprocessing libraries, must be documented as Software of Unknown Provenance per IEC 62304 §8. SOUP documentation must include version, license, known vulnerabilities, and validation evidence.",
+      "accountable_persona": "model-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 2.2: Algorithm description (component provenance)",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 11: Technical documentation",
+        "iec_62304": "§8: Software configuration management; SOUP documentation",
+        "iso_14971": "§4.2: Hazard identification (from third-party components)"
+      },
+      "threshold": {
+        "metric": "soup_documentation_complete",
+        "description": "Binary: all third-party AI components documented as SOUP with version, license, known vulnerabilities, and validation evidence.",
+        "evidence": {
+          "fhir_resource": "Device",
+          "attribute": "parent (reference to host system), deviceName (component), version, property (license, cve-status)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-model-development",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L5-DEV-003",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Pre-Deployment Safety Evaluation (ISO 14971)",
+      "description": "A formal risk-benefit analysis must be completed for every clinical AI model before first deployment, following ISO 14971. The analysis must enumerate hazards, estimate probability and severity of harm, define risk controls, and document residual risk. The risk file must be approved by the clinical AI governance body and archived with the regulatory submission.",
+      "accountable_persona": "model-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 3.1: Risk management documentation",
+        "fda_pccp": "Principle 2: Risk-based",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9: Risk management system",
+        "iec_62304": "§4.3: Safety classification (informed by risk file)",
+        "iso_14971": "§7: Risk evaluation; §8: Risk control; §9: Residual risk"
+      },
+      "threshold": {
+        "metric": "iso14971_risk_file_approved",
+        "description": "Binary: ISO 14971 risk file completed, approved by governance body, and residual risk accepted before clinical deployment.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "category.code == 'iso14971-risk-file', status == 'current', author (governance body)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L5-VV-001",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Independent Clinical Validation",
+      "description": "Validation of clinical AI model performance must be performed by a party independent of the development team. For Class II and III SaMD, independent validation must be performed by a qualified external organization. The validation report must be archived and referenced in the FDA marketing submission.",
+      "accountable_persona": "model-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 3.4: Independent testing and validation",
+        "fda_pccp": "Principle 4: Transparent with regulator",
+        "onc_hti1": "§170.315(b)(11)(iv): External validation",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 43: Conformity assessment by Notified Body",
+        "iec_62304": "§5.7: System testing (independence requirement)",
+        "iso_14971": "§7: Risk evaluation (independent review)"
+      },
+      "threshold": {
+        "metric": "independent_validation_completed",
+        "description": "Binary: independent validation performed by party separate from the development team; validation report archived.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "category.code == 'independent-validation-report', author (independent party), status == 'current'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "pre-deployment",
+        "breach_action": "block-clinical-deployment"
+      }
+    },
+    {
+      "id": "SRF-L5-VV-002",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Model Artifact Signing and Supply-Chain Provenance",
+      "description": "All clinical AI model artifacts must be cryptographically signed before deployment. The signing key must be controlled by the model provider and verified by the health platform provider at load time. A supply-chain provenance record must link the signed artifact to the training data, code commit, and build pipeline.",
+      "accountable_persona": "model-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "verification-validation",
+      "mappings": {
+        "fda_tplc": "Section 3.2: Cybersecurity and supply chain",
+        "fda_pccp": "Principle 1: Verifiable modification scope",
+        "onc_hti1": "N/A",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 9: Risk management; Art. 28: Transparency for providers",
+        "iec_62304": "§5.5: Software unit implementation (artifact management)",
+        "iso_14971": "N/A"
+      },
+      "threshold": {
+        "metric": "model_artifact_signed",
+        "description": "Binary: all production model artifacts are cryptographically signed; supply-chain provenance record links artifact to training data and build pipeline.",
+        "evidence": {
+          "fhir_resource": "Provenance",
+          "attribute": "entity (signed artifact), signature, agent (model-provider), activity.code == 'artifact-signing'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "at-artifact-build",
+        "breach_action": "block-artifact-deployment"
+      }
+    },
+    {
+      "id": "SRF-L5-PMS-001",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Post-Market Performance Monitoring Plan",
+      "description": "Every clinical AI model must have a documented Post-Market Surveillance (PMS) plan aligned to FDA PCCP Guiding Principles. The plan must define: primary performance metrics, monitoring cadence, drift thresholds triggering re-validation, and conditions requiring a new FDA submission. The PMS plan must be submitted to FDA as part of the PCCP.",
+      "accountable_persona": "model-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4: Post-market monitoring requirements",
+        "fda_pccp": "Principle 5: Lifecycle-oriented monitoring plan",
+        "onc_hti1": "§170.315(b)(11)(v): Ongoing maintenance assessment",
+        "hipaa": "N/A",
+        "eu_ai_act": "Art. 72: Post-market monitoring plan",
+        "iec_62304": "§6.2: Problem and modification process",
+        "iso_14971": "§10: Post-production activities"
+      },
+      "threshold": {
+        "metric": "pms_plan_active",
+        "description": "Binary: PMS plan documented, approved, and actively generating performance reports on the defined cadence.",
+        "evidence": {
+          "fhir_resource": "MeasureReport",
+          "attribute": "measure (primary-performance-metric), period (monitoring cadence), status == 'complete'",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-monitoring-cadence",
+        "breach_action": "alert-governance-body-and-notify-regulatory"
+      }
+    },
+    {
+      "id": "SRF-L5-PMS-002",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Vulnerability Disclosure and Patch Response SLA",
+      "description": "Critical CVEs affecting clinical AI model components (inference frameworks, SOUP libraries) must be assessed and patched within the configured SLA. Patch deployment must be logged. The SLA aligns to FDA's 2023 Cybersecurity Final Guidance requirements for medical device software.",
+      "accountable_persona": "model-provider",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "post-market-surveillance",
+      "mappings": {
+        "fda_tplc": "Section 4: Post-market cybersecurity obligations",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR §164.308(a)(1)(ii)(B): Risk management",
+        "eu_ai_act": "Art. 72: Post-market monitoring including cybersecurity",
+        "iec_62304": "§6.2: Software problem resolution",
+        "iso_14971": "§10.2: Post-production information (vulnerability feedback)"
+      },
+      "threshold": {
+        "metric": "cve_critical_patch_days",
+        "description": "Maximum number of days to deploy a patch for a critical (CVSS >= 9.0) CVE affecting clinical AI model components.",
+        "evidence": {
+          "fhir_resource": "AuditEvent",
+          "attribute": "type.code == 'patch-deployment', entity (cve-id), recorded (patch date)",
+          "fhir_version": "R4"
+        },
+        "operator": "<=",
+        "param": "{max_cve_critical_patch_days}",
+        "param_type": "tier-configurable",
+        "window": "per-cve",
+        "breach_action": "escalate-to-security-and-regulatory-and-consider-system-suspension"
+      }
+    }
+  ]
+}
