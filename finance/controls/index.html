@@ -9,6 +9,7 @@
       content="Browse all 40 finance controls in the CoSAI SRF. Filter by layer, MRM stage, persona, and operating model."
     />
     <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/finance/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
 
@@ -193,6 +194,19 @@
       }
       .pill--stage { background: var(--slate-100); color: var(--slate-600); }
       .pill--agent { background: #fef3c7; color: #92400e; }
+      .ctrl-card__permalink {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--slate-400);
+        background: none;
+        border: 1px solid var(--slate-200);
+        border-radius: 3px;
+        padding: 1px 5px;
+        cursor: pointer;
+        margin-left: var(--sp-2);
+        line-height: 1.4;
+      }
+      .ctrl-card__permalink:hover { color: var(--cosai-blue); border-color: var(--cosai-blue); }
 
       /* ── Control detail (expanded) ────────────────────────────────── */
       .ctrl-card__detail {
@@ -673,11 +687,11 @@
       </div>`;
 
     return `
-      <article class="ctrl-card" data-id="${escHtml(c.id)}">
+      <article class="ctrl-card" id="${escHtml(c.id)}" data-id="${escHtml(c.id)}">
         <div class="ctrl-card__header" role="button" tabindex="0" aria-expanded="false">
           <div class="ctrl-card__layer-badge layer-${escHtml(c.layer)}">${escHtml(c.layer)}</div>
           <div class="ctrl-card__meta">
-            <div class="ctrl-card__id">${escHtml(c.id)}</div>
+            <div class="ctrl-card__id">${escHtml(c.id)}<button class="ctrl-card__permalink" onclick="navigator.clipboard.writeText(location.origin+location.pathname+'#${escHtml(c.id)}');this.textContent='Copied!';setTimeout(()=>this.textContent='#',1200)" title="Copy permalink">#</button></div>
             <div class="ctrl-card__title">${escHtml(c.title)}</div>
           </div>
           <div class="ctrl-card__pills">

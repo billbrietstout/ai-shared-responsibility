@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Glossary — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="SRF term definitions with stable anchors for citation. Layers L1-L5, personas, operating models, accountability rules, agentic extensions."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/glossary/" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      /* ── Layout ──────────────────────────────────────────────────── */
+      .gloss-layout {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: var(--sp-10);
+        align-items: start;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: var(--sp-8) var(--sp-6);
+      }
+      @media (max-width: 760px) {
+        .gloss-layout { grid-template-columns: 1fr; }
+        .gloss-nav { display: none; }
+      }
+
+      /* ── Sidebar nav ─────────────────────────────────────────────── */
+      .gloss-nav {
+        position: sticky;
+        top: var(--sp-6);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md);
+        padding: var(--sp-5);
+      }
+      .gloss-nav__title {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--slate-400);
+        margin: 0 0 var(--sp-3);
+      }
+      .gloss-nav__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .gloss-nav__list li { margin-bottom: var(--sp-1); }
+      .gloss-nav__list a {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        text-decoration: none;
+        display: block;
+        padding: 2px 0;
+      }
+      .gloss-nav__list a:hover { color: var(--cosai-blue); }
+      .gloss-nav__section {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--slate-400);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin: var(--sp-4) 0 var(--sp-2);
+      }
+
+      /* ── Content ─────────────────────────────────────────────────── */
+      .gloss-section {
+        margin-bottom: var(--sp-12);
+        scroll-margin-top: var(--sp-6);
+      }
+      .gloss-section__heading {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--slate-800);
+        border-bottom: 2px solid var(--slate-200);
+        padding-bottom: var(--sp-2);
+        margin-bottom: var(--sp-6);
+      }
+
+      /* ── Term entries ─────────────────────────────────────────────── */
+      .gloss-list {
+        margin: 0;
+        padding: 0;
+      }
+      .gloss-list dt {
+        display: flex;
+        align-items: baseline;
+        gap: var(--sp-2);
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-top: var(--sp-6);
+        scroll-margin-top: var(--sp-6);
+      }
+      .gloss-list dt:first-child { margin-top: 0; }
+      .gloss-list dd {
+        margin: var(--sp-2) 0 0 0;
+        padding-left: var(--sp-5);
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: 1.7;
+        border-left: 2px solid var(--slate-100);
+      }
+      .gloss-anchor {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--slate-300);
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+      .gloss-anchor:hover { color: var(--cosai-blue); }
+      .gloss-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: var(--slate-100);
+        color: var(--slate-500);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        flex-shrink: 0;
+      }
+      .gloss-badge--l1 { background: #eff6ff; color: #1d4ed8; }
+      .gloss-badge--l2 { background: #f0fdf4; color: #166534; }
+      .gloss-badge--l3 { background: #fff7ed; color: #9a3412; }
+      .gloss-badge--l4 { background: #fdf4ff; color: #7e22ce; }
+      .gloss-badge--l5 { background: #fff1f2; color: #9f1239; }
+      .gloss-crosslink {
+        margin-top: var(--sp-2);
+        font-size: var(--text-xs);
+        color: var(--slate-400);
+      }
+      .gloss-crosslink a { color: var(--cosai-blue); }
+    </style>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://aisharedresponsibility.com/glossary/",
+      "name": "CoSAI SRF Glossary: Canonical Term Definitions",
+      "url": "https://aisharedresponsibility.com/glossary/",
+      "description": "Canonical definitions for all SRF terms with stable anchor links. Layers L1-L5, personas, operating models, accountability rules, agentic extensions, controls vocabulary, and evidence terms.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AI Shared Responsibility",
+        "url": "https://aisharedresponsibility.com/"
+      },
+      "isPartOf": { "@type": "WebSite", "url": "https://aisharedresponsibility.com/" }
+    },
+    {
+      "@type": "DefinedTermSet",
+      "@id": "https://aisharedresponsibility.com/glossary/#term-set",
+      "name": "CoSAI AI Shared Responsibility Framework Glossary",
+      "description": "Canonical definitions for all SRF terms with stable anchor links for citation. Covers framework architecture, accountability rules, operating models, agentic extensions, evidence and controls vocabulary, and persona summaries.",
+      "url": "https://aisharedresponsibility.com/glossary/",
+      "hasDefinedTerm": [
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#layer",
+          "termCode": "layer",
+          "name": "Layer",
+          "url": "https://aisharedresponsibility.com/glossary/#layer"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#L1",
+          "termCode": "L1",
+          "name": "L1 AI Business & Usage",
+          "url": "https://aisharedresponsibility.com/glossary/#L1"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#L2",
+          "termCode": "L2",
+          "name": "L2 AI Information",
+          "url": "https://aisharedresponsibility.com/glossary/#L2"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#L3",
+          "termCode": "L3",
+          "name": "L3 AI Application",
+          "url": "https://aisharedresponsibility.com/glossary/#L3"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#L4",
+          "termCode": "L4",
+          "name": "L4 AI Platform",
+          "url": "https://aisharedresponsibility.com/glossary/#L4"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#L5",
+          "termCode": "L5",
+          "name": "L5 AI Model Provider",
+          "url": "https://aisharedresponsibility.com/glossary/#L5"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#persona",
+          "termCode": "persona",
+          "name": "Persona",
+          "url": "https://aisharedresponsibility.com/glossary/#persona"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#operating-model",
+          "termCode": "operating-model",
+          "name": "Operating Model",
+          "url": "https://aisharedresponsibility.com/glossary/#operating-model"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#accountability",
+          "termCode": "accountability",
+          "name": "Accountability",
+          "url": "https://aisharedresponsibility.com/glossary/#accountability"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#accountable-party",
+          "termCode": "accountable-party",
+          "name": "Accountable Party",
+          "url": "https://aisharedresponsibility.com/glossary/#accountable-party"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#responsibility-cascade",
+          "termCode": "responsibility-cascade",
+          "name": "Responsibility Cascade",
+          "url": "https://aisharedresponsibility.com/glossary/#responsibility-cascade"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#shared-responsibility",
+          "termCode": "shared-responsibility",
+          "name": "Shared Responsibility",
+          "url": "https://aisharedresponsibility.com/glossary/#shared-responsibility"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#raci",
+          "termCode": "raci",
+          "name": "RACI",
+          "url": "https://aisharedresponsibility.com/glossary/#raci"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#AI-SaaS",
+          "termCode": "AI-SaaS",
+          "name": "AI-SaaS",
+          "url": "https://aisharedresponsibility.com/glossary/#AI-SaaS"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#AI-PaaS",
+          "termCode": "AI-PaaS",
+          "name": "AI-PaaS",
+          "url": "https://aisharedresponsibility.com/glossary/#AI-PaaS"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#Agent-PaaS",
+          "termCode": "Agent-PaaS",
+          "name": "Agent-PaaS",
+          "url": "https://aisharedresponsibility.com/glossary/#Agent-PaaS"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#IaaS",
+          "termCode": "IaaS",
+          "name": "IaaS",
+          "url": "https://aisharedresponsibility.com/glossary/#IaaS"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#autonomy-level",
+          "termCode": "autonomy-level",
+          "name": "Autonomy Level",
+          "url": "https://aisharedresponsibility.com/glossary/#autonomy-level"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#human-override-tier",
+          "termCode": "human-override-tier",
+          "name": "Human Override Tier",
+          "url": "https://aisharedresponsibility.com/glossary/#human-override-tier"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#agentic-system",
+          "termCode": "agentic-system",
+          "name": "Agentic System",
+          "url": "https://aisharedresponsibility.com/glossary/#agentic-system"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#control",
+          "termCode": "control",
+          "name": "Control",
+          "url": "https://aisharedresponsibility.com/glossary/#control"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#evidence-threshold",
+          "termCode": "evidence-threshold",
+          "name": "Evidence Threshold",
+          "url": "https://aisharedresponsibility.com/glossary/#evidence-threshold"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#ocsf",
+          "termCode": "ocsf",
+          "name": "OCSF",
+          "url": "https://aisharedresponsibility.com/glossary/#ocsf"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#control-schema",
+          "termCode": "control-schema",
+          "name": "Control Schema",
+          "url": "https://aisharedresponsibility.com/glossary/#control-schema"
+        }
+      ]
+    }
+  ]
+}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="glossary"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Reference</span>
+        <h1 class="page-hero__title">Glossary</h1>
+        <p class="page-hero__lede">
+          Canonical definitions for every SRF term, with stable anchor links for citation.
+          Each term links back to the primary page where it is defined in full context.
+        </p>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="gloss-layout">
+
+        <!-- ── Sidebar nav ──────────────────────────────────────────── -->
+        <nav class="gloss-nav" aria-label="Glossary sections">
+          <p class="gloss-nav__title">Sections</p>
+          <ul class="gloss-nav__list">
+            <li><p class="gloss-nav__section">Architecture</p></li>
+            <li><a href="#framework-architecture">Framework Architecture</a></li>
+            <li><a href="#accountability-rules">Accountability Rules</a></li>
+            <li><a href="#operating-models">Operating Models</a></li>
+            <li><p class="gloss-nav__section">Advanced</p></li>
+            <li><a href="#agentic-extensions">Agentic Extensions</a></li>
+            <li><a href="#evidence-and-controls">Evidence &amp; Controls</a></li>
+            <li><a href="#personas">Personas</a></li>
+          </ul>
+        </nav>
+
+        <!-- ── Main content ─────────────────────────────────────────── -->
+        <div>
+
+          <!-- Framework Architecture -->
+          <section id="framework-architecture" class="gloss-section">
+            <h2 class="gloss-section__heading">Framework Architecture</h2>
+            <dl class="gloss-list">
+
+              <dt id="layer"><a href="#layer" class="gloss-anchor">#</a> Layer</dt>
+              <dd>One of five enterprise architecture tiers in the CoSAI SRF (L1-L5). Each layer represents a distinct accountability domain. Requirements cascade from L1 downward through L2, L3, L4, and L5.</dd>
+
+              <dt id="L1"><a href="#L1" class="gloss-anchor">#</a> L1: AI Business &amp; Usage <span class="gloss-badge gloss-badge--l1">L1</span></dt>
+              <dd>The governance, strategy, and compliance layer. Owns regulatory obligations, acceptable-use policy, and incident governance. Security and governance requirements set at L1 constrain every layer below it.
+                <p class="gloss-crosslink">Full definition: <a href="/framework/#L1">framework/#L1</a></p>
+              </dd>
+
+              <dt id="L2"><a href="#L2" class="gloss-anchor">#</a> L2: AI Information <span class="gloss-badge gloss-badge--l2">L2</span></dt>
+              <dd>The data ownership and privacy layer. Accountable for training data provenance, master data management, privacy controls, and data classification decisions.
+                <p class="gloss-crosslink">Full definition: <a href="/framework/#L2">framework/#L2</a></p>
+              </dd>
+
+              <dt id="L3"><a href="#L3" class="gloss-anchor">#</a> L3: AI Application <span class="gloss-badge gloss-badge--l3">L3</span></dt>
+              <dd>The development and integration layer. Responsible for guardrails, input validation, output filtering, prompt engineering, RAG pipelines, and agent orchestration logic.
+                <p class="gloss-crosslink">Full definition: <a href="/framework/#L3">framework/#L3</a></p>
+              </dd>
+
+              <dt id="L4"><a href="#L4" class="gloss-anchor">#</a> L4: AI Platform <span class="gloss-badge gloss-badge--l4">L4</span></dt>
+              <dd>The infrastructure and runtime layer. Covers compute, LLM gateways, model routers, guardrail infrastructure, and platform-level IAM.
+                <p class="gloss-crosslink">Full definition: <a href="/framework/#L4">framework/#L4</a></p>
+              </dd>
+
+              <dt id="L5"><a href="#L5" class="gloss-anchor">#</a> L5: AI Model Provider <span class="gloss-badge gloss-badge--l5">L5</span></dt>
+              <dd>The foundation model and supply-chain layer. Accountable for model security, model cards, vulnerability disclosure, and distribution governance.
+                <p class="gloss-crosslink">Full definition: <a href="/framework/#L5">framework/#L5</a></p>
+              </dd>
+
+              <dt id="persona"><a href="#persona" class="gloss-anchor">#</a> Persona</dt>
+              <dd>A named stakeholder role in the SRF. There are eight personas, each mapped to one or more layers. Controls assign accountability to exactly one persona.
+                <p class="gloss-crosslink">All personas: <a href="/personas/">personas/</a></p>
+              </dd>
+
+              <dt id="operating-model"><a href="#operating-model" class="gloss-anchor">#</a> Operating Model</dt>
+              <dd>One of four deployment archetypes (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) that determines how L1-L5 accountability shifts between customer and provider.
+                <p class="gloss-crosslink">Full reference: <a href="/operating-models/">operating-models/</a></p>
+              </dd>
+
+            </dl>
+          </section>
+
+          <!-- Accountability Rules -->
+          <section id="accountability-rules" class="gloss-section">
+            <h2 class="gloss-section__heading">Accountability Rules</h2>
+            <dl class="gloss-list">
+
+              <dt id="accountability"><a href="#accountability" class="gloss-anchor">#</a> Accountability</dt>
+              <dd>The obligation that cannot be delegated. Exactly one party per activity. The SRF's central rule: "shared" is a valid matrix value during analysis but must resolve to a single named persona in every control.</dd>
+
+              <dt id="accountable-party"><a href="#accountable-party" class="gloss-anchor">#</a> Accountable Party</dt>
+              <dd>The single persona named as accountable for a given control. If a control shows "shared" in the responsibility matrix, the accountable party is still the one who cannot transfer the obligation.</dd>
+
+              <dt id="responsibility-cascade"><a href="#responsibility-cascade" class="gloss-anchor">#</a> Responsibility Cascade</dt>
+              <dd>The principle that security and governance requirements set at L1 propagate downward through L2, L3, L4, and L5. An L1 policy decision constrains every layer below it.</dd>
+
+              <dt id="shared-responsibility"><a href="#shared-responsibility" class="gloss-anchor">#</a> Shared Responsibility</dt>
+              <dd>A state in the responsibility matrix where both customer and provider carry obligations for a control. Not a final answer: each shared control must still name one accountable persona.</dd>
+
+              <dt id="raci"><a href="#raci" class="gloss-anchor">#</a> RACI</dt>
+              <dd>Responsible, Accountable, Consulted, Informed. The SRF applies RACI at the control level but enforces exactly one Accountable owner per row.</dd>
+
+            </dl>
+          </section>
+
+          <!-- Operating Models -->
+          <section id="operating-models" class="gloss-section">
+            <h2 class="gloss-section__heading">Operating Models</h2>
+            <dl class="gloss-list">
+
+              <dt id="AI-SaaS"><a href="#AI-SaaS" class="gloss-anchor">#</a> AI-SaaS</dt>
+              <dd>AI-Enabled SaaS. Provider manages the application (L3), platform (L4), and model (L5). Customer retains L1 governance and L2 data obligations. Lowest customer technical responsibility.
+                <p class="gloss-crosslink">Full definition: <a href="/operating-models/#AI-SaaS">operating-models/#AI-SaaS</a></p>
+              </dd>
+
+              <dt id="AI-PaaS"><a href="#AI-PaaS" class="gloss-anchor">#</a> AI-PaaS</dt>
+              <dd>AI Platform as a Service. Customer builds and owns L3. Provider manages L4 and L5. Customer and provider share L2.
+                <p class="gloss-crosslink">Full definition: <a href="/operating-models/#AI-PaaS">operating-models/#AI-PaaS</a></p>
+              </dd>
+
+              <dt id="Agent-PaaS"><a href="#Agent-PaaS" class="gloss-anchor">#</a> Agent-PaaS</dt>
+              <dd>Agentic Platform as a Service. Customer owns agent definitions and L1 business logic on a provider-managed orchestration runtime. L3 and L5 are shared.
+                <p class="gloss-crosslink">Full definition: <a href="/operating-models/#Agent-PaaS">operating-models/#Agent-PaaS</a></p>
+              </dd>
+
+              <dt id="IaaS"><a href="#IaaS" class="gloss-anchor">#</a> IaaS</dt>
+              <dd>Infrastructure as a Service. Maximum customer responsibility. Customer owns L1-L3 and most of L5. Provider is accountable only for physical infrastructure within L4.
+                <p class="gloss-crosslink">Full definition: <a href="/operating-models/#IaaS">operating-models/#IaaS</a></p>
+              </dd>
+
+            </dl>
+          </section>
+
+          <!-- Agentic Extensions -->
+          <section id="agentic-extensions" class="gloss-section">
+            <h2 class="gloss-section__heading">Agentic Extensions</h2>
+            <dl class="gloss-list">
+
+              <dt id="autonomy-level"><a href="#autonomy-level" class="gloss-anchor">#</a> Autonomy Level</dt>
+              <dd>A six-point scale (L0-L5) classifying how independently an AI agent acts. L0 = fully human-controlled; L5 = fully autonomous with no human oversight. Every agentic deployment must declare its autonomy level.</dd>
+
+              <dt id="human-override-tier"><a href="#human-override-tier" class="gloss-anchor">#</a> Human Override Tier</dt>
+              <dd>A five-point scale (T1-T5) specifying the required human intervention capability for an agentic system. T1 = immediate human takeover at any step; T5 = retrospective audit only. Must be declared alongside autonomy level.</dd>
+
+              <dt id="agentic-system"><a href="#agentic-system" class="gloss-anchor">#</a> Agentic System</dt>
+              <dd>An AI system that can take multi-step actions, use tools, or operate across sessions with limited human supervision. Agentic systems require autonomy level and human override tier declarations in addition to standard SRF layer assignments.</dd>
+
+            </dl>
+          </section>
+
+          <!-- Evidence and Controls -->
+          <section id="evidence-and-controls" class="gloss-section">
+            <h2 class="gloss-section__heading">Evidence &amp; Controls</h2>
+            <dl class="gloss-list">
+
+              <dt id="control"><a href="#control" class="gloss-anchor">#</a> Control</dt>
+              <dd>A specific accountability assignment within a vertical schema. Each control has an ID (e.g. SRF-L1-DEV-001), a layer, an accountable persona, applicable operating models, and an evidence threshold.</dd>
+
+              <dt id="evidence-threshold"><a href="#evidence-threshold" class="gloss-anchor">#</a> Evidence Threshold</dt>
+              <dd>The measurable criterion that satisfies a control. Specifies a metric, operator, parameter, window, and breach action. Used to determine whether accountability is being exercised.</dd>
+
+              <dt id="ocsf"><a href="#ocsf" class="gloss-anchor">#</a> OCSF</dt>
+              <dd>Open Cybersecurity Schema Framework. The evidence schema used to specify what telemetry or log data satisfies a control's evidence requirement.</dd>
+
+              <dt id="control-schema"><a href="#control-schema" class="gloss-anchor">#</a> Control Schema</dt>
+              <dd>The full set of controls for a vertical. Six are published: Financial Services (40 controls), Healthcare (40), Insurance (40), Public Sector (40), Defense (53), Manufacturing (45).</dd>
+
+            </dl>
+          </section>
+
+          <!-- Personas -->
+          <section id="personas" class="gloss-section">
+            <h2 class="gloss-section__heading">Personas</h2>
+            <p style="font-size:var(--text-sm);color:var(--slate-500);margin-bottom:var(--sp-5);">Brief definitions. Full responsibilities and layer mappings are on the <a href="/personas/">Personas page</a>.</p>
+            <dl class="gloss-list">
+
+              <dt id="persona-ai-system-governance"><a href="#persona-ai-system-governance" class="gloss-anchor">#</a> AI System Governance <span class="gloss-badge gloss-badge--l1">L1</span></dt>
+              <dd>Defines security control objectives, measures implementations, and enforces compliance. Includes AI risk officers, compliance teams, and governance boards.
+                <p class="gloss-crosslink">Full definition: <a href="/personas/#ai-system-governance">personas/#ai-system-governance</a></p>
+              </dd>
+
+              <dt id="persona-data-provider"><a href="#persona-data-provider" class="gloss-anchor">#</a> Data Provider <span class="gloss-badge gloss-badge--l2">L2</span></dt>
+              <dd>Supplies training data, evaluation datasets, or inference data. Includes data aggregators and dataset licensors.
+                <p class="gloss-crosslink">Full definition: <a href="/personas/#data-provider">personas/#data-provider</a></p>
+              </dd>
+
+              <dt id="persona-application-developer"><a href="#persona-application-developer" class="gloss-anchor">#</a> Application Developer <span class="gloss-badge gloss-badge--l3">L3</span></dt>
+              <dd>Integrates AI models into applications via APIs or embedded models. Accountable for application-level security, input validation, and output filtering.
+                <p class="gloss-crosslink">Full definition: <a href="/personas/#application-developer">personas/#application-developer</a></p>
+              </dd>
+
+              <dt id="persona-agentic-platform-provider"><a href="#persona-agentic-platform-provider" class="gloss-anchor">#</a> Agentic Platform Provider <span class="gloss-badge gloss-badge--l3">L3</span> <span class="gloss-badge gloss-badge--l4">L4</span></dt>
+              <dd>Provides development environments, frameworks, and orchestration runtimes for agentic AI.
+                <p class="gloss-crosslink">Full definition: <a href="/personas/#agentic-platform-provider">personas/#agentic-platform-provider</a></p>
+              </dd>
+
+              <dt id="persona-ai-platform-provider"><a href="#persona-ai-platform-provider" class="gloss-anchor">#</a> AI Platform Provider <span class="gloss-badge gloss-badge--l4">L4</span></dt>
+              <dd>Provides compute, APIs, and platform services for AI model hosting. Includes cloud providers and MLOps platforms.
+                <p class="gloss-crosslink">Full definition: <a href="/personas/#ai-platform-provider">personas/#ai-platform-provider</a></p>
+              </dd>
+
+              <dt id="persona-model-provider"><a href="#persona-model-provider" class="gloss-anchor">#</a> Model Provider <span class="gloss-badge gloss-badge--l5">L5</span></dt>
+              <dd>Develops, trains, and tunes foundation models. Accountable for model security, model cards, and vulnerability disclosure.
+                <p class="gloss-crosslink">Full definition: <a href="/personas/#model-provider">personas/#model-provider</a></p>
+              </dd>
+
+            </dl>
+          </section>
+
+        </div><!-- /main content -->
+      </div><!-- /gloss-layout -->
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

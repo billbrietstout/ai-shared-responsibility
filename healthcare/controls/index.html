@@ -9,6 +9,7 @@
       content="Browse all 40 healthcare controls in the CoSAI SRF. Filter by SRF layer, clinical lifecycle stage, operating model, and accountable persona."
     />
     <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/healthcare/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
 
@@ -191,6 +192,19 @@
         border-radius: 3px;
         color: var(--slate-600);
       }
+      .control-card__permalink {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--slate-400);
+        background: none;
+        border: 1px solid var(--slate-200);
+        border-radius: 3px;
+        padding: 1px 5px;
+        cursor: pointer;
+        margin-left: var(--sp-2);
+        line-height: 1.4;
+      }
+      .control-card__permalink:hover { color: var(--cosai-blue); border-color: var(--cosai-blue); }
       .control-card__chevron {
         flex-shrink: 0;
         width: 16px;
@@ -603,7 +617,7 @@
       ${paramBadgeHTML(t.param_type)}
     </div>
     <div class="control-card__title-area">
-      <div class="control-card__id">${escHtml(c.id)}</div>
+      <div class="control-card__id">${escHtml(c.id)}<button class="control-card__permalink" onclick="navigator.clipboard.writeText(location.origin+location.pathname+'#control-'+escHtml(c.id));this.textContent='Copied!';setTimeout(()=>this.textContent='#',1200)" title="Copy permalink">#</button></div>
       <div class="control-card__title">${escHtml(c.title)}</div>
       <div class="control-card__persona">
         ${escHtml(c.component)} · <code>${escHtml(c.accountable_persona)}</code>

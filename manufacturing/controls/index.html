@@ -9,6 +9,7 @@
       content="Browse all 45 manufacturing controls in the CoSAI SRF. Filter by SRF layer, lifecycle stage, OT applicability, EU AI Act risk class, operating model, responsibility split, and accountable persona."
     />
     <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/manufacturing/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
       .browser-layout {
@@ -166,6 +167,19 @@
         font-size: var(--text-xs);
         color: var(--slate-500);
       }
+      .control-card__permalink {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        color: var(--slate-400);
+        background: none;
+        border: 1px solid var(--slate-200);
+        border-radius: 3px;
+        padding: 1px 5px;
+        cursor: pointer;
+        margin-left: var(--sp-2);
+        line-height: 1.4;
+      }
+      .control-card__permalink:hover { color: var(--cosai-blue); border-color: var(--cosai-blue); }
       .control-card__chevron {
         width: 16px;
         height: 16px;
@@ -688,7 +702,7 @@
           return '<span class="operating-tag">' + escHtml(m) + '</span>';
         }).join('');
 
-        return '<article class="control-card" role="listitem">' +
+        return '<article class="control-card" id="control-' + escHtml(c.id) + '" role="listitem">' +
           '<div class="control-card__head" tabindex="0" role="button" aria-expanded="false">' +
           '<div>' +
           '<div class="control-card__badges">' +
@@ -696,7 +710,7 @@
           renderRiskBadge(c.eu_ai_act_risk_class) +
           renderSplitChip(c.responsibility_split) +
           '</div>' +
-          '<div class="control-card__id">' + escHtml(c.id) + '</div>' +
+          '<div class="control-card__id">' + escHtml(c.id) + '<button class="control-card__permalink" onclick="navigator.clipboard.writeText(location.origin+location.pathname+\'#control-\'+\'' + escHtml(c.id) + '\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'#\',1200)" title="Copy permalink">#</button></div>' +
           '<div class="control-card__title">' + escHtml(c.title) + '</div>' +
           '<div class="control-card__persona">' + escHtml(c.accountable_persona) + ' &middot; ' + escHtml(c.lifecycle_stage) + '</div>' +
           '</div>' +
