@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to Use the Public Sector Schema - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Five steps for CAIO staff and ISSOs using the SRF public-sector schema to prepare the September 22, 2026 OMB M-25-21 compliance report and the next AI service ATO."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Breadcrumb ───────────────────────────────────────────────── */
+      .breadcrumb {
+        font-size: var(--text-xs);
+        color: #93c5fd;
+        margin-bottom: var(--sp-4);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+      }
+      .breadcrumb a {
+        color: #93c5fd;
+        text-decoration: none;
+        opacity: 0.75;
+      }
+      .breadcrumb a:hover { opacity: 1; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+      .breadcrumb__current { opacity: 0.9; }
+
+      /* ── Audience badge ───────────────────────────────────────────── */
+      .audience-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-3);
+        background: rgba(45, 91, 227, 0.18);
+        border: 1px solid rgba(45, 91, 227, 0.35);
+        border-radius: var(--radius);
+        padding: var(--sp-2) var(--sp-4);
+        margin-top: var(--sp-5);
+        flex-wrap: wrap;
+      }
+      .audience-badge__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #93c5fd;
+      }
+      .audience-badge__text {
+        font-size: var(--text-sm);
+        color: #cbd5e1;
+      }
+
+      /* ── Step list ────────────────────────────────────────────────── */
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 var(--sp-12);
+      }
+      .step {
+        counter-increment: steps;
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: var(--sp-6);
+        margin-bottom: var(--sp-10);
+        padding-bottom: var(--sp-10);
+        border-bottom: 1px solid var(--slate-100);
+      }
+      .step:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      .step__num {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--cosai-navy);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .step__num::before { content: counter(steps); }
+      .step__body h2 {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin: 0 0 var(--sp-3);
+      }
+      .step__body p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-4);
+        max-width: 640px;
+      }
+      .step__body p:last-child { margin-bottom: 0; }
+      .step__body strong { color: var(--slate-800); }
+
+      /* ── Tables ───────────────────────────────────────────────────── */
+      .role-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin: var(--sp-4) 0;
+      }
+      .role-table th {
+        text-align: left;
+        padding: var(--sp-2) var(--sp-3);
+        background: var(--slate-50);
+        border-bottom: 2px solid var(--slate-200);
+        font-weight: 700;
+        color: var(--slate-500);
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .role-table td {
+        padding: var(--sp-2) var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-700);
+        vertical-align: top;
+      }
+      .role-table tr:last-child td { border-bottom: none; }
+
+      /* ── Callout ──────────────────────────────────────────────────── */
+      .callout {
+        background: #f0f4ff;
+        border-left: 4px solid #3b82f6;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        padding: var(--sp-4) var(--sp-5);
+        margin: var(--sp-4) 0;
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        max-width: 640px;
+      }
+      .callout strong { color: #1d4ed8; }
+
+      /* ── Evidence block ───────────────────────────────────────────── */
+      .evidence-block {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+        margin: var(--sp-4) 0;
+        max-width: 640px;
+      }
+      .evidence-block h4 {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-700);
+        margin: 0 0 var(--sp-3);
+      }
+      .evidence-row {
+        display: flex;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-2);
+        font-size: var(--text-xs);
+        color: var(--slate-600);
+        align-items: baseline;
+      }
+      .evidence-row:last-child { margin-bottom: 0; }
+      .evidence-row__label {
+        font-weight: 700;
+        color: var(--slate-500);
+        min-width: 120px;
+        flex-shrink: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* ── CTA row ──────────────────────────────────────────────────── */
+      .cta-row {
+        display: flex;
+        gap: var(--sp-4);
+        flex-wrap: wrap;
+        margin-bottom: var(--sp-12);
+      }
+      .btn {
+        display: inline-block;
+        padding: var(--sp-3) var(--sp-6);
+        border-radius: var(--radius);
+        font-size: var(--text-sm);
+        font-weight: 700;
+        text-decoration: none;
+        transition: background 0.1s, border-color 0.1s;
+      }
+      .btn--primary {
+        background: var(--cosai-blue);
+        color: #fff;
+        border: 1px solid var(--cosai-blue);
+      }
+      .btn--primary:hover { background: var(--cosai-navy); border-color: var(--cosai-navy); }
+      .btn--outline {
+        background: #fff;
+        color: var(--cosai-blue);
+        border: 1px solid var(--slate-200);
+      }
+      .btn--outline:hover { border-color: var(--cosai-blue); background: var(--cosai-blue-light); }
+
+      @media (max-width: 640px) {
+        .step { grid-template-columns: 36px 1fr; gap: var(--sp-4); }
+        .step__num { width: 36px; height: 36px; font-size: 0.9rem; }
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+    <site-nav current="industries"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <div class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <a href="/public-sector/">Public Sector</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <span class="breadcrumb__current">How to use the schema</span>
+        </div>
+        <span class="page-hero__eyebrow">Public-sector vertical &middot; OMB M-25-21 &middot; FedRAMP 20x</span>
+        <h1 class="page-hero__title">How to use the public-sector controls schema</h1>
+        <p class="page-hero__lede">
+          A workflow guide for CAIO staff and ISSOs preparing the September 22, 2026 OMB
+          M-25-21 minimum-practices report and the next AI service Authority to Operate.
+        </p>
+        <div class="audience-badge" role="note" aria-label="Intended audience">
+          <span class="audience-badge__label">Audience</span>
+          <span class="audience-badge__text">
+            CAIO staff &middot; ISSOs &middot; Authorizing Officials &middot; Program offices &middot; Contracting officers
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:32px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema notice.</strong> This guide describes a proposed
+        extension of the CoSAI Shared Responsibility Framework. It is not part of SRF v1.0 and has not been
+        endorsed by CoSAI, OMB, GSA, FedRAMP, NIST, or any federal agency. Nothing here constitutes legal,
+        compliance, or acquisition advice. Section references to OMB M-25-21 and M-25-22 are illustrative;
+        verify against the primary PDFs at whitehouse.gov before citing in agency documentation.
+      </div>
+
+      <ol class="step-list">
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Inventory use cases and confirm high-impact designations</h2>
+            <p>
+              Start with your agency's AI use-case inventory. For each entry, confirm whether a
+              high-impact designation exists, who made it, and when. If a use case lacks a
+              designation decision, it needs one before you can assess M-25-21 compliance.
+            </p>
+            <p>
+              The schema L1 controls <strong>SRF-L1-ACQ-001</strong> and <strong>SRF-L1-ACQ-002</strong>
+              define the completeness and designation documentation requirements. Pull those controls
+              into the M-25-21 readiness workpaper as your first two checklist rows.
+            </p>
+            <div class="callout">
+              <strong>Practical check:</strong> OMB published agency compliance plans in fall 2025.
+              If your agency published a plan (DHS, VA, HHS, EEOC plans are public examples),
+              cross-reference the use cases listed there against your current inventory. Gaps indicate
+              use cases added or changed since the plan was filed.
+            </div>
+            <p>
+              For use cases that cannot meet minimum practices by September 22, the discontinuation
+              and waiver process (SRF-L1-MON-005) must be ready. Document the approving official and
+              timeline now, before the deadline.
+            </p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Select an operating model and trace CRM inheritance</h2>
+            <p>
+              Each AI use case runs on one of four operating models. Selecting the right model
+              determines which controls your agency owns outright, which it shares with a vendor,
+              and which it can inherit from a FedRAMP authorization.
+            </p>
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>Operating model</th>
+                  <th>Description</th>
+                  <th>Inheritance posture</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>AI-SaaS</strong></td>
+                  <td>AI capability via FedRAMP-authorized API (e.g., OpenAI 20x Moderate, IBM watsonx)</td>
+                  <td>CSP holds the L4/L5 authorization; agency owns L1-L3 and agency-side CRM rows</td>
+                </tr>
+                <tr>
+                  <td><strong>AI-PaaS</strong></td>
+                  <td>Agency-built or fine-tuned model on a FedRAMP-authorized platform</td>
+                  <td>Platform authorization inherited; agency adds application-layer and data-layer controls</td>
+                </tr>
+                <tr>
+                  <td><strong>Agent-Ops</strong></td>
+                  <td>Agentic AI in casework, benefits processing, or citizen service workflows</td>
+                  <td>Agency owns task boundary, oversight gate, and remedy controls; CSP shares platform controls</td>
+                </tr>
+                <tr>
+                  <td><strong>Shared-Service</strong></td>
+                  <td>Interagency platform (e.g., GSA enterprise AI services)</td>
+                  <td>Consuming agency inherits from service provider ATO; must document inheritance chain per SRF-L3-VAL-007</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              Once you have selected a model, open the Customer Responsibility Matrix for the
+              relevant FedRAMP authorization and map the <code>responsibility_split</code> values
+              in the JSON controls (<code>csp</code>, <code>agency</code>, <code>shared</code>,
+              <code>inherited</code>) to your existing CRM rows. AI-specific obligations in
+              M-25-21 that do not appear in the CRM are agency-owned by default.
+            </p>
+            <div class="callout">
+              <strong>For Shared-Service deployments:</strong> The inheritance chain must be
+              documented before the ATO is granted (SRF-L3-VAL-007). Work with the GSA or
+              interagency platform team to get the provider-side ATO boundary documentation,
+              then map which controls flow to your agency.
+            </div>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Map SRF personas to agency roles</h2>
+            <p>
+              The schema uses six personas that correspond to SRF layers, not federal job titles.
+              The table below maps each persona to the federal roles most commonly responsible for
+              those obligations. Use this mapping to assign ownership rows in the workpaper.
+            </p>
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>SRF persona</th>
+                  <th>Federal role(s)</th>
+                  <th>Primary layer(s)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ai-system-governance</code></td>
+                  <td>CAIO, AI Governance Board, Deputy CIO</td>
+                  <td>L1</td>
+                </tr>
+                <tr>
+                  <td><code>data-provider</code></td>
+                  <td>CDO, Privacy Officer, Records Officer, ISSO</td>
+                  <td>L2</td>
+                </tr>
+                <tr>
+                  <td><code>application-developer</code></td>
+                  <td>Program office, system owner, application developer (contractor or FTE)</td>
+                  <td>L3</td>
+                </tr>
+                <tr>
+                  <td><code>agentic-platform-provider</code></td>
+                  <td>Platform engineering team, ISSO, cloud program office</td>
+                  <td>L3, L4</td>
+                </tr>
+                <tr>
+                  <td><code>ai-platform-provider</code></td>
+                  <td>ISSO, Authorizing Official, cloud program office; vendor for inherited controls</td>
+                  <td>L4</td>
+                </tr>
+                <tr>
+                  <td><code>model-provider</code></td>
+                  <td>Contracting officer, CAIO, vendor (for CSP-split controls)</td>
+                  <td>L5</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              The workpaper Persona Mapping sheet carries these assignments pre-populated. Adjust
+              them to reflect your agency's actual organizational structure. Where a role is shared
+              across multiple offices, name a primary contact and a secondary.
+            </p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Set tier parameters by FIPS 199 level and high-impact designation</h2>
+            <p>
+              Controls marked <code>tier-configurable</code> carry a parameter name (e.g.,
+              <code>TIER_AI_INVENTORY_COVERAGE_PCT</code>) rather than a hard threshold. Use
+              the FIPS 199 impact level of the system and the M-25-21 high-impact designation
+              to set values in the Tier Parameters sheet of the workpaper.
+            </p>
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>Tier</th>
+                  <th>FIPS 199 level</th>
+                  <th>M-25-21 designation</th>
+                  <th>Suggested threshold posture</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Tier 1</strong></td>
+                  <td>High</td>
+                  <td>High-impact AI</td>
+                  <td>Maximum thresholds: inventory coverage 100%, staff training 100%, audit log completeness 100%, PSI &lt; 0.2, accuracy degradation &lt; 2%.</td>
+                </tr>
+                <tr>
+                  <td><strong>Tier 2</strong></td>
+                  <td>Moderate</td>
+                  <td>High-impact AI</td>
+                  <td>Recommended minimums in schema descriptions: inventory 95%, training 95%, log completeness 100%, PSI &lt; 0.25.</td>
+                </tr>
+                <tr>
+                  <td><strong>Tier 3</strong></td>
+                  <td>Moderate or Low</td>
+                  <td>Not high-impact</td>
+                  <td>Reduced cadence acceptable for monitoring controls. Some OVR controls may not apply; document the rationale.</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="callout">
+              <strong>Zero-tolerance controls are not tier-configurable.</strong> Controls marked
+              <code>zero-tolerance</code> (agency data egress block, human oversight gate for adverse
+              decisions, FedRAMP authorization status, and others) must be met at all tiers. They appear
+              in the workpaper with locked thresholds.
+            </div>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Assemble the evidence package for the OMB report and ATO file</h2>
+            <p>
+              The September 22, 2026 OMB report requires agencies to demonstrate compliance with
+              the seven M-25-21 minimum practices. The next AI service ATO requires completing the
+              Customer Responsibility Matrix for AI-specific controls. Both artifacts draw from the
+              same evidence set.
+            </p>
+            <p>
+              Use the Minimum-Practices Evidence Log sheet in the workpaper to map each M-25-21
+              minimum practice to the relevant SRF controls and record the evidence artifact for each.
+            </p>
+            <div class="evidence-block">
+              <h4>M-25-21 minimum practices to SRF control mapping (illustrative)</h4>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Pre-deployment testing</div>
+                <div>SRF-L3-VAL-001: Pre-deployment test report; SRF-L3-VAL-002: AI impact assessment</div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">AI impact assessment</div>
+                <div>SRF-L3-VAL-002: Completed and governance-board-reviewed impact assessment</div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Ongoing monitoring</div>
+                <div>SRF-L2-MON-004 (PSI); SRF-L2-MON-006 (accuracy); SRF-L4-MON-005 (audit log completeness)</div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Human training</div>
+                <div>SRF-L1-ACQ-008: Training completion records from the agency learning management system</div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Human oversight</div>
+                <div>SRF-L3-OVR-004: Oversight gate operational log; SRF-L3-MON-006: Agent boundary enforcement log</div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Remedies or appeals</div>
+                <div>SRF-L3-OVR-005: Documented remedy and appeal mechanism; SRF-L3-OVR-008: Explanation record per adverse decision</div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Public feedback</div>
+                <div>SRF-L1-OVR-006: Feedback channel operational with review logs; SRF-L1-ACQ-004: Compliance plan referencing the feedback mechanism</div>
+              </div>
+            </div>
+            <p>
+              For evidence types that are governance documents rather than streaming telemetry
+              (impact assessments, ATO letters, compliance plans, training records), store them in
+              your document management system and reference them by artifact ID in the workpaper.
+              The OCSF evidence pointers in the JSON apply to controls that have machine-readable
+              monitoring signals.
+            </p>
+            <div class="callout">
+              <strong>FedRAMP 20x alignment:</strong> If your AI service is going through a 20x
+              authorization, the KSI evidence format (machine-readable, from production) is the same
+              evidence model the SRF evidence plane uses. Document both requirements with the same
+              evidence artifact where possible.
+            </div>
+          </div>
+        </li>
+
+      </ol>
+
+      <div class="cta-row">
+        <a href="/public-sector/controls/" class="btn btn--primary">Browse all controls</a>
+        <a href="/public-sector/m2521-workpaper.xlsx" class="btn btn--outline">Download workpaper</a>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

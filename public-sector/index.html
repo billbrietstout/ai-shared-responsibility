@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Public Sector - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="The SRF public-sector schema operationalizes the agency side of the FedRAMP Customer Responsibility Matrix for AI: 40 controls across five layers mapped to OMB M-25-21, M-25-22, FedRAMP 20x KSIs, and NIST AI RMF, with OCSF evidence pointers and a responsibility_split value on every control."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Stat strip ───────────────────────────────────────────────── */
+      .stat-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--slate-200);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: var(--sp-10);
+      }
+      .stat-cell {
+        background: #fff;
+        padding: var(--sp-5) var(--sp-6);
+        text-align: center;
+      }
+      .stat-cell__num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--cosai-navy);
+        line-height: 1;
+        margin-bottom: var(--sp-2);
+      }
+      .stat-cell__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+
+      /* ── Section label ────────────────────────────────────────────── */
+      .section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-5);
+      }
+
+      /* ── Context block ────────────────────────────────────────────── */
+      .context-block {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        margin-bottom: var(--sp-10);
+      }
+      .context-block p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+        max-width: 680px;
+      }
+      .context-block p:last-child { margin-bottom: 0; }
+      .context-block strong { color: var(--slate-800); }
+
+      /* ── Context note (single-line roadmap callout) ───────────────── */
+      .context-note {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+        margin-bottom: var(--sp-6);
+      }
+
+      /* ── Card grid ────────────────────────────────────────────────── */
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-12);
+      }
+      .page-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      }
+      .page-card:hover {
+        box-shadow: var(--shadow-lg);
+        border-color: var(--cosai-blue-soft);
+        transform: translateY(-3px);
+        text-decoration: none;
+        color: inherit;
+      }
+      .page-card__accent { height: 4px; }
+      .page-card__accent--blue   { background: var(--cosai-blue); }
+      .page-card__accent--green  { background: var(--l1); }
+      .page-card__accent--purple { background: var(--l4); }
+      .page-card__body {
+        padding: var(--sp-6);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+      }
+      .page-card__icon {
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-bottom: var(--sp-1);
+      }
+      .page-card__icon--blue   { background: var(--cosai-blue-light); }
+      .page-card__icon--green  { background: var(--l1-bg); }
+      .page-card__icon--purple { background: var(--l4-bg); }
+      .page-card__icon svg {
+        width: 18px;
+        height: 18px;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .page-card__icon--blue   svg { stroke: var(--cosai-blue); }
+      .page-card__icon--green  svg { stroke: var(--l1); }
+      .page-card__icon--purple svg { stroke: var(--l4); }
+      .page-card__name {
+        font-size: var(--text-lg);
+        font-weight: 800;
+        color: var(--slate-900);
+        letter-spacing: -0.02em;
+      }
+      .page-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        flex: 1;
+      }
+      .page-card__tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-top: var(--sp-1);
+      }
+      .tag {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid;
+      }
+      .tag--blue   { color: var(--cosai-blue); background: var(--cosai-blue-light); border-color: var(--cosai-blue-soft); }
+      .tag--green  { color: var(--l1-text); background: var(--l1-bg); border-color: var(--l1-border); }
+      .tag--slate  { color: var(--slate-500); background: var(--slate-100); border-color: var(--slate-200); }
+      .tag--purple { color: var(--l4-text); background: var(--l4-bg); border-color: var(--l4-border); }
+      .page-card__footer {
+        padding: var(--sp-4) var(--sp-6);
+        border-top: 1px solid var(--slate-100);
+        background: var(--slate-50);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .page-card__cta {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--cosai-blue);
+      }
+
+      /* ── Schema strip ─────────────────────────────────────────────── */
+      .schema-strip {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sp-6);
+        margin-bottom: var(--sp-10);
+      }
+      .schema-item__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .schema-item__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: var(--sp-1);
+      }
+      .schema-item__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0;
+      }
+
+      /* ── Layer reference ──────────────────────────────────────────── */
+      .layer-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-10);
+      }
+      .layer-row {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        align-items: center;
+        gap: var(--sp-4);
+        padding: var(--sp-4) var(--sp-5);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+      }
+      .layer-badge {
+        font-size: var(--text-xs);
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        text-align: center;
+      }
+      .layer-badge--l1 { color: var(--l1-text); background: var(--l1-bg); border: 1px solid var(--l1-border); }
+      .layer-badge--l2 { color: var(--l2-text); background: var(--l2-bg); border: 1px solid var(--l2-border); }
+      .layer-badge--l3 { color: var(--l3-text); background: var(--l3-bg); border: 1px solid var(--l3-border); }
+      .layer-badge--l4 { color: var(--l4-text); background: var(--l4-bg); border: 1px solid var(--l4-border); }
+      .layer-badge--l5 { color: var(--l5-text); background: var(--l5-bg); border: 1px solid var(--l5-border); }
+      .layer-row__text { min-width: 0; }
+      .layer-row__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: 2px;
+      }
+      .layer-row__desc {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        line-height: var(--leading-snug);
+      }
+      .layer-row__count {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--slate-400);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      /* ── Crosswalk pills ──────────────────────────────────────────── */
+      .pills-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-2);
+        margin-bottom: var(--sp-12);
+      }
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        border: 1px solid var(--slate-200);
+        background: #fff;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-600);
+      }
+      .pill__dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--cosai-blue);
+        flex-shrink: 0;
+      }
+
+      /* ── Responsive ───────────────────────────────────────────────── */
+      @media (max-width: 640px) {
+        .stat-strip { grid-template-columns: repeat(2, 1fr); }
+        .schema-strip { grid-template-columns: 1fr; }
+        .layer-row { grid-template-columns: 72px 1fr; }
+        .layer-row__count { display: none; }
+        .context-block { padding: var(--sp-4) var(--sp-5); }
+      }
+
+      /* ── Breadcrumb ───────────────────────────────────────────────── */
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: var(--sp-4);
+      }
+      .breadcrumb a { color: rgba(255,255,255,0.7); text-decoration: none; }
+      .breadcrumb a:hover { opacity: 1; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+      .breadcrumb__current { opacity: 0.9; }
+
+    </style>
+  </head>
+  <body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+    <site-nav current="industries"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <span class="breadcrumb__current">Public Sector</span>
+        </nav>
+        <span class="page-hero__eyebrow">Public-sector vertical &middot; OMB M-25-21 &middot; FedRAMP 20x &middot; OCSF v1.8.0</span>
+        <h1 class="page-hero__title">AI shared responsibility for federal civilian agencies</h1>
+        <p class="page-hero__lede">
+          FedRAMP authorizes the cloud service provider side. The agency side of every AI
+          service's shared responsibility split has no schema. This vertical fills that gap:
+          40 controls across five SRF layers, each with a named accountable party, a measurable
+          threshold, an OCSF evidence pointer, and a <code>responsibility_split</code> value
+          aligned to FedRAMP Customer Responsibility Matrix categories.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <!-- Status notice -->
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:32px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+        extension of the CoSAI Shared Responsibility Framework, developed independently to
+        demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
+        by CoSAI, OMB, GSA, FedRAMP, NIST, or any federal agency. Section references to
+        OMB M-25-21 and M-25-22 are marked TBD pending verification against the primary PDFs
+        at whitehouse.gov. FedRAMP 20x KSI names are still evolving through the pilot phases;
+        verify at fedramp.gov before using in official agency documentation.
+      </div>
+
+      <!-- Stat strip -->
+      <div class="stat-strip" role="region" aria-label="Schema at a glance">
+        <div class="stat-cell">
+          <div class="stat-cell__num">40</div>
+          <div class="stat-cell__label">Controls</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">5</div>
+          <div class="stat-cell__label">SRF layers</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">4</div>
+          <div class="stat-cell__label">Federal AI lifecycle stages</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">Sep 22</div>
+          <div class="stat-cell__label">OMB M-25-21 deadline (2026)</div>
+        </div>
+      </div>
+
+      <!-- Context -->
+      <div class="context-block" role="note">
+        <p>
+          <strong>The M-25-21 gap.</strong> OMB M-25-21 (April 3, 2025) requires federal civilian
+          agencies to apply seven minimum risk management practices to every high-impact AI use case
+          and report compliance to OMB by September 22, 2026. Use cases that cannot meet the minimum
+          practices must be discontinued. The memo names the practices but provides no control catalog,
+          no measurable thresholds, and no evidence model.
+        </p>
+        <p>
+          <strong>The FedRAMP CRM gap.</strong> FedRAMP 20x is moving AI services into agencies faster
+          than agency-side governance can absorb them. FedRAMP authorizes the cloud service provider
+          side; the Customer Responsibility Matrix covers 800-53 security controls but assigns nobody
+          to the AI-specific obligations in M-25-21 and M-25-22. This schema fills the agency side of
+          that split.
+        </p>
+        <p>
+          <strong>COSAiS still in draft.</strong> NIST's COSAiS overlays (SP 800-53 control overlays
+          for securing AI systems) are the official forthcoming answer, but all overlays remain in draft
+          as of June 2026. Agencies facing the September deadline cannot wait. COSAiS mappings in this
+          schema are marked TBD with a revisit note for when final drafts publish.
+        </p>
+        <p>
+          <strong>The responsibility_split field.</strong> Every control in this schema carries a
+          <code>responsibility_split</code> value aligned to FedRAMP CRM categories: <code>agency</code>,
+          <code>shared</code>, <code>csp</code>, or <code>inherited</code>. This is the feature that
+          makes the schema legible to ISSOs and maps directly onto artifacts every Authorizing Official
+          already uses.
+        </p>
+      </div>
+
+      <!-- Pages in this section -->
+      <p class="section-label">In this section</p>
+      <nav class="card-grid" aria-label="Public-sector section pages">
+
+        <a class="page-card" href="/public-sector/how-to/">
+          <div class="page-card__accent page-card__accent--blue"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+            </div>
+            <div class="page-card__name">How to use the schema</div>
+            <p class="page-card__desc">
+              Five steps for CAIO staff and ISSOs: inventory use cases, select operating model
+              and trace CRM inheritance, map personas to agency roles, set tier parameters by
+              FIPS 199 level, and assemble the evidence package for the OMB report and ATO file.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--blue">CAIO and ISSO guide</span>
+              <span class="tag tag--slate">XLSX workpaper</span>
+              <span class="tag tag--slate">M-25-21</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Read the guide &#8594;</span>
+          </div>
+        </a>
+
+        <a class="page-card" href="/public-sector/controls/">
+          <div class="page-card__accent page-card__accent--green"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--green" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <div class="page-card__name">Controls browser</div>
+            <p class="page-card__desc">
+              Browse, filter, and inspect all 40 controls. Filter by SRF layer, federal AI
+              lifecycle stage, operating model, responsibility split, or accountable persona.
+              View thresholds, OCSF evidence pointers, and regulatory mappings for each control.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--slate">40 controls</span>
+              <span class="tag tag--slate">Filter by split</span>
+              <span class="tag tag--green">Live</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Browse controls &#8594;</span>
+          </div>
+        </a>
+
+        <a class="page-card" href="/data/public-sector-controls.json" download="public-sector-controls.json">
+          <div class="page-card__accent page-card__accent--purple"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </div>
+            <div class="page-card__name">Raw schema (JSON)</div>
+            <p class="page-card__desc">
+              Machine-readable controls schema. All 40 controls with thresholds, OCSF evidence
+              pointers, responsibility_split values, regulatory mappings, and persona assignments.
+              Use as input for tooling, FedRAMP CRM completion, or policy-as-code pipelines.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--slate">public-sector-controls.json</span>
+              <span class="tag tag--slate">40 controls</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Download JSON &#8594;</span>
+          </div>
+        </a>
+
+        <a class="page-card" href="/public-sector/how-to/m2521-workpaper.xlsx">
+          <div class="page-card__accent page-card__accent--blue"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </div>
+            <div class="page-card__name">M-25-21 readiness workpaper</div>
+            <p class="page-card__desc">
+              Four-sheet Excel workbook: Instructions, Tier Parameters, Persona Mapping, and
+              Minimum-Practices Evidence Log. Generated from the controls JSON. Sized for the
+              September 22, 2026 OMB report and the next AI service ATO file.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--slate">m2521-workpaper.xlsx</span>
+              <span class="tag tag--slate">4 sheets</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Download .xlsx &#8594;</span>
+          </div>
+        </a>
+
+      </nav>
+
+      <!-- Schema design -->
+      <p class="section-label">Schema design</p>
+      <div class="schema-strip" role="region" aria-label="Schema design reference">
+        <div class="schema-item">
+          <div class="schema-item__label">Accountability plane</div>
+          <div class="schema-item__name">SRF layers and personas</div>
+          <p class="schema-item__desc">
+            Each control names one accountable persona. Five layers map to a federal AI
+            lifecycle: governance, data, application, platform, and model. Federal roles
+            (CAIO, ISSO, AO) map to personas in the how-to guide, not the JSON.
+          </p>
+        </div>
+        <div class="schema-item">
+          <div class="schema-item__label">Control plane</div>
+          <div class="schema-item__name">Federal AI lifecycle stages + CRM split</div>
+          <p class="schema-item__desc">
+            Four stages: ACQ (acquisition), VAL (pre-deployment validation), MON (ongoing
+            monitoring), OVR (human oversight and remedy). Every control also carries a
+            <code>responsibility_split</code> value for direct CRM integration.
+          </p>
+        </div>
+        <div class="schema-item">
+          <div class="schema-item__label">Evidence plane</div>
+          <div class="schema-item__name">OCSF v1.8.0 and document artifacts</div>
+          <p class="schema-item__desc">
+            Each threshold names an OCSF event class where a machine-readable signal exists.
+            Where evidence is a governance document (impact assessment, ATO letter, compliance
+            plan), the schema says so rather than forcing OCSF onto paperwork.
+          </p>
+        </div>
+      </div>
+
+      <!-- Layer coverage -->
+      <p class="section-label">Coverage by layer</p>
+      <div class="layer-list" role="list" aria-label="Controls by SRF layer">
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l1">L1</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Governance and processes</div>
+            <div class="layer-row__desc">
+              Use-case inventory and public posting, high-impact designation, CAIO and governance
+              board, M-25-21 compliance plan, discontinuation and waiver process, public feedback
+              channel, M-25-22 contract compliance, staff training, governance board review cadence.
+              Accountable persona: <code>ai-system-governance</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">9 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l2">L2</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Data and input control</div>
+            <div class="layer-row__desc">
+              Authority-to-use for training and RAG data, agency data egress block per M-25-22,
+              PII and CUI classification, input drift monitoring (PSI), NARA log retention,
+              output accuracy monitoring, disparate impact monitoring, FedRAMP authorization
+              for data services. Accountable personas: <code>data-provider</code>
+              (5 controls) and <code>application-developer</code> (3 controls).
+            </div>
+          </div>
+          <span class="layer-row__count">8 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l3">L3</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Application and integration</div>
+            <div class="layer-row__desc">
+              Pre-deployment testing, AI impact assessment, prompt injection detection, human
+              oversight gate for adverse citizen decisions, remedy and appeal mechanism, agentic
+              task boundary enforcement, shared-service inheritance chain, plain-language
+              explanation for adverse decisions. Accountable personas: <code>application-developer</code>
+              (7 controls) and <code>agentic-platform-provider</code> (1 control).
+            </div>
+          </div>
+          <span class="layer-row__count">8 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l4">L4</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Platform and infrastructure</div>
+            <div class="layer-row__desc">
+              FedRAMP authorization at required FIPS 199 impact level, guardrail configuration
+              baseline, API gateway authentication, CUI encryption and access monitoring, audit
+              log completeness per 20x KSIs, model serving availability SLA, ATO CRM completion,
+              continuous vulnerability scanning. Accountable personas: <code>ai-platform-provider</code>
+              (6 controls) and <code>agentic-platform-provider</code> (2 controls).
+            </div>
+          </div>
+          <span class="layer-row__count">8 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l5">L5</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Model and supplier</div>
+            <div class="layer-row__desc">
+              Model documentation per M-25-22 transparency terms, vendor drift disclosure SLA,
+              artifact signing and provenance, vulnerability disclosure SLA, model portability
+              for lock-in avoidance, model version change re-validation trigger, supply chain
+              risk assessment. Accountable persona: <code>model-provider</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">7 controls</span>
+        </div>
+
+      </div>
+
+      <!-- GovRAMP roadmap note -->
+      <p class="context-note">GovRAMP crosswalk is on the roadmap; controls will gain GovRAMP marketplace authorization IDs once the program publishes its AI-specific requirements.</p>
+
+      <!-- Crosswalk pills -->
+      <p class="section-label">Regulatory crosswalk</p>
+      <div class="pills-row">
+        <div class="pill"><span class="pill__dot"></span>OMB M-25-21</div>
+        <div class="pill"><span class="pill__dot"></span>OMB M-25-22</div>
+        <div class="pill"><span class="pill__dot"></span>FedRAMP 20x KSIs</div>
+        <div class="pill"><span class="pill__dot"></span>NIST AI RMF 1.0</div>
+        <div class="pill"><span class="pill__dot"></span>NIST AI 600-1</div>
+        <div class="pill"><span class="pill__dot"></span>NIST COSAiS (draft)</div>
+        <div class="pill"><span class="pill__dot"></span>OWASP LLM Top 10</div>
+        <div class="pill"><span class="pill__dot"></span>FIPS 199 impact levels</div>
+        <div class="pill"><span class="pill__dot"></span>FedRAMP CRM categories</div>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Public Sector Controls Browser - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Browse all 40 public-sector controls in the CoSAI SRF. Filter by SRF layer, federal AI lifecycle stage, operating model, accountable persona, and FedRAMP CRM responsibility split."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .browser-layout {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: var(--sp-8);
+        align-items: start;
+        padding-top: var(--sp-8);
+        padding-bottom: var(--sp-20);
+      }
+      @media (max-width: 820px) {
+        .browser-layout { grid-template-columns: 1fr; }
+        .filter-sidebar { position: static !important; }
+      }
+
+      .filter-sidebar {
+        position: sticky;
+        top: 72px;
+      }
+      .filter-group {
+        margin-bottom: var(--sp-6);
+      }
+      .filter-group__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+        display: block;
+      }
+      .filter-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: var(--radius);
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        font-family: inherit;
+        line-height: 1.8;
+        transition: background 0.1s;
+      }
+      .filter-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+      .filter-btn.active {
+        background: #1e3a8a;
+        color: #fff;
+        font-weight: 600;
+      }
+      .filter-btn .count {
+        float: right;
+        font-size: 0.7rem;
+        opacity: 0.6;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .filter-divider {
+        border: none;
+        border-top: 1px solid var(--slate-200);
+        margin: var(--sp-4) 0;
+      }
+      .clear-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: var(--sp-2) 0;
+        border-radius: var(--radius);
+        border: 1px solid var(--slate-200);
+        background: none;
+        cursor: pointer;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-500);
+        font-family: inherit;
+        transition: background 0.1s, color 0.1s;
+      }
+      .clear-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+
+      .results-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: var(--sp-4);
+      }
+      .results-count {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+      }
+      .results-count strong { color: var(--slate-800); }
+      .search-input {
+        padding: var(--sp-2) var(--sp-3);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        font-size: var(--text-sm);
+        font-family: inherit;
+        color: var(--slate-800);
+        background: #fff;
+        width: 200px;
+        outline: none;
+        transition: border-color 0.1s;
+      }
+      .search-input:focus { border-color: #1d4ed8; }
+
+      .control-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        margin-bottom: var(--sp-4);
+        overflow: hidden;
+        transition: box-shadow 0.12s;
+      }
+      .control-card:hover { box-shadow: var(--shadow); }
+      .control-card__head {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--sp-4);
+        padding: var(--sp-5) var(--sp-6);
+        cursor: pointer;
+        user-select: none;
+      }
+      .control-card__badges {
+        display: flex;
+        flex-direction: column;
+        gap: var(--sp-2);
+        flex-shrink: 0;
+        width: 72px;
+      }
+      .badge {
+        font-size: 0.6rem;
+        font-weight: 800;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        padding: 3px 6px;
+        border-radius: 4px;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .badge--l1 { color: var(--l1-text); background: var(--l1-bg); }
+      .badge--l2 { color: var(--l2-text); background: var(--l2-bg); }
+      .badge--l3 { color: var(--l3-text); background: var(--l3-bg); }
+      .badge--l4 { color: var(--l4-text); background: var(--l4-bg); }
+      .badge--l5 { color: var(--l5-text); background: var(--l5-bg); }
+      .badge--acq  { color: #1e40af; background: #dbeafe; }
+      .badge--val  { color: #5b21b6; background: #ede9fe; }
+      .badge--mon  { color: #065f46; background: #d1fae5; }
+      .badge--ovr  { color: #9a3412; background: #fff7ed; }
+      .badge--zero  { color: #991b1b; background: #fee2e2; }
+      .badge--verif { color: #155e75; background: #cffafe; }
+      .badge--csp      { color: #4a1d96; background: #ede9fe; }
+      .badge--agency   { color: #1e3a8a; background: #dbeafe; }
+      .badge--shared   { color: #065f46; background: #d1fae5; }
+      .badge--inherited { color: #92400e; background: #fef3c7; }
+      .control-card__title-area { flex: 1; min-width: 0; }
+      .control-card__id {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--slate-400);
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
+      }
+      .control-card__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-800);
+        line-height: var(--leading-snug);
+      }
+      .control-card__persona {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        margin-top: var(--sp-1);
+      }
+      .control-card__persona code {
+        font-size: 0.7rem;
+        background: var(--slate-100);
+        padding: 1px 5px;
+        border-radius: 3px;
+        color: var(--slate-600);
+      }
+      .control-card__chevron {
+        flex-shrink: 0;
+        width: 16px;
+        height: 16px;
+        color: var(--slate-400);
+        transition: transform 0.15s;
+        margin-top: 3px;
+      }
+      .control-card.open .control-card__chevron { transform: rotate(180deg); }
+
+      .control-detail {
+        display: none;
+        border-top: 1px solid var(--slate-100);
+        padding: var(--sp-5) var(--sp-6);
+        background: var(--slate-50);
+      }
+      .control-card.open .control-detail { display: block; }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-5);
+      }
+      @media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } }
+      .detail-section__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .detail-section p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-2);
+      }
+      .detail-section p:last-child { margin-bottom: 0; }
+      .threshold-row {
+        display: flex;
+        align-items: baseline;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-2);
+      }
+      .threshold-label {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-500);
+        width: 80px;
+        flex-shrink: 0;
+      }
+      .threshold-value {
+        font-size: var(--text-xs);
+        font-family: ui-monospace, monospace;
+        color: var(--slate-700);
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        padding: 2px 7px;
+        border-radius: 4px;
+      }
+      .ocsf-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: #dbeafe;
+        color: #1e3a8a;
+        border: 1px solid #93c5fd;
+        border-radius: 4px;
+        padding: 2px 7px;
+        margin-bottom: var(--sp-2);
+      }
+      .mapping-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .mapping-tag {
+        font-size: 0.62rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--slate-100);
+        color: var(--slate-600);
+        border: 1px solid var(--slate-200);
+      }
+      .operating-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .operating-tag {
+        font-size: 0.62rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #dbeafe;
+        color: #1e3a8a;
+        border: 1px solid #93c5fd;
+      }
+      .split-chip {
+        display: inline-block;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .split-chip--csp      { color: #4a1d96; background: #ede9fe; border: 1px solid #c4b5fd; }
+      .split-chip--agency   { color: #1e3a8a; background: #dbeafe; border: 1px solid #93c5fd; }
+      .split-chip--shared   { color: #065f46; background: #d1fae5; border: 1px solid #6ee7b7; }
+      .split-chip--inherited { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--sp-16) var(--sp-8);
+        color: var(--slate-400);
+      }
+      .empty-state p { font-size: var(--text-sm); margin-top: var(--sp-2); }
+
+      /* ── Controls hero ────────────────────────────────────────────── */
+      .controls-hero {
+        padding: var(--sp-10) 0 0;
+        margin-bottom: var(--sp-6);
+      }
+      .controls-hero .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-3);
+      }
+      .controls-hero .breadcrumb a {
+        color: var(--slate-500);
+        text-decoration: none;
+      }
+      .controls-hero .breadcrumb a:hover { color: var(--cosai-blue); text-decoration: underline; }
+      .controls-hero .breadcrumb__sep { opacity: 0.4; }
+      .controls-hero__title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--cosai-navy);
+        margin: 0 0 var(--sp-2);
+        line-height: 1.2;
+      }
+      .controls-hero__sub {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+        margin: 0 0 var(--sp-6);
+      }
+    </style>
+  </head>
+  <body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+    <site-nav current="industries"></site-nav>
+
+    <div id="main" class="page-body">
+
+      <div class="controls-hero">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <a href="/public-sector/">Public Sector</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <span>Controls browser</span>
+        </nav>
+        <h1 class="controls-hero__title">Public-sector controls browser</h1>
+        <p class="controls-hero__sub">
+          Browse all 40 controls in the public-sector schema. Filter by SRF layer,
+          federal AI lifecycle stage, operating model, accountable persona, or FedRAMP CRM
+          responsibility split.
+        </p>
+      </div>
+
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:24px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+        extension of the CoSAI Shared Responsibility Framework. It is not part of SRF v1.0 and
+        has not been endorsed by CoSAI, OMB, GSA, FedRAMP, NIST, or any federal agency. Section
+        references to OMB M-25-21 and M-25-22 require verification against the primary PDFs at
+        whitehouse.gov. FedRAMP 20x KSI names are still evolving through the pilot phases; verify
+        at fedramp.gov before using in agency documentation.
+      </div>
+
+      <div class="browser-layout">
+
+        <!-- Filter sidebar -->
+        <aside class="filter-sidebar" aria-label="Filter controls">
+
+          <div class="filter-group">
+            <span class="filter-group__label">SRF layer</span>
+            <button class="filter-btn active" data-filter="layer" data-value="all" tabindex="0">All layers <span class="count" id="count-layer-all"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L1" tabindex="0">L1 Governance <span class="count" id="count-layer-l1"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L2" tabindex="0">L2 Data <span class="count" id="count-layer-l2"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L3" tabindex="0">L3 Application <span class="count" id="count-layer-l3"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L4" tabindex="0">L4 Platform <span class="count" id="count-layer-l4"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L5" tabindex="0">L5 Model <span class="count" id="count-layer-l5"></span></button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Lifecycle stage</span>
+            <button class="filter-btn" data-filter="stage" data-value="acquisition-integration" tabindex="0">Acquisition</button>
+            <button class="filter-btn" data-filter="stage" data-value="pre-deployment-validation" tabindex="0">Validation</button>
+            <button class="filter-btn" data-filter="stage" data-value="ongoing-monitoring" tabindex="0">Monitoring</button>
+            <button class="filter-btn" data-filter="stage" data-value="human-oversight-remedy" tabindex="0">Oversight/Remedy</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Operating model</span>
+            <button class="filter-btn" data-filter="model" data-value="AI-SaaS" tabindex="0">AI-SaaS</button>
+            <button class="filter-btn" data-filter="model" data-value="AI-PaaS" tabindex="0">AI-PaaS</button>
+            <button class="filter-btn" data-filter="model" data-value="Agent-Ops" tabindex="0">Agent-Ops</button>
+            <button class="filter-btn" data-filter="model" data-value="Shared-Service" tabindex="0">Shared-Service</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Responsibility split</span>
+            <button class="filter-btn" data-filter="split" data-value="agency" tabindex="0">Agency</button>
+            <button class="filter-btn" data-filter="split" data-value="shared" tabindex="0">Shared</button>
+            <button class="filter-btn" data-filter="split" data-value="csp" tabindex="0">CSP</button>
+            <button class="filter-btn" data-filter="split" data-value="inherited" tabindex="0">Inherited</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Persona</span>
+            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">ai-system-governance</button>
+            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">data-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">application-developer</button>
+            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">agentic-platform-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">ai-platform-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">model-provider</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Param type</span>
+            <button class="filter-btn" data-filter="paramtype" data-value="zero-tolerance" tabindex="0">Zero-tolerance</button>
+            <button class="filter-btn" data-filter="paramtype" data-value="verification" tabindex="0">Verification</button>
+            <button class="filter-btn" data-filter="paramtype" data-value="tier-configurable" tabindex="0">Tier-configurable</button>
+          </div>
+
+          <hr class="filter-divider" />
+          <button class="clear-btn" id="clear-filters" tabindex="0">Clear all filters</button>
+
+        </aside>
+
+        <!-- Results panel -->
+        <div role="region" aria-live="polite" aria-label="Control results">
+          <div class="results-header">
+            <span class="results-count" id="results-count">Loading controls&#8230;</span>
+            <input
+              type="search"
+              class="search-input"
+              id="search-input"
+              placeholder="Search controls&#8230;"
+              aria-label="Search controls"
+            />
+          </div>
+          <div id="controls-list"></div>
+        </div>
+
+      </div>
+    </div><!-- /#main -->
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+    <script>
+    (function () {
+      var STAGE_LABELS = {
+        'acquisition-integration':     'ACQ',
+        'pre-deployment-validation':   'VAL',
+        'ongoing-monitoring':          'MON',
+        'human-oversight-remedy':      'OVR'
+      };
+      var STAGE_BADGE = {
+        'acquisition-integration':     'acq',
+        'pre-deployment-validation':   'val',
+        'ongoing-monitoring':          'mon',
+        'human-oversight-remedy':      'ovr'
+      };
+      var STAGE_FULL = {
+        'acquisition-integration':   'Acquisition and Integration',
+        'pre-deployment-validation': 'Pre-Deployment Validation',
+        'ongoing-monitoring':        'Ongoing Monitoring',
+        'human-oversight-remedy':    'Human Oversight and Remedy'
+      };
+      var PARAM_BADGE = {
+        'zero-tolerance': 'zero',
+        'verification':   'verif',
+        'tier-configurable': null
+      };
+
+      var allControls = [];
+      var activeFilters = { layer: 'all', stage: null, model: null, persona: null, paramtype: null, split: null };
+      var searchQuery = '';
+
+      function escHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      fetch('/data/public-sector-controls.json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          allControls = data.controls;
+          initCounts();
+          renderControls();
+        })
+        .catch(function() {
+          document.getElementById('controls-list').innerHTML =
+            '<div class="empty-state"><p>Could not load controls data.</p></div>';
+        });
+
+      function initCounts() {
+        var total = allControls.length;
+        var el = function(id) { return document.getElementById(id); };
+        if (el('count-layer-all')) el('count-layer-all').textContent = total;
+        ['L1','L2','L3','L4','L5'].forEach(function(l) {
+          var key = 'count-layer-' + l.toLowerCase();
+          var cnt = allControls.filter(function(c) { return c.layer === l; }).length;
+          if (el(key)) el(key).textContent = cnt;
+        });
+      }
+
+      function filtered() {
+        return allControls.filter(function(c) {
+          if (activeFilters.layer !== 'all' && c.layer !== activeFilters.layer) return false;
+          if (activeFilters.stage && c.public_sector_stage !== activeFilters.stage) return false;
+          if (activeFilters.model && (c.operating_models || []).indexOf(activeFilters.model) === -1) return false;
+          if (activeFilters.persona && c.accountable_persona !== activeFilters.persona) return false;
+          if (activeFilters.paramtype && c.threshold.param_type !== activeFilters.paramtype) return false;
+          if (activeFilters.split && c.responsibility_split !== activeFilters.split) return false;
+          if (searchQuery) {
+            var q = searchQuery.toLowerCase();
+            return (
+              c.id.toLowerCase().indexOf(q) !== -1 ||
+              c.title.toLowerCase().indexOf(q) !== -1 ||
+              c.description.toLowerCase().indexOf(q) !== -1 ||
+              c.component.toLowerCase().indexOf(q) !== -1
+            );
+          }
+          return true;
+        });
+      }
+
+      function renderControls() {
+        var list = filtered();
+        var container = document.getElementById('controls-list');
+        var countEl = document.getElementById('results-count');
+
+        countEl.innerHTML = 'Showing <strong>' + list.length + '</strong> of <strong>' + allControls.length + '</strong> controls';
+
+        if (list.length === 0) {
+          container.innerHTML = '<div class="empty-state"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No controls match the current filters.</p></div>';
+          return;
+        }
+
+        container.innerHTML = list.map(function(c) { return controlCardHTML(c); }).join('');
+
+        container.querySelectorAll('.control-card__head').forEach(function(head) {
+          var toggle = function() {
+            var card = head.closest('.control-card');
+            card.classList.toggle('open');
+            head.setAttribute('aria-expanded', card.classList.contains('open') ? 'true' : 'false');
+          };
+          head.addEventListener('click', toggle);
+          head.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+          });
+        });
+      }
+
+      function stageBadgeHTML(stage) {
+        var cls = STAGE_BADGE[stage] || 'acq';
+        var label = STAGE_LABELS[stage] || stage;
+        return '<span class="badge badge--' + cls + '">' + escHtml(label) + '</span>';
+      }
+
+      function paramBadgeHTML(paramType) {
+        var cls = PARAM_BADGE[paramType];
+        if (!cls) return '';
+        var label = paramType === 'zero-tolerance' ? 'Zero' : 'Verify';
+        return '<span class="badge badge--' + cls + '">' + label + '</span>';
+      }
+
+      function splitBadgeHTML(split) {
+        if (!split) return '';
+        var labels = { csp: 'CSP', agency: 'Agency', shared: 'Shared', inherited: 'Inherited' };
+        return '<span class="badge badge--' + escHtml(split) + '">' + escHtml(labels[split] || split) + '</span>';
+      }
+
+      function mappingTags(mappings) {
+        return Object.entries(mappings)
+          .filter(function(kv) { var v = kv[1]; return v && !String(v).startsWith('N/A') && !String(v).startsWith('TBD'); })
+          .map(function(kv) { return '<span class="mapping-tag">' + escHtml(kv[0].replace(/_/g, ' ').toUpperCase()) + '</span>'; })
+          .join('');
+      }
+
+      function operatingTags(models) {
+        return (models || []).map(function(m) { return '<span class="operating-tag">' + escHtml(m) + '</span>'; }).join('');
+      }
+
+      function splitChipHTML(split) {
+        var labels = { csp: 'CSP', agency: 'Agency', shared: 'Shared', inherited: 'Inherited' };
+        return '<span class="split-chip split-chip--' + escHtml(split) + '">' + escHtml(labels[split] || split) + '</span>';
+      }
+
+      function controlCardHTML(c) {
+        var t = c.threshold;
+        var ocsfText = t.evidence && t.evidence.ocsf_class
+          ? t.evidence.ocsf_class.split(':')[0].trim()
+          : 'Document artifact';
+
+        return '<article class="control-card" id="control-' + escHtml(c.id) + '">' +
+          '<div class="control-card__head" role="button" aria-expanded="false" tabindex="0">' +
+            '<div class="control-card__badges">' +
+              '<span class="badge badge--' + escHtml(c.layer.toLowerCase()) + '">' + escHtml(c.layer) + '</span>' +
+              stageBadgeHTML(c.public_sector_stage) +
+              splitBadgeHTML(c.responsibility_split) +
+              paramBadgeHTML(t.param_type) +
+            '</div>' +
+            '<div class="control-card__title-area">' +
+              '<div class="control-card__id">' + escHtml(c.id) + '</div>' +
+              '<div class="control-card__title">' + escHtml(c.title) + '</div>' +
+              '<div class="control-card__persona">' +
+                escHtml(c.component) + ' &middot; <code>' + escHtml(c.accountable_persona) + '</code>' +
+              '</div>' +
+            '</div>' +
+            '<svg class="control-card__chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>' +
+          '</div>' +
+          '<div class="control-detail">' +
+            '<div class="detail-grid">' +
+              '<div>' +
+                '<div class="detail-section">' +
+                  '<div class="detail-section__label">Description</div>' +
+                  '<p>' + escHtml(c.description) + '</p>' +
+                '</div>' +
+                '<div class="detail-section" style="margin-top:var(--sp-4)">' +
+                  '<div class="detail-section__label">Federal AI lifecycle stage</div>' +
+                  '<p>' + escHtml(STAGE_FULL[c.public_sector_stage] || c.public_sector_stage) + '</p>' +
+                '</div>' +
+                '<div class="detail-section" style="margin-top:var(--sp-4)">' +
+                  '<div class="detail-section__label">FedRAMP CRM responsibility split</div>' +
+                  '<p>' + splitChipHTML(c.responsibility_split) + '</p>' +
+                '</div>' +
+                '<div class="detail-section" style="margin-top:var(--sp-4)">' +
+                  '<div class="detail-section__label">Operating models</div>' +
+                  '<div class="operating-tags">' + operatingTags(c.operating_models) + '</div>' +
+                '</div>' +
+                '<div class="detail-section" style="margin-top:var(--sp-4)">' +
+                  '<div class="detail-section__label">Regulatory mappings</div>' +
+                  '<div class="mapping-tags">' + (mappingTags(c.mappings) || '<span style="font-size:var(--text-xs);color:var(--slate-400)">TBD: verify against source documents</span>') + '</div>' +
+                '</div>' +
+              '</div>' +
+              '<div>' +
+                '<div class="detail-section">' +
+                  '<div class="detail-section__label">Threshold</div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(t.metric) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Operator</span><span class="threshold-value">' + escHtml(t.operator) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Param</span><span class="threshold-value">' + escHtml(t.param) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(t.window) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Breach</span><span class="threshold-value" style="max-width:200px;white-space:normal">' + escHtml(t.breach_action) + '</span></div>' +
+                '</div>' +
+                '<div class="detail-section" style="margin-top:var(--sp-4)">' +
+                  '<div class="detail-section__label">OCSF evidence pointer</div>' +
+                  '<div class="ocsf-chip">OCSF v1.8.0 &middot; ' + escHtml(ocsfText) + '</div>' +
+                  (t.evidence && t.evidence.attribute && t.evidence.attribute !== 'TBD'
+                    ? '<p style="font-size:var(--text-xs);color:var(--slate-500);margin:0;font-family:ui-monospace,monospace">' + escHtml(t.evidence.attribute) + '</p>'
+                    : '') +
+                '</div>' +
+                '<div class="detail-section" style="margin-top:var(--sp-4)">' +
+                  '<div class="detail-section__label">Threshold description</div>' +
+                  '<p>' + escHtml(t.description) + '</p>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</article>';
+      }
+
+      document.querySelectorAll('.filter-btn[data-filter]').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var filterType = btn.dataset.filter;
+          var value = btn.dataset.value;
+
+          if (filterType === 'layer') {
+            activeFilters.layer = value;
+            document.querySelectorAll('[data-filter="layer"]').forEach(function(b) { b.classList.remove('active'); });
+            btn.classList.add('active');
+          } else {
+            var current = activeFilters[filterType];
+            if (current === value) {
+              activeFilters[filterType] = null;
+              btn.classList.remove('active');
+            } else {
+              document.querySelectorAll('[data-filter="' + filterType + '"]').forEach(function(b) { b.classList.remove('active'); });
+              activeFilters[filterType] = value;
+              btn.classList.add('active');
+            }
+          }
+          renderControls();
+        });
+
+        btn.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+        });
+      });
+
+      document.getElementById('clear-filters').addEventListener('click', function() {
+        activeFilters = { layer: 'all', stage: null, model: null, persona: null, paramtype: null, split: null };
+        searchQuery = '';
+        document.getElementById('search-input').value = '';
+        document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelector('[data-filter="layer"][data-value="all"]').classList.add('active');
+        renderControls();
+      });
+
+      document.getElementById('search-input').addEventListener('input', function(e) {
+        searchQuery = e.target.value.trim();
+        renderControls();
+      });
+
+    })();
+    </script>
+
+  </body>
+</html>
