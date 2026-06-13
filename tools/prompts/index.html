@@ -6,10 +6,249 @@
     <title>System Instructions — AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Versioned system instructions for grounding AI assistants in the CoSAI AI Shared Responsibility Framework. Coming in Phase 1."
+      content="Versioned system instructions for grounding AI assistants in the CoSAI AI Shared Responsibility Framework. Core prompt, role variants, and sector context parameters."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Prompt block ─────────────────────────────────────────────── */
+      .prompt-block {
+        background: var(--cosai-navy);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: var(--sp-10);
+      }
+      .prompt-block__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--sp-3) var(--sp-5);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .prompt-block__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+      }
+      .prompt-block__copy {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: rgba(255,255,255,0.55);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: var(--radius);
+        padding: 4px 10px;
+        cursor: pointer;
+        transition: background 0.1s, color 0.1s;
+      }
+      .prompt-block__copy:hover {
+        background: rgba(255,255,255,0.14);
+        color: rgba(255,255,255,0.9);
+      }
+      .prompt-block__copy--copied {
+        color: #6ee7b7 !important;
+        border-color: rgba(110,231,183,0.3) !important;
+      }
+      .prompt-block pre {
+        margin: 0;
+        padding: var(--sp-6);
+        font-size: 0.8rem;
+        line-height: 1.65;
+        color: #e2e8f0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      }
+
+      /* ── Section label ────────────────────────────────────────────── */
+      .section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-5);
+      }
+
+      /* ── Variant grid ─────────────────────────────────────────────── */
+      .variant-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-12);
+      }
+      .variant-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        padding: var(--sp-5) var(--sp-6);
+      }
+      .variant-card__role {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cosai-blue);
+        margin-bottom: var(--sp-2);
+      }
+      .variant-card__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin-bottom: var(--sp-2);
+      }
+      .variant-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-4);
+      }
+      .variant-card__focus span {
+        display: inline-block;
+        background: var(--slate-100);
+        border-radius: 4px;
+        padding: 2px 7px;
+        margin: 2px 2px 0 0;
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--slate-600);
+        letter-spacing: 0.04em;
+      }
+
+      /* ── Sector params ────────────────────────────────────────────── */
+      .sector-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-12);
+      }
+      .sector-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .sector-card__accent { height: 4px; }
+      .sector-card__accent--finance  { background: #1a56db; }
+      .sector-card__accent--health   { background: #057a55; }
+      .sector-card__accent--insure   { background: #7e3af2; }
+      .sector-card__accent--gov      { background: #c27803; }
+      .sector-card__accent--defense  { background: #4b5563; }
+      .sector-card__accent--mfg      { background: #b45309; }
+      .sector-card__body {
+        padding: var(--sp-5) var(--sp-6);
+      }
+      .sector-card__icon {
+        font-size: 1.2rem;
+        margin-bottom: var(--sp-2);
+      }
+      .sector-card__name {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin-bottom: var(--sp-3);
+      }
+      .sector-card__param {
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+        font-size: 0.72rem;
+        color: var(--slate-700);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        padding: var(--sp-3) var(--sp-4);
+        margin-bottom: var(--sp-3);
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.5;
+      }
+      .sector-card__regs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .sector-card__reg {
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        padding: 2px 7px;
+        border-radius: 4px;
+        background: var(--slate-100);
+        color: var(--slate-600);
+      }
+
+      /* ── Steps list ───────────────────────────────────────────────── */
+      .steps-list {
+        list-style: none;
+        margin: 0 0 var(--sp-10);
+        padding: 0;
+        counter-reset: step;
+      }
+      .steps-list li {
+        counter-increment: step;
+        display: flex;
+        gap: var(--sp-4);
+        padding: var(--sp-4) 0;
+        border-bottom: 1px solid var(--slate-100);
+      }
+      .steps-list li:last-child { border-bottom: none; }
+      .steps-list__num {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--cosai-blue-light);
+        color: var(--cosai-blue);
+        font-size: var(--text-xs);
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .steps-list__num::before { content: counter(step); }
+      .steps-list__body { flex: 1; }
+      .steps-list__title {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin-bottom: 2px;
+      }
+      .steps-list__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0;
+      }
+
+      /* ── Roadmap block ────────────────────────────────────────────── */
+      .roadmap-block {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        margin-bottom: var(--sp-10);
+        max-width: 720px;
+      }
+      .roadmap-block__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin-bottom: var(--sp-4);
+      }
+      .roadmap-block p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+      }
+      .roadmap-block p:last-child { margin-bottom: 0; }
+      .roadmap-block strong { color: var(--slate-800); }
+
+    </style>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -21,70 +260,320 @@
         <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / System Instructions</span>
         <h1 class="page-hero__title">System Instructions</h1>
         <p class="page-hero__lede">
-          Versioned, downloadable system prompts that ground AI assistants in
-          the CoSAI AI SRF. Enforce exactly one accountable party per
-          activity, layer-cascading responsibilities, and autonomy
-          classification for agentic systems.
+          Copy-ready prompts that ground AI assistants in the CoSAI AI SRF.
+          The core instruction enforces one accountable party per activity,
+          layer-cascading responsibilities, and autonomy classification for
+          agentic systems. Role variants and sector context parameters are
+          provided for targeted workflows.
         </p>
       </div>
     </header>
 
     <main id="main" class="page-body">
-      <div class="prose">
-        <h2>Why this matters</h2>
-        <p>
-          AI assistants are increasingly used to draft governance documents,
-          generate RACI matrices, and analyze deployment scenarios against
-          regulatory requirements. Without a grounding system instruction, the
-          outputs can contradict the SRF — misassigning accountability,
-          skipping layer analysis, or treating "shared" responsibility as a
-          valid final answer when the framework requires a single accountable
-          party.
-        </p>
-        <p>
-          A canonical system instruction solves this by making the framework's
-          core rules non-negotiable in any AI-assisted governance workflow.
-        </p>
 
-        <h2>What's planned</h2>
-        <p>
-          <strong>Core system instruction (v2.0)</strong> — A production-ready
-          prompt that enforces the SRF's fundamental rules: one accountable
-          party per activity, L1-to-L5 responsibility cascade, mandatory
-          autonomy level classification (L0–L5) for agentic systems, and
-          explicit citation of framework sections.
-        </p>
-        <p>
-          <strong>Prompt variants</strong> — Shorter, role-specific versions
-          optimized for executive summary, auditor (evidence-focused),
-          developer (technical controls), and legal/procurement (contract
-          language) contexts.
-        </p>
-        <p>
-          <strong>Scenario packs</strong> — Few-shot examples for the 10–15
-          most common governance scenarios: third-party model evaluation,
-          incident post-mortem, autonomy classification, contract clause
-          generation, and sector-specific deployments in healthcare, finance,
-          and public sector.
-        </p>
-        <p>
-          <strong>Version registry</strong> — All prompts are versioned and
-          pinned to a specific SRF release. The registry includes a testing
-          harness that validates outputs against framework rules.
-        </p>
+      <!-- Core prompt -->
+      <p class="section-label">Core system instruction</p>
 
-        <h2>Timeline</h2>
+      <div class="prompt-block" id="core-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">SRF v2.0 &middot; Core &middot; May 2026</span>
+          <button class="prompt-block__copy" onclick="copyPrompt('core-block', this)">Copy</button>
+        </div>
+        <pre>You are an expert AI Governance Analyst using the CoSAI AI Shared Responsibility Framework v2.0 (May 2026 or later).
+
+Core Principles (never violate):
+- There must be exactly one accountable party per activity/component. Use RACI (Responsible, Accountable, Consulted, Informed) but always identify the single Accountable owner.
+- Responsibilities cascade from the AI Business &amp; Usage layer downward through AI Information &rarr; AI Application &rarr; AI Platform &rarr; AI Model Provider.
+- For agentic systems, always classify autonomy level (L0&ndash;L5) and reference required human override tiers (T1&ndash;T5).
+- Ground every analysis in the official SRF sections, matrices, and evidence requirements. Cite them explicitly.
+- Flag ambiguities, responsibility gaps, and contract boundary issues clearly.
+- Balance safety, security, and compliance with innovation. Avoid overly restrictive "safety theater."
+
+Framework Structure:
+- 5 Enterprise Architecture Layers with named personas (Agentic Platform Provider, Application Developer, AI System Governance, Model Provider, etc.)
+- Operating Models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+- Agentic extensions: identity, MCP/tooling, multi-agent coordination, dynamic responsibility shifts
+- Evidence categories and autonomy-scaled requirements
+- Implementation Playbook and regulatory mappings
+
+When responding, structure your output in this order:
+1. Scenario Summary (1 paragraph)
+2. Layer-by-Layer Analysis (map to the 5 layers and operating model)
+3. Autonomy &amp; Agentic Considerations (if applicable)
+4. Responsibility Matrix (RACI table with exactly one Accountable per row)
+5. Gaps, Risks &amp; Recommendations (including contract language where relevant)
+6. Evidence Requirements (tailored checklist)
+7. Actionable Next Steps (playbook alignment)
+
+Be precise, actionable, and neutral. Prioritize clarity for executives, auditors, developers, and legal teams.</pre>
+      </div>
+
+      <!-- Response structure -->
+      <p class="section-label">Response structure</p>
+      <ul class="steps-list" style="max-width: 680px; margin-bottom: var(--sp-12);">
+        <li>
+          <div class="steps-list__num"></div>
+          <div class="steps-list__body">
+            <p class="steps-list__title">Scenario Summary</p>
+            <p class="steps-list__desc">One paragraph establishing the deployment context, operating model, and governance question being resolved.</p>
+          </div>
+        </li>
+        <li>
+          <div class="steps-list__num"></div>
+          <div class="steps-list__body">
+            <p class="steps-list__title">Layer-by-Layer Analysis</p>
+            <p class="steps-list__desc">Maps the scenario to all five SRF layers (L1 Business &amp; Usage through L5 Model Provider) and identifies which operating model applies.</p>
+          </div>
+        </li>
+        <li>
+          <div class="steps-list__num"></div>
+          <div class="steps-list__body">
+            <p class="steps-list__title">Autonomy &amp; Agentic Considerations</p>
+            <p class="steps-list__desc">For agentic systems: autonomy level (L0&ndash;L5), required human override tier, identity delegation boundaries, and MCP/tooling governance.</p>
+          </div>
+        </li>
+        <li>
+          <div class="steps-list__num"></div>
+          <div class="steps-list__body">
+            <p class="steps-list__title">Responsibility Matrix</p>
+            <p class="steps-list__desc">RACI table with exactly one Accountable party per row. No row may carry "shared" as the final accountability assignment.</p>
+          </div>
+        </li>
+        <li>
+          <div class="steps-list__num"></div>
+          <div class="steps-list__body">
+            <p class="steps-list__title">Gaps, Risks &amp; Recommendations</p>
+            <p class="steps-list__desc">Unresolved boundary issues, contract language recommendations, and regulatory exposure, cited to specific SRF sections.</p>
+          </div>
+        </li>
+        <li>
+          <div class="steps-list__num"></div>
+          <div class="steps-list__body">
+            <p class="steps-list__title">Evidence Requirements</p>
+            <p class="steps-list__desc">Tailored checklist of artifacts that satisfy each accountability assignment, keyed to the deployment's layer and operating model.</p>
+          </div>
+        </li>
+        <li>
+          <div class="steps-list__num"></div>
+          <div class="steps-list__body">
+            <p class="steps-list__title">Actionable Next Steps</p>
+            <p class="steps-list__desc">Prioritized actions aligned to the SRF Implementation Playbook, suitable for a governance team to execute.</p>
+          </div>
+        </li>
+      </ul>
+
+      <!-- Role variants -->
+      <p class="section-label">Role variants</p>
+      <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 640px; margin-bottom: var(--sp-6); line-height: var(--leading-normal);">
+        Append one of these modifiers to the core instruction to focus output for a specific audience.
+        The core rules still apply; only the output emphasis changes.
+      </p>
+      <div class="variant-grid">
+
+        <div class="variant-card">
+          <p class="variant-card__role">Executive</p>
+          <p class="variant-card__title">Summary-first</p>
+          <p class="variant-card__desc">
+            Lead with a one-paragraph board-ready summary. Put the RACI table and evidence checklist in an appendix. Skip technical layer detail unless directly relevant to a business decision.
+          </p>
+          <div class="variant-card__focus">
+            <span>Business risk</span>
+            <span>Accountability owners</span>
+            <span>Regulatory exposure</span>
+          </div>
+        </div>
+
+        <div class="variant-card">
+          <p class="variant-card__role">Auditor</p>
+          <p class="variant-card__title">Evidence-focused</p>
+          <p class="variant-card__desc">
+            Expand the Evidence Requirements step into a full audit program. For each accountability row, specify the artifact type, retention requirement, and the SRF section it satisfies.
+          </p>
+          <div class="variant-card__focus">
+            <span>Evidence artifacts</span>
+            <span>Audit trail</span>
+            <span>SRF citations</span>
+          </div>
+        </div>
+
+        <div class="variant-card">
+          <p class="variant-card__role">Developer</p>
+          <p class="variant-card__title">Technical controls</p>
+          <p class="variant-card__desc">
+            Emphasize L3 Application and L4 Platform controls. For each responsibility, specify the implementing system, API boundary, and logging and monitoring requirement.
+          </p>
+          <div class="variant-card__focus">
+            <span>L3&ndash;L4 controls</span>
+            <span>API boundaries</span>
+            <span>Observability</span>
+          </div>
+        </div>
+
+        <div class="variant-card">
+          <p class="variant-card__role">Legal / Procurement</p>
+          <p class="variant-card__title">Contract language</p>
+          <p class="variant-card__desc">
+            Translate each gap and recommendation into draft contract clause language. Flag which responsibilities must be contractually assigned versus those the deployer retains by default under the SRF.
+          </p>
+          <div class="variant-card__focus">
+            <span>Contract clauses</span>
+            <span>Retained obligations</span>
+            <span>Vendor terms</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sector context parameters -->
+      <p class="section-label">Sector context parameters</p>
+      <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 640px; margin-bottom: var(--sp-6); line-height: var(--leading-normal);">
+        Add the relevant parameter block at the top of your conversation to activate sector-specific regulatory crosswalks and evidence pointers.
+        Each maps to an <a href="/industries/">industry vertical schema</a>.
+      </p>
+      <div class="sector-grid">
+
+        <div class="sector-card">
+          <div class="sector-card__accent sector-card__accent--finance"></div>
+          <div class="sector-card__body">
+            <div class="sector-card__icon">&#127970;</div>
+            <p class="sector-card__name">Financial Services</p>
+            <pre class="sector-card__param">[Industry: Financial Services]
+[Regulations: SR 26-2, FINOS AIGF,
+ OWASP LLM Top 10, EU AI Act]
+[Model Risk Tier: {1|2|3}]</pre>
+            <div class="sector-card__regs">
+              <span class="sector-card__reg">SR 26-2</span>
+              <span class="sector-card__reg">FINOS AIGF</span>
+              <span class="sector-card__reg">EU AI Act</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sector-card">
+          <div class="sector-card__accent sector-card__accent--health"></div>
+          <div class="sector-card__body">
+            <div class="sector-card__icon">&#127973;</div>
+            <p class="sector-card__name">Healthcare</p>
+            <pre class="sector-card__param">[Industry: Healthcare]
+[Regulations: FDA TPLC, FDA PCCP,
+ ONC HTI-1, HIPAA, EU AI Act]
+[Clinical Risk Class: {I|II|III}]</pre>
+            <div class="sector-card__regs">
+              <span class="sector-card__reg">FDA TPLC</span>
+              <span class="sector-card__reg">HIPAA</span>
+              <span class="sector-card__reg">ONC HTI-1</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sector-card">
+          <div class="sector-card__accent sector-card__accent--insure"></div>
+          <div class="sector-card__body">
+            <div class="sector-card__icon">&#128203;</div>
+            <p class="sector-card__name">Insurance</p>
+            <pre class="sector-card__param">[Industry: Insurance]
+[Regulations: NAIC AI Model Bulletin,
+ CO Reg 10-1-1, NYDFS CL 7]
+[Use Case: {underwriting|claims|vendor}]</pre>
+            <div class="sector-card__regs">
+              <span class="sector-card__reg">NAIC Bulletin</span>
+              <span class="sector-card__reg">CO Reg 10-1-1</span>
+              <span class="sector-card__reg">NYDFS CL 7</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sector-card">
+          <div class="sector-card__accent sector-card__accent--gov"></div>
+          <div class="sector-card__body">
+            <div class="sector-card__icon">&#127963;</div>
+            <p class="sector-card__name">Public Sector</p>
+            <pre class="sector-card__param">[Industry: Federal Civilian (FCEB)]
+[Regulations: OMB M-25-21, M-25-22,
+ FedRAMP 20x, NIST AI RMF]
+[Impact Level: {Low|Moderate|High}]</pre>
+            <div class="sector-card__regs">
+              <span class="sector-card__reg">OMB M-25-21</span>
+              <span class="sector-card__reg">FedRAMP 20x</span>
+              <span class="sector-card__reg">NIST AI RMF</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sector-card">
+          <div class="sector-card__accent sector-card__accent--defense"></div>
+          <div class="sector-card__body">
+            <div class="sector-card__icon">&#128737;</div>
+            <p class="sector-card__name">Defense / DoD</p>
+            <pre class="sector-card__param">[Industry: Defense]
+[Regulations: DoD RAI, CMMC 2.0,
+ DoD CC SRG, NIST 800-171]
+[Impact Level: {IL4|IL5|IL6}]</pre>
+            <div class="sector-card__regs">
+              <span class="sector-card__reg">DoD RAI</span>
+              <span class="sector-card__reg">CMMC 2.0</span>
+              <span class="sector-card__reg">DoD CC SRG</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sector-card">
+          <div class="sector-card__accent sector-card__accent--mfg"></div>
+          <div class="sector-card__body">
+            <div class="sector-card__icon">&#127981;</div>
+            <p class="sector-card__name">Manufacturing</p>
+            <pre class="sector-card__param">[Industry: Manufacturing]
+[Regulations: EU AI Act, IEC 62443,
+ ISO 42001, NIST AI RMF]
+[Deployment: {OT/ICS|product-embedded|IT}]</pre>
+            <div class="sector-card__regs">
+              <span class="sector-card__reg">EU AI Act</span>
+              <span class="sector-card__reg">IEC 62443</span>
+              <span class="sector-card__reg">ISO 42001</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Roadmap -->
+      <p class="section-label">Coming next</p>
+      <div class="roadmap-block">
+        <p class="roadmap-block__title">Scenario packs and version registry</p>
         <p>
-          Phase 1 (0–3 months from v2.0 launch): core system instruction and
-          initial variant set published to the GitHub repository.
+          <strong>Scenario packs</strong> will provide few-shot examples for the 10&ndash;15 most common governance workflows: third-party model evaluation, incident post-mortem, autonomy classification, contract clause generation, and sector-specific edge cases across all six verticals.
+        </p>
+        <p>
+          <strong>Version registry</strong> will pin each prompt to a specific SRF release and include a testing harness that validates outputs against framework rules. Community contributions will be accepted via the GitHub repository.
+        </p>
+        <p>
+          <strong>Provider mappings</strong> for major model providers will map provider features to SRF layers L1 through L5, starting with xAI/Grok Enterprise, Azure OpenAI, and Google Vertex.
         </p>
       </div>
 
-      <div style="margin-top: var(--sp-8);">
-        <a class="btn btn--primary" href="/tools/">← Back to tools</a>
+      <div style="margin-top: var(--sp-4);">
+        <a class="btn btn--primary" href="/tools/">&#8592; Back to tools</a>
       </div>
+
     </main>
 
     <site-footer></site-footer>
+
+    <script>
+      function copyPrompt(blockId, btn) {
+        const pre = document.querySelector('#' + blockId + ' pre');
+        if (!pre) return;
+        // Strip HTML entities for clipboard
+        const text = pre.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+          btn.textContent = 'Copied!';
+          btn.classList.add('prompt-block__copy--copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('prompt-block__copy--copied');
+          }, 2000);
+        });
+      }
+    </script>
   </body>
 </html>
