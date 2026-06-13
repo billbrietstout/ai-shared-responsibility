@@ -248,6 +248,47 @@
       .roadmap-block p:last-child { margin-bottom: 0; }
       .roadmap-block strong { color: var(--slate-800); }
 
+      /* ── Inline copy buttons ──────────────────────────────────────── */
+      .copy-btn {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--slate-500);
+        background: var(--slate-100);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        padding: 3px 8px;
+        cursor: pointer;
+        transition: background 0.1s, color 0.1s;
+        display: block;
+        margin-top: var(--sp-3);
+        width: fit-content;
+      }
+      .copy-btn:hover { background: var(--slate-200); color: var(--slate-700); }
+      .copy-btn--copied { color: #059669 !important; border-color: #a7f3d0 !important; background: #ecfdf5 !important; }
+
+      .param-wrap { position: relative; margin-bottom: var(--sp-3); }
+      .param-wrap pre { margin-bottom: 0; padding-right: 52px; }
+      .param-wrap .copy-btn {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        margin: 0;
+      }
+
+      .variant-card__modifier {
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+        font-size: 0.72rem;
+        color: var(--slate-700);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        padding: var(--sp-3) var(--sp-4);
+        margin: var(--sp-4) 0 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.5;
+      }
+
     </style>
   </head>
   <body>
@@ -418,6 +459,8 @@ When I ask about a specific vertical or regulation, reference the relevant secti
             <span>Accountability owners</span>
             <span>Regulatory exposure</span>
           </div>
+          <pre class="variant-card__modifier">Output focus: Executive summary.
+Lead with a one-paragraph board-ready summary of accountability owners and top risks. Move the RACI table and evidence checklist to an appendix. Skip technical layer detail unless it directly affects a business or regulatory decision.</pre>
         </div>
 
         <div class="variant-card">
@@ -431,6 +474,8 @@ When I ask about a specific vertical or regulation, reference the relevant secti
             <span>Audit trail</span>
             <span>SRF citations</span>
           </div>
+          <pre class="variant-card__modifier">Output focus: Audit program.
+Expand step 6 (Evidence Requirements) into a full audit test plan. For each accountability row, specify: artifact type, retention period, testing procedure, and the SRF section it satisfies. Format as numbered audit tests.</pre>
         </div>
 
         <div class="variant-card">
@@ -444,6 +489,8 @@ When I ask about a specific vertical or regulation, reference the relevant secti
             <span>API boundaries</span>
             <span>Observability</span>
           </div>
+          <pre class="variant-card__modifier">Output focus: Technical controls.
+Emphasize L3 (AI Application) and L4 (AI Platform) controls. For each accountability assignment, specify the implementing system, API boundary, logging requirement, and monitoring threshold. Use technical naming conventions.</pre>
         </div>
 
         <div class="variant-card">
@@ -457,6 +504,8 @@ When I ask about a specific vertical or regulation, reference the relevant secti
             <span>Retained obligations</span>
             <span>Vendor terms</span>
           </div>
+          <pre class="variant-card__modifier">Output focus: Contract language.
+Translate each gap and recommendation into draft contract clause language. For each clause, indicate whether the obligation is contractually assigned to a counterparty or retained by the deployer under the SRF. Format as numbered provisions.</pre>
         </div>
 
       </div>
@@ -600,8 +649,7 @@ When I ask about a specific vertical or regulation, reference the relevant secti
       function copyPrompt(blockId, btn) {
         const pre = document.querySelector('#' + blockId + ' pre');
         if (!pre) return;
-        const text = pre.innerText;
-        navigator.clipboard.writeText(text).then(() => {
+        navigator.clipboard.writeText(pre.innerText).then(() => {
           btn.textContent = 'Copied!';
           btn.classList.add('prompt-block__copy--copied');
           setTimeout(() => {
@@ -610,6 +658,32 @@ When I ask about a specific vertical or regulation, reference the relevant secti
           }, 2000);
         });
       }
+
+      function copyEl(el, btn) {
+        navigator.clipboard.writeText(el.innerText).then(() => {
+          const orig = btn.textContent;
+          btn.textContent = 'Copied!';
+          btn.classList.add('copy-btn--copied');
+          setTimeout(() => {
+            btn.textContent = orig;
+            btn.classList.remove('copy-btn--copied');
+          }, 1800);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.variant-card__modifier, .sector-card__param').forEach(pre => {
+          const wrap = document.createElement('div');
+          wrap.className = 'param-wrap';
+          pre.parentNode.insertBefore(wrap, pre);
+          wrap.appendChild(pre);
+          const btn = document.createElement('button');
+          btn.className = 'copy-btn';
+          btn.textContent = 'Copy';
+          btn.onclick = () => copyEl(pre, btn);
+          wrap.appendChild(btn);
+        });
+      });
     </script>
   </body>
 </html>
