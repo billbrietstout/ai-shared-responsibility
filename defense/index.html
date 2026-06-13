@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Department of War - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="The SRF Department of War schema maps DoD Responsible AI tenets to named accountability across IL4, IL5, and IL6 impact levels, with separate control tiers for Non-NSS and NSS environments, CMMC-aligned evidence for contractors, and DISA authorization requirements for cloud deployments."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Stat strip ───────────────────────────────────────────────── */
+      .stat-strip {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--slate-200);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: var(--sp-10);
+      }
+      .stat-cell {
+        background: #fff;
+        padding: var(--sp-5) var(--sp-6);
+        text-align: center;
+      }
+      .stat-cell__num {
+        font-size: 2.2rem;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--cosai-navy);
+        line-height: 1;
+        margin-bottom: var(--sp-2);
+      }
+      .stat-cell__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+
+      /* ── Section label ────────────────────────────────────────────── */
+      .section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-5);
+      }
+
+      /* ── Context block ────────────────────────────────────────────── */
+      .context-block {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        margin-bottom: var(--sp-10);
+      }
+      .context-block p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+        max-width: 680px;
+      }
+      .context-block p:last-child { margin-bottom: 0; }
+      .context-block strong { color: var(--slate-800); }
+
+      /* ── Context note ─────────────────────────────────────────────── */
+      .context-note {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+        margin-bottom: var(--sp-6);
+      }
+
+      /* ── IL classification table ──────────────────────────────────── */
+      .il-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: var(--sp-10);
+        font-size: var(--text-sm);
+      }
+      .il-table thead {
+        background: var(--slate-800);
+        color: #fff;
+      }
+      .il-table thead th {
+        padding: var(--sp-3) var(--sp-4);
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .il-table tbody tr { border-bottom: 1px solid var(--slate-100); }
+      .il-table tbody tr:last-child { border-bottom: none; }
+      .il-table tbody tr:nth-child(even) { background: var(--slate-50); }
+      .il-table td {
+        padding: var(--sp-3) var(--sp-4);
+        vertical-align: top;
+        color: var(--slate-700);
+        line-height: 1.5;
+      }
+      .il-table td:first-child {
+        font-weight: 700;
+        color: var(--slate-900);
+        white-space: nowrap;
+      }
+      .il-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+      .il-badge--il4 { background: #dbeafe; color: #1e40af; }
+      .il-badge--il5 { background: #fef3c7; color: #92400e; }
+      .il-badge--il6 { background: #fee2e2; color: #991b1b; }
+      .il-badge--nss { background: #fef9c3; color: #713f12; }
+      .il-badge--non-nss { background: #f0fdf4; color: #14532d; }
+
+      /* ── Card grid ────────────────────────────────────────────────── */
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-12);
+      }
+      .page-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        color: inherit;
+        overflow: hidden;
+        transition: box-shadow 0.12s, border-color 0.12s, transform 0.12s;
+      }
+      .page-card:hover {
+        box-shadow: var(--shadow-md);
+        border-color: var(--slate-300);
+        transform: translateY(-1px);
+      }
+      .page-card__accent { height: 4px; }
+      .page-card__accent--blue   { background: var(--cosai-blue); }
+      .page-card__accent--green  { background: var(--l1); }
+      .page-card__accent--purple { background: var(--l4); }
+      .page-card__accent--olive  { background: #4d7c0f; }
+      .page-card__body {
+        padding: var(--sp-5) var(--sp-6);
+        flex: 1;
+      }
+      .page-card__icon {
+        width: 40px; height: 40px;
+        border-radius: var(--radius);
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: var(--sp-4);
+      }
+      .page-card__icon svg {
+        width: 20px; height: 20px;
+        stroke-width: 1.75;
+        fill: none;
+        stroke-linecap: round; stroke-linejoin: round;
+      }
+      .page-card__icon--blue   { background: var(--cosai-blue-light); }
+      .page-card__icon--green  { background: var(--l1-bg); }
+      .page-card__icon--purple { background: var(--l4-bg); }
+      .page-card__icon--olive  { background: #f7fee7; }
+      .page-card__icon--blue   svg { stroke: var(--cosai-blue); }
+      .page-card__icon--green  svg { stroke: var(--l1); }
+      .page-card__icon--purple svg { stroke: var(--l4); }
+      .page-card__icon--olive  svg { stroke: #4d7c0f; }
+      .page-card__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-2);
+      }
+      .page-card__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-4);
+      }
+      .page-card__tags { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        border: 1px solid transparent;
+      }
+      .tag--blue   { background: var(--cosai-blue-light); color: var(--cosai-blue); border-color: #bfdbfe; }
+      .tag--slate  { background: var(--slate-100); color: var(--slate-600); border-color: var(--slate-200); }
+      .tag--green  { background: var(--l1-bg); color: var(--l1-text); border-color: var(--l1-border); }
+      .tag--olive  { background: #f7fee7; color: #3f6212; border-color: #d9f99d; }
+      .tag--red    { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+      .page-card__footer {
+        padding: var(--sp-3) var(--sp-6);
+        border-top: 1px solid var(--slate-100);
+        background: var(--slate-50);
+      }
+      .page-card__cta {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--cosai-blue);
+      }
+
+      /* ── Schema strip ─────────────────────────────────────────────── */
+      .schema-strip {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sp-5);
+        margin-bottom: var(--sp-10);
+      }
+      .schema-item {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+        background: #fff;
+      }
+      .schema-item__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .schema-item__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-3);
+      }
+      .schema-item p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0;
+      }
+
+      /* ── Layer list ───────────────────────────────────────────────── */
+      .layer-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: var(--sp-4);
+      }
+      .layer-row {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--sp-5);
+        padding: var(--sp-5) var(--sp-6);
+        border-bottom: 1px solid var(--slate-100);
+        background: #fff;
+      }
+      .layer-row:last-child { border-bottom: none; }
+      .layer-badge {
+        flex-shrink: 0;
+        width: 36px; height: 36px;
+        border-radius: var(--radius);
+        display: flex; align-items: center; justify-content: center;
+        font-size: var(--text-xs);
+        font-weight: 800;
+        letter-spacing: 0.02em;
+        margin-top: 2px;
+      }
+      .layer-badge--l1 { background: var(--l1-bg); color: var(--l1-text); }
+      .layer-badge--l2 { background: var(--l2-bg); color: var(--l2-text); }
+      .layer-badge--l3 { background: var(--l3-bg); color: var(--l3-text); }
+      .layer-badge--l4 { background: var(--l4-bg); color: var(--l4-text); }
+      .layer-badge--l5 { background: var(--l5-bg); color: var(--l5-text); }
+      .layer-row__text { flex: 1; }
+      .layer-row__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: var(--sp-2);
+      }
+      .layer-row__desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+      .layer-row__count {
+        flex-shrink: 0;
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-500);
+        white-space: nowrap;
+        margin-top: 2px;
+      }
+
+      /* ── Pills row ────────────────────────────────────────────────── */
+      .pills-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-12);
+      }
+      .pill {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-2) var(--sp-4);
+        border: 1px solid var(--slate-200);
+        border-radius: 999px;
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        background: #fff;
+      }
+      .pill__dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--cosai-navy);
+        flex-shrink: 0;
+      }
+
+      /* ── Responsibility split key ──────────────────────────────────── */
+      .split-key {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-10);
+        padding: var(--sp-4) var(--sp-5);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        align-items: center;
+      }
+      .split-key__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-right: var(--sp-2);
+        white-space: nowrap;
+      }
+      .split-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        border: 1px solid transparent;
+      }
+      .split-chip--dod    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+      .split-chip--disa   { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
+      .split-chip--cont   { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+      .split-chip--csp    { background: #f0fdf4; color: #14532d; border-color: #bbf7d0; }
+      .split-chip--shared { background: var(--slate-100); color: var(--slate-600); border-color: var(--slate-200); }
+      .split-chip__dot {
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        opacity: 0.7;
+      }
+
+      @media (max-width: 640px) {
+        .stat-strip { grid-template-columns: repeat(2, 1fr); }
+        .schema-strip { grid-template-columns: 1fr; }
+        .il-table { font-size: var(--text-xs); }
+      }
+    </style>
+  </head>
+  <body>
+    <site-header></site-header>
+
+    <header class="page-hero" style="border-bottom-color: #374151;">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <span class="breadcrumb__current">Department of War</span>
+        </nav>
+        <span class="page-hero__eyebrow">Department of War vertical &middot; DoD RAI &middot; IL4 / IL5 / IL6 &middot; CMMC 2.0 &middot; OCSF v1.8.0</span>
+        <h1 class="page-hero__title">AI shared responsibility for DoD components and the defense industrial base</h1>
+        <p class="page-hero__lede">
+          The DoD Responsible AI Strategy names five principles but assigns no accountable party,
+          specifies no control thresholds, and provides no evidence model. CMMC 2.0 governs
+          contractor cybersecurity but was not designed around AI. This vertical fills both gaps:
+          53 controls across five SRF layers, parameterized by impact level (IL4, IL5, IL6),
+          with a separate responsibility split for DoD components, DISA, contractors, and
+          cloud service providers.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <!-- Status notice -->
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:32px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+        extension of the CoSAI Shared Responsibility Framework, developed independently to
+        demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
+        by CoSAI, DoD, DISA, or any government agency. CMMC and DISA requirement references
+        should be verified against current program documentation before use in official
+        contractor or agency submissions.
+      </div>
+
+      <!-- Stat strip -->
+      <div class="stat-strip" role="region" aria-label="Schema at a glance">
+        <div class="stat-cell">
+          <div class="stat-cell__num">53</div>
+          <div class="stat-cell__label">Controls</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">5</div>
+          <div class="stat-cell__label">SRF layers</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">3</div>
+          <div class="stat-cell__label">Impact levels (IL4 / IL5 / IL6)</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-cell__num">2</div>
+          <div class="stat-cell__label">System tiers (Non-NSS / NSS)</div>
+        </div>
+      </div>
+
+      <!-- Impact Level terminology table -->
+      <p class="section-label">Impact level and NSS terminology</p>
+      <table class="il-table" role="table" aria-label="DoD impact level and NSS classification reference">
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>System tier</th>
+            <th>Data classification</th>
+            <th>Cloud authorization path</th>
+            <th>Responsibility split note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="il-badge il-badge--il4">IL4</span></td>
+            <td><span class="il-badge il-badge--non-nss">Non-NSS</span></td>
+            <td>Controlled Unclassified Information (CUI). No classified data. Excludes
+              National Security Information (NSI).</td>
+            <td>FedRAMP Moderate baseline + DoD CC SRG IL4 overlay. Commercial cloud
+              providers with DISA IL4 Provisional Authorization (PA).</td>
+            <td>CSP holds the platform PA. DoD component owns CUI configuration,
+              access policy, and agency-side controls. Contractor systems require CMMC
+              Level 2 for CUI processing.</td>
+          </tr>
+          <tr>
+            <td><span class="il-badge il-badge--il5">IL5</span></td>
+            <td><span class="il-badge il-badge--non-nss">Non-NSS</span></td>
+            <td>CUI that requires higher protection than IL4: Privacy Act data, law
+              enforcement sensitive, some export-controlled research. No classified data.</td>
+            <td>FedRAMP High baseline + DoD CC SRG IL5 overlay. Government-only cloud
+              regions required (GovCloud or equivalent). DISA IL5 PA holders only.</td>
+            <td>Government-community cloud enforces tenant separation. CSP must operate
+              in a US-person-only environment. DoD component retains agency-side controls
+              identical to IL4 but with stricter access vetting.</td>
+          </tr>
+          <tr>
+            <td><span class="il-badge il-badge--il5">IL5</span></td>
+            <td><span class="il-badge il-badge--nss">NSS</span></td>
+            <td>Unclassified National Security Systems. Processes NSI or directly supports
+              NSS missions as defined in 44 USC 3552(b)(6): intelligence, cryptology,
+              command and control of military forces, or weapons systems.</td>
+            <td>Government-only cloud region with DISA IL5 PA. CNSS Policy 22 applies.
+              CNSSI 1253 security controls baseline applies in addition to DoD CC SRG.</td>
+            <td>DISA assumes a larger authorization role. The DoD component must document
+              NSS boundary determination. CSP access restricted to cleared US persons;
+              FOCI mitigation may apply.</td>
+          </tr>
+          <tr>
+            <td><span class="il-badge il-badge--il6">IL6</span></td>
+            <td><span class="il-badge il-badge--nss">NSS</span></td>
+            <td>Classified information up to and including SECRET. Processed only in
+              classified cloud environments or on-premises classified networks (SIPRNET).</td>
+            <td>Classified cloud (AWS C2S, Azure Government Secret, Oracle NSR) with
+              DISA IL6 PA. No commercial cloud path. ATO issued by Component Authorizing
+              Official for Classified (AOSC).</td>
+            <td>CSP operates as a cleared facility under DISA and DoD oversight. Component
+              ISSO and AO remain accountable for classified workload configuration.
+              Contractor access requires personnel security clearance (Secret or above)
+              and facility clearance (FCL).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Context blocks -->
+      <div class="context-block" role="note">
+        <p>
+          <strong>The DoD RAI gap.</strong> The DoD Responsible AI Strategy and Implementation
+          Pathway (2022) established five principles: Responsible, Equitable, Traceable,
+          Reliable, and Governable (RETR-G). The strategy also created the Chief Digital and
+          Artificial Intelligence Office (CDAO) to oversee implementation. Neither the strategy
+          nor subsequent guidance assigns a named accountable party to each principle, specifies
+          a measurable threshold for compliance, or defines the evidence a program office or
+          contractor must produce. This schema fills that gap by binding each principle to a
+          control, a persona, and an OCSF evidence pointer.
+        </p>
+        <p>
+          <strong>The CMMC gap.</strong> CMMC 2.0 (32 CFR Part 170, effective December 2024)
+          governs the cybersecurity posture of defense contractors handling CUI and Federal
+          Contract Information (FCI). Level 2 (110 practices from NIST SP 800-171) applies
+          to contractors processing CUI. CMMC was designed around cybersecurity, not AI
+          governance: it has no practice for model transparency, no threshold for human
+          oversight of AI-generated decisions, and no evidence requirement for training
+          data provenance. This schema provides the AI-specific layer that CMMC does not.
+        </p>
+        <p>
+          <strong>The NSS boundary problem.</strong> Many DoD AI deployments cross the NSS
+          boundary at runtime rather than at design time: a logistics model deployed at IL4
+          may later receive NSI as operational context, pushing it into NSS territory. The
+          <code>nss_boundary</code> field on every control in this schema requires the
+          deploying component to make and document an explicit classification determination
+          before deployment, not after.
+        </p>
+        <p>
+          <strong>The IL-split responsibility problem.</strong> The DoD Cloud Computing
+          Security Requirements Guide (CC SRG) defines what the CSP must do to earn a DISA
+          Provisional Authorization at each impact level. It does not define what the DoD
+          component or contractor must do on the agency side of that authorization. This schema
+          provides the component-side control catalog, parameterized by IL, with a
+          <code>responsibility_split</code> value on every control.
+        </p>
+      </div>
+
+      <!-- Responsibility split key -->
+      <p class="section-label">Responsibility split values</p>
+      <div class="split-key" role="note" aria-label="Responsibility split key">
+        <span class="split-key__label">Split key</span>
+        <span class="split-chip split-chip--dod"><span class="split-chip__dot"></span>dod-component</span>
+        <span class="split-chip split-chip--disa"><span class="split-chip__dot"></span>disa</span>
+        <span class="split-chip split-chip--cont"><span class="split-chip__dot"></span>contractor</span>
+        <span class="split-chip split-chip--csp"><span class="split-chip__dot"></span>csp</span>
+        <span class="split-chip split-chip--shared"><span class="split-chip__dot"></span>shared</span>
+        <span style="font-size:var(--text-xs);color:var(--slate-500);margin-left:var(--sp-2);">
+          Every control carries one value. <code>shared</code> = documented split required; accountable party owns the split determination.
+        </span>
+      </div>
+
+      <!-- Pages in this section -->
+      <p class="section-label">In this section</p>
+      <nav class="card-grid" aria-label="Department of War section pages">
+
+        <a class="page-card" href="/defense/how-to/">
+          <div class="page-card__accent page-card__accent--blue"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--blue" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d="M9 11l3 3L22 4"/>
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+            </div>
+            <div class="page-card__name">How to use the schema</div>
+            <p class="page-card__desc">
+              Step-by-step guide for program managers, ISSOs, and contracting officers:
+              determine NSS boundary, select IL tier, trace CC SRG inheritance, map personas
+              to DoD roles, and assemble the evidence package for ATO and CMMC assessment.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--blue">PM and ISSO guide</span>
+              <span class="tag tag--slate">CMMC crosswalk</span>
+              <span class="tag tag--slate">IL4 / IL5 / IL6</span>
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Read the guide →</span>
+          </div>
+        </a>
+
+        <a class="page-card" href="/defense/controls/">
+          <div class="page-card__accent page-card__accent--green"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--green" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7"/>
+                <rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/>
+                <rect x="3" y="14" width="7" height="7"/>
+              </svg>
+            </div>
+            <div class="page-card__name">Controls browser</div>
+            <p class="page-card__desc">
+              Browse, filter, and inspect all 53 controls. Filter by SRF layer, impact level,
+              NSS tier, responsibility split, CMMC practice mapping, or accountable persona.
+              View thresholds, OCSF evidence pointers, and regulatory mappings per control.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--slate">53 controls</span>
+              <span class="tag tag--slate">Filter by IL</span>
+              
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Browse controls →</span>
+          </div>
+        </a>
+
+        <a class="page-card" href="/data/defense-controls.json" download="defense-controls.json">
+          <div class="page-card__accent page-card__accent--purple"></div>
+          <div class="page-card__body">
+            <div class="page-card__icon page-card__icon--purple" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <polyline points="16 18 22 12 16 6"/>
+                <polyline points="8 6 2 12 8 18"/>
+              </svg>
+            </div>
+            <div class="page-card__name">Raw schema (JSON)</div>
+            <p class="page-card__desc">
+              Machine-readable controls schema. All 53 controls with IL-parameterized thresholds,
+              OCSF evidence pointers, responsibility_split values, NSS boundary flags, CMMC practice
+              mappings, and DoD RAI principle alignment.
+            </p>
+            <div class="page-card__tags">
+              <span class="tag tag--slate">defense-controls.json</span>
+              <span class="tag tag--slate">53 controls</span>
+              
+            </div>
+          </div>
+          <div class="page-card__footer">
+            <span class="page-card__cta">Download JSON →</span>
+          </div>
+        </a>
+
+      </nav>
+
+      <!-- Schema design -->
+      <p class="section-label">Schema design</p>
+      <div class="schema-strip" role="region" aria-label="Schema design reference">
+        <div class="schema-item">
+          <div class="schema-item__label">Accountability plane</div>
+          <div class="schema-item__name">SRF layers, DoD RAI principles, and personas</div>
+          <p>Each control names one accountable persona and aligns to one or more of the
+            five DoD RAI principles (Responsible, Equitable, Traceable, Reliable, Governable).
+            DoD roles (CDAO, Program Manager, ISSO, Contracting Officer) map to SRF personas
+            in the how-to guide, not in the JSON.</p>
+        </div>
+        <div class="schema-item">
+          <div class="schema-item__label">Control plane</div>
+          <div class="schema-item__name">IL-parameterized thresholds + CC SRG split</div>
+          <p>Four lifecycle stages: ACQ (acquisition), TEVV (test, evaluation, verification
+            and validation), OPS (operational monitoring), OVR (human oversight and remedy).
+            Every control also carries a <code>responsibility_split</code> value aligned to
+            the DoD CC SRG and a <code>nss_boundary</code> flag indicating whether the
+            control applies to Non-NSS, NSS, or both environments.</p>
+        </div>
+        <div class="schema-item">
+          <div class="schema-item__label">Evidence plane</div>
+          <div class="schema-item__name">OCSF v1.8.0 + CMMC assessment artifacts</div>
+          <p>Machine-readable evidence uses OCSF event classes where a technical signal
+            exists. Governance artifacts (TEVV plan, impact assessment, ATO package, CMMC
+            evidence folder) are named explicitly so assessors and ISSOs know what documents
+            to produce. IL6 evidence requirements note classified artifact handling.</p>
+        </div>
+      </div>
+
+      <!-- Layer coverage -->
+      <p class="section-label">Coverage by layer</p>
+      <div class="layer-list" role="list" aria-label="Controls by SRF layer">
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l1">L1</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Governance and processes</div>
+            <div class="layer-row__desc">
+              AI use case registry (DoD AI portfolio, CDAO reporting), Responsible AI Officer
+              designation, AI Governance Board with CDAO oversight, DoD RAI compliance plan,
+              five-principle alignment assessment (RETR-G), AI acquisition requirements per
+              DoDI 5000.90, supply chain AI risk assessment, operator and commander training,
+              incident reporting to CDAO, NSS boundary classification determination.
+              Accountable persona: <code>ai-system-governance</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">11 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l2">L2</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Data and input control</div>
+            <div class="layer-row__desc">
+              CUI classification and marking on AI inputs and outputs, IL-level data boundary
+              enforcement (tenant isolation by impact level), training data authority-to-use
+              documentation, data egress controls per classification, adversarial input detection,
+              bias and disparate impact monitoring on consequential decisions, NARA-compliant
+              audit log retention for AI decisions, contractor data isolation from DoD data planes.
+              Accountable personas: <code>data-provider</code> and <code>application-developer</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">10 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l3">L3</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Application and integration</div>
+            <div class="layer-row__desc">
+              TEVV plan and execution (pre-deployment test, evaluation, verification and
+              validation per DoDI 5000.89), AI impact assessment before operational deployment,
+              human oversight gate for use-of-force-adjacent and consequential administrative
+              decisions, operator interface override capability, remedy and appeal mechanism
+              for adverse decisions, agentic task boundary enforcement, prompt injection
+              detection, inheritance chain documentation for shared services, plain-language
+              explanation of AI-generated outputs for operators.
+              Accountable personas: <code>application-developer</code> and <code>agentic-platform-provider</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">11 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l4">L4</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Platform and infrastructure</div>
+            <div class="layer-row__desc">
+              DISA Provisional Authorization at required IL (IL4, IL5, or IL6), STIG baseline
+              configuration enforcement, IL-appropriate cloud region enforcement (commercial /
+              government-only / classified), CUI and classified data encryption to NSA-approved
+              standards, audit log completeness per DISA requirements, API gateway authentication
+              and authorization, CMMC Level 2 or 3 assessment for contractor-owned platforms,
+              continuous vulnerability scanning (DISA ACAS), mission-critical AI availability
+              SLA, network isolation enforcement by IL boundary.
+              Accountable personas: <code>ai-platform-provider</code> and <code>agentic-platform-provider</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">12 controls</span>
+        </div>
+
+        <div class="layer-row" role="listitem">
+          <span class="layer-badge layer-badge--l5">L5</span>
+          <div class="layer-row__text">
+            <div class="layer-row__name">Model and supplier</div>
+            <div class="layer-row__desc">
+              Model transparency card and documentation per DoDI 5000.90 and M-25-22 transparency
+              terms, vendor drift disclosure SLA, model artifact signing and bill of AI materials
+              (BoAIM), vulnerability disclosure SLA and patch cadence, model portability to avoid
+              lock-in, re-validation trigger on version change, personnel security clearance
+              requirement for cleared personnel accessing IL6 model infrastructure.
+              Accountable persona: <code>model-provider</code>.
+            </div>
+          </div>
+          <span class="layer-row__count">9 controls</span>
+        </div>
+
+      </div>
+
+      <p class="context-note">
+        GovRAMP crosswalk and CMMC practice-to-control mapping are on the roadmap.
+        IL6 classified cloud providers (C2S, Azure Government Secret, Oracle NSR) will
+        receive separate evidence pointer annotations once classified-environment OCSF
+        implementation guidance is available.
+      </p>
+
+      <!-- Crosswalk pills -->
+      <p class="section-label">Regulatory crosswalk</p>
+      <div class="pills-row">
+        <div class="pill"><span class="pill__dot"></span>DoD RAI Strategy (2022)</div>
+        <div class="pill"><span class="pill__dot"></span>DoDI 5000.90 (AI Acquisition)</div>
+        <div class="pill"><span class="pill__dot"></span>DoDI 5000.89 (TEVV)</div>
+        <div class="pill"><span class="pill__dot"></span>DoD Directive 3000.09 (AWS)</div>
+        <div class="pill"><span class="pill__dot"></span>DoD CC SRG (IL4 / IL5 / IL6)</div>
+        <div class="pill"><span class="pill__dot"></span>CMMC 2.0 (32 CFR Part 170)</div>
+        <div class="pill"><span class="pill__dot"></span>NIST SP 800-171 Rev 3</div>
+        <div class="pill"><span class="pill__dot"></span>NIST SP 800-172</div>
+        <div class="pill"><span class="pill__dot"></span>CNSSI 1253 (NSS baseline)</div>
+        <div class="pill"><span class="pill__dot"></span>CNSS Policy 22 (NSS cloud)</div>
+        <div class="pill"><span class="pill__dot"></span>NIST AI RMF 1.0</div>
+        <div class="pill"><span class="pill__dot"></span>NIST AI 600-1</div>
+        <div class="pill"><span class="pill__dot"></span>DISA STIGs</div>
+        <div class="pill"><span class="pill__dot"></span>OWASP LLM Top 10</div>
+        <div class="pill"><span class="pill__dot"></span>DFARS 252.204-7012 (CUI safeguarding)</div>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

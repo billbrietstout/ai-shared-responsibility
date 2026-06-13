@@ -1,0 +1,1800 @@
+{
+  "schema_version": "0.1",
+  "srf_version": "1.0",
+  "industry": "manufacturing",
+  "description": "Manufacturing control schema for the CoSAI AI Shared Responsibility Framework. Scoped to industrial manufacturers deploying AI in OT/ICS environments, embedding AI in products placed on the EU market, and operating IT-side AI for supply chain, quality, and production management. Controls are parameterized by OT applicability (ot-only, it-only, both) and EU AI Act risk class (high-risk, limited-risk, minimal-risk, N/A).",
+  "regulatory_context": "Three converging deadlines anchor this vertical. EU AI Act (Regulation 2024/1689) high-risk provider and deployer obligations take effect August 2, 2026. EU Machinery Regulation (EU) 2023/1230 applies from January 20, 2027, making AI safety components in machinery automatically high-risk under the AI Act. IEC 62443 governs OT/ICS cybersecurity via a zone-and-conduit model; ISA-TR62443-2-2-2025 (December 2025) updated the series but added no AI-specific controls. ISO 42001:2023 provides the quality management system anchor for EU AI Act Article 17 compliance but assigns no accountable party per control. The NIST Cybersecurity Framework Profile for Artificial Intelligence (Cyber AI Profile) was published as a preliminary draft in December 2025 and is not yet final. This schema fills the AI governance gap in each of these frameworks by assigning a named accountable persona, measurable threshold, and machine-readable evidence pointer to every control.",
+  "id_convention": "SRF-{layer}-{DES|VAL|OPS|CHG}-{seq}",
+  "mapping_status_note": "EU AI Act article numbers, EU Machinery Regulation annex item numbers, IEC 62443 section numbers, and IEC 61508 clause references marked TBD require verification against primary regulatory and standards texts before use in compliance submissions. Do not substitute invented IDs.",
+  "generated": "2026-06-12",
+  "lifecycle_stages": ["design", "validation", "ops", "change"],
+  "operating_models": ["AI-SaaS", "OT-Edge", "Product-Embedded", "AI-PaaS"],
+  "ot_applicability_values": {
+    "ot-only": "Control applies specifically to AI deployed within OT/ICS network zones.",
+    "it-only": "Control applies to AI on IT-side systems only.",
+    "both": "Control applies regardless of deployment environment."
+  },
+  "eu_ai_act_risk_classes": {
+    "high-risk": "System falls under EU AI Act Annex III or is a safety component under Annex I harmonized legislation.",
+    "limited-risk": "System has transparency obligations only (chatbots, synthetic content).",
+    "minimal-risk": "No specific EU AI Act obligations beyond voluntary codes of practice. Note: no controls in this vertical carry this class by design — manufacturing AI in scope skews high-risk (Annex III machinery, safety components) or N/A (OT/ICS cybersecurity controls). The class is defined here for schema completeness.",
+    "N/A": "EU AI Act risk classification does not apply to this control."
+  },
+  "responsibility_split_values": {
+    "manufacturer": "The manufacturing organization deploying or placing the AI system on the market.",
+    "equipment-oem": "The OEM supplying the AI-enabled machine, robot, or system.",
+    "ai-vendor": "The AI software or model vendor.",
+    "system-integrator": "The SI who integrated AI into the plant or product.",
+    "shared": "Responsibility is split between parties; the accountable party must document the split."
+  },
+  "controls": [
+
+    {
+      "id": "SRF-L1-DES-001",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "EU AI Act Risk Classification and Registry",
+      "description": "The manufacturer must classify every AI system in development or operation by EU AI Act risk tier (prohibited, high-risk, limited-risk, minimal-risk). High-risk systems must be registered in the EU AI database before being placed on the market or put into service. The registry must record the system's operating model, risk class, conformity assessment route, accountable manager, and market placement date. Unregistered high-risk systems identified post-deployment must be added within 30 days of discovery.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "OT-Edge", "Product-Embedded", "AI-PaaS"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 16 (provider obligations), Article 49 (registration), Annex III (high-risk categories)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 1.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "all_high_risk_systems_registered",
+        "description": "Every high-risk AI system is registered in the EU AI database before market placement or entry into service. EU AI Act Article 49 is a binary obligation — partial registration is not permitted and any unregistered in-scope system constitutes non-compliance.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. EU AI database registration record (printout or API confirmation) for each high-risk system, timestamped before market placement date.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-market-placement",
+        "breach_action": "identify-unregistered-systems; halt-market-placement; notify-compliance-manager; initiate-registration"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DES-002",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "AI Governance Committee with OT and Safety Representation",
+      "description": "The manufacturer must establish an AI governance committee that includes at minimum the Plant AI Safety Officer (or functional safety engineer), OT Security lead, product compliance manager, and a senior operations representative. The committee must meet at least quarterly, review the AI system inventory, approve new high-risk AI deployments, and document decisions. Committee composition and meeting records must be retained for audit.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "OT-Edge", "Product-Embedded", "AI-PaaS"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 17 (quality management system), Article 26 (deployer obligations)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 1.2",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "governance_committee_active",
+        "description": "Governance committee with required membership exists and has met within the last 90 days with documented minutes.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Meeting record and composition document.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "quarterly",
+        "breach_action": "convene-committee; appoint-missing-roles; document-composition"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DES-003",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "AI Use Case Inventory with Operating Model and Risk Tier",
+      "description": "The manufacturer must maintain a current inventory of all AI use cases, recording for each: system name, operating model (AI-SaaS, OT-Edge, Product-Embedded, AI-PaaS), EU AI Act risk class, OT applicability, accountable owner, deployment status, and date last reviewed. The inventory must be updated within 14 days of any new AI system entering design, validation, or production.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "OT-Edge", "Product-Embedded", "AI-PaaS"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 17 (quality management system, inventory element)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 1.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "inventory_staleness_days",
+        "description": "Maximum number of days since any AI use case record was last reviewed.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Inventory last-updated timestamp.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<=",
+        "param": "TIER_INVENTORY_STALENESS_DAYS",
+        "param_type": "tier-configurable",
+        "window": "monthly",
+        "breach_action": "review-and-update-inventory; notify-governance-committee"
+      }
+    },
+
+    {
+      "id": "SRF-L1-VAL-004",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Conformity Assessment Program Management",
+      "description": "For each high-risk AI system, the manufacturer must determine the required conformity assessment route (self-assessment per Article 43 or third-party notified body assessment) and track assessment status, scheduled completion date, and responsible manager. Systems requiring notified-body assessment must have an engaged notified body before market placement. A master conformity assessment register must be maintained and reviewed by the governance committee.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["Product-Embedded", "OT-Edge"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 43 (conformity assessment procedures), Annex VII (third-party assessment)",
+        "eu_machinery_reg": "Article TBD",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 1.4",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "conformity_assessment_register_complete",
+        "description": "All high-risk systems in the inventory have an assigned conformity assessment route and status in the master register.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Conformity assessment register.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "quarterly",
+        "breach_action": "assign-assessment-route; engage-notified-body-if-required; update-register"
+      }
+    },
+
+    {
+      "id": "SRF-L1-OPS-005",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Incident Reporting Plan to Market Surveillance Authority",
+      "description": "The manufacturer must maintain a written incident reporting plan for serious incidents involving high-risk AI systems. The plan must define the trigger conditions, the responsible reporter, the market surveillance authority contact, and the 15-business-day reporting deadline per EU AI Act Article 73. The plan must be tested annually via a tabletop exercise, and test results must be documented.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["Product-Embedded", "OT-Edge", "AI-SaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 73 (serious incident reporting), Article 72 (post-market monitoring)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 5.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "incident_plan_tested",
+        "description": "Incident reporting plan exists, names the responsible reporter and MSA contact, and has been exercised via tabletop test within the last 12 months.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Incident reporting plan and tabletop test record.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual",
+        "breach_action": "draft-or-update-incident-plan; schedule-tabletop-exercise"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DES-006",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Third-Party AI System Procurement Policy",
+      "description": "The manufacturer must maintain a procurement policy for third-party AI systems that requires: EU declaration of conformity for high-risk systems, technical documentation per Article 11, supplier contractual obligations for post-market monitoring data sharing, and a supply chain AI risk assessment for OT-deployed components. The policy must apply to equipment OEMs, AI software vendors, and system integrators supplying AI-enabled systems.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "OT-Edge", "Product-Embedded", "AI-PaaS"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 16 (provider obligations on deployers), Article 25 (obligations of distributors and deployers), Article 28 (third-party obligations)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 6.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "procurement_policy_active",
+        "description": "A written AI procurement policy covering the required elements exists and has been communicated to procurement and legal.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Procurement policy document with effective date.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual",
+        "breach_action": "draft-or-update-procurement-policy; communicate-to-procurement"
+      }
+    },
+
+    {
+      "id": "SRF-L1-OPS-007",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Post-Market Monitoring Plan per EU AI Act Article 72",
+      "description": "For each high-risk AI system placed on the market or put into service, the manufacturer must maintain a post-market monitoring plan. The plan must define monitoring frequency, performance metrics to track, data collection mechanism, the responsible team, and the escalation threshold for triggering a corrective action or market withdrawal. Plans must be updated when the system's risk profile changes.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["Product-Embedded", "OT-Edge", "AI-SaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 72 (post-market monitoring system), Article 17 (quality management system)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 4.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "post_market_plan_active",
+        "description": "A post-market monitoring plan exists for each high-risk AI system, names a responsible owner, and specifies collection frequency and escalation thresholds.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Post-market monitoring plan document.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual",
+        "breach_action": "create-post-market-plan; assign-owner; define-escalation-thresholds"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DES-008",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Fundamental Rights Impact Assessment (FRIA)",
+      "description": "Public-body deployers and private deployers of high-risk AI systems covered by EU AI Act Article 27 must complete a Fundamental Rights Impact Assessment before putting the system into service. The FRIA must address: the rights at risk, the affected populations, the safeguards applied, and the monitoring plan. FRIA records must be retained and provided to market surveillance authorities on request.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "Product-Embedded"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 27 (fundamental rights impact assessment for deployers)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MAP 5.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "fria_completed",
+        "description": "FRIA completed and documented for each applicable high-risk AI system before service entry.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. FRIA document with completion date and approver.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "schedule-fria; assign-assessor; document-findings"
+      }
+    },
+
+    {
+      "id": "SRF-L1-CHG-009",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "AI Discontinuation and Decommission Procedure",
+      "description": "The manufacturer must maintain a documented decommission procedure for AI systems covering: shutdown sequence for OT-edge AI (including safe state transitions and safety interlock preservation), data retention and deletion requirements, EU AI database de-registration for high-risk systems, and post-decommission evidence retention per regulatory requirements. The procedure must be tested for OT-edge systems before any production decommission.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "OT-Edge", "Product-Embedded", "AI-PaaS"],
+      "lifecycle_stage": "change",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 49 (registration and de-registration)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 3.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "decommission_procedure_documented",
+        "description": "Decommission procedure exists, covers OT safe-state requirements, and has been reviewed within 12 months.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Decommission procedure document.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual",
+        "breach_action": "draft-decommission-procedure; review-with-ot-safety-team"
+      }
+    },
+
+    {
+      "id": "SRF-L1-CHG-010",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "OT Change Management Policy for AI Systems",
+      "description": "The manufacturer must maintain an OT-specific change management policy for AI systems that defines: version freeze windows aligned to production schedules, the trigger conditions for safety re-validation (model update, training data change, configuration change), the rollback procedure and rollback test requirement, and the change record format. The policy must distinguish between IT-side AI changes (standard change management cycle) and OT-edge AI changes (extended validation window, safety re-validation gate).",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "change",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 17 (quality management system, change control element)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 2.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against IEC 61508-1 through IEC 61508-7. Do not cite specific clause numbers without primary text verification."
+      },
+      "threshold": {
+        "metric": "ot_change_policy_active",
+        "description": "An OT AI change management policy exists, distinguishes OT from IT change cycles, defines safety re-validation triggers, and has been communicated to OT engineering and production.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. OT change management policy document with version history.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual",
+        "breach_action": "draft-ot-change-policy; align-with-plant-safety-officer; communicate-to-ot-engineering"
+      }
+    },
+
+    {
+      "id": "SRF-L2-DES-001",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "Sensor and Historian Data Provenance Documentation",
+      "description": "For every AI system using plant sensor or historian data as training or inference input, the data provider must document: the data source (sensor ID, historian tag, PLC address), authority-to-use (operational license or site ownership), data quality specification (sampling rate, expected range, known degradation conditions), and chain of custody for data used in model training. Documentation must be retained as part of the EU AI Act technical file for high-risk systems.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["OT-Edge", "AI-PaaS"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 10 (data and data governance), Annex IV (technical documentation data section)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MAP 3.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "data_provenance_documented",
+        "description": "Provenance documentation exists for all training and inference data sources used by OT-edge AI systems.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Data provenance record per data source.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-model-version",
+        "breach_action": "document-data-sources; assign-data-provider; include-in-technical-file"
+      }
+    },
+
+    {
+      "id": "SRF-L2-DES-002",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "Training Data Authority-to-Use for Production Data",
+      "description": "The data provider must establish and document the contractual or operational basis authorizing use of plant production data for training or fine-tuning AI models. Where production data was collected under operational agreements that do not explicitly authorize AI training use, the data provider must obtain explicit authorization before training commences. The authority-to-use record must reference the applicable agreement and be retained as part of the technical file.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 10 (data governance, legal basis for data use)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MAP 3.2",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "training_atu_documented",
+        "description": "Authority-to-use documented for all production data sources used in model training before training commences.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Authority-to-use record with agreement reference.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-training-run",
+        "breach_action": "obtain-authorization; document-legal-basis; pause-training-until-authorized"
+      }
+    },
+
+    {
+      "id": "SRF-L2-OPS-003",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "OT/IT Data Boundary Enforcement",
+      "description": "No training or fine-tuning data may traverse from OT network zones to cloud or IT networks without traversing an approved conduit documented in the IEC 62443 zone-and-conduit model. Every such traversal must be logged with source zone, destination, data type, volume, and timestamp. The data provider must verify conduit approval before each extraction and retain traversal audit logs for the period specified in the site data retention policy.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["OT-Edge", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 10 (data governance)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MAP 3.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ot_data_boundary_violations",
+        "description": "Count of data traversals from OT zones to IT or cloud without an approved conduit record in the current period.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001) or audit_activity (3002). Log source: OT data diode or conduit gateway syslog.",
+          "attribute": "dst_endpoint.zone; src_endpoint.zone; observables",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "block-unapproved-traversal; alert-ot-security; initiate-conduit-review"
+      }
+    },
+
+    {
+      "id": "SRF-L2-OPS-004",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "Input Data Drift Monitoring",
+      "description": "For AI systems with tier-configurable thresholds, the data provider must monitor input data distribution drift using a statistical measure (Population Stability Index or equivalent) on sensor or process variable inputs. The drift metric must be computed at least as frequently as the configured monitoring window and trigger an alert when the threshold is exceeded. Drift alerts must be investigated within the configured response window.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 72 (post-market monitoring), Article 9 (risk management system)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "input_psi_score",
+        "description": "Population Stability Index (or equivalent) on primary model input features. Lower is better; alert threshold set by operating model and criticality.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003) or model inference log. Drift score computed by data monitoring tool.",
+          "attribute": "observables; metadata.drift_score",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<=",
+        "param": "TIER_INPUT_PSI_THRESHOLD",
+        "param_type": "tier-configurable",
+        "window": "TIER_DRIFT_MONITORING_WINDOW",
+        "breach_action": "alert-data-provider; investigate-root-cause; consider-retraining-or-fallback"
+      }
+    },
+
+    {
+      "id": "SRF-L2-VAL-005",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "Training Data Bias Assessment for Consequential AI",
+      "description": "For AI systems used in personnel, quality, or safety decisions, the data provider must conduct a training data bias assessment before model deployment. The assessment must evaluate representation across relevant subgroups (shift, plant, demographic where applicable), identify and document known gaps, and specify mitigations applied. Assessment results must be retained as part of the technical file for high-risk systems.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "it-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 10 (data governance, bias examination), Annex IV (bias documentation)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.11",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "bias_assessment_completed",
+        "description": "Training data bias assessment completed, documented, and reviewed before model deployment for consequential AI systems.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Bias assessment report with methodology and findings.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-model-version",
+        "breach_action": "complete-bias-assessment; document-mitigations; update-technical-file"
+      }
+    },
+
+    {
+      "id": "SRF-L2-OPS-006",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "Adversarial Input Detection for OT-Edge AI",
+      "description": "AI systems deployed in OT/ICS environments must include anomaly detection on process variable inputs to identify adversarial manipulation or sensor spoofing. The detection mechanism must be configured with thresholds appropriate to the process's normal operating envelope and must alert the OT security team and process operator on detection. Detection events must be logged and investigated.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, security robustness)",
+        "eu_machinery_reg": "Annex I item TBD (protection against third-party attacks)",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.6",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "LLM07 (System Prompt Leakage, adapted to sensor input manipulation)",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against primary text. EU Machinery Regulation Annex I item number TBD."
+      },
+      "threshold": {
+        "metric": "adversarial_input_alert_coverage",
+        "description": "Percentage of OT-edge AI systems with anomaly detection active on primary process variable inputs.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004). Source: OT anomaly detection platform.",
+          "attribute": "finding.type; src_endpoint.name; severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_OT_ANOMALY_DETECTION_COVERAGE_PCT",
+        "param_type": "tier-configurable",
+        "window": "continuous",
+        "breach_action": "deploy-anomaly-detection; alert-ot-security; investigate-uncovered-systems"
+      }
+    },
+
+    {
+      "id": "SRF-L2-OPS-007",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "AI Decision Log Retention per EU AI Act Article 12",
+      "description": "High-risk AI systems must emit automated logs covering the input data used, the output produced, the date and time, and the operator or automated system that acted on the output. Logs must be retained for a minimum of six months per EU AI Act Article 12. Logs must be stored in a tamper-evident format and be retrievable on request by the deployer, operator, or market surveillance authority.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS", "Product-Embedded"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 12 (record-keeping), Article 26 (deployer logging obligations)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 4.2",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ai_log_retention_days",
+        "description": "Minimum retention period in days for AI decision logs. EU AI Act Article 12 minimum: 180 days.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Log storage metadata: retention policy applied.",
+          "attribute": "time; actor; observables; metadata.retention_days",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_LOG_RETENTION_DAYS",
+        "param_type": "tier-configurable",
+        "window": "continuous",
+        "breach_action": "extend-log-retention; verify-tamper-evidence; alert-compliance-team"
+      }
+    },
+
+    {
+      "id": "SRF-L2-OPS-008",
+      "layer": "L2",
+      "component": "Data and Input",
+      "title": "Production Data Egress Audit for Cloud AI Services",
+      "description": "For AI systems that send plant production data to cloud AI services, the data provider must verify that no plant data leaves the approved cloud boundary without an audit record. Monthly automated scans must compare actual data egress records against the approved data flow register. Any undocumented egress must be investigated, halted if possible, and reported to the OT security team and data protection officer within 24 hours.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "it-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 10 (data governance)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MAP 3.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "undocumented_egress_events",
+        "description": "Count of confirmed plant data egress events not covered by an approved data flow register entry in the current month.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001). Source: cloud gateway or DLP tool.",
+          "attribute": "dst_endpoint.name; src_endpoint.name; traffic.bytes_out",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "monthly",
+        "breach_action": "investigate-egress; halt-if-feasible; notify-dpo-and-ot-security"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-001",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "EU AI Act Technical Documentation Completeness",
+      "description": "Before placing a high-risk AI system on the market or putting it into service, the application developer must verify that technical documentation per Article 11 and Annex IV is complete. Required elements include: general description of the system, detailed design description, information on training methodology and data, testing and validation information, instructions for use, and relevant standards applied. The documentation must be retained for 10 years after the last unit is placed on the market.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["Product-Embedded", "OT-Edge"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 11 (technical documentation), Annex IV (technical documentation content)",
+        "eu_machinery_reg": "Article TBD (technical file requirements)",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 1.3",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "technical_documentation_complete",
+        "description": "All required Annex IV elements are present and current in the technical file before market placement.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Technical file completeness checklist with sign-off.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "complete-missing-elements; update-technical-file; delay-market-placement"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-002",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "Pre-Deployment Testing for Safety-Critical AI",
+      "description": "Before deploying an AI system in a safety-critical process context, the application developer must complete a documented test plan and test results covering: normal operating envelope, out-of-range input handling, degraded mode behavior, and failure mode effects. Test results must reference specific test cases and pass/fail outcomes. The test record must be included in the technical file.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["OT-Edge", "Product-Embedded"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL1", "SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, testing), Annex IV (testing and validation documentation)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against IEC 61508-1 through IEC 61508-7."
+      },
+      "threshold": {
+        "metric": "safety_critical_test_completed",
+        "description": "Pre-deployment test plan and results documented for safety-critical AI systems before deployment.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Test plan document and test results report.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "complete-test-plan; execute-tests; resolve-failures-before-deployment"
+      }
+    },
+
+    {
+      "id": "SRF-L3-OPS-003",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "Human Oversight Gate for Safety-Critical AI Outputs",
+      "description": "AI systems whose outputs could directly affect safety-critical process states must have a human-confirmed gate before the output is acted upon. The gate must require an affirmative operator acknowledgment rather than passive non-intervention. The system must log each gate event, including whether the operator confirmed or overrode the AI output. Zero-tolerance: no autonomous safety decision without a human-confirmed gate unless the system has a validated safety case demonstrating that automatic response is required to prevent imminent harm.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["OT-Edge", "Product-Embedded"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 14 (human oversight), Article 9 (risk management)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 4.1",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against primary text."
+      },
+      "threshold": {
+        "metric": "safety_gate_bypass_count",
+        "description": "Count of safety-critical AI output events acted upon without a recorded human-confirmed gate acknowledgment.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003) or audit_activity (3002). Source: HMI audit log or SCADA event log.",
+          "attribute": "actor.user.name; activity_id; observables.gate_acknowledged",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "alert-plant-safety-officer; investigate-bypass; verify-gate-implementation"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-004",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "Safety Interlock Integration Verification",
+      "description": "Before deploying an AI system that provides outputs to a safety-instrumented system (SIS) or interlock circuit, the application developer must verify that the AI output cannot override or suppress the SIS response. Verification must be documented via a test record demonstrating that a simulated AI failure mode does not prevent SIS activation. The verification record must be retained in the safety case.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management), Annex IV (safety testing documentation)",
+        "eu_machinery_reg": "Annex I item 5 (safety components with self-evolving behaviour)",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MEASURE 2.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against IEC 61508-1 and IEC 61508-4. Do not cite specific clause numbers without verification."
+      },
+      "threshold": {
+        "metric": "sis_integration_verified",
+        "description": "Safety interlock integration verified by test before deployment; AI output cannot override or suppress SIS activation.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Safety interlock integration test record and sign-off by functional safety engineer.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "halt-deployment; remediate-integration; retest-before-resuming"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-005",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "EU AI Act Conformity Assessment Completed Before Market Placement",
+      "description": "For each high-risk AI system, the application developer must verify that the applicable conformity assessment procedure (self-assessment per Annex VI or third-party per Annex VII) has been completed and documented before the system is placed on the market or put into service. The conformity assessment record must be retained as part of the technical file and referenced in the EU declaration of conformity.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["Product-Embedded", "OT-Edge"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 43 (conformity assessment procedures), Annex VI (internal control), Annex VII (third-party assessment), Article 47 (EU declaration of conformity)",
+        "eu_machinery_reg": "Article TBD",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 1.4",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "conformity_assessment_completed",
+        "description": "Conformity assessment completed and declaration of conformity signed before market placement.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Conformity assessment record and EU declaration of conformity document.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "complete-conformity-assessment; sign-declaration; update-technical-file"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-006",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "FAT/SAT Test Coverage for AI-Enabled Machinery",
+      "description": "Factory Acceptance Tests (FAT) and Site Acceptance Tests (SAT) for AI-enabled machinery must include test cases covering AI-specific failure modes: model output at edge-of-envelope inputs, graceful degradation on model failure, and correct override behavior. Test coverage for AI-specific cases must be documented separately in the FAT/SAT report and included in the technical file. Test completion is required before commissioning.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["OT-Edge", "Product-Embedded"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Annex IV (testing information), Article 9 (risk management testing)",
+        "eu_machinery_reg": "Annex I item 5 (safety component validation)",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against IEC 61508-1 through IEC 61508-7."
+      },
+      "threshold": {
+        "metric": "fat_sat_ai_coverage_complete",
+        "description": "FAT and SAT reports include AI-specific test cases and are completed before commissioning.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. FAT report and SAT report with AI-specific test case sections.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "extend-fat-sat-scope; retest-ai-failure-modes; delay-commissioning"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-007",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "Operator Override Interface Verification",
+      "description": "Every AI-assisted decision interface deployed in OT or product contexts must include a tested, functional operator override capability that allows an authorized operator to reject the AI output and proceed with manual control. The override path must not require network connectivity to function. Override functionality must be tested and documented before deployment; test results must be retained in the technical file.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["OT-Edge", "Product-Embedded"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 14 (human oversight measures, override capability)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "GOVERN 4.1",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "EU Machinery Regulation Annex I item number TBD pending review of Annex I provisions."
+      },
+      "threshold": {
+        "metric": "override_interface_tested",
+        "description": "Operator override interface tested and documented before deployment. Override functions without network connectivity.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Override interface test record.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "implement-override-capability; test-offline-function; document-results"
+      }
+    },
+
+    {
+      "id": "SRF-L3-OPS-008",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "Agentic Task Boundary Enforcement for Autonomous Systems",
+      "description": "Autonomous AI agents deployed in manufacturing (robotic work cells, AI-driven production schedulers, autonomous quality inspection systems) must operate within a defined task boundary specifying: permitted actions, authority limits (what plant states the agent can command), and abort conditions. The boundary must be enforced at runtime, and any attempt to exceed authority must trigger an alert and operator intervention. Boundary definitions must be version-controlled.",
+      "accountable_persona": "agentic-platform-provider",
+      "operating_models": ["OT-Edge", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 14 (human oversight), Article 9 (risk management)",
+        "eu_machinery_reg": "Annex I item 5",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 4.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "LLM06 (Excessive Agency)",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against primary text."
+      },
+      "threshold": {
+        "metric": "authority_boundary_violation_count",
+        "description": "Count of runtime events where an agent attempted to execute an action outside its defined task boundary.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003) or detection_finding (2004). Source: agent orchestration layer or OT control system event log.",
+          "attribute": "activity_id; actor.process.name; observables.boundary_exceeded",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "halt-agent; alert-operator; review-boundary-definition"
+      }
+    },
+
+    {
+      "id": "SRF-L3-OPS-009",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "Prompt Injection and Adversarial Input Detection for AI Assistants",
+      "description": "AI assistants and LLM-backed tools deployed in manufacturing IT environments (AI-SaaS, AI-PaaS) must include input validation and prompt injection detection. Detection must cover direct injection in user inputs and indirect injection via retrieved documents or data feeds. Detection events must be logged, and confirmed injections must be investigated within the configured response window.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "it-only",
+      "eu_ai_act_risk_class": "limited-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 52 (transparency obligations for certain AI systems)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.6",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "LLM01 (Prompt Injection)"
+      },
+      "threshold": {
+        "metric": "prompt_injection_detection_active",
+        "description": "Prompt injection detection is active and logging on all AI-SaaS and AI-PaaS deployments.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004). Source: AI gateway or application WAF.",
+          "attribute": "finding.type; src_endpoint.name; severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "continuous",
+        "breach_action": "enable-injection-detection; review-detection-configuration; alert-security-team"
+      }
+    },
+
+    {
+      "id": "SRF-L3-OPS-010",
+      "layer": "L3",
+      "component": "Application and Use Case",
+      "title": "Explanation Availability for AI-Assisted Quality and Safety Decisions",
+      "description": "AI systems used for quality inspection, defect classification, or safety-relevant process decisions must provide operators with an explanation or rationale on request. The explanation must be available in the operator interface without requiring external connectivity. Explanation format and depth must be calibrated to the operating model: OT-edge systems must provide a concise process-variable-level rationale; IT-side systems may provide more detailed feature attributions.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["OT-Edge", "AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 13 (transparency and provision of information to deployers), Article 14 (human oversight, explainability)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.9",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "explanation_capability_available",
+        "description": "Explanation capability is available in the operator interface for AI-assisted quality and safety decisions, accessible without external connectivity.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Explanation capability test record in acceptance test documentation.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "implement-explanation-interface; test-offline-access; update-technical-file"
+      }
+    },
+
+    {
+      "id": "SRF-L4-DES-001",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "OT Network Zone Segmentation per IEC 62443",
+      "description": "AI systems deployed within OT/ICS environments must be assigned to the correct security zone in the plant's IEC 62443 zone-and-conduit model. Zone assignment must be documented in the conduit design, and the conduit between the AI system zone and adjacent zones must be documented with its security level, communication protocol, and data flow direction. Zone placement must be reviewed and approved by the OT security team before deployment.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "system-integrator",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, security measures)",
+        "eu_machinery_reg": "Annex I item TBD (protection against third-party attacks)",
+        "iec_62443": "ISA-62443-3-2 Section TBD (zone and conduit design), ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MAP 1.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ot_zone_assignment_documented",
+        "description": "All OT-deployed AI systems have a documented zone assignment and conduit design reviewed by the OT security team.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Zone-and-conduit design document with OT security review sign-off.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "assign-zone; document-conduit; obtain-ot-security-sign-off"
+      }
+    },
+
+    {
+      "id": "SRF-L4-DES-002",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "OT-Edge AI Hardware Security Baseline",
+      "description": "Edge hardware hosting AI models within OT zones must comply with a documented hardware security baseline covering: firmware signing, secure boot, removal of unnecessary network services, physical port restrictions, and hardened credentials. The baseline must be applied before deployment and verified via a configuration audit. Deviations from the baseline must be documented with a risk acceptance by the OT security lead.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, cybersecurity measures)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-4-2 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MAP 1.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ot_hw_baseline_applied",
+        "description": "Hardware security baseline applied and configuration audit completed for all OT-edge AI hardware before deployment.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Configuration audit report with compliance status.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "apply-baseline; audit-configuration; document-deviations-with-risk-acceptance"
+      }
+    },
+
+    {
+      "id": "SRF-L4-OPS-003",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Air-Gap or Approved-Conduit Enforcement for Safety-Critical OT AI",
+      "description": "AI systems deployed in safety-critical OT zones must be isolated from external networks via an air gap or a documented approved conduit. Unapproved network connections from safety-critical OT zones to external networks, the corporate IT network, or the internet are prohibited. Connections detected outside the approved conduit must trigger an immediate alert to the OT security team and plant safety officer.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, security measures for high-risk AI)",
+        "eu_machinery_reg": "Annex I item TBD (protection against third-party attacks for the operational lifetime)",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MAP 1.5",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against primary text. EU Machinery Regulation Annex I item number TBD."
+      },
+      "threshold": {
+        "metric": "unapproved_ot_connection_count",
+        "description": "Count of network connections from safety-critical OT zones to external networks not traversing an approved conduit.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001) or detection_finding (2004). Source: OT firewall or network monitoring platform.",
+          "attribute": "dst_endpoint.name; src_endpoint.zone; severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "block-connection; alert-ot-security-and-plant-safety-officer; investigate-source"
+      }
+    },
+
+    {
+      "id": "SRF-L4-CHG-004",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Patch and Update Change Management for OT AI",
+      "description": "Patches and software updates for AI systems in OT zones must follow the OT change management policy: each update requires a change record, a safety impact assessment, and version freeze coordination with production scheduling. Updates to AI systems that affect safety functions must include a safety re-validation gate before deployment. Rollback capability must be verified before any OT AI patch is applied.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "change",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 17 (quality management system, change control)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 2.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against primary text."
+      },
+      "threshold": {
+        "metric": "ot_patch_change_record_completeness",
+        "description": "Percentage of OT AI patch events with a completed change record, safety impact assessment, and confirmed rollback test.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Change record with safety impact assessment and rollback test result.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_CHANGE_RECORD_COMPLETENESS_PCT",
+        "param_type": "tier-configurable",
+        "window": "per-change",
+        "breach_action": "complete-change-record; conduct-safety-impact-assessment; verify-rollback"
+      }
+    },
+
+    {
+      "id": "SRF-L4-OPS-005",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "OT SIEM and Anomaly Detection Coverage",
+      "description": "OT zones hosting AI systems must be covered by a security information and event management (SIEM) platform or OT-native anomaly detection tool. Coverage must include the AI host device, the conduit interfaces, and the associated PLCs or SCADA components in the same security zone. Detection coverage must be validated quarterly and reported to the OT security lead.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, monitoring measures)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MEASURE 2.8",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ot_siem_coverage_pct",
+        "description": "Percentage of OT zones hosting AI systems covered by SIEM or OT anomaly detection.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004). Source: OT SIEM coverage report.",
+          "attribute": "observables; src_endpoint.zone",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_OT_SIEM_COVERAGE_PCT",
+        "param_type": "tier-configurable",
+        "window": "quarterly",
+        "breach_action": "extend-siem-coverage; deploy-sensors; alert-ot-security"
+      }
+    },
+
+    {
+      "id": "SRF-L4-OPS-006",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Remote Access Security for OT AI Maintenance",
+      "description": "Remote access sessions to OT AI systems for maintenance, diagnostics, or updates are prohibited unless authenticated using multi-factor authentication (MFA) and authorized via a formal change record or maintenance request. Zero unauthenticated remote sessions are permitted. All remote sessions must be logged with the operator identity, session duration, and actions performed. Session logs must be retained and reviewed monthly.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, access control measures)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MAP 1.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "unauthenticated_remote_session_count",
+        "description": "Count of remote access sessions to OT AI systems without MFA authentication.",
+        "evidence": {
+          "ocsf_class": "authentication (3002) or access_activity (3003). Source: OT remote access gateway log.",
+          "attribute": "actor.user.name; mfa_factor; session_duration",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "terminate-session; alert-ot-security; review-access-controls"
+      }
+    },
+
+    {
+      "id": "SRF-L4-OPS-007",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Encrypted Communication for AI Data in Transit",
+      "description": "AI data in transit between components must be encrypted using approved cryptographic protocols. For OT-edge deployments where latency constraints preclude standard TLS, the platform provider must document the alternative encryption or integrity protection mechanism and the associated risk acceptance approved by the OT security lead. IT-side AI communications must use TLS 1.2 or later.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-SaaS", "OT-Edge", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, security measures)",
+        "eu_machinery_reg": "Annex I item TBD",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MAP 1.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "unencrypted_ai_data_in_transit_count",
+        "description": "Count of confirmed AI data flows in transit without approved encryption or documented risk-accepted alternative.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001). Source: network monitoring platform.",
+          "attribute": "tls.version; dst_endpoint.name; observables",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<=",
+        "param": "TIER_UNENCRYPTED_FLOW_TOLERANCE",
+        "param_type": "tier-configurable",
+        "window": "monthly",
+        "breach_action": "enable-encryption; document-alternative-if-ot-constrained; obtain-risk-acceptance"
+      }
+    },
+
+    {
+      "id": "SRF-L4-DES-008",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "AI Software Bill of Materials (SBOM/AIBOM) for OT AI Components",
+      "description": "For AI systems deployed in OT zones, the platform provider must maintain an AI Bill of Materials (AIBOM) covering all software components, ML frameworks, model artifacts, and third-party libraries. The AIBOM must be updated with each change to the AI system and used as the basis for vulnerability management. Component suppliers must be identified for every third-party entry. The AIBOM must be retained as part of the technical file.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge", "Product-Embedded"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Annex IV (technical documentation, component inventory element)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MAP 5.2",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "aibom_current",
+        "description": "An AIBOM exists for every OT-deployed AI system and has been updated within 30 days of the last system change.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. AIBOM document with version and last-updated date.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-change",
+        "breach_action": "create-aibom; update-after-changes; include-in-technical-file"
+      }
+    },
+
+    {
+      "id": "SRF-L4-OPS-009",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Availability SLA for AI in Critical Production Processes",
+      "description": "For AI systems that are in the critical path of production (AI-driven quality gates, real-time process control, predictive maintenance with mandatory action) the platform provider must define and monitor an availability SLA. The SLA must specify the target availability percentage, the measurement window, and the degraded-mode behavior when availability falls below threshold. SLA breaches must trigger a defined escalation path.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, continuity measures)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 4.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ai_availability_pct",
+        "description": "Measured availability of critical-path AI systems as a percentage of total required uptime in the measurement window.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003) or audit_activity (3002). Source: platform monitoring dashboard uptime report.",
+          "attribute": "observables.availability_pct; time",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_AI_AVAILABILITY_PCT",
+        "param_type": "tier-configurable",
+        "window": "monthly",
+        "breach_action": "escalate-to-platform-provider; activate-degraded-mode-procedure; investigate-root-cause"
+      }
+    },
+
+    {
+      "id": "SRF-L5-VAL-001",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "EU AI Act Technical File Completeness - Model Supplier Obligations",
+      "description": "The model provider (AI model vendor or equipment OEM supplying an AI-enabled system) must provide a complete technical file including: the EU declaration of conformity, technical documentation per Annex IV, information on training methodology and data, and the conformity assessment record. For high-risk systems, the declaration of conformity must be signed by an authorized representative. Deploying manufacturers must verify completeness of supplier documentation before market placement.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["Product-Embedded", "OT-Edge"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "equipment-oem",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 11 (technical documentation), Article 47 (EU declaration of conformity), Annex IV",
+        "eu_machinery_reg": "Article TBD (technical file requirements)",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 1.3",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "supplier_technical_file_complete",
+        "description": "Model supplier technical file includes declaration of conformity, technical documentation, and conformity assessment record before deployment.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Supplier technical file completeness checklist with review sign-off.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-supplier-engagement",
+        "breach_action": "request-missing-documentation; delay-deployment; escalate-to-procurement"
+      }
+    },
+
+    {
+      "id": "SRF-L5-OPS-002",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "Model Drift and Performance Degradation Monitoring",
+      "description": "The model provider must supply or specify a monitoring mechanism for model drift and performance degradation. For OT-edge AI, the monitoring interval must be calibrated to the process criticality and the acceptable lag between degradation onset and detection. Performance metrics must include at minimum the primary task metric (e.g., classification accuracy for quality inspection, MAE for predictive maintenance) and a statistical drift indicator. Degradation events must trigger an alert and investigation.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 72 (post-market monitoring), Article 9 (risk management, ongoing monitoring)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MEASURE 2.5",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "model_performance_vs_baseline",
+        "description": "Model primary task metric relative to the validated baseline performance. Drift threshold set by operating model and process criticality.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003) or model monitoring log. Source: model performance monitoring tool.",
+          "attribute": "observables.performance_metric; time; metadata.baseline_value",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_MODEL_PERFORMANCE_FLOOR",
+        "param_type": "tier-configurable",
+        "window": "TIER_MODEL_MONITORING_WINDOW",
+        "breach_action": "alert-model-provider; investigate-drift-cause; consider-retraining-or-fallback"
+      }
+    },
+
+    {
+      "id": "SRF-L5-CHG-003",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "Model Version Change Management Trigger",
+      "description": "Every model version change must generate a change record before deployment. For high-risk AI systems, model version changes must trigger a re-validation assessment to determine whether the change requires a new conformity assessment under EU AI Act Article 43. OT-edge deployments require an additional safety impact assessment and version freeze coordination. The model provider must document the change scope and re-validation determination in the change record.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS", "Product-Embedded", "AI-PaaS"],
+      "lifecycle_stage": "change",
+      "responsibility_split": "shared",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 43 (conformity assessment re-evaluation trigger), Article 17 (quality management, change control)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 2.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "IEC 61508 clause reference requires verification against primary text."
+      },
+      "threshold": {
+        "metric": "model_change_record_completeness",
+        "description": "Percentage of model version change events with a completed change record and re-validation determination before deployment.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Change record with re-validation determination signed off by responsible engineer.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-change",
+        "breach_action": "create-change-record; conduct-revalidation-assessment; delay-deployment"
+      }
+    },
+
+    {
+      "id": "SRF-L5-OPS-004",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "Vulnerability Disclosure SLA for AI Model Supplier",
+      "description": "The model provider must publish and honor a vulnerability disclosure SLA specifying: the channel for receiving vulnerability reports, the acknowledgment timeline, the assessment and severity classification timeline, and the patch availability timeline by severity level. For OT-edge AI, the SLA must account for the OT change management cycle; critical vulnerabilities must include a compensating control recommendation when immediate patching is infeasible.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS", "Product-Embedded", "AI-PaaS"],
+      "lifecycle_stage": "ops",
+      "responsibility_split": "ai-vendor",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL1", "SL2"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, security vulnerability management)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MANAGE 3.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "vuln_sla_days_critical",
+        "description": "Maximum days from confirmed critical vulnerability to patch availability for AI model components.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Vendor VDP or SLA document. Patch availability date records.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<=",
+        "param": "TIER_VULN_SLA_DAYS_CRITICAL",
+        "param_type": "tier-configurable",
+        "window": "per-vulnerability",
+        "breach_action": "escalate-to-vendor; implement-compensating-control; notify-ot-security"
+      }
+    },
+
+    {
+      "id": "SRF-L5-DES-005",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "BoAIM and Model Artifact Signing",
+      "description": "The model provider must supply a Bill of AI Materials (BoAIM) for each AI model artifact, listing model architecture, training framework versions, base model or pre-trained weights sources, and fine-tuning dataset provenance. Model artifacts must be signed with a verifiable digital signature before distribution. The deploying manufacturer must verify artifact signatures before deployment to OT or product environments.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["OT-Edge", "Product-Embedded"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "ai-vendor",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Annex IV (technical documentation, model description)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "MAP 5.2",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "LLM03 (Supply Chain Vulnerabilities)"
+      },
+      "threshold": {
+        "metric": "model_artifact_signed",
+        "description": "Model artifact signature verified before deployment. BoAIM present and current for every artifact deployed to OT or product environments.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. BoAIM document and artifact signature verification record.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "obtain-boaim; verify-signature; halt-deployment-if-verification-fails"
+      }
+    },
+
+    {
+      "id": "SRF-L5-VAL-006",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "Functional Safety Validation for AI in Safety-Instrumented Systems",
+      "description": "Where an AI system is integrated into or provides inputs to a safety-instrumented system (SIS), the model provider and deploying manufacturer must complete a safety validation appropriate to the Safety Integrity Level (SIL) of the SIS. Safety validation must follow IEC 61508 or a sector-equivalent standard. Safety case documents and SIL assessment records are classified documents: note document type and custodian role (functional safety engineer, plant safety officer); do not publish document URLs. Validation must be completed before commissioning.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["OT-Edge"],
+      "lifecycle_stage": "validation",
+      "responsibility_split": "shared",
+      "ot_applicability": "ot-only",
+      "eu_ai_act_risk_class": "high-risk",
+      "iec_62443_sls": ["SL2", "SL3"],
+      "mappings": {
+        "eu_ai_act": "Article 9 (risk management, safety validation), Annex IV (safety testing documentation)",
+        "eu_machinery_reg": "Annex I item 5 (safety components with self-evolving behaviour)",
+        "iec_62443": "ISA-62443-3-3 Section TBD",
+        "iso_42001": "N/A",
+        "nist_ai_rmf": "MEASURE 2.2",
+        "iec_61508": "TBD",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A",
+        "mapping_status_note": "All IEC 61508 clause references marked TBD. Citation must reference IEC 61508 part numbers (IEC 61508-1 through IEC 61508-7) only, not specific clause numbers, pending verification against primary text."
+      },
+      "threshold": {
+        "metric": "sil_validation_completed",
+        "description": "SIL-appropriate functional safety validation completed and safety case documented before commissioning. Document custodian: functional safety engineer.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Safety case document (access restricted; maintained by functional safety engineer). SIL assessment record (access restricted).",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "engage-functional-safety-engineer; complete-sil-assessment; document-safety-case"
+      }
+    },
+
+    {
+      "id": "SRF-L5-DES-007",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "Model Portability and Lock-In Avoidance Documentation",
+      "description": "The model provider must document the model export capability, the supported export formats, and the migration path to an alternative platform. For OT-edge AI, the export documentation must specify whether the model can be re-deployed on alternative OT-compatible hardware without retraining. Model portability documentation must be provided before contract signature and updated when the provider's platform capabilities change.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["OT-Edge", "AI-SaaS", "AI-PaaS"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "ai-vendor",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "N/A",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "N/A",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 6.2",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "portability_documentation_provided",
+        "description": "Model portability documentation provided before contract signature, covering export formats and OT re-deployment capability.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Portability documentation from supplier.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-supplier-engagement",
+        "breach_action": "request-portability-documentation; evaluate-lock-in-risk; escalate-to-procurement"
+      }
+    },
+
+    {
+      "id": "SRF-L5-DES-008",
+      "layer": "L5",
+      "component": "Model and Supplier",
+      "title": "Model Supplier Due Diligence and Supply Chain Risk Assessment",
+      "description": "Before contracting a model supplier for an OT-edge or product-embedded AI system, the model provider evaluation must include: financial stability and support horizon, security disclosure history, jurisdictional risk (data residency, export control), EU AI Act compliance status for high-risk models, and OT environment compatibility. The due diligence record must be reviewed by procurement and the OT security lead and retained with the supplier record.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["OT-Edge", "Product-Embedded"],
+      "lifecycle_stage": "design",
+      "responsibility_split": "manufacturer",
+      "ot_applicability": "both",
+      "eu_ai_act_risk_class": "N/A",
+      "iec_62443_sls": [],
+      "mappings": {
+        "eu_ai_act": "Article 28 (third-party provider obligations), Article 16 (provider due diligence)",
+        "eu_machinery_reg": "N/A",
+        "iec_62443": "ISA-62443-2-1 Section TBD",
+        "iso_42001": "Section TBD",
+        "nist_ai_rmf": "GOVERN 6.1",
+        "iec_61508": "N/A",
+        "nist_cyber_ai": "TBD",
+        "owasp_llm": "LLM03 (Supply Chain Vulnerabilities)"
+      },
+      "threshold": {
+        "metric": "supplier_due_diligence_completed",
+        "description": "Supplier due diligence record completed, reviewed by procurement and OT security lead, and retained before contract signature.",
+        "evidence": {
+          "ocsf_class": "Governance document artifact. Supplier due diligence report with review sign-off.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-supplier-engagement",
+        "breach_action": "complete-due-diligence; obtain-ot-security-review; delay-contract-signature"
+      }
+    }
+
+  ]
+}

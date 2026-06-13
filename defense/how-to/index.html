@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to Use the Defense Schema - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Five steps for Program Managers, ISSOs, and Contracting Officers using the SRF defense schema to prepare a DoD AI system for operational deployment at IL4, IL5, or IL6."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Breadcrumb ───────────────────────────────────────────────── */
+      .breadcrumb {
+        font-size: var(--text-xs);
+        color: #93c5fd;
+        margin-bottom: var(--sp-4);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+      }
+      .breadcrumb a {
+        color: #93c5fd;
+        text-decoration: none;
+        opacity: 0.75;
+      }
+      .breadcrumb a:hover { opacity: 1; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+      .breadcrumb__current { opacity: 0.9; }
+
+      /* ── Audience badge ───────────────────────────────────────────── */
+      .audience-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-3);
+        background: rgba(45, 91, 227, 0.18);
+        border: 1px solid rgba(45, 91, 227, 0.35);
+        border-radius: var(--radius);
+        padding: var(--sp-2) var(--sp-4);
+        margin-top: var(--sp-5);
+        flex-wrap: wrap;
+      }
+      .audience-badge__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #93c5fd;
+      }
+      .audience-badge__text {
+        font-size: var(--text-sm);
+        color: #cbd5e1;
+      }
+
+      /* ── Step list ────────────────────────────────────────────────── */
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 var(--sp-12);
+      }
+      .step {
+        counter-increment: steps;
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: var(--sp-6);
+        margin-bottom: var(--sp-10);
+        padding-bottom: var(--sp-10);
+        border-bottom: 1px solid var(--slate-100);
+      }
+      .step:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      .step__num {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--cosai-navy);
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .step__num::before { content: counter(steps); }
+      .step__body h2 {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin: 0 0 var(--sp-3);
+      }
+      .step__body p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-4);
+        max-width: 640px;
+      }
+      .step__body p:last-child { margin-bottom: 0; }
+      .step__body strong { color: var(--slate-800); }
+
+      /* ── Tables ───────────────────────────────────────────────────── */
+      .role-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin: var(--sp-4) 0;
+      }
+      .role-table th {
+        text-align: left;
+        padding: var(--sp-2) var(--sp-3);
+        background: var(--slate-50);
+        border-bottom: 2px solid var(--slate-200);
+        font-weight: 700;
+        color: var(--slate-500);
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .role-table td {
+        padding: var(--sp-2) var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-700);
+        vertical-align: top;
+      }
+      .role-table tr:last-child td { border-bottom: none; }
+
+      /* ── Callout ──────────────────────────────────────────────────── */
+      .callout {
+        background: #f0f4ff;
+        border-left: 4px solid #3b82f6;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0;
+        padding: var(--sp-4) var(--sp-5);
+        margin: var(--sp-4) 0;
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        max-width: 640px;
+      }
+      .callout strong { color: #1d4ed8; }
+
+      /* ── Evidence block ───────────────────────────────────────────── */
+      .evidence-block {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md);
+        padding: var(--sp-5);
+        margin: var(--sp-4) 0;
+        max-width: 640px;
+      }
+      .evidence-block h4 {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin: 0 0 var(--sp-3);
+      }
+      .evidence-row {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: var(--sp-3);
+        padding: var(--sp-2) 0;
+        border-top: 1px solid var(--slate-200);
+        font-size: var(--text-sm);
+      }
+      .evidence-row:first-of-type { border-top: none; }
+      .evidence-row__label {
+        font-weight: 600;
+        color: var(--slate-700);
+      }
+
+      /* ── Workpaper download ───────────────────────────────────────── */
+      .workpaper-dl {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-5);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md);
+        padding: var(--sp-5) var(--sp-6);
+        margin: var(--sp-10) 0 var(--sp-8);
+        flex-wrap: wrap;
+      }
+      .workpaper-dl__icon {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0;
+        color: var(--cosai-navy);
+      }
+      .workpaper-dl__icon svg {
+        width: 40px;
+        height: 40px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .workpaper-dl__text { flex: 1; min-width: 200px; }
+      .workpaper-dl__name {
+        font-weight: 700;
+        color: var(--slate-800);
+        margin: 0 0 var(--sp-1);
+        font-size: var(--text-sm);
+      }
+      .workpaper-dl__meta {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        margin: 0;
+      }
+      .btn {
+        display: inline-block;
+        padding: var(--sp-2) var(--sp-5);
+        border-radius: var(--radius);
+        border: 1.5px solid var(--cosai-navy);
+        background: transparent;
+        color: var(--cosai-navy);
+        font-size: var(--text-sm);
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s;
+        font-family: inherit;
+      }
+      .btn:hover { background: var(--cosai-navy); color: #fff; }
+      .btn--primary {
+        background: #1d4ed8;
+        color: #fff;
+        border-color: #1d4ed8;
+      }
+      .btn--primary:hover { background: var(--cosai-navy); border-color: var(--cosai-navy); }
+
+      /* ── CTA row ──────────────────────────────────────────────────── */
+      .cta-row {
+        display: flex;
+        gap: var(--sp-4);
+        flex-wrap: wrap;
+        margin-top: var(--sp-8);
+      }
+
+      /* ── IL badge row ─────────────────────────────────────────────── */
+      .il-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        border-radius: 4px;
+        padding: 2px 8px;
+        background: #1e3a5f;
+        color: #93c5fd;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <site-nav current="industries"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <div class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <a href="/defense/">Department of War</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <span class="breadcrumb__current">How to use the schema</span>
+        </div>
+        <span class="page-hero__eyebrow">Defense vertical &middot; DoD RAI &middot; CMMC 2.0 &middot; DISA CC SRG</span>
+        <h1 class="page-hero__title">How to use the defense controls schema</h1>
+        <p class="page-hero__lede">
+          A workflow guide for Program Managers, ISSOs, and Contracting Officers preparing
+          a DoD AI system for operational deployment at IL4, IL5, or IL6.
+        </p>
+        <div class="audience-badge" role="note" aria-label="Intended audience">
+          <span class="audience-badge__label">Audience</span>
+          <span class="audience-badge__text">
+            Program Managers &middot; ISSOs &middot; Authorizing Officials &middot; Contracting Officers &middot; CDAO liaison
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:32px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema notice.</strong> This guide describes a proposed
+        extension of the CoSAI Shared Responsibility Framework. It is not part of SRF v1.0 and has not been
+        endorsed by CoSAI, DoD, CDAO, DISA, or any government agency. Nothing here constitutes legal,
+        compliance, acquisition, or contracting advice. DoDI section references, CC SRG section numbers,
+        and CMMC practice cross-references are illustrative and marked TBD; verify against the primary
+        documents at esd.whs.mil and public.cyber.mil before citing in program records.
+      </div>
+
+      <ol class="step-list">
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Determine the NSS boundary and select the impact level</h2>
+            <p>
+              Before any other schema work, produce the NSS boundary determination memo required
+              by <strong>SRF-L1-ACQ-009</strong>. The memo must cite 44 USC 3552(b)(6), document
+              the factors the authorizing official considered, and state whether the system is NSS
+              or non-NSS. This determination drives your security baseline choice (CNSSI 1253 for
+              NSS; NIST SP 800-53 for non-NSS) and your IL selection.
+            </p>
+            <p>
+              Use this table as the canonical reference for IL and NSS combinations:
+            </p>
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>Impact level</th>
+                  <th>NSS tier</th>
+                  <th>Data type</th>
+                  <th>Cloud path</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="il-badge">IL4</span></td>
+                  <td>Non-NSS</td>
+                  <td>CUI, no NSI</td>
+                  <td>Commercial cloud; DISA IL4 PA required</td>
+                </tr>
+                <tr>
+                  <td><span class="il-badge">IL5</span></td>
+                  <td>Non-NSS</td>
+                  <td>Higher-sensitivity CUI (Privacy Act, law enforcement sensitive, export-controlled research)</td>
+                  <td>Government-only cloud region; DISA IL5 PA required</td>
+                </tr>
+                <tr>
+                  <td><span class="il-badge">IL5</span></td>
+                  <td>NSS</td>
+                  <td>Unclassified NSS (intelligence, cryptology, command/control, weapons systems per 44 USC 3552(b)(6))</td>
+                  <td>Government-only cloud region; CNSS Policy 22 and CNSSI 1253 apply</td>
+                </tr>
+                <tr>
+                  <td><span class="il-badge">IL6</span></td>
+                  <td>NSS</td>
+                  <td>Classified up to and including SECRET</td>
+                  <td>Classified cloud only (AWS C2S, Azure Government Secret, Oracle NSR); no commercial path</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="callout">
+              <strong>NSS determination is not automatic.</strong> Many DoD administrative, logistics,
+              and healthcare systems are non-NSS even at IL5. The deploying component makes the
+              boundary determination; document the rationale explicitly. An undocumented assumption
+              is a finding in every ATO review.
+            </div>
+            <p>
+              Once the IL is set, register the system in the CDAO AI registry per
+              <strong>SRF-L1-ACQ-001</strong> and designate the Responsible AI Officer per
+              <strong>SRF-L1-ACQ-002</strong> before proceeding.
+            </p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Select the operating model and trace CC SRG inheritance from the DISA PA</h2>
+            <p>
+              Each AI system runs on one of four operating models. The choice determines which
+              controls the component owns outright, which it shares with a contractor or CSP,
+              and which it inherits through the DISA Provisional Authorization.
+            </p>
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>Operating model</th>
+                  <th>Description</th>
+                  <th>Inheritance posture</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>AI-SaaS</strong></td>
+                  <td>Commercial AI service accessed via API; DISA PA required before use with DoD data</td>
+                  <td>CSP holds L4/L5 PA; component owns L1-L3 and all DoD-side CRM rows</td>
+                </tr>
+                <tr>
+                  <td><strong>AI-PaaS</strong></td>
+                  <td>Component-built or fine-tuned model on a government-authorized platform (e.g., AWS GovCloud, Azure Government)</td>
+                  <td>Platform PA inherited for infrastructure controls; component adds application, data, and model governance layers</td>
+                </tr>
+                <tr>
+                  <td><strong>Agent-Ops</strong></td>
+                  <td>Agentic AI in operational workflows (logistics, ISR data triage, administrative processing)</td>
+                  <td>Component owns task boundary, oversight gate, and remedy controls; CSP or DISA shares platform controls</td>
+                </tr>
+                <tr>
+                  <td><strong>Program-Embedded</strong></td>
+                  <td>AI embedded directly in a weapon system or C2 program (ACAT program); subject to DoDI 5000.89 TEVV</td>
+                  <td>Component or prime contractor owns all layers; TEVV plan governs the test and acceptance cycle</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              After selecting an operating model, open the DISA CC SRG for your IL and map the
+              <code>responsibility_split</code> values in the JSON controls
+              (<code>dod-component</code>, <code>disa</code>, <code>contractor</code>,
+              <code>csp</code>, <code>shared</code>) to your Customer Responsibility Matrix.
+              AI-specific controls not covered by the CC SRG are component-owned by default.
+            </p>
+            <div class="callout">
+              <strong>For IL6 systems:</strong> Commercial cloud paths do not apply. Verify the
+              classified cloud environment (AWS C2S, Azure Government Secret, or Oracle NSR)
+              is the designated operational environment before beginning the inheritance mapping.
+              The CC SRG does not cover classified enclaves in the same way; work with DISA
+              directly to confirm the applicable control baseline.
+            </div>
+            <p>
+              Document the inheritance chain per <strong>SRF-L3-ACQ-008</strong>. Inherited
+              controls must be traceable to a named PA or ATO in the ATO package.
+            </p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Map SRF personas to DoD roles</h2>
+            <p>
+              The schema uses six personas aligned to SRF layers, not DoD job titles. Use this
+              table to assign ownership rows in the workpaper and to identify the officials
+              responsible for each RAI principle area.
+            </p>
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>SRF persona</th>
+                  <th>DoD role(s)</th>
+                  <th>Office</th>
+                  <th>Primary layer(s)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>ai-system-governance</code></td>
+                  <td>CDAO liaison, Program Executive Officer, Component RAI Officer</td>
+                  <td>CDAO; component CIO office</td>
+                  <td>L1</td>
+                </tr>
+                <tr>
+                  <td><code>data-provider</code></td>
+                  <td>Chief Data Officer, Privacy Officer, Records Officer, ISSO</td>
+                  <td>Component CDO; ISSO office</td>
+                  <td>L2</td>
+                </tr>
+                <tr>
+                  <td><code>application-developer</code></td>
+                  <td>Program Manager, system owner, software developer (FTE or contractor)</td>
+                  <td>Program office</td>
+                  <td>L3</td>
+                </tr>
+                <tr>
+                  <td><code>agentic-platform-provider</code></td>
+                  <td>Platform engineering team, ISSO</td>
+                  <td>Program office or DISA</td>
+                  <td>L3, L4</td>
+                </tr>
+                <tr>
+                  <td><code>ai-platform-provider</code></td>
+                  <td>ISSO, Authorizing Official, cloud program office; CSP for inherited controls</td>
+                  <td>Component AO office; DISA for DISA-split controls</td>
+                  <td>L4</td>
+                </tr>
+                <tr>
+                  <td><code>model-provider</code></td>
+                  <td>Contracting Officer, CDAO, prime contractor or AI vendor</td>
+                  <td>Contracting office; program office</td>
+                  <td>L5</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>
+              The Persona Mapping sheet in the workpaper carries these assignments pre-populated.
+              Adjust the office column to reflect your component's actual structure. Where a role
+              spans multiple offices, name a primary official and a secondary.
+            </p>
+            <div class="callout">
+              <strong>Contracting Officer involvement:</strong> The CO is the primary actor for
+              L5 controls requiring contract clauses (DoDI 5000.90 transparency card,
+              data rights provisions, CMMC certification requirements, and vendor disclosure SLAs).
+              Engage the CO early in the acquisition phase before the solicitation is issued.
+            </div>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Set tier parameters by IL and operating model</h2>
+            <p>
+              Controls marked <code>tier-configurable</code> carry a parameter name (e.g.,
+              <code>TIER_AI_REGISTRY_COVERAGE_PCT</code>) rather than a fixed threshold. Use the
+              system's IL and operating model to set values in the Tier Parameters sheet of the
+              workpaper.
+            </p>
+            <table class="role-table">
+              <thead>
+                <tr>
+                  <th>IL</th>
+                  <th>NSS tier</th>
+                  <th>Suggested threshold posture</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="il-badge">IL6</span></td>
+                  <td>NSS</td>
+                  <td>Maximum thresholds across all tier-configurable parameters. Zero-tolerance controls apply without exception. IL6 evidence is classified; document artifact type and custodian role rather than URL.</td>
+                </tr>
+                <tr>
+                  <td><span class="il-badge">IL5</span> NSS</td>
+                  <td>NSS</td>
+                  <td>Maximum thresholds. CNSSI 1253 baseline governs security controls. CNSS Policy 22 applies. All zero-tolerance controls apply.</td>
+                </tr>
+                <tr>
+                  <td><span class="il-badge">IL5</span> Non-NSS</td>
+                  <td>Non-NSS</td>
+                  <td>Near-maximum thresholds. NIST 800-53 moderate baseline. DISA IL5 PA required. Human oversight gate required for consequential decisions.</td>
+                </tr>
+                <tr>
+                  <td><span class="il-badge">IL4</span></td>
+                  <td>Non-NSS</td>
+                  <td>Recommended minimums in schema descriptions. Reduced cadence acceptable for some monitoring controls. Document any reductions with PM and ISSO approval.</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="callout">
+              <strong>Zero-tolerance controls are not tier-configurable.</strong> Controls marked
+              <code>zero-tolerance</code> (human oversight gate for use-of-force-adjacent decisions,
+              NSS determination memo, DISA PA currency, IL6 personnel clearance, and others)
+              must be met at every IL. They appear in the workpaper with locked thresholds.
+            </div>
+            <p>
+              For IL6 classified environments: do not attempt to satisfy evidence requirements with
+              public URLs or commercial SIEM exports. Record the document type (e.g.,
+              "TEVV report, classified, retained at SCIF"), the custodian role, and the access path
+              (classified network or cleared facility). The OCSF evidence fields in the JSON are
+              filled TBD for IL6 controls because the evidence exists but cannot be linked.
+            </p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="step__num"></div>
+          <div class="step__body">
+            <h2>Assemble the evidence package</h2>
+            <p>
+              The DoD AI deployment evidence package combines: the TEVV artifacts required by
+              DoDI 5000.89, the AI impact assessment, the ATO file with inherited control
+              documentation, the CMMC evidence folder for contractor-operated components, and
+              CDAO incident reporting records for operational systems.
+            </p>
+            <p>
+              Use the CMMC Evidence Log sheet in the workpaper to map each control to its
+              evidence artifact. For controls with OCSF-mapped evidence, the OCSF class is
+              the expected telemetry source; for governance documents, record the artifact ID
+              and custodian.
+            </p>
+            <div class="evidence-block">
+              <h4>Key evidence artifacts by lifecycle stage</h4>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Acquisition (ACQ)</div>
+                <div>
+                  NSS boundary determination memo (SRF-L1-ACQ-009);
+                  DoD RAI compliance plan covering all five principles (SRF-L1-ACQ-004);
+                  AI use case registry entry with CDAO reporting confirmation (SRF-L1-ACQ-001);
+                  supply chain risk assessment (SRF-L1-ACQ-006, SRF-L5-ACQ-008);
+                  DoDI 5000.90 contract clauses verified by CO (SRF-L1-ACQ-005);
+                  model transparency card (SRF-L5-ACQ-001);
+                  DISA PA verification at required IL (SRF-L4-ACQ-001)
+                </div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">TEVV</div>
+                <div>
+                  TEVV plan approved before deployment (SRF-L1-TEVV-010);
+                  TEVV report signed by AO (SRF-L3-TEVV-001);
+                  AI impact assessment approved (SRF-L3-TEVV-002);
+                  operator override capability verified (SRF-L3-OVR-004);
+                  STIG compliance baseline verification (SRF-L4-ACQ-002);
+                  prompt injection detection coverage verified (SRF-L3-OPS-007)
+                </div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Operations (OPS)</div>
+                <div>
+                  IL boundary enforcement logs (SRF-L2-OPS-002);
+                  ACAS scan coverage reports (SRF-L4-OPS-009);
+                  audit log completeness verification (SRF-L4-OPS-005);
+                  adversarial detection event log (SRF-L2-OPS-005);
+                  AI decision log retention confirmation (SRF-L2-OPS-007);
+                  availability SLA compliance report (SRF-L4-OPS-010)
+                </div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">Human oversight (OVR)</div>
+                <div>
+                  Human oversight gate operational log with zero bypass events (SRF-L3-OVR-003);
+                  operator override event log (SRF-L3-OVR-004);
+                  remedy and appeal procedure published and named reviewer designated (SRF-L3-OVR-005);
+                  CDAO incident reporting records (SRF-L1-OPS-008)
+                </div>
+              </div>
+              <div class="evidence-row">
+                <div class="evidence-row__label">CMMC (contractor)</div>
+                <div>
+                  CMMC Level 2 C3PAO assessment with SPRS submission (SRF-L4-ACQ-007);
+                  CMMC Level 3 DIBCAC assessment for higher-value programs (SRF-L4-ACQ-008);
+                  contractor data isolation verification (SRF-L2-ACQ-008);
+                  personnel security clearance roster for IL6 access (SRF-L5-ACQ-007)
+                </div>
+              </div>
+            </div>
+            <p>
+              For governance documents, store them in the program's authoritative records system
+              and reference them by artifact ID in the workpaper. For controls with OCSF-mapped
+              telemetry, configure your SIEM to emit the specified OCSF class before system
+              acceptance. The OCSF attribute fields marked TBD require mapping to your specific
+              platform's log schema after DISA finalizes the SIEM integration guidance.
+            </p>
+            <div class="callout">
+              <strong>CMMC and AI governance:</strong> CMMC 2.0 governs contractor cybersecurity
+              for CUI but does not address AI-specific obligations. This schema extends the CMMC
+              evidence folder to include AI governance artifacts. Organize the CMMC evidence log
+              with a dedicated AI section that maps NIST 800-171 practices to the SRF controls
+              that satisfy or extend them.
+            </div>
+          </div>
+        </li>
+
+      </ol>
+
+      <div class="workpaper-dl" role="region" aria-label="CMMC and TEVV workpaper download">
+        <div class="workpaper-dl__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+        </div>
+        <div class="workpaper-dl__text">
+          <p class="workpaper-dl__name">CMMC / TEVV workpaper</p>
+          <p class="workpaper-dl__meta">
+            XLSX &middot; Generated from defense-controls.json &middot; Includes Instructions,
+            Tier Parameters, Persona Mapping, and CMMC Evidence Log
+          </p>
+        </div>
+        <a
+          href="/defense-cmmc-tevv-workpaper.xlsx"
+          class="btn"
+          download
+          aria-label="Download CMMC and TEVV workpaper (XLSX)"
+        >
+          Download workpaper
+        </a>
+      </div>
+
+      <div class="cta-row">
+        <a href="/defense/controls/" class="btn btn--primary">Browse all controls</a>
+        <a href="/defense/" class="btn">Defense hub</a>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+  </body>
+</html>
