@@ -6,7 +6,7 @@
     <title>Developers — AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Machine-readable CoSAI SRF resources for developers and AI systems — canonical system prompts, structured schema, and JSON artifacts for integrating the framework into your tooling."
+      content="Machine-readable CoSAI SRF resources for developers and AI systems: canonical system prompts, structured schema, and JSON artifacts for integrating the framework into your tooling."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -70,6 +70,8 @@
         text-transform: uppercase; color: var(--slate-400);
       }
       .dev-card__arrow { font-size: var(--text-sm); color: var(--cosai-blue); font-weight: 700; }
+      .dev-card__stretch { position: absolute; inset: 0; z-index: 1; }
+      .dev-card__inline-link { position: relative; z-index: 2; color: var(--cosai-blue); }
 
       .coming-soon {
         background: var(--slate-50);
@@ -218,12 +220,13 @@
           </div>
         </a>
 
-        <a class="dev-card" href="/llms-full.txt">
+        <div class="dev-card" style="position:relative;">
+          <a class="dev-card__stretch" href="/llms-full.txt" aria-label="LLM Full-Content File"></a>
           <div class="dev-card__head" aria-hidden="true">
-            <div><span class="dev-card__head-comment"># AI Shared Responsibility — CoSAI SRF</span></div>
+            <div><span class="dev-card__head-comment"># AI Shared Responsibility: CoSAI SRF</span></div>
             <div><span class="dev-card__head-comment"># Full Content for Agent Retrieval</span></div>
             <div>&nbsp;</div>
-            <div><span class="dev-card__head-key">layers:</span> <span class="dev-card__head-string">L1–L5 inline</span></div>
+            <div><span class="dev-card__head-key">layers:</span> <span class="dev-card__head-string">L1 to L5 inline</span></div>
             <div><span class="dev-card__head-key">controls:</span> <span class="dev-card__head-string">218 across 6 verticals</span></div>
           </div>
           <div class="dev-card__body">
@@ -233,14 +236,14 @@
               all 218 controls across six verticals, and regulatory context inlined.
               An agent or RAG pipeline can retrieve one URL and answer detailed SRF
               questions without following additional links. Also available:
-              <a href="/llms.txt" style="color:var(--cosai-blue);">llms.txt</a> (link index).
+              <a href="/llms.txt" class="dev-card__inline-link">llms.txt</a> (link index).
             </p>
           </div>
           <div class="dev-card__footer">
             <span class="dev-card__tag">Plain text · 319 KB</span>
             <span class="dev-card__arrow">→</span>
           </div>
-        </a>
+        </div>
 
         <a class="dev-card" href="/developers/schema/">
           <div class="dev-card__head" aria-hidden="true">
@@ -273,7 +276,7 @@
         <h2 class="coming-soon__title">OTel-inspired governance schema</h2>
         <p class="coming-soon__desc">
           A machine-readable policy-as-code format modeled on OpenTelemetry semantic
-          conventions — define accountability thresholds, evidence requirements,
+          conventions: define accountability thresholds, evidence requirements,
           and autonomy ceilings per layer and business vertical. Consumable by
           AI gateways, GRC tools, and runtime observability platforms.
         </p>
