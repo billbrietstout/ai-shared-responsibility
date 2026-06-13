@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to Use the Insurance Controls Schema - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="How insurers use the SRF insurance controls schema to prepare for NAIC market conduct exams and meet the Colorado Regulation 10-1-1 framework-availability obligation. Five-step guide for AI governance leads."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Breadcrumb ───────────────────────────────────────────────── */
+      .breadcrumb {
+        font-size: var(--text-xs);
+        color: rgba(255,255,255,0.7);
+        margin-bottom: var(--sp-4);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+      }
+      .breadcrumb a { color: rgba(255,255,255,0.7); text-decoration: none; opacity: 0.75; }
+      .breadcrumb a:hover { opacity: 1; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+
+      /* ── Audience badge ───────────────────────────────────────────── */
+      .audience-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-3);
+        background: rgba(59, 130, 246, 0.15);
+        border: 1px solid rgba(59, 130, 246, 0.35);
+        border-radius: var(--radius);
+        padding: var(--sp-2) var(--sp-4);
+        margin-top: var(--sp-5);
+        flex-wrap: wrap;
+      }
+      .audience-badge__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #93c5fd;
+      }
+      .audience-badge__text {
+        font-size: var(--text-sm);
+        color: #bfdbfe;
+      }
+
+      /* ── Intro box ────────────────────────────────────────────────── */
+      .intro-box {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-6) var(--sp-8);
+        margin-bottom: var(--sp-10);
+      }
+      .intro-box p {
+        font-size: var(--text-base);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+      }
+      .intro-box p:last-child { margin-bottom: 0; }
+
+      /* ── Step card ────────────────────────────────────────────────── */
+      .step-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        overflow: hidden;
+        margin-bottom: var(--sp-6);
+      }
+      .step-card__header {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-4);
+        padding: var(--sp-5) var(--sp-6);
+        background: var(--slate-50);
+        border-bottom: 1px solid var(--slate-100);
+      }
+      .step-num {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #1e3a8a;
+        color: #fff;
+        font-size: var(--text-sm);
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .step-card__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-800);
+        letter-spacing: -0.01em;
+      }
+      .step-card__body {
+        padding: var(--sp-6) var(--sp-8);
+      }
+      .step-card__body p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-4);
+      }
+      .step-card__body p:last-child { margin-bottom: 0; }
+      .step-card__body strong { color: var(--slate-800); }
+
+      /* ── Action table ─────────────────────────────────────────────── */
+      .action-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin-top: var(--sp-4);
+        margin-bottom: var(--sp-4);
+      }
+      .action-table th {
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        padding: var(--sp-2) var(--sp-3);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .action-table td {
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-600);
+        vertical-align: top;
+      }
+      .action-table tr:last-child td { border-bottom: none; }
+      .action-table td:first-child {
+        font-weight: 700;
+        color: var(--slate-800);
+        white-space: nowrap;
+        width: 200px;
+      }
+      .control-ref {
+        font-family: ui-monospace, monospace;
+        font-size: 0.7rem;
+        background: #dbeafe;
+        color: #1e3a8a;
+        padding: 2px 6px;
+        border-radius: 3px;
+        border: 1px solid #93c5fd;
+        white-space: nowrap;
+      }
+
+      /* ── Callout ──────────────────────────────────────────────────── */
+      .callout {
+        border-radius: var(--radius-lg);
+        padding: var(--sp-4) var(--sp-6);
+        margin: var(--sp-5) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
+      }
+      .callout--blue {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #1e40af;
+      }
+      .callout--amber {
+        background: #fffbeb;
+        border: 1px solid #fbbf24;
+        color: #92400e;
+      }
+      .callout__label {
+        font-weight: 700;
+        font-size: var(--text-xs);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: var(--sp-1);
+      }
+      .callout--blue  .callout__label { color: #1e3a8a; }
+      .callout--amber .callout__label { color: #78350f; }
+
+      /* ── Tier table ───────────────────────────────────────────────── */
+      .tier-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin: var(--sp-4) 0;
+      }
+      .tier-table th {
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        padding: var(--sp-2) var(--sp-3);
+        border-bottom: 2px solid var(--slate-200);
+      }
+      .tier-table td {
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-600);
+        vertical-align: top;
+      }
+      .tier-table tr:last-child td { border-bottom: none; }
+      .tier-table td:first-child { font-weight: 700; color: var(--slate-800); }
+
+      /* ── Workpaper row ────────────────────────────────────────────── */
+      .workpaper-dl {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-5);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+        margin-bottom: var(--sp-4);
+      }
+      .workpaper-dl__icon {
+        width: 44px;
+        height: 44px;
+        background: var(--cosai-blue-light);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .workpaper-dl__icon svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--cosai-blue);
+        fill: none;
+        stroke-width: 1.75;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .workpaper-dl__text { flex: 1; }
+      .workpaper-dl__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 2px;
+      }
+      .workpaper-dl__meta {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+    <site-nav current="industries"></site-nav>
+
+    <header class="page-hero" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #1d4ed8 100%);">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <a href="/insurance/">Insurance</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span>How to use</span>
+        </nav>
+        <span class="page-hero__eyebrow">Practitioners guide · Market conduct exam readiness</span>
+        <h1 class="page-hero__title">How to use the insurance controls schema</h1>
+        <p class="page-hero__lede">
+          A five-step workflow for AI governance leads preparing for a NAIC market conduct exam
+          and the Colorado Regulation 10-1-1 framework-availability obligation. Start at step 1
+          if you are configuring from scratch; jump to step 5 if you have a running schema and
+          need to assemble the exam evidence package.
+        </p>
+        <div class="audience-badge">
+          <span class="audience-badge__label">Audience</span>
+          <span class="audience-badge__text">Chief compliance officer, AI governance lead, actuarial review function, market conduct exam counsel</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <!-- Status notice -->
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:32px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+        extension of the CoSAI Shared Responsibility Framework, developed independently to
+        demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
+        by CoSAI, the NAIC, or any regulator. Regulatory section references are marked TBD
+        where verification against source documents is required.
+      </div>
+
+      <!-- Intro -->
+      <div class="intro-box">
+        <p>
+          The NAIC Model Bulletin requires a written AIS Program but prescribes no implementation
+          schema. Colorado's amended Regulation 10-1-1 requires the entire governance framework
+          to be available to the Division of Insurance on request from July 1, 2026. The NAIC AI
+          Systems Evaluation Tool gives examiners a structured review framework, but insurers
+          have had no control-by-control counterpart to map against.
+        </p>
+        <p>
+          This schema provides that counterpart: 40 controls with named accountable personas,
+          measurable thresholds, and OCSF-compatible evidence pointers. These five steps walk
+          you through applying it to your organization.
+        </p>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="step-card">
+        <div class="step-card__header">
+          <div class="step-num" aria-hidden="true">1</div>
+          <div class="step-card__title">Classify lines of business and regulatory scope</div>
+        </div>
+        <div class="step-card__body">
+          <p>
+            Before selecting controls, establish which regulatory regimes apply. Not all controls
+            apply to all lines of business, and the tier parameters you set in step 4 depend on
+            consumer impact by line.
+          </p>
+
+          <table class="action-table" aria-label="Regulatory scope by line of business">
+            <thead>
+              <tr>
+                <th>Line of business</th>
+                <th>Applicable regime</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Life insurance (all states)</td>
+                <td>NAIC Model Bulletin (where adopted). Colorado original Reg 10-1-1 (effective November 14, 2023). EU AI Act Annex III high-risk if EU exposure.</td>
+              </tr>
+              <tr>
+                <td>Private passenger auto (CO)</td>
+                <td>NAIC Model Bulletin. Colorado amended Reg 10-1-1 (effective October 15, 2025). Framework availability deadline: July 1, 2026. <span class="control-ref">SRF-L1-DEV-005</span> is zero-tolerance.</td>
+              </tr>
+              <tr>
+                <td>Health benefit plans (CO)</td>
+                <td>NAIC Model Bulletin. Colorado amended Reg 10-1-1 (effective October 15, 2025). Same July 1, 2026 availability deadline. EU AI Act if EU exposure.</td>
+              </tr>
+              <tr>
+                <td>All lines (NY-licensed)</td>
+                <td>NYDFS Circular Letter No. 7 (July 2024) adds governance, fairness analysis, and senior management accountability obligations for underwriting and pricing AI.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout--amber">
+            <div class="callout__label">Colorado July 1, 2026</div>
+            Auto and health benefit insurers writing business in Colorado must have their complete
+            governance framework available to the Division of Insurance on request from that date.
+            If you write those lines in Colorado, <span class="control-ref">SRF-L1-DEV-005</span>
+            is a zero-tolerance control with immediate escalation on breach. Confirm your readiness
+            now; the deadline is weeks away as of this writing.
+          </div>
+
+          <p>
+            Output from this step: a scope matrix listing lines of business, applicable regulatory
+            regimes, and the subset of controls that carry zero-tolerance status for your book.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-card">
+        <div class="step-card__header">
+          <div class="step-num" aria-hidden="true">2</div>
+          <div class="step-card__title">Select operating model for each AI system</div>
+        </div>
+        <div class="step-card__body">
+          <p>
+            Each AI system in your inventory must be assigned to one of the four operating models.
+            The operating model determines which controls apply and which do not. Insurance has a
+            distinctive model not found in banking: Vendor-Model, covering third-party predictive
+            models and ECDIS vendors.
+          </p>
+
+          <table class="action-table" aria-label="Operating model definitions">
+            <thead>
+              <tr>
+                <th>Operating model</th>
+                <th>Description and examples</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>AI-SaaS</td>
+                <td>Turnkey AI application delivered as a service. The insurer configures and operates it but does not train or host the model. Example: a claims triage SaaS platform.</td>
+              </tr>
+              <tr>
+                <td>AI-PaaS</td>
+                <td>AI platform on which the insurer builds and trains its own models. Example: an MLOps platform used to develop proprietary underwriting models.</td>
+              </tr>
+              <tr>
+                <td>Agent-Ops</td>
+                <td>Agentic AI workflows with tool use, multi-step reasoning, or autonomous action. Example: an AI agent handling first-notice-of-loss intake and claims routing.</td>
+              </tr>
+              <tr>
+                <td>Vendor-Model</td>
+                <td>Third-party predictive model or ECDIS vendor whose output is used in underwriting, rating, or claims. The NAIC Model Bulletin holds insurers accountable for these. Example: a bureau loss cost model, a credit-based insurance score, or a telematics scoring engine.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout--blue">
+            <div class="callout__label">Vendor-Model is the key insurance-specific model</div>
+            Most of your third-party model and ECDIS obligations land on the Vendor-Model operating
+            model. Controls
+            <span class="control-ref">SRF-L1-DEV-003</span>,
+            <span class="control-ref">SRF-L2-DEV-001</span>,
+            <span class="control-ref">SRF-L5-TPO-001</span>, and the full L5 layer apply to
+            Vendor-Model. If you use bureau models, credit-based scores, or telematics scoring
+            as inputs to underwriting or rating, those relationships need a due-diligence
+            evidence package per <span class="control-ref">SRF-L5-TPO-001</span>.
+          </div>
+
+          <p>
+            Output from this step: each AI system in your inventory tagged with its operating model.
+            Feed this into the next step to identify the accountable persona for each control.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-card">
+        <div class="step-card__header">
+          <div class="step-num" aria-hidden="true">3</div>
+          <div class="step-card__title">Map personas to accountable officers</div>
+        </div>
+        <div class="step-card__body">
+          <p>
+            Each control names one accountable persona. Personas are abstract roles in the SRF.
+            Your task is to map each persona to a named officer or function in your organization.
+            The NAIC Model Bulletin requires a named senior officer for the AIS Program
+            (<span class="control-ref">SRF-L1-MON-002</span>); that officer should also anchor
+            the L1 persona mapping.
+          </p>
+
+          <table class="action-table" aria-label="Persona to organizational function mapping">
+            <thead>
+              <tr>
+                <th>SRF persona</th>
+                <th>Typical insurance mapping</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ai-system-governance</code></td>
+                <td>Chief Compliance Officer (CCO) or Chief Risk Officer (CRO) designated as AIS Program owner. All L1 controls are accountable to this persona.</td>
+              </tr>
+              <tr>
+                <td><code>data-provider</code></td>
+                <td>Chief Actuary or Actuarial Data Science lead responsible for training data governance, ECDIS sourcing, and PSI monitoring. All L2 controls.</td>
+              </tr>
+              <tr>
+                <td><code>application-developer</code></td>
+                <td>AI/ML Engineering or InsurTech development team responsible for the application layer: explanation coverage, human review gates, fairness testing. All L3 controls.</td>
+              </tr>
+              <tr>
+                <td><code>ai-platform-provider</code></td>
+                <td>Infrastructure Security or Platform Engineering team responsible for model gateways, encryption, audit logging, and anomaly detection. All L4 controls. May be an external cloud provider for AI-SaaS deployments.</td>
+              </tr>
+              <tr>
+                <td><code>model-provider</code></td>
+                <td>Vendor AI model supplier (for Vendor-Model) or internal model development team (for AI-PaaS). All L5 controls. For vendor models, the insurer remains accountable for due diligence even though the provider supplies the artifacts.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>
+            Output from this step: a persona mapping table signed off by each named officer,
+            retained in your AIS Program documentation. This table is a primary exam artifact
+            for the governance and accountability dimensions of the NAIC Evaluation Tool.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step-card">
+        <div class="step-card__header">
+          <div class="step-num" aria-hidden="true">4</div>
+          <div class="step-card__title">Set tier parameters by line of business and consumer impact</div>
+        </div>
+        <div class="step-card__body">
+          <p>
+            Tier-configurable controls carry a parameter name in the threshold (e.g.,
+            <code>TIER_PSI_DRIFT_THRESHOLD</code>). Your organization sets the numeric value
+            for that parameter. Insurance tiering is by line of business and consumer impact
+            level, not by bank-style materiality. Higher consumer impact means tighter thresholds
+            and shorter monitoring windows.
+          </p>
+
+          <table class="tier-table" aria-label="Consumer impact tier guidance">
+            <thead>
+              <tr>
+                <th>Impact tier</th>
+                <th>Line examples</th>
+                <th>Guidance</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>High</td>
+                <td>Health benefit plans, life insurance, disability income</td>
+                <td>Tightest thresholds. Fairness testing quarterly or more frequently. PSI drift window monthly. Adverse impact ratio minimum at or above 0.85.</td>
+              </tr>
+              <tr>
+                <td>Medium</td>
+                <td>Private passenger auto, homeowners</td>
+                <td>Standard thresholds. Fairness testing semi-annually. PSI drift window monthly. Adverse impact ratio minimum at or above 0.80 (4/5ths rule).</td>
+              </tr>
+              <tr>
+                <td>Lower</td>
+                <td>Commercial lines, specialty, reinsurance</td>
+                <td>Relaxed thresholds where no individual consumer is directly impacted. Fairness testing annually. PSI drift window quarterly.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>
+            Key parameters to configure: PSI drift threshold
+            (<span class="control-ref">SRF-L2-MON-001</span>), adverse impact ratio minimum
+            (<span class="control-ref">SRF-L3-MON-001</span>), audit log completeness percentage
+            (<span class="control-ref">SRF-L4-MON-002</span>), and vendor disclosure SLA windows
+            (<span class="control-ref">SRF-L5-MON-001</span>, <span class="control-ref">SRF-L5-MON-002</span>).
+          </p>
+
+          <div class="callout callout--blue">
+            <div class="callout__label">Note on a life quantitative testing regulation</div>
+            A separate Colorado regulation proposing quantitative testing standards for life
+            insurance AI was in draft as of this writing. Controls referencing testing thresholds
+            for life lines should be treated as TBD pending that regulation's finalization.
+            Watch for updates and revise your tier parameters accordingly.
+          </div>
+
+          <p>
+            Output from this step: a tier parameter register documenting each configurable
+            parameter, its value, the line of business it applies to, the rationale for the
+            chosen value, and the officer who approved it. This register is a required component
+            of the exam readiness package assembled in step 5.
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step-card">
+        <div class="step-card__header">
+          <div class="step-num" aria-hidden="true">5</div>
+          <div class="step-card__title">Assemble the exam-ready evidence package</div>
+        </div>
+        <div class="step-card__body">
+          <p>
+            The NAIC AI Systems Evaluation Tool gives examiners a structured framework to review
+            insurer AI governance. Your evidence package maps each examiner dimension to the
+            controls and artifacts that satisfy it. Assembling this package before the exam
+            is the difference between a manageable review and a protracted information request.
+          </p>
+
+          <p>
+            <strong>Package components:</strong> Start with these four workstreams, then cross-reference
+            the control IDs in each.
+          </p>
+
+          <table class="action-table" aria-label="Exam evidence package components">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Controls covered</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Governance artifacts</td>
+                <td>
+                  AIS Program with board approval
+                  (<span class="control-ref">SRF-L1-DEV-001</span>),
+                  senior officer designation
+                  (<span class="control-ref">SRF-L1-MON-002</span>),
+                  AI system inventory
+                  (<span class="control-ref">SRF-L1-DEV-002</span>),
+                  third-party vendor register
+                  (<span class="control-ref">SRF-L1-DEV-003</span>),
+                  adverse-decision appeal process
+                  (<span class="control-ref">SRF-L1-DEV-004</span>),
+                  Colorado framework availability readiness
+                  (<span class="control-ref">SRF-L1-DEV-005</span>).
+                </td>
+              </tr>
+              <tr>
+                <td>Tier parameters and persona mapping</td>
+                <td>
+                  The tier parameter register from step 4, signed off by the accountable officer.
+                  The persona mapping table from step 3. These demonstrate that controls are
+                  configured, not just declared.
+                </td>
+              </tr>
+              <tr>
+                <td>Model documentation per system</td>
+                <td>
+                  For each production AI system: model card
+                  (<span class="control-ref">SRF-L5-DEV-001</span>),
+                  independent validation report
+                  (<span class="control-ref">SRF-L5-VAL-002</span>),
+                  pre-deployment fairness evaluation
+                  (<span class="control-ref">SRF-L5-VAL-001</span>),
+                  explainability validation
+                  (<span class="control-ref">SRF-L3-VAL-003</span>),
+                  ECDIS permissible-purpose determination
+                  (<span class="control-ref">SRF-L2-DEV-001</span>),
+                  proxy variable screen
+                  (<span class="control-ref">SRF-L2-DEV-002</span>).
+                </td>
+              </tr>
+              <tr>
+                <td>Ongoing monitoring evidence log</td>
+                <td>
+                  Last 12 months of PSI drift results
+                  (<span class="control-ref">SRF-L2-MON-001</span>),
+                  fairness outcome testing results
+                  (<span class="control-ref">SRF-L3-MON-001</span>),
+                  audit log completeness metrics
+                  (<span class="control-ref">SRF-L4-MON-002</span>),
+                  and adverse action explanation coverage rates
+                  (<span class="control-ref">SRF-L3-VAL-001</span>).
+                  For vendor models: evidence of performance disclosure SLA compliance
+                  (<span class="control-ref">SRF-L5-MON-001</span>).
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="callout callout--blue">
+            <div class="callout__label">Vendor model due diligence</div>
+            For each third-party AI model in scope, the complete due-diligence evidence package
+            (<span class="control-ref">SRF-L5-TPO-001</span>) is a stand-alone exhibit in the
+            exam package. Examiners applying the NAIC Evaluation Tool will specifically assess
+            whether the insurer has documented oversight of vendor AI, not just the vendor's
+            self-attestation. Your package must demonstrate that the insurer reviewed and
+            retained the required artifacts.
+          </div>
+
+          <p>
+            Output from this step: a complete, indexed evidence package ready for production to
+            the NAIC exam team or the Colorado Division of Insurance. The package index should
+            cross-reference each evaluation tool dimension to the specific artifacts and control
+            IDs that satisfy it, making the examiner's review straightforward.
+          </p>
+
+          <!-- Workpaper download -->
+          <div class="workpaper-dl" role="region" aria-label="Exam-readiness workpaper download">
+            <div class="workpaper-dl__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 18 15 15"/>
+              </svg>
+            </div>
+            <div class="workpaper-dl__text">
+              <p class="workpaper-dl__name">Exam-readiness workpaper</p>
+              <p class="workpaper-dl__meta">
+                XLSX · Generated from insurance-controls.json · Includes Instructions,
+                Tier Parameters, Persona Mapping, and Exam Evidence Log
+              </p>
+            </div>
+            <a
+              href="/insurance/how-to/insurance-exam-workpaper.xlsx"
+              class="btn"
+              download
+              aria-label="Download insurance exam-readiness workpaper (XLSX)"
+            >
+              Download workpaper
+            </a>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

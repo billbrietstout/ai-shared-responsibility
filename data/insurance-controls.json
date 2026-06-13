@@ -1,0 +1,1337 @@
+{
+  "schema_version": "0.1",
+  "srf_version": "1.0",
+  "industry": "insurance",
+  "description": "Insurance-sector control schema for the CoSAI AI Shared Responsibility Framework. Maps SRF layers and accountable personas to NAIC Model Bulletin AIS Program requirements, NAIC AI Systems Evaluation Tool dimensions, Colorado Regulation 10-1-1 (3 CCR 702-10), NYDFS Circular Letter No. 7, EU AI Act articles, and OWASP LLM Top 10.",
+  "regulatory_context": "The NAIC Model Bulletin on the Use of AI Systems (December 2023) requires a written AIS Program covering governance, risk management, internal controls, and third-party AI oversight but prescribes no control catalog. Colorado Regulation 10-1-1 (amended effective October 15, 2025) extends ECDIS governance to private passenger auto and health benefit insurers, with governance frameworks due on request from July 1, 2026. The NAIC AI Systems Evaluation Tool multistate pilot (January to September 2026, twelve states) gives examiners a standardized review framework for market conduct exams. This schema operationalizes those requirements with named accountable personas, measurable thresholds, and machine-readable evidence.",
+  "id_convention": "SRF-{layer}-{stage: DEV|VAL|MON|TPO}-{seq}",
+  "mapping_status_note": "NAIC Model Bulletin section references, NAIC Evaluation Tool dimension names, and regulatory citation IDs marked TBD require verification against final NAIC publications and the live pilot materials before publishing. Do not substitute invented IDs.",
+  "generated": "2026-06-12",
+  "lifecycle_stages": ["design-development", "validation-testing", "ongoing-monitoring", "third-party-oversight"],
+  "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+  "controls": [
+
+    {
+      "id": "SRF-L1-DEV-001",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "AIS Program Document Currency and Board Approval",
+      "description": "The insurer must maintain a written AI Systems (AIS) Program approved by the board or a designated senior executive. The program must cover governance structure, risk management framework, internal controls, and third-party AI oversight. It must be reviewed and reapproved on the cadence defined in SRF-L1-MON-001 and be available to the regulator on request per CO Regulation 10-1-1.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin on the Use of AI Systems (Dec 2023) Section III (AIS Program requirements); verify section references against bulletin text at content.naic.org",
+        "naic_eval_tool": "TBD: NAIC AI Systems Evaluation Tool governance dimension; verify dimension names against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 Section 3 (governance framework); verify against amended regulation text effective Oct 15, 2025",
+        "nydfs_cl7": "TBD: NYDFS Circular Letter No. 7 (July 2024) Section II (governance framework requirements); verify section references",
+        "eu_ai_act": "TBD: Art. 9 (risk management system); Art. 17 (quality management system)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ais_program_board_approved",
+        "description": "Binary: a written AIS Program exists, carries board or executive approval dated within the prior review cycle, and covers all four required areas.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. AIS Program approval is a governance record, not streaming telemetry. Store as a versioned policy document with board approval metadata. Candidate OCSF class: audit_activity (3002) if the document management system emits approval events to SIEM.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "escalate-to-board; notify-chief-compliance-officer; block-new-ai-system-deployment"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DEV-002",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "AI System Inventory Coverage",
+      "description": "The insurer must maintain a current inventory of all AI systems in use across all lines of business covered by the AIS Program. The inventory must record system name, vendor (if third-party), line of business, risk tier, accountable officer, and deployment date. Coverage is defined as the percentage of known production AI systems appearing in the inventory.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (inventory of AI systems as component of AIS Program)",
+        "naic_eval_tool": "TBD: verify against pilot evaluation tool dimensions",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (governance framework availability); verify section references",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 17 (quality management system; inventory of high-risk systems)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ai_system_inventory_coverage_pct",
+        "description": "Percentage of known production AI systems appearing in the current inventory. Tier-configurable; recommended minimum 95%.",
+        "evidence": {
+          "ocsf_class": "Document management artifact at L1. Continuous coverage tracking can use api_activity (6003) if the inventory system exposes an API that logs registration events to SIEM.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_AI_INVENTORY_COVERAGE_PCT",
+        "param_type": "tier-configurable",
+        "window": "quarterly",
+        "breach_action": "identify-unregistered-systems; suspend-unregistered-ai-deployments; report-to-chief-compliance-officer"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DEV-003",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+      "description": "The insurer must maintain a register of all third-party AI vendors whose systems are used in underwriting, rating, claims, or consumer-facing workflows. Each vendor entry must name the insurer-side accountable officer responsible for oversight of that vendor relationship, consistent with the NAIC Model Bulletin's third-party oversight requirements.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (third-party AI oversight; vendor accountability)",
+        "naic_eval_tool": "TBD: verify third-party oversight dimension in pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (third-party risk management as component of governance framework)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 Section III (governance and accountability for external data and AI tools)",
+        "eu_ai_act": "TBD: Art. 25 (obligations of deployers); Art. 28 (obligations of third-party providers)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "vendor_register_accountable_officer_coverage",
+        "description": "Binary: a third-party AI vendor register exists, every vendor entry names an accountable officer, and the register was reviewed within the prior review cycle.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Vendor register is a governance record. Candidate: audit_activity (3002) if vendor management platform emits change events.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "identify-vendors-without-accountable-officer; freeze-new-vendor-onboarding; escalate-to-chief-risk-officer"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DEV-004",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Adverse-Decision Appeal Process Documentation",
+      "description": "The insurer must document and publish (internally and, where required, to consumers) a process by which consumers can appeal or seek human review of adverse decisions made with AI assistance, including coverage denials, premium increases, and claims denials. The process must name the accountable function, specify the review timeline, and comply with applicable state requirements.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (consumer protection obligations; internal controls)",
+        "naic_eval_tool": "TBD: verify against consumer protection dimension in pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (risk management framework; consumer impact)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (consumer disclosure and recourse obligations)",
+        "eu_ai_act": "TBD: Art. 86 (right of explanation for decisions made by high-risk AI systems)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "adverse_decision_appeal_process_documented",
+        "description": "Binary: documented appeal process exists, names the accountable function, specifies the review timeline, and has been reviewed by legal and compliance within the prior annual cycle.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Candidate: audit_activity (3002) for policy publication events.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "escalate-to-chief-compliance-officer; halt-AI-assisted-adverse-decisions-pending-remediation"
+      }
+    },
+
+    {
+      "id": "SRF-L1-DEV-005",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Governance Framework Availability Readiness for CO Regulation 10-1-1",
+      "description": "Insurers writing private passenger auto or health benefit plans in Colorado must have their complete AI governance structure and risk management framework available to the Division of Insurance on request from July 1, 2026. This control verifies that the framework package (AIS Program, system inventory, risk assessments, audit logs) is assembled, current, and accessible within the required response window.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "N/A",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 Section 5 (availability of governance framework to the Division on request; effective July 1, 2026 for auto and health benefit lines); verify section references against amended regulation text",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "N/A",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "co_framework_package_availability_ready",
+        "description": "Zero-tolerance: the governance framework package is assembled and can be produced to the Colorado Division of Insurance within the regulatory response window. Failure means the insurer cannot demonstrate compliance on request.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Readiness is a procedural verification, not streaming telemetry.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "immediate-escalation-to-general-counsel; suspend-AI-use-in-CO-auto-and-health-lines-pending-remediation"
+      }
+    },
+
+    {
+      "id": "SRF-L1-MON-001",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "AI Risk Appetite Statement Review Cadence",
+      "description": "The insurer must maintain a board-approved AI risk appetite statement that names a specific senior executive accountable for AI risk. The statement must define risk tolerance thresholds by line of business and operating model and must be reviewed and reapproved on the cadence defined here. Significant changes in AI system scope or a material market conduct exam finding trigger an out-of-cycle review.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (governance structure; senior management accountability)",
+        "naic_eval_tool": "TBD: governance dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (governance framework review requirements)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (senior management and board accountability)",
+        "eu_ai_act": "N/A",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "risk_appetite_statement_reviewed",
+        "description": "Binary: board-approved AI risk appetite statement reviewed and reapproved within the prior 12 months, and within 90 days of any material scope change.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Candidate: audit_activity (3002) for board approval events.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "12mo",
+        "breach_action": "escalate-to-board-risk-committee; flag-in-annual-compliance-report"
+      }
+    },
+
+    {
+      "id": "SRF-L1-MON-002",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Senior Management Accountability Designation for AI Governance",
+      "description": "The insurer must designate a named senior officer accountable for the AIS Program, with documented authority, responsibilities, and reporting line. The designation must be reviewed annually and updated within 30 days of any change in the responsible officer.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (senior management accountability; AIS Program governance)",
+        "naic_eval_tool": "TBD: verify governance accountability dimension",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (governance structure; accountable officer requirement)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (board and senior management oversight obligations)",
+        "eu_ai_act": "N/A",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "senior_officer_designation_current",
+        "description": "Binary: a named senior officer designation exists, is current (updated within 30 days of any change), and is included in the AIS Program.",
+        "evidence": {
+          "ocsf_class": "Document management artifact.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "escalate-to-board; flag-for-regulatory-disclosure"
+      }
+    },
+
+    {
+      "id": "SRF-L1-TPO-001",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Third-Party AIS Program Alignment Review",
+      "description": "The insurer must annually review each third-party AI vendor's AIS Program (or equivalent governance documentation) to confirm it meets or exceeds the insurer's own standards. The review must be documented, findings tracked to resolution, and results factored into vendor risk ratings. Insurers remain accountable for vendor AI outcomes under the NAIC Model Bulletin.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "third-party-oversight",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (insurer accountability for third-party AI; vendor oversight obligations)",
+        "naic_eval_tool": "TBD: third-party oversight dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (third-party risk management as component of governance framework)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (oversight of external data sources and AI vendors)",
+        "eu_ai_act": "TBD: Art. 28 (obligations of providers placing AI systems on market through third parties)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "vendor_ais_program_review_completed",
+        "description": "Binary: annual governance review completed for each in-scope third-party AI vendor, findings documented, and results incorporated into vendor risk ratings.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Vendor review findings are governance records.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "12mo",
+        "breach_action": "escalate-to-chief-risk-officer; freeze-new-vendor-deployments; initiate-remediation-plan"
+      }
+    },
+
+    {
+      "id": "SRF-L1-TPO-002",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Market Conduct Exam Readiness Documentation Package",
+      "description": "The insurer must maintain a documentation package structured for market conduct exam review, covering governance, risk management, internal controls, and third-party oversight dimensions as reflected in the NAIC AI Systems Evaluation Tool. The package must be current, indexed, and producible within the insurer's exam response SLA.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "third-party-oversight",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin (all sections; program documentation requirements)",
+        "naic_eval_tool": "TBD: all evaluation tool dimensions; verify dimension names against NAIC pilot materials before crosswalking",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (framework availability on request)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "N/A",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "exam_readiness_package_current",
+        "description": "Binary: documentation package exists, covers all NAIC Evaluation Tool dimensions, is indexed, and was reviewed within the prior 6 months.",
+        "evidence": {
+          "ocsf_class": "Document management artifact.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "6mo",
+        "breach_action": "escalate-to-general-counsel; convene-exam-readiness-task-force"
+      }
+    },
+
+    {
+      "id": "SRF-L2-DEV-001",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "ECDIS Source Documentation and Permissible-Purpose Verification",
+      "description": "Any external consumer data or information source (ECDIS) used in underwriting, rating, or claims decisions must be documented with its source, data type, intended use, and a written permissible-purpose determination. Proxy variable screening per SRF-L2-DEV-002 must be completed before deployment. This control is the data-layer counterpart to the adverse-action explanation obligation in SRF-L3-VAL-001.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section II (ECDIS definition and governance obligations)",
+        "naic_eval_tool": "TBD: data governance dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (ECDIS governance; permissible use requirements for auto and health lines)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 Section II (external consumer data governance; fairness obligations)",
+        "eu_ai_act": "TBD: Art. 10 (data governance for high-risk AI systems)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ecdis_permissible_purpose_documented",
+        "description": "Zero-tolerance: no ECDIS source may be used in production without a documented permissible-purpose determination and completed proxy screening.",
+        "evidence": {
+          "ocsf_class": "Document management artifact for permissible-purpose determination. Data pipeline events: api_activity (6003) for ECDIS API calls, with source identifier as a tracked attribute.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "zero-tolerance",
+        "window": "per-deployment",
+        "breach_action": "suspend-ECDIS-source-from-production; escalate-to-chief-compliance-officer; initiate-permissible-purpose-review"
+      }
+    },
+
+    {
+      "id": "SRF-L2-DEV-002",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "Protected-Class Proxy Variable Screening",
+      "description": "Before any model or ECDIS source is deployed in underwriting, rating, or claims, the data-provider must complete a documented proxy variable screen to identify variables that may serve as proxies for race, color, national origin, religion, sex, marital status, or other protected characteristics. Identified proxy variables must be reviewed by the accountable officer and either removed or subject to a documented fairness mitigation plan.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section II (unfair discrimination prohibition; ECDIS governance)",
+        "naic_eval_tool": "TBD: fairness and discrimination dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (proxy variable governance for auto and health lines)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (proxy variable prohibition; fairness analysis obligations)",
+        "eu_ai_act": "TBD: Art. 10 (data governance; prohibition on discriminatory data processing for high-risk AI)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "proxy_variable_screen_completed",
+        "description": "Zero-tolerance: no model or ECDIS source may enter production without a completed and documented proxy variable screen, reviewed and signed off by the accountable officer.",
+        "evidence": {
+          "ocsf_class": "Document management artifact for screen results. Candidate: audit_activity (3002) if the model validation platform logs screening completion events.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "zero-tolerance",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; escalate-to-chief-compliance-officer; initiate-proxy-variable-remediation"
+      }
+    },
+
+    {
+      "id": "SRF-L2-DEV-003",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "Training Data Representativeness by Line of Business",
+      "description": "Training datasets for models used in underwriting, rating, or claims must be assessed for demographic and geographic representativeness relative to the insurer's book of business and the applicable line of business. Representativeness gaps must be documented and addressed in the model validation plan. This control applies to internally trained models and to vendor model evaluations under SRF-L5-VAL-001.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section II (fairness in model development)",
+        "naic_eval_tool": "TBD: data quality and representativeness dimension",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (risk management framework; fairness obligations)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (training data governance; representativeness requirements)",
+        "eu_ai_act": "TBD: Art. 10 (training data requirements for high-risk AI systems)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "training_data_representativeness_documented",
+        "description": "Binary: representativeness assessment completed and documented before model deployment, with findings incorporated into the model validation plan.",
+        "evidence": {
+          "ocsf_class": "Document management artifact for representativeness assessment. Candidate: security_finding (2001) if model monitoring platform emits data quality findings.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; document-representativeness-gap; initiate-data-remediation-or-scope-restriction"
+      }
+    },
+
+    {
+      "id": "SRF-L2-VAL-001",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "External Data Source Permissible Use Audit",
+      "description": "Before production deployment, all external data sources must undergo a permissible-use audit confirming that each source's terms of use, data license, and applicable regulatory permissions cover the intended insurance use case. The audit result must be retained in the model documentation package.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "validation-testing",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section II (ECDIS source governance; permissible use)",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (data source governance)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 Section II (external data governance and permissible use)",
+        "eu_ai_act": "TBD: Art. 10 (data governance for high-risk AI)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "external_data_permissible_use_audited",
+        "description": "Binary: permissible-use audit completed for all external data sources in the deployment package before production go-live.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Audit results are governance records.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; escalate-to-legal; remove-unaudited-data-sources"
+      }
+    },
+
+    {
+      "id": "SRF-L2-MON-001",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "Input Drift Monitoring via Population Stability Index",
+      "description": "For each model in production use, the data-provider or model operator must monitor the distribution of input variables against the training baseline using the Population Stability Index (PSI) or an equivalent statistical measure. Drift beyond the tier-configurable threshold triggers model review. This control is the data-layer counterpart to the performance disclosure obligation in SRF-L5-MON-001.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (ongoing model monitoring obligations)",
+        "naic_eval_tool": "TBD: model performance monitoring dimension",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (risk management framework; ongoing monitoring)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 72 (post-market monitoring; performance drift reporting)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "input_psi_max",
+        "description": "Maximum PSI across monitored input variables in the current monitoring window. Tier-configurable; recommended threshold: PSI < 0.2 for stable, 0.2-0.25 for minor drift requiring review, > 0.25 for significant drift requiring model review.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004): AI monitoring platform emits drift findings when PSI exceeds threshold. Attributes: finding.title = 'input_drift'; analytic.type = 'statistical'; severity_id based on PSI band.",
+          "attribute": "finding.title == 'input_drift' AND analytic.type == 'statistical'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<",
+        "param": "TIER_PSI_DRIFT_THRESHOLD",
+        "param_type": "tier-configurable",
+        "window": "monthly",
+        "breach_action": "trigger-model-review; notify-model-owner; escalate-to-chief-actuary-if-drift-persists-two-cycles"
+      }
+    },
+
+    {
+      "id": "SRF-L2-MON-002",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "Consumer Data Minimization in Agent Context Stores",
+      "description": "Agentic AI systems used in claims, underwriting, or customer service must enforce data minimization in context stores and retrieval-augmented generation (RAG) pipelines. Consumer PII and sensitive insurance data retained in agent context must be scoped to the current session and purged within the configured retention window. Persistent cross-session consumer profiles must not be built without explicit authorization.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["Agent-Ops"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "N/A",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (data governance; consumer data handling)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 10 (data minimization for high-risk AI); GDPR Art. 5(1)(c) where applicable",
+        "owasp_llm": "TBD: LLM06 (Sensitive Information Disclosure); verify current OWASP LLM Top 10 numbering"
+      },
+      "threshold": {
+        "metric": "agent_context_pii_retention_violation_count",
+        "description": "Zero-tolerance: no consumer PII or sensitive insurance data retained in agent context stores beyond the configured session retention window without explicit authorization.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): data loss prevention or context store audit system emits findings when PII retention exceeds configured window. Attributes: finding.type_id = data_retention_violation; data.classification = 'PII'.",
+          "attribute": "finding.type_id == 'data_retention_violation' AND data.classification == 'PII'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-session",
+        "breach_action": "purge-affected-context-stores; notify-data-privacy-officer; suspend-affected-agent-workflows-pending-investigation"
+      }
+    },
+
+    {
+      "id": "SRF-L2-MON-003",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "Algorithmic Model Input Completeness Monitoring",
+      "description": "For each model in production use, the rate of missing or null values in required input variables must be monitored against the training baseline. Sustained incompleteness above the tier-configurable threshold may indicate upstream data pipeline failure, ECDIS source degradation, or a distribution shift requiring model review.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (model performance monitoring; data quality)",
+        "naic_eval_tool": "TBD: data quality dimension",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 72 (post-market monitoring; performance indicators)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "model_input_missing_rate_pct",
+        "description": "Percentage of input records with one or more missing required variables. Tier-configurable; triggers model review when above threshold for two consecutive monitoring windows.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004): data quality monitoring platform emits findings on input completeness degradation.",
+          "attribute": "finding.title == 'input_completeness_degradation'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<",
+        "param": "TIER_INPUT_MISSING_RATE_THRESHOLD_PCT",
+        "param_type": "tier-configurable",
+        "window": "monthly",
+        "breach_action": "investigate-data-pipeline; notify-model-owner; escalate-if-persists-two-cycles"
+      }
+    },
+
+    {
+      "id": "SRF-L2-TPO-001",
+      "layer": "L2",
+      "component": "Data and Training",
+      "title": "Vendor Data Lineage Documentation",
+      "description": "Third-party AI vendors providing models or ECDIS sources must supply documented data lineage covering training data sources, data collection methods, processing steps, and retention policies. The insurer must review and retain this documentation as part of vendor onboarding and annual review under SRF-L1-TPO-001.",
+      "accountable_persona": "data-provider",
+      "operating_models": ["AI-SaaS", "Vendor-Model"],
+      "insurance_stage": "third-party-oversight",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (vendor accountability; documentation requirements)",
+        "naic_eval_tool": "TBD: third-party data governance dimension",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (third-party data governance requirements)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 Section II (external data source documentation)",
+        "eu_ai_act": "TBD: Art. 11 (technical documentation for high-risk AI including training data description)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "vendor_data_lineage_documented",
+        "description": "Binary: data lineage documentation provided by vendor, reviewed by insurer, and retained in the vendor file. Required at onboarding and refreshed at each annual review.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Vendor documentation is a governance record.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "suspend-vendor-data-source; request-documentation; escalate-to-chief-risk-officer-if-not-remediated-within-30-days"
+      }
+    },
+
+    {
+      "id": "SRF-L3-DEV-001",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Prompt Injection Defense for Consumer-Facing AI",
+      "description": "AI applications and agentic systems with consumer-facing interfaces in insurance workflows (chatbots, claims intake, policy service) must implement documented defenses against prompt injection attacks. Defenses must include input validation, output filtering, and system prompt isolation. Validation must be completed before production deployment and repeated after any significant update to the application.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-SaaS", "Agent-Ops"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "N/A",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (robustness and cybersecurity for high-risk AI systems)",
+        "owasp_llm": "TBD: LLM01 (Prompt Injection); verify current OWASP LLM Top 10 numbering and description"
+      },
+      "threshold": {
+        "metric": "prompt_injection_defense_validated",
+        "description": "Zero-tolerance: no consumer-facing AI application may enter production without documented prompt injection defense validation.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): application security testing platform emits findings for prompt injection vulnerabilities. Attribute: finding.type_id = 'prompt_injection'; status_id = 'new' for unmitigated findings.",
+          "attribute": "finding.type_id == 'prompt_injection' AND status_id == 'new'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; require-security-remediation; re-validate-before-release"
+      }
+    },
+
+    {
+      "id": "SRF-L3-DEV-002",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Agentic Task Boundary Enforcement for Claims Automation",
+      "description": "Agentic AI systems used in claims processing, settlement, or subrogation must enforce explicit task boundaries preventing the agent from taking actions outside the defined scope without human authorization. Boundary enforcement must be implemented as a technical control (not solely policy), tested before deployment, and monitored per SRF-L3-MON-002.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["Agent-Ops"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (internal controls for AI-assisted decisions; human oversight)",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 14 (human oversight obligations for high-risk AI); Art. 15 (robustness)",
+        "owasp_llm": "TBD: LLM08 (Excessive Agency); verify current OWASP LLM Top 10 numbering"
+      },
+      "threshold": {
+        "metric": "agent_boundary_enforcement_validated",
+        "description": "Zero-tolerance: no agentic claims or underwriting workflow may enter production without validated technical task boundary enforcement.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): agent boundary validation test results emitted to SIEM. Attribute: finding.type_id = 'agent_scope_violation'; status_id = 'new' for unmitigated findings.",
+          "attribute": "finding.type_id == 'agent_scope_violation' AND status_id == 'new'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; require-technical-boundary-remediation; escalate-to-chief-claims-officer"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-001",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Adverse-Action Explanation Coverage with Reason Codes",
+      "description": "Every adverse decision made with material AI assistance (coverage denial, premium increase above threshold, claims denial) must be accompanied by a documented explanation in the form of reason codes or equivalent disclosure sufficient to meet applicable state requirements. Explanation coverage must reach 100% of in-scope adverse decisions before production deployment and be maintained in ongoing monitoring.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "validation-testing",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (consumer disclosure; adverse action explanations)",
+        "naic_eval_tool": "TBD: consumer protection and transparency dimension",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (adverse action disclosure requirements for auto and health lines)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (explanation and disclosure obligations for AI-assisted decisions)",
+        "eu_ai_act": "TBD: Art. 86 (right of explanation for decisions by high-risk AI systems)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "adverse_action_explanation_coverage_pct",
+        "description": "Zero-tolerance: 100% of AI-assisted adverse decisions in scope must carry a documented explanation or reason code before deployment and in ongoing production.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003): decision logging API emits records for each adverse decision, including presence or absence of explanation payload. Missing explanation_payload triggers a security_finding (2001).",
+          "attribute": "activity_id == 'adverse_decision' AND explanation_payload != null",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "100",
+        "param_type": "zero-tolerance",
+        "window": "per-decision",
+        "breach_action": "suspend-AI-assisted-adverse-decisions; escalate-to-chief-compliance-officer; initiate-explanation-remediation"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-002",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Human Review Gate for Adverse Underwriting and Claims Decisions",
+      "description": "AI-assisted adverse decisions in underwriting and claims must route through a documented human review gate before being communicated to the consumer. The gate must be a technical control in the workflow, not solely a policy requirement. Review completion must be logged with the reviewer identity, timestamp, and outcome.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "validation-testing",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (human oversight; internal controls for AI-assisted adverse decisions)",
+        "naic_eval_tool": "TBD: human oversight dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (human oversight obligations for AI-assisted adverse decisions)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (human review requirements for AI-assisted decisions)",
+        "eu_ai_act": "TBD: Art. 14 (human oversight for high-risk AI systems)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "adverse_decision_human_review_gate_bypass_count",
+        "description": "Zero-tolerance: no adverse underwriting or claims decision generated with AI assistance may bypass the human review gate.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003): workflow system logs each adverse decision with human_review_completed flag. security_finding (2001) emitted on bypass detection.",
+          "attribute": "activity_id == 'adverse_decision' AND human_review_completed == true",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-decision",
+        "breach_action": "void-bypassed-decision; notify-affected-consumer; escalate-to-chief-claims-officer; regulatory-disclosure-assessment"
+      }
+    },
+
+    {
+      "id": "SRF-L3-VAL-003",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Explainability Validation for Rate and Underwriting Models",
+      "description": "Before deployment, rate and underwriting models must undergo explainability validation confirming that the model's decision logic can be explained to an examiner, a consumer, or a regulator at the level required by applicable state rules. Validation must use a documented methodology and produce an explainability evidence artifact retained in the model file.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "validation-testing",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section II (explainability requirements for AI-assisted decisions)",
+        "naic_eval_tool": "TBD: transparency and explainability dimension",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (explainability obligations for underwriting and pricing AI)",
+        "eu_ai_act": "TBD: Art. 13 (transparency and provision of information for high-risk AI); Art. 86",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "explainability_validation_completed",
+        "description": "Binary: explainability validation completed using a documented methodology, evidence artifact produced and retained in model file, before production deployment.",
+        "evidence": {
+          "ocsf_class": "Document management artifact for explainability evidence. Candidate: audit_activity (3002) if model validation platform logs validation completion events.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; require-explainability-validation; escalate-to-chief-actuary"
+      }
+    },
+
+    {
+      "id": "SRF-L3-MON-001",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Unfair-Discrimination Outcome Testing Cadence",
+      "description": "For each AI model or system used in underwriting, rating, or claims, the insurer must conduct outcome testing for unfair discrimination on a cadence scaled to consumer impact and line of business. Testing must assess adverse impact ratios across protected class proxies and document results. Findings above the tier-configurable threshold trigger a model review.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section II (prohibition on unfair discrimination; ongoing monitoring obligations)",
+        "naic_eval_tool": "TBD: fairness and non-discrimination dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (ongoing fairness monitoring obligations for auto and health lines)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (fairness analysis and ongoing testing obligations)",
+        "eu_ai_act": "TBD: Art. 72 (post-market monitoring; fairness indicators)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "adverse_impact_ratio_max",
+        "description": "Maximum adverse impact ratio across monitored protected-class proxies in the current testing window. Tier-configurable by line of business and consumer impact level; recommended threshold follows the 4/5ths rule (0.8 minimum ratio) as a starting point.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004): outcome testing platform emits fairness findings when adverse impact ratio breaches threshold.",
+          "attribute": "finding.title == 'adverse_impact_ratio_breach'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_ADVERSE_IMPACT_RATIO_MIN",
+        "param_type": "tier-configurable",
+        "window": "TIER_FAIRNESS_TESTING_CADENCE",
+        "breach_action": "initiate-model-review; notify-chief-compliance-officer; consider-model-suspension-pending-remediation; regulatory-disclosure-assessment"
+      }
+    },
+
+    {
+      "id": "SRF-L3-MON-002",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Consumer Complaint Monitoring for AI-Driven Decisions",
+      "description": "The insurer must monitor the volume and nature of consumer complaints related to AI-assisted underwriting, rating, and claims decisions. Complaints must be categorized by AI system, line of business, and decision type. Complaint rate trends above the tier-configurable threshold trigger a model review and must be reported to the accountable officer.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (internal controls; consumer feedback monitoring)",
+        "naic_eval_tool": "TBD: consumer protection dimension; verify against pilot materials",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 72 (post-market monitoring; user feedback and complaints)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "ai_complaint_rate_per_1000_decisions",
+        "description": "Consumer complaint rate related to AI-assisted decisions, expressed per 1,000 decisions. Tier-configurable by line of business.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004): complaint management system emits findings when complaint rate exceeds threshold for a given AI system or line of business.",
+          "attribute": "finding.title == 'ai_complaint_rate_breach'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<",
+        "param": "TIER_COMPLAINT_RATE_THRESHOLD",
+        "param_type": "tier-configurable",
+        "window": "quarterly",
+        "breach_action": "trigger-model-review; notify-accountable-officer; escalate-if-trend-continues-two-quarters"
+      }
+    },
+
+    {
+      "id": "SRF-L3-TPO-001",
+      "layer": "L3",
+      "component": "Application and Agent",
+      "title": "Vendor Application Interface Security Testing",
+      "description": "Third-party AI applications and API integrations used in insurance workflows must undergo documented security testing before integration into production systems. Testing must cover authentication, authorization, input validation, and output integrity. Test results must be retained and reviewed at each annual vendor assessment under SRF-L1-TPO-001.",
+      "accountable_persona": "application-developer",
+      "operating_models": ["AI-SaaS", "Vendor-Model"],
+      "insurance_stage": "third-party-oversight",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (third-party AI oversight; security requirements)",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (third-party security requirements)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (cybersecurity and robustness requirements for high-risk AI)",
+        "owasp_llm": "TBD: LLM01 (Prompt Injection); LLM09 (Improper Output Handling); verify current OWASP LLM Top 10 numbering"
+      },
+      "threshold": {
+        "metric": "vendor_interface_security_test_completed",
+        "description": "Binary: security test completed for the vendor application interface, results documented, and critical or high findings resolved before production integration.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): application security testing platform emits findings for vendor interface vulnerabilities.",
+          "attribute": "finding.severity_id IN ('critical','high') AND status_id == 'new'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "verification",
+        "window": "per-integration",
+        "breach_action": "block-vendor-integration; require-remediation; re-test-before-release"
+      }
+    },
+
+    {
+      "id": "SRF-L4-DEV-001",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Model Gateway Authentication Configuration",
+      "description": "Every model API gateway used to serve AI models in insurance workflows must enforce mutual TLS or equivalent strong authentication. Unauthenticated or weakly authenticated access paths must not exist in production. Configuration must be validated before deployment and after any infrastructure change affecting authentication.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-PaaS", "Agent-Ops"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "N/A",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (cybersecurity and robustness for high-risk AI systems)",
+        "owasp_llm": "TBD: LLM09 (Improper Output Handling); also relevant to authentication bypass vectors"
+      },
+      "threshold": {
+        "metric": "unauthenticated_model_gateway_access_count",
+        "description": "Zero-tolerance: no unauthenticated access path to model API gateways may exist in production.",
+        "evidence": {
+          "ocsf_class": "authentication (3001): gateway authentication events logged to SIEM. Unauthenticated access attempts produce security_finding (2001).",
+          "attribute": "class_uid == 3001 AND status_id == 'failure' AND auth_protocol == 'none'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "block-unauthenticated-access-immediately; page-platform-security-team; initiate-incident-response"
+      }
+    },
+
+    {
+      "id": "SRF-L4-DEV-002",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Guardrail Configuration Baseline Documentation",
+      "description": "AI platforms used in insurance workflows must maintain a documented baseline configuration for content and behavior guardrails. The baseline must specify enabled guardrail categories, thresholds, and the review process for any configuration change. Changes to guardrail configuration must be logged and approved by the accountable officer before taking effect in production.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (internal controls; platform governance)",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 9 (risk management system; technical safeguards)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "guardrail_baseline_documented_and_current",
+        "description": "Binary: documented guardrail baseline exists, is current, and all configuration changes in the prior period were logged and approved.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002): platform configuration management system logs guardrail configuration changes with approver identity and timestamp.",
+          "attribute": "activity_id == 'guardrail_config_change' AND approver_id != null",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-change",
+        "breach_action": "revert-unapproved-change; notify-platform-security-team; review-change-management-process"
+      }
+    },
+
+    {
+      "id": "SRF-L4-DEV-003",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "PII Encryption at Rest and in Transit",
+      "description": "All consumer PII and sensitive insurance data processed or stored by AI platform infrastructure must be encrypted at rest using AES-256 or equivalent and in transit using TLS 1.2 or higher. Encryption configuration must be validated before deployment and included in the platform security assessment under SRF-L4-VAL-001.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "N/A",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (data security requirements; consumer data protection)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (cybersecurity; data protection for high-risk AI)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "pii_unencrypted_at_rest_or_in_transit_count",
+        "description": "Zero-tolerance: no consumer PII or sensitive insurance data stored or transmitted in unencrypted form in production AI platform infrastructure.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): infrastructure security scanner emits findings for unencrypted PII storage or transmission. Attribute: finding.type_id = 'unencrypted_pii'.",
+          "attribute": "finding.type_id == 'unencrypted_pii' AND status_id == 'new'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "isolate-affected-data-store; page-security-team; initiate-incident-response; regulatory-disclosure-assessment"
+      }
+    },
+
+    {
+      "id": "SRF-L4-VAL-001",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Platform Security Assessment",
+      "description": "AI platform infrastructure used in insurance workflows must undergo a documented security assessment before production deployment and annually thereafter. The assessment must cover authentication, authorization, encryption, guardrail configuration, network segmentation, and third-party component vulnerability status. Critical and high findings must be remediated before production go-live.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "validation-testing",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (internal controls; platform security)",
+        "naic_eval_tool": "TBD: security and risk management dimension",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (risk management framework; security assessment requirements)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (accuracy, robustness and cybersecurity for high-risk AI)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "platform_security_assessment_completed",
+        "description": "Binary: security assessment completed, all critical and high findings remediated, and assessment report retained before production deployment.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): security assessment platform emits findings. Unmitigated critical or high findings block deployment.",
+          "attribute": "finding.severity_id IN ('critical','high') AND status_id == 'new'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; remediate-open-findings; re-assess-before-release"
+      }
+    },
+
+    {
+      "id": "SRF-L4-MON-001",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Vendor-Model Isolation and Egress Control",
+      "description": "Third-party model inference endpoints and AI SaaS platforms must be isolated from core insurance systems through network segmentation and egress controls. Consumer PII and policy data must not be transmitted to vendor endpoints beyond what is required for the specific inference task. Egress controls must be monitored continuously and violations treated as security incidents.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (third-party oversight; data security obligations)",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (data security; third-party data sharing controls)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (cybersecurity; data integrity and confidentiality)",
+        "owasp_llm": "TBD: LLM06 (Sensitive Information Disclosure); verify current OWASP LLM Top 10 numbering"
+      },
+      "threshold": {
+        "metric": "vendor_model_egress_violation_count",
+        "description": "Zero-tolerance: no unauthorized transmission of consumer PII or policy data to vendor endpoints. Any egress control violation is treated as a security incident.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001): network monitoring platform logs outbound connections to vendor endpoints. security_finding (2001) emitted on PII egress detection.",
+          "attribute": "dst_endpoint.type == 'vendor_model' AND data.classification == 'PII' AND authorized == false",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "continuous",
+        "breach_action": "block-egress-immediately; isolate-affected-system; initiate-incident-response; notify-data-privacy-officer"
+      }
+    },
+
+    {
+      "id": "SRF-L4-MON-002",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Audit Log Completeness for AI-Assisted Decisions",
+      "description": "All AI-assisted decisions in underwriting, rating, and claims must generate complete, tamper-evident audit log entries capturing: decision type, AI system identifier, input data hash, output recommendation, human review outcome (if applicable), timestamp, and user identity. Log completeness must be monitored continuously and the completeness rate must remain above the tier-configurable threshold.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (internal controls; audit trail requirements)",
+        "naic_eval_tool": "TBD: documentation and audit trail dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (audit trail requirements; framework availability for regulators)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (recordkeeping and audit trail obligations)",
+        "eu_ai_act": "TBD: Art. 12 (logging and audit trail requirements for high-risk AI systems)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "audit_log_completeness_pct",
+        "description": "Percentage of AI-assisted decisions with complete, tamper-evident audit log entries. Tier-configurable; recommended minimum 99.5%.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002): SIEM monitors audit log completeness rate. security_finding (2001) emitted when completeness drops below threshold.",
+          "attribute": "class_uid == 3002 AND activity_id == 'ai_decision_log' AND status_id == 'success'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "TIER_AUDIT_LOG_COMPLETENESS_PCT",
+        "param_type": "tier-configurable",
+        "window": "daily",
+        "breach_action": "investigate-logging-gap; notify-platform-team; escalate-to-chief-compliance-officer-if-gap-exceeds-24h"
+      }
+    },
+
+    {
+      "id": "SRF-L4-MON-003",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Runtime Anomaly Detection for AI Workloads",
+      "description": "AI platform infrastructure must monitor runtime behavior of AI workloads for anomalous patterns indicating model compromise, data exfiltration, or unexpected model behavior. Monitoring must cover inference request volume, latency, output distribution, and network activity. Anomaly findings above the tier-configurable sensitivity threshold must trigger an incident response workflow.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-PaaS", "Agent-Ops"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "N/A",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (robustness and resilience for high-risk AI; detection of anomalous behavior)",
+        "owasp_llm": "TBD: LLM03 (Training Data Poisoning detected via runtime behavior); verify current OWASP LLM Top 10 numbering"
+      },
+      "threshold": {
+        "metric": "runtime_anomaly_mean_time_to_detect_hours",
+        "description": "Mean time to detect runtime anomaly events. Tier-configurable; lower is better. Recommended: detect within 1 hour for high-severity anomalies.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004): runtime monitoring platform emits anomaly findings for AI workloads.",
+          "attribute": "finding.title == 'ai_runtime_anomaly' AND severity_id IN ('critical','high')",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "<=",
+        "param": "TIER_RUNTIME_ANOMALY_DETECT_HOURS",
+        "param_type": "tier-configurable",
+        "window": "continuous",
+        "breach_action": "page-security-operations; initiate-incident-response; isolate-anomalous-workload-if-high-severity"
+      }
+    },
+
+    {
+      "id": "SRF-L4-TPO-001",
+      "layer": "L4",
+      "component": "Platform and Infrastructure",
+      "title": "Third-Party Platform Access Review",
+      "description": "Third-party AI platforms and SaaS AI providers must undergo an annual access review confirming that access credentials, API keys, and data sharing agreements are current, scoped to current use cases, and consistent with the vendor register in SRF-L1-DEV-003. Access not used in the prior 90 days must be deprovisioned or explicitly reauthorized.",
+      "accountable_persona": "ai-platform-provider",
+      "operating_models": ["AI-SaaS", "Vendor-Model"],
+      "insurance_stage": "third-party-oversight",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (third-party access controls; vendor oversight)",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (third-party access controls as component of risk management framework)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 25 (obligations of deployers; third-party access controls)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "stale_vendor_access_count",
+        "description": "Count of third-party AI platform access credentials or API keys unused in the prior 90 days that have not been deprovisioned or reauthorized.",
+        "evidence": {
+          "ocsf_class": "api_activity (6003): access management platform logs vendor credential usage. security_finding (2001) emitted for stale credentials.",
+          "attribute": "finding.type_id == 'stale_vendor_access' AND last_used_days > 90",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "quarterly",
+        "breach_action": "deprovision-stale-access; notify-accountable-officer; update-vendor-register"
+      }
+    },
+
+    {
+      "id": "SRF-L5-DEV-001",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Model Card with Intended Line-of-Business Statement",
+      "description": "Every AI model used in insurance underwriting, rating, or claims must have a current model card that includes: intended lines of business, training data summary, known performance limitations, bias evaluation results, recommended use and out-of-scope uses, and the vendor's accountability contact. Model cards must be updated within 30 days of any material model change.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (vendor model documentation; third-party AI transparency obligations)",
+        "naic_eval_tool": "TBD: model documentation dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (model documentation requirements; governance framework)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (model transparency and documentation for external AI tools)",
+        "eu_ai_act": "TBD: Art. 11 (technical documentation for high-risk AI systems); Art. 13 (transparency obligations)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "model_card_current",
+        "description": "Binary: current model card exists, covers all required fields, and was updated within 30 days of the last material model change.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Model card is a required artifact in the model documentation package.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-material-change",
+        "breach_action": "suspend-model-from-new-deployments; require-model-card-update; notify-chief-actuary"
+      }
+    },
+
+    {
+      "id": "SRF-L5-DEV-002",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Model Artifact Signing and Supply-Chain Provenance",
+      "description": "Model artifacts deployed in insurance AI infrastructure must be cryptographically signed by the model provider, and the insurer must verify signatures before deployment. A software bill of materials (SBOM) or equivalent supply-chain provenance document must accompany each model artifact. Signature verification must be automated in the deployment pipeline.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "design-development",
+      "mappings": {
+        "naic_model_bulletin": "N/A",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 15 (cybersecurity; model integrity and supply-chain security)",
+        "owasp_llm": "TBD: LLM03 (Training Data Poisoning; supply-chain integrity); verify current OWASP LLM Top 10 numbering"
+      },
+      "threshold": {
+        "metric": "unsigned_model_artifact_deployment_count",
+        "description": "Zero-tolerance: no model artifact may be deployed without a verified cryptographic signature from the model provider.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): deployment pipeline emits findings when signature verification fails. Attribute: finding.type_id = 'unsigned_model_artifact'.",
+          "attribute": "finding.type_id == 'unsigned_model_artifact' AND status_id == 'new'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; alert-security-team; investigate-supply-chain-integrity"
+      }
+    },
+
+    {
+      "id": "SRF-L5-VAL-001",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Pre-Deployment Fairness Evaluation by Line of Business",
+      "description": "Before any model is deployed in underwriting, rating, or claims for a given line of business, the model provider or insurer must complete a documented fairness evaluation assessing the model's performance across protected class proxies for that specific line. The evaluation must follow a documented methodology, produce findings, and result in either a clearance determination or a documented remediation plan before deployment is authorized.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "validation-testing",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section II (fairness obligations; pre-deployment testing)",
+        "naic_eval_tool": "TBD: fairness evaluation dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (pre-deployment fairness testing requirements for auto and health lines)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (pre-deployment fairness analysis for underwriting and pricing AI)",
+        "eu_ai_act": "TBD: Art. 9 (risk management system; pre-deployment risk assessment for high-risk AI)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "pre_deployment_fairness_eval_completed",
+        "description": "Zero-tolerance: no model may be deployed in a covered line of business without a completed, documented fairness evaluation for that line.",
+        "evidence": {
+          "ocsf_class": "Document management artifact for fairness evaluation results. Candidate: audit_activity (3002) if model validation platform logs evaluation completion.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "zero-tolerance",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; require-fairness-evaluation; escalate-to-chief-actuary-and-chief-compliance-officer"
+      }
+    },
+
+    {
+      "id": "SRF-L5-VAL-002",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Independent Model Validation",
+      "description": "Models used in underwriting, rating, or claims must undergo independent validation (conducted by a function or party independent of model development) before production deployment. Validation must assess conceptual soundness, data quality, performance, and limitations. Findings must be reviewed by the accountable officer and addressed before deployment. This control supports the insurer's ability to demonstrate due diligence to examiners.",
+      "accountable_persona": "model-provider",
+      "accountable_persona_note": "Independent validation is conducted by the insurer's validation function or a third party acting on the insurer's behalf. The model-provider is the subject of validation. Accountability for commissioning and completing validation sits with the insurer.",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "validation-testing",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section III (internal controls; independent model review obligations)",
+        "naic_eval_tool": "TBD: model validation dimension; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (risk management framework; independent model review)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (independent review of AI systems used in underwriting and pricing)",
+        "eu_ai_act": "TBD: Art. 9 (conformity assessment; independent testing for high-risk AI)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "independent_model_validation_completed",
+        "description": "Binary: independent validation completed, findings documented and reviewed, open findings addressed or risk-accepted with documented rationale, before production deployment.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Validation report is a required exam artifact.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-deployment",
+        "breach_action": "block-deployment; require-independent-validation; escalate-to-chief-risk-officer"
+      }
+    },
+
+    {
+      "id": "SRF-L5-MON-001",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Post-Deployment Performance and Drift Disclosure SLA from Vendors",
+      "description": "Vendors providing AI models used in underwriting, rating, or claims must contractually commit to a performance monitoring and disclosure SLA covering: notification of material performance degradation within the configured window, PSI drift reports on a defined cadence, and advance notice of planned model updates. The insurer must enforce this SLA in vendor contracts and monitor compliance.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (vendor accountability; performance monitoring obligations)",
+        "naic_eval_tool": "TBD: third-party model monitoring dimension",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (ongoing monitoring requirements for third-party AI)",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 72 (post-market monitoring obligations; reporting to deployers)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "vendor_perf_disclosure_sla_breach_count",
+        "description": "Count of SLA breaches: vendor failed to notify within the contractual disclosure window of material performance degradation or drift event. Tier-configurable disclosure window.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004): vendor SLA monitoring system emits findings on missed disclosure deadlines.",
+          "attribute": "finding.type_id == 'vendor_sla_breach' AND sla_type == 'performance_disclosure'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "tier-configurable",
+        "window": "TIER_VENDOR_DISCLOSURE_WINDOW",
+        "breach_action": "notify-vendor; escalate-to-vendor-accountable-officer; assess-model-suspension; factor-into-vendor-risk-rating"
+      }
+    },
+
+    {
+      "id": "SRF-L5-MON-002",
+      "layer": "L5",
+      "component": "Model",
+      "title": "CVE Vulnerability Disclosure SLA from Model Provider",
+      "description": "Model providers must contractually commit to notifying the insurer within the configured SLA window of any CVE or material security vulnerability in model infrastructure, training pipeline, or inference API that could affect the insurer's production deployment. The insurer must have a documented patch response procedure triggered by vendor notifications.",
+      "accountable_persona": "model-provider",
+      "operating_models": ["AI-PaaS", "Vendor-Model"],
+      "insurance_stage": "ongoing-monitoring",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (vendor security obligations; third-party risk management)",
+        "naic_eval_tool": "N/A",
+        "co_reg_10_1_1": "N/A",
+        "nydfs_cl7": "N/A",
+        "eu_ai_act": "TBD: Art. 72 (post-market monitoring; vulnerability disclosure obligations)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "cve_disclosure_sla_breach_count",
+        "description": "Count of vendor CVE or security vulnerability notifications not received within the contractual disclosure SLA window.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001): vulnerability management platform correlates vendor CVE notifications with the insurer's contractual SLA. Breach emitted as finding.",
+          "attribute": "finding.type_id == 'vendor_cve_sla_breach'",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "0",
+        "param_type": "tier-configurable",
+        "window": "TIER_CVE_DISCLOSURE_WINDOW",
+        "breach_action": "notify-vendor; escalate-to-security-team; assess-emergency-patch; factor-into-vendor-risk-rating"
+      }
+    },
+
+    {
+      "id": "SRF-L5-TPO-001",
+      "layer": "L5",
+      "component": "Model",
+      "title": "Vendor Model Due-Diligence Evidence Package (NAIC Third-Party Oversight)",
+      "description": "For each third-party AI model used in underwriting, rating, or claims, the insurer must assemble and retain a due-diligence evidence package covering: model card (SRF-L5-DEV-001), independent validation results (SRF-L5-VAL-002), fairness evaluation (SRF-L5-VAL-001), artifact signing (SRF-L5-DEV-002), and performance SLA (SRF-L5-MON-001). This package is the primary artifact for demonstrating third-party model oversight to examiners.",
+      "accountable_persona": "model-provider",
+      "accountable_persona_note": "Assembly of the due-diligence package is the insurer's responsibility (ai-system-governance at L1). The model-provider supplies the required documentation. Both parties are accountable for their respective contributions.",
+      "operating_models": ["AI-SaaS", "Vendor-Model"],
+      "insurance_stage": "third-party-oversight",
+      "mappings": {
+        "naic_model_bulletin": "TBD: NAIC Model Bulletin Section IV (insurer accountability for third-party AI models; documentation of due diligence)",
+        "naic_eval_tool": "TBD: all evaluation tool dimensions applicable to third-party model oversight; verify against pilot materials",
+        "co_reg_10_1_1": "TBD: 3 CCR 702-10 (third-party risk management framework; documentation availability)",
+        "nydfs_cl7": "TBD: NYDFS CL 7 (documentation obligations for external AI models in underwriting and pricing)",
+        "eu_ai_act": "TBD: Art. 11 (technical documentation); Art. 25 (obligations of deployers regarding third-party AI providers)",
+        "owasp_llm": "N/A"
+      },
+      "threshold": {
+        "metric": "vendor_model_due_diligence_package_complete",
+        "description": "Binary: due-diligence evidence package assembled, all component artifacts present and current, and package reviewed by the accountable officer within the prior annual cycle.",
+        "evidence": {
+          "ocsf_class": "Document management artifact. Due-diligence package is a required exam artifact. Candidate: audit_activity (3002) if document management system logs package completeness checks.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "identify-missing-artifacts; engage-vendor; escalate-to-chief-risk-officer; assess-model-suspension-if-package-cannot-be-completed"
+      }
+    }
+
+  ]
+}
