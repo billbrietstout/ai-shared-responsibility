@@ -209,9 +209,52 @@
       }
       .btn--outline:hover { border-color: var(--cosai-blue); background: var(--cosai-blue-light); }
 
+      /* ── Workpaper download row ───────────────────────────────────── */
+      .workpaper-dl {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-5);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+        margin-bottom: var(--sp-8);
+      }
+      .workpaper-dl__icon {
+        width: 44px;
+        height: 44px;
+        background: var(--cosai-blue-light);
+        border-radius: var(--radius);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .workpaper-dl__icon svg {
+        width: 22px;
+        height: 22px;
+        stroke: var(--cosai-blue);
+        fill: none;
+        stroke-width: 1.75;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .workpaper-dl__text { flex: 1; }
+      .workpaper-dl__name {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin-bottom: 2px;
+      }
+      .workpaper-dl__meta {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+      }
+
       @media (max-width: 640px) {
         .step { grid-template-columns: 36px 1fr; gap: var(--sp-4); }
         .step__num { width: 36px; height: 36px; font-size: 0.9rem; }
+        .workpaper-dl { flex-direction: column; align-items: flex-start; }
       }
 
     </style>
@@ -511,9 +554,34 @@
 
       </ol>
 
+      <div class="workpaper-dl" role="region" aria-label="M-25-21 readiness workpaper download">
+        <div class="workpaper-dl__icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+        </div>
+        <div class="workpaper-dl__text">
+          <p class="workpaper-dl__name">M-25-21 readiness workpaper</p>
+          <p class="workpaper-dl__meta">
+            XLSX &middot; Generated from public-sector-controls.json &middot; Includes Instructions,
+            Tier Parameters, Persona Mapping, and Minimum-Practices Evidence Log
+          </p>
+        </div>
+        <a
+          href="/public-sector/how-to/m2521-workpaper.xlsx"
+          class="btn"
+          download
+          aria-label="Download M-25-21 readiness workpaper (XLSX)"
+        >
+          Download workpaper
+        </a>
+      </div>
+
       <div class="cta-row">
         <a href="/public-sector/controls/" class="btn btn--primary">Browse all controls</a>
-        <a href="/public-sector/m2521-workpaper.xlsx" class="btn btn--outline">Download workpaper</a>
       </div>
 
     </main>
