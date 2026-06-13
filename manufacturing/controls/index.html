@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Manufacturing Controls Browser - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Browse all 45 manufacturing controls in the CoSAI SRF. Filter by SRF layer, lifecycle stage, OT applicability, EU AI Act risk class, operating model, responsibility split, and accountable persona."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .browser-layout {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: var(--sp-8);
+        align-items: start;
+        padding-top: var(--sp-8);
+        padding-bottom: var(--sp-20);
+      }
+      @media (max-width: 820px) {
+        .browser-layout { grid-template-columns: 1fr; }
+        .filter-sidebar { position: static !important; }
+      }
+
+      .filter-sidebar {
+        position: sticky;
+        top: 72px;
+      }
+      .filter-group {
+        margin-bottom: var(--sp-6);
+      }
+      .filter-group__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+        display: block;
+      }
+      .filter-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: var(--radius);
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        font-family: inherit;
+        line-height: 1.8;
+        transition: background 0.1s;
+      }
+      .filter-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+      .filter-btn.active {
+        background: #1e3a8a;
+        color: #fff;
+        font-weight: 600;
+      }
+      .filter-btn .count {
+        float: right;
+        font-size: 0.7rem;
+        opacity: 0.6;
+        font-weight: 400;
+        margin-top: 2px;
+      }
+      .filter-divider {
+        border: none;
+        border-top: 1px solid var(--slate-200);
+        margin: var(--sp-4) 0;
+      }
+      .clear-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        padding: var(--sp-2) 0;
+        border-radius: var(--radius);
+        border: 1px solid var(--slate-200);
+        background: none;
+        cursor: pointer;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-500);
+        font-family: inherit;
+        transition: background 0.1s, color 0.1s;
+      }
+      .clear-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+
+      .results-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: var(--sp-4);
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+      }
+      .results-count {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+      }
+      .search-input {
+        padding: var(--sp-2) var(--sp-3);
+        border: 1px solid var(--slate-300);
+        border-radius: var(--radius);
+        font-size: var(--text-sm);
+        font-family: inherit;
+        color: var(--slate-800);
+        width: 200px;
+        transition: border-color 0.15s;
+      }
+      .search-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+      }
+
+      /* ── Control cards ────────────────────────────────────────────── */
+      .control-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md);
+        margin-bottom: var(--sp-3);
+        overflow: hidden;
+        transition: box-shadow 0.15s;
+      }
+      .control-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+      .control-card__head {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: var(--sp-4);
+        padding: var(--sp-4) var(--sp-5);
+        cursor: pointer;
+        background: #fff;
+        align-items: start;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+      .control-card__head:focus-visible {
+        outline: 2px solid #3b82f6;
+        outline-offset: -2px;
+      }
+      .control-card__badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+        margin-bottom: var(--sp-2);
+      }
+      .control-card__id {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        color: var(--slate-400);
+        font-family: ui-monospace, monospace;
+        margin-bottom: var(--sp-1);
+      }
+      .control-card__title {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--slate-800);
+        margin-bottom: var(--sp-1);
+        line-height: 1.4;
+      }
+      .control-card__persona {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+      }
+      .control-card__chevron {
+        width: 16px;
+        height: 16px;
+        color: var(--slate-400);
+        margin-top: var(--sp-1);
+        flex-shrink: 0;
+        transition: transform 0.2s;
+      }
+      .control-card.open .control-card__chevron { transform: rotate(180deg); }
+
+      .control-detail {
+        display: none;
+        border-top: 1px solid var(--slate-100);
+        padding: var(--sp-5) var(--sp-6);
+        background: var(--slate-50);
+      }
+      .control-card.open .control-detail { display: block; }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-5);
+      }
+      @media (max-width: 640px) { .detail-grid { grid-template-columns: 1fr; } }
+      .detail-section__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+      }
+      .detail-section p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-2);
+      }
+      .detail-section p:last-child { margin-bottom: 0; }
+      .threshold-row {
+        display: flex;
+        align-items: baseline;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-2);
+      }
+      .threshold-label {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-500);
+        width: 80px;
+        flex-shrink: 0;
+      }
+      .threshold-value {
+        font-size: var(--text-xs);
+        font-family: ui-monospace, monospace;
+        color: var(--slate-700);
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        padding: 2px 7px;
+        border-radius: 4px;
+      }
+      .ocsf-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-1);
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        background: #dbeafe;
+        color: #1e3a8a;
+        border: 1px solid #93c5fd;
+        border-radius: 4px;
+        padding: 2px 7px;
+        margin-bottom: var(--sp-2);
+      }
+      .mapping-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .mapping-tag {
+        font-size: 0.62rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: var(--slate-100);
+        color: var(--slate-600);
+        border: 1px solid var(--slate-200);
+      }
+      .operating-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .operating-tag {
+        font-size: 0.62rem;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #dbeafe;
+        color: #1e3a8a;
+        border: 1px solid #93c5fd;
+      }
+
+      /* ── OT applicability badge ───────────────────────────────────── */
+      .ot-badge {
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .ot-badge--ot-only  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+      .ot-badge--it-only  { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+      .ot-badge--both     { background: #f0fdf4; color: #14532d; border: 1px solid #86efac; }
+
+      /* ── EU AI Act risk class badge ───────────────────────────────── */
+      .risk-badge {
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        letter-spacing: 0.04em;
+      }
+      .risk-badge--high-risk    { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+      .risk-badge--limited-risk { background: #fef9c3; color: #713f12; border: 1px solid #fde047; }
+      .risk-badge--minimal-risk { background: #f0fdf4; color: #14532d; border: 1px solid #86efac; }
+      .risk-badge--na           { background: var(--slate-100); color: var(--slate-500); border: 1px solid var(--slate-200); }
+
+      /* ── Responsibility split badge ───────────────────────────────── */
+      .split-chip {
+        display: inline-block;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+      .split-chip--manufacturer    { color: #1e40af; background: #dbeafe; border: 1px solid #93c5fd; }
+      .split-chip--equipment-oem   { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; }
+      .split-chip--ai-vendor       { color: #5b21b6; background: #ede9fe; border: 1px solid #c4b5fd; }
+      .split-chip--system-integrator { color: #14532d; background: #d1fae5; border: 1px solid #6ee7b7; }
+      .split-chip--shared          { color: #475569; background: #f8fafc; border: 1px solid #cbd5e1; }
+
+      /* ── IEC 62443 SL tags ────────────────────────────────────────── */
+      .sl-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .sl-tag {
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 2px 7px;
+        border-radius: 4px;
+        background: #1e3a5f;
+        color: #93c5fd;
+        border: 1px solid #3b82f6;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: var(--sp-16) var(--sp-8);
+        color: var(--slate-400);
+      }
+      .empty-state p { font-size: var(--text-sm); margin-top: var(--sp-2); }
+
+      /* ── Controls hero ────────────────────────────────────────────── */
+      .controls-hero {
+        padding: var(--sp-10) 0 0;
+        margin-bottom: var(--sp-6);
+      }
+      .controls-hero .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-3);
+      }
+      .controls-hero .breadcrumb a {
+        color: var(--slate-500);
+        text-decoration: none;
+      }
+      .controls-hero .breadcrumb a:hover { color: var(--cosai-blue); text-decoration: underline; }
+      .controls-hero .breadcrumb__sep { opacity: 0.4; }
+      .controls-hero__title {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--cosai-navy);
+        margin: 0 0 var(--sp-2);
+        line-height: 1.2;
+      }
+      .controls-hero__sub {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+        margin: 0 0 var(--sp-6);
+      }
+    </style>
+  
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "CoSAI SRF Manufacturing Controls \u2014 Full Schema",
+  "url": "https://aisharedresponsibility.com/manufacturing/controls/",
+  "description": "The CoSAI SRF manufacturing schema: 45 controls for OT/ICS, product-embedded AI, and IT-side manufacturing across L1-L5. OT applicability flags per control. Regulatory crosswalk: EU AI Act high-risk (August 2026), EU Machinery Regulation 2023/1230 (January 2027), IEC 62443 OT cybersecurity zones, ISO 42001.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/",
+    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+  },
+  "license": "https://github.com/aisharedresponsibility/aisharedresponsibility.com/blob/main/LICENSE",
+  "isAccessibleForFree": true,
+  "distribution": {
+    "@type": "DataDownload",
+    "contentUrl": "https://aisharedresponsibility.com/data/manufacturing-controls.json",
+    "encodingFormat": "application/json"
+  },
+  "keywords": "manufacturing OT ICS EU AI Act IEC 62443 ISO 42001 embedded AI"
+}
+    </script>
+  </head>
+  <body>
+
+    <a class="skip-link" href="#main">Skip to content</a>
+    <site-nav current="industries"></site-nav>
+
+    <div id="main" class="page-body">
+
+      <div class="controls-hero">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <a href="/manufacturing/">Manufacturing</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <span>Controls browser</span>
+        </nav>
+        <h1 class="controls-hero__title">Manufacturing controls browser</h1>
+        <p class="controls-hero__sub">
+          Browse all 45 controls in the manufacturing schema. Filter by SRF layer, lifecycle
+          stage, OT applicability, EU AI Act risk class, operating model, responsibility split,
+          or accountable persona.
+        </p>
+      </div>
+
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:24px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+        extension of the CoSAI Shared Responsibility Framework. It is not part of SRF v1.0 and
+        has not been endorsed by CoSAI, the European Commission, ISA, IEC, or any standards body
+        or government agency. EU AI Act and EU Machinery Regulation references must be verified
+        against current regulatory text before use in compliance submissions.
+      </div>
+
+      <div class="browser-layout">
+
+        <!-- Filter sidebar -->
+        <aside class="filter-sidebar" aria-label="Filter controls">
+
+          <div class="filter-group">
+            <span class="filter-group__label">SRF layer</span>
+            <button class="filter-btn active" data-filter="layer" data-value="all" tabindex="0">All layers <span class="count" id="count-layer-all"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L1" tabindex="0">L1 Governance <span class="count" id="count-layer-l1"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L2" tabindex="0">L2 Data <span class="count" id="count-layer-l2"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L3" tabindex="0">L3 Application <span class="count" id="count-layer-l3"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L4" tabindex="0">L4 Platform <span class="count" id="count-layer-l4"></span></button>
+            <button class="filter-btn" data-filter="layer" data-value="L5" tabindex="0">L5 Model <span class="count" id="count-layer-l5"></span></button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Lifecycle stage</span>
+            <button class="filter-btn" data-filter="stage" data-value="design" tabindex="0">DES - Design</button>
+            <button class="filter-btn" data-filter="stage" data-value="validation" tabindex="0">VAL - Validation</button>
+            <button class="filter-btn" data-filter="stage" data-value="ops" tabindex="0">OPS - Operations</button>
+            <button class="filter-btn" data-filter="stage" data-value="change" tabindex="0">CHG - Change</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">OT applicability</span>
+            <button class="filter-btn" data-filter="ot" data-value="ot-only" tabindex="0">OT-only</button>
+            <button class="filter-btn" data-filter="ot" data-value="it-only" tabindex="0">IT-only</button>
+            <button class="filter-btn" data-filter="ot" data-value="both" tabindex="0">Both</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">EU AI Act risk class</span>
+            <button class="filter-btn" data-filter="risk" data-value="high-risk" tabindex="0">High-risk</button>
+            <button class="filter-btn" data-filter="risk" data-value="limited-risk" tabindex="0">Limited-risk</button>
+            <button class="filter-btn" data-filter="risk" data-value="minimal-risk" tabindex="0">Minimal-risk</button>
+            <button class="filter-btn" data-filter="risk" data-value="N/A" tabindex="0">N/A</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Operating model</span>
+            <button class="filter-btn" data-filter="model" data-value="AI-SaaS" tabindex="0">AI-SaaS</button>
+            <button class="filter-btn" data-filter="model" data-value="OT-Edge" tabindex="0">OT-Edge</button>
+            <button class="filter-btn" data-filter="model" data-value="Product-Embedded" tabindex="0">Product-Embedded</button>
+            <button class="filter-btn" data-filter="model" data-value="AI-PaaS" tabindex="0">AI-PaaS</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Responsibility split</span>
+            <button class="filter-btn" data-filter="split" data-value="manufacturer" tabindex="0">Manufacturer</button>
+            <button class="filter-btn" data-filter="split" data-value="equipment-oem" tabindex="0">Equipment OEM</button>
+            <button class="filter-btn" data-filter="split" data-value="ai-vendor" tabindex="0">AI Vendor</button>
+            <button class="filter-btn" data-filter="split" data-value="system-integrator" tabindex="0">System Integrator</button>
+            <button class="filter-btn" data-filter="split" data-value="shared" tabindex="0">Shared</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Persona</span>
+            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">ai-system-governance</button>
+            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">data-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">application-developer</button>
+            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">agentic-platform-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">ai-platform-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">model-provider</button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Param type</span>
+            <button class="filter-btn" data-filter="paramtype" data-value="zero-tolerance" tabindex="0">Zero-tolerance</button>
+            <button class="filter-btn" data-filter="paramtype" data-value="tier-configurable" tabindex="0">Tier-configurable</button>
+            <button class="filter-btn" data-filter="paramtype" data-value="verification" tabindex="0">Verification</button>
+          </div>
+
+          <hr class="filter-divider" />
+          <button class="clear-btn" id="clear-filters" tabindex="0">Clear all filters</button>
+
+        </aside>
+
+        <!-- Controls list -->
+        <section aria-label="Controls list">
+          <div class="results-header">
+            <span class="results-count" id="results-count">Loading...</span>
+            <input
+              type="search"
+              class="search-input"
+              id="search-input"
+              placeholder="Search controls..."
+              aria-label="Search controls"
+            />
+          </div>
+          <div id="controls-list"></div>
+        </section>
+
+      </div>
+    </div>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+    <script>
+    (function () {
+      'use strict';
+
+      // ── Utilities ────────────────────────────────────────────────────
+      function escHtml(str) {
+        if (str == null) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function fmtLabel(s) {
+        if (s == null) return '';
+        return String(s).replace(/_/g, ' ');
+      }
+
+      // ── State ─────────────────────────────────────────────────────────
+      var allControls = [];
+      var filters = { layer: 'all', stage: null, ot: null, risk: null, model: null, split: null, persona: null, paramtype: null };
+      var searchQuery = '';
+
+      // ── Load data ─────────────────────────────────────────────────────
+      fetch('/data/manufacturing-controls.json')
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          allControls = data.controls || [];
+          initCounts();
+          render();
+        })
+        .catch(function () {
+          document.getElementById('controls-list').innerHTML =
+            '<div class="empty-state"><p>Failed to load controls. Please reload the page.</p></div>';
+        });
+
+      // ── Count badges ──────────────────────────────────────────────────
+      function initCounts() {
+        var layers = ['L1','L2','L3','L4','L5'];
+        var total = allControls.length;
+        document.getElementById('count-layer-all').textContent = total;
+        layers.forEach(function (l) {
+          var el = document.getElementById('count-layer-' + l.toLowerCase());
+          if (el) el.textContent = allControls.filter(function (c) { return c.layer === l; }).length;
+        });
+      }
+
+      // ── Filter matching ───────────────────────────────────────────────
+      function matchesFilters(c) {
+        if (filters.layer !== 'all' && c.layer !== filters.layer) return false;
+        if (filters.stage && c.lifecycle_stage !== filters.stage) return false;
+        if (filters.ot && c.ot_applicability !== filters.ot) return false;
+        if (filters.risk && c.eu_ai_act_risk_class !== filters.risk) return false;
+        if (filters.model && (!c.operating_models || c.operating_models.indexOf(filters.model) === -1)) return false;
+        if (filters.split && c.responsibility_split !== filters.split) return false;
+        if (filters.persona && c.accountable_persona !== filters.persona) return false;
+        if (filters.paramtype && (!c.threshold || c.threshold.param_type !== filters.paramtype)) return false;
+        if (searchQuery) {
+          var q = searchQuery.toLowerCase();
+          var haystack = [c.id, c.title, c.description, c.accountable_persona,
+            c.lifecycle_stage, c.responsibility_split, c.ot_applicability,
+            c.eu_ai_act_risk_class].join(' ').toLowerCase();
+          if (haystack.indexOf(q) === -1) return false;
+        }
+        return true;
+      }
+
+      // ── Render controls ───────────────────────────────────────────────
+      function render() {
+        var filtered = allControls.filter(matchesFilters);
+        var count = filtered.length;
+        document.getElementById('results-count').textContent =
+          count + ' control' + (count === 1 ? '' : 's');
+
+        var html = '';
+        if (count === 0) {
+          html = '<div class="empty-state"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><p>No controls match the current filters.</p></div>';
+        } else {
+          filtered.forEach(function (c) {
+            html += renderCard(c);
+          });
+        }
+
+        document.getElementById('controls-list').innerHTML = html;
+
+        // attach expand/collapse
+        document.querySelectorAll('.control-card__head').forEach(function (head) {
+          head.addEventListener('click', function () { toggle(head.closest('.control-card')); });
+          head.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggle(head.closest('.control-card'));
+            }
+          });
+        });
+      }
+
+      function toggle(card) {
+        var isOpen = card.classList.contains('open');
+        card.classList.toggle('open', !isOpen);
+        card.querySelector('.control-card__head').setAttribute('aria-expanded', String(!isOpen));
+      }
+
+      // ── Mapping display ───────────────────────────────────────────────
+      function renderMappings(mappings) {
+        if (!mappings) return '';
+        var SKIP = ['N/A', 'TBD', 'n/a', 'tbd', 'mapping_status_note'];
+        var tags = '';
+        Object.keys(mappings).forEach(function (key) {
+          if (SKIP.indexOf(key) !== -1) return;
+          var val = mappings[key];
+          if (!val || val === 'N/A' || val.indexOf('TBD') !== -1) return;
+          tags += '<span class="mapping-tag">' + escHtml(fmtLabel(key)) + ': ' + escHtml(val) + '</span>';
+        });
+        return tags;
+      }
+
+      function renderIec62443Sls(sls) {
+        if (!sls || sls.length === 0) return '';
+        return sls.map(function (sl) {
+          return '<span class="sl-tag">' + escHtml(sl) + '</span>';
+        }).join('');
+      }
+
+      function renderSplitChip(split) {
+        var cls = 'split-chip--' + (split || 'shared').replace(/\//g, '-');
+        return '<span class="split-chip ' + cls + '">' + escHtml(split) + '</span>';
+      }
+
+      function renderOtBadge(ot) {
+        var cls = 'ot-badge--' + (ot || 'both').replace(/\//g, '-');
+        return '<span class="ot-badge ' + cls + '">' + escHtml(ot) + '</span>';
+      }
+
+      function renderRiskBadge(risk) {
+        var map = { 'high-risk': 'high-risk', 'limited-risk': 'limited-risk', 'minimal-risk': 'minimal-risk', 'N/A': 'na' };
+        var cls = 'risk-badge--' + (map[risk] || 'na');
+        return '<span class="risk-badge ' + cls + '">' + escHtml(risk) + '</span>';
+      }
+
+      function renderLayerBadge(layer) {
+        return '<span class="layer-badge-inline layer-badge-inline--' + layer.toLowerCase() + '">' + escHtml(layer) + '</span>';
+      }
+
+      function renderCard(c) {
+        var t = c.threshold || {};
+        var mappingTags = renderMappings(c.mappings);
+        var slTags = renderIec62443Sls(c.iec_62443_sls);
+        var opTags = (c.operating_models || []).map(function (m) {
+          return '<span class="operating-tag">' + escHtml(m) + '</span>';
+        }).join('');
+
+        return '<article class="control-card" role="listitem">' +
+          '<div class="control-card__head" tabindex="0" role="button" aria-expanded="false">' +
+          '<div>' +
+          '<div class="control-card__badges">' +
+          renderOtBadge(c.ot_applicability) +
+          renderRiskBadge(c.eu_ai_act_risk_class) +
+          renderSplitChip(c.responsibility_split) +
+          '</div>' +
+          '<div class="control-card__id">' + escHtml(c.id) + '</div>' +
+          '<div class="control-card__title">' + escHtml(c.title) + '</div>' +
+          '<div class="control-card__persona">' + escHtml(c.accountable_persona) + ' &middot; ' + escHtml(c.lifecycle_stage) + '</div>' +
+          '</div>' +
+          '<svg class="control-card__chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>' +
+          '</div>' +
+          '<div class="control-detail">' +
+          '<div class="detail-grid">' +
+          '<div class="detail-section">' +
+          '<div class="detail-section__label">Description</div>' +
+          '<p>' + escHtml(c.description) + '</p>' +
+          '</div>' +
+          '<div class="detail-section">' +
+          '<div class="detail-section__label">Threshold</div>' +
+          '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(t.metric) + '</span></div>' +
+          '<div class="threshold-row"><span class="threshold-label">Operator</span><span class="threshold-value">' + escHtml(t.operator) + ' ' + escHtml(t.param) + '</span></div>' +
+          '<div class="threshold-row"><span class="threshold-label">Type</span><span class="threshold-value">' + escHtml(t.param_type) + '</span></div>' +
+          '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(t.window) + '</span></div>' +
+          (t.description ? '<p style="margin-top:8px;font-size:0.8rem;color:var(--slate-500);">' + escHtml(t.description) + '</p>' : '') +
+          (t.breach_action ? '<p style="margin-top:4px;font-size:0.8rem;color:var(--slate-500);"><strong>On breach:</strong> ' + escHtml(t.breach_action) + '</p>' : '') +
+          '</div>' +
+          '<div class="detail-section">' +
+          '<div class="detail-section__label">Evidence (OCSF v1.8.0)</div>' +
+          (t.evidence ? '<div class="ocsf-chip">OCSF</div><p>' + escHtml(t.evidence.ocsf_class) + '</p>' +
+            (t.evidence.attribute && t.evidence.attribute !== 'TBD' ? '<p style="font-size:0.8rem;color:var(--slate-500);">Attribute: <code>' + escHtml(t.evidence.attribute) + '</code></p>' : '') : '') +
+          '<div class="detail-section__label" style="margin-top:12px;">Operating models</div>' +
+          '<div class="operating-tags">' + opTags + '</div>' +
+          (slTags ? '<div class="detail-section__label" style="margin-top:12px;">IEC 62443 SLs</div><div class="sl-tags">' + slTags + '</div>' : '') +
+          '</div>' +
+          '<div class="detail-section">' +
+          '<div class="detail-section__label">Regulatory mappings</div>' +
+          (mappingTags ? '<div class="mapping-tags">' + mappingTags + '</div>' : '<p style="color:var(--slate-400);font-size:0.8rem;">All mappings TBD or N/A for this control.</p>') +
+          (c.mappings && c.mappings.mapping_status_note ?
+            '<p style="margin-top:8px;font-size:0.78rem;color:#92400e;background:#fffbeb;border:1px solid #fbbf24;border-radius:6px;padding:6px 8px;">' + escHtml(c.mappings.mapping_status_note) + '</p>' : '') +
+          '</div>' +
+          '</div>' +
+          '</div>' +
+          '</article>';
+      }
+
+      // ── Filter buttons ────────────────────────────────────────────────
+      document.querySelectorAll('.filter-btn[data-filter]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var f = btn.getAttribute('data-filter');
+          var v = btn.getAttribute('data-value');
+
+          if (f === 'layer') {
+            filters.layer = v;
+            document.querySelectorAll('.filter-btn[data-filter="layer"]').forEach(function (b) {
+              b.classList.toggle('active', b === btn);
+            });
+          } else {
+            var current = filters[f];
+            var next = (current === v) ? null : v;
+            filters[f] = next;
+            document.querySelectorAll('.filter-btn[data-filter="' + f + '"]').forEach(function (b) {
+              b.classList.toggle('active', b.getAttribute('data-value') === next);
+            });
+          }
+          render();
+        });
+
+        btn.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+        });
+      });
+
+      document.getElementById('clear-filters').addEventListener('click', function () {
+        filters = { layer: 'all', stage: null, ot: null, risk: null, model: null, split: null, persona: null, paramtype: null };
+        searchQuery = '';
+        document.getElementById('search-input').value = '';
+        document.querySelectorAll('.filter-btn').forEach(function (b) {
+          b.classList.remove('active');
+        });
+        document.querySelector('.filter-btn[data-value="all"]').classList.add('active');
+        render();
+      });
+
+      document.getElementById('search-input').addEventListener('input', function () {
+        searchQuery = this.value.trim();
+        render();
+      });
+
+    })();
+    </script>
+  </body>
+</html>

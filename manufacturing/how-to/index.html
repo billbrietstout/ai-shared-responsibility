@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to Use the Manufacturing Schema - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Five steps for Plant AI Safety Officers, OT Security Teams, and Product Compliance Managers using the SRF manufacturing schema to prepare for EU AI Act high-risk obligations, EU Machinery Regulation 2023/1230, and IEC 62443 OT cybersecurity requirements."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+
+      /* ── Breadcrumb ───────────────────────────────────────────────── */
+      .breadcrumb {
+        font-size: var(--text-xs);
+        color: #93c5fd;
+        margin-bottom: var(--sp-4);
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        flex-wrap: wrap;
+      }
+      .breadcrumb a {
+        color: #93c5fd;
+        text-decoration: none;
+        opacity: 0.75;
+      }
+      .breadcrumb a:hover { opacity: 1; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.4; }
+      .breadcrumb__current { opacity: 0.9; }
+
+      /* ── Audience badge ───────────────────────────────────────────── */
+      .audience-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-3);
+        background: rgba(45, 91, 227, 0.18);
+        border: 1px solid rgba(45, 91, 227, 0.35);
+        border-radius: var(--radius);
+        padding: var(--sp-2) var(--sp-4);
+        margin-top: var(--sp-5);
+        flex-wrap: wrap;
+      }
+      .audience-badge__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #93c5fd;
+      }
+      .audience-badge__text {
+        font-size: var(--text-sm);
+        color: #cbd5e1;
+      }
+
+      /* ── Step list ────────────────────────────────────────────────── */
+      .step-list {
+        counter-reset: steps;
+        list-style: none;
+        padding: 0;
+        margin: 0 0 var(--sp-12);
+      }
+      .step {
+        counter-increment: steps;
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: var(--sp-6);
+        margin-bottom: var(--sp-10);
+        padding-bottom: var(--sp-10);
+        border-bottom: 1px solid var(--slate-100);
+      }
+      .step:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+      }
+      .step__num {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: var(--cosai-navy);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .step__num::before { content: counter(steps); }
+      .step__body {}
+      .step__title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin: 0 0 var(--sp-3);
+        line-height: 1.3;
+      }
+      .step__body p {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-4);
+        max-width: 640px;
+      }
+      .step__body p:last-child { margin-bottom: 0; }
+      .step__body strong { color: var(--slate-800); }
+      .step__body code {
+        font-size: 0.85em;
+        background: var(--slate-100);
+        border: 1px solid var(--slate-200);
+        border-radius: 3px;
+        padding: 1px 5px;
+      }
+
+      /* ── Callout box ──────────────────────────────────────────────── */
+      .callout {
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+        margin: var(--sp-5) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
+        max-width: 640px;
+      }
+      .callout--amber {
+        background: #fffbeb;
+        border: 1px solid #fbbf24;
+        color: #78350f;
+      }
+      .callout--blue {
+        background: #eff6ff;
+        border: 1px solid #93c5fd;
+        color: #1e3a8a;
+      }
+      .callout strong { color: inherit; font-weight: 700; }
+
+      /* ── Persona table ────────────────────────────────────────────── */
+      .persona-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin: var(--sp-5) 0;
+        font-size: var(--text-sm);
+      }
+      .persona-table thead {
+        background: var(--slate-800);
+        color: #fff;
+      }
+      .persona-table thead th {
+        padding: var(--sp-3) var(--sp-4);
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .persona-table tbody tr { border-bottom: 1px solid var(--slate-100); }
+      .persona-table tbody tr:last-child { border-bottom: none; }
+      .persona-table tbody tr:nth-child(even) { background: var(--slate-50); }
+      .persona-table td {
+        padding: var(--sp-3) var(--sp-4);
+        vertical-align: top;
+        color: var(--slate-700);
+        line-height: 1.5;
+      }
+      .persona-table td:first-child {
+        font-family: ui-monospace, monospace;
+        font-size: 0.82rem;
+        color: var(--cosai-navy);
+        white-space: nowrap;
+      }
+
+      /* ── Evidence list ────────────────────────────────────────────── */
+      .evidence-list {
+        list-style: none;
+        padding: 0;
+        margin: var(--sp-4) 0;
+        max-width: 620px;
+      }
+      .evidence-list li {
+        display: flex;
+        align-items: baseline;
+        gap: var(--sp-3);
+        padding: var(--sp-2) 0;
+        border-bottom: 1px solid var(--slate-100);
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+      .evidence-list li:last-child { border-bottom: none; }
+      .evidence-list li::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--cosai-blue);
+        flex-shrink: 0;
+        margin-top: 6px;
+      }
+
+      /* ── Layer mapping table ──────────────────────────────────────── */
+      .layer-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin: var(--sp-5) 0;
+        font-size: var(--text-sm);
+      }
+      .layer-table thead {
+        background: var(--slate-800);
+        color: #fff;
+      }
+      .layer-table thead th {
+        padding: var(--sp-3) var(--sp-4);
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .layer-table tbody tr { border-bottom: 1px solid var(--slate-100); }
+      .layer-table tbody tr:last-child { border-bottom: none; }
+      .layer-table tbody tr:nth-child(even) { background: var(--slate-50); }
+      .layer-table td {
+        padding: var(--sp-3) var(--sp-4);
+        vertical-align: top;
+        color: var(--slate-700);
+        line-height: 1.5;
+      }
+
+      /* ── Responsibility split table ───────────────────────────────── */
+      .split-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin: var(--sp-5) 0;
+        font-size: var(--text-sm);
+      }
+      .split-table thead {
+        background: var(--slate-800);
+        color: #fff;
+      }
+      .split-table thead th {
+        padding: var(--sp-3) var(--sp-4);
+        text-align: left;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .split-table tbody tr { border-bottom: 1px solid var(--slate-100); }
+      .split-table tbody tr:last-child { border-bottom: none; }
+      .split-table td {
+        padding: var(--sp-3) var(--sp-4);
+        vertical-align: top;
+        color: var(--slate-700);
+        line-height: 1.5;
+      }
+      .split-chip {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 4px;
+      }
+      .split-chip--mfr    { color: #1e40af; background: #dbeafe; border: 1px solid #93c5fd; }
+      .split-chip--oem    { color: #92400e; background: #fef3c7; border: 1px solid #fde68a; }
+      .split-chip--vendor { color: #5b21b6; background: #ede9fe; border: 1px solid #c4b5fd; }
+      .split-chip--si     { color: #14532d; background: #d1fae5; border: 1px solid #6ee7b7; }
+      .split-chip--shared { color: #475569; background: #f8fafc; border: 1px solid #cbd5e1; }
+
+      @media (max-width: 640px) {
+        .step { grid-template-columns: 1fr; }
+        .step__num { width: 36px; height: 36px; font-size: 0.9rem; }
+      }
+    </style>
+  
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "How to Use the CoSAI SRF Manufacturing Schema",
+  "url": "https://aisharedresponsibility.com/manufacturing/how-to/",
+  "description": "Practitioner guide for applying the CoSAI SRF Manufacturing controls schema. Maps SRF layers L1-L5 to sector-specific compliance workflows and audit evidence collection.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/",
+    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://aisharedresponsibility.com/",
+    "name": "AI Shared Responsibility"
+  },
+  "mentions": [
+    {
+      "@type": "DefinedTerm",
+      "name": "L1 AI Business & Usage",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L2 AI Information",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L3 AI Application",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L4 AI Platform",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L5 AI Model Provider",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "SRF Personas",
+      "url": "https://aisharedresponsibility.com/personas/"
+    }
+  ]
+}
+    </script>
+  </head>
+  <body>
+    <site-header></site-header>
+
+    <header class="page-hero" style="border-bottom-color: #92400e;">
+      <div class="page-hero__inner">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/industries/">Industries</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <a href="/manufacturing/">Manufacturing</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
+          <span class="breadcrumb__current">How to use the schema</span>
+        </nav>
+        <span class="page-hero__eyebrow">Manufacturing vertical &middot; EU AI Act &middot; EU Machinery Regulation &middot; IEC 62443</span>
+        <h1 class="page-hero__title">How to use the manufacturing schema</h1>
+        <p class="page-hero__lede">
+          Five steps for Plant AI Safety Officers, OT Security Teams, and Product Compliance
+          Managers: classify AI systems by risk tier and operating model, map SRF personas to
+          manufacturing roles, trace responsibility splits, set tier parameters, and assemble
+          the EU AI Act evidence package.
+        </p>
+        <div class="audience-badge" role="note" aria-label="Intended audience">
+          <span class="audience-badge__label">For</span>
+          <span class="audience-badge__text">Plant AI Safety Officer &middot; OT Security Team &middot; Product Compliance Manager &middot; OT/MES Engineer</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-body">
+
+      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-bottom:32px;font-size:0.875rem;color:#78350f;line-height:1.55;">
+        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+        extension of the CoSAI Shared Responsibility Framework, developed independently to
+        demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
+        by CoSAI, the European Commission, ISA, IEC, or any standards body or government agency.
+        EU AI Act and EU Machinery Regulation references must be verified against current
+        regulatory text before use in compliance submissions.
+      </div>
+
+      <ol class="step-list" aria-label="Five steps for using the manufacturing schema">
+
+        <!-- Step 1 -->
+        <li class="step">
+          <div class="step__num" aria-hidden="true"></div>
+          <div class="step__body">
+            <h2 class="step__title">Classify AI systems by EU AI Act risk tier and operating model</h2>
+            <p>
+              Start with the EU AI Act risk classification. Every AI system must be assigned one of
+              four risk tiers: <strong>prohibited</strong> (banned), <strong>high-risk</strong>,
+              <strong>limited-risk</strong>, or <strong>minimal-risk</strong>. For manufacturing,
+              the high-risk determination is the critical question.
+            </p>
+            <p>
+              A system is automatically high-risk if it is a safety component under EU Machinery
+              Regulation 2023/1230 Annex I items 5 or 6: that is, if it uses machine learning to
+              ensure a safety function, or if it is machinery that embeds such a component. This
+              classification is triggered by the function, not by the label; an AI visual inspection
+              system that gates safety-critical assembly steps qualifies.
+            </p>
+            <p>
+              A system is high-risk under EU AI Act Annex III if it operates in critical
+              infrastructure, involves employment or worker management decisions, or affects access
+              to essential services. AI used for predictive maintenance on equipment whose failure
+              could cause harm, or AI-driven workforce scheduling with consequential outcomes,
+              should be evaluated against Annex III.
+            </p>
+            <p>
+              Assign each system one of four operating models: <strong>AI-SaaS</strong> (cloud AI
+              for IT-side manufacturing), <strong>OT-Edge</strong> (AI deployed within OT/ICS
+              security zones), <strong>Product-Embedded</strong> (AI in machinery or products
+              placed on the EU market), or <strong>AI-PaaS</strong> (digital twin, IIoT, or MES
+              platform infrastructure). Record both the risk class and operating model in the AI
+              use case inventory (control SRF-L1-DES-003).
+            </p>
+            <div class="callout callout--amber" role="note">
+              <strong>EU Machinery Regulation note:</strong> The January 20, 2027 deadline for
+              EU Machinery Regulation 2023/1230 follows the August 2, 2026 EU AI Act high-risk
+              deadline by less than six months. The compliance work overlaps substantially. A
+              safety component classification under the Machinery Regulation is automatic
+              high-risk classification under the AI Act, so conformity assessment and technical
+              file preparation should address both simultaneously.
+            </div>
+          </div>
+        </li>
+
+        <!-- Step 2 -->
+        <li class="step">
+          <div class="step__num" aria-hidden="true"></div>
+          <div class="step__body">
+            <h2 class="step__title">Map SRF personas to manufacturing roles</h2>
+            <p>
+              The SRF uses six cross-industry personas. Each maps to specific manufacturing roles.
+              Assign the persona for each control to the role that holds operational accountability
+              in your organization. For controls marked <code>shared</code>, document the split
+              explicitly rather than leaving it undefined.
+            </p>
+
+            <table class="persona-table" role="table" aria-label="SRF persona to manufacturing role mapping">
+              <thead>
+                <tr>
+                  <th>SRF persona</th>
+                  <th>Manufacturing role</th>
+                  <th>Typical office or team</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>ai-system-governance</td>
+                  <td>Plant AI Safety Officer or VP Manufacturing with AI governance mandate</td>
+                  <td>EHS, Operations, or Chief Digital Officer organization</td>
+                </tr>
+                <tr>
+                  <td>data-provider</td>
+                  <td>OT Data Manager or Historian Administrator</td>
+                  <td>IT/OT integration team or plant automation engineering</td>
+                </tr>
+                <tr>
+                  <td>application-developer</td>
+                  <td>OT/MES Engineer or Product Application Engineer</td>
+                  <td>Manufacturing engineering, MES team, or product development</td>
+                </tr>
+                <tr>
+                  <td>agentic-platform-provider</td>
+                  <td>Automation Platform Owner or Robotics Systems Engineer</td>
+                  <td>Advanced manufacturing or automation center of excellence</td>
+                </tr>
+                <tr>
+                  <td>ai-platform-provider</td>
+                  <td>OT Infrastructure Lead or ICS Security Team</td>
+                  <td>OT network operations, ICS security, or plant IT</td>
+                </tr>
+                <tr>
+                  <td>model-provider</td>
+                  <td>AI Model Vendor or Equipment OEM (external); AI model team (internal)</td>
+                  <td>Procurement contract counterparty or internal AI center of excellence</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p>
+              For controls owned by external parties (model vendor, equipment OEM, system integrator),
+              verify that procurement contracts assign the obligation explicitly. The schema's
+              <code>responsibility_split</code> field on every control indicates the expected owner;
+              use this as a contract checklist during supplier negotiations.
+            </p>
+          </div>
+        </li>
+
+        <!-- Step 3 -->
+        <li class="step">
+          <div class="step__num" aria-hidden="true"></div>
+          <div class="step__body">
+            <h2 class="step__title">Trace responsibility splits by operating model</h2>
+            <p>
+              The schema uses five responsibility split values. Each control carries exactly one.
+              For <code>shared</code> controls, the accountable party (usually the manufacturer)
+              must document the split and assign sub-obligations to the relevant parties.
+            </p>
+
+            <table class="split-table" role="table" aria-label="Responsibility split values and scope">
+              <thead>
+                <tr>
+                  <th>Split value</th>
+                  <th>Scope</th>
+                  <th>Typical contract mechanism</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="split-chip split-chip--mfr">manufacturer</span></td>
+                  <td>The manufacturing organization deploying or placing the AI system on the market. Full accountability; no delegation.</td>
+                  <td>Internal policy and procedure</td>
+                </tr>
+                <tr>
+                  <td><span class="split-chip split-chip--oem">equipment-oem</span></td>
+                  <td>The OEM supplying the AI-enabled machine, robot, or system. Accountable for product-side obligations including technical file and EU declaration of conformity.</td>
+                  <td>Supply contract with EU AI Act compliance annex</td>
+                </tr>
+                <tr>
+                  <td><span class="split-chip split-chip--vendor">ai-vendor</span></td>
+                  <td>The AI software or model vendor. Accountable for model artifacts, BoAIM, vulnerability disclosure SLA, and portability documentation.</td>
+                  <td>Software license or AI services agreement with SRF annex</td>
+                </tr>
+                <tr>
+                  <td><span class="split-chip split-chip--si">system-integrator</span></td>
+                  <td>The SI who integrated AI into the plant or product. Accountable for integration quality, zone segmentation, and acceptance testing scope.</td>
+                  <td>Professional services contract with FAT/SAT and IEC 62443 deliverable requirements</td>
+                </tr>
+                <tr>
+                  <td><span class="split-chip split-chip--shared">shared</span></td>
+                  <td>Split across parties. The accountable party (the manufacturer, unless otherwise designated) must document who owns each sub-obligation.</td>
+                  <td>Responsibility matrix (RACI) attached to the relevant contracts</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p>
+              Use the <a href="/manufacturing/controls/" style="color:var(--cosai-blue);">controls browser</a>
+              with the "Responsibility split" filter to export a view of controls by party. Run
+              this view in contract review to verify coverage.
+            </p>
+          </div>
+        </li>
+
+        <!-- Step 4 -->
+        <li class="step">
+          <div class="step__num" aria-hidden="true"></div>
+          <div class="step__body">
+            <h2 class="step__title">Set tier parameters by operating model and EU AI Act risk class</h2>
+            <p>
+              Controls of type <code>tier-configurable</code> carry a threshold parameter name
+              (e.g., <code>TIER_INPUT_PSI_THRESHOLD</code>) rather than a hard-coded value. Your
+              organization sets these parameters by operating model and risk class. The table below
+              provides starting points; adjust based on your process criticality and regulatory risk
+              appetite.
+            </p>
+
+            <table class="layer-table" role="table" aria-label="Recommended tier parameter starting points">
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>AI-SaaS / AI-PaaS (IT-side)</th>
+                  <th>OT-Edge / Product-Embedded (high-risk)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>TIER_AI_REGISTRY_COVERAGE_PCT</code></td>
+                  <td>100%</td>
+                  <td>100%</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_INVENTORY_STALENESS_DAYS</code></td>
+                  <td>30 days</td>
+                  <td>14 days</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_INPUT_PSI_THRESHOLD</code></td>
+                  <td>0.2 (PSI alert threshold)</td>
+                  <td>0.1 (tighter; process drift is safety-relevant)</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_LOG_RETENTION_DAYS</code></td>
+                  <td>180 days (EU AI Act minimum)</td>
+                  <td>365 days recommended for safety-critical deployments</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_OT_ANOMALY_DETECTION_COVERAGE_PCT</code></td>
+                  <td>N/A (IT-only parameter)</td>
+                  <td>100% for safety zones; 80% minimum for non-safety zones</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_OT_SIEM_COVERAGE_PCT</code></td>
+                  <td>N/A (OT-only parameter)</td>
+                  <td>100%</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_CHANGE_RECORD_COMPLETENESS_PCT</code></td>
+                  <td>95%</td>
+                  <td>100% for safety-critical OT AI</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_MODEL_PERFORMANCE_FLOOR</code></td>
+                  <td>Defined per use case (e.g., 95% accuracy for quality inspection)</td>
+                  <td>Same, but with tighter monitoring window; process criticality determines floor</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_VULN_SLA_DAYS_CRITICAL</code></td>
+                  <td>30 days</td>
+                  <td>90 days (OT change cycle constraint); compensating control required if longer</td>
+                </tr>
+                <tr>
+                  <td><code>TIER_AI_AVAILABILITY_PCT</code></td>
+                  <td>99.5% for business-critical; lower for non-critical</td>
+                  <td>99.9% for AI in the critical production path</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p>
+              Document tier parameters in a policy annex or configuration management record.
+              Reference them from the controls assessment workpaper so auditors can trace each
+              threshold to its source.
+            </p>
+
+            <div class="callout callout--blue" role="note">
+              <strong>OT change management note:</strong> OT-edge AI systems cannot be patched on
+              an IT cycle. The <code>TIER_VULN_SLA_DAYS_CRITICAL</code> parameter for OT-edge
+              deployments must account for the change management cycle: version freeze windows
+              aligned to production shutdowns, safety re-validation before deployment, and rollback
+              verification. A 90-day SLA is a common starting point; supplement it with a
+              compensating control requirement (network isolation, input validation, anomaly
+              detection) for vulnerabilities that cannot be patched within the SLA.
+            </div>
+          </div>
+        </li>
+
+        <!-- Step 5 -->
+        <li class="step">
+          <div class="step__num" aria-hidden="true"></div>
+          <div class="step__body">
+            <h2 class="step__title">Assemble the evidence package</h2>
+            <p>
+              The manufacturing evidence package differs from other verticals in two ways: the EU AI
+              Act technical file has a 10-year retention requirement for high-risk systems, and safety
+              case documents for AI in safety-instrumented systems may be confidential. The list below
+              covers the required artifacts by category.
+            </p>
+
+            <p><strong>EU AI Act technical file (per high-risk system):</strong></p>
+            <ul class="evidence-list" role="list">
+              <li>General system description, including intended purpose and operating model</li>
+              <li>Design documentation: architecture, training methodology, dataset descriptions, data quality assessment</li>
+              <li>Testing and validation information: pre-deployment test plan and results, FAT/SAT report with AI-specific test cases</li>
+              <li>Conformity assessment record (self-assessment or notified-body certificate)</li>
+              <li>EU declaration of conformity (signed, with CE marking reference for machinery)</li>
+              <li>EU AI database registration confirmation</li>
+              <li>Instructions for use (including human oversight requirements and operator override procedure)</li>
+              <li>Post-market monitoring plan</li>
+              <li>Fundamental Rights Impact Assessment (where applicable under Article 27)</li>
+              <li>Change log for all substantive system modifications</li>
+            </ul>
+
+            <p><strong>OT-specific artifacts:</strong></p>
+            <ul class="evidence-list" role="list">
+              <li>IEC 62443 zone-and-conduit design document with OT security review sign-off</li>
+              <li>OT change management records for each AI system update (change record, safety impact assessment, rollback test result)</li>
+              <li>OT-edge hardware security baseline configuration audit report</li>
+              <li>Conduit traversal audit log for data flows between OT and IT/cloud</li>
+              <li>OT SIEM or anomaly detection coverage report</li>
+              <li>Remote access session logs (monthly review record)</li>
+              <li>SBOM/AIBOM for each OT-deployed AI component</li>
+            </ul>
+
+            <p><strong>Safety-critical artifacts (access-restricted; maintain with functional safety engineer):</strong></p>
+            <ul class="evidence-list" role="list">
+              <li>Safety case document (custodian: functional safety engineer or plant safety officer)</li>
+              <li>SIL assessment record for AI in safety-instrumented systems, per IEC 61508 (custodian: functional safety engineer)</li>
+              <li>Safety interlock integration test record</li>
+            </ul>
+
+            <div class="callout callout--amber" role="note">
+              <strong>IEC 61508 evidence note:</strong> Safety case documents and SIL assessment
+              records are often confidential under corporate security and functional safety
+              management policies. Do not publish document URLs or include document content in
+              publicly accessible systems. Record document type, custodian role, and access path
+              only. For market surveillance authority requests, the deploying manufacturer must
+              have an internal retrieval process for these artifacts.
+            </div>
+
+            <p><strong>Supplier documentation (per third-party AI system):</strong></p>
+            <ul class="evidence-list" role="list">
+              <li>EU declaration of conformity from the model provider or equipment OEM</li>
+              <li>Supplier technical file completeness checklist with review sign-off</li>
+              <li>Bill of AI Materials (BoAIM) with artifact signature verification record</li>
+              <li>Supplier vulnerability disclosure SLA document</li>
+              <li>Supplier due diligence report with OT security review sign-off</li>
+              <li>Model portability documentation</li>
+            </ul>
+
+            <p>
+              Download the <a href="/manufacturing/how-to/manufacturing-compliance-workpaper.xlsx" style="color:var(--cosai-blue);">manufacturing compliance workpaper</a>
+              to track all 45 controls, assign owners, log evidence artifact status, and record
+              tier parameter values in a single auditor-ready file.
+            </p>
+          </div>
+        </li>
+
+      </ol>
+
+    </main>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+  </body>
+</html>

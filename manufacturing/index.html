@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Department of War - AI Shared Responsibility - CoSAI SRF</title>
+    <title>Manufacturing - AI Shared Responsibility - CoSAI SRF</title>
     <meta
       name="description"
-      content="The SRF Department of War schema maps DoD Responsible AI tenets to named accountability across IL4, IL5, and IL6 impact levels, with separate control tiers for Non-NSS and NSS environments, CMMC-aligned evidence for contractors, and DISA authorization requirements for cloud deployments."
+      content="The SRF Manufacturing schema maps EU AI Act high-risk obligations, EU Machinery Regulation 2023/1230, and IEC 62443 OT cybersecurity to named accountability across OT-edge, product-embedded, and IT-side AI deployments in industrial manufacturing."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -79,8 +79,8 @@
         margin-bottom: var(--sp-6);
       }
 
-      /* ── IL classification table ──────────────────────────────────── */
-      .il-table {
+      /* ── OT environment table ─────────────────────────────────────── */
+      .ot-table {
         width: 100%;
         border-collapse: collapse;
         border: 1px solid var(--slate-200);
@@ -89,11 +89,11 @@
         margin-bottom: var(--sp-10);
         font-size: var(--text-sm);
       }
-      .il-table thead {
+      .ot-table thead {
         background: var(--slate-800);
         color: #fff;
       }
-      .il-table thead th {
+      .ot-table thead th {
         padding: var(--sp-3) var(--sp-4);
         text-align: left;
         font-size: var(--text-xs);
@@ -101,21 +101,21 @@
         letter-spacing: 0.06em;
         text-transform: uppercase;
       }
-      .il-table tbody tr { border-bottom: 1px solid var(--slate-100); }
-      .il-table tbody tr:last-child { border-bottom: none; }
-      .il-table tbody tr:nth-child(even) { background: var(--slate-50); }
-      .il-table td {
+      .ot-table tbody tr { border-bottom: 1px solid var(--slate-100); }
+      .ot-table tbody tr:last-child { border-bottom: none; }
+      .ot-table tbody tr:nth-child(even) { background: var(--slate-50); }
+      .ot-table td {
         padding: var(--sp-3) var(--sp-4);
         vertical-align: top;
         color: var(--slate-700);
         line-height: 1.5;
       }
-      .il-table td:first-child {
+      .ot-table td:first-child {
         font-weight: 700;
         color: var(--slate-900);
         white-space: nowrap;
       }
-      .il-badge {
+      .ot-badge {
         display: inline-block;
         padding: 2px 8px;
         border-radius: 4px;
@@ -123,11 +123,13 @@
         font-weight: 700;
         letter-spacing: 0.04em;
       }
-      .il-badge--il4 { background: #dbeafe; color: #1e40af; }
-      .il-badge--il5 { background: #fef3c7; color: #92400e; }
-      .il-badge--il6 { background: #fee2e2; color: #991b1b; }
-      .il-badge--nss { background: #fef9c3; color: #713f12; }
-      .il-badge--non-nss { background: #f0fdf4; color: #14532d; }
+      .ot-badge--saas     { background: #dbeafe; color: #1e40af; }
+      .ot-badge--edge     { background: #fef3c7; color: #92400e; }
+      .ot-badge--product  { background: #fee2e2; color: #991b1b; }
+      .ot-badge--paas     { background: #f5f3ff; color: #5b21b6; }
+      .ot-badge--high     { background: #fee2e2; color: #991b1b; }
+      .ot-badge--limited  { background: #fef9c3; color: #713f12; }
+      .ot-badge--minimal  { background: #f0fdf4; color: #14532d; }
 
       /* ── Card grid ────────────────────────────────────────────────── */
       .card-grid {
@@ -157,7 +159,6 @@
       .page-card__accent--blue   { background: var(--cosai-blue); }
       .page-card__accent--green  { background: var(--l1); }
       .page-card__accent--purple { background: var(--l4); }
-      .page-card__accent--olive  { background: #4d7c0f; }
       .page-card__body {
         padding: var(--sp-5) var(--sp-6);
         flex: 1;
@@ -177,11 +178,9 @@
       .page-card__icon--blue   { background: var(--cosai-blue-light); }
       .page-card__icon--green  { background: var(--l1-bg); }
       .page-card__icon--purple { background: var(--l4-bg); }
-      .page-card__icon--olive  { background: #f7fee7; }
       .page-card__icon--blue   svg { stroke: var(--cosai-blue); }
       .page-card__icon--green  svg { stroke: var(--l1); }
       .page-card__icon--purple svg { stroke: var(--l4); }
-      .page-card__icon--olive  svg { stroke: #4d7c0f; }
       .page-card__name {
         font-size: var(--text-base);
         font-weight: 700;
@@ -206,8 +205,6 @@
       .tag--blue   { background: var(--cosai-blue-light); color: var(--cosai-blue); border-color: #bfdbfe; }
       .tag--slate  { background: var(--slate-100); color: var(--slate-600); border-color: var(--slate-200); }
       .tag--green  { background: var(--l1-bg); color: var(--l1-text); border-color: var(--l1-border); }
-      .tag--olive  { background: #f7fee7; color: #3f6212; border-color: #d9f99d; }
-      .tag--red    { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
       .page-card__footer {
         padding: var(--sp-3) var(--sp-6);
         border-top: 1px solid var(--slate-100);
@@ -364,10 +361,10 @@
         font-weight: 700;
         border: 1px solid transparent;
       }
-      .split-chip--dod    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
-      .split-chip--disa   { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
-      .split-chip--cont   { background: #fef3c7; color: #92400e; border-color: #fde68a; }
-      .split-chip--csp    { background: #f0fdf4; color: #14532d; border-color: #bbf7d0; }
+      .split-chip--mfr    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+      .split-chip--oem    { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+      .split-chip--vendor { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
+      .split-chip--si     { background: #f0fdf4; color: #14532d; border-color: #bbf7d0; }
       .split-chip--shared { background: var(--slate-100); color: var(--slate-600); border-color: var(--slate-200); }
       .split-chip__dot {
         width: 6px; height: 6px;
@@ -379,7 +376,7 @@
       @media (max-width: 640px) {
         .stat-strip { grid-template-columns: repeat(2, 1fr); }
         .schema-strip { grid-template-columns: 1fr; }
-        .il-table { font-size: var(--text-xs); }
+        .ot-table { font-size: var(--text-xs); }
       }
     </style>
   
@@ -387,9 +384,9 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "name": "CoSAI SRF Defense / DoD Controls Schema",
-  "url": "https://aisharedresponsibility.com/defense/",
-  "description": "The CoSAI SRF defense schema: 53 controls for DoD components and the defense industrial base across L1-L5. Impact levels IL4, IL5, IL6. Separate NSS and Non-NSS control tiers. Regulatory crosswalk: DoD Responsible AI tenets, CMMC 2.0, DoD CC SRG, NIST 800-171. One named persona accountable per control.",
+  "name": "CoSAI SRF Manufacturing Controls Schema",
+  "url": "https://aisharedresponsibility.com/manufacturing/",
+  "description": "The CoSAI SRF manufacturing schema: 45 controls for OT/ICS, product-embedded AI, and IT-side manufacturing across L1-L5. OT applicability flags per control. Regulatory crosswalk: EU AI Act high-risk (August 2026), EU Machinery Regulation 2023/1230 (January 2027), IEC 62443 OT cybersecurity zones, ISO 42001.",
   "publisher": {
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -403,8 +400,8 @@
   },
   "about": {
     "@type": "Dataset",
-    "name": "CoSAI SRF Defense / DoD Controls",
-    "url": "https://aisharedresponsibility.com/data/defense-controls.json"
+    "name": "CoSAI SRF Manufacturing Controls",
+    "url": "https://aisharedresponsibility.com/data/manufacturing-controls.json"
   },
   "mentions": [
     {
@@ -449,22 +446,23 @@
   <body>
     <site-header></site-header>
 
-    <header class="page-hero" style="border-bottom-color: #374151;">
+    <header class="page-hero" style="border-bottom-color: #92400e;">
       <div class="page-hero__inner">
         <nav class="breadcrumb" aria-label="Breadcrumb">
           <a href="/industries/">Industries</a>
           <span class="breadcrumb__sep" aria-hidden="true">&#8250;</span>
-          <span class="breadcrumb__current">Department of War</span>
+          <span class="breadcrumb__current">Manufacturing</span>
         </nav>
-        <span class="page-hero__eyebrow">Department of War vertical &middot; DoD RAI &middot; IL4 / IL5 / IL6 &middot; CMMC 2.0 &middot; OCSF v1.8.0</span>
-        <h1 class="page-hero__title">AI shared responsibility for DoD components and the defense industrial base</h1>
+        <span class="page-hero__eyebrow">Manufacturing vertical &middot; EU AI Act (Aug 2026) &middot; EU Machinery Reg (Jan 2027) &middot; IEC 62443 &middot; OCSF v1.8.0</span>
+        <h1 class="page-hero__title">AI shared responsibility for industrial manufacturing</h1>
         <p class="page-hero__lede">
-          The DoD Responsible AI Strategy names five principles but assigns no accountable party,
-          specifies no control thresholds, and provides no evidence model. CMMC 2.0 governs
-          contractor cybersecurity but was not designed around AI. This vertical fills both gaps:
-          53 controls across five SRF layers, parameterized by impact level (IL4, IL5, IL6),
-          with a separate responsibility split for DoD components, DISA, contractors, and
-          cloud service providers.
+          The EU AI Act high-risk compliance deadline (August 2, 2026) covers manufacturers deploying
+          AI in safety-critical processes and products. The EU Machinery Regulation 2023/1230
+          (January 20, 2027) makes AI safety components in machinery automatically high-risk.
+          IEC 62443 governs OT/ICS security but has no AI-specific controls. This vertical fills all
+          three gaps: 45 controls across five SRF layers, parameterized by OT applicability and EU AI
+          Act risk class, with named accountability for manufacturers, equipment OEMs, AI vendors,
+          and system integrators.
         </p>
       </div>
     </header>
@@ -476,15 +474,15 @@
         <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
         extension of the CoSAI Shared Responsibility Framework, developed independently to
         demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
-        by CoSAI, DoD, DISA, or any government agency. CMMC and DISA requirement references
-        should be verified against current program documentation before use in official
-        contractor or agency submissions.
+        by CoSAI, the European Commission, ISA, IEC, or any standards body or government agency.
+        EU AI Act and EU Machinery Regulation references must be verified against current
+        regulatory text before use in compliance submissions.
       </div>
 
       <!-- Stat strip -->
       <div class="stat-strip" role="region" aria-label="Schema at a glance">
         <div class="stat-cell">
-          <div class="stat-cell__num">53</div>
+          <div class="stat-cell__num">45</div>
           <div class="stat-cell__label">Controls</div>
         </div>
         <div class="stat-cell">
@@ -492,74 +490,55 @@
           <div class="stat-cell__label">SRF layers</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-cell__num">3</div>
-          <div class="stat-cell__label">Impact levels (IL4 / IL5 / IL6)</div>
+          <div class="stat-cell__num">4</div>
+          <div class="stat-cell__label">Lifecycle stages (DES / VAL / OPS / CHG)</div>
         </div>
         <div class="stat-cell">
-          <div class="stat-cell__num">2</div>
-          <div class="stat-cell__label">System tiers (Non-NSS / NSS)</div>
+          <div class="stat-cell__num">4</div>
+          <div class="stat-cell__label">Operating models</div>
         </div>
       </div>
 
-      <!-- Impact Level terminology table -->
-      <p class="section-label">Impact level and NSS terminology</p>
-      <table class="il-table" role="table" aria-label="DoD impact level and NSS classification reference">
+      <!-- OT environment table -->
+      <p class="section-label">Operating model and EU AI Act risk class</p>
+      <table class="ot-table" role="table" aria-label="Manufacturing operating model reference">
         <thead>
           <tr>
-            <th>Level</th>
-            <th>System tier</th>
-            <th>Data classification</th>
-            <th>Cloud authorization path</th>
-            <th>Responsibility split note</th>
+            <th>Operating model</th>
+            <th>Data type</th>
+            <th>Network zone</th>
+            <th>EU AI Act risk class</th>
+            <th>Key obligation</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td><span class="il-badge il-badge--il4">IL4</span></td>
-            <td><span class="il-badge il-badge--non-nss">Non-NSS</span></td>
-            <td>Controlled Unclassified Information (CUI). No classified data. Excludes
-              National Security Information (NSI).</td>
-            <td>FedRAMP Moderate baseline + DoD CC SRG IL4 overlay. Commercial cloud
-              providers with DISA IL4 Provisional Authorization (PA).</td>
-            <td>CSP holds the platform PA. DoD component owns CUI configuration,
-              access policy, and agency-side controls. Contractor systems require CMMC
-              Level 2 for CUI processing.</td>
+            <td><span class="ot-badge ot-badge--saas">AI-SaaS</span></td>
+            <td>Production KPIs, supply chain data, quality metrics, workforce analytics</td>
+            <td>Corporate IT / cloud boundary</td>
+            <td><span class="ot-badge ot-badge--high">High-risk</span> where used for employment, safety, or critical infrastructure decisions; otherwise limited or minimal</td>
+            <td>EU AI Act provider obligations (Article 16), deployer obligations (Article 26), post-market monitoring (Article 72)</td>
           </tr>
           <tr>
-            <td><span class="il-badge il-badge--il5">IL5</span></td>
-            <td><span class="il-badge il-badge--non-nss">Non-NSS</span></td>
-            <td>CUI that requires higher protection than IL4: Privacy Act data, law
-              enforcement sensitive, some export-controlled research. No classified data.</td>
-            <td>FedRAMP High baseline + DoD CC SRG IL5 overlay. Government-only cloud
-              regions required (GovCloud or equivalent). DISA IL5 PA holders only.</td>
-            <td>Government-community cloud enforces tenant separation. CSP must operate
-              in a US-person-only environment. DoD component retains agency-side controls
-              identical to IL4 but with stricter access vetting.</td>
+            <td><span class="ot-badge ot-badge--edge">OT-Edge</span></td>
+            <td>Sensor streams, PLC/SCADA signals, process variables, historian data</td>
+            <td>OT/ICS security zone per IEC 62443 zone-and-conduit model</td>
+            <td><span class="ot-badge ot-badge--high">High-risk</span> where AI is a safety component (EU Machinery Regulation Annex I item 5/6) or integrated into critical infrastructure</td>
+            <td>Zone segmentation, conduit documentation, IEC 62443 SL compliance, air-gap or approved-conduit enforcement, OT change management</td>
           </tr>
           <tr>
-            <td><span class="il-badge il-badge--il5">IL5</span></td>
-            <td><span class="il-badge il-badge--nss">NSS</span></td>
-            <td>Unclassified National Security Systems. Processes NSI or directly supports
-              NSS missions as defined in 44 USC 3552(b)(6): intelligence, cryptology,
-              command and control of military forces, or weapons systems.</td>
-            <td>Government-only cloud region with DISA IL5 PA. CNSS Policy 22 applies.
-              CNSSI 1253 security controls baseline applies in addition to DoD CC SRG.</td>
-            <td>DISA assumes a larger authorization role. The DoD component must document
-              NSS boundary determination. CSP access restricted to cleared US persons;
-              FOCI mitigation may apply.</td>
+            <td><span class="ot-badge ot-badge--product">Product-Embedded</span></td>
+            <td>Machine operating state, sensor inputs, user commands</td>
+            <td>Embedded in product; external network connectivity varies</td>
+            <td><span class="ot-badge ot-badge--high">High-risk</span> for AI safety components under EU Machinery Regulation Annex I items 5 and 6 (automatic high-risk classification under EU AI Act)</td>
+            <td>Conformity assessment (EU AI Act Article 43), EU declaration of conformity (Article 47), EU AI database registration (Article 49), 10-year technical file retention</td>
           </tr>
           <tr>
-            <td><span class="il-badge il-badge--il6">IL6</span></td>
-            <td><span class="il-badge il-badge--nss">NSS</span></td>
-            <td>Classified information up to and including SECRET. Processed only in
-              classified cloud environments or on-premises classified networks (SIPRNET).</td>
-            <td>Classified cloud (AWS C2S, Azure Government Secret, Oracle NSR) with
-              DISA IL6 PA. No commercial cloud path. ATO issued by Component Authorizing
-              Official for Classified (AOSC).</td>
-            <td>CSP operates as a cleared facility under DISA and DoD oversight. Component
-              ISSO and AO remain accountable for classified workload configuration.
-              Contractor access requires personnel security clearance (Secret or above)
-              and facility clearance (FCL).</td>
+            <td><span class="ot-badge ot-badge--paas">AI-PaaS</span></td>
+            <td>Digital twin state, IIoT telemetry, model training datasets</td>
+            <td>Cloud or hybrid; data may traverse OT/IT boundary via approved conduit</td>
+            <td><span class="ot-badge ot-badge--minimal">Minimal-risk</span> for infrastructure only; risk class determined by workloads deployed on the platform</td>
+            <td>OT/IT data boundary enforcement, data provenance documentation, platform SBOM/AIBOM, model drift monitoring</td>
           </tr>
         </tbody>
       </table>
@@ -567,39 +546,45 @@
       <!-- Context blocks -->
       <div class="context-block" role="note">
         <p>
-          <strong>The DoD RAI gap.</strong> The DoD Responsible AI Strategy and Implementation
-          Pathway (2022) established five principles: Responsible, Equitable, Traceable,
-          Reliable, and Governable (RETR-G). The strategy also created the Chief Digital and
-          Artificial Intelligence Office (CDAO) to oversee implementation. Neither the strategy
-          nor subsequent guidance assigns a named accountable party to each principle, specifies
-          a measurable threshold for compliance, or defines the evidence a program office or
-          contractor must produce. This schema fills that gap by binding each principle to a
-          control, a persona, and an OCSF evidence pointer.
+          <strong>The EU AI Act high-risk gap.</strong> The EU AI Act (Regulation 2024/1689)
+          high-risk provider and deployer obligations take effect August 2, 2026. The Act requires
+          providers to complete conformity assessments, register high-risk systems in the EU AI
+          database, implement a quality management system per Article 17, and activate post-market
+          monitoring per Article 72. Deployers must implement human oversight, retain automated logs
+          for at least six months, and complete Fundamental Rights Impact Assessments where required.
+          The Act provides no control catalog, no evidence model, and no thresholds. This schema
+          provides all three.
         </p>
         <p>
-          <strong>The CMMC gap.</strong> CMMC 2.0 (32 CFR Part 170, effective December 2024)
-          governs the cybersecurity posture of defense contractors handling CUI and Federal
-          Contract Information (FCI). Level 2 (110 practices from NIST SP 800-171) applies
-          to contractors processing CUI. CMMC was designed around cybersecurity, not AI
-          governance: it has no practice for model transparency, no threshold for human
-          oversight of AI-generated decisions, and no evidence requirement for training
-          data provenance. This schema provides the AI-specific layer that CMMC does not.
+          <strong>The EU Machinery Regulation 2023/1230 gap.</strong> The EU Machinery Regulation
+          applies from January 20, 2027. Annex I item 5 defines safety components with self-evolving
+          behavior using machine learning approaches that ensure safety functions. Item 6 covers
+          machinery embedding such components. Both are automatically high-risk AI systems under the
+          EU AI Act. Manufacturers must protect safety functions against third-party attacks for the
+          operational lifetime of the machine. No existing schema connects Machinery Regulation
+          obligations to the AI Act conformity assessment process; this vertical bridges the two.
         </p>
         <p>
-          <strong>The NSS boundary problem.</strong> Many DoD AI deployments cross the NSS
-          boundary at runtime rather than at design time: a logistics model deployed at IL4
-          may later receive NSI as operational context, pushing it into NSS territory. The
-          <code>nss_boundary</code> field on every control in this schema requires the
-          deploying component to make and document an explicit classification determination
-          before deployment, not after.
+          <strong>The IEC 62443 OT gap.</strong> IEC 62443 is the global standard for OT/ICS
+          cybersecurity. ISA-TR62443-2-2-2025 (December 2025) updated the security protection scheme
+          guidance but added no AI-specific controls. The standard has no concept of model drift, no
+          AI accountability assignment per zone, and no evidence model for AI outputs. The
+          <code>ot_applicability</code> field on every control in this schema requires the deploying
+          manufacturer to make an explicit OT/IT/both determination and document it, closing the
+          classification gap IEC 62443 leaves open.
         </p>
         <p>
-          <strong>The IL-split responsibility problem.</strong> The DoD Cloud Computing
-          Security Requirements Guide (CC SRG) defines what the CSP must do to earn a DISA
-          Provisional Authorization at each impact level. It does not define what the DoD
-          component or contractor must do on the agency side of that authorization. This schema
-          provides the component-side control catalog, parameterized by IL, with a
-          <code>responsibility_split</code> value on every control.
+          <strong>ISO 42001 and the quality management system anchor.</strong> ISO 42001:2023 is
+          gaining adoption as the Article 17 quality management system anchor for EU AI Act compliance.
+          ISO 42001 assigns no accountable party per control and provides no thresholds. This schema
+          is a structural complement: use ISO 42001 for QMS certification; use this schema for
+          per-control accountability, thresholds, and evidence.
+        </p>
+        <p>
+          <strong>NIST Cyber AI Profile.</strong> The NIST Cybersecurity Framework Profile for
+          Artificial Intelligence (Cyber AI Profile) was published as a preliminary draft on
+          December 16, 2025. All NIST Cyber AI mappings in this schema are marked TBD pending
+          finalization of the profile.
         </p>
       </div>
 
@@ -607,10 +592,10 @@
       <p class="section-label">Responsibility split values</p>
       <div class="split-key" role="note" aria-label="Responsibility split key">
         <span class="split-key__label">Split key</span>
-        <span class="split-chip split-chip--dod"><span class="split-chip__dot"></span>dod-component</span>
-        <span class="split-chip split-chip--disa"><span class="split-chip__dot"></span>disa</span>
-        <span class="split-chip split-chip--cont"><span class="split-chip__dot"></span>contractor</span>
-        <span class="split-chip split-chip--csp"><span class="split-chip__dot"></span>csp</span>
+        <span class="split-chip split-chip--mfr"><span class="split-chip__dot"></span>manufacturer</span>
+        <span class="split-chip split-chip--oem"><span class="split-chip__dot"></span>equipment-oem</span>
+        <span class="split-chip split-chip--vendor"><span class="split-chip__dot"></span>ai-vendor</span>
+        <span class="split-chip split-chip--si"><span class="split-chip__dot"></span>system-integrator</span>
         <span class="split-chip split-chip--shared"><span class="split-chip__dot"></span>shared</span>
         <span style="font-size:var(--text-xs);color:var(--slate-500);margin-left:var(--sp-2);">
           Every control carries one value. <code>shared</code> = documented split required; accountable party owns the split determination.
@@ -619,9 +604,9 @@
 
       <!-- Pages in this section -->
       <p class="section-label">In this section</p>
-      <nav class="card-grid" aria-label="Department of War section pages">
+      <nav class="card-grid" aria-label="Manufacturing section pages">
 
-        <a class="page-card" href="/defense/how-to/">
+        <a class="page-card" href="/manufacturing/how-to/">
           <div class="page-card__accent page-card__accent--blue"></div>
           <div class="page-card__body">
             <div class="page-card__icon page-card__icon--blue" aria-hidden="true">
@@ -632,22 +617,23 @@
             </div>
             <div class="page-card__name">How to use the schema</div>
             <p class="page-card__desc">
-              Step-by-step guide for program managers, ISSOs, and contracting officers:
-              determine NSS boundary, select IL tier, trace CC SRG inheritance, map personas
-              to DoD roles, and assemble the evidence package for ATO and CMMC assessment.
+              Five-step guide for Plant AI Safety Officers, OT Security Teams, and Product
+              Compliance Managers: classify AI systems by risk tier and operating model, map
+              personas to manufacturing roles, trace responsibility splits, set tier parameters,
+              and assemble the EU AI Act evidence package.
             </p>
             <div class="page-card__tags">
-              <span class="tag tag--blue">PM and ISSO guide</span>
-              <span class="tag tag--slate">CMMC crosswalk</span>
-              <span class="tag tag--slate">IL4 / IL5 / IL6</span>
+              <span class="tag tag--blue">Plant AI Safety Officer guide</span>
+              <span class="tag tag--slate">OT change management</span>
+              <span class="tag tag--slate">Evidence package</span>
             </div>
           </div>
           <div class="page-card__footer">
-            <span class="page-card__cta">Read the guide →</span>
+            <span class="page-card__cta">Read the guide &rarr;</span>
           </div>
         </a>
 
-        <a class="page-card" href="/defense/controls/">
+        <a class="page-card" href="/manufacturing/controls/">
           <div class="page-card__accent page-card__accent--green"></div>
           <div class="page-card__body">
             <div class="page-card__icon page-card__icon--green" aria-hidden="true">
@@ -660,22 +646,22 @@
             </div>
             <div class="page-card__name">Controls browser</div>
             <p class="page-card__desc">
-              Browse, filter, and inspect all 53 controls. Filter by SRF layer, impact level,
-              NSS tier, responsibility split, CMMC practice mapping, or accountable persona.
-              View thresholds, OCSF evidence pointers, and regulatory mappings per control.
+              Browse, filter, and inspect all 45 controls. Filter by SRF layer, lifecycle stage,
+              OT applicability, EU AI Act risk class, operating model, responsibility split, or
+              accountable persona. View thresholds, OCSF evidence pointers, and regulatory
+              mappings per control.
             </p>
             <div class="page-card__tags">
-              <span class="tag tag--slate">53 controls</span>
-              <span class="tag tag--slate">Filter by IL</span>
-              
+              <span class="tag tag--slate">45 controls</span>
+              <span class="tag tag--slate">Filter by OT applicability</span>
             </div>
           </div>
           <div class="page-card__footer">
-            <span class="page-card__cta">Browse controls →</span>
+            <span class="page-card__cta">Browse controls &rarr;</span>
           </div>
         </a>
 
-        <a class="page-card" href="/data/defense-controls.json" download="defense-controls.json">
+        <a class="page-card" href="/data/manufacturing-controls.json" download="manufacturing-controls.json">
           <div class="page-card__accent page-card__accent--purple"></div>
           <div class="page-card__body">
             <div class="page-card__icon page-card__icon--purple" aria-hidden="true">
@@ -686,18 +672,17 @@
             </div>
             <div class="page-card__name">Raw schema (JSON)</div>
             <p class="page-card__desc">
-              Machine-readable controls schema. All 53 controls with IL-parameterized thresholds,
-              OCSF evidence pointers, responsibility_split values, NSS boundary flags, CMMC practice
-              mappings, and DoD RAI principle alignment.
+              Machine-readable controls schema. All 45 controls with OT applicability flags,
+              EU AI Act risk class, IEC 62443 security levels, OCSF evidence pointers,
+              responsibility_split values, and regulatory crosswalk mappings.
             </p>
             <div class="page-card__tags">
-              <span class="tag tag--slate">defense-controls.json</span>
-              <span class="tag tag--slate">53 controls</span>
-              
+              <span class="tag tag--slate">manufacturing-controls.json</span>
+              <span class="tag tag--slate">45 controls</span>
             </div>
           </div>
           <div class="page-card__footer">
-            <span class="page-card__cta">Download JSON →</span>
+            <span class="page-card__cta">Download JSON &rarr;</span>
           </div>
         </a>
 
@@ -708,28 +693,36 @@
       <div class="schema-strip" role="region" aria-label="Schema design reference">
         <div class="schema-item">
           <div class="schema-item__label">Accountability plane</div>
-          <div class="schema-item__name">SRF layers, DoD RAI principles, and personas</div>
-          <p>Each control names one accountable persona and aligns to one or more of the
-            five DoD RAI principles (Responsible, Equitable, Traceable, Reliable, Governable).
-            DoD roles (CDAO, Program Manager, ISSO, Contracting Officer) map to SRF personas
-            in the how-to guide, not in the JSON.</p>
+          <div class="schema-item__name">SRF layers, manufacturing personas, and operating models</div>
+          <p>Each control names one accountable SRF persona. Manufacturing roles map to those
+            personas in the how-to guide: Plant AI Safety Officer to
+            <code>ai-system-governance</code>, OT Data Manager to <code>data-provider</code>,
+            OT/MES Engineer to <code>application-developer</code>, Automation Platform Owner
+            to <code>agentic-platform-provider</code>, OT Infrastructure/ICS Security Team to
+            <code>ai-platform-provider</code>, AI Model Vendor / Equipment OEM to
+            <code>model-provider</code>.</p>
         </div>
         <div class="schema-item">
           <div class="schema-item__label">Control plane</div>
-          <div class="schema-item__name">IL-parameterized thresholds + CC SRG split</div>
-          <p>Four lifecycle stages: ACQ (acquisition), TEVV (test, evaluation, verification
-            and validation), OPS (operational monitoring), OVR (human oversight and remedy).
-            Every control also carries a <code>responsibility_split</code> value aligned to
-            the DoD CC SRG and a <code>nss_boundary</code> flag indicating whether the
-            control applies to Non-NSS, NSS, or both environments.</p>
+          <div class="schema-item__name">OT-parameterized thresholds across four lifecycle stages</div>
+          <p>Four lifecycle stages: <strong>DES</strong> (design, classification, architecture),
+            <strong>VAL</strong> (conformity assessment, FAT/SAT, safety validation),
+            <strong>OPS</strong> (operational monitoring, post-market), and
+            <strong>CHG</strong> (OT change management, version freeze, safety re-validation).
+            Every control carries an <code>ot_applicability</code> value and an
+            <code>eu_ai_act_risk_class</code> value. OT change management (CHG stage) is the
+            distinctive manufacturing stage: model updates in OT environments cannot follow
+            the IT patch cycle.</p>
         </div>
         <div class="schema-item">
           <div class="schema-item__label">Evidence plane</div>
-          <div class="schema-item__name">OCSF v1.8.0 + CMMC assessment artifacts</div>
-          <p>Machine-readable evidence uses OCSF event classes where a technical signal
-            exists. Governance artifacts (TEVV plan, impact assessment, ATO package, CMMC
-            evidence folder) are named explicitly so assessors and ISSOs know what documents
-            to produce. IL6 evidence requirements note classified artifact handling.</p>
+          <div class="schema-item__name">OCSF v1.8.0 + EU AI Act technical file artifacts</div>
+          <p>Machine-readable evidence uses OCSF event classes where a technical signal exists.
+            Governance artifacts (EU AI Act technical file, FRIA, FAT/SAT report, conformity
+            assessment certificate, safety case, change record) are named explicitly so
+            compliance managers and auditors know what to produce. IEC 61508 SIL assessments
+            and safety case documents may be confidential; document type and custodian role
+            only, no URL.</p>
         </div>
       </div>
 
@@ -742,15 +735,16 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Governance and processes</div>
             <div class="layer-row__desc">
-              AI use case registry (DoD AI portfolio, CDAO reporting), Responsible AI Officer
-              designation, AI Governance Board with CDAO oversight, DoD RAI compliance plan,
-              five-principle alignment assessment (RETR-G), AI acquisition requirements per
-              DoDI 5000.90, supply chain AI risk assessment, operator and commander training,
-              incident reporting to CDAO, NSS boundary classification determination.
+              EU AI Act risk classification and EU database registration, governance committee
+              with OT and safety representation, AI use case inventory with operating model
+              per system, conformity assessment program management, serious incident reporting
+              plan per Article 73, third-party procurement policy, post-market monitoring plan
+              per Article 72, FRIA for applicable deployers, AI decommission procedure,
+              OT change management policy with version freeze and safety re-validation triggers.
               Accountable persona: <code>ai-system-governance</code>.
             </div>
           </div>
-          <span class="layer-row__count">11 controls</span>
+          <span class="layer-row__count">10 controls</span>
         </div>
 
         <div class="layer-row" role="listitem">
@@ -758,33 +752,35 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Data and input control</div>
             <div class="layer-row__desc">
-              CUI classification and marking on AI inputs and outputs, IL-level data boundary
-              enforcement (tenant isolation by impact level), training data authority-to-use
-              documentation, data egress controls per classification, adversarial input detection,
-              bias and disparate impact monitoring on consequential decisions, NARA-compliant
-              audit log retention for AI decisions, contractor data isolation from DoD data planes.
-              Accountable personas: <code>data-provider</code> and <code>application-developer</code>.
+              Sensor and historian data provenance documentation, training data authority-to-use
+              for production data, OT/IT data boundary enforcement via approved conduits,
+              input data drift monitoring (PSI or equivalent), training data bias assessment
+              for consequential AI, adversarial input detection for OT-edge AI, AI decision log
+              retention per Article 12 (six months minimum), production data egress audit for
+              cloud services.
+              Accountable personas: <code>data-provider</code>, <code>ai-platform-provider</code>.
             </div>
           </div>
-          <span class="layer-row__count">10 controls</span>
+          <span class="layer-row__count">8 controls</span>
         </div>
 
         <div class="layer-row" role="listitem">
           <span class="layer-badge layer-badge--l3">L3</span>
           <div class="layer-row__text">
-            <div class="layer-row__name">Application and integration</div>
+            <div class="layer-row__name">Application and use case</div>
             <div class="layer-row__desc">
-              TEVV plan and execution (pre-deployment test, evaluation, verification and
-              validation per DoDI 5000.89), AI impact assessment before operational deployment,
-              human oversight gate for use-of-force-adjacent and consequential administrative
-              decisions, operator interface override capability, remedy and appeal mechanism
-              for adverse decisions, agentic task boundary enforcement, prompt injection
-              detection, inheritance chain documentation for shared services, plain-language
-              explanation of AI-generated outputs for operators.
-              Accountable personas: <code>application-developer</code> and <code>agentic-platform-provider</code>.
+              EU AI Act technical documentation completeness (Article 11 / Annex IV),
+              pre-deployment testing for safety-critical AI, human oversight gate for
+              safety-critical outputs (zero-tolerance bypass), safety interlock integration
+              verification, conformity assessment completed before market placement,
+              FAT/SAT coverage for AI-specific failure modes, operator override interface
+              verification, agentic task boundary enforcement for autonomous systems,
+              prompt injection detection for AI assistants, explanation availability for
+              quality and safety decisions.
+              Accountable personas: <code>application-developer</code>, <code>agentic-platform-provider</code>.
             </div>
           </div>
-          <span class="layer-row__count">11 controls</span>
+          <span class="layer-row__count">10 controls</span>
         </div>
 
         <div class="layer-row" role="listitem">
@@ -792,17 +788,18 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Platform and infrastructure</div>
             <div class="layer-row__desc">
-              DISA Provisional Authorization at required IL (IL4, IL5, or IL6), STIG baseline
-              configuration enforcement, IL-appropriate cloud region enforcement (commercial /
-              government-only / classified), CUI and classified data encryption to NSA-approved
-              standards, audit log completeness per DISA requirements, API gateway authentication
-              and authorization, CMMC Level 2 or 3 assessment for contractor-owned platforms,
-              continuous vulnerability scanning (DISA ACAS), mission-critical AI availability
-              SLA, network isolation enforcement by IL boundary.
-              Accountable personas: <code>ai-platform-provider</code> and <code>agentic-platform-provider</code>.
+              OT network zone segmentation per IEC 62443 zones-and-conduits model,
+              OT-edge AI hardware security baseline (firmware signing, secure boot,
+              hardened credentials), air-gap or approved-conduit enforcement for
+              safety-critical OT AI (zero-tolerance), OT patch and update change management,
+              OT SIEM and anomaly detection coverage, remote access security for OT AI
+              maintenance (zero-tolerance unauthenticated sessions), encrypted communication
+              for AI data in transit, SBOM/AIBOM for OT AI components, availability SLA for
+              AI in critical production processes.
+              Accountable persona: <code>ai-platform-provider</code>.
             </div>
           </div>
-          <span class="layer-row__count">12 controls</span>
+          <span class="layer-row__count">9 controls</span>
         </div>
 
         <div class="layer-row" role="listitem">
@@ -810,44 +807,43 @@
           <div class="layer-row__text">
             <div class="layer-row__name">Model and supplier</div>
             <div class="layer-row__desc">
-              Model transparency card and documentation per DoDI 5000.90 and M-25-22 transparency
-              terms, vendor drift disclosure SLA, model artifact signing and bill of AI materials
-              (BoAIM), vulnerability disclosure SLA and patch cadence, model portability to avoid
-              lock-in, re-validation trigger on version change, personnel security clearance
-              requirement for cleared personnel accessing IL6 model infrastructure.
+              EU AI Act technical file completeness for model supplier, model drift and
+              performance degradation monitoring, model version change management trigger
+              (re-validation determination for high-risk), vulnerability disclosure SLA
+              accounting for OT change cycle, BoAIM and model artifact signing,
+              functional safety validation for AI in safety-instrumented systems
+              (SIL-appropriate per IEC 61508; safety case documents are classified artifacts),
+              model portability and lock-in avoidance documentation, model supplier due
+              diligence and supply chain risk assessment.
               Accountable persona: <code>model-provider</code>.
             </div>
           </div>
-          <span class="layer-row__count">9 controls</span>
+          <span class="layer-row__count">8 controls</span>
         </div>
 
       </div>
 
       <p class="context-note">
-        GovRAMP crosswalk and CMMC practice-to-control mapping are on the roadmap.
-        IL6 classified cloud providers (C2S, Azure Government Secret, Oracle NSR) will
-        receive separate evidence pointer annotations once classified-environment OCSF
-        implementation guidance is available.
+        NIST Cyber AI Profile mappings are marked TBD pending finalization of the December 2025
+        preliminary draft. IEC 61508 clause-level mappings are marked TBD across all controls;
+        cite only part numbers (IEC 61508-1 through IEC 61508-7) until verified against
+        primary text. The NIST Trustworthy AI in Critical Infrastructure Profile was still
+        in development as of June 2026 and is not cited.
       </p>
 
       <!-- Crosswalk pills -->
       <p class="section-label">Regulatory crosswalk</p>
       <div class="pills-row">
-        <div class="pill"><span class="pill__dot"></span>DoD RAI Strategy (2022)</div>
-        <div class="pill"><span class="pill__dot"></span>DoDI 5000.90 (AI Acquisition)</div>
-        <div class="pill"><span class="pill__dot"></span>DoDI 5000.89 (TEVV)</div>
-        <div class="pill"><span class="pill__dot"></span>DoD Directive 3000.09 (AWS)</div>
-        <div class="pill"><span class="pill__dot"></span>DoD CC SRG (IL4 / IL5 / IL6)</div>
-        <div class="pill"><span class="pill__dot"></span>CMMC 2.0 (32 CFR Part 170)</div>
-        <div class="pill"><span class="pill__dot"></span>NIST SP 800-171 Rev 3</div>
-        <div class="pill"><span class="pill__dot"></span>NIST SP 800-172</div>
-        <div class="pill"><span class="pill__dot"></span>CNSSI 1253 (NSS baseline)</div>
-        <div class="pill"><span class="pill__dot"></span>CNSS Policy 22 (NSS cloud)</div>
+        <div class="pill"><span class="pill__dot"></span>EU AI Act (Regulation 2024/1689)</div>
+        <div class="pill"><span class="pill__dot"></span>EU Machinery Regulation 2023/1230</div>
+        <div class="pill"><span class="pill__dot"></span>IEC 62443 series</div>
+        <div class="pill"><span class="pill__dot"></span>ISA-TR62443-2-2-2025</div>
+        <div class="pill"><span class="pill__dot"></span>ISO 42001:2023</div>
         <div class="pill"><span class="pill__dot"></span>NIST AI RMF 1.0</div>
         <div class="pill"><span class="pill__dot"></span>NIST AI 600-1</div>
-        <div class="pill"><span class="pill__dot"></span>DISA STIGs</div>
+        <div class="pill"><span class="pill__dot"></span>IEC 61508 (SIL, functional safety)</div>
+        <div class="pill"><span class="pill__dot"></span>NIST Cyber AI Profile (preliminary draft)</div>
         <div class="pill"><span class="pill__dot"></span>OWASP LLM Top 10</div>
-        <div class="pill"><span class="pill__dot"></span>DFARS 252.204-7012 (CUI safeguarding)</div>
       </div>
 
     </main>

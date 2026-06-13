@@ -53,6 +53,7 @@
       .dev-card__head-keyword { color: #93c5fd; }
       .dev-card__head-string  { color: #86efac; }
       .dev-card__head-key     { color: #f0abfc; }
+      .dev-card__head-comment { color: #64748b; font-style: italic; }
       .dev-card__body { padding: var(--sp-5) var(--sp-6); flex: 1; display: flex; flex-direction: column; gap: var(--sp-3); }
       .dev-card__name { font-size: var(--text-base); font-weight: 700; color: var(--slate-900); }
       .dev-card__desc { font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); flex: 1; }
@@ -100,6 +101,54 @@
         padding: var(--sp-2) var(--sp-3);
       }
     </style>
+  
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "CoSAI SRF Developer Resources",
+  "url": "https://aisharedresponsibility.com/developers/",
+  "description": "Machine-readable CoSAI SRF resources for developers and AI systems: canonical system prompts, structured JSON schemas for all five layers (L1-L5), and JSON datasets for all six industry vertical control schemas.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/",
+    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://aisharedresponsibility.com/",
+    "name": "AI Shared Responsibility"
+  },
+  "mentions": [
+    {
+      "@type": "DefinedTerm",
+      "name": "L1 AI Business & Usage",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L2 AI Information",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L3 AI Application",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L4 AI Platform",
+      "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "@type": "DefinedTerm",
+      "name": "L5 AI Model Provider",
+      "url": "https://aisharedresponsibility.com/framework/"
+    }
+  ]
+}
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -127,20 +176,68 @@
             <div><span class="dev-card__head-keyword">SYSTEM</span></div>
             <div><span class="dev-card__head-string">"You are an AI governance assistant"</span></div>
             <div><span class="dev-card__head-key">accountability_rule:</span> one party per layer</div>
-            <div><span class="dev-card__head-key">cascade:</span> L1 → L5</div>
+            <div><span class="dev-card__head-key">cascade:</span> L1 &rarr; L5</div>
             <div><span class="dev-card__head-key">operating_model:</span> required</div>
           </div>
           <div class="dev-card__body">
-            <div class="dev-card__name">SRF System Prompts <span style="font-size:0.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#92400e;background:#fde68a;border:1px solid #fcd34d;border-radius:3px;padding:2px 6px;vertical-align:middle;margin-left:6px;">Coming in v2.0</span></div>
+            <div class="dev-card__name">SRF System Prompts</div>
             <p class="dev-card__desc">
               Canonical system instructions for LLMs and AI assistants that enforce
-              the SRF accountability rules — one accountable party per layer,
+              the SRF accountability rules: one accountable party per layer,
               responsibility cascades from L1 to L5, operating model required for
-              all assignments.
+              all assignments. Role variants for executive, auditor, developer,
+              and legal/procurement. Sector context for all six verticals.
             </p>
           </div>
           <div class="dev-card__footer">
-            <span class="dev-card__tag">Plain text · JSON</span>
+            <span class="dev-card__tag">Plain text · Copy-ready</span>
+            <span class="dev-card__arrow">→</span>
+          </div>
+        </a>
+
+        <a class="dev-card" href="/data/index.json">
+          <div class="dev-card__head" aria-hidden="true">
+            <div><span class="dev-card__head-key">"files"</span>: [</div>
+            <div>&nbsp;&nbsp;{ <span class="dev-card__head-key">"file"</span>: <span class="dev-card__head-string">"layers.json"</span>,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dev-card__head-key">"record_count"</span>: <span class="dev-card__head-string">5</span> },</div>
+            <div>&nbsp;&nbsp;{ <span class="dev-card__head-key">"file"</span>: <span class="dev-card__head-string">"finance-controls.json"</span>,</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="dev-card__head-key">"record_count"</span>: <span class="dev-card__head-string">40</span> } ...]</div>
+          </div>
+          <div class="dev-card__body">
+            <div class="dev-card__name">Machine-readable Data</div>
+            <p class="dev-card__desc">
+              All control schemas and framework definitions as static JSON: layers,
+              personas, the responsibility matrix, and all six vertical control
+              schemas (218 controls total). Start with <code style="font-size:0.8em;background:var(--slate-100);padding:1px 4px;border-radius:3px;">/data/index.json</code>
+              for schema descriptions and record counts.
+            </p>
+          </div>
+          <div class="dev-card__footer">
+            <span class="dev-card__tag">JSON · 10 files · 218 controls</span>
+            <span class="dev-card__arrow">→</span>
+          </div>
+        </a>
+
+        <a class="dev-card" href="/llms-full.txt">
+          <div class="dev-card__head" aria-hidden="true">
+            <div><span class="dev-card__head-comment"># AI Shared Responsibility — CoSAI SRF</span></div>
+            <div><span class="dev-card__head-comment"># Full Content for Agent Retrieval</span></div>
+            <div>&nbsp;</div>
+            <div><span class="dev-card__head-key">layers:</span> <span class="dev-card__head-string">L1–L5 inline</span></div>
+            <div><span class="dev-card__head-key">controls:</span> <span class="dev-card__head-string">218 across 6 verticals</span></div>
+          </div>
+          <div class="dev-card__body">
+            <div class="dev-card__name">LLM Full-Content File</div>
+            <p class="dev-card__desc">
+              Single-fetch document for agent retrieval: all framework definitions,
+              all 218 controls across six verticals, and regulatory context inlined.
+              An agent or RAG pipeline can retrieve one URL and answer detailed SRF
+              questions without following additional links. Also available:
+              <a href="/llms.txt" style="color:var(--cosai-blue);">llms.txt</a> (link index).
+            </p>
+          </div>
+          <div class="dev-card__footer">
+            <span class="dev-card__tag">Plain text · 319 KB</span>
             <span class="dev-card__arrow">→</span>
           </div>
         </a>
@@ -156,14 +253,14 @@
           <div class="dev-card__body">
             <div class="dev-card__name">SRF Schema Viewer <span style="font-size:0.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:#92400e;background:#fde68a;border:1px solid #fcd34d;border-radius:3px;padding:2px 6px;vertical-align:middle;margin-left:6px;">Coming in v2.0</span></div>
             <p class="dev-card__desc">
-              Machine-readable SRF schema — layers, operating models,
-              accountability assignments, and persona definitions as structured
-              JSON. A foundation for governance tooling, GRC integrations, and
-              automated accountability checks.
+              Policy-as-code governance schema modeled on OpenTelemetry semantic
+              conventions: accountability thresholds, evidence requirements, and
+              autonomy ceilings per layer and vertical. Consumable by AI gateways,
+              GRC tools, and runtime observability platforms.
             </p>
           </div>
           <div class="dev-card__footer">
-            <span class="dev-card__tag">JSON · Structured data</span>
+            <span class="dev-card__tag">YAML · JSON-LD · v2.0</span>
             <span class="dev-card__arrow">→</span>
           </div>
         </a>
