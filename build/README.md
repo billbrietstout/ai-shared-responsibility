@@ -74,3 +74,55 @@ It is markup-safe: it skips text inside `<head>`, `<script>`, `<style>`, `<svg>`
 glossary page. Review `git diff` before committing. Adjust the `DENY` set in the
 script to suppress terms you do not want auto-linked (for example the layer-name
 phrase "Model Provider" matching the persona term).
+
+## Page-level machine metadata (phase 2)
+
+`inject_page_metadata.py` writes three meta tags into every page `<head>`:
+
+```html
+<!-- llm:meta -->
+<meta name="llm:type" content="framework|glossary|comparison|controls|tool|..." />
+<meta name="llm:canonical-id" content="srf.page.<slug>" />
+<meta name="llm:concepts" content="<comma-separated ontology node ids>" />
+<!-- /llm:meta -->
+```
+
+`llm:concepts` values are real node ids from `/ids.json`, so an agent can pivot
+from a page straight into the ontology. Per-page type and concept sets come from
+`classify()` in the script; vertical concept lists are computed from that
+vertical's controls. The block is wrapped in markers and is idempotent.
+
+```bash
+python3 build/inject_page_metadata.py          # apply
+python3 build/inject_page_metadata.py --check   # report only
+```
+
+`srf.page.<slug>` is a page-identifier namespace; it is intentionally separate
+from the concept ids in `ids.json` (a page is not a concept).
+
+## Structured chunk markers (phase 2)
+
+`inject_chunk_markers.py` adds `data-llm="<topic>"` to the page hero
+(`data-llm="summary"`) and to each content `<section>`, derived from the
+section's own heading. App-shell pages with no static sections get one marker on
+`<main>` (or the controls pages' `<div id="main">`) labelled from the title.
+
+```bash
+python3 build/inject_chunk_markers.py          # apply
+python3 build/inject_chunk_markers.py --check   # report only
+python3 build/inject_chunk_markers.py finance/index.html   # one file
+```
+
+Markup-safe: `<script>` and `<style>` blocks are stashed before processing, so
+JS template strings that contain `<section>`/`<article>` are never touched. Only
+opening tags are modified; idempotent (a tag with `data-llm` is skipped).
+
+## Verify the pages
+
+```bash
+python3 build/verify_pages.py
+```
+
+Checks every page declares `llm:type`, all `llm:concepts` resolve to `ids.json`,
+content pages carry at least one chunk marker, every `data-llm` sits on a real
+carrier tag, and `section`/`header` tags stay balanced.

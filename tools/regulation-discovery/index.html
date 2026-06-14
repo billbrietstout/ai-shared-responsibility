@@ -36,6 +36,11 @@
   }
 }
     </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-regulation-discovery" />
+    <meta name="llm:concepts" content="ext.framework.nist-ai-rmf, ext.framework.eu-ai-act, ext.framework.iso-42001, ext.framework.iso-22989, ext.framework.nist-ai-600-1, ext.framework.nistir-8605a, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5" />
+    <!-- /llm:meta -->
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -62,7 +67,7 @@
       (<code>python3 -m http.server</code>) and reload.
     </div>
 
-    <main id="main" class="layout">
+    <main id="main" class="layout" data-llm="ai-regulation-discovery-wizard">
       <div class="wizard">
         <div class="state-bar" role="group" aria-label="Wizard state">
           <span class="state-bar__label" id="privacy-note">Your answers stay in this browser.</span>
@@ -97,7 +102,7 @@
         </div>
 
         <!-- Step 1: Scope -->
-        <section class="step-card" id="step-1" aria-labelledby="step-1-title">
+        <section class="step-card" id="step-1" aria-labelledby="step-1-title" data-llm="step-1-scope-context">
           <h2 id="step-1-title" class="step-title">Step 1 — Scope &amp; Context</h2>
           <p class="step-intro">
             Start with where you operate and which sector you serve. This narrows which regulations
@@ -161,7 +166,7 @@
         </section>
 
         <!-- Step 2: System -->
-        <section class="step-card" id="step-2" hidden aria-labelledby="step-2-title">
+        <section class="step-card" id="step-2" hidden aria-labelledby="step-2-title" data-llm="step-2-system-description">
           <h2 id="step-2-title" class="step-title">Step 2 — System Description</h2>
           <p class="step-intro">Describe the AI system itself: what it is, what it does, and how it operates.</p>
 
@@ -223,7 +228,7 @@
         </section>
 
         <!-- Step 3: Impact & Risk -->
-        <section class="step-card" id="step-3" hidden aria-labelledby="step-3-title">
+        <section class="step-card" id="step-3" hidden aria-labelledby="step-3-title" data-llm="step-3-impact-risk">
           <h2 id="step-3-title" class="step-title">Step 3 — Impact &amp; Risk</h2>
           <p class="step-intro">Describe how the system affects people, what data it uses, and your initial risk assessment.</p>
 
@@ -297,7 +302,7 @@
         </section>
 
         <!-- Step 4: Results -->
-        <section class="step-card" id="step-4" hidden aria-labelledby="step-4-title">
+        <section class="step-card" id="step-4" hidden aria-labelledby="step-4-title" data-llm="step-4-results">
           <h2 id="step-4-title" class="step-title">Step 4 — Results</h2>
 
           <div class="summary-card" id="summary-card">
@@ -330,12 +335,12 @@
               </div>
             </div>
 
-            <section class="results-section">
+            <section class="results-section" data-llm="applicable-regulations">
               <h3>Applicable regulations</h3>
               <ul class="reg-list" id="reg-list"></ul>
             </section>
 
-            <section class="results-section">
+            <section class="results-section" data-llm="top-controls-by-srf-layer">
               <h3>Top controls by SRF layer</h3>
               <p class="hint">Priority controls derived from the regulations above, grouped by the CoSAI AI SRF layer that holds primary accountability.</p>
               <div class="layer-controls" id="layer-controls"></div>
