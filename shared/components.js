@@ -28,6 +28,7 @@ const FOOTER_LINKS = [
   { label: "Developers",  href: "/developers/" },
   { label: "Presentation",href: "/presentation/" },
   { label: "About",       href: "/about/" },
+  { label: "llms.txt",    href: "/llms.txt" },
   { label: "Source",      href: "https://github.com/billbrietstout/ai-shared-responsibility", external: true },
 ];
 

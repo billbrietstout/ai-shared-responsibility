@@ -102,6 +102,48 @@
         border: 1px solid var(--slate-200); border-radius: var(--radius);
         padding: var(--sp-2) var(--sp-3);
       }
+
+      /* ── LLM-friendly resources ──────────────────────────────────── */
+      .llmf { margin: 0 0 var(--sp-12); }
+      .llmf__heading {
+        font-size: var(--text-xl); font-weight: 700; color: var(--slate-900);
+        margin: 0 0 var(--sp-3);
+      }
+      .llmf__intro {
+        font-size: var(--text-sm); color: var(--slate-600);
+        line-height: 1.7; max-width: 72ch; margin: 0 0 var(--sp-5);
+      }
+      .llmf__features {
+        display: flex; flex-wrap: wrap; gap: var(--sp-2);
+        list-style: none; margin: 0 0 var(--sp-8); padding: 0;
+      }
+      .llmf__feature {
+        font-size: var(--text-xs); font-weight: 600; color: var(--slate-600);
+        background: var(--slate-50); border: 1px solid var(--slate-200);
+        border-radius: 999px; padding: 4px 11px;
+      }
+      .llmf__groups {
+        display: grid; grid-template-columns: 1fr 1fr;
+        gap: var(--sp-7) var(--sp-8);
+      }
+      @media (max-width: 640px) { .llmf__groups { grid-template-columns: 1fr; } }
+      .llmf__group-title {
+        font-size: var(--text-xs); font-weight: 700; text-transform: uppercase;
+        letter-spacing: .07em; color: var(--slate-400);
+        border-bottom: 1px solid var(--slate-200);
+        padding-bottom: var(--sp-2); margin: 0 0 var(--sp-3);
+      }
+      .llmf__list { list-style: none; margin: 0; padding: 0; }
+      .llmf__list li { margin-bottom: var(--sp-3); }
+      .llmf__file {
+        font-family: var(--font-mono); font-size: var(--text-sm);
+        color: var(--cosai-blue); text-decoration: none; font-weight: 600;
+      }
+      .llmf__file:hover { text-decoration: underline; }
+      .llmf__note {
+        display: block; font-size: var(--text-xs); color: var(--slate-500);
+        line-height: 1.5; margin-top: 2px;
+      }
     </style>
   
     <script type="application/ld+json">
@@ -274,6 +316,130 @@
         </a>
 
       </div>
+
+      <!-- LLM-friendly resources -->
+      <section class="llmf" data-llm="llm-friendly" aria-labelledby="llmf-heading">
+        <h2 id="llmf-heading" class="llmf__heading">Built for LLMs and agents</h2>
+        <p class="llmf__intro">
+          Every page here is structured to be read by AI systems as well as people.
+          Pages carry machine-readable type and concept metadata, content is split
+          into retrieval chunks, each concept has one stable ID, and the whole
+          framework is published as JSON you can fetch directly. The files below are
+          the entry points. Most are not in the site navigation because they exist
+          for machines, so they are collected in one place. Point an agent at
+          <a class="dev-card__inline-link" href="/llms.txt">/llms.txt</a> first; it
+          indexes everything else.
+        </p>
+
+        <ul class="llmf__features">
+          <li class="llmf__feature">Per-page llm:type and llm:concepts metadata</li>
+          <li class="llmf__feature">data-llm chunk markers</li>
+          <li class="llmf__feature">Canonical concept IDs</li>
+          <li class="llmf__feature">Deduplicated glossary registry</li>
+          <li class="llmf__feature">JSON-LD on every page</li>
+          <li class="llmf__feature">AI crawlers allowed in robots.txt</li>
+        </ul>
+
+        <div class="llmf__groups">
+
+          <div class="llmf__group">
+            <p class="llmf__group-title">Start here: navigation manifests</p>
+            <ul class="llmf__list">
+              <li>
+                <a class="llmf__file" href="/llms.txt">/llms.txt</a>
+                <span class="llmf__note">Curated link index of every canonical page, data file, and API for agents.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/llms-full.txt">/llms-full.txt</a>
+                <span class="llmf__note">Single-fetch document: all framework concepts and 218 controls inlined.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/sitemap.xml">/sitemap.xml</a>
+                <span class="llmf__note">Every URL on the site, including the machine endpoints below.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/robots.txt">/robots.txt</a>
+                <span class="llmf__note">Crawler policy. Twelve AI crawlers are explicitly allowed.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="llmf__group">
+            <p class="llmf__group-title">Canonical glossary and API</p>
+            <ul class="llmf__list">
+              <li>
+                <a class="llmf__file" href="/glossary.json">/glossary.json</a>
+                <span class="llmf__note">Full term registry: definition, canonical ID, and anchor for every term.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/api/glossary/index.json">/api/glossary/index.json</a>
+                <span class="llmf__note">Term index. Each term is also at /api/glossary/&lt;anchor&gt;.json on its own.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/glossary/">/glossary/</a>
+                <span class="llmf__note">The human-readable glossary, with a stable #anchor per term.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="llmf__group">
+            <p class="llmf__group-title">Concept graph</p>
+            <ul class="llmf__list">
+              <li>
+                <a class="llmf__file" href="/ontology/nodes.json">/ontology/nodes.json</a>
+                <span class="llmf__note">Graph nodes: layers, operating models, personas, concepts, controls, standards.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/ontology/edges.json">/ontology/edges.json</a>
+                <span class="llmf__note">Typed relationships between nodes (accountable_to, applies_to_layer, and more).</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/ids.json">/ids.json</a>
+                <span class="llmf__note">Canonical ID registry: one stable, namespaced ID and URL per concept.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="llmf__group">
+            <p class="llmf__group-title">Bulk knowledge pack</p>
+            <ul class="llmf__list">
+              <li>
+                <a class="llmf__file" href="/export/framework.json">/export/framework.json</a>
+                <span class="llmf__note">Whole framework in one file: concepts, relationships, and definitions.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/export/glossary.json">/export/glossary.json</a>
+                <span class="llmf__note">Flattened definitions for bulk ingestion.</span>
+              </li>
+              <li>
+                <a class="llmf__file" href="/export/ontology.json">/export/ontology.json</a>
+                <span class="llmf__note">Flattened nodes and edges in one file.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="llmf__group">
+            <p class="llmf__group-title">Structured data</p>
+            <ul class="llmf__list">
+              <li>
+                <a class="llmf__file" href="/data/index.json">/data/index.json</a>
+                <span class="llmf__note">Index of the layer, persona, matrix, regulation, and six control-schema files.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div class="llmf__group">
+            <p class="llmf__group-title">Retrieval validation</p>
+            <ul class="llmf__list">
+              <li>
+                <a class="llmf__file" href="/llm/test/">/llm/test/</a>
+                <span class="llmf__note">Simulate how an agent retrieves this content. Returns matched chunks, concept hits, and a confidence score. Add ?q=QUERY&amp;format=json for raw JSON.</span>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
 
       <!-- Coming soon -->
       <div class="coming-soon">
