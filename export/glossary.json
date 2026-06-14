@@ -1,0 +1,217 @@
+{
+  "$schema_version": "1.0",
+  "description": "Flattened glossary definitions for bulk agent ingestion.",
+  "updated": "2026-06-14",
+  "definitions": [
+    {
+      "id": "srf.concept.layer",
+      "anchor": "layer",
+      "term": "Layer",
+      "definition": "One of five enterprise architecture tiers in the CoSAI SRF (L1-L5). Each layer represents a distinct accountability domain. Requirements cascade from L1 downward through L2, L3, L4, and L5.",
+      "url": "https://aisharedresponsibility.com/glossary/#layer"
+    },
+    {
+      "id": "srf.layer.L1",
+      "anchor": "L1",
+      "term": "L1: AI Business & Usage",
+      "definition": "The governance, strategy, and compliance layer. Owns regulatory obligations, acceptable-use policy, and incident governance. Security and governance requirements set at L1 constrain every layer below it.",
+      "url": "https://aisharedresponsibility.com/glossary/#L1"
+    },
+    {
+      "id": "srf.layer.L2",
+      "anchor": "L2",
+      "term": "L2: AI Information",
+      "definition": "The data ownership and privacy layer. Accountable for training data provenance, master data management, privacy controls, and data classification decisions.",
+      "url": "https://aisharedresponsibility.com/glossary/#L2"
+    },
+    {
+      "id": "srf.layer.L3",
+      "anchor": "L3",
+      "term": "L3: AI Application",
+      "definition": "The development and integration layer. Responsible for guardrails, input validation, output filtering, prompt engineering, RAG pipelines, and agent orchestration logic.",
+      "url": "https://aisharedresponsibility.com/glossary/#L3"
+    },
+    {
+      "id": "srf.layer.L4",
+      "anchor": "L4",
+      "term": "L4: AI Platform",
+      "definition": "The infrastructure and runtime layer. Covers compute, LLM gateways, model routers, guardrail infrastructure, and platform-level IAM.",
+      "url": "https://aisharedresponsibility.com/glossary/#L4"
+    },
+    {
+      "id": "srf.layer.L5",
+      "anchor": "L5",
+      "term": "L5: AI Model Provider",
+      "definition": "The foundation model and supply-chain layer. Accountable for model security, model cards, vulnerability disclosure, and distribution governance.",
+      "url": "https://aisharedresponsibility.com/glossary/#L5"
+    },
+    {
+      "id": "srf.concept.persona",
+      "anchor": "persona",
+      "term": "Persona",
+      "definition": "A named stakeholder role in the SRF. There are eight personas, each mapped to one or more layers. Controls assign accountability to exactly one persona.",
+      "url": "https://aisharedresponsibility.com/glossary/#persona"
+    },
+    {
+      "id": "srf.concept.operating-model",
+      "anchor": "operating-model",
+      "term": "Operating Model",
+      "definition": "One of four deployment archetypes (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) that determines how L1-L5 accountability shifts between customer and provider.",
+      "url": "https://aisharedresponsibility.com/glossary/#operating-model"
+    },
+    {
+      "id": "srf.concept.accountability",
+      "anchor": "accountability",
+      "term": "Accountability",
+      "definition": "The obligation that cannot be delegated. Exactly one party per activity. The SRF's central rule: \"shared\" is a valid matrix value during analysis but must resolve to a single named persona in every control.",
+      "url": "https://aisharedresponsibility.com/glossary/#accountability"
+    },
+    {
+      "id": "srf.concept.accountable-party",
+      "anchor": "accountable-party",
+      "term": "Accountable Party",
+      "definition": "The single persona named as accountable for a given control. If a control shows \"shared\" in the responsibility matrix, the accountable party is still the one who cannot transfer the obligation.",
+      "url": "https://aisharedresponsibility.com/glossary/#accountable-party"
+    },
+    {
+      "id": "srf.concept.responsibility-cascade",
+      "anchor": "responsibility-cascade",
+      "term": "Responsibility Cascade",
+      "definition": "The principle that security and governance requirements set at L1 propagate downward through L2, L3, L4, and L5. An L1 policy decision constrains every layer below it.",
+      "url": "https://aisharedresponsibility.com/glossary/#responsibility-cascade"
+    },
+    {
+      "id": "srf.concept.shared-responsibility",
+      "anchor": "shared-responsibility",
+      "term": "Shared Responsibility",
+      "definition": "A state in the responsibility matrix where both customer and provider carry obligations for a control. Not a final answer: each shared control must still name one accountable persona.",
+      "url": "https://aisharedresponsibility.com/glossary/#shared-responsibility"
+    },
+    {
+      "id": "srf.concept.raci",
+      "anchor": "raci",
+      "term": "RACI",
+      "definition": "Responsible, Accountable, Consulted, Informed. The SRF applies RACI at the control level but enforces exactly one Accountable owner per row.",
+      "url": "https://aisharedresponsibility.com/glossary/#raci"
+    },
+    {
+      "id": "srf.opmodel.ai-saas",
+      "anchor": "AI-SaaS",
+      "term": "AI-SaaS",
+      "definition": "AI-Enabled SaaS. Provider manages the application (L3), platform (L4), and model (L5). Customer retains L1 governance and L2 data obligations. Lowest customer technical responsibility.",
+      "url": "https://aisharedresponsibility.com/glossary/#AI-SaaS"
+    },
+    {
+      "id": "srf.opmodel.ai-paas",
+      "anchor": "AI-PaaS",
+      "term": "AI-PaaS",
+      "definition": "AI Platform as a Service. Customer builds and owns L3. Provider manages L4 and L5. Customer and provider share L2.",
+      "url": "https://aisharedresponsibility.com/glossary/#AI-PaaS"
+    },
+    {
+      "id": "srf.opmodel.agent-paas",
+      "anchor": "Agent-PaaS",
+      "term": "Agent-PaaS",
+      "definition": "Agentic Platform as a Service. Customer owns agent definitions and L1 business logic on a provider-managed orchestration runtime. L3 and L5 are shared.",
+      "url": "https://aisharedresponsibility.com/glossary/#Agent-PaaS"
+    },
+    {
+      "id": "srf.opmodel.iaas",
+      "anchor": "IaaS",
+      "term": "IaaS",
+      "definition": "Infrastructure as a Service. Maximum customer responsibility. Customer owns L1-L3 and most of L5. Provider is accountable only for physical infrastructure within L4.",
+      "url": "https://aisharedresponsibility.com/glossary/#IaaS"
+    },
+    {
+      "id": "srf.concept.autonomy-level",
+      "anchor": "autonomy-level",
+      "term": "Autonomy Level",
+      "definition": "A six-point scale (L0-L5) classifying how independently an AI agent acts. L0 = fully human-controlled; L5 = fully autonomous with no human oversight. Every agentic deployment must declare its autonomy level.",
+      "url": "https://aisharedresponsibility.com/glossary/#autonomy-level"
+    },
+    {
+      "id": "srf.concept.human-override-tier",
+      "anchor": "human-override-tier",
+      "term": "Human Override Tier",
+      "definition": "A five-point scale (T1-T5) specifying the required human intervention capability for an agentic system. T1 = immediate human takeover at any step; T5 = retrospective audit only. Must be declared alongside autonomy level.",
+      "url": "https://aisharedresponsibility.com/glossary/#human-override-tier"
+    },
+    {
+      "id": "srf.concept.agentic-system",
+      "anchor": "agentic-system",
+      "term": "Agentic System",
+      "definition": "An AI system that can take multi-step actions, use tools, or operate across sessions with limited human supervision. Agentic systems require autonomy level and human override tier declarations in addition to standard SRF layer assignments.",
+      "url": "https://aisharedresponsibility.com/glossary/#agentic-system"
+    },
+    {
+      "id": "srf.concept.control",
+      "anchor": "control",
+      "term": "Control",
+      "definition": "A specific accountability assignment within a vertical schema. Each control has an ID (e.g. SRF-L1-DEV-001), a layer, an accountable persona, applicable operating models, and an evidence threshold.",
+      "url": "https://aisharedresponsibility.com/glossary/#control"
+    },
+    {
+      "id": "srf.concept.evidence-threshold",
+      "anchor": "evidence-threshold",
+      "term": "Evidence Threshold",
+      "definition": "The measurable criterion that satisfies a control. Specifies a metric, operator, parameter, window, and breach action. Used to determine whether accountability is being exercised.",
+      "url": "https://aisharedresponsibility.com/glossary/#evidence-threshold"
+    },
+    {
+      "id": "srf.concept.ocsf",
+      "anchor": "ocsf",
+      "term": "OCSF",
+      "definition": "Open Cybersecurity Schema Framework. The evidence schema used to specify what telemetry or log data satisfies a control's evidence requirement.",
+      "url": "https://aisharedresponsibility.com/glossary/#ocsf"
+    },
+    {
+      "id": "srf.concept.control-schema",
+      "anchor": "control-schema",
+      "term": "Control Schema",
+      "definition": "The full set of controls for a vertical. Six are published: Financial Services (40 controls), Healthcare (40), Insurance (40), Public Sector (40), Defense (53), Manufacturing (45).",
+      "url": "https://aisharedresponsibility.com/glossary/#control-schema"
+    },
+    {
+      "id": "srf.role.ai-system-governance",
+      "anchor": "persona-ai-system-governance",
+      "term": "AI System Governance",
+      "definition": "Defines security control objectives, measures implementations, and enforces compliance. Includes AI risk officers, compliance teams, and governance boards.",
+      "url": "https://aisharedresponsibility.com/glossary/#persona-ai-system-governance"
+    },
+    {
+      "id": "srf.role.data-provider",
+      "anchor": "persona-data-provider",
+      "term": "Data Provider",
+      "definition": "Supplies training data, evaluation datasets, or inference data. Includes data aggregators and dataset licensors.",
+      "url": "https://aisharedresponsibility.com/glossary/#persona-data-provider"
+    },
+    {
+      "id": "srf.role.application-developer",
+      "anchor": "persona-application-developer",
+      "term": "Application Developer",
+      "definition": "Integrates AI models into applications via APIs or embedded models. Accountable for application-level security, input validation, and output filtering.",
+      "url": "https://aisharedresponsibility.com/glossary/#persona-application-developer"
+    },
+    {
+      "id": "srf.role.agentic-platform-provider",
+      "anchor": "persona-agentic-platform-provider",
+      "term": "Agentic Platform Provider",
+      "definition": "Provides development environments, frameworks, and orchestration runtimes for agentic AI.",
+      "url": "https://aisharedresponsibility.com/glossary/#persona-agentic-platform-provider"
+    },
+    {
+      "id": "srf.role.ai-platform-provider",
+      "anchor": "persona-ai-platform-provider",
+      "term": "AI Platform Provider",
+      "definition": "Provides compute, APIs, and platform services for AI model hosting. Includes cloud providers and MLOps platforms.",
+      "url": "https://aisharedresponsibility.com/glossary/#persona-ai-platform-provider"
+    },
+    {
+      "id": "srf.role.model-provider",
+      "anchor": "persona-model-provider",
+      "term": "Model Provider",
+      "definition": "Develops, trains, and tunes foundation models. Accountable for model security, model cards, and vulnerability disclosure.",
+      "url": "https://aisharedresponsibility.com/glossary/#persona-model-provider"
+    }
+  ]
+}

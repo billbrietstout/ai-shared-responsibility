@@ -73,6 +73,18 @@ All control schemas and framework definitions are available as static JSON. An a
 - [Defense Controls](https://aisharedresponsibility.com/data/defense-controls.json): 53 controls: layer, IL4/IL5/IL6 impact level, NSS/Non-NSS tier, responsibility split.
 - [Manufacturing Controls](https://aisharedresponsibility.com/data/manufacturing-controls.json): 45 controls: layer, OT applicability, EU AI Act risk class, lifecycle stage.
 
+## Knowledge graph and APIs
+
+A canonical concept layer for retrieval and reasoning. Every concept has one stable ID and one canonical URL. Glossary terms are deduplicated: each resolves to a single ontology node. Generated from the source content by build/generate_knowledge_layer.py.
+
+- [Glossary Registry](https://aisharedresponsibility.com/glossary.json): Full machine-readable glossary. Every SRF term with its definition, canonical ID, stable anchor URL, and per-term API link.
+- [Glossary API Index](https://aisharedresponsibility.com/api/glossary/index.json): Index of all glossary terms. Each term is independently retrievable at /api/glossary/{anchor}.json (for example /api/glossary/accountability.json, /api/glossary/L1.json, /api/glossary/AI-SaaS.json).
+- [Ontology Nodes](https://aisharedresponsibility.com/ontology/nodes.json): Concept graph nodes. Types: concept, framework, role, control. Covers the five layers, four operating models, eight personas, glossary vocabulary, all 258 vertical controls, and mapped external standards.
+- [Ontology Edges](https://aisharedresponsibility.com/ontology/edges.json): Typed, directed relationships between nodes (has_persona, operates_at_layer, assigns_responsibility, applies_to_layer, accountable_to, maps_to_layer, and more).
+- [Canonical ID Registry](https://aisharedresponsibility.com/ids.json): Every concept, layer, role, operating model, and control with one stable namespaced ID, name, and URL. Includes a glossary anchor cross-reference.
+- [Knowledge Pack](https://aisharedresponsibility.com/export/framework.json): Single flattened, linked representation of the whole framework for bulk ingestion: concepts, relationships, and definitions. Companion exports: /export/glossary.json and /export/ontology.json.
+- [Retrieval Validation Tool](https://aisharedresponsibility.com/llm/test/): Simulate RAG ingestion against the knowledge pack. Returns matched chunks, concept hits, and a confidence score. Append ?q=QUERY&format=json for a JSON response.
+
 ## Full content for agent retrieval
 
 - [llms-full.txt](https://aisharedresponsibility.com/llms-full.txt): Complete inline content: all framework concepts, all six vertical control schemas, and regulatory context in a single document. Agents can retrieve this file to answer detailed SRF questions without following additional links.

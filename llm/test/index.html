@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Retrieval Validation — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Simulate how an LLM retrieval system ingests this site. Query the knowledge pack and inspect matched chunks, concept hits, and a confidence score. Validates chunking quality and surfaces missing semantic links."
+    />
+    <meta name="color-scheme" content="light" />
+    <meta name="robots" content="noindex, follow" />
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:concepts" content="retrieval, rag, chunking, validation, ontology, glossary" />
+    <meta name="llm:canonical-id" content="srf.tool.retrieval-validation" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/llm/test/" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .lt-wrap { max-width: 920px; margin: 0 auto; padding: var(--sp-8) var(--sp-6); }
+      .lt-form { display: flex; gap: var(--sp-3); margin: var(--sp-6) 0 var(--sp-4); }
+      .lt-form input[type="search"] {
+        flex: 1; font-size: var(--text-base); padding: var(--sp-3) var(--sp-4);
+        border: 1px solid var(--slate-300); border-radius: var(--radius-md);
+        font-family: inherit;
+      }
+      .lt-form button {
+        font-size: var(--text-sm); font-weight: 600; padding: 0 var(--sp-5);
+        border: none; border-radius: var(--radius-md); background: var(--cosai-blue);
+        color: #fff; cursor: pointer;
+      }
+      .lt-examples { font-size: var(--text-sm); color: var(--slate-500); margin-bottom: var(--sp-6); }
+      .lt-examples a { color: var(--cosai-blue); text-decoration: none; margin-right: var(--sp-3); }
+      .lt-meta {
+        display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: center;
+        padding: var(--sp-4); background: var(--slate-50);
+        border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+        margin-bottom: var(--sp-6); font-size: var(--text-sm);
+      }
+      .lt-conf { font-weight: 700; }
+      .lt-bar { flex: 1; height: 8px; background: var(--slate-200); border-radius: 999px; overflow: hidden; min-width: 120px; }
+      .lt-bar span { display: block; height: 100%; background: var(--cosai-blue); }
+      .lt-chip {
+        display: inline-block; font-size: var(--text-xs); font-family: var(--font-mono);
+        padding: 2px 8px; margin: 2px 4px 2px 0; border-radius: 999px;
+        background: var(--slate-100); color: var(--slate-600);
+      }
+      .lt-chip a { color: inherit; text-decoration: none; }
+      .lt-result {
+        border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+        padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-3);
+      }
+      .lt-result__head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-3); }
+      .lt-result__term { font-weight: 700; color: var(--slate-900); }
+      .lt-result__id { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--slate-400); }
+      .lt-result__score { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--slate-500); }
+      .lt-result__text { font-size: var(--text-sm); color: var(--slate-600); line-height: 1.6; margin: var(--sp-2) 0 0; }
+      .lt-result__text mark { background: #fef9c3; padding: 0 2px; }
+      .lt-result__link { font-size: var(--text-xs); }
+      .lt-section-title { font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--slate-400); margin: var(--sp-6) 0 var(--sp-2); }
+      details.lt-json { margin-top: var(--sp-8); }
+      details.lt-json pre {
+        background: var(--slate-900); color: #e2e8f0; padding: var(--sp-4);
+        border-radius: var(--radius-md); overflow: auto; font-size: var(--text-xs); line-height: 1.5;
+      }
+      .lt-note { font-size: var(--text-sm); color: var(--slate-500); line-height: 1.7; }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="developers"></site-nav>
+
+    <header class="page-hero">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Developer tool</span>
+        <h1 class="page-hero__title">Retrieval validation</h1>
+        <p class="page-hero__lede">
+          Simulate how a retrieval-augmented agent ingests this site. Enter a query to see
+          which knowledge-pack chunks match, which concepts are hit, and a confidence score.
+          Runs entirely in your browser against the published export pack.
+        </p>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="lt-wrap">
+        <form class="lt-form" id="lt-form" role="search">
+          <input type="search" id="lt-q" name="q" placeholder="e.g. who is accountable for guardrails"
+                 aria-label="Retrieval query" autocomplete="off" />
+          <button type="submit">Test</button>
+        </form>
+        <p class="lt-examples">
+          Try:
+          <a href="?q=accountability">accountability</a>
+          <a href="?q=who+owns+guardrails">who owns guardrails</a>
+          <a href="?q=autonomy+level+human+override">autonomy level</a>
+          <a href="?q=evidence+threshold+OCSF">evidence threshold</a>
+          <a href="?q=AI-SaaS+responsibility">AI-SaaS responsibility</a>
+        </p>
+
+        <div id="lt-out" aria-live="polite"></div>
+
+        <details class="lt-json">
+          <summary>Raw endpoint response (JSON)</summary>
+          <pre id="lt-json">Run a query to see the JSON response.</pre>
+        </details>
+
+        <p class="lt-section-title">About this tool</p>
+        <p class="lt-note">
+          The corpus is built from <a href="/export/framework.json">/export/framework.json</a>
+          (definitions plus concept labels). Scoring uses BM25 over tokenized chunks. A low confidence
+          score or empty concept hits for a term that should exist signals a chunking gap or a missing
+          semantic link worth fixing at the source. Append <code>&amp;format=json</code> to any query
+          URL to get the JSON response only.
+        </p>
+      </div>
+    </main>
+
+    <site-footer></site-footer>
+
+    <script>
+      const STOP = new Set("a an and are as at be by for from has in is it its of on or that the to with who whose how what which".split(" "));
+      const PACK_URL = "/export/framework.json";
+      let CHUNKS = [], CONCEPTS = [], DF = {}, AVGDL = 0, READY = null;
+
+      const tokenize = (s) =>
+        (s || "").toLowerCase().match(/[a-z0-9][a-z0-9-]*/g)?.filter(t => !STOP.has(t) && t.length > 1) || [];
+
+      async function load() {
+        const res = await fetch(PACK_URL, { cache: "no-store" });
+        const pack = await res.json();
+        CONCEPTS = pack.concepts || [];
+        const defs = pack.definitions || [];
+        const byId = {};
+        defs.forEach(d => { byId[d.id] = d; });
+        // one chunk per concept: label + definition text when available
+        CHUNKS = CONCEPTS.map(c => {
+          const def = byId[c.id];
+          const text = def ? def.definition : "";
+          const blob = `${c.label}. ${text}`.trim();
+          const toks = tokenize(blob);
+          return { id: c.id, term: def ? def.term : c.label, type: c.type,
+                   url: c.url, text: text || c.label, tokens: toks, len: toks.length };
+        });
+        let total = 0;
+        CHUNKS.forEach(ch => {
+          total += ch.len;
+          new Set(ch.tokens).forEach(t => { DF[t] = (DF[t] || 0) + 1; });
+        });
+        AVGDL = total / (CHUNKS.length || 1);
+      }
+
+      function search(query) {
+        const q = tokenize(query);
+        const N = CHUNKS.length, k1 = 1.5, b = 0.75;
+        const idf = (t) => Math.log(1 + (N - (DF[t] || 0) + 0.5) / ((DF[t] || 0) + 0.5));
+        const scored = CHUNKS.map(ch => {
+          const tf = {};
+          ch.tokens.forEach(t => { tf[t] = (tf[t] || 0) + 1; });
+          let s = 0, hit = 0;
+          q.forEach(t => {
+            const f = tf[t] || 0;
+            if (f > 0) hit++;
+            const denom = f + k1 * (1 - b + b * ch.len / AVGDL);
+            s += idf(t) * (f * (k1 + 1)) / (denom || 1);
+          });
+          return { ch, score: s, covered: hit };
+        }).filter(r => r.score > 0).sort((a, b) => b.score - a.score);
+
+        const top = scored.slice(0, 6);
+        const distinct = new Set(q).size || 1;
+        const topCover = top.length ? top[0].covered : 0;
+        // confidence: blend of query-term coverage in the best chunk and
+        // separation of the top hit from the field
+        const cover = topCover / distinct;
+        const norm = top.length ? Math.min(1, top[0].score / (top[0].score + 2.5)) : 0;
+        const confidence = top.length ? Math.round((0.6 * cover + 0.4 * norm) * 100) / 100 : 0;
+
+        const conceptHits = top
+          .filter(r => r.covered > 0)
+          .map(r => ({ id: r.ch.id, label: r.ch.term, type: r.ch.type, url: r.ch.url }));
+
+        return {
+          query, q, top, confidence,
+          json: {
+            query,
+            matched_chunks: top.map(r => ({
+              id: r.ch.id, term: r.ch.term, url: r.ch.url,
+              score: Math.round(r.score * 1000) / 1000,
+              snippet: r.ch.text.slice(0, 240)
+            })),
+            concept_hits: conceptHits,
+            confidence
+          }
+        };
+      }
+
+      function highlight(text, q) {
+        const set = new Set(q);
+        return text.replace(/[a-z0-9][a-z0-9-]*/gi, (w) =>
+          set.has(w.toLowerCase()) ? `<mark>${w}</mark>` : w);
+      }
+
+      function render(result) {
+        const out = document.getElementById("lt-out");
+        document.getElementById("lt-json").textContent = JSON.stringify(result.json, null, 2);
+        if (!result.top.length) {
+          out.innerHTML = `<p class="lt-note">No chunks matched <strong>${result.query}</strong>. That is itself a signal: the concept may be missing from the knowledge pack or under-linked.</p>`;
+          return;
+        }
+        const pct = Math.round(result.confidence * 100);
+        const chips = result.json.concept_hits.map(c =>
+          `<span class="lt-chip"><a href="${c.url}">${c.id}</a></span>`).join("");
+        const results = result.top.map(r => `
+          <div class="lt-result">
+            <div class="lt-result__head">
+              <span class="lt-result__term">${r.ch.term}</span>
+              <span class="lt-result__score">score ${Math.round(r.score * 1000) / 1000}</span>
+            </div>
+            <div class="lt-result__id">${r.ch.id}</div>
+            <p class="lt-result__text">${highlight(r.ch.text.slice(0, 280), result.q)}</p>
+            <a class="lt-result__link" href="${r.ch.url}">${r.ch.url.replace(location.origin, "")}</a>
+          </div>`).join("");
+        out.innerHTML = `
+          <div class="lt-meta">
+            <span class="lt-conf">Confidence ${result.confidence.toFixed(2)}</span>
+            <span class="lt-bar"><span style="width:${pct}%"></span></span>
+            <span>${result.top.length} chunk${result.top.length === 1 ? "" : "s"}</span>
+          </div>
+          <p class="lt-section-title">Concept hits</p>
+          <div>${chips || '<span class="lt-note">none</span>'}</div>
+          <p class="lt-section-title">Matched chunks</p>
+          ${results}`;
+      }
+
+      async function run(query, jsonOnly) {
+        READY = READY || load();
+        await READY;
+        const result = search(query);
+        if (jsonOnly) {
+          document.body.innerHTML = `<pre style="padding:16px;font:13px/1.5 monospace;white-space:pre-wrap">${JSON.stringify(result.json, null, 2)}</pre>`;
+          return;
+        }
+        render(result);
+      }
+
+      const params = new URLSearchParams(location.search);
+      const q0 = params.get("q");
+      const jsonOnly = params.get("format") === "json";
+      if (q0) { document.getElementById("lt-q").value = q0; run(q0, jsonOnly); }
+
+      document.getElementById("lt-form").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const v = document.getElementById("lt-q").value.trim();
+        if (!v) return;
+        history.replaceState(null, "", "?q=" + encodeURIComponent(v));
+        run(v, false);
+      });
+    </script>
+  </body>
+</html>
