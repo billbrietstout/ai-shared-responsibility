@@ -98,8 +98,12 @@ def parse_glossary():
 
     terms = []
     seen = set()
+    # Tolerate extra attributes on the section tag (e.g. data-llm chunk markers
+    # added by build/inject_chunk_markers.py). Match by id + the gloss-section
+    # class regardless of attribute order or additions.
     section_re = re.compile(
-        r'<section id="([^"]+)" class="gloss-section">(.*?)</section>', re.S)
+        r'<section\b(?=[^>]*\bid="([^"]+)")(?=[^>]*\bclass="[^"]*gloss-section)[^>]*>(.*?)</section>',
+        re.S)
     term_re = re.compile(
         r'<dt id="([^"]+)">(.*?)</dt>\s*<dd>(.*?)</dd>', re.S)
 

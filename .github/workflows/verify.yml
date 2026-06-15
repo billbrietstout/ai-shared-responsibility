@@ -1,0 +1,43 @@
+name: Verify knowledge layer and pages
+
+# Runs the build/ verifiers on every push and pull request. The drift gate
+# regenerates the knowledge layer and re-applies the page injectors, then fails
+# if the committed output differs, so stale generated files or unmarked pages
+# cannot land on develop or main.
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Structural check (generator --check)
+        run: python3 build/generate_knowledge_layer.py --check
+
+      - name: Knowledge layer integrity
+        run: python3 build/verify_knowledge_layer.py
+
+      - name: Page metadata and chunk markers
+        run: python3 build/verify_pages.py
+
+      - name: Regeneration drift gate
+        run: |
+          python3 build/generate_knowledge_layer.py
+          python3 build/inject_page_metadata.py
+          python3 build/inject_chunk_markers.py
+          if ! git diff --quiet; then
+            echo "::error::Generated artifacts or page markers are out of date. Run the build/ scripts locally and commit the result."
+            git --no-pager diff --stat
+            exit 1
+          fi
+          echo "No drift. Committed artifacts match the generators."

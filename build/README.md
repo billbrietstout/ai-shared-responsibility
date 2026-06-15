@@ -126,3 +126,21 @@ python3 build/verify_pages.py
 Checks every page declares `llm:type`, all `llm:concepts` resolve to `ids.json`,
 content pages carry at least one chunk marker, every `data-llm` sits on a real
 carrier tag, and `section`/`header` tags stay balanced.
+
+## Continuous integration
+
+`.github/workflows/verify.yml` runs on every push to `develop`/`main` and on
+pull requests:
+
+1. `generate_knowledge_layer.py --check` (structural parse)
+2. `verify_knowledge_layer.py` (JSON integrity)
+3. `verify_pages.py` (metadata, chunk markers, markup)
+4. Drift gate: regenerate the knowledge layer, re-run both injectors, then
+   `git diff --exit-code`. Fails if committed artifacts or page markers are out
+   of date, so stale generated files cannot land.
+
+The drift gate is why the generators must stay idempotent. If you change the
+glossary page, a `/data` file, or add a page, run the three build scripts and
+commit the result, or CI will fail. Note that the glossary parser tolerates the
+`data-llm` chunk markers that `inject_chunk_markers.py` adds to the glossary
+sections; do not reintroduce a parser that assumes a fixed attribute order.
