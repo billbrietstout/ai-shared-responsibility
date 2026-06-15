@@ -7,7 +7,7 @@
  *   3. rendering (context · controls · owasp · live panel · results)
  *   4. interaction (phase nav, answer, persistence, export / import)
  *   5. scoring (layer, overall, gap tally)
- *   6. PDF export via /shared/vendor/jspdf.umd.min.js
+ *   6. PDF export via /shared/vendor/jspdf-2.5.1.umd.min.js
  */
 
 (function () {

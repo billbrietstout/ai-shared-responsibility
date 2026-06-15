@@ -102,3 +102,33 @@ The `regHtml()` function in regulation-discovery calls `escapeHtml()` on every f
 1. **Add CSP meta tags** to all HTML files (or configure server-level headers). ~2 hours.
 2. **Wrap scenario in prompt delimiters** in `srf-stress/index.html` and add `maxlength` to textarea. ~20 minutes.
 3. **Version-stamp jspdf.umd.min.js** and record in ARCHITECTURE.md. ~10 minutes.
+
+---
+
+## Remediation update — 2026-06-14
+
+**Prompt-injection hardening (item 2): done, server-side.** `worker/index.js`
+now prepends a server-controlled guard system prompt to every request, so the
+model treats user content as data and ignores attempts to change its role or
+reveal instructions. The worker also validates and sanitizes the payload:
+message-count, per-message, and total-character caps, an allowed-role set, a
+request body-size limit, and stripping of unknown message fields. A `maxlength`
+was added to the scenario textareas as client-side defense in depth. Worker
+responses now send `X-Content-Type-Options: nosniff` and `Cache-Control: no-store`.
+
+**jspdf version stamp (item 3): done.** The vendored file is now
+`shared/vendor/jspdf-2.5.1.umd.min.js` (jsPDF 2.5.1, MIT) and all references are
+updated. The version is recorded in `NOTICE`.
+
+**Rate limiting:** intentionally not in worker code (Cloudflare Workers are
+stateless). Configure a Cloudflare Rate Limiting rule on the `/api/analyze`
+route, or a KV / Durable Object counter for custom logic. The input caps above
+bound per-request cost in the meantime.
+
+**CSP (item 1): not applied, by decision.** Every page uses inline `<style>` and
+`<script>`, and GitHub Pages cannot send HTTP headers. A `<meta>` CSP would
+therefore require `'unsafe-inline'` (negating most of its XSS value) or a hash
+for every inline block (brittle to maintain by hand). A meaningful CSP should
+wait until either the inline scripts and styles are externalized or the site
+moves behind a host that can set response headers, for example the existing
+Cloudflare worker extended to serve or proxy the pages.

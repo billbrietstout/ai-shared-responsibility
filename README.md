@@ -78,6 +78,14 @@ See [`security-audit.md`](security-audit.md) for the most recent security review
 
 ## License
 
-Licensed under the [Apache License, Version 2.0](LICENSE).
+This repository is dual-licensed by component. See [`NOTICE`](NOTICE) for full attribution.
 
-The CoSAI AI Shared Responsibility Framework content referenced and displayed by this site is a publication of the [Coalition for Secure AI (CoSAI)](https://www.coalitionforsecureai.org/). Framework text, layer definitions, and persona descriptions are reproduced here for educational and reference purposes consistent with CoSAI's open publication goals.
+| Component | License |
+|-----------|---------|
+| Code (HTML, CSS, JavaScript, `build/` scripts) | [Apache License 2.0](LICENSE) |
+| Original site content (page copy, glossary definitions, vertical control schemas) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| `shared/vendor/jspdf-2.5.1.umd.min.js` | MIT (jsPDF, © James Hall and contributors) |
+
+The CoSAI AI Shared Responsibility Framework content referenced and displayed by this site (the five layers, eight personas, four operating models, and accountability rules) is a publication of the [Coalition for Secure AI (CoSAI)](https://www.coalitionforsecureai.org/), a project of OASIS Open. Framework text, layer definitions, and persona descriptions are reproduced here for educational and reference purposes consistent with CoSAI's open publication goals; source and version attribution is retained in the `source` field of the relevant `data/*.json` files.
+
+The industry vertical control schemas (finance, healthcare, insurance, public sector, defense, manufacturing) are independently proposed extensions authored for this site and are not part of an official CoSAI release. Review the framework's own copyright and attribution terms before redistributing or commercializing derived work.
