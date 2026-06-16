@@ -1,13 +1,21 @@
 {
   "description": "Machine-readable data index for aisharedresponsibility.com. All files are static JSON served from /data/. Framework concepts (layers, personas, operating models) are defined in the CoSAI AI Shared Responsibility Framework v1.0.",
   "framework_reference": "https://aisharedresponsibility.com/framework/",
-  "updated": "2026-06-13",
+  "updated": "2026-06-15",
   "files": [
     {
       "file": "layers.json",
       "url": "https://aisharedresponsibility.com/data/layers.json",
       "description": "The five SRF architecture layers: L1 AI Business & Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider. Each entry includes personas, operating model responsibility assignments, and component descriptions.",
-      "schema_keys": ["id", "name", "short", "personas", "description", "components", "operating_models"],
+      "schema_keys": [
+        "id",
+        "name",
+        "short",
+        "personas",
+        "description",
+        "components",
+        "operating_models"
+      ],
       "record_count": 5,
       "related_page": "https://aisharedresponsibility.com/framework/"
     },
@@ -15,7 +23,15 @@
       "file": "personas.json",
       "url": "https://aisharedresponsibility.com/data/personas.json",
       "description": "The eight SRF personas: AI System Users, AI System Governance, Data Provider, Application Developer, Agentic Platform & Framework Providers, AI Model Serving, AI Platform Provider, Model Provider. Each entry maps the persona to its primary SRF layers, ISO/IEC 22989 reference, and responsibilities.",
-      "schema_keys": ["id", "name", "srf_layers", "standard_ref", "audiences", "description", "responsibilities"],
+      "schema_keys": [
+        "id",
+        "name",
+        "srf_layers",
+        "standard_ref",
+        "audiences",
+        "description",
+        "responsibilities"
+      ],
       "record_count": 8,
       "related_page": "https://aisharedresponsibility.com/personas/"
     },
@@ -23,7 +39,11 @@
       "file": "matrix.json",
       "url": "https://aisharedresponsibility.com/data/matrix.json",
       "description": "Responsibility matrix across the four operating models (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) and five layers. Each cell specifies whether accountability is customer-owned, shared, provider-managed, model-evaluation, or N/A.",
-      "schema_keys": ["models", "responsibility_values", "cells"],
+      "schema_keys": [
+        "models",
+        "responsibility_values",
+        "cells"
+      ],
       "record_count": 4,
       "related_page": "https://aisharedresponsibility.com/operating-models/"
     },
@@ -31,7 +51,11 @@
       "file": "regulations.json",
       "url": "https://aisharedresponsibility.com/data/regulations.json",
       "description": "AI regulations and standards mapped to SRF layers. Includes EU AI Act, NIST AI RMF, ISO 42001, OMB M-25-21, SR 26-2, and others.",
-      "schema_keys": ["updated", "stale_threshold_days", "items"],
+      "schema_keys": [
+        "updated",
+        "stale_threshold_days",
+        "items"
+      ],
       "record_count": 10,
       "related_page": "https://aisharedresponsibility.com/regulations/"
     },
@@ -39,7 +63,18 @@
       "file": "finance-controls.json",
       "url": "https://aisharedresponsibility.com/data/finance-controls.json",
       "description": "40 controls for financial services AI deployments. Each control maps to an SRF layer (L1-L5), accountable persona, applicable operating models, and evidence thresholds. Regulatory context: SR 26-2, FINOS AIGF, OWASP LLM Top 10, EU AI Act. Four MRM stages: development, validation, deployment, monitoring.",
-      "schema_keys": ["id", "layer", "component", "title", "description", "accountable_persona", "operating_models", "mrm_stage", "mappings", "threshold"],
+      "schema_keys": [
+        "id",
+        "layer",
+        "component",
+        "title",
+        "description",
+        "accountable_persona",
+        "operating_models",
+        "mrm_stage",
+        "mappings",
+        "threshold"
+      ],
       "record_count": 40,
       "srf_version": "1.0",
       "related_page": "https://aisharedresponsibility.com/finance/",
@@ -49,7 +84,18 @@
       "file": "healthcare-controls.json",
       "url": "https://aisharedresponsibility.com/data/healthcare-controls.json",
       "description": "40 controls for healthcare AI deployments including clinical decision support, AI-assisted diagnostics, and agentic care coordination. Each control maps to an SRF layer (L1-L5), accountable persona, clinical lifecycle stage, and FHIR AuditEvent evidence pointer. Regulatory context: FDA TPLC, FDA PCCP, ONC HTI-1, HIPAA, EU AI Act, IEC 62304, ISO 14971.",
-      "schema_keys": ["id", "layer", "component", "title", "description", "accountable_persona", "operating_models", "clinical_stage", "mappings", "threshold"],
+      "schema_keys": [
+        "id",
+        "layer",
+        "component",
+        "title",
+        "description",
+        "accountable_persona",
+        "operating_models",
+        "clinical_stage",
+        "mappings",
+        "threshold"
+      ],
       "record_count": 40,
       "srf_version": "1.0",
       "related_page": "https://aisharedresponsibility.com/healthcare/",
@@ -59,7 +105,18 @@
       "file": "insurance-controls.json",
       "url": "https://aisharedresponsibility.com/data/insurance-controls.json",
       "description": "40 controls for insurance AI deployments covering underwriting, claims, and vendor model governance. Each control maps to an SRF layer (L1-L5), accountable persona, and lifecycle stage. Regulatory context: NAIC AI Model Bulletin, Colorado Regulation 10-1-1 (July 2026 deadline), NYDFS CL 7, NAIC AI Systems Evaluation Tool.",
-      "schema_keys": ["id", "layer", "component", "title", "description", "accountable_persona", "operating_models", "lifecycle_stage", "mappings", "threshold"],
+      "schema_keys": [
+        "id",
+        "layer",
+        "component",
+        "title",
+        "description",
+        "accountable_persona",
+        "operating_models",
+        "lifecycle_stage",
+        "mappings",
+        "threshold"
+      ],
       "record_count": 40,
       "srf_version": "1.0",
       "related_page": "https://aisharedresponsibility.com/insurance/",
@@ -69,7 +126,19 @@
       "file": "public-sector-controls.json",
       "url": "https://aisharedresponsibility.com/data/public-sector-controls.json",
       "description": "40 controls for federal civilian agency (FCEB) AI deployments. Each control maps to an SRF layer (L1-L5), accountability split (agency vs. vendor), and federal lifecycle stage. Regulatory context: OMB M-25-21 (September 22, 2026 deadline), OMB M-25-22, FedRAMP 20x KSIs, NIST AI RMF.",
-      "schema_keys": ["id", "layer", "component", "title", "description", "accountable_persona", "responsibility_split", "operating_models", "lifecycle_stage", "mappings", "threshold"],
+      "schema_keys": [
+        "id",
+        "layer",
+        "component",
+        "title",
+        "description",
+        "accountable_persona",
+        "responsibility_split",
+        "operating_models",
+        "lifecycle_stage",
+        "mappings",
+        "threshold"
+      ],
       "record_count": 40,
       "srf_version": "1.0",
       "related_page": "https://aisharedresponsibility.com/public-sector/",
@@ -79,7 +148,20 @@
       "file": "defense-controls.json",
       "url": "https://aisharedresponsibility.com/data/defense-controls.json",
       "description": "53 controls for DoD components and the defense industrial base. Each control maps to an SRF layer (L1-L5), impact level (IL4/IL5/IL6), NSS vs. Non-NSS tier, accountable persona, and responsibility split. Regulatory context: DoD Responsible AI tenets, CMMC 2.0, DoD CC SRG, NIST 800-171.",
-      "schema_keys": ["id", "layer", "component", "title", "description", "accountable_persona", "responsibility_split", "operating_models", "il_level", "nss_tier", "mappings", "threshold"],
+      "schema_keys": [
+        "id",
+        "layer",
+        "component",
+        "title",
+        "description",
+        "accountable_persona",
+        "responsibility_split",
+        "operating_models",
+        "il_level",
+        "nss_tier",
+        "mappings",
+        "threshold"
+      ],
       "record_count": 53,
       "srf_version": "1.0",
       "related_page": "https://aisharedresponsibility.com/defense/",
@@ -89,7 +171,21 @@
       "file": "manufacturing-controls.json",
       "url": "https://aisharedresponsibility.com/data/manufacturing-controls.json",
       "description": "45 controls for manufacturing AI deployments covering OT/ICS, product-embedded AI, and IT-side manufacturing. Each control maps to an SRF layer (L1-L5), OT applicability, EU AI Act risk class, and lifecycle stage. Regulatory context: EU AI Act high-risk obligations (August 2026), EU Machinery Regulation 2023/1230 (January 2027), IEC 62443, ISO 42001.",
-      "schema_keys": ["id", "layer", "component", "title", "description", "accountable_persona", "responsibility_split", "operating_models", "ot_applicability", "eu_ai_act_risk_class", "lifecycle_stage", "mappings", "threshold"],
+      "schema_keys": [
+        "id",
+        "layer",
+        "component",
+        "title",
+        "description",
+        "accountable_persona",
+        "responsibility_split",
+        "operating_models",
+        "ot_applicability",
+        "eu_ai_act_risk_class",
+        "lifecycle_stage",
+        "mappings",
+        "threshold"
+      ],
       "record_count": 45,
       "srf_version": "1.0",
       "related_page": "https://aisharedresponsibility.com/manufacturing/",
@@ -104,7 +200,12 @@
       "L4": "AI Platform: infrastructure, APIs, and runtime services",
       "L5": "AI Model Provider: foundation models and model governance"
     },
-    "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"],
+    "operating_models": [
+      "AI-SaaS",
+      "AI-PaaS",
+      "Agent-PaaS",
+      "IaaS"
+    ],
     "personas": [
       "AI System Users",
       "AI System Governance",
@@ -115,6 +216,54 @@
       "AI Platform Provider",
       "Model Provider"
     ],
-    "responsibility_values": ["customer-owned", "shared", "provider-managed", "model-evaluation", "N/A"]
-  }
+    "responsibility_values": [
+      "customer-owned",
+      "shared",
+      "provider-managed",
+      "model-evaluation",
+      "N/A"
+    ]
+  },
+  "exports": [
+    {
+      "file": "export/framework.json",
+      "url": "https://aisharedresponsibility.com/export/framework.json",
+      "format": "json",
+      "description": "Flattened, linked knowledge pack of the whole framework for bulk ingestion: concepts, relationships, definitions."
+    },
+    {
+      "file": "export/glossary.json",
+      "url": "https://aisharedresponsibility.com/export/glossary.json",
+      "format": "json",
+      "description": "Glossary export companion to the knowledge pack."
+    },
+    {
+      "file": "export/ontology.json",
+      "url": "https://aisharedresponsibility.com/export/ontology.json",
+      "format": "json",
+      "description": "Ontology export companion to the knowledge pack."
+    },
+    {
+      "file": "export/matrix.csv",
+      "url": "https://aisharedresponsibility.com/export/matrix.csv",
+      "format": "csv",
+      "description": "Accountability matrix as a flat CSV: one row per SRF layer (L1-L5) by operating model (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) with customer and provider responsibility. For ingestion into GRC and spreadsheet tools.",
+      "record_count": 20
+    },
+    {
+      "file": "export/srf-oscal-catalog.json",
+      "url": "https://aisharedresponsibility.com/export/srf-oscal-catalog.json",
+      "format": "oscal-catalog",
+      "description": "OSCAL 1.1.2 catalog of the SRF accountability matrix. Groups are SRF layers; controls are layer-by-operating-model accountability cells with customer and provider responsibility props. For ingestion into OSCAL-aware GRC platforms.",
+      "record_count": 20
+    },
+    {
+      "file": "export/playbooks.json",
+      "url": "https://aisharedresponsibility.com/export/playbooks.json",
+      "format": "json",
+      "description": "Machine-readable AI incident response playbooks: seven boundary-failure scenarios with SRF layer mapping, who-leads-by-operating-model, triage steps, vendor asks, and evidence to preserve.",
+      "record_count": 7,
+      "related_page": "https://aisharedresponsibility.com/tools/ir-playbooks/"
+    }
+  ]
 }

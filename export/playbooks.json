@@ -1,0 +1,221 @@
+{
+  "schema": "https://aisharedresponsibility.com/export/playbooks.schema",
+  "title": "AI Incident Response Playbooks",
+  "source": "https://aisharedresponsibility.com/tools/ir-playbooks/",
+  "version": "1.0",
+  "updated": "2026-06-16T05:35:13+00:00",
+  "status": "Proposed extension of the CoSAI Shared Responsibility Framework; not part of CoSAI SRF v1.0; not legal advice.",
+  "common_first_steps": [
+    "Contain without destroying evidence; capture prompts, inputs, outputs, and logs first.",
+    "Identify the SRF layer that failed (L1-L5) and the operating model to determine who leads.",
+    "Open the vendor incident channel if any vendor-owned layer is implicated; cite the notification clause.",
+    "Start a timeline: detection time, model and version, sub-processors, notifications.",
+    "Set regulatory and customer notification clocks early; L1 governance owns this call."
+  ],
+  "playbooks": [
+    {
+      "id": "prompt-injection-exfiltration",
+      "title": "Prompt injection leading to data exfiltration",
+      "trigger": "An AI feature followed instructions hidden in user input or retrieved content and returned or sent data it should not have.",
+      "srf_layers": [
+        "L3"
+      ],
+      "threat_tags": [
+        "OWASP LLM01",
+        "indirect-injection"
+      ],
+      "who_leads_by_operating_model": {
+        "AI-SaaS": "vendor-leads",
+        "AI-PaaS": "customer-leads",
+        "Agent-PaaS": "shared",
+        "IaaS": "customer-leads"
+      },
+      "immediate_triage": [
+        "Capture the prompt, injected content, output, and downstream call before disabling the feature.",
+        "Revoke credentials the feature could reach and rotate exposed keys.",
+        "Identify what data left the boundary and where it went.",
+        "Disable the affected tool or retrieval source until input/output filtering is verified."
+      ],
+      "demand_from_vendor": [
+        "Root cause, injection class, and the filtering change made (provider-owned layers).",
+        "Whether other tenants were affected and indirect-injection defenses going forward."
+      ],
+      "preserve_as_evidence": "Full prompt and output transcript, retrieval and tool logs, affected data inventory, egress timeline."
+    },
+    {
+      "id": "model-data-poisoning",
+      "title": "Model or training-data poisoning",
+      "trigger": "The model produces systematically manipulated output, a backdoor trigger is suspected, or a poisoned dataset or fine-tune is discovered.",
+      "srf_layers": [
+        "L5",
+        "L2"
+      ],
+      "threat_tags": [
+        "MITRE ATLAS poisoning"
+      ],
+      "who_leads_by_operating_model": {
+        "AI-SaaS": "vendor-leads",
+        "AI-PaaS": "vendor-leads-model",
+        "Agent-PaaS": "shared",
+        "IaaS": "customer-leads"
+      },
+      "immediate_triage": [
+        "Freeze the production model version and pin to a known-good prior version if available.",
+        "Quarantine the suspected dataset, fine-tune, or retrieval index.",
+        "Test for the trigger across representative inputs and record reproduction steps.",
+        "Scope downstream decisions made on poisoned output that may need reversal."
+      ],
+      "demand_from_vendor": [
+        "Model provenance, signing, and weight-integrity evidence for the affected version.",
+        "Whether the issue is tenant-specific or platform-wide, plus remediation and re-train plan."
+      ],
+      "preserve_as_evidence": "Model and dataset versions, reproduction inputs/outputs, provenance records, decisions made on suspect output."
+    },
+    {
+      "id": "agent-harmful-action",
+      "title": "Autonomous agent took a harmful or unauthorized action",
+      "trigger": "An agent called a tool, moved money, changed a record, or sent a message it should not have, with no human in the loop.",
+      "srf_layers": [
+        "L3",
+        "L4"
+      ],
+      "threat_tags": [
+        "Agent-PaaS"
+      ],
+      "who_leads_by_operating_model": {
+        "Agent-PaaS": "shared",
+        "AI-SaaS": "vendor-leads",
+        "AI-PaaS": "customer-leads",
+        "IaaS": "customer-leads"
+      },
+      "immediate_triage": [
+        "Trigger the kill-switch: suspend the agent and revoke its tool and API scopes.",
+        "Enumerate every action the agent took in the window from the audit trail.",
+        "Reverse or contain external effects: cancel transactions, restore records, recall messages.",
+        "Re-impose approval gates for high-impact actions before re-enabling."
+      ],
+      "demand_from_vendor": [
+        "Complete action audit trail and runtime integrity evidence for the session.",
+        "Whether a guardrail or authorization control failed on their side, and the fix."
+      ],
+      "preserve_as_evidence": "Action log with timestamps, granted scopes and override settings at incident time, external systems touched."
+    },
+    {
+      "id": "data-leakage",
+      "title": "Sensitive data leaked through prompts, logs, or output",
+      "trigger": "Confidential or regulated data appears in model output, training data, prompt logs, or a shared model context it should not reach.",
+      "srf_layers": [
+        "L2",
+        "L4"
+      ],
+      "threat_tags": [
+        "OWASP LLM02",
+        "OWASP LLM06"
+      ],
+      "who_leads_by_operating_model": {
+        "AI-SaaS": "shared",
+        "AI-PaaS": "shared",
+        "Agent-PaaS": "shared",
+        "IaaS": "customer-leads"
+      },
+      "immediate_triage": [
+        "Determine the leak path: prompt logging, training capture, wrong-user output, or cross-tenant exposure.",
+        "Invoke no-training and retention clauses; require purge of captured data and confirmation.",
+        "Classify exposed records and trigger the privacy and regulatory notification assessment at L1.",
+        "Disable prompt or response logging for sensitive flows until controls are verified."
+      ],
+      "demand_from_vendor": [
+        "Confirmation data was not used for training and a certificate of deletion for captured copies.",
+        "Scope of exposure, including other tenants or sub-processors."
+      ],
+      "preserve_as_evidence": "Exposed-record inventory, leak-path analysis, deletion certificates, sub-processor list in the data path."
+    },
+    {
+      "id": "harmful-output",
+      "title": "Harmful, infringing, or non-compliant output",
+      "trigger": "The system produced a materially wrong decision, defamatory or biased content, or output that infringes IP or breaches regulation.",
+      "srf_layers": [
+        "L1",
+        "L3"
+      ],
+      "threat_tags": [
+        "liability",
+        "IP"
+      ],
+      "who_leads_by_operating_model": {
+        "all": "customer-leads-L1",
+        "AI-SaaS": "shared-on-cause",
+        "AI-PaaS": "customer-leads-on-cause",
+        "IaaS": "customer-leads-on-cause"
+      },
+      "immediate_triage": [
+        "Stop the harm: withdraw the output, pause the workflow, notify anyone who relied on it.",
+        "Preserve input, output, model version, and any human review that did or did not occur.",
+        "Engage legal on liability allocation and IP indemnity before external statements.",
+        "Assess regulatory exposure (EU AI Act, sector rules) and the L1 notification timeline."
+      ],
+      "demand_from_vendor": [
+        "Explanation, model and guardrail configuration, and corrective action (provider-owned behavior).",
+        "Activation of IP indemnity where output infringes third-party rights."
+      ],
+      "preserve_as_evidence": "Output and context, decision trail, model version and settings, human-oversight record."
+    },
+    {
+      "id": "supply-chain-breach",
+      "title": "Sub-processor or model supply-chain breach",
+      "trigger": "A model provider, sub-processor, or upstream component in the AI supply chain reports a breach or compromise.",
+      "srf_layers": [
+        "L5",
+        "L4"
+      ],
+      "threat_tags": [
+        "supply-chain"
+      ],
+      "who_leads_by_operating_model": {
+        "AI-SaaS": "vendor-leads",
+        "AI-PaaS": "vendor-leads",
+        "Agent-PaaS": "shared",
+        "IaaS": "customer-leads"
+      },
+      "immediate_triage": [
+        "Pull the sub-processor inventory and identify every path touching the compromised provider.",
+        "Assess what data and credentials were reachable through that path and rotate them.",
+        "Hold the direct vendor to the breach-notification clause and require their downstream assessment.",
+        "Decide whether to fail over to an alternate model or provider while the breach is open."
+      ],
+      "demand_from_vendor": [
+        "Breach scope, affected data categories, and downstream sub-processor audit result.",
+        "Opt-out or migration options if the compromised sub-processor cannot be trusted."
+      ],
+      "preserve_as_evidence": "Sub-processor inventory with data roles, breach notice received, exposure analysis, credential-rotation record."
+    },
+    {
+      "id": "silent-model-change",
+      "title": "Silent model change broke a control",
+      "trigger": "A model or feature update shifted behavior with no notice, and a control that depended on the old behavior now fails.",
+      "srf_layers": [
+        "L5"
+      ],
+      "threat_tags": [
+        "change-management"
+      ],
+      "who_leads_by_operating_model": {
+        "AI-SaaS": "vendor-leads-notice",
+        "AI-PaaS": "vendor-leads-notice",
+        "Agent-PaaS": "shared",
+        "IaaS": "customer-leads"
+      },
+      "immediate_triage": [
+        "Confirm the change: compare current behavior to your baseline evaluation set.",
+        "Pin to a prior model version if offered, while you re-validate.",
+        "Re-run the controls and guardrails that depend on model behavior and record what broke.",
+        "Invoke the change-notification clause and log the gap for the vendor scorecard."
+      ],
+      "demand_from_vendor": [
+        "Change notes, deprecation and pinning options, and the notice that should have been sent.",
+        "A commitment to advance notice and a version-pinning window going forward."
+      ],
+      "preserve_as_evidence": "Baseline vs current evaluation results, model version delta, absent or late change notice."
+    }
+  ]
+}

@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Incident Response Playbooks — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Scenario-based incident response playbooks for AI accountability-boundary failures, mapped to CoSAI SRF layers and operating models. Who acts, what to demand from the vendor, and what evidence to preserve when a boundary fails."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .breadcrumb { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--text-sm); color: #94a3b8; margin-bottom: var(--sp-4); }
+      .breadcrumb a { color: #cbd5e1; text-decoration: none; }
+      .breadcrumb a:hover { color: #fff; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.5; }
+      .breadcrumb__current { color: #fff; }
+
+      .audience-badge { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3); margin-top: var(--sp-5); padding: var(--sp-3) var(--sp-4); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius); }
+      .audience-badge__label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4ade80; }
+      .audience-badge__text { font-size: var(--text-sm); color: #cbd5e1; }
+
+      .scope-note { background: #fffbeb; border: 1px solid #fbbf24; border-radius: var(--radius-lg); padding: 14px 20px; margin-bottom: var(--sp-8); font-size: var(--text-sm); color: #78350f; line-height: var(--leading-normal); }
+      .scope-note strong { color: #92400e; }
+
+      .intro-box { border-left: 3px solid var(--cosai-blue); background: var(--slate-50); border-radius: var(--radius); padding: var(--sp-5) var(--sp-6); margin-bottom: var(--sp-8); }
+      .intro-box p { margin: 0 0 var(--sp-3); color: var(--slate-700); line-height: var(--leading-normal); }
+      .intro-box p:last-child { margin-bottom: 0; }
+
+      .section-eyebrow { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--cosai-blue); margin-bottom: var(--sp-2); }
+      .section-title { font-size: var(--text-xl); font-weight: 800; color: var(--slate-900); letter-spacing: -0.02em; margin: 0 0 var(--sp-2); }
+      .section-lede { color: var(--slate-600); line-height: var(--leading-normal); margin: 0 0 var(--sp-6); max-width: 64ch; }
+      .block { margin-bottom: var(--sp-16); }
+
+      /* Common triage */
+      .triage { counter-reset: t; display: grid; gap: var(--sp-3); }
+      .triage__item { display: grid; grid-template-columns: 30px 1fr; gap: var(--sp-3); align-items: start; }
+      .triage__num { width: 28px; height: 28px; border-radius: 50%; background: var(--cosai-navy); color: #fff; font-size: var(--text-xs); font-weight: 800; display: flex; align-items: center; justify-content: center; }
+      .triage__text { font-size: var(--text-sm); color: var(--slate-700); line-height: var(--leading-normal); padding-top: 3px; }
+
+      /* Filter */
+      .filter-bar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); padding: var(--sp-4); background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); margin-bottom: var(--sp-6); }
+      .filter-bar__label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-500); margin-right: var(--sp-2); }
+      .filter-chip { font-size: var(--text-sm); font-weight: 600; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--slate-300); background: #fff; color: var(--slate-600); cursor: pointer; transition: all 0.12s; }
+      .filter-chip:hover { border-color: var(--cosai-blue-soft); }
+      .filter-chip[aria-pressed="true"] { background: var(--cosai-navy); color: #fff; border-color: var(--cosai-navy); }
+
+      /* Playbook card */
+      .pb { border: 1px solid var(--slate-200); border-radius: var(--radius-xl); background: #fff; box-shadow: var(--shadow); margin-bottom: var(--sp-6); overflow: hidden; }
+      .pb__head { padding: var(--sp-6); border-bottom: 1px solid var(--slate-100); background: var(--slate-50); }
+      .pb__num { font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.1em; color: #b91c1c; text-transform: uppercase; }
+      .pb__title { font-size: var(--text-lg); font-weight: 800; color: var(--slate-900); letter-spacing: -0.01em; margin: var(--sp-1) 0 var(--sp-2); }
+      .pb__trigger { font-size: var(--text-sm); color: var(--slate-600); margin: 0; line-height: var(--leading-snug); }
+      .chip-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-4); }
+      .chip { font-size: var(--text-xs); font-weight: 700; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--slate-200); color: var(--slate-600); background: #fff; }
+      .chip--layer { color: var(--cosai-navy); background: #eef1f8; border-color: #d7def0; }
+      .chip--threat { color: #b45309; background: #fffbeb; border-color: #fcd34d; }
+
+      .pb__body { padding: var(--sp-6); }
+      .pb__h { font-size: var(--text-xs); font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--slate-500); margin: 0 0 var(--sp-3); }
+      .pb__sub { margin-bottom: var(--sp-6); }
+      .pb__sub:last-child { margin-bottom: 0; }
+
+      .who-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+      .who-table th { text-align: left; font-size: var(--text-xs); letter-spacing: 0.04em; text-transform: uppercase; color: var(--slate-500); font-weight: 700; padding: var(--sp-2) var(--sp-3); border-bottom: 2px solid var(--slate-200); }
+      .who-table td { padding: var(--sp-3); border-bottom: 1px solid var(--slate-100); color: var(--slate-700); vertical-align: top; line-height: var(--leading-snug); }
+      .who-table tr:last-child td { border-bottom: none; }
+      .who-table .opm { font-weight: 700; color: var(--slate-800); white-space: nowrap; }
+      .lead { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; padding: 1px 7px; border-radius: 999px; }
+      .lead--you { color: #047857; background: #ecfdf5; border: 1px solid #6ee7b7; }
+      .lead--vendor { color: var(--cosai-blue); background: var(--cosai-blue-light); border: 1px solid var(--cosai-blue-soft); }
+      .lead--shared { color: #b45309; background: #fffbeb; border: 1px solid #fcd34d; }
+
+      .pb__list { margin: 0; padding-left: var(--sp-5); }
+      .pb__list li { font-size: var(--text-sm); color: var(--slate-700); line-height: var(--leading-normal); margin-bottom: var(--sp-2); }
+      .pb__list li:last-child { margin-bottom: 0; }
+
+      .table-scroll { overflow-x: auto; }
+      .is-hidden { display: none !important; }
+
+      @media (max-width: 640px) {
+        .triage__item { grid-template-columns: 26px 1fr; }
+      }
+    </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "AI Incident Response Playbooks — CoSAI SRF",
+  "url": "https://aisharedresponsibility.com/tools/ir-playbooks/",
+  "description": "Scenario-based incident response playbooks for AI accountability-boundary failures, mapped to CoSAI SRF layers and operating models. Covers prompt injection and data exfiltration, model poisoning, agent misuse, data leakage, harmful output, supply-chain breach, and silent model change.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://aisharedresponsibility.com/",
+    "name": "AI Shared Responsibility"
+  },
+  "mentions": [
+    { "@type": "DefinedTerm", "name": "L1 AI Business & Usage", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L2 AI Information", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L3 AI Application", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L4 AI Platform", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L5 AI Model Provider", "url": "https://aisharedresponsibility.com/framework/" }
+  ]
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-ir-playbooks" />
+    <meta name="llm:concepts" content="srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.concept.incident-response" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <div class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/tools/">Tools</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span class="breadcrumb__current">Incident Response Playbooks</span>
+        </div>
+        <span class="page-hero__eyebrow">Tools · Day 2 · Incident response</span>
+        <h1 class="page-hero__title">AI incident response playbooks</h1>
+        <p class="page-hero__lede">
+          Preventive controls tell you who is accountable. These playbooks tell
+          you what to do when a boundary fails. Each scenario maps to the SRF
+          layer that broke, names who leads the response under your operating
+          model, and lists what to demand from the vendor and what evidence to
+          preserve.
+        </p>
+        <div class="audience-badge" role="note" aria-label="Intended audience">
+          <span class="audience-badge__label">Audience</span>
+          <span class="audience-badge__text">
+            Incident response · Security operations · On-call · Vendor management · Legal
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="ir-playbooks">
+
+      <div class="scope-note" role="note">
+        <strong>Practitioner aid.</strong> These playbooks are a proposed
+        extension of the CoSAI Shared Responsibility Framework, written to
+        demonstrate the approach. They are not part of CoSAI SRF v1.0, are not a
+        substitute for your own IR plan, and are not legal advice. Adapt the
+        steps to your runbooks and escalation paths before an incident.
+      </div>
+
+      <div class="intro-box" role="note">
+        <p>
+          When an AI system fails, the first question is rarely technical. It is
+          "whose problem is this." The accountability layer that broke and your
+          operating model decide who leads the response: in AI-SaaS the provider
+          owns most of the stack, in IaaS you own nearly all of it, and Agent-PaaS
+          splits the agentic layers down the middle. Reach for the wrong party
+          and you lose the first hour.
+        </p>
+        <p>
+          Each playbook below starts from a trigger, points to the SRF layer
+          involved, and resolves the "who acts" question per operating model
+          before listing triage steps. The vendor asks line up with the contract
+          clauses on the <a href="/tools/vendor-risk/">vendor risk</a> page, so
+          the rights you negotiated are the rights you invoke here.
+        </p>
+      </div>
+
+      <!-- First 15 minutes -->
+      <section class="block" data-llm="first-fifteen">
+        <p class="section-eyebrow">Before the specific playbook</p>
+        <h2 class="section-title">The first fifteen minutes, any AI incident</h2>
+        <p class="section-lede">
+          Run these regardless of scenario. They preserve evidence and put the
+          right party on point before the facts are clear.
+        </p>
+        <div class="triage">
+          <div class="triage__item"><div class="triage__num">1</div><div class="triage__text">Contain without destroying evidence. Disable the affected feature, agent, or key, but capture prompts, inputs, outputs, and logs first. AI evidence is often ephemeral.</div></div>
+          <div class="triage__item"><div class="triage__num">2</div><div class="triage__text">Identify the SRF layer that failed (L1 to L5) and your operating model. That pair tells you whether you lead or the vendor leads.</div></div>
+          <div class="triage__item"><div class="triage__num">3</div><div class="triage__text">Open the vendor incident channel if any layer they own is implicated. Cite the contractual incident-response and notification clause.</div></div>
+          <div class="triage__item"><div class="triage__num">4</div><div class="triage__text">Start a timeline. Record detection time, model and version in use, sub-processors in the path, and who was notified when.</div></div>
+          <div class="triage__item"><div class="triage__num">5</div><div class="triage__text">Decide on regulatory and customer notification clocks early. L1 governance owns this call; do not let it slip while engineering triages.</div></div>
+        </div>
+      </section>
+
+      <!-- Playbooks -->
+      <section class="block" data-llm="playbooks">
+        <p class="section-eyebrow">Scenarios</p>
+        <h2 class="section-title">Playbooks by failure</h2>
+        <p class="section-lede">
+          Seven of the most common AI boundary failures. Filter by the SRF layer
+          that broke. The "who leads" table is derived from the SRF
+          responsibility matrix for that layer.
+        </p>
+
+        <div class="filter-bar" role="group" aria-label="Filter playbooks by SRF layer">
+          <span class="filter-bar__label">SRF layer</span>
+          <button class="filter-chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-chip" data-filter="L1" aria-pressed="false">L1 Business</button>
+          <button class="filter-chip" data-filter="L2" aria-pressed="false">L2 Information</button>
+          <button class="filter-chip" data-filter="L3" aria-pressed="false">L3 Application</button>
+          <button class="filter-chip" data-filter="L4" aria-pressed="false">L4 Platform</button>
+          <button class="filter-chip" data-filter="L5" aria-pressed="false">L5 Model</button>
+        </div>
+
+        <!-- PB1 -->
+        <article class="pb" data-layers="L3" data-llm="pb-prompt-injection">
+          <div class="pb__head">
+            <div class="pb__num">Playbook 1</div>
+            <h3 class="pb__title">Prompt injection leading to data exfiltration</h3>
+            <p class="pb__trigger">Trigger: an AI feature followed instructions hidden in user input or in retrieved content, and returned or sent data it should not have.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L3 AI Application</span>
+              <span class="chip chip--threat">OWASP LLM01</span>
+              <span class="chip chip--threat">Indirect injection</span>
+            </div>
+          </div>
+          <div class="pb__body">
+            <div class="pb__sub">
+              <p class="pb__h">Who leads, by operating model</p>
+              <div class="table-scroll"><table class="who-table"><tbody>
+                <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns L3. You demand root cause and a fix; you own notifying affected users.</td></tr>
+                <tr><td class="opm">AI-PaaS</td><td><span class="lead lead--you">You lead</span> You own the application and its guardrails; provider supports at the platform and model layer.</td></tr>
+                <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> You own agent definitions and prompts; provider owns the runtime that executed the action.</td></tr>
+                <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You own the full stack; provider involvement is infrastructure only.</td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Immediate triage</p>
+              <ol class="pb__list">
+                <li>Capture the exact prompt, the injected content, the model output, and the downstream call before disabling the feature.</li>
+                <li>Revoke any credentials or tokens the feature could reach, and rotate keys exposed in the output path.</li>
+                <li>Identify what data left the boundary and where it went. Treat retrieved or tool-sourced content as the likely injection vector.</li>
+                <li>Disable the affected tool or retrieval source until input and output filtering is verified.</li>
+              </ol>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Demand from the vendor</p>
+              <ul class="pb__list">
+                <li>For provider-owned layers: root cause, the injection class, and the input or output filtering change made.</li>
+                <li>Confirmation of whether other tenants were affected, and indirect-injection defenses going forward.</li>
+              </ul>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Preserve as evidence</p>
+              <p class="pb__trigger">Full prompt and output transcript, retrieval and tool logs, affected data inventory, and the timeline of egress.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- PB2 -->
+        <article class="pb" data-layers="L5 L2" data-llm="pb-model-poisoning">
+          <div class="pb__head">
+            <div class="pb__num">Playbook 2</div>
+            <h3 class="pb__title">Model or training-data poisoning</h3>
+            <p class="pb__trigger">Trigger: the model produces systematically manipulated output, a backdoor trigger is suspected, or a poisoned dataset or fine-tune is discovered.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L5 AI Model Provider</span>
+              <span class="chip chip--layer">L2 AI Information</span>
+              <span class="chip chip--threat">ATLAS poisoning</span>
+            </div>
+          </div>
+          <div class="pb__body">
+            <div class="pb__sub">
+              <p class="pb__h">Who leads, by operating model</p>
+              <div class="table-scroll"><table class="who-table"><tbody>
+                <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns the model. You document impact and hold them to the integrity clause.</td></tr>
+                <tr><td class="opm">AI-PaaS</td><td><span class="lead lead--vendor">Vendor leads (model)</span> Provider owns the foundation model; you own model evaluation and any data you supplied.</td></tr>
+                <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Provider owns the base model; you own fine-tunes, prompts, and retrieved data that could carry poison.</td></tr>
+                <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You trained or hosted it; you own provenance and rollback.</td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Immediate triage</p>
+              <ol class="pb__list">
+                <li>Freeze the model version in production and pin to a known-good prior version if one exists.</li>
+                <li>Quarantine any dataset, fine-tune, or retrieval index suspected as the poison source.</li>
+                <li>Test for the suspected trigger across representative inputs and record reproduction steps.</li>
+                <li>Scope downstream decisions made on poisoned output that may need to be reversed.</li>
+              </ol>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Demand from the vendor</p>
+              <ul class="pb__list">
+                <li>Model provenance, signing, and weight-integrity evidence for the affected version.</li>
+                <li>Whether the issue is tenant-specific or platform-wide, and the remediation and re-train plan.</li>
+              </ul>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Preserve as evidence</p>
+              <p class="pb__trigger">Model and dataset versions, reproduction inputs and outputs, provenance records, and the list of decisions made on suspect output.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- PB3 -->
+        <article class="pb" data-layers="L3 L4" data-llm="pb-agent-action">
+          <div class="pb__head">
+            <div class="pb__num">Playbook 3</div>
+            <h3 class="pb__title">Autonomous agent took a harmful or unauthorized action</h3>
+            <p class="pb__trigger">Trigger: an agent called a tool, moved money, changed a record, or sent a message it should not have, with no human in the loop.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L3 AI Application</span>
+              <span class="chip chip--layer">L4 AI Platform</span>
+              <span class="chip chip--threat">Agent-PaaS</span>
+            </div>
+          </div>
+          <div class="pb__body">
+            <div class="pb__sub">
+              <p class="pb__h">Who leads, by operating model</p>
+              <div class="table-scroll"><table class="who-table"><tbody>
+                <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> You own the agent definition, granted scopes, and override config; provider owns the runtime that executed it.</td></tr>
+                <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns the embedded agent; you own which permissions you granted.</td></tr>
+                <tr><td class="opm">AI-PaaS / IaaS</td><td><span class="lead lead--you">You lead</span> You built the orchestration; provider supports the platform or infrastructure only.</td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Immediate triage</p>
+              <ol class="pb__list">
+                <li>Trigger the kill-switch: suspend the agent and revoke its tool and API scopes immediately.</li>
+                <li>Enumerate every action the agent took in the affected window from the action audit trail.</li>
+                <li>Reverse or contain external effects: cancel transactions, restore records, recall messages where possible.</li>
+                <li>Re-impose approval gates for high-impact actions before re-enabling anything.</li>
+              </ol>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Demand from the vendor</p>
+              <ul class="pb__list">
+                <li>Complete action audit trail and runtime integrity evidence for the session.</li>
+                <li>Whether a guardrail or authorization control failed on their side, and the fix.</li>
+              </ul>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Preserve as evidence</p>
+              <p class="pb__trigger">Action log with timestamps, granted scopes and override settings at time of incident, and the external systems touched.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- PB4 -->
+        <article class="pb" data-layers="L2 L4" data-llm="pb-data-leak">
+          <div class="pb__head">
+            <div class="pb__num">Playbook 4</div>
+            <h3 class="pb__title">Sensitive data leaked through prompts, logs, or output</h3>
+            <p class="pb__trigger">Trigger: confidential or regulated data appears in model output, training data, prompt logs, or a shared model context it should not reach.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L2 AI Information</span>
+              <span class="chip chip--layer">L4 AI Platform</span>
+              <span class="chip chip--threat">OWASP LLM02 / LLM06</span>
+            </div>
+          </div>
+          <div class="pb__body">
+            <div class="pb__sub">
+              <p class="pb__h">Who leads, by operating model</p>
+              <div class="table-scroll"><table class="who-table"><tbody>
+                <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--shared">Shared</span> You own what data you sent and classification; provider owns isolation and log handling.</td></tr>
+                <tr><td class="opm">AI-PaaS / Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Data layer is shared; you own classification and the provider owns platform retention.</td></tr>
+                <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You own the data layer end to end.</td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Immediate triage</p>
+              <ol class="pb__list">
+                <li>Determine the leak path: prompt logging, training capture, output to the wrong user, or cross-tenant exposure.</li>
+                <li>Invoke the no-training and retention clauses; require the provider to purge captured data and confirm.</li>
+                <li>Classify the exposed records and trigger the privacy and regulatory notification assessment at L1.</li>
+                <li>Disable prompt or response logging for sensitive flows until controls are verified.</li>
+              </ol>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Demand from the vendor</p>
+              <ul class="pb__list">
+                <li>Confirmation the data was not used for training and a certificate of deletion for captured copies.</li>
+                <li>Scope of exposure, including whether other tenants or sub-processors saw the data.</li>
+              </ul>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Preserve as evidence</p>
+              <p class="pb__trigger">Exposed-record inventory, leak-path analysis, deletion certificates, and the sub-processor list in the data path.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- PB5 -->
+        <article class="pb" data-layers="L1 L3" data-llm="pb-harmful-output">
+          <div class="pb__head">
+            <div class="pb__num">Playbook 5</div>
+            <h3 class="pb__title">Harmful, infringing, or non-compliant output</h3>
+            <p class="pb__trigger">Trigger: the system produced a materially wrong decision, defamatory or biased content, or output that infringes IP or breaches regulation.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L1 AI Business & Usage</span>
+              <span class="chip chip--layer">L3 AI Application</span>
+              <span class="chip chip--threat">Liability / IP</span>
+            </div>
+          </div>
+          <div class="pb__body">
+            <div class="pb__sub">
+              <p class="pb__h">Who leads, by operating model</p>
+              <div class="table-scroll"><table class="who-table"><tbody>
+                <tr><td class="opm">All models</td><td><span class="lead lead--you">You lead (L1)</span> Business governance owns the harm, the affected parties, and the regulatory clock, whoever built the model.</td></tr>
+                <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--shared">Shared on cause</span> Provider owns the L3 application behavior; you invoke the IP and liability clauses.</td></tr>
+                <tr><td class="opm">AI-PaaS / IaaS</td><td><span class="lead lead--you">You lead on cause</span> You own the application that produced the output.</td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Immediate triage</p>
+              <ol class="pb__list">
+                <li>Stop the harm: withdraw the output, pause the workflow, and notify anyone who relied on it.</li>
+                <li>Preserve the input, output, model version, and any human review that did or did not occur.</li>
+                <li>Engage legal on liability allocation and IP indemnity per contract before external statements.</li>
+                <li>Assess regulatory exposure (EU AI Act, sector rules) and the notification timeline at L1.</li>
+              </ol>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Demand from the vendor</p>
+              <ul class="pb__list">
+                <li>For provider-owned application behavior: explanation, model and guardrail configuration, and corrective action.</li>
+                <li>Activation of IP indemnity where the output infringes third-party rights.</li>
+              </ul>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Preserve as evidence</p>
+              <p class="pb__trigger">The output and its context, the decision trail, model version and settings, and the human-oversight record.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- PB6 -->
+        <article class="pb" data-layers="L5 L4" data-llm="pb-supply-chain">
+          <div class="pb__head">
+            <div class="pb__num">Playbook 6</div>
+            <h3 class="pb__title">Sub-processor or model supply-chain breach</h3>
+            <p class="pb__trigger">Trigger: a model provider, sub-processor, or upstream component in the AI supply chain reports a breach or compromise.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L5 AI Model Provider</span>
+              <span class="chip chip--layer">L4 AI Platform</span>
+              <span class="chip chip--threat">Supply chain</span>
+            </div>
+          </div>
+          <div class="pb__body">
+            <div class="pb__sub">
+              <p class="pb__h">Who leads, by operating model</p>
+              <div class="table-scroll"><table class="who-table"><tbody>
+                <tr><td class="opm">AI-SaaS / AI-PaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns the platform and model supply chain; you own your exposure assessment and notification.</td></tr>
+                <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Map which side contracted the compromised sub-processor.</td></tr>
+                <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You assembled the stack and own the upstream relationships.</td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Immediate triage</p>
+              <ol class="pb__list">
+                <li>Pull your sub-processor inventory and identify every path that touches the compromised provider.</li>
+                <li>Assess what data and credentials were reachable through that path and rotate them.</li>
+                <li>Hold the direct vendor to the breach-notification clause and require their downstream assessment.</li>
+                <li>Decide whether to fail over to an alternate model or provider while the breach is open.</li>
+              </ol>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Demand from the vendor</p>
+              <ul class="pb__list">
+                <li>Breach scope, affected data categories, and the downstream sub-processor audit result.</li>
+                <li>Opt-out or migration options if the compromised sub-processor cannot be trusted.</li>
+              </ul>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Preserve as evidence</p>
+              <p class="pb__trigger">Sub-processor inventory with data roles, the breach notice received, exposure analysis, and credential-rotation record.</p>
+            </div>
+          </div>
+        </article>
+
+        <!-- PB7 -->
+        <article class="pb" data-layers="L5" data-llm="pb-silent-change">
+          <div class="pb__head">
+            <div class="pb__num">Playbook 7</div>
+            <h3 class="pb__title">Silent model change broke a control</h3>
+            <p class="pb__trigger">Trigger: a model or feature update shifted behavior with no notice, and a control that depended on the old behavior now fails.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L5 AI Model Provider</span>
+              <span class="chip chip--threat">Change management</span>
+            </div>
+          </div>
+          <div class="pb__body">
+            <div class="pb__sub">
+              <p class="pb__h">Who leads, by operating model</p>
+              <div class="table-scroll"><table class="who-table"><tbody>
+                <tr><td class="opm">AI-SaaS / AI-PaaS</td><td><span class="lead lead--vendor">Vendor leads (notice)</span> Provider owns the model and the duty to notify; you own detecting and re-validating your controls.</td></tr>
+                <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Provider changed the base model; you own agent behavior that depended on it.</td></tr>
+                <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You control versioning and should not be surprised.</td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Immediate triage</p>
+              <ol class="pb__list">
+                <li>Confirm the change: compare current behavior to your baseline evaluation set.</li>
+                <li>Pin to a prior model version if the provider offers version pinning, while you re-validate.</li>
+                <li>Re-run the controls and guardrails that depend on model behavior and record what broke.</li>
+                <li>Invoke the change-notification clause and log the gap for the vendor scorecard.</li>
+              </ol>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Demand from the vendor</p>
+              <ul class="pb__list">
+                <li>Change notes, the deprecation and pinning options, and the notice that should have been sent.</li>
+                <li>A commitment to advance notice and a version-pinning window going forward.</li>
+              </ul>
+            </div>
+            <div class="pb__sub">
+              <p class="pb__h">Preserve as evidence</p>
+              <p class="pb__trigger">Baseline vs current evaluation results, the model version delta, and the absent or late change notice.</p>
+            </div>
+          </div>
+        </article>
+
+        <p id="filter-empty" class="section-lede is-hidden" role="status">No playbook is tagged to that layer. Clear the filter to see all seven.</p>
+      </section>
+
+      <!-- Related -->
+      <section class="block" data-llm="related">
+        <h2 class="section-title" style="margin-bottom:var(--sp-5);">Related on this site</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--sp-3);">
+          <a class="related-card" href="/tools/vendor-risk/" style="border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:var(--sp-4) var(--sp-5);text-decoration:none;color:inherit;background:#fff;"><div style="font-weight:700;color:var(--slate-900);font-size:var(--text-sm);">Vendor risk assessment</div><div style="font-size:var(--text-xs);color:var(--slate-500);">The contract clauses these playbooks invoke.</div></a>
+          <a class="related-card" href="/tools/srf-stress/" style="border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:var(--sp-4) var(--sp-5);text-decoration:none;color:inherit;background:#fff;"><div style="font-weight:700;color:var(--slate-900);font-size:var(--text-sm);">SRF Stress Test</div><div style="font-size:var(--text-xs);color:var(--slate-500);">Pressure-test a deployment for accountability gaps before they fail.</div></a>
+          <a class="related-card" href="/controls/" style="border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:var(--sp-4) var(--sp-5);text-decoration:none;color:inherit;background:#fff;"><div style="font-weight:700;color:var(--slate-900);font-size:var(--text-sm);">Controls</div><div style="font-size:var(--text-xs);color:var(--slate-500);">Preventive controls with OWASP LLM and MITRE ATLAS mapping.</div></a>
+          <a class="related-card" href="/operating-models/" style="border:1px solid var(--slate-200);border-radius:var(--radius-lg);padding:var(--sp-4) var(--sp-5);text-decoration:none;color:inherit;background:#fff;"><div style="font-weight:700;color:var(--slate-900);font-size:var(--text-sm);">Operating models</div><div style="font-size:var(--text-xs);color:var(--slate-500);">How accountability shifts across the four operating models.</div></a>
+        </div>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script>
+      (function () {
+        var chips = Array.prototype.slice.call(document.querySelectorAll(".filter-chip"));
+        var cards = Array.prototype.slice.call(document.querySelectorAll(".pb"));
+        var empty = document.getElementById("filter-empty");
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            var filter = chip.getAttribute("data-filter");
+            chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c === chip)); });
+            var shown = 0;
+            cards.forEach(function (card) {
+              var layers = (card.getAttribute("data-layers") || "").split(" ");
+              var match = filter === "all" || layers.indexOf(filter) !== -1;
+              card.classList.toggle("is-hidden", !match);
+              if (match) shown++;
+            });
+            empty.classList.toggle("is-hidden", shown !== 0);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
