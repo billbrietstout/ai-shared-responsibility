@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>How to Run an AI Vendor Risk Assessment — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="A step-by-step workflow for running a vendor risk assessment on an AI supplier using the CoSAI Shared Responsibility Framework: tier the vendor, find the layer, split accountability, demand evidence, and contract the boundary."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .breadcrumb {
+        display: flex; align-items: center; gap: var(--sp-2);
+        font-size: var(--text-sm); color: #94a3b8; margin-bottom: var(--sp-4);
+      }
+      .breadcrumb a { color: #cbd5e1; text-decoration: none; }
+      .breadcrumb a:hover { color: #fff; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.5; }
+      .breadcrumb__current { color: #fff; }
+
+      .audience-badge {
+        display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3);
+        margin-top: var(--sp-5); padding: var(--sp-3) var(--sp-4);
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+        border-radius: var(--radius);
+      }
+      .audience-badge__label { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #4ade80; }
+      .audience-badge__text { font-size: var(--text-sm); color: #cbd5e1; }
+
+      .scope-note {
+        background: #fffbeb; border: 1px solid #fbbf24; border-radius: var(--radius-lg);
+        padding: 14px 20px; margin-bottom: var(--sp-8); font-size: var(--text-sm);
+        color: #78350f; line-height: var(--leading-normal);
+      }
+      .scope-note strong { color: #92400e; }
+
+      .intro-box { border-left: 3px solid var(--cosai-blue); background: var(--slate-50); border-radius: var(--radius); padding: var(--sp-5) var(--sp-6); margin-bottom: var(--sp-10); }
+      .intro-box p { margin: 0 0 var(--sp-3); color: var(--slate-700); line-height: var(--leading-normal); }
+      .intro-box p:last-child { margin-bottom: 0; }
+
+      .steps-eyebrow { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--slate-400); margin-bottom: var(--sp-6); }
+
+      .step { display: grid; grid-template-columns: 44px 1fr; gap: 0 var(--sp-5); }
+      .step__spine { display: flex; flex-direction: column; align-items: center; }
+      .step__num { width: 44px; height: 44px; border-radius: 50%; background: var(--cosai-blue); color: #fff; font-size: var(--text-base); font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: var(--shadow-md); }
+      .step__line { width: 2px; background: var(--slate-200); flex: 1; min-height: var(--sp-8); margin-top: var(--sp-2); }
+      .step:last-child .step__line { display: none; }
+      .step__body { padding-bottom: var(--sp-10); }
+      .step__title { font-size: var(--text-xl); font-weight: 700; color: var(--slate-900); letter-spacing: -0.02em; margin: var(--sp-2) 0 var(--sp-3); line-height: var(--leading-tight); }
+      .step__desc { font-size: var(--text-base); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-4); max-width: 660px; }
+      .step__body ul { margin: 0 0 var(--sp-4); padding-left: var(--sp-5); max-width: 660px; }
+      .step__body li { font-size: var(--text-sm); color: var(--slate-700); line-height: var(--leading-normal); margin-bottom: var(--sp-2); }
+
+      .tag-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-4); }
+      .tag-plain { font-size: var(--text-xs); font-weight: 600; color: var(--slate-600); background: var(--slate-100); border: 1px solid var(--slate-200); border-radius: 999px; padding: 3px 10px; }
+
+      .callout { border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-4); }
+      .callout p { margin: 0; font-size: var(--text-sm); line-height: var(--leading-normal); }
+      .callout--blue { border-color: var(--cosai-blue-soft); background: var(--cosai-blue-light); color: var(--slate-700); }
+      .callout--amber { border-color: #fbbf24; background: #fffbeb; color: #713f12; }
+
+      .data-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); margin-bottom: var(--sp-4); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); overflow: hidden; }
+      .data-table th { text-align: left; background: var(--slate-50); font-size: var(--text-xs); letter-spacing: 0.04em; text-transform: uppercase; color: var(--slate-600); font-weight: 700; padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--slate-200); }
+      .data-table td { padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--slate-100); color: var(--slate-700); vertical-align: top; line-height: var(--leading-snug); }
+      .data-table tr:last-child td { border-bottom: none; }
+      .table-scroll { overflow-x: auto; margin-bottom: var(--sp-4); }
+
+      .workpaper-dl { display: flex; align-items: center; gap: var(--sp-5); background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-lg); padding: var(--sp-5) var(--sp-6); margin-bottom: var(--sp-4); }
+      .workpaper-dl__icon { width: 44px; height: 44px; background: var(--cosai-blue-light); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+      .workpaper-dl__icon svg { width: 22px; height: 22px; stroke: var(--cosai-blue); fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+      .workpaper-dl__text { flex: 1; }
+      .workpaper-dl__name { font-size: var(--text-base); font-weight: 700; color: var(--slate-900); margin-bottom: 2px; }
+      .workpaper-dl__meta { font-size: var(--text-xs); color: var(--slate-500); line-height: var(--leading-snug); }
+
+      .page-nav { margin-top: var(--sp-12); padding-top: var(--sp-8); border-top: 1px solid var(--slate-200); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--sp-4); }
+      .page-nav__link { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--text-sm); font-weight: 600; color: var(--cosai-blue); text-decoration: none; }
+      .page-nav__link:hover { text-decoration: underline; }
+      .page-nav__link svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+      @media (max-width: 600px) {
+        .step { grid-template-columns: 36px 1fr; gap: 0 var(--sp-3); }
+        .step__num { width: 36px; height: 36px; font-size: var(--text-sm); }
+        .workpaper-dl { flex-direction: column; align-items: flex-start; gap: var(--sp-3); }
+      }
+    </style>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="how-to" />
+    <meta name="llm:canonical-id" content="srf.page.tools-vendor-risk-how-to" />
+    <meta name="llm:concepts" content="srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.role.model-provider, srf.role.ai-platform-provider, srf.role.agentic-platform-provider, srf.role.application-developer, srf.role.data-provider, srf.role.ai-system-governance, srf.concept.evidence-threshold" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <div class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/tools/">Tools</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <a href="/tools/vendor-risk/">Vendor Risk Assessment</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span class="breadcrumb__current">How-to guide</span>
+        </div>
+        <span class="page-hero__eyebrow">Vendor risk · Third-party risk · Procurement</span>
+        <h1 class="page-hero__title">How to run an AI vendor risk assessment</h1>
+        <p class="page-hero__lede">
+          A five-step workflow that turns the vendor categories into a repeatable
+          assessment: tier the vendor, place it on the SRF, split the
+          accountability, demand the right evidence, and write the boundary into
+          the contract.
+        </p>
+        <div class="audience-badge" role="note" aria-label="Intended audience">
+          <span class="audience-badge__label">Audience</span>
+          <span class="audience-badge__text">
+            Vendor risk analysts · TPRM · Procurement · Security GRC · Legal reviewers
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="how-to-run-an-ai-vendor-risk-assessment">
+
+      <div class="scope-note" role="note">
+        <strong>Practitioner aid.</strong> This guide is a proposed extension of
+        the CoSAI Shared Responsibility Framework, built to demonstrate the
+        approach. It is not part of CoSAI SRF v1.0 and is not legal advice.
+        Validate every step against your own TPRM program and legal counsel.
+      </div>
+
+      <div class="intro-box" role="note">
+        <p>
+          A standard third-party questionnaire was built for software that does
+          one predictable thing. AI vendors break that assumption: the same
+          contract can put a model, an autonomous agent, and a hidden chain of
+          sub-processors inside your environment. The result is that "who is
+          accountable" stops being obvious, which is exactly the question a
+          vendor risk assessment exists to answer.
+        </p>
+        <p>
+          This workflow keeps the answer concrete. For every vendor you name one
+          accountable party per responsibility, and you ask for evidence that
+          proves the vendor holds its side. Work through the steps in order. The
+          companion <a href="/tools/vendor-risk/">vendor risk reference</a> holds
+          the per-category evidence lists you will pull from in steps 3 and 4.
+        </p>
+      </div>
+
+      <p class="steps-eyebrow">Five-step workflow</p>
+
+      <!-- Step 1 -->
+      <div class="step">
+        <div class="step__spine"><div class="step__num" aria-hidden="true">1</div><div class="step__line" aria-hidden="true"></div></div>
+        <div class="step__body">
+          <h2 class="step__title">Tier the vendor before you spend effort on it</h2>
+          <p class="step__desc">
+            Assessment depth should track risk, not contract value. Score the
+            vendor on three axes and let the highest score set the tier. A
+            cheap agent with write access to production outranks an expensive
+            read-only analytics tool.
+          </p>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr><th>Axis</th><th>Ask</th></tr></thead>
+              <tbody>
+                <tr><td>Data sensitivity</td><td>Does the vendor touch regulated, confidential, or customer data, or only low-sensitivity data?</td></tr>
+                <tr><td>Autonomy</td><td>Does it take actions on your systems on its own, run with a human in the loop, or only return information?</td></tr>
+                <tr><td>SRF depth</td><td>How deep does it reach: app features at L3, the platform at L4, or the model itself at L5?</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout--blue">
+            <p><strong>Tier 1 (critical)</strong> if any axis is high: full assessment and a contractual responsibility matrix. <strong>Tier 2 (elevated)</strong> for business data or human-in-the-loop app features. <strong>Tier 3 (standard)</strong> for low-sensitivity, bounded, non-autonomous tools.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step">
+        <div class="step__spine"><div class="step__num" aria-hidden="true">2</div><div class="step__line" aria-hidden="true"></div></div>
+        <div class="step__body">
+          <h2 class="step__title">Place the vendor on the SRF</h2>
+          <p class="step__desc">
+            Match the vendor to one of the seven categories and read off the SRF
+            layers it touches and the operating model it implies. The layer tells
+            you which responsibilities are even in play; many failed assessments
+            come from asking platform questions of a model provider, or model
+            questions of a reseller.
+          </p>
+          <div class="tag-row">
+            <span class="tag-plain">L4/L5 → Core platform &amp; infrastructure</span>
+            <span class="tag-plain">L5 → Model provider</span>
+            <span class="tag-plain">L3 → AI-enabled SaaS</span>
+            <span class="tag-plain">L3/L4 → Agentic systems</span>
+            <span class="tag-plain">L2 → Data, labeling &amp; retrieval</span>
+            <span class="tag-plain">Cross-layer → Consulting</span>
+            <span class="tag-plain">L3/L4 → Software &amp; VARs</span>
+          </div>
+          <div class="callout callout--amber">
+            <p>A single vendor can occupy more than one category. A SaaS product with an autonomous agent and its own hosted model spans L3, L4, and L5. Assess each layer it reaches rather than forcing one label.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step">
+        <div class="step__spine"><div class="step__num" aria-hidden="true">3</div><div class="step__line" aria-hidden="true"></div></div>
+        <div class="step__body">
+          <h2 class="step__title">Split the accountability, one owner per responsibility</h2>
+          <p class="step__desc">
+            For each responsibility in the category, decide who owns it: the
+            vendor or you. "Shared" is not a valid final answer. Where a duty
+            looks joint, break it into the part the vendor controls and the part
+            you control, and assign each part to one owner. This split becomes a
+            column in your workpaper and settles disputes before an incident, not
+            during one.
+          </p>
+          <ul>
+            <li>Write the vendor's duties as commitments you can verify, not as marketing claims.</li>
+            <li>Write your own duties down too. Tenant data classification, identity, override configuration, and output monitoring almost always stay with you.</li>
+            <li>Flag any responsibility neither side will own. That gap is the finding.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step">
+        <div class="step__spine"><div class="step__num" aria-hidden="true">4</div><div class="step__line" aria-hidden="true"></div></div>
+        <div class="step__body">
+          <h2 class="step__title">Demand evidence, not assertions</h2>
+          <p class="step__desc">
+            Pull the evidence list for the category from the reference page and
+            send it as the ask. Match each attestation to the risk it actually
+            covers: SOC 2 proves security controls operated, but says nothing
+            about model behavior, bias, or autonomy. ISO 42001 is the signal that
+            a vendor runs a governed AI program. For Tier 1 vendors, insist on
+            evidence of controls operating over time rather than a single annual
+            snapshot.
+          </p>
+          <div class="callout callout--blue">
+            <p><strong>The AI-specific asks are the ones checklists miss:</strong> prompt-injection and indirect-injection defenses, model and weight provenance with an AIBOM, agent permission and override controls, training-data provenance and IP indemnity, and the full sub-processor chain with data residency.</p>
+          </div>
+          <p class="step__desc" style="margin-top:var(--sp-4);">
+            The workpaper below carries every category's asks with columns for
+            the response, the evidence received, and a pass or fail decision.
+          </p>
+          <div class="workpaper-dl">
+            <div class="workpaper-dl__icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 18 15 15"/>
+              </svg>
+            </div>
+            <div class="workpaper-dl__text">
+              <p class="workpaper-dl__name">AI vendor risk assessment workpaper</p>
+              <p class="workpaper-dl__meta">
+                XLSX · Question bank for all seven categories · SRF layer and accountability mapping ·
+                Attestation, evidence, response, and decision columns · Risk-tier and attestation reference tabs
+              </p>
+            </div>
+            <a href="/tools/vendor-risk/how-to/vendor-risk-workpaper.xlsx" class="btn" download aria-label="Download the AI vendor risk assessment workpaper (XLSX)">
+              Download workpaper
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step">
+        <div class="step__spine"><div class="step__num" aria-hidden="true">5</div><div class="step__line" aria-hidden="true"></div></div>
+        <div class="step__body">
+          <h2 class="step__title">Write the boundary into the contract</h2>
+          <p class="step__desc">
+            An assessment that lives in a spreadsheet expires the day the vendor
+            ships a new model version. Move the conclusions into the agreement so
+            they survive change. The responsibility matrix, the evidence cadence,
+            and the AI-specific commitments all belong in contract terms, not just
+            in the security review.
+          </p>
+          <ul>
+            <li>Attach the responsibility matrix and require notice when the vendor changes models, sub-processors, or autonomy defaults.</li>
+            <li>Bind data-use limits: tenant data is not used to train shared models, with deletion certificates on exit.</li>
+            <li>Allocate liability for AI-generated harm and secure IP indemnity for model output.</li>
+            <li>Set the evidence cadence: continuous or annual, and the right to re-assess on material change.</li>
+          </ul>
+          <div class="callout callout--amber">
+            <p>Re-tier on every material change. A vendor that adds an autonomous agent or starts hosting its own model has moved up the stack and earns a fresh assessment, whatever its last score was.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="page-nav" aria-label="Page navigation">
+        <a href="/tools/vendor-risk/" class="page-nav__link">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          Vendor risk reference
+        </a>
+        <div style="display:flex; gap:var(--sp-4); flex-wrap:wrap; align-items:center;">
+          <a href="/framework/" class="page-nav__link">SRF framework<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a>
+          <a href="/tools/" class="page-nav__link">All tools<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg></a>
+        </div>
+      </nav>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

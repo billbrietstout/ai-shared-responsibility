@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vendor Risk Assessment for AI Suppliers — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Map the AI vendor landscape to the CoSAI Shared Responsibility Framework. Seven AI vendor categories with SRF layer mapping, accountability splits, attestation baselines, and the evidence to demand during vendor risk assessment."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: var(--sp-2);
+        font-size: var(--text-sm);
+        color: #94a3b8;
+        margin-bottom: var(--sp-4);
+      }
+      .breadcrumb a { color: #cbd5e1; text-decoration: none; }
+      .breadcrumb a:hover { color: #fff; text-decoration: underline; }
+      .breadcrumb__sep { opacity: 0.5; }
+      .breadcrumb__current { color: #fff; }
+
+      .audience-badge {
+        display: inline-flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--sp-3);
+        margin-top: var(--sp-5);
+        padding: var(--sp-3) var(--sp-4);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: var(--radius);
+      }
+      .audience-badge__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #4ade80;
+      }
+      .audience-badge__text { font-size: var(--text-sm); color: #cbd5e1; }
+
+      .scope-note {
+        background: #fffbeb;
+        border: 1px solid #fbbf24;
+        border-radius: var(--radius-lg);
+        padding: 14px 20px;
+        margin-bottom: var(--sp-8);
+        font-size: var(--text-sm);
+        color: #78350f;
+        line-height: var(--leading-normal);
+      }
+      .scope-note strong { color: #92400e; }
+
+      .intro-box {
+        border-left: 3px solid var(--cosai-blue);
+        background: var(--slate-50);
+        border-radius: var(--radius);
+        padding: var(--sp-5) var(--sp-6);
+        margin-bottom: var(--sp-8);
+      }
+      .intro-box p { margin: 0 0 var(--sp-3); color: var(--slate-700); line-height: var(--leading-normal); }
+      .intro-box p:last-child { margin-bottom: 0; }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-12);
+      }
+      .action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-3) var(--sp-5);
+        border-radius: var(--radius);
+        font-size: var(--text-sm);
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid var(--slate-200);
+        color: var(--slate-700);
+        background: #fff;
+        transition: border-color 0.12s, box-shadow 0.12s;
+      }
+      .action-btn:hover { border-color: var(--cosai-blue-soft); box-shadow: var(--shadow); text-decoration: none; }
+      .action-btn--primary { background: var(--cosai-blue); color: #fff; border-color: var(--cosai-blue); }
+      .action-btn--primary:hover { color: #fff; }
+
+      .section-title {
+        font-size: var(--text-xl);
+        font-weight: 800;
+        color: var(--slate-900);
+        letter-spacing: -0.02em;
+        margin: 0 0 var(--sp-2);
+      }
+      .section-eyebrow {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cosai-blue);
+        margin-bottom: var(--sp-2);
+      }
+      .section-lede { color: var(--slate-600); line-height: var(--leading-normal); margin: 0 0 var(--sp-6); max-width: 64ch; }
+      .block { margin-bottom: var(--sp-16); }
+
+      /* Tier table */
+      .tier-table, .ref-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+      }
+      .tier-table th, .ref-table th {
+        text-align: left;
+        background: var(--slate-50);
+        color: var(--slate-700);
+        font-weight: 700;
+        padding: var(--sp-3) var(--sp-4);
+        border-bottom: 1px solid var(--slate-200);
+        font-size: var(--text-xs);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .tier-table td, .ref-table td {
+        padding: var(--sp-3) var(--sp-4);
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-700);
+        vertical-align: top;
+        line-height: var(--leading-snug);
+      }
+      .tier-table tr:last-child td, .ref-table tr:last-child td { border-bottom: none; }
+      .tier-pill {
+        display: inline-block;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .tier-pill--1 { background: #fef2f2; color: #b91c1c; }
+      .tier-pill--2 { background: #fffbeb; color: #b45309; }
+      .tier-pill--3 { background: #ecfdf5; color: #047857; }
+      .table-scroll { overflow-x: auto; border-radius: var(--radius-lg); }
+
+      /* Filter toolbar */
+      .filter-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: var(--sp-4);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--sp-6);
+      }
+      .filter-bar__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin-right: var(--sp-2);
+      }
+      .filter-chip {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--slate-300);
+        background: #fff;
+        color: var(--slate-600);
+        cursor: pointer;
+        transition: all 0.12s;
+      }
+      .filter-chip:hover { border-color: var(--cosai-blue-soft); }
+      .filter-chip[aria-pressed="true"] {
+        background: var(--cosai-navy);
+        color: #fff;
+        border-color: var(--cosai-navy);
+      }
+
+      /* Vendor category card */
+      .vcard {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-xl);
+        background: #fff;
+        box-shadow: var(--shadow);
+        margin-bottom: var(--sp-6);
+        overflow: hidden;
+      }
+      .vcard__head {
+        padding: var(--sp-6);
+        border-bottom: 1px solid var(--slate-100);
+        background: var(--slate-50);
+      }
+      .vcard__num {
+        font-size: var(--text-xs);
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: var(--cosai-blue);
+        text-transform: uppercase;
+      }
+      .vcard__title {
+        font-size: var(--text-lg);
+        font-weight: 800;
+        color: var(--slate-900);
+        letter-spacing: -0.01em;
+        margin: var(--sp-1) 0 var(--sp-2);
+      }
+      .vcard__new {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #047857;
+        background: #ecfdf5;
+        border: 1px solid #6ee7b7;
+        border-radius: 999px;
+        padding: 1px 7px;
+        margin-left: var(--sp-2);
+        vertical-align: middle;
+      }
+      .vcard__examples { font-size: var(--text-sm); color: var(--slate-600); margin: 0; line-height: var(--leading-snug); }
+      .chip-row { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-4); }
+      .chip {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--slate-200);
+        color: var(--slate-600);
+        background: #fff;
+      }
+      .chip--layer { color: var(--cosai-navy); background: #eef1f8; border-color: #d7def0; }
+      .chip--model { color: #6d28d9; background: #f5f3ff; border-color: #ddd6fe; }
+      .chip--role { color: var(--slate-600); }
+
+      .vcard__body { padding: var(--sp-6); }
+      .split {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-6);
+      }
+      .split__col {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-4);
+      }
+      .split__col--vendor { background: #f5f8ff; border-color: #dbe5fb; }
+      .split__col--customer { background: #fafaf9; }
+      .split__label {
+        font-size: var(--text-xs);
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: var(--sp-2);
+      }
+      .split__col--vendor .split__label { color: var(--cosai-blue); }
+      .split__col--customer .split__label { color: var(--slate-500); }
+      .split__col p { margin: 0; font-size: var(--text-sm); color: var(--slate-700); line-height: var(--leading-snug); }
+
+      .risk-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+      .risk-table th {
+        text-align: left;
+        font-size: var(--text-xs);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        font-weight: 700;
+        padding: var(--sp-2) var(--sp-3);
+        border-bottom: 2px solid var(--slate-200);
+      }
+      .risk-table td {
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-700);
+        vertical-align: top;
+        line-height: var(--leading-snug);
+      }
+      .risk-table tr:last-child td { border-bottom: none; }
+      .risk-table .gap-flag {
+        font-size: 10px;
+        font-weight: 800;
+        color: #b45309;
+        background: #fffbeb;
+        border: 1px solid #fcd34d;
+        border-radius: 4px;
+        padding: 0 5px;
+        margin-left: 6px;
+        white-space: nowrap;
+      }
+      .att {
+        display: inline-block;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-600);
+        white-space: nowrap;
+      }
+
+      .callout--blue {
+        background: var(--cosai-blue-light);
+        border: 1px solid var(--cosai-blue-soft);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-5) var(--sp-6);
+      }
+      .callout--blue p { margin: 0; color: var(--slate-700); line-height: var(--leading-normal); }
+      .callout--blue p + p { margin-top: var(--sp-3); }
+
+      .xrisk-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: var(--sp-4);
+      }
+      .xrisk {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-4) var(--sp-5);
+        background: #fff;
+      }
+      .xrisk__name { font-weight: 700; color: var(--slate-900); margin-bottom: var(--sp-2); font-size: var(--text-sm); }
+      .xrisk__desc { font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-snug); margin: 0; }
+
+      .related-links { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: var(--sp-3); }
+      .related-card {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-4) var(--sp-5);
+        text-decoration: none;
+        color: inherit;
+        background: #fff;
+        transition: border-color 0.12s, box-shadow 0.12s;
+      }
+      .related-card:hover { border-color: var(--cosai-blue-soft); box-shadow: var(--shadow); text-decoration: none; }
+      .related-card__name { font-weight: 700; color: var(--slate-900); font-size: var(--text-sm); margin-bottom: 2px; }
+      .related-card__desc { font-size: var(--text-xs); color: var(--slate-500); line-height: var(--leading-snug); }
+
+      .is-hidden { display: none !important; }
+
+      @media (max-width: 640px) {
+        .split { grid-template-columns: 1fr; }
+      }
+    </style>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-vendor-risk" />
+    <meta name="llm:concepts" content="srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.role.model-provider, srf.role.ai-platform-provider, srf.role.agentic-platform-provider, srf.role.application-developer, srf.role.data-provider, srf.role.ai-system-governance, srf.concept.evidence-threshold" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <div class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/tools/">Tools</a>
+          <span class="breadcrumb__sep" aria-hidden="true">›</span>
+          <span class="breadcrumb__current">Vendor Risk Assessment</span>
+        </div>
+        <span class="page-hero__eyebrow">Tools · Procurement · Third-party risk</span>
+        <h1 class="page-hero__title">Vendor risk assessment for AI suppliers</h1>
+        <p class="page-hero__lede">
+          A reference for the teams who vet AI vendors. It sorts the AI supplier
+          landscape into seven categories, maps each to the SRF layers and
+          accountability boundaries it touches, and lists the attestations and
+          evidence to demand before you sign.
+        </p>
+        <div class="audience-badge" role="note" aria-label="Intended audience">
+          <span class="audience-badge__label">Audience</span>
+          <span class="audience-badge__text">
+            Vendor risk · Third-party risk management · Procurement · Security GRC · Legal
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="vendor-risk-assessment">
+
+      <div class="scope-note" role="note">
+        <strong>Practitioner aid.</strong> This page operationalizes the CoSAI
+        Shared Responsibility Framework for vendor risk work. It is a proposed
+        extension developed to demonstrate the approach, not part of CoSAI SRF
+        v1.0 and not an endorsement of any named vendor. Validate every control
+        and contract term with your security, legal, and compliance functions
+        before use.
+      </div>
+
+      <div class="intro-box" role="note">
+        <p>
+          Vendor risk teams protect the company from supply-chain exposure. With
+          AI suppliers that job gets harder, because risk no longer sits in one
+          place: it spreads across the data a vendor touches, the model behind a
+          feature, the autonomy you grant an agent, and the sub-processors none
+          of those vendors named. A SOC 2 report alone will not tell you who is
+          accountable when an agent takes the wrong action or a model leaks a
+          prompt.
+        </p>
+        <p>
+          The fix is to know, per vendor type, which SRF responsibilities the
+          vendor owns and which stay with you, then ask for evidence that proves
+          the vendor holds up its side. Each category below gives you that split
+          plus a concrete evidence list. Start with the risk tier to decide how
+          deep to go.
+        </p>
+      </div>
+
+      <div class="action-row">
+        <a class="action-btn action-btn--primary" href="/tools/vendor-risk/how-to/">
+          Read the how-to guide
+          <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </a>
+        <a class="action-btn" href="/tools/vendor-risk/how-to/vendor-risk-workpaper.xlsx" download>
+          Download VRA workpaper (.xlsx)
+        </a>
+        <a class="action-btn" href="/framework/">SRF layer reference</a>
+      </div>
+
+      <!-- ── Risk tiering ─────────────────────────────────────── -->
+      <section class="block" data-llm="risk-tiering">
+        <p class="section-eyebrow">Step 1</p>
+        <h2 class="section-title">Tier the vendor before you assess it</h2>
+        <p class="section-lede">
+          Depth of assessment should track the risk a vendor introduces, not the
+          size of the contract. Score each vendor on three axes: the sensitivity
+          of data it touches, the autonomy it exercises, and how deep into the
+          SRF stack it reaches. The highest of the three sets the tier.
+        </p>
+        <div class="table-scroll">
+          <table class="tier-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Triggers (any one)</th>
+                <th>Assessment depth</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="tier-pill tier-pill--1">Tier 1 · Critical</span></td>
+                <td>Regulated or highly sensitive data; autonomous actions on your systems; deep platform or model access (L4 or L5).</td>
+                <td>Full assessment, all evidence asks, contractual SRF responsibility matrix, continuous evidence rather than point-in-time, named incident path.</td>
+              </tr>
+              <tr>
+                <td><span class="tier-pill tier-pill--2">Tier 2 · Elevated</span></td>
+                <td>Internal business data; human-in-the-loop; application-layer AI features (L3).</td>
+                <td>Core attestations plus the AI-specific asks for the category, data-use and sub-processor disclosure, admin controls review.</td>
+              </tr>
+              <tr>
+                <td><span class="tier-pill tier-pill--3">Tier 3 · Standard</span></td>
+                <td>Low-sensitivity data; bounded scope; no autonomy; no training on your data.</td>
+                <td>Baseline attestation (SOC 2 or ISO 27001), acceptable use terms, data-retention and deletion commitment.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Vendor categories ────────────────────────────────── -->
+      <section class="block" data-llm="vendor-categories">
+        <p class="section-eyebrow">Step 2</p>
+        <h2 class="section-title">Assess by vendor category</h2>
+        <p class="section-lede">
+          Seven categories cover the AI supplier market. Filter by the SRF layer
+          you care about to narrow the list. Asks flagged
+          <span class="risk-table"><span class="gap-flag">AI-specific</span></span>
+          go beyond a standard security questionnaire and are the ones most VRA
+          checklists miss.
+        </p>
+
+        <div class="filter-bar" role="group" aria-label="Filter vendor categories by SRF layer">
+          <span class="filter-bar__label">SRF layer</span>
+          <button class="filter-chip" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-chip" data-filter="L1" aria-pressed="false">L1 Business</button>
+          <button class="filter-chip" data-filter="L2" aria-pressed="false">L2 Information</button>
+          <button class="filter-chip" data-filter="L3" aria-pressed="false">L3 Application</button>
+          <button class="filter-chip" data-filter="L4" aria-pressed="false">L4 Platform</button>
+          <button class="filter-chip" data-filter="L5" aria-pressed="false">L5 Model</button>
+        </div>
+
+        <!-- Category 1 -->
+        <article class="vcard" data-layers="L4 L5" data-llm="category-core-platform">
+          <div class="vcard__head">
+            <div class="vcard__num">Category 1</div>
+            <h3 class="vcard__title">Core AI platform &amp; infrastructure</h3>
+            <p class="vcard__examples">Cloud AI services, MLOps pipelines, model hosting, GPU infrastructure. For example AWS AI, Azure AI, Google Cloud AI.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L4 AI Platform</span>
+              <span class="chip chip--layer">L5 (partial)</span>
+              <span class="chip chip--model">IaaS · AI-PaaS</span>
+              <span class="chip chip--role">AI Platform Provider</span>
+            </div>
+          </div>
+          <div class="vcard__body">
+            <div class="split">
+              <div class="split__col split__col--vendor">
+                <div class="split__label">Vendor is accountable for</div>
+                <p>Tenant isolation, platform and infrastructure security, encryption services, availability, and the platform telemetry it exposes.</p>
+              </div>
+              <div class="split__col split__col--customer">
+                <div class="split__label">You stay accountable for</div>
+                <p>Workload and key configuration, data classification, identity and access, app-layer controls, and deciding which AI events and logs you collect.</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="risk-table">
+                <thead><tr><th>Risk area</th><th>Attestation baseline</th><th>Evidence to ask for</th></tr></thead>
+                <tbody>
+                  <tr><td>Multi-tenant data isolation</td><td><span class="att">SOC 2 / ISO 27001</span></td><td>Architecture diagrams showing how one customer is prevented from reaching another's data, and where data resides.</td></tr>
+                  <tr><td>Encryption at rest and in transit</td><td><span class="att">SOC 2 / ISO 27001</span></td><td>Key-management description and bring-your-own-key options.</td></tr>
+                  <tr><td>Security certifications</td><td><span class="att">SOC 2 / ISO 27001 / FedRAMP</span></td><td>Current attestation reports under NDA, with scope and exceptions.</td></tr>
+                  <tr><td>Incident response and monitoring</td><td><span class="att">SOC 2 +</span></td><td>Which AI events the platform generates, how models are monitored, and which logs you are expected to collect.</td></tr>
+                  <tr><td>Shared responsibility boundary</td><td><span class="att">Documented matrix</span></td><td>A responsibility matrix that states who owns what, plus the adversarial or bias testing the platform expects you to run.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <!-- Category 2 -->
+        <article class="vcard" data-layers="L5" data-llm="category-model-provider">
+          <div class="vcard__head">
+            <div class="vcard__num">Category 2</div>
+            <h3 class="vcard__title">Pre-trained model &amp; algorithm providers</h3>
+            <p class="vcard__examples">Foundation and domain-specific models reached by API: LLMs, vision, and speech models. For example OpenAI, Anthropic, Mistral, Meta, Google.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L5 AI Model Provider</span>
+              <span class="chip chip--model">AI-PaaS</span>
+              <span class="chip chip--role">Model Provider</span>
+            </div>
+          </div>
+          <div class="vcard__body">
+            <div class="split">
+              <div class="split__col split__col--vendor">
+                <div class="split__label">Vendor is accountable for</div>
+                <p>Training and model integrity, safety tuning, model and system cards, API security, and not training on your prompts where contracted.</p>
+              </div>
+              <div class="split__col split__col--customer">
+                <div class="split__label">You stay accountable for</div>
+                <p>Use-case risk classification, prompt and output handling, application guardrails, and human oversight of model output.</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="risk-table">
+                <thead><tr><th>Risk area</th><th>Attestation baseline</th><th>Evidence to ask for</th></tr></thead>
+                <tbody>
+                  <tr><td>Model integrity and benchmarks</td><td><span class="att">SOC 2 +</span></td><td>Third-party benchmark certification and robustness metrics against adversarial attacks and jailbreaks.</td></tr>
+                  <tr><td>Training-data provenance and bias</td><td><span class="att">ISO 42001</span></td><td>Proof of data opt-out (GDPR, CCPA) and a list of third-party datasets used.</td></tr>
+                  <tr><td>Responsible AI and explainability</td><td><span class="att">ISO 42001</span></td><td>System and model cards covering intended use, limits, and evaluation.</td></tr>
+                  <tr><td>Licensing and IP indemnification</td><td><span class="att">Contract</span></td><td>License and acceptable-use terms, plus an IP indemnity clause for model output.</td></tr>
+                  <tr><td>Regulatory alignment</td><td><span class="att">EU AI Act</span></td><td>Mapping of the model to EU AI Act risk categories and proof that prompts are not used for training.</td></tr>
+                  <tr><td>Model supply-chain integrity <span class="gap-flag">AI-specific</span></td><td><span class="att">ISO 42001</span></td><td>Model provenance and signing, weight-integrity controls, and a vulnerability disclosure process.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <!-- Category 3 -->
+        <article class="vcard" data-layers="L3" data-llm="category-ai-saas">
+          <div class="vcard__head">
+            <div class="vcard__num">Category 3</div>
+            <h3 class="vcard__title">AI-enabled SaaS applications <span class="vcard__new">Added</span></h3>
+            <p class="vcard__examples">SaaS products with embedded AI features: copilots, assistants, and AI inside tools you already buy. For example CRM copilots, support bots, document AI. The category most companies actually procure.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L3 AI Application</span>
+              <span class="chip chip--model">AI-SaaS</span>
+              <span class="chip chip--role">Application Developer</span>
+            </div>
+          </div>
+          <div class="vcard__body">
+            <div class="split">
+              <div class="split__col split__col--vendor">
+                <div class="split__label">Vendor is accountable for</div>
+                <p>Application logic, in-app guardrails, output filtering, feature-level access control, and the foundation models it selects underneath.</p>
+              </div>
+              <div class="split__col split__col--customer">
+                <div class="split__label">You stay accountable for</div>
+                <p>What data you feed the app, user permissions, acceptable use, and monitoring AI output for your own context and accuracy.</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="risk-table">
+                <thead><tr><th>Risk area</th><th>Attestation baseline</th><th>Evidence to ask for</th></tr></thead>
+                <tbody>
+                  <tr><td>Underlying model and sub-processors</td><td><span class="att">Disclosure</span></td><td>Which foundation models and sub-processors power the feature, and the data flow to each.</td></tr>
+                  <tr><td>Prompt injection and output safety <span class="gap-flag">AI-specific</span></td><td><span class="att">ISO 42001</span></td><td>Input and output filtering, indirect prompt-injection defenses, and jailbreak test results.</td></tr>
+                  <tr><td>Data use for training</td><td><span class="att">Contract</span></td><td>Contractual proof that tenant data is not used to train shared models.</td></tr>
+                  <tr><td>Feature governance</td><td><span class="att">SOC 2 +</span></td><td>Admin controls to disable AI features and audit logs of AI actions taken in your tenant.</td></tr>
+                  <tr><td>Tenant isolation</td><td><span class="att">SOC 2 / ISO 27001</span></td><td>Isolation evidence and data-residency options.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <!-- Category 4 -->
+        <article class="vcard" data-layers="L3 L4" data-llm="category-agentic">
+          <div class="vcard__head">
+            <div class="vcard__num">Category 4</div>
+            <h3 class="vcard__title">Agentic AI &amp; autonomous systems <span class="vcard__new">Added</span></h3>
+            <p class="vcard__examples">Autonomous agents, tool-using copilots, workflow automation, and the tool and connector ecosystems (for example MCP servers) that agents act through.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L3 AI Application</span>
+              <span class="chip chip--layer">L4 AI Platform</span>
+              <span class="chip chip--model">Agent-PaaS</span>
+              <span class="chip chip--role">Agentic Platform Provider</span>
+            </div>
+          </div>
+          <div class="vcard__body">
+            <div class="split">
+              <div class="split__col split__col--vendor">
+                <div class="split__label">Vendor is accountable for</div>
+                <p>The agent runtime, tool and permission scoping, guardrail enforcement, action logging, and the autonomy and override controls it exposes.</p>
+              </div>
+              <div class="split__col split__col--customer">
+                <div class="split__label">You stay accountable for</div>
+                <p>Which tools and scopes you grant, how you configure human override and approval gates, and the blast-radius limits you set.</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="risk-table">
+                <thead><tr><th>Risk area</th><th>Attestation baseline</th><th>Evidence to ask for</th></tr></thead>
+                <tbody>
+                  <tr><td>Autonomy and human override <span class="gap-flag">AI-specific</span></td><td><span class="att">Disclosure</span></td><td>The autonomy levels (L0 to L5) and override tiers (T1 to T5) the product supports, and its default settings.</td></tr>
+                  <tr><td>Tool and action authorization <span class="gap-flag">AI-specific</span></td><td><span class="att">ISO 42001</span></td><td>The permission model, scope limits, and the ability to require human approval per action class.</td></tr>
+                  <tr><td>Guardrail bypass monitoring</td><td><span class="att">SOC 2 +</span></td><td>Detection of guardrail bypass, runtime integrity verification, and a complete action audit trail.</td></tr>
+                  <tr><td>Blast-radius containment</td><td><span class="att">Contract</span></td><td>Rate limits, spend caps, rollback, and a documented kill-switch.</td></tr>
+                  <tr><td>Indirect prompt injection <span class="gap-flag">AI-specific</span></td><td><span class="att">ISO 42001</span></td><td>Defenses for the case where an agent reads untrusted content or tool output and acts on it.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <!-- Category 5 -->
+        <article class="vcard" data-layers="L2" data-llm="category-data-labeling">
+          <div class="vcard__head">
+            <div class="vcard__num">Category 5</div>
+            <h3 class="vcard__title">Data, labeling &amp; retrieval services</h3>
+            <p class="vcard__examples">Managed labeling, RLHF, and crowdsourcing platforms, plus retrieval and vector-data providers that feed RAG systems. For example Scale AI, LXT, Toloka.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L2 AI Information</span>
+              <span class="chip chip--role">Data Provider</span>
+            </div>
+          </div>
+          <div class="vcard__body">
+            <div class="split">
+              <div class="split__col split__col--vendor">
+                <div class="split__label">Vendor is accountable for</div>
+                <p>Workforce vetting, confidential-data controls, annotation quality, retrieval-index security, and secure deletion on request.</p>
+              </div>
+              <div class="split__col split__col--customer">
+                <div class="split__label">You stay accountable for</div>
+                <p>Classifying data before you share it, defining the retention policy, and accepting the quality thresholds you contract to.</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="risk-table">
+                <thead><tr><th>Risk area</th><th>Attestation baseline</th><th>Evidence to ask for</th></tr></thead>
+                <tbody>
+                  <tr><td>Workforce vetting and background checks</td><td><span class="att">SOC 2 +</span></td><td>Which roles or regions are exempt from screening, and the re-screening cadence for gig workers and contractors.</td></tr>
+                  <tr><td>Confidential-data controls</td><td><span class="att">SOC 2 +</span></td><td>DLP evidence, GeoIP and embargo restrictions, and penetration-test results for any contractor-provided VDI.</td></tr>
+                  <tr><td>Annotation QA and accuracy</td><td><span class="att">ISO 9001 +</span></td><td>QA methodology documentation and the prior-quarter metrics dashboard.</td></tr>
+                  <tr><td>Sub-processors and cross-border flow</td><td><span class="att">Disclosure</span></td><td>Sub-processor list with change control, a data-flow diagram with geographies, audit results, and opt-out options.</td></tr>
+                  <tr><td>Retention and secure deletion</td><td><span class="att">SOC 2 +</span></td><td>Whether you can define the retention policy, plus certificates of data deletion or destruction.</td></tr>
+                  <tr><td>Retrieval and RAG integrity <span class="gap-flag">AI-specific</span></td><td><span class="att">ISO 27001</span></td><td>Access controls on the vector store, data-poisoning defenses, and tenant isolation of embeddings.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <!-- Category 6 -->
+        <article class="vcard" data-layers="L1 L3" data-llm="category-consulting">
+          <div class="vcard__head">
+            <div class="vcard__num">Category 6</div>
+            <h3 class="vcard__title">AI consulting &amp; professional services</h3>
+            <p class="vcard__examples">Strategy, custom model development, and system integration. For example Big-4 consultancies and boutique AI shops.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L1 AI Business &amp; Usage</span>
+              <span class="chip chip--layer">Cross-layer</span>
+              <span class="chip chip--role">AI System Governance</span>
+              <span class="chip chip--role">Application Developer</span>
+            </div>
+          </div>
+          <div class="vcard__body">
+            <div class="split">
+              <div class="split__col split__col--vendor">
+                <div class="split__label">Vendor is accountable for</div>
+                <p>Secure development practice, deliverable quality, the firm's own security posture, and clean exit from your environment.</p>
+              </div>
+              <div class="split__col split__col--customer">
+                <div class="split__label">You stay accountable for</div>
+                <p>Scope definition, environment-access boundaries, IP terms, and acceptance criteria for what the engagement produces.</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="risk-table">
+                <thead><tr><th>Risk area</th><th>Attestation baseline</th><th>Evidence to ask for</th></tr></thead>
+                <tbody>
+                  <tr><td>Scope, SLAs, and success KPIs</td><td><span class="att">Contract</span></td><td>Examples of AI KPI dashboards and prior-project scorecards.</td></tr>
+                  <tr><td>Access controls in client environments</td><td><span class="att">SOC 2 +</span></td><td>Restricted data and system-access requirements such as VPN, VDI, Jupyter Hub, and IDE.</td></tr>
+                  <tr><td>Ownership of code and models produced</td><td><span class="att">Contract</span></td><td>Contracts addressing IP or joint ownership, plus SBOM and AIBOM breakdowns of what was delivered.</td></tr>
+                  <tr><td>Security posture of the firm</td><td><span class="att">SOC 2 / ISO 27001</span></td><td>Third-party attestation results for the consulting firm itself.</td></tr>
+                  <tr><td>Post-engagement data destruction</td><td><span class="att">SOC 2 +</span></td><td>Destruction certificates, the process for sanitizing IDE and repos (Jira, Confluence, Git), and wiping developer workstations and VDI caches.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <!-- Category 7 -->
+        <article class="vcard" data-layers="L3 L4" data-llm="category-resellers">
+          <div class="vcard__head">
+            <div class="vcard__num">Category 7</div>
+            <h3 class="vcard__title">Software, VARs &amp; distributors</h3>
+            <p class="vcard__examples">Bundled AI software, marketplace sellers, and OEM integrators that resell or repackage AI built by someone else.</p>
+            <div class="chip-row">
+              <span class="chip chip--layer">L3 AI Application</span>
+              <span class="chip chip--layer">L4 AI Platform</span>
+              <span class="chip chip--role">Reseller of OEM</span>
+            </div>
+          </div>
+          <div class="vcard__body">
+            <div class="split">
+              <div class="split__col split__col--vendor">
+                <div class="split__label">Vendor is accountable for</div>
+                <p>Passing through the OEM's controls without weakening them, delivering patches, and providing support and escalation.</p>
+              </div>
+              <div class="split__col split__col--customer">
+                <div class="split__label">You stay accountable for</div>
+                <p>Validating the OEM behind the reseller and holding both to the contract terms and the downstream supply chain.</p>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="risk-table">
+                <thead><tr><th>Risk area</th><th>Attestation baseline</th><th>Evidence to ask for</th></tr></thead>
+                <tbody>
+                  <tr><td>Patch and update responsibility</td><td><span class="att">Contract</span></td><td>Model, dataset, and tool patch schedule, plus an end-of-life matrix by product.</td></tr>
+                  <tr><td>Reseller controls aligned to OEM</td><td><span class="att">Disclosure</span></td><td>A controls-hardening benchmark and a contract clause ensuring the vendor cannot weaken security settings over time.</td></tr>
+                  <tr><td>Support and escalation path</td><td><span class="att">Contract</span></td><td>Named contacts and numbers, and the incident-response process.</td></tr>
+                  <tr><td>Downstream supply-chain vetting</td><td><span class="att">Disclosure</span></td><td>Current sub-provider inventory with geographic locations and data roles, audit results, and opt-out options.</td></tr>
+                  <tr><td>Licensing terms and warranty</td><td><span class="att">Legal review</span></td><td>Licensing and warranty coverage, with legal sign-off.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </article>
+
+        <p id="filter-empty" class="section-lede is-hidden" role="status">No categories touch that layer. Clear the filter to see all seven.</p>
+      </section>
+
+      <!-- ── Cross-cutting risks ──────────────────────────────── -->
+      <section class="block" data-llm="cross-cutting-risks">
+        <p class="section-eyebrow">Step 3</p>
+        <h2 class="section-title">Cross-cutting AI risks to check on every vendor</h2>
+        <p class="section-lede">
+          These risks do not belong to one category. They apply to any vendor
+          that builds, hosts, resells, or services AI, and they are where a
+          traditional third-party questionnaire goes quiet.
+        </p>
+        <div class="xrisk-grid">
+          <div class="xrisk"><div class="xrisk__name">Prompt injection, direct and indirect</div><p class="xrisk__desc">Whether the vendor defends against malicious instructions in user input and in content the system retrieves or a tool returns.</p></div>
+          <div class="xrisk"><div class="xrisk__name">Model and weight supply chain</div><p class="xrisk__desc">Provenance, signing, and poisoning or backdoor defenses for models and weights. Ask for an AIBOM alongside the SBOM.</p></div>
+          <div class="xrisk"><div class="xrisk__name">Training-data provenance and IP</div><p class="xrisk__desc">What the model was trained on, opt-out handling, and indemnity for IP claims arising from output.</p></div>
+          <div class="xrisk"><div class="xrisk__name">Data residency and sub-processors</div><p class="xrisk__desc">Where data and inference run, the full sub-processor chain, and notice and opt-out on changes.</p></div>
+          <div class="xrisk"><div class="xrisk__name">Continuous vs point-in-time evidence</div><p class="xrisk__desc">Whether the vendor can show controls operating over time, not just a once-a-year attestation snapshot.</p></div>
+          <div class="xrisk"><div class="xrisk__name">Versioning and decommissioning</div><p class="xrisk__desc">How model and feature versions are tracked, notified, deprecated, and rolled back without breaking your controls.</p></div>
+          <div class="xrisk"><div class="xrisk__name">Liability for AI-generated harm</div><p class="xrisk__desc">Contractual allocation of liability when model output causes financial, legal, or safety harm.</p></div>
+          <div class="xrisk"><div class="xrisk__name">AI management system maturity</div><p class="xrisk__desc">Whether the vendor runs a governed AI program. ISO 42001 certification and a NIST AI RMF profile are the signals.</p></div>
+        </div>
+      </section>
+
+      <!-- ── Attestation reference ────────────────────────────── -->
+      <section class="block" data-llm="attestation-reference">
+        <p class="section-eyebrow">Reference</p>
+        <h2 class="section-title">What each attestation actually proves</h2>
+        <p class="section-lede">
+          Attestations are not interchangeable. Security certifications say
+          nothing about AI governance, and an AI-management certification says
+          nothing about quality control on a labeling floor. Match the
+          attestation to the risk.
+        </p>
+        <div class="table-scroll">
+          <table class="ref-table">
+            <thead>
+              <tr><th>Attestation</th><th>What it covers</th><th>What it does not cover</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>SOC 2 Type II</td><td>Operating effectiveness of security, availability, and confidentiality controls over a period.</td><td>AI-specific risk, model behavior, bias, or autonomy.</td></tr>
+              <tr><td>ISO/IEC 27001</td><td>A certified information security management system.</td><td>AI governance and model-lifecycle controls.</td></tr>
+              <tr><td>ISO/IEC 42001</td><td>A certified AI management system: governance, risk, and lifecycle controls for AI. The AI-specific signal.</td><td>Point-in-time security control testing of infrastructure.</td></tr>
+              <tr><td>ISO 9001</td><td>Quality management. Relevant to labeling and annotation accuracy.</td><td>Security or AI-specific risk.</td></tr>
+              <tr><td>FedRAMP</td><td>US federal authorization for cloud services at a defined impact level.</td><td>AI governance beyond the underlying cloud platform.</td></tr>
+              <tr><td>NIST AI RMF</td><td>A voluntary AI risk-management profile. Shows the vendor has a structured AI risk process.</td><td>Independent certification; it is self-applied unless audited.</td></tr>
+              <tr><td>EU AI Act</td><td>Risk categorization and the legal obligations that follow for in-scope systems.</td><td>A security or quality attestation on its own.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── Related ──────────────────────────────────────────── -->
+      <section class="block" data-llm="related">
+        <h2 class="section-title" style="margin-bottom:var(--sp-5);">Related on this site</h2>
+        <div class="related-links">
+          <a class="related-card" href="/tools/vendor-risk/how-to/"><div class="related-card__name">How-to guide</div><div class="related-card__desc">Run a vendor risk assessment with the SRF, step by step.</div></a>
+          <a class="related-card" href="/framework/"><div class="related-card__name">Framework overview</div><div class="related-card__desc">The five SRF layers, personas, and operating models.</div></a>
+          <a class="related-card" href="/operating-models/"><div class="related-card__name">Operating models</div><div class="related-card__desc">How accountability shifts across AI-SaaS, AI-PaaS, Agent-PaaS, and IaaS.</div></a>
+          <a class="related-card" href="/compare/"><div class="related-card__name">Framework comparison</div><div class="related-card__desc">How the SRF relates to NIST AI RMF, ISO 42001, and the EU AI Act.</div></a>
+          <a class="related-card" href="/tools/regulation-discovery/"><div class="related-card__name">Regulation discovery</div><div class="related-card__desc">Identify which regulations apply to a planned AI system.</div></a>
+          <a class="related-card" href="/tools/prompts/"><div class="related-card__name">System instructions</div><div class="related-card__desc">Copy-ready prompts, including a legal and procurement role variant.</div></a>
+        </div>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script>
+      (function () {
+        var chips = Array.prototype.slice.call(document.querySelectorAll(".filter-chip"));
+        var cards = Array.prototype.slice.call(document.querySelectorAll(".vcard"));
+        var empty = document.getElementById("filter-empty");
+        chips.forEach(function (chip) {
+          chip.addEventListener("click", function () {
+            var filter = chip.getAttribute("data-filter");
+            chips.forEach(function (c) { c.setAttribute("aria-pressed", String(c === chip)); });
+            var shown = 0;
+            cards.forEach(function (card) {
+              var layers = (card.getAttribute("data-layers") || "").split(" ");
+              var match = filter === "all" || layers.indexOf(filter) !== -1;
+              card.classList.toggle("is-hidden", !match);
+              if (match) shown++;
+            });
+            empty.classList.toggle("is-hidden", shown !== 0);
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
