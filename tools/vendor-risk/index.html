@@ -346,10 +346,52 @@
 
       .is-hidden { display: none !important; }
 
+      /* Procurement language blocks */
+      .tmpl { border: 1px solid var(--slate-200); border-radius: var(--radius-lg); background: #fff; margin-bottom: var(--sp-4); overflow: hidden; }
+      .tmpl__head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-3) var(--sp-4); background: var(--slate-50); border-bottom: 1px solid var(--slate-100); }
+      .tmpl__name { font-size: var(--text-sm); font-weight: 700; color: var(--slate-800); }
+      .tmpl__body { padding: var(--sp-4); font-size: var(--text-sm); color: var(--slate-700); line-height: var(--leading-normal); white-space: pre-wrap; font-family: var(--font-mono); }
+      .copy-btn { font-size: 0.7rem; font-weight: 700; color: var(--slate-500); background: #fff; border: 1px solid var(--slate-300); border-radius: var(--radius); padding: 4px 10px; cursor: pointer; transition: all 0.1s; flex-shrink: 0; }
+      .copy-btn:hover { background: var(--slate-100); color: var(--slate-700); }
+      .copy-btn--copied { color: #059669 !important; border-color: #a7f3d0 !important; background: #ecfdf5 !important; }
+      .tmpl-note { font-size: var(--text-xs); color: var(--slate-500); margin: var(--sp-2) 0 var(--sp-6); }
+
       @media (max-width: 640px) {
         .split { grid-template-columns: 1fr; }
       }
     </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "Vendor Risk Assessment for AI Suppliers — CoSAI SRF",
+  "url": "https://aisharedresponsibility.com/tools/vendor-risk/",
+  "description": "Maps the AI vendor landscape to the CoSAI AI Shared Responsibility Framework for procurement and third-party risk teams. Seven AI vendor categories with SRF layer mapping, vendor-versus-customer accountability splits, attestation baselines, and the evidence to demand during vendor risk assessment.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/",
+    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://aisharedresponsibility.com/",
+    "name": "AI Shared Responsibility"
+  },
+  "about": [
+    { "@type": "Thing", "name": "Vendor risk assessment" },
+    { "@type": "Thing", "name": "Third-party risk management" },
+    { "@type": "Thing", "name": "AI procurement" }
+  ],
+  "mentions": [
+    { "@type": "DefinedTerm", "name": "L1 AI Business & Usage", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L2 AI Information", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L3 AI Application", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L4 AI Platform", "url": "https://aisharedresponsibility.com/framework/" },
+    { "@type": "DefinedTerm", "name": "L5 AI Model Provider", "url": "https://aisharedresponsibility.com/framework/" }
+  ]
+}
+    </script>
     <!-- llm:meta -->
     <meta name="llm:type" content="tool" />
     <meta name="llm:canonical-id" content="srf.page.tools-vendor-risk" />
@@ -810,6 +852,66 @@
         </div>
       </section>
 
+      <!-- ── Procurement language ─────────────────────────────── -->
+      <section class="block" data-llm="procurement-language">
+        <p class="section-eyebrow">Templates</p>
+        <h2 class="section-title">Contract clauses and RFP language</h2>
+        <p class="section-lede">
+          Copy-ready starting points that move the assessment from a spreadsheet
+          into the agreement and the RFP. Edit the bracketed terms to fit, and
+          have counsel review before use. These are drafting aids, not legal
+          advice.
+        </p>
+
+        <h3 class="rel__title" style="margin:var(--sp-4) 0 var(--sp-3);font-size:var(--text-base);">Contract clauses</h3>
+
+        <div class="tmpl">
+          <div class="tmpl__head"><span class="tmpl__name">Shared-responsibility matrix</span><button class="copy-btn" type="button">Copy</button></div>
+          <div class="tmpl__body">Vendor shall maintain and attach as an exhibit a responsibility matrix that assigns one accountable party to each control across the applicable SRF layers (L1 to L5). Where a control is jointly operated, the matrix shall separate the portion Vendor controls from the portion [Customer] controls and assign each to a single owner. Vendor shall not characterize any control as "shared" without this split.</div>
+        </div>
+
+        <div class="tmpl">
+          <div class="tmpl__head"><span class="tmpl__name">Data use and no training on customer data</span><button class="copy-btn" type="button">Copy</button></div>
+          <div class="tmpl__body">Vendor shall not use [Customer] data, prompts, inputs, or outputs to train, fine-tune, or evaluate any model that is made available to other customers, and shall not retain such data beyond the period required to deliver the service. Vendor shall provide written confirmation of this control and evidence of technical enforcement on request.</div>
+        </div>
+
+        <div class="tmpl">
+          <div class="tmpl__head"><span class="tmpl__name">Sub-processors, residency, and change notice</span><button class="copy-btn" type="button">Copy</button></div>
+          <div class="tmpl__body">Vendor shall maintain a current list of all sub-processors, including any model, infrastructure, and labeling providers, with each provider's geographic location and data role. Vendor shall process [Customer] data only in [permitted regions] and shall give [Customer] at least [30] days' written notice before adding or replacing a sub-processor, changing a processing location, or changing the model that powers the service, with a right to object.</div>
+        </div>
+
+        <div class="tmpl">
+          <div class="tmpl__head"><span class="tmpl__name">AI liability and IP indemnification</span><button class="copy-btn" type="button">Copy</button></div>
+          <div class="tmpl__body">Vendor shall indemnify [Customer] against third-party claims that the service's AI output infringes intellectual property rights. The parties shall allocate liability for losses arising from AI-generated output, including erroneous, harmful, or non-compliant output, as set out in [Schedule X], and such liability shall not be excluded by general limitations on consequential damages to the extent it arises from Vendor's failure to meet the controls in this agreement.</div>
+        </div>
+
+        <div class="tmpl">
+          <div class="tmpl__head"><span class="tmpl__name">Agentic controls and kill-switch</span><button class="copy-btn" type="button">Copy</button></div>
+          <div class="tmpl__body">For any autonomous or agentic capability, Vendor shall provide [Customer] with configurable controls over autonomy level and human override, scope and rate limits on tool and action use, the ability to require human approval for [defined high-impact actions], a complete audit trail of agent actions, and a documented mechanism to immediately suspend agent activity. Vendor shall not change default autonomy or override settings without prior written notice.</div>
+        </div>
+
+        <div class="tmpl">
+          <div class="tmpl__head"><span class="tmpl__name">Continuous evidence, re-assessment, and secure deletion</span><button class="copy-btn" type="button">Copy</button></div>
+          <div class="tmpl__body">Vendor shall provide evidence that the controls in this agreement are operating, on a [continuous / quarterly] basis rather than only at point-in-time, and shall permit [Customer] to re-assess on any material change to the model, sub-processors, or autonomy configuration. On termination, Vendor shall securely delete all [Customer] data and provide a certificate of deletion within [30] days.</div>
+        </div>
+
+        <h3 class="rel__title" style="margin:var(--sp-8) 0 var(--sp-3);font-size:var(--text-base);">RFP question language</h3>
+        <div class="tmpl">
+          <div class="tmpl__head"><span class="tmpl__name">AI-specific RFP questions</span><button class="copy-btn" type="button">Copy</button></div>
+          <div class="tmpl__body">1. Which SRF layers does your offering touch (L1 to L5), and what is your operating model (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)?
+2. Provide a responsibility matrix stating which controls you own and which remain with us.
+3. List the foundation models and sub-processors behind the service, with their geographic locations and data roles.
+4. Confirm in writing that our data, prompts, and outputs are not used to train shared models, and describe how this is enforced.
+5. Provide your current attestations (SOC 2 Type II, ISO/IEC 27001, ISO/IEC 42001) and, for AI governance, your ISO 42001 certification or NIST AI RMF profile.
+6. Describe your defenses against prompt injection, including indirect injection from retrieved content or tool output.
+7. Provide model and weight provenance, signing, and an AI bill of materials (AIBOM).
+8. For agentic features, state the autonomy levels and human-override tiers supported, the permission model, and the kill-switch mechanism.
+9. Describe how you notify customers of model, sub-processor, and autonomy changes, and the notice period.
+10. Provide your data-retention and secure-deletion policy, including certificates of destruction on exit.</div>
+        </div>
+        <p class="tmpl-note">The downloadable <a href="/tools/vendor-risk/how-to/vendor-risk-workpaper.xlsx" download>VRA workpaper</a> includes these clauses, the RFP questions, and an attestation-to-evidence mapping as separate tabs.</p>
+      </section>
+
       <!-- ── Related ──────────────────────────────────────────── -->
       <section class="block" data-llm="related">
         <h2 class="section-title" style="margin-bottom:var(--sp-5);">Related on this site</h2>
@@ -844,6 +946,24 @@
               if (match) shown++;
             });
             empty.classList.toggle("is-hidden", shown !== 0);
+          });
+        });
+      })();
+
+      (function () {
+        document.querySelectorAll(".tmpl").forEach(function (tmpl) {
+          var btn = tmpl.querySelector(".copy-btn");
+          var body = tmpl.querySelector(".tmpl__body");
+          if (!btn || !body) return;
+          btn.addEventListener("click", function () {
+            navigator.clipboard.writeText(body.innerText).then(function () {
+              btn.textContent = "Copied!";
+              btn.classList.add("copy-btn--copied");
+              setTimeout(function () {
+                btn.textContent = "Copy";
+                btn.classList.remove("copy-btn--copied");
+              }, 1800);
+            });
           });
         });
       })();
