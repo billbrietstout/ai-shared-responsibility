@@ -56,7 +56,7 @@ for p in pages:
     for mm in re.finditer(r'data-llm="[^"]*"', src):
         ctx = src.rfind("<", 0, mm.start())
         tagname = re.match(r"<\s*([a-zA-Z0-9]+)", src[ctx:ctx+20])
-        if not tagname or tagname.group(1).lower() not in ("section", "header", "main", "div"):
+        if not tagname or tagname.group(1).lower() not in ("section", "header", "main", "div", "article"):
             stray.append(f"{rel}@{mm.start()}")
 
     # 5. tag balance unchanged / parseable (section + header open==close)

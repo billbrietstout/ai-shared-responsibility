@@ -1,0 +1,426 @@
+{
+  "schema": "https://aisharedresponsibility.com/data/vendor-risk.schema",
+  "title": "AI Vendor Risk Assessment Categories",
+  "source": "https://aisharedresponsibility.com/tools/vendor-risk/",
+  "how_to": "https://aisharedresponsibility.com/tools/vendor-risk/how-to/",
+  "version": "1.0",
+  "updated": "2026-06-20T18:18:11+00:00",
+  "status": "Proposed extension of the CoSAI Shared Responsibility Framework; not part of CoSAI SRF v1.0; not an endorsement of any named vendor; not legal advice.",
+  "description": "Seven AI vendor categories mapped to the CoSAI SRF. Each category states the SRF layers and operating models it touches, the responsibilities the vendor owns versus those the customer keeps, the attestation baseline, and the evidence to demand before signing. Includes a three-tier risk model, cross-cutting AI risks to check on every vendor, and a reference for what each attestation actually proves.",
+  "risk_tiers": [
+    {
+      "tier": "Tier 1",
+      "label": "Critical",
+      "triggers": "Regulated or highly sensitive data; autonomous actions on your systems; deep platform or model access (L4 or L5).",
+      "assessment_depth": "Full assessment, all evidence asks, contractual SRF responsibility matrix, continuous evidence rather than point-in-time, named incident path."
+    },
+    {
+      "tier": "Tier 2",
+      "label": "Elevated",
+      "triggers": "Internal business data; human-in-the-loop; application-layer AI features (L3).",
+      "assessment_depth": "Core attestations plus the AI-specific asks for the category, data-use and sub-processor disclosure, admin controls review."
+    },
+    {
+      "tier": "Tier 3",
+      "label": "Standard",
+      "triggers": "Low-sensitivity data; bounded scope; no autonomy; no training on your data.",
+      "assessment_depth": "Baseline attestation (SOC 2 or ISO 27001), acceptable use terms, data-retention and deletion commitment."
+    }
+  ],
+  "tiering_note": "Depth of assessment should track the risk a vendor introduces, not the size of the contract. Score each vendor on three axes: sensitivity of data touched, autonomy exercised, and depth reached into the SRF stack. The highest of the three sets the tier.",
+  "categories": [
+    {
+      "id": "core-ai-platform-infrastructure",
+      "number": 1,
+      "title": "Core AI platform & infrastructure",
+      "summary": "Cloud AI services, MLOps pipelines, model hosting, GPU infrastructure.",
+      "examples": ["AWS AI", "Azure AI", "Google Cloud AI"],
+      "srf_layers": ["L4", "L5"],
+      "srf_layers_note": "L4 AI Platform; L5 partial.",
+      "operating_models": ["IaaS", "AI-PaaS"],
+      "srf_roles": ["AI Platform Provider"],
+      "vendor_accountable_for": "Tenant isolation, platform and infrastructure security, encryption services, availability, and the platform telemetry it exposes.",
+      "customer_accountable_for": "Workload and key configuration, data classification, identity and access, app-layer controls, and deciding which AI events and logs you collect.",
+      "risk_areas": [
+        {
+          "risk_area": "Multi-tenant data isolation",
+          "attestation_baseline": "SOC 2 / ISO 27001",
+          "evidence": "Architecture diagrams showing how one customer is prevented from reaching another's data, and where data resides.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Encryption at rest and in transit",
+          "attestation_baseline": "SOC 2 / ISO 27001",
+          "evidence": "Key-management description and bring-your-own-key options.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Security certifications",
+          "attestation_baseline": "SOC 2 / ISO 27001 / FedRAMP",
+          "evidence": "Current attestation reports under NDA, with scope and exceptions.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Incident response and monitoring",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Which AI events the platform generates, how models are monitored, and which logs you are expected to collect.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Shared responsibility boundary",
+          "attestation_baseline": "Documented matrix",
+          "evidence": "A responsibility matrix that states who owns what, plus the adversarial or bias testing the platform expects you to run.",
+          "ai_specific": false
+        }
+      ]
+    },
+    {
+      "id": "pre-trained-model-algorithm-providers",
+      "number": 2,
+      "title": "Pre-trained model & algorithm providers",
+      "summary": "Foundation and domain-specific models reached by API: LLMs, vision, and speech models.",
+      "examples": ["OpenAI", "Anthropic", "Mistral", "Meta", "Google"],
+      "srf_layers": ["L5"],
+      "operating_models": ["AI-PaaS"],
+      "srf_roles": ["Model Provider"],
+      "vendor_accountable_for": "Training and model integrity, safety tuning, model and system cards, API security, and not training on your prompts where contracted.",
+      "customer_accountable_for": "Use-case risk classification, prompt and output handling, application guardrails, and human oversight of model output.",
+      "risk_areas": [
+        {
+          "risk_area": "Model integrity and benchmarks",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Third-party benchmark certification and robustness metrics against adversarial attacks and jailbreaks.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Training-data provenance and bias",
+          "attestation_baseline": "ISO 42001",
+          "evidence": "Proof of data opt-out (GDPR, CCPA) and a list of third-party datasets used.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Responsible AI and explainability",
+          "attestation_baseline": "ISO 42001",
+          "evidence": "System and model cards covering intended use, limits, and evaluation.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Licensing and IP indemnification",
+          "attestation_baseline": "Contract",
+          "evidence": "License and acceptable-use terms, plus an IP indemnity clause for model output.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Regulatory alignment",
+          "attestation_baseline": "EU AI Act",
+          "evidence": "Mapping of the model to EU AI Act risk categories and proof that prompts are not used for training.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Model supply-chain integrity",
+          "attestation_baseline": "ISO 42001",
+          "evidence": "Model provenance and signing, weight-integrity controls, and a vulnerability disclosure process.",
+          "ai_specific": true
+        }
+      ]
+    },
+    {
+      "id": "ai-enabled-saas-applications",
+      "number": 3,
+      "title": "AI-enabled SaaS applications",
+      "summary": "SaaS products with embedded AI features: copilots, assistants, and AI inside tools you already buy. The category most companies actually procure.",
+      "examples": ["CRM copilots", "support bots", "document AI"],
+      "srf_layers": ["L3"],
+      "operating_models": ["AI-SaaS"],
+      "srf_roles": ["Application Developer"],
+      "vendor_accountable_for": "Application logic, in-app guardrails, output filtering, feature-level access control, and the foundation models it selects underneath.",
+      "customer_accountable_for": "What data you feed the app, user permissions, acceptable use, and monitoring AI output for your own context and accuracy.",
+      "risk_areas": [
+        {
+          "risk_area": "Underlying model and sub-processors",
+          "attestation_baseline": "Disclosure",
+          "evidence": "Which foundation models and sub-processors power the feature, and the data flow to each.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Prompt injection and output safety",
+          "attestation_baseline": "ISO 42001",
+          "evidence": "Input and output filtering, indirect prompt-injection defenses, and jailbreak test results.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Data use for training",
+          "attestation_baseline": "Contract",
+          "evidence": "Contractual proof that tenant data is not used to train shared models.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Feature governance",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Admin controls to disable AI features and audit logs of AI actions taken in your tenant.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Tenant isolation",
+          "attestation_baseline": "SOC 2 / ISO 27001",
+          "evidence": "Isolation evidence and data-residency options.",
+          "ai_specific": false
+        }
+      ]
+    },
+    {
+      "id": "agentic-ai-autonomous-systems",
+      "number": 4,
+      "title": "Agentic AI & autonomous systems",
+      "summary": "Autonomous agents, tool-using copilots, workflow automation, and the tool and connector ecosystems (for example MCP servers) that agents act through.",
+      "examples": [],
+      "srf_layers": ["L3", "L4"],
+      "operating_models": ["Agent-PaaS"],
+      "srf_roles": ["Agentic Platform Provider"],
+      "vendor_accountable_for": "The agent runtime, tool and permission scoping, guardrail enforcement, action logging, and the autonomy and override controls it exposes.",
+      "customer_accountable_for": "Which tools and scopes you grant, how you configure human override and approval gates, and the blast-radius limits you set.",
+      "risk_areas": [
+        {
+          "risk_area": "Autonomy and human override",
+          "attestation_baseline": "Disclosure",
+          "evidence": "The autonomy levels (L0 to L5) and override tiers (T1 to T5) the product supports, and its default settings.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Tool and action authorization",
+          "attestation_baseline": "ISO 42001",
+          "evidence": "The permission model, scope limits, and the ability to require human approval per action class.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Guardrail bypass monitoring",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Detection of guardrail bypass, runtime integrity verification, and a complete action audit trail.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Blast-radius containment",
+          "attestation_baseline": "Contract",
+          "evidence": "Rate limits, spend caps, rollback, and a documented kill-switch.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Indirect prompt injection",
+          "attestation_baseline": "ISO 42001",
+          "evidence": "Defenses for the case where an agent reads untrusted content or tool output and acts on it.",
+          "ai_specific": true
+        }
+      ]
+    },
+    {
+      "id": "data-labeling-retrieval-services",
+      "number": 5,
+      "title": "Data, labeling & retrieval services",
+      "summary": "Managed labeling, RLHF, and crowdsourcing platforms, plus retrieval and vector-data providers that feed RAG systems.",
+      "examples": ["Scale AI", "LXT", "Toloka"],
+      "srf_layers": ["L2"],
+      "operating_models": [],
+      "srf_roles": ["Data Provider"],
+      "vendor_accountable_for": "Workforce vetting, confidential-data controls, annotation quality, retrieval-index security, and secure deletion on request.",
+      "customer_accountable_for": "Classifying data before you share it, defining the retention policy, and accepting the quality thresholds you contract to.",
+      "risk_areas": [
+        {
+          "risk_area": "Workforce vetting and background checks",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Which roles or regions are exempt from screening, and the re-screening cadence for gig workers and contractors.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Confidential-data controls",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "DLP evidence, GeoIP and embargo restrictions, and penetration-test results for any contractor-provided VDI.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Annotation QA and accuracy",
+          "attestation_baseline": "ISO 9001 +",
+          "evidence": "QA methodology documentation and the prior-quarter metrics dashboard.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Sub-processors and cross-border flow",
+          "attestation_baseline": "Disclosure",
+          "evidence": "Sub-processor list with change control, a data-flow diagram with geographies, audit results, and opt-out options.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Retention and secure deletion",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Whether you can define the retention policy, plus certificates of data deletion or destruction.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Retrieval and RAG integrity",
+          "attestation_baseline": "ISO 27001",
+          "evidence": "Access controls on the vector store, data-poisoning defenses, and tenant isolation of embeddings.",
+          "ai_specific": true
+        }
+      ]
+    },
+    {
+      "id": "ai-consulting-professional-services",
+      "number": 6,
+      "title": "AI consulting & professional services",
+      "summary": "Strategy, custom model development, and system integration.",
+      "examples": ["Big-4 consultancies", "boutique AI shops"],
+      "srf_layers": ["L1"],
+      "srf_layers_note": "Cross-layer; anchored at L1 AI Business & Usage.",
+      "operating_models": [],
+      "srf_roles": ["AI System Governance", "Application Developer"],
+      "vendor_accountable_for": "Secure development practice, deliverable quality, the firm's own security posture, and clean exit from your environment.",
+      "customer_accountable_for": "Scope definition, environment-access boundaries, IP terms, and acceptance criteria for what the engagement produces.",
+      "risk_areas": [
+        {
+          "risk_area": "Scope, SLAs, and success KPIs",
+          "attestation_baseline": "Contract",
+          "evidence": "Examples of AI KPI dashboards and prior-project scorecards.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Access controls in client environments",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Restricted data and system-access requirements such as VPN, VDI, Jupyter Hub, and IDE.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Ownership of code and models produced",
+          "attestation_baseline": "Contract",
+          "evidence": "Contracts addressing IP or joint ownership, plus SBOM and AIBOM breakdowns of what was delivered.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Security posture of the firm",
+          "attestation_baseline": "SOC 2 / ISO 27001",
+          "evidence": "Third-party attestation results for the consulting firm itself.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Post-engagement data destruction",
+          "attestation_baseline": "SOC 2 +",
+          "evidence": "Destruction certificates, the process for sanitizing IDE and repos (Jira, Confluence, Git), and wiping developer workstations and VDI caches.",
+          "ai_specific": false
+        }
+      ]
+    },
+    {
+      "id": "software-vars-distributors",
+      "number": 7,
+      "title": "Software, VARs & distributors",
+      "summary": "Bundled AI software, marketplace sellers, and OEM integrators that resell or repackage AI built by someone else.",
+      "examples": [],
+      "srf_layers": ["L3", "L4"],
+      "operating_models": [],
+      "srf_roles": ["Reseller of OEM"],
+      "vendor_accountable_for": "Passing through the OEM's controls without weakening them, delivering patches, and providing support and escalation.",
+      "customer_accountable_for": "Validating the OEM behind the reseller and holding both to the contract terms and the downstream supply chain.",
+      "risk_areas": [
+        {
+          "risk_area": "Patch and update responsibility",
+          "attestation_baseline": "Contract",
+          "evidence": "Model, dataset, and tool patch schedule, plus an end-of-life matrix by product.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Reseller controls aligned to OEM",
+          "attestation_baseline": "Disclosure",
+          "evidence": "A controls-hardening benchmark and a contract clause ensuring the vendor cannot weaken security settings over time.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Support and escalation path",
+          "attestation_baseline": "Contract",
+          "evidence": "Named contacts and numbers, and the incident-response process.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Downstream supply-chain vetting",
+          "attestation_baseline": "Disclosure",
+          "evidence": "Current sub-provider inventory with geographic locations and data roles, audit results, and opt-out options.",
+          "ai_specific": false
+        },
+        {
+          "risk_area": "Licensing terms and warranty",
+          "attestation_baseline": "Legal review",
+          "evidence": "Licensing and warranty coverage, with legal sign-off.",
+          "ai_specific": false
+        }
+      ]
+    }
+  ],
+  "cross_cutting_risks": [
+    {
+      "title": "Prompt injection, direct and indirect",
+      "description": "Whether the vendor defends against malicious instructions in user input and in content the system retrieves or a tool returns."
+    },
+    {
+      "title": "Model and weight supply chain",
+      "description": "Provenance, signing, and poisoning or backdoor defenses for models and weights. Ask for an AIBOM alongside the SBOM."
+    },
+    {
+      "title": "Training-data provenance and IP",
+      "description": "What the model was trained on, opt-out handling, and indemnity for IP claims arising from output."
+    },
+    {
+      "title": "Data residency and sub-processors",
+      "description": "Where data and inference run, the full sub-processor chain, and notice and opt-out on changes."
+    },
+    {
+      "title": "Continuous vs point-in-time evidence",
+      "description": "Whether the vendor can show controls operating over time, not just a once-a-year attestation snapshot."
+    },
+    {
+      "title": "Versioning and decommissioning",
+      "description": "How model and feature versions are tracked, notified, deprecated, and rolled back without breaking your controls."
+    },
+    {
+      "title": "Liability for AI-generated harm",
+      "description": "Contractual allocation of liability when model output causes financial, legal, or safety harm."
+    },
+    {
+      "title": "AI management system maturity",
+      "description": "Whether the vendor runs a governed AI program. ISO 42001 certification and a NIST AI RMF profile are the signals."
+    }
+  ],
+  "attestation_reference": [
+    {
+      "attestation": "SOC 2 Type II",
+      "covers": "Operating effectiveness of security, availability, and confidentiality controls over a period.",
+      "does_not_cover": "AI-specific risk, model behavior, bias, or autonomy."
+    },
+    {
+      "attestation": "ISO/IEC 27001",
+      "covers": "A certified information security management system.",
+      "does_not_cover": "AI governance and model-lifecycle controls."
+    },
+    {
+      "attestation": "ISO/IEC 42001",
+      "covers": "A certified AI management system: governance, risk, and lifecycle controls for AI. The AI-specific signal.",
+      "does_not_cover": "Point-in-time security control testing of infrastructure."
+    },
+    {
+      "attestation": "ISO 9001",
+      "covers": "Quality management. Relevant to labeling and annotation accuracy.",
+      "does_not_cover": "Security or AI-specific risk."
+    },
+    {
+      "attestation": "FedRAMP",
+      "covers": "US federal authorization for cloud services at a defined impact level.",
+      "does_not_cover": "AI governance beyond the underlying cloud platform."
+    },
+    {
+      "attestation": "NIST AI RMF",
+      "covers": "A voluntary AI risk-management profile. Shows the vendor has a structured AI risk process.",
+      "does_not_cover": "Independent certification; it is self-applied unless audited."
+    },
+    {
+      "attestation": "EU AI Act",
+      "covers": "Risk categorization and the legal obligations that follow for in-scope systems.",
+      "does_not_cover": "A security or quality attestation on its own."
+    }
+  ]
+}

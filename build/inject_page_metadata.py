@@ -37,6 +37,10 @@ GLOSS    = ["srf.concept.accountability", "srf.concept.accountable-party",
             "srf.concept.evidence-threshold", "srf.concept.ocsf",
             "srf.concept.control-schema"]
 ACCT     = ["srf.concept.accountability", "srf.concept.responsibility-cascade"]
+# Roles the vendor-risk pages map AI suppliers to, in page order.
+VENDOR_RISK_ROLES = ["srf.role.model-provider", "srf.role.ai-platform-provider",
+                     "srf.role.agentic-platform-provider", "srf.role.application-developer",
+                     "srf.role.data-provider", "srf.role.ai-system-governance"]
 
 VERTICALS = ["finance", "healthcare", "insurance",
              "public-sector", "defense", "manufacturing"]
@@ -82,6 +86,8 @@ def classify(rel):
         return "industries", ["srf.framework.cosai-srf", "srf.concept.control"] + LAYERS
     if top == "about":
         return "about", ["srf.framework.cosai-srf"]
+    if top == "changelog":
+        return "reference", ["srf.framework.cosai-srf"]
     if top == "developers":
         return "developer", ["srf.framework.cosai-srf", "srf.concept.control"]
     if top == "presentation":
@@ -98,6 +104,10 @@ def classify(rel):
             return "how-to", LAYERS + vertical_personas(v) + ["srf.concept.evidence-threshold"]
     if top in ("tools", "assess", "controls"):
         leaf = seg[-1]
+        if "ir-playbooks" in rel:        return "tool", LAYERS + OPMODELS
+        if "vendor-risk" in rel:
+            vr = LAYERS + OPMODELS + VENDOR_RISK_ROLES + ["srf.concept.evidence-threshold"]
+            return ("how-to" if leaf == "how-to" else "tool"), vr
         if "layer-matrix" in rel:        return "tool", LAYERS + OPMODELS
         if "policy-pyramid" in rel:      return "tool", LAYERS + ["srf.concept.responsibility-cascade"]
         if "srf-stress" in rel:          return "tool", ACCT + LAYERS
