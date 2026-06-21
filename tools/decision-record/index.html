@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Accountability Decision Record — CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Turn the CoSAI AI Shared Responsibility Framework into a signed one-page approval. Name one accountable party per layer for a specific AI deployment, flag residual gaps, and export a Decision Record to PDF. Browser-based, no account, nothing leaves your device."
+    />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="/shared/vendor/jspdf-2.5.1.umd.min.js"></script>
+    <script defer src="app.js"></script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "CoSAI SRF Accountability Decision Record",
+  "url": "https://aisharedresponsibility.com/tools/decision-record/",
+  "description": "Generates a signable one-page accountability decision record for a specific AI deployment. Names one accountable party per SRF layer, records the operating model and residual gaps, and exports to PDF and JSON.",
+  "applicationCategory": "BusinessApplication",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/",
+    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+  },
+  "isAccessibleForFree": true,
+  "about": {
+    "@type": "TechArticle",
+    "name": "CoSAI AI Shared Responsibility Framework",
+    "url": "https://aisharedresponsibility.com/framework/",
+    "description": "Five-layer enterprise architecture model (L1 AI Business & Usage through L5 AI Model Provider), eight personas, four operating models."
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-decision-record" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <svg class="header-shield" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M20 3L5 9v10c0 9 6.5 17.4 15 19.4C29.5 36.4 36 28 36 19V9L20 3z" fill="#2d5be3" opacity=".3" />
+          <path d="M20 6L8 11v8c0 7.4 5.2 14.3 12 16.4C26.8 33.3 32 26.4 32 19v-8L20 6z" stroke="#2d5be3" stroke-width="1.5" fill="none" />
+          <path d="M13 20l4 4 10-10" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div>
+          <div class="header-title">Accountability Decision Record</div>
+          <div class="header-sub">One accountable party per layer, for one deployment, signed and exportable</div>
+        </div>
+        <div class="header-badge">DECISION</div>
+        <a class="header-home" href="/tools/">← All tools</a>
+      </div>
+    </header>
+
+    <div id="boot-error" class="boot-error" role="alert" hidden>
+      Could not load framework data. If you opened this page via <code>file://</code>, some
+      browsers block local <code>fetch()</code>. Serve the directory over HTTP
+      (<code>python3 -m http.server</code>) and reload.
+    </div>
+
+    <main id="main" class="layout" data-llm="accountability-decision-record">
+      <div class="state-bar" role="group" aria-label="Decision Record actions">
+        <span class="state-bar__label" id="privacy-note">Your record stays in this browser. Nothing leaves your device.</span>
+        <button id="btn-export" class="btn btn--ghost" type="button">Export JSON</button>
+        <button id="btn-import" class="btn btn--ghost" type="button">Import JSON</button>
+        <input id="file-import" type="file" accept="application/json,.json" hidden />
+        <button id="btn-pdf" class="btn btn--primary" type="button">Download PDF</button>
+        <button id="btn-reset" class="btn btn--ghost" type="button">Reset</button>
+      </div>
+
+      <section class="intro-block" aria-labelledby="intro-heading" data-llm="accountability-decision-record">
+        <h1 id="intro-heading" class="intro-block__title">Accountability Decision Record</h1>
+        <p class="intro-block__lede">
+          The framework tells you who <em>should</em> be accountable. This turns that into the
+          artifact your organization keeps: a one-page record that names a single accountable
+          party for each SRF layer of one specific deployment, captures the residual gaps, and
+          carries a sign-off. Fill it in, resolve every "shared" to one name, and export.
+          A reviewer can approve a deployment once they can see who owns each part.
+        </p>
+      </section>
+
+      <div class="grid">
+        <!-- ─── Left: form ──────────────────────────────────────────── -->
+        <form id="dr-form" class="panel" autocomplete="off">
+          <fieldset class="fs">
+            <legend class="fs__legend">1. The deployment</legend>
+            <div class="field">
+              <label class="field__label" for="f-system">System / use case name</label>
+              <input id="f-system" class="field__input" type="text" maxlength="200" placeholder="e.g. Claims triage assistant" />
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-org">Accountable organization</label>
+                <input id="f-org" class="field__input" type="text" maxlength="200" placeholder="Your org / business unit" />
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-vendor">Provider / vendor <span class="field__hint">(if any)</span></label>
+                <input id="f-vendor" class="field__input" type="text" maxlength="200" placeholder="e.g. Acme AI Platform" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-model">Operating model</label>
+                <select id="f-model" class="field__input"></select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-vertical">Industry context <span class="field__hint">(optional)</span></label>
+                <select id="f-vertical" class="field__input">
+                  <option value="">General / not sector-specific</option>
+                  <option value="finance">Financial services</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="insurance">Insurance</option>
+                  <option value="public-sector">Public sector</option>
+                  <option value="defense">Defense / DoD</option>
+                  <option value="manufacturing">Manufacturing</option>
+                </select>
+              </div>
+            </div>
+            <p id="model-desc" class="model-desc"></p>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-autonomy">Agent autonomy</label>
+                <select id="f-autonomy" class="field__input">
+                  <option value="">Not agentic / N/A</option>
+                  <option value="L0">L0 — No autonomy (human does the work)</option>
+                  <option value="L1">L1 — Assisted (human acts, AI suggests)</option>
+                  <option value="L2">L2 — Partial (AI acts on approval)</option>
+                  <option value="L3">L3 — Conditional (AI acts, human on the loop)</option>
+                  <option value="L4">L4 — High (AI acts, human can intervene)</option>
+                  <option value="L5">L5 — Full (AI acts independently)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-override">Human override tier</label>
+                <select id="f-override" class="field__input">
+                  <option value="">N/A</option>
+                  <option value="T1">T1 — Real-time block</option>
+                  <option value="T2">T2 — Pause / approve before act</option>
+                  <option value="T3">T3 — Interrupt in flight</option>
+                  <option value="T4">T4 — Post-hoc reversal</option>
+                  <option value="T5">T5 — Audit only, no override</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend class="fs__legend">2. Accountability by layer</legend>
+            <p class="fs__hint">
+              Each layer needs <strong>one</strong> named accountable party. The default split
+              comes from your operating model. Where the framework says <em>shared</em>, you must
+              still name the single party who answers for it: shared is not a valid final answer.
+            </p>
+            <div id="layers"></div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend class="fs__legend">3. Residual gaps & decision</legend>
+            <div class="field">
+              <label class="field__label" for="f-gaps">Open gaps / accepted residual risk</label>
+              <textarea id="f-gaps" class="field__input" rows="3" maxlength="2000" placeholder="What is not yet owned, or is owned with conditions? What risk is being accepted to ship?"></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-decision">Decision</label>
+                <select id="f-decision" class="field__input">
+                  <option value="Approved">Approved</option>
+                  <option value="Approved with conditions">Approved with conditions</option>
+                  <option value="Deferred">Deferred</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-date">Decision date</label>
+                <input id="f-date" class="field__input" type="date" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-approver">Approver name & role</label>
+                <input id="f-approver" class="field__input" type="text" maxlength="200" placeholder="e.g. J. Rivera, Chief Risk Officer" />
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-review">Next review date <span class="field__hint">(optional)</span></label>
+                <input id="f-review" class="field__input" type="date" />
+              </div>
+            </div>
+          </fieldset>
+        </form>
+
+        <!-- ─── Right: live record preview ──────────────────────────── -->
+        <aside class="panel preview" aria-label="Decision Record preview">
+          <div id="record" class="record"></div>
+        </aside>
+      </div>
+
+      <p class="footnote">
+        This Decision Record applies the CoSAI AI Shared Responsibility Framework's core rule:
+        exactly one accountable party per activity. The per-layer default split is derived from the
+        framework's operating-model matrix; you assign the named owner. The record is a governance
+        artifact, not legal advice, and does not transfer liability by itself. Verify named owners
+        against your contracts and internal delegations of authority.
+      </p>
+    </main>
+  </body>
+</html>
