@@ -143,6 +143,44 @@
         gap: 4px;
       }
 
+      /* ── Decision Record CTA (hero) ─────────────────────────────── */
+      .hero__decision {
+        margin-top: var(--sp-4);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--sp-4);
+        background: rgba(45,91,227,0.16);
+        border: 1px solid rgba(147,197,253,0.4);
+        border-radius: var(--radius-lg);
+        padding: var(--sp-4) var(--sp-5);
+      }
+      .hero__decision-text {
+        font-size: var(--text-sm);
+        color: #cbd5e1;
+        line-height: var(--leading-normal);
+        max-width: 62ch;
+        margin: 0;
+      }
+      .hero__decision-text strong { color: #fff; font-weight: 700; }
+      .hero__primary {
+        flex: none;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--sp-2);
+        background: #2d5be3;
+        color: #fff;
+        font-size: var(--text-sm);
+        font-weight: 700;
+        text-decoration: none;
+        padding: var(--sp-3) var(--sp-5);
+        border-radius: var(--radius);
+        border: 1px solid #2d5be3;
+        transition: background 0.14s, transform 0.14s;
+      }
+      .hero__primary:hover { background: #1e47c4; transform: translateY(-1px); color: #fff; text-decoration: none; }
+
       /* ── AI analysis feature callout ────────────────────────────── */
       .feature-callout {
         padding: var(--sp-16) var(--page-pad);
@@ -744,6 +782,18 @@
             </a>
 
           </div>
+
+          <div class="hero__decision">
+            <p class="hero__decision-text">
+              However you enter, you finish in the same place: a <strong>signed Accountability
+              Decision Record</strong> that names one accountable party per layer for your
+              deployment, captures the residual gaps, and carries a sign-off.
+            </p>
+            <a class="hero__primary" href="/tools/decision-record/">
+              Create a Decision Record
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -956,9 +1006,14 @@
           <div class="tools-strip__header">
             <p class="section__label">Interactive tools</p>
             <h2 id="tools-heading">Browser-based. No account. Nothing leaves your device.</h2>
-            <p>Eight assessment tools built on the framework. State saves in your browser and exports as JSON or PDF.</p>
+            <p>Nine assessment tools built on the framework. State saves in your browser and exports as JSON or PDF.</p>
           </div>
           <div class="tools-grid">
+            <a class="tool-card tool-card--featured" href="/tools/decision-record/">
+              <span class="tool-card__tag tool-card__tag--pdf">PDF export</span>
+              <div class="tool-card__name">Accountability Decision Record</div>
+              <p class="tool-card__desc">Name one accountable party per layer for a specific deployment, flag residual gaps, and export a signed one-page record. The artifact your reviewer approves.</p>
+            </a>
             <a class="tool-card tool-card--featured" href="/assess/srf-stress/">
               <span class="tool-card__tag tool-card__tag--ai">
                 ✦ AI-powered
