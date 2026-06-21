@@ -7,21 +7,21 @@
 <link rel="stylesheet" href="/shared/styles.css">
 <style>
 :root {
-  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, ui-sans-serif, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* Mapped onto the site design tokens from /shared/styles.css so this page
+     adopts the site palette and typography instead of a private one. */
   --color-background-primary: #ffffff;
-  --color-background-secondary: #f8fafc;
-  --color-background-tertiary: #fafaf9;
-  --color-text-primary: #0f172a;
-  --color-text-secondary: #334155;
-  --color-text-tertiary: #475569;
-  --color-border-primary: #94a3b8;
-  --color-border-secondary: #e2e8f0;
-  --color-border-tertiary: #f1f5f9;
-  --border-radius-md: 8px;
-  --border-radius-lg: 10px;
-  --navy: #0e174d;
-  --navy-accent: #1f4af5;
+  --color-background-secondary: var(--slate-50);
+  --color-background-tertiary: var(--slate-50);
+  --color-text-primary: var(--slate-900);
+  --color-text-secondary: var(--slate-700);
+  --color-text-tertiary: var(--slate-600);
+  --color-border-primary: var(--slate-400);
+  --color-border-secondary: var(--slate-200);
+  --color-border-tertiary: var(--slate-100);
+  --border-radius-md: var(--radius);
+  --border-radius-lg: var(--radius-lg);
+  --navy: var(--cosai-navy);
+  --navy-accent: var(--cosai-blue);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,59 +33,10 @@ body {
   min-height: 100vh;
 }
 
-/* ── PLATFORM HEADER ── */
-.platform-header {
-  background: var(--navy);
-  padding: 0 32px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.platform-header-inner {
-  max-width: 1000px;
-  margin: 0 auto;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.platform-wordmark {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-size: 17px;
-  font-weight: 600;
-  color: #ffffff;
-  text-decoration: none;
-}
-.platform-sep { width: 1px; height: 18px; background: rgba(255,255,255,0.2); }
-.platform-tool { font-size: 12px; color: rgba(255,255,255,0.6); font-family: var(--font-mono); }
-.platform-back {
-  margin-left: auto;
-  font-size: 12px;
-  color: rgba(255,255,255,0.55);
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  transition: color 0.15s;
-  font-family: var(--font-mono);
-}
-.platform-back:hover { color: rgba(255,255,255,0.9); }
-
 .page-wrap {
   max-width: 1000px;
   margin: 0 auto;
   padding: 32px 24px 60px;
-}
-
-.page-title {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  letter-spacing: 0.1em;
-  font-family: var(--font-mono);
-  margin-bottom: 20px;
-  text-transform: uppercase;
 }
 
 .wrap { font-size: 13px; }
@@ -493,22 +444,21 @@ body {
 
 <a class="skip-link" href="#main">Skip to content</a>
 
-<header class="platform-header">
-  <div class="platform-header-inner">
-    <a href="/tools/" class="platform-wordmark">CoSAI Wizards</a>
-    <div class="platform-sep"></div>
-    <span class="platform-tool">Layer Integration Matrix</span>
-    <a href="/tools/" class="platform-back">
-      <svg width="12" height="12" fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9L4.5 6l3-3"/>
-      </svg>
-      Back to wizards
-    </a>
+<script type="module" src="/shared/components.js"></script>
+<site-nav current="tools"></site-nav>
+
+<header class="page-hero" data-llm="summary">
+  <div class="page-hero__inner">
+    <span class="page-hero__eyebrow">Tools · Reference · Accountability matrix</span>
+    <h1 class="page-hero__title">Layer Integration Matrix</h1>
+    <p class="page-hero__lede">
+      Who is accountable for each slice of the AI stack, across the five CoSAI SRF
+      layers, the MLOps lifecycle, and four operating models.
+    </p>
   </div>
 </header>
 
 <main id="main" class="page-wrap" data-llm="layer-integration-matrix">
-  <div class="page-title">LAYER INTEGRATION MATRIX</div>
   <div class="wrap">
     <p class="view-note" style="margin-bottom:16px">This explorer matches the SRF’s idea of a <strong>governance manual for decomposition</strong>: you see <strong>who is accountable</strong> for each slice of the stack, how that follows the <strong>MLOps lifecycle</strong>, and <strong>what each layer is for</strong> as AI scales. That structure helps teams <strong>expand AI faster with less ambiguity</strong>—clearer procurement and vendor boundaries, <strong>stage-gate evidence</strong> aligned to owners, and a path that <strong>scales as systems grow more autonomous</strong>—while still complementing NIST AI RMF, ISO/IEC 42001, and the EU AI Act rather than replacing them.</p>
     <div class="tab-row">
