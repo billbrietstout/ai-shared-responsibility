@@ -102,6 +102,9 @@ def classify(rel):
             return "controls", LAYERS + vertical_personas(v) + ["srf.concept.control", "srf.concept.evidence-threshold"]
         if seg[1] == "how-to":
             return "how-to", LAYERS + vertical_personas(v) + ["srf.concept.evidence-threshold"]
+    if rel == "assess/layer-matrix":
+        # Canonical page is /tools/layer-matrix/; this path 301-redirects there.
+        return "redirect", []
     if top in ("tools", "assess", "controls"):
         leaf = seg[-1]
         if "ir-playbooks" in rel:        return "tool", LAYERS + OPMODELS
