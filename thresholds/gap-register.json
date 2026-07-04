@@ -1,0 +1,476 @@
+{
+  "generated": "2026-07-04",
+  "oscal_catalog": {
+    "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+    "title": "Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures",
+    "version": "5.2.0",
+    "oscal_version": "1.2.2"
+  },
+  "objective_fields_needing_a_home": [
+    "objective.target_value",
+    "objective.comparison",
+    "objective.window",
+    "objective.error_budget.budget",
+    "objective.error_budget.burn_rate_alert_threshold"
+  ],
+  "controls": [
+    {
+      "id": "AISRF-BIZ-001",
+      "title": "AI system inventory coverage",
+      "srf_layer": "ai_business_usage",
+      "defined_in": "baseline-catalog.yaml",
+      "objective": {
+        "target_value": 100,
+        "comparison": ">=",
+        "window": "30d",
+        "error_budget": {
+          "budget": 0.05,
+          "burn_rate_alert_threshold": 2
+        }
+      },
+      "bindings": [
+        {
+          "control_id": "cm-8",
+          "catalog_title": "System Component Inventory",
+          "rationale": "AI system inventory is a specialization of system component inventory.",
+          "gap_class": "cadence_only",
+          "gap_note": "ODPs exist; can carry test/review cadence only",
+          "params": [
+            {
+              "param_id": "cm-08_odp.01",
+              "label": "information",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-08_odp.02",
+              "label": "frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            }
+          ]
+        },
+        {
+          "control_id": "pm-5",
+          "catalog_title": "System Inventory",
+          "rationale": "Organization-wide system inventory at the program level.",
+          "gap_class": "cadence_only",
+          "gap_note": "ODPs exist; can carry test/review cadence only",
+          "params": [
+            {
+              "param_id": "pm-05_odp",
+              "label": "frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            }
+          ]
+        }
+      ],
+      "best_case": "cadence_only",
+      "objective_can_bind": false
+    },
+    {
+      "id": "AISRF-INFO-001",
+      "title": "Shadow AI detection and triage",
+      "srf_layer": "ai_information",
+      "defined_in": "baseline-catalog.yaml",
+      "objective": {
+        "target_value": 95,
+        "comparison": ">=",
+        "window": "30d",
+        "error_budget": {
+          "budget": 0.05,
+          "burn_rate_alert_threshold": 6
+        }
+      },
+      "bindings": [
+        {
+          "control_id": "cm-8.3",
+          "catalog_title": "Automated Unauthorized Component Detection",
+          "rationale": "Automated detection of unauthorized components; shadow AI services are unauthorized components consumed rather than installed.",
+          "gap_class": "cadence_only",
+          "gap_note": "ODPs exist; can carry test/review cadence only",
+          "params": [
+            {
+              "param_id": "cm-8.3_prm_1",
+              "label": "organization-defined automated mechanisms",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-08.03_odp.01",
+              "label": "automated mechanisms",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-08.03_odp.02",
+              "label": "automated mechanisms",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-08.03_odp.03",
+              "label": "automated mechanisms",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-08.03_odp.04",
+              "label": "frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            },
+            {
+              "param_id": "cm-08.03_odp.05",
+              "label": " disable network access by unauthorized components isolate unauthorized componen",
+              "has_selection": true,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-08.03_odp.06",
+              "label": "personnel or roles",
+              "has_selection": false,
+              "cadence_capable": false
+            }
+          ]
+        },
+        {
+          "control_id": "si-4",
+          "catalog_title": "System Monitoring",
+          "rationale": "System monitoring covers detection of unauthorized use.",
+          "gap_class": "cadence_only",
+          "gap_note": "ODPs exist; can carry test/review cadence only",
+          "params": [
+            {
+              "param_id": "si-04_odp.01",
+              "label": "monitoring objectives",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.02",
+              "label": "techniques and methods",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.03",
+              "label": "system monitoring information",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.04",
+              "label": "personnel or roles",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.05",
+              "label": " as needed {{ insert: param, si-04_odp.06 }} ",
+              "has_selection": true,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.06",
+              "label": "frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            }
+          ]
+        }
+      ],
+      "best_case": "cadence_only",
+      "objective_can_bind": false
+    },
+    {
+      "id": "AISRF-APP-001",
+      "title": "Human override responsiveness",
+      "srf_layer": "ai_application",
+      "defined_in": "baseline-catalog.yaml",
+      "objective": {
+        "target_value": 100,
+        "comparison": ">=",
+        "window": "90d",
+        "error_budget": {
+          "budget": 0
+        }
+      },
+      "bindings": [
+        {
+          "control_id": "si-17",
+          "catalog_title": "Fail-safe Procedures",
+          "rationale": "Fail-safe procedures on defined failure conditions; the closest anchor for agent kill-switch and override drills.",
+          "gap_class": "untyped_odp",
+          "gap_note": "ODPs exist but are untyped; cannot carry a measured objective",
+          "params": [
+            {
+              "param_id": "si-17_prm_1",
+              "label": "organization-defined list of failure conditions and associated fail-safe procedures",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-17_odp.01",
+              "label": "fail-safe procedures",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-17_odp.02",
+              "label": "list of failure conditions",
+              "has_selection": false,
+              "cadence_capable": false
+            }
+          ]
+        },
+        {
+          "control_id": "ir-4",
+          "catalog_title": "Incident Handling",
+          "rationale": "Incident handling covers the escalation path the drills exercise.",
+          "gap_class": "no_odp",
+          "gap_note": "control has no ODPs at all",
+          "params": []
+        }
+      ],
+      "best_case": "untyped_odp",
+      "objective_can_bind": false
+    },
+    {
+      "id": "AISRF-PLAT-001",
+      "title": "Guardrail enforcement coverage at inference",
+      "srf_layer": "ai_platform",
+      "defined_in": "baseline-catalog.yaml",
+      "objective": {
+        "target_value": 99.9,
+        "comparison": ">=",
+        "window": "30d",
+        "error_budget": {
+          "budget": 0.001,
+          "burn_rate_alert_threshold": 14.4
+        }
+      },
+      "bindings": [
+        {
+          "control_id": "si-10",
+          "catalog_title": "Information Input Validation",
+          "rationale": "Information input validation is the catalog home for prompt and input guardrails.",
+          "gap_class": "untyped_odp",
+          "gap_note": "ODPs exist but are untyped; cannot carry a measured objective",
+          "params": [
+            {
+              "param_id": "si-10_odp",
+              "label": "information inputs",
+              "has_selection": false,
+              "cadence_capable": false
+            }
+          ]
+        },
+        {
+          "control_id": "si-15",
+          "catalog_title": "Information Output Filtering",
+          "rationale": "Information output filtering is the catalog home for response guardrails.",
+          "gap_class": "untyped_odp",
+          "gap_note": "ODPs exist but are untyped; cannot carry a measured objective",
+          "params": [
+            {
+              "param_id": "si-15_odp",
+              "label": "software programs and/or applications",
+              "has_selection": false,
+              "cadence_capable": false
+            }
+          ]
+        }
+      ],
+      "best_case": "untyped_odp",
+      "objective_can_bind": false
+    },
+    {
+      "id": "AISRF-MODEL-001",
+      "title": "Model provenance attestation currency",
+      "srf_layer": "ai_model_provider",
+      "defined_in": "baseline-catalog.yaml",
+      "objective": {
+        "target_value": 100,
+        "comparison": ">=",
+        "window": "30d",
+        "error_budget": {
+          "budget": 0
+        }
+      },
+      "bindings": [
+        {
+          "control_id": "sr-4",
+          "catalog_title": "Provenance",
+          "rationale": "Provenance of systems and components extends naturally to model artifacts.",
+          "gap_class": "untyped_odp",
+          "gap_note": "ODPs exist but are untyped; cannot carry a measured objective",
+          "params": [
+            {
+              "param_id": "sr-04_odp",
+              "label": "systems, system components, and associated data",
+              "has_selection": false,
+              "cadence_capable": false
+            }
+          ]
+        },
+        {
+          "control_id": "cm-14",
+          "catalog_title": "Signed Components",
+          "rationale": "Signed components; model attestation is signature verification at deployment.",
+          "gap_class": "untyped_odp",
+          "gap_note": "ODPs exist but are untyped; cannot carry a measured objective",
+          "params": [
+            {
+              "param_id": "cm-14_prm_1",
+              "label": "organization-defined software and firmware components",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-14_odp.01",
+              "label": "software components",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "cm-14_odp.02",
+              "label": "firmware components",
+              "has_selection": false,
+              "cadence_capable": false
+            }
+          ]
+        }
+      ],
+      "best_case": "untyped_odp",
+      "objective_can_bind": false
+    },
+    {
+      "id": "AISRF-MODEL-002",
+      "title": "Post-deployment model drift monitoring",
+      "srf_layer": "ai_model_provider",
+      "defined_in": "healthcare.profile.yaml",
+      "objective": {
+        "target_value": 100,
+        "comparison": ">=",
+        "window": "7d",
+        "error_budget": {
+          "budget": 0
+        }
+      },
+      "bindings": [
+        {
+          "control_id": "ca-7",
+          "catalog_title": "Continuous Monitoring",
+          "rationale": "Continuous monitoring with organization-defined metrics; the natural anchor for drift bounds.",
+          "gap_class": "cadence_only",
+          "gap_note": "ODPs exist; can carry test/review cadence only",
+          "params": [
+            {
+              "param_id": "ca-7_prm_4",
+              "label": "organization-defined personnel or roles",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "ca-7_prm_5",
+              "label": "organization-defined frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            },
+            {
+              "param_id": "ca-07_odp.01",
+              "label": "system-level metrics",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "ca-07_odp.02",
+              "label": "frequencies",
+              "has_selection": false,
+              "cadence_capable": true
+            },
+            {
+              "param_id": "ca-07_odp.03",
+              "label": "frequencies",
+              "has_selection": false,
+              "cadence_capable": true
+            },
+            {
+              "param_id": "ca-07_odp.04",
+              "label": "personnel or roles",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "ca-07_odp.05",
+              "label": "frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            },
+            {
+              "param_id": "ca-07_odp.06",
+              "label": "personnel or roles",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "ca-07_odp.07",
+              "label": "frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            }
+          ]
+        },
+        {
+          "control_id": "si-4",
+          "catalog_title": "System Monitoring",
+          "rationale": "System monitoring for anomalous behavior.",
+          "gap_class": "cadence_only",
+          "gap_note": "ODPs exist; can carry test/review cadence only",
+          "params": [
+            {
+              "param_id": "si-04_odp.01",
+              "label": "monitoring objectives",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.02",
+              "label": "techniques and methods",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.03",
+              "label": "system monitoring information",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.04",
+              "label": "personnel or roles",
+              "has_selection": false,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.05",
+              "label": " as needed {{ insert: param, si-04_odp.06 }} ",
+              "has_selection": true,
+              "cadence_capable": false
+            },
+            {
+              "param_id": "si-04_odp.06",
+              "label": "frequency",
+              "has_selection": false,
+              "cadence_capable": true
+            }
+          ]
+        }
+      ],
+      "best_case": "cadence_only",
+      "objective_can_bind": false
+    }
+  ]
+}

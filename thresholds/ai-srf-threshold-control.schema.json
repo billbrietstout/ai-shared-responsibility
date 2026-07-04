@@ -1,0 +1,284 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://aisharedresponsibility.com/thresholds/ai-srf-threshold-control.schema.json",
+  "title": "AI SRF Threshold Control",
+  "description": "A single operational threshold control governing an AI system component, organized by CoSAI AI Shared Responsibility Framework v1.0 layer. Uses SRE semantics (SLI, SLO, error budget, enforcement) so thresholds can drive live alerting and automated enforcement, not just compliance paperwork. Taxonomy values (layers, personas, autonomy levels, intervention tiers, evidence categories) are taken from the CoSAI SRF v1.0 document approved 26 May 2026.",
+  "type": "object",
+  "required": ["id", "title", "srf_layer", "component", "owner", "indicator", "objective", "severity", "enforcement", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^AISRF-(BIZ|INFO|APP|PLAT|MODEL)-[0-9]{3}$",
+      "description": "Stable control identifier. Prefix encodes the SRF layer."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 5,
+      "description": "Short human-readable control name."
+    },
+    "srf_layer": {
+      "type": "string",
+      "enum": [
+        "ai_business_usage",
+        "ai_information",
+        "ai_application",
+        "ai_platform",
+        "ai_model_provider"
+      ],
+      "description": "CoSAI AI SRF five-layer taxonomy (SRF v1.0 Section 3, Appendix A.7.2). L1 ai_business_usage, L2 ai_information, L3 ai_application, L4 ai_platform, L5 ai_model_provider."
+    },
+    "component": {
+      "type": "string",
+      "description": "The component within the layer this control governs. Where possible, use component names from the SRF v1.0 responsibility matrices (A.1.2.1, A.1.2.4, A.1.3.1, A.1.4.1, A.1.5.1), e.g. 'Shadow AI Detection', 'Application Safety Systems', 'Model Provenance & Lifecycle'."
+    },
+    "owner": {
+      "type": "object",
+      "description": "Exactly one accountable party per component (SRF v1.0 core principle, Section 3).",
+      "required": ["persona"],
+      "additionalProperties": false,
+      "properties": {
+        "persona": {
+          "type": "string",
+          "enum": [
+            "agentic_platform_provider",
+            "application_developer",
+            "data_provider",
+            "ai_system_users",
+            "ai_system_governance",
+            "model_provider",
+            "ai_model_serving",
+            "ai_platform_provider"
+          ],
+          "description": "One of the eight CoSAI-RM personas (SRF v1.0 Section 3.1)."
+        },
+        "role": {
+          "type": "string",
+          "description": "Organization-specific role holding the accountability, e.g. 'Chief AI Risk Officer', 'Head of ML Platform'."
+        }
+      }
+    },
+    "autonomy_scope": {
+      "type": "object",
+      "description": "Range of agent autonomy levels this control applies to, using the SRF v1.0 L0-L5 taxonomy (Appendix A.1.3.3, adapted from SAE J3016). Omit for controls that apply regardless of autonomy.",
+      "required": ["min_level"],
+      "additionalProperties": false,
+      "properties": {
+        "min_level": {
+          "type": "string",
+          "enum": ["L0", "L1", "L2", "L3", "L4", "L5"],
+          "description": "Lowest autonomy level at which the control applies. L0 no automation, L1 human-initiated, L2 human-approved, L3 human-supervised, L4 human-on-loop, L5 full autonomy."
+        },
+        "max_level": {
+          "type": "string",
+          "enum": ["L0", "L1", "L2", "L3", "L4", "L5"],
+          "description": "Highest autonomy level at which the control applies. Defaults to L5 when omitted."
+        }
+      }
+    },
+    "indicator": {
+      "type": "object",
+      "description": "Service Level Indicator: the measured quantity.",
+      "required": ["name", "description", "unit"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Machine-friendly indicator name, snake_case."
+        },
+        "description": {
+          "type": "string",
+          "description": "What is measured, numerator and denominator where applicable."
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["percent", "ratio", "count", "seconds", "minutes", "hours", "days"],
+          "description": "Unit of measurement."
+        },
+        "measurement_source": {
+          "type": "string",
+          "description": "Where the measurement comes from, e.g. a telemetry pipeline, CASB logs, model registry API."
+        }
+      }
+    },
+    "objective": {
+      "type": "object",
+      "description": "Service Level Objective: target plus error budget.",
+      "required": ["target_value", "comparison", "window"],
+      "additionalProperties": false,
+      "properties": {
+        "target_value": {
+          "type": "number",
+          "description": "Threshold the indicator must satisfy."
+        },
+        "comparison": {
+          "type": "string",
+          "enum": [">=", "<=", ">", "<", "=="],
+          "description": "How the indicator is compared to target_value."
+        },
+        "window": {
+          "type": "string",
+          "pattern": "^[0-9]+(m|h|d)$",
+          "description": "Evaluation window, e.g. '30d', '24h', '5m'."
+        },
+        "error_budget": {
+          "type": "object",
+          "description": "Tolerated shortfall before budget-exhaustion enforcement fires.",
+          "required": ["budget"],
+          "additionalProperties": false,
+          "properties": {
+            "budget": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Allowed failure fraction (for percent/ratio SLIs) or absolute allowance (for count SLIs) per window."
+            },
+            "burn_rate_alert_threshold": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Multiple of the steady-state burn rate that triggers an early alert, per SRE multiwindow burn-rate practice. E.g. 14.4 means the budget would exhaust in 1/14.4 of the window."
+            }
+          }
+        }
+      }
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Consequence severity of sustained breach."
+    },
+    "regulatory_drivers": {
+      "type": "array",
+      "description": "Regulations or supervisory guidance motivating this control's threshold. Empty or absent in the vertical-agnostic baseline; populated by vertical profiles.",
+      "items": {
+        "type": "object",
+        "required": ["framework", "citation"],
+        "additionalProperties": false,
+        "properties": {
+          "framework": {
+            "type": "string",
+            "description": "Short name, e.g. 'SR 11-7', 'FDA AI/ML SaMD Guidance', 'EU AI Act'."
+          },
+          "citation": {
+            "type": "string",
+            "description": "Specific section or article, e.g. 'Annex III(5)(b)', 'Section III.B'."
+          },
+          "url": {
+            "type": "string",
+            "format": "uri"
+          }
+        }
+      }
+    },
+    "enforcement": {
+      "type": "object",
+      "description": "Automated actions on breach and on budget exhaustion. Intervention tiers use the SRF v1.0 T1-T5 human intervention taxonomy (Appendix A.1.3.2). Note the SRF itself assigns accountability and evidence; consequence and remedy remain the domain of regulation, contract, and governance policy (SRF v1.0 A.6.2). Enforcement here is the deploying organization's own operational policy.",
+      "required": ["on_breach"],
+      "additionalProperties": false,
+      "properties": {
+        "on_breach": {
+          "$ref": "#/definitions/enforcement_action"
+        },
+        "on_budget_exhausted": {
+          "$ref": "#/definitions/enforcement_action"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "description": "Seam to OSCAL and to SRF v1.0 evidence requirements (Appendix A.7). OSCAL owns what controls exist, assessment results, and audit trail; this schema owns live thresholds and enforcement.",
+      "additionalProperties": false,
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["governance", "technical", "operational", "assessment", "attestation"],
+            "description": "SRF v1.0 evidence categories (Appendix A.7.1)."
+          }
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Expected artifacts, e.g. 'Model Cards', 'Kill switch test results', 'SOC 2 Type II'."
+        },
+        "oscal_component_uuid": {
+          "type": "string",
+          "description": "UUID of the OSCAL component this control's measurements attach to."
+        },
+        "oscal_bindings": {
+          "type": "array",
+          "description": "OSCAL catalog controls this threshold operationalizes. A bare control ID is ambiguous, so each binding pairs a catalog source URI with the control ID, OSCAL style. Candidate bindings that fail to resolve, or resolve to controls whose parameters cannot carry the objective, are the raw material of the gap register.",
+          "items": {
+            "type": "object",
+            "required": ["source", "control_id"],
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "type": "string",
+                "format": "uri",
+                "description": "URI of the OSCAL catalog, e.g. the NIST SP 800-53 rev 5 catalog JSON."
+              },
+              "control_id": {
+                "type": "string",
+                "description": "Control or enhancement ID within the catalog, lowercase OSCAL form, e.g. 'cm-8' or 'cm-8.3'."
+              },
+              "rationale": {
+                "type": "string",
+                "description": "Why this catalog control is the anchor for this threshold."
+              }
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "active", "deprecated"],
+      "description": "Lifecycle status of the control definition."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-form implementation notes."
+    }
+  },
+  "definitions": {
+    "enforcement_action": {
+      "type": "object",
+      "required": ["action"],
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "type": "string",
+          "enum": [
+            "alert",
+            "require_human_approval",
+            "restrict_scope",
+            "pause_and_review",
+            "halt_component",
+            "emergency_shutdown"
+          ],
+          "description": "Operational response. The last four correspond broadly to escalating intervention: restrict_scope (T2 active redirect), pause_and_review (T3), halt_component (T4 immediate halt), emergency_shutdown (T5)."
+        },
+        "intervention_tier": {
+          "type": "string",
+          "enum": ["T1", "T2", "T3", "T4", "T5"],
+          "description": "SRF v1.0 human intervention tier (A.1.3.2): T1 soft guidance (automated), T2 active redirect (AI Ops), T3 pause and review (Senior AI Ops), T4 immediate halt (Incident Commander), T5 emergency shutdown (CISO/Executive)."
+        },
+        "notify": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Roles or channels to notify."
+        },
+        "generate_oscal_assessment_result": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether a breach event should emit an OSCAL assessment-result record. Generator not yet implemented; field reserves the seam."
+        }
+      }
+    }
+  }
+}

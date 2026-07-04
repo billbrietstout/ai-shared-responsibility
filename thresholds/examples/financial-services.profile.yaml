@@ -1,0 +1,98 @@
+# Financial Services Threshold Profile
+# Overrides the vertical-agnostic baseline for organizations subject to
+# banking supervision. Only target_value, error_budget, enforcement, and
+# regulatory_drivers may be overridden; wholly new controls may be added.
+# Merge semantics: described in ../README.md, resolver not yet implemented.
+
+profile:
+  id: aisrf-thresholds-financial-services
+  version: 0.2.0
+  imports: baseline-catalog.yaml
+
+overrides:
+
+  # Model risk management demands full inventory, faster
+  - id: AISRF-BIZ-001
+    objective:
+      target_value: 100
+      window: 30d
+      error_budget:
+        budget: 0          # SR 11-7 model inventory has no tolerated gap
+    regulatory_drivers:
+      - framework: SR 11-7
+        citation: Section VI (model inventory expectations)
+        url: https://www.federalreserve.gov/supervisionreg/srletters/sr1107a1.pdf
+      - framework: EU AI Act
+        citation: Annex III(5)(b) (creditworthiness / credit scoring as high-risk)
+        url: https://artificialintelligenceact.eu/annex/3/
+    enforcement:
+      on_breach:
+        action: require_human_approval
+        intervention_tier: T2
+        notify: [model-risk-management]
+      on_budget_exhausted:
+        action: pause_and_review
+        intervention_tier: T3
+        notify: [model-risk-management, chief-risk-officer]
+
+  # Customer financial data raises shadow AI severity
+  - id: AISRF-INFO-001
+    objective:
+      target_value: 99
+      window: 30d
+      error_budget:
+        budget: 0.01
+        burn_rate_alert_threshold: 4
+    regulatory_drivers:
+      - framework: GLBA Safeguards Rule
+        citation: 16 CFR 314.4 (risk assessment and access controls over customer information)
+        url: https://www.ecfr.gov/current/title-16/chapter-I/subchapter-C/part-314
+    enforcement:
+      on_breach:
+        action: restrict_scope
+        intervention_tier: T2
+        notify: [secops, privacy-office]
+      on_budget_exhausted:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander, chief-risk-officer]
+
+  # Effective challenge: overrides on decisioning agents are examinable
+  - id: AISRF-APP-001
+    regulatory_drivers:
+      - framework: SR 11-7
+        citation: Section V (effective challenge and ongoing monitoring)
+        url: https://www.federalreserve.gov/supervisionreg/srletters/sr1107a1.pdf
+      - framework: EU AI Act
+        citation: Article 14 (human oversight for high-risk systems)
+        url: https://artificialintelligenceact.eu/article/14/
+    enforcement:
+      on_breach:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander, model-risk-management]
+      on_budget_exhausted:
+        action: emergency_shutdown
+        intervention_tier: T5
+        notify: [ciso, chief-risk-officer]
+
+  # Validated-model boundary: nothing unattested serves credit decisions
+  - id: AISRF-MODEL-001
+    objective:
+      target_value: 100
+      window: 30d
+      error_budget:
+        budget: 0
+    regulatory_drivers:
+      - framework: SR 11-7
+        citation: Section IV (model development, implementation, and use documentation)
+        url: https://www.federalreserve.gov/supervisionreg/srletters/sr1107a1.pdf
+    enforcement:
+      on_breach:
+        action: pause_and_review
+        intervention_tier: T3
+        notify: [model-risk-management]
+      on_budget_exhausted:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander, model-risk-management]

@@ -1,0 +1,248 @@
+# AI SRF Threshold Baseline Catalog
+# Vertical-agnostic operational thresholds, one control per CoSAI AI SRF v1.0 layer.
+# Vertical profiles (financial-services, healthcare, ...) override target_value,
+# error_budget, enforcement, and regulatory_drivers, or add new controls.
+# Taxonomy verified against: CoSAI AI Shared Responsibility Framework v1.0,
+# approved by the CoSAI Project Governing Board 26 May 2026.
+
+catalog:
+  id: aisrf-thresholds-baseline
+  version: 0.3.0
+  schema: ../ai-srf-threshold-control.schema.json
+
+# OSCAL catalog source for all bindings below (YAML anchor)
+x-oscal-sources:
+  sp800-53r5: &sp800-53r5 https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+
+controls:
+
+  # ── L1: AI Business & Usage ──────────────────────────────────────────────
+  - id: AISRF-BIZ-001
+    title: AI system inventory coverage
+    srf_layer: ai_business_usage
+    component: AI System Inventory
+    owner:
+      persona: ai_system_governance
+      role: AI Governance Committee lead
+    indicator:
+      name: inventory_coverage_ratio
+      description: >-
+        Percentage of AI systems in production or pilot that are mapped to the
+        five SRF layers with exactly one accountable party per component.
+        Numerator: mapped systems. Denominator: all systems discovered through
+        procurement, network, and spend telemetry. Target per SRF v1.0
+        Implementation Playbook Phase 1 Week 1 success metric (100% mapped).
+      unit: percent
+      measurement_source: AI system inventory register reconciled against discovery telemetry
+    objective:
+      target_value: 100
+      comparison: ">="
+      window: 30d
+      error_budget:
+        budget: 0.05
+        burn_rate_alert_threshold: 2
+    severity: high
+    enforcement:
+      on_breach:
+        action: alert
+        intervention_tier: T1
+        notify: [ai-governance-committee]
+      on_budget_exhausted:
+        action: require_human_approval
+        intervention_tier: T2
+        notify: [ai-governance-committee, procurement]
+    evidence:
+      categories: [governance, operational]
+      artifacts: [AI Policy, Risk Register, AI system inventory export]
+      oscal_bindings:
+        - source: *sp800-53r5
+          control_id: cm-8
+          rationale: AI system inventory is a specialization of system component inventory.
+        - source: *sp800-53r5
+          control_id: pm-5
+          rationale: Organization-wide system inventory at the program level.
+    status: active
+
+  # ── L2: AI Information ───────────────────────────────────────────────────
+  - id: AISRF-INFO-001
+    title: Shadow AI detection and triage
+    srf_layer: ai_information
+    component: Shadow AI Detection
+    owner:
+      persona: ai_system_governance
+      role: Security operations lead
+    indicator:
+      name: shadow_ai_triage_ratio
+      description: >-
+        Percentage of detected unsanctioned AI service usage events (network
+        monitoring for AI service API calls and web usage, per SRF v1.0
+        A.1.2.3) triaged and risk-assessed within 7 days of detection.
+      unit: percent
+      measurement_source: CASB / network monitoring pipeline joined to triage ticket queue
+    objective:
+      target_value: 95
+      comparison: ">="
+      window: 30d
+      error_budget:
+        budget: 0.05
+        burn_rate_alert_threshold: 6
+    severity: medium
+    enforcement:
+      on_breach:
+        action: alert
+        intervention_tier: T1
+        notify: [secops]
+      on_budget_exhausted:
+        action: restrict_scope
+        intervention_tier: T2
+        notify: [secops, ai-governance-committee]
+    evidence:
+      categories: [operational, governance]
+      artifacts: [Shadow AI discovery reports, Acceptable Use Policy, DLP alerts]
+      oscal_bindings:
+        - source: *sp800-53r5
+          control_id: cm-8.3
+          rationale: Automated detection of unauthorized components; shadow AI services are unauthorized components consumed rather than installed.
+        - source: *sp800-53r5
+          control_id: si-4
+          rationale: System monitoring covers detection of unauthorized use.
+    status: active
+
+  # ── L3: AI Application ───────────────────────────────────────────────────
+  - id: AISRF-APP-001
+    title: Human override responsiveness
+    srf_layer: ai_application
+    component: Application Safety Systems
+    owner:
+      persona: application_developer
+      role: Application engineering lead
+    autonomy_scope:
+      min_level: L2
+      max_level: L5
+    indicator:
+      name: override_test_pass_ratio
+      description: >-
+        Percentage of human override drills that halt agent action within the
+        intervention-tier response time targets of SRF v1.0 A.1.3.2 (T3 pause
+        within 1 minute, T4 halt within 10 seconds). Drill cadence per A.7.3:
+        quarterly at L2-L3, monthly kill-switch tests at L4-L5.
+      unit: percent
+      measurement_source: Override drill harness results in agent telemetry store
+    objective:
+      target_value: 100
+      comparison: ">="
+      window: 90d
+      error_budget:
+        budget: 0
+    severity: critical
+    enforcement:
+      on_breach:
+        action: pause_and_review
+        intervention_tier: T3
+        notify: [senior-ai-ops]
+      on_budget_exhausted:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander, ai-governance-committee]
+    evidence:
+      categories: [technical, assessment]
+      artifacts: [Override Test Results, Kill switch test results, Agent Telemetry]
+      oscal_bindings:
+        - source: *sp800-53r5
+          control_id: si-17
+          rationale: Fail-safe procedures on defined failure conditions; the closest anchor for agent kill-switch and override drills.
+        - source: *sp800-53r5
+          control_id: ir-4
+          rationale: Incident handling covers the escalation path the drills exercise.
+    status: active
+
+  # ── L4: AI Platform ──────────────────────────────────────────────────────
+  - id: AISRF-PLAT-001
+    title: Guardrail enforcement coverage at inference
+    srf_layer: ai_platform
+    component: Model Safety & Security Systems
+    owner:
+      persona: ai_model_serving
+      role: ML platform lead
+    indicator:
+      name: guardrail_coverage_ratio
+      description: >-
+        Percentage of inference requests to production model endpoints that
+        pass through the platform policy enforcement point (input validation,
+        output filtering, access policy) rather than reaching a model
+        endpoint directly.
+      unit: percent
+      measurement_source: API gateway logs reconciled against model serving access logs
+    objective:
+      target_value: 99.9
+      comparison: ">="
+      window: 30d
+      error_budget:
+        budget: 0.001
+        burn_rate_alert_threshold: 14.4
+    severity: high
+    enforcement:
+      on_breach:
+        action: alert
+        intervention_tier: T2
+        notify: [ml-platform-oncall]
+      on_budget_exhausted:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander]
+    evidence:
+      categories: [technical, attestation]
+      artifacts: [Guardrail Configs, SOC 2 Type II, Model Registry access records]
+      oscal_bindings:
+        - source: *sp800-53r5
+          control_id: si-10
+          rationale: Information input validation is the catalog home for prompt and input guardrails.
+        - source: *sp800-53r5
+          control_id: si-15
+          rationale: Information output filtering is the catalog home for response guardrails.
+    status: active
+
+  # ── L5: AI Model Provider ────────────────────────────────────────────────
+  - id: AISRF-MODEL-001
+    title: Model provenance attestation currency
+    srf_layer: ai_model_provider
+    component: Model Provenance & Lifecycle
+    owner:
+      persona: model_provider
+      role: Model release manager
+    indicator:
+      name: attested_model_ratio
+      description: >-
+        Percentage of model versions deployed to production that carry a
+        current model card and a valid digital attestation (cryptographic
+        signature over model artifacts, per SRF v1.0 A.1.5.1 Model
+        Provenance & Lifecycle).
+      unit: percent
+      measurement_source: Model registry metadata scan against signing service
+    objective:
+      target_value: 100
+      comparison: ">="
+      window: 30d
+      error_budget:
+        budget: 0
+    severity: high
+    enforcement:
+      on_breach:
+        action: require_human_approval
+        intervention_tier: T2
+        notify: [model-governance]
+      on_budget_exhausted:
+        action: pause_and_review
+        intervention_tier: T3
+        notify: [model-governance, ai-governance-committee]
+    evidence:
+      categories: [technical, assessment]
+      artifacts: [Model Cards, SLSA Attestations, Vulnerability disclosures]
+      oscal_bindings:
+        - source: *sp800-53r5
+          control_id: sr-4
+          rationale: Provenance of systems and components extends naturally to model artifacts.
+        - source: *sp800-53r5
+          control_id: cm-14
+          rationale: Signed components; model attestation is signature verification at deployment.
+    status: active

@@ -1,0 +1,122 @@
+# Healthcare Threshold Profile
+# Overrides the vertical-agnostic baseline for organizations deploying AI in
+# clinical or PHI-bearing contexts. Adds one control with no general
+# equivalent: post-deployment drift monitoring, driven by FDA's
+# Predetermined Change Control Plan expectations for AI-enabled device software.
+# Merge semantics: described in ../README.md, resolver not yet implemented.
+
+profile:
+  id: aisrf-thresholds-healthcare
+  version: 0.2.0
+  imports: baseline-catalog.yaml
+
+overrides:
+
+  # PHI exposure through unsanctioned AI tools is a reportable risk
+  - id: AISRF-INFO-001
+    objective:
+      target_value: 99
+      window: 30d
+      error_budget:
+        budget: 0.01
+        burn_rate_alert_threshold: 4
+    regulatory_drivers:
+      - framework: HIPAA Security Rule
+        citation: 45 CFR 164.308(a)(1) (security management process, risk analysis)
+        url: https://www.ecfr.gov/current/title-45/subtitle-A/subchapter-C/part-164/subpart-C
+    enforcement:
+      on_breach:
+        action: restrict_scope
+        intervention_tier: T2
+        notify: [secops, privacy-office]
+      on_budget_exhausted:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander, privacy-office]
+
+  # Clinical decision support: override failure is a patient-safety event
+  - id: AISRF-APP-001
+    regulatory_drivers:
+      - framework: FDA AI/ML SaMD Guidance
+        citation: Human oversight expectations for AI-enabled device software functions
+        url: https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-software-medical-device
+    enforcement:
+      on_breach:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander, clinical-safety-officer]
+      on_budget_exhausted:
+        action: emergency_shutdown
+        intervention_tier: T5
+        notify: [ciso, clinical-safety-officer]
+
+  # Validated-model boundary for clinical models
+  - id: AISRF-MODEL-001
+    objective:
+      target_value: 100
+      window: 30d
+      error_budget:
+        budget: 0
+    regulatory_drivers:
+      - framework: FDA AI/ML SaMD Guidance
+        citation: Model documentation and transparency expectations
+        url: https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-software-medical-device
+    enforcement:
+      on_breach:
+        action: pause_and_review
+        intervention_tier: T3
+        notify: [model-governance, clinical-safety-officer]
+      on_budget_exhausted:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander]
+
+additions:
+
+  # No baseline equivalent: continuous post-deployment drift monitoring
+  - id: AISRF-MODEL-002
+    title: Post-deployment model drift monitoring
+    srf_layer: ai_model_provider
+    component: Model Provenance & Lifecycle
+    owner:
+      persona: model_provider
+      role: Clinical ML validation lead
+    indicator:
+      name: drift_metric_within_pccp_bounds_ratio
+      description: >-
+        Percentage of monitored performance and input-distribution metrics for
+        deployed clinical models that remain within the bounds declared in the
+        model's Predetermined Change Control Plan during the window.
+      unit: percent
+      measurement_source: Model monitoring pipeline compared against PCCP-declared bounds
+    objective:
+      target_value: 100
+      comparison: ">="
+      window: 7d
+      error_budget:
+        budget: 0
+    severity: critical
+    regulatory_drivers:
+      - framework: FDA AI/ML SaMD Guidance
+        citation: Predetermined Change Control Plan (PCCP) for AI-enabled device software
+        url: https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-software-medical-device
+    enforcement:
+      on_breach:
+        action: pause_and_review
+        intervention_tier: T3
+        notify: [clinical-ml-validation, clinical-safety-officer]
+      on_budget_exhausted:
+        action: halt_component
+        intervention_tier: T4
+        notify: [incident-commander, regulatory-affairs]
+    evidence:
+      categories: [operational, assessment]
+      artifacts: [Drift monitoring reports, PCCP, Model performance dashboards]
+      oscal_bindings:
+        - source: https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+          control_id: ca-7
+          rationale: Continuous monitoring with organization-defined metrics; the natural anchor for drift bounds.
+        - source: https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json
+          control_id: si-4
+          rationale: System monitoring for anomalous behavior.
+    status: active
