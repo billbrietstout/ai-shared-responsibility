@@ -15,11 +15,23 @@ Gap classes, per binding:
                       evaluation window, or error budget
   untyped_odp         parameters exist but are freeform labels or fixed
                       selections; none can carry a measured objective
+  no_binding          control declares a measured threshold but no 800-53
+                      binding yet (industry vertical controls; see below)
 
 Per threshold control, the register records the best case across bindings
 and whether the objective (target_value + window + error_budget) has any
 place to live in the catalog. Output: gap-register.json (machine-readable)
 and gap-register.md (NIST feedback draft).
+
+Beyond the baseline threshold catalog, the register now covers the six
+industry vertical control sets in data/*-controls.json (258 controls, each
+with a threshold tuple). Vertical controls that declare
+threshold.evidence.oscal_bindings are resolved against the catalog exactly
+like baseline controls; controls without bindings are classified
+`no_binding` and counted per vertical. Generative and agentic thresholds
+should bind to the COSAiS overlays (NISTIR 8605B Generative AI, 8605D
+Agentic AI) as those publish, since they are 800-53 overlays that carry
+organization-defined parameters.
 
 Usage: python3 generate-gap-register.py [--catalog PATH]
 If --catalog is omitted, the script downloads the rev 5 catalog JSON from
@@ -53,6 +65,28 @@ def load_threshold_controls():
         for c in doc.get("additions", []):
             controls.append((c, prof.name))
     return controls
+
+
+VERTICALS = ["finance", "public-sector", "healthcare", "insurance",
+             "defense", "manufacturing"]
+
+
+def load_vertical_controls():
+    """Industry vertical controls from data/*-controls.json.
+
+    Returns {vertical: [(control, source_file)]}. Each control carries a
+    threshold tuple (metric, operator, param, window, breach_action) and may
+    carry threshold.evidence.oscal_bindings; most do not yet.
+    """
+    out = {}
+    data_dir = HERE.parent / "data"
+    for v in VERTICALS:
+        path = data_dir / f"{v}-controls.json"
+        if not path.exists():
+            continue
+        doc = json.loads(path.read_text())
+        out[v] = [(c, path.name) for c in doc.get("controls", [])]
+    return out
 
 
 def get_catalog(path_arg, source_uri):
@@ -127,6 +161,7 @@ GAP_RANK = {  # lower is better
     "no_odp": 2,
     "withdrawn": 3,
     "control_not_found": 4,
+    "no_binding": 5,
 }
 
 GAP_LABEL = {
@@ -135,7 +170,48 @@ GAP_LABEL = {
     "no_odp": "control has no ODPs at all",
     "withdrawn": "control withdrawn in rev 5",
     "control_not_found": "no such control in the catalog",
+    "no_binding": "measured threshold declared but no 800-53 binding proposed yet",
 }
+
+
+def classify_vertical_control(c, src_file, idx):
+    """Build a register entry for one industry vertical control."""
+    th = c.get("threshold", {})
+    entry = {
+        "id": c["id"],
+        "title": c["title"],
+        "srf_layer": c.get("layer"),
+        "defined_in": src_file,
+        "threshold": {
+            "metric": th.get("metric"),
+            "operator": th.get("operator"),
+            "param": th.get("param"),
+            "window": th.get("window"),
+            "breach_action": th.get("breach_action"),
+        },
+        "bindings": [],
+    }
+    for b in th.get("evidence", {}).get("oscal_bindings", []):
+        cid = b["control_id"]
+        ctl = idx.get(cid)
+        if ctl is None:
+            gap, params, title = "control_not_found", [], None
+        else:
+            gap, params = classify_binding(ctl)
+            title = ctl.get("title")
+        entry["bindings"].append({
+            "control_id": cid,
+            "catalog_title": title,
+            "rationale": b.get("rationale"),
+            "gap_class": gap,
+            "gap_note": GAP_LABEL[gap],
+            "params": params,
+        })
+    entry["best_case"] = min(
+        (b["gap_class"] for b in entry["bindings"]),
+        key=GAP_RANK.get, default="no_binding")
+    entry["objective_can_bind"] = False
+    return entry
 
 
 def main():
@@ -205,10 +281,27 @@ def main():
         entry["objective_can_bind"] = False  # true only if a typed ODP existed; none do in rev 5
         register["controls"].append(entry)
 
+    # Industry vertical sections (one per vertical, per the OSCAL vertical
+    # mapping plan workstream C).
+    register["verticals"] = {}
+    for v, ctls in load_vertical_controls().items():
+        entries = [classify_vertical_control(c, src, idx) for c, src in ctls]
+        bound = [e for e in entries if e["bindings"]]
+        register["verticals"][v] = {
+            "source_file": ctls[0][1] if ctls else None,
+            "control_count": len(entries),
+            "with_bindings": len(bound),
+            "without_bindings": len(entries) - len(bound),
+            "oscal_profile": f"https://aisharedresponsibility.com/export/srf-{v}.profile.json",
+            "controls": entries,
+        }
+
     (HERE / "gap-register.json").write_text(json.dumps(register, indent=2) + "\n")
     (HERE / "gap-register.md").write_text(render_markdown(register))
+    n_vert = sum(vd["control_count"] for vd in register["verticals"].values())
     print(f"wrote gap-register.json and gap-register.md "
-          f"({len(register['controls'])} controls, catalog version {meta.get('version')})")
+          f"({len(register['controls'])} threshold controls, {n_vert} vertical "
+          f"controls, catalog version {meta.get('version')})")
 
 
 def render_markdown(reg):
@@ -261,6 +354,44 @@ def render_markdown(reg):
         w(f"Best case across bindings: `{e['best_case']}`. Objective can bind to an ODP: "
           f"**{'yes' if e['objective_can_bind'] else 'no'}**.")
         w("")
+    w("## Findings by industry vertical")
+    w("")
+    w("The six industry vertical control sets (`data/*-controls.json`, also "
+      "published as OSCAL profiles under `/export/`) each declare a measured "
+      "threshold per control. This section records, per vertical, how many of "
+      "those thresholds have a proposed 800-53 binding and classifies the "
+      "bindings that exist. Controls without bindings are the backlog for the "
+      "COSAiS overlay effort: generative and agentic thresholds should bind "
+      "to NISTIR 8605B (Generative AI) and 8605D (Agentic AI) as those "
+      "overlays publish, since both are 800-53 overlays that carry "
+      "organization-defined parameters; predictive-AI thresholds map to "
+      "8605A. Until then they are classified `no_binding` here rather than "
+      "bound to invented anchors.")
+    w("")
+    for v, vd in reg.get("verticals", {}).items():
+        w(f"### {v.replace('-', ' ').title()} ({vd['source_file']})")
+        w("")
+        w(f"{vd['control_count']} controls; {vd['with_bindings']} with 800-53 "
+          f"bindings, {vd['without_bindings']} classified `no_binding`. OSCAL "
+          f"profile: {vd['oscal_profile']}")
+        w("")
+        bound = [e for e in vd["controls"] if e["bindings"]]
+        if bound:
+            w("| Control | 800-53 binding | Gap class |")
+            w("| --- | --- | --- |")
+            for e in bound:
+                for b in e["bindings"]:
+                    w(f"| `{e['id']}` | `{b['control_id']}` | `{b['gap_class']}` |")
+            w("")
+        by_layer = {}
+        for e in vd["controls"]:
+            if not e["bindings"]:
+                by_layer.setdefault(e["srf_layer"], []).append(e["id"])
+        if by_layer:
+            w("Unbound thresholds by layer: "
+              + "; ".join(f"{layer}: {len(ids)}"
+                          for layer, ids in sorted(by_layer.items())) + ".")
+            w("")
     w("## Summary finding")
     w("")
     n = len(reg["controls"])
@@ -284,7 +415,13 @@ def render_markdown(reg):
       "typed parameter constraint (numeric with unit and window semantics) would let profiles "
       "carry operational thresholds natively, and would let a resolved threshold emit "
       "`set-parameter` values that provably match the live alerting configuration.")
-    w("3. **For the AI RMF Critical Infrastructure profile:** each prioritized outcome could name "
+    w("3. **For the COSAiS overlay series (NISTIR 8605, 8605A-D):** the industry vertical "
+      "sections above enumerate 258 measured thresholds with no 800-53 binding yet. Where an "
+      "overlay control covers the same behavior (guardrail coverage, drift bounds, oversight "
+      "responsiveness), the overlay's ODPs are the natural home for these objectives; typed "
+      "measured-objective ODPs in 8605B (Generative AI) and 8605D (Agentic AI) would let the "
+      "vertical OSCAL profiles bind directly as the overlays publish.")
+    w("4. **For the AI RMF Critical Infrastructure profile:** each prioritized outcome could name "
       "the measurable indicator that would make it auditable. The healthcare drift control "
       "(AISRF-MODEL-002) is a worked example of a profile-driven addition with a concrete SLI "
       "bound to `ca-7`, whose `ca-07_odp.01` (system-level metrics) is exactly the right hook "

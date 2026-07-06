@@ -3,9 +3,9 @@
   "srf_version": "1.0",
   "industry": "defense",
   "description": "Defense control schema for the CoSAI AI Shared Responsibility Framework. Scoped to DoD components and the defense industrial base (DIB). Maps SRF layers and accountable personas to DoD Responsible AI (RAI) principles, DoDI 5000.90 (AI acquisition), DoDI 5000.89 (TEVV), CMMC 2.0, NIST SP 800-171 Rev 3, NIST AI RMF 1.0, and the DISA Cloud Computing SRG. Controls are parameterized by impact level (IL4/IL5/IL6) and NSS tier (non-nss/nss/both).",
-  "regulatory_context": "DoD AI governance is anchored by the DoD Responsible AI Strategy and Implementation Pathway (June 2022), which established five RAI principles: Responsible, Equitable, Traceable, Reliable, Governable (RETR-G). DoDI 5000.90 (December 2020) requires AI transparency cards and acquisition safeguards; DoDI 5000.89 (November 2021) mandates TEVV planning before operational deployment. CMMC 2.0 (32 CFR Part 170, effective December 2024) governs contractor cybersecurity posture for CUI but does not address AI governance; this schema adds the AI layer CMMC lacks. Cloud deployments require a DISA Provisional Authorization (PA) at the required IL; the CC SRG defines what the CSP must implement. This schema covers the component and contractor side of those splits. IL6 systems operate in classified cloud environments (AWS C2S, Azure Government Secret, Oracle NSR) where commercial paths do not apply.",
+  "regulatory_context": "DoD AI governance is anchored by the DoD Responsible AI Strategy and Implementation Pathway (June 2022), which established five RAI principles: Responsible, Equitable, Traceable, Reliable, Governable (RETR-G). DoDI 5000.90 (December 2020) governs cybersecurity risk management by acquisition decision authorities and program managers, including supply chain risk; it contains no AI-specific requirements. DoDI 5000.89 (November 2020) sets test and evaluation policy that AI TEVV planning operationalizes. AI-specific artifacts such as transparency cards derive from the RAI S&I Pathway and the CDAO RAI Toolkit, not from a 5000-series instruction. CMMC 2.0 (32 CFR Part 170, effective December 2024) governs contractor cybersecurity posture for CUI but does not address AI governance; this schema adds the AI layer CMMC lacks. Cloud deployments require a DISA Provisional Authorization (PA) at the required IL; the CC SRG defines what the CSP must implement. This schema covers the component and contractor side of those splits. IL6 systems operate in classified cloud environments (AWS C2S, Azure Government Secret, Oracle NSR) where commercial paths do not apply.",
   "id_convention": "SRF-{layer}-{ACQ|TEVV|OPS|OVR}-{seq}",
-  "mapping_status_note": "DoDI section references, CC SRG section numbers, and CMMC practice cross-references marked TBD require verification against primary PDFs and public.cyber.mil before publishing. Do not substitute invented IDs.",
+  "mapping_status_note": "All five defense mapping keys verified against primary sources July 6, 2026 (tranche 4): DoDI 5000.90 and 5000.89 full texts (esd.whs.mil), DoD RAI S&I Pathway (June 2022), the January 30, 2025 Cloud Computing Mission Owner SRG and CSP SRG V1R2, and 32 CFR Part 170 (eCFR). Zero TBDs remain. See the *_citation_format headers, including the DoDI 5000.90 identity finding. N/A means the source was read and does not address the control's subject. Do not substitute invented IDs.",
   "generated": "2026-06-12",
   "lifecycle_stages": [
     "acquisition",
@@ -63,8 +63,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Governable principle; DoD RAI Strategy Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD: AI system registration and reporting requirements",
+        "dod_rai_strategy": "Governable principle; LOE 1.2.4 (DoD AI Inventory reporting to CDAO)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -114,8 +114,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Governable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Governable principle; LOE 1.1.2 (designate DoD Component RAI Leads)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -165,8 +165,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Governable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Governable principle; LOE 1.1.7 (update DoD governance framework for AI development and delivery)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -219,8 +219,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "All five RAI principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "All five RAI principles; Tenet 3 goal (AI risks considered from the outset with robust documentation)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -269,8 +269,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD: AI acquisition requirements sections",
+        "dod_rai_strategy": "Responsible principle; LOE 3.1.1 (Acquisition Toolkit: standard AI contract language for T&E access, vendor documentation, and data rights)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -323,10 +323,10 @@
         "3.11.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Reliable principle; LOE 2.1.7 (DoD-wide AI security guidance leveraging supply chain security best practices)",
+        "dodi_5000_90": "Section 3.4 (Cybersecurity in the Supply Chain)",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD: CMMC supply chain risk practice reference",
+        "cmmc_2_0": "RA.L2-3.11.1 (periodic risk assessments); RA.L3-3.11.6e (assess, respond to, and monitor supply chain risks - Level 3)",
         "nist_800_171": "3.11.1",
         "nist_ai_rmf": "MAP 5.1",
         "cc_srg": "N/A",
@@ -378,10 +378,10 @@
         "3.2.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible and Equitable principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle; Equitable principle; LOE 2.2.1 (vendor training and documentation before fielding); LOE 6.2.2 (integrate RAI curricula into Component AI training programs)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AT.L2-3.2.1 (security awareness training); AT.L2-3.2.2 (personnel trained for assigned security duties)",
         "nist_800_171": "3.2.1",
         "nist_ai_rmf": "GOVERN 4.1",
         "cc_srg": "N/A",
@@ -432,10 +432,10 @@
         "3.6.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Governable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Governable principle; LOE 1.1.6 (methods to report AI Ethical Principles concerns); LOE 2.2.3 (operator processes to report changes in capability performance and emergent behavior)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "IR.L2-3.6.1 (operational incident-handling capability); IR.L2-3.6.2 (track, document, and report incidents)",
         "nist_800_171": "3.6.1",
         "nist_ai_rmf": "RESPOND 1.1",
         "cc_srg": "N/A",
@@ -483,13 +483,13 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.7",
-        "cc_srg": "TBD: CC SRG NSS boundary documentation requirements",
+        "cc_srg": "Mission Owner SRG Section 3.3.3 (Choosing the Information Impact Level: IL5 includes unclassified NSS)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -534,9 +534,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Reliable and Traceable principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD: TEVV plan requirements section",
+        "dod_rai_strategy": "Reliable principle; Traceable principle; LOE 2.1.1 (TEVV framework across the AI capability lifecycle)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "Section 3.4 (T&E Program Planning: TEMP and test strategy documentation and approval)",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.1",
@@ -587,13 +587,13 @@
         "3.1.3"
       ],
       "mappings": {
-        "dod_rai_strategy": "Traceable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Traceable principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AC.L2-3.1.3 (control the flow of CUI)",
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MAP 1.6",
-        "cc_srg": "TBD: CUI data handling section",
+        "cc_srg": "Mission Owner SRG Section 3.3.3 (CUI assignment to Impact Levels 4 and 5)",
         "owasp_llm": "LLM06"
       },
       "threshold": {
@@ -641,13 +641,13 @@
         "3.13.1"
       ],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Reliable principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.1 (boundary protection)",
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MEASURE 2.6",
-        "cc_srg": "TBD: IL boundary enforcement section",
+        "cc_srg": "CSP SRG Section 5.2.2 (Impact Level Separation Requirements)",
         "owasp_llm": "LLM06"
       },
       "threshold": {
@@ -692,8 +692,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Traceable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD: data rights and training data provisions",
+        "dod_rai_strategy": "Traceable principle; LOE 3.1.3 (government IP and data rights best practices in AI acquisition)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -746,13 +746,13 @@
         "3.13.5"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)",
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MANAGE 2.4",
-        "cc_srg": "TBD: data egress controls section",
+        "cc_srg": "Mission Owner SRG Section 3.3.2 (VDSS security stack and DMZ zone data flow requirements)",
         "owasp_llm": "LLM06"
       },
       "threshold": {
@@ -800,13 +800,13 @@
         "3.14.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Reliable principle; LOE 2.1.2 (AI T&E Toolkit: tools to detect adversarial attacks and natural degradation)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "SI.L2-3.14.1 (identify, report, and correct system flaws); SI.L2-3.14.2 (malicious code protection at designated locations)",
         "nist_800_171": "3.14.1",
         "nist_ai_rmf": "MEASURE 2.6",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "LLM01"
       },
       "threshold": {
@@ -849,8 +849,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Equitable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Equitable principle; LOE 3.2.5 (best practices to avoid unintended bias in AI capabilities using personal information)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -902,13 +902,13 @@
         "3.3.1"
       ],
       "mappings": {
-        "dod_rai_strategy": "Traceable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Traceable principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AU.L2-3.3.1 (create and retain system audit logs and records)",
         "nist_800_171": "3.3.1",
         "nist_ai_rmf": "GOVERN 1.5",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -955,13 +955,13 @@
         "3.13.1"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.1 (boundary protection)",
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MAP 5.2",
-        "cc_srg": "TBD",
+        "cc_srg": "Mission Owner SRG Section 3.3.3 (third-party developers prohibited from storing DOD CUI in unauthorized impact levels or corporate networks)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1006,9 +1006,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Reliable and Traceable principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD: TEVV execution and reporting sections",
+        "dod_rai_strategy": "Reliable principle; Traceable principle; LOE 2.1.1 (TEVV framework: continuous testing with documentation and reporting standards)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "Section 5.3 (DT&E Execution, Evaluation, and Reporting); Section 6.4 (Operational and Live Fire Execution)",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.1",
@@ -1058,9 +1058,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Responsible and Equitable principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dod_rai_strategy": "Responsible principle; Equitable principle; Tenet 3 goal (identify and mitigate AI risks and unintended consequences from the outset)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MAP 2.1",
@@ -1107,9 +1107,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Governable and Responsible principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dod_rai_strategy": "Governable principle; Responsible principle; LOE 1.4.2 (update or supplement DoDD 3000.09 with DoD AI Ethical Principles guidance)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 1.3",
@@ -1158,9 +1158,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Governable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dod_rai_strategy": "Governable principle; LOE 2.2.2 (traceable feedback on system status and clear operator procedures to activate and deactivate system functions)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 1.3",
@@ -1208,8 +1208,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Equitable and Governable principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Equitable principle; Governable principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -1259,13 +1259,13 @@
         "3.1.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Governable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
-        "cmmc_2_0": "TBD",
+        "dod_rai_strategy": "Governable principle",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
+        "cmmc_2_0": "AC.L2-3.1.1 (limit system access to authorized users, processes, and devices); AC.L2-3.1.2 (limit system access to permitted transactions and functions)",
         "nist_800_171": "3.1.1",
         "nist_ai_rmf": "MANAGE 1.3",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "LLM08"
       },
       "threshold": {
@@ -1311,13 +1311,13 @@
         "3.14.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Reliable principle; LOE 2.1.2 (AI T&E Toolkit: adversarial attack detection tools with operator notification)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "SI.L2-3.14.2 (malicious code protection at designated locations)",
         "nist_800_171": "3.14.2",
         "nist_ai_rmf": "MEASURE 2.6",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "LLM01"
       },
       "threshold": {
@@ -1359,13 +1359,13 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Traceable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Traceable principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.6",
-        "cc_srg": "TBD: inheritance documentation requirements",
+        "cc_srg": "Mission Owner SRG Section 3.3.3 (inheritance of CSP security controls and CSO residual risk)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1411,9 +1411,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Traceable and Equitable principles; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dod_rai_strategy": "Traceable principle; Equitable principle; LOE 2.2.1 (documentation ensuring warfighter understanding of capability function, risks, and performance expectations)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 2.2",
@@ -1459,13 +1459,13 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.6",
-        "cc_srg": "TBD: PA requirement section",
+        "cc_srg": "Mission Owner SRG Section 3.2 (CSP/CSO Approval Process: DOD Provisional Authorization required)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1512,13 +1512,13 @@
         "3.4.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Reliable principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "CM.L2-3.4.1 (baseline configurations and system inventories); CM.L2-3.4.2 (security configuration settings)",
         "nist_800_171": "3.4.1",
         "nist_ai_rmf": "MANAGE 2.4",
-        "cc_srg": "TBD: STIG compliance requirements",
+        "cc_srg": "Mission Owner SRG Section 3.3.2 (VM OS and applications configured IAW applicable STIGs)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1561,13 +1561,13 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 2.4",
-        "cc_srg": "TBD: cloud region requirements by IL",
+        "cc_srg": "CSP SRG Section 5.2.2 (location and separation requirements by impact level); Mission Owner SRG Section 3.3.3 (IL6 restricted to DOD private/community or federal government community cloud)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1614,13 +1614,13 @@
         "3.13.10"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "SC.L2-3.13.8 (cryptography to prevent unauthorized disclosure of CUI in transit); SC.L2-3.13.10 (cryptographic key management)",
         "nist_800_171": "3.13.8",
         "nist_ai_rmf": "MANAGE 2.4",
-        "cc_srg": "TBD: encryption requirements by IL",
+        "cc_srg": "Mission Owner SRG Section 3.3.4 (Encryption of Data at Rest: FIPS 140-2/3 with Mission Owner key control)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1667,13 +1667,13 @@
         "3.3.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Traceable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Traceable principle; LOE 1.2.3 (identify infrastructure gaps for traceability, auditability, risk analysis, and forensics)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AU.L2-3.3.1 (create and retain system audit logs and records); AU.L2-3.3.2 (trace actions to individual users)",
         "nist_800_171": "3.3.1",
         "nist_ai_rmf": "GOVERN 1.5",
-        "cc_srg": "TBD: audit logging requirements by IL",
+        "cc_srg": "Mission Owner SRG Section 3.3 (CSSP collaboration to ensure required security-relevant data is accessible)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1720,13 +1720,13 @@
         "3.5.5"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "IA.L2-3.5.3 (multifactor authentication for local and network access)",
         "nist_800_171": "3.5.3",
         "nist_ai_rmf": "MANAGE 2.4",
-        "cc_srg": "TBD: API authentication requirements",
+        "cc_srg": "Mission Owner SRG Section 3.3.2 (DOD CAC/PKI authentication for cloud system access)",
         "owasp_llm": "LLM09"
       },
       "threshold": {
@@ -1774,8 +1774,8 @@
         "3.12.4"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "Section 3.4.a(3) (vendor CMMC certification level assessed in market research)",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "32 CFR Part 170, Level 2 requirements",
         "nist_800_171": "3.12.1",
@@ -1827,8 +1827,8 @@
         "3.12.4"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "Section 3.4.a(3) (vendor CMMC certification level assessed in market research)",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "32 CFR Part 170, Level 3 requirements",
         "nist_800_171": "3.12.1",
@@ -1880,13 +1880,13 @@
         "3.11.3"
       ],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Reliable principle",
+        "dodi_5000_90": "Section 3.3.c (dedicated resources to monitor and mitigate exploitable cyber vulnerabilities)",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "RA.L2-3.11.2 (periodic vulnerability scanning); RA.L2-3.11.3 (remediate vulnerabilities per risk assessments)",
         "nist_800_171": "3.11.2",
         "nist_ai_rmf": "MANAGE 2.4",
-        "cc_srg": "TBD: continuous monitoring requirements",
+        "cc_srg": "Mission Owner SRG Section 3.3.2 (vulnerability scanning and VDMS endpoint protections including ACAS)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1931,13 +1931,13 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dod_rai_strategy": "Reliable principle",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.7",
-        "cc_srg": "TBD",
+        "cc_srg": "Mission Owner SRG Section 3.3.7 (Contract/SLA Requirements: availability-related security controls)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -1981,8 +1981,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Traceable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD: AI transparency card requirements",
+        "dod_rai_strategy": "Traceable principle; LOE 3.2.1 (Product Toolkit: AI Data Cards and Model Cards with detailed instructions)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -2029,9 +2029,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dod_rai_strategy": "Reliable principle; LOE 2.2.3 (guidance for monitoring AI system performance after fielding)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.8",
@@ -2080,10 +2080,10 @@
         "3.14.3"
       ],
       "mappings": {
-        "dod_rai_strategy": "Traceable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Traceable principle",
+        "dodi_5000_90": "Section 3.4.c(4) (software assurance and anti-counterfeit practices for mission-critical functions per DoDI 5200.44)",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "SI.L2-3.14.3 (monitor security alerts and advisories and take action); SI.L3-3.14.1e (verify software integrity using root of trust mechanisms or cryptographic signatures - Level 3)",
         "nist_800_171": "3.14.3",
         "nist_ai_rmf": "MAP 5.1",
         "cc_srg": "N/A",
@@ -2132,13 +2132,13 @@
         "3.14.1"
       ],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Reliable principle; LOE 3.1.1 (standard AI contract language including immediate remediation methods)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "SI.L2-3.14.1 (identify, report, and correct system flaws in a timely manner)",
         "nist_800_171": "3.14.1",
         "nist_ai_rmf": "MANAGE 2.4",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -2180,8 +2180,8 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Governable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD: data rights and portability provisions",
+        "dod_rai_strategy": "Governable principle; LOE 3.1.3 (open architecture, data rights, and avoidance of proprietary lock-in)",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -2230,9 +2230,9 @@
       ],
       "cmmc_practices": [],
       "mappings": {
-        "dod_rai_strategy": "Reliable principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD: re-validation requirements",
+        "dod_rai_strategy": "Reliable principle; LOE 4.2.2 (continuous testing and validation consistent with iterative acquisition)",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "Section 4.4.d (OTA testing of capability upgrades and alterations that materially change system performance after initial fielding)",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 3.1",
@@ -2279,13 +2279,13 @@
         "3.9.2"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "PS.L2-3.9.1 (screen individuals prior to authorizing access); PS.L2-3.9.2 (protect CUI during and after personnel actions)",
         "nist_800_171": "3.9.1",
         "nist_ai_rmf": "GOVERN 1.6",
-        "cc_srg": "TBD: IL6 personnel clearance requirements",
+        "cc_srg": "CSP SRG Section 4.1 (IL6 facility and personnel clearances authorized by DCSA); CSP SRG Section 5.5.2 (CSP Personnel Requirements)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -2331,10 +2331,10 @@
         "3.11.1"
       ],
       "mappings": {
-        "dod_rai_strategy": "Responsible principle; Implementation Pathway Section TBD",
-        "dodi_5000_90": "TBD",
+        "dod_rai_strategy": "Responsible principle; LOE 2.1.7 (AI security guidance leveraging supply chain security best practices)",
+        "dodi_5000_90": "Section 3.4.c(1)-(2) (foreign ownership, control, or influence in supplier risk management)",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "RA.L2-3.11.1 (periodic risk assessments); RA.L3-3.11.6e (assess, respond to, and monitor supply chain risks - Level 3)",
         "nist_800_171": "3.11.1",
         "nist_ai_rmf": "MAP 5.1",
         "cc_srg": "N/A",
@@ -2384,7 +2384,7 @@
       "cmmc_practices": [],
       "mappings": {
         "dod_rai_strategy": "Responsible principle; Governable principle",
-        "dodi_5000_90": "TBD",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
@@ -2439,12 +2439,12 @@
       ],
       "mappings": {
         "dod_rai_strategy": "Traceable principle; Reliable principle",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
-        "cmmc_2_0": "TBD",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
+        "cmmc_2_0": "RA.L2-3.11.1 (periodic risk assessments)",
         "nist_800_171": "3.11.1",
         "nist_ai_rmf": "MAP 2.2",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "LLM03"
       },
       "threshold": {
@@ -2493,12 +2493,12 @@
       ],
       "mappings": {
         "dod_rai_strategy": "Equitable principle; Traceable principle",
-        "dodi_5000_90": "TBD",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "AU.L2-3.3.1 (audit logs enabling monitoring, analysis, and investigation); AU.L2-3.3.2 (trace actions to individual users)",
         "nist_800_171": "3.3.1",
         "nist_ai_rmf": "MEASURE 2.5",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -2548,12 +2548,12 @@
       ],
       "mappings": {
         "dod_rai_strategy": "Reliable principle; Traceable principle",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
-        "cmmc_2_0": "TBD",
+        "dodi_5000_90": "Section 3.3.b(2) (periodic threat-representative adversarial assessments)",
+        "dodi_5000_89": "Section 3.5 (Cybersecurity T&E: cooperative vulnerability and penetration assessment and adversarial assessment)",
+        "cmmc_2_0": "RA.L2-3.11.2 (periodic vulnerability scanning); CA.L3-3.12.1e (penetration testing leveraging automated tools and subject matter experts - Level 3)",
         "nist_800_171": "3.11.2",
         "nist_ai_rmf": "MEASURE 2.6",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "LLM01"
       },
       "threshold": {
@@ -2600,8 +2600,8 @@
       "cmmc_practices": [],
       "mappings": {
         "dod_rai_strategy": "Equitable principle",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.2",
@@ -2655,12 +2655,12 @@
       ],
       "mappings": {
         "dod_rai_strategy": "Reliable principle",
-        "dodi_5000_90": "TBD",
+        "dodi_5000_90": "N/A",
         "dodi_5000_89": "N/A",
-        "cmmc_2_0": "TBD",
+        "cmmc_2_0": "CM.L2-3.4.1 (baseline configurations and system inventories); CM.L2-3.4.2 (security configuration settings); CA.L2-3.12.1 (periodic security control assessments)",
         "nist_800_171": "3.4.1",
         "nist_ai_rmf": "MANAGE 2.2",
-        "cc_srg": "TBD",
+        "cc_srg": "Mission Owner SRG Section 2.3 (Security Assessment Information: required STIG and SRG assessments)",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -2707,12 +2707,12 @@
       ],
       "mappings": {
         "dod_rai_strategy": "Governable principle; Responsible principle",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "N/A",
         "cmmc_2_0": "N/A",
         "nist_800_171": "3.1.1",
         "nist_ai_rmf": "GOVERN 5.2",
-        "cc_srg": "TBD",
+        "cc_srg": "N/A",
         "owasp_llm": "N/A"
       },
       "threshold": {
@@ -2758,8 +2758,8 @@
       "cmmc_practices": [],
       "mappings": {
         "dod_rai_strategy": "Reliable principle; Traceable principle",
-        "dodi_5000_90": "TBD",
-        "dodi_5000_89": "TBD",
+        "dodi_5000_90": "N/A",
+        "dodi_5000_89": "Section 5.2 (DT&E Activities: characterize system capabilities, limitations, and deficiencies)",
         "cmmc_2_0": "N/A",
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 1.1",
@@ -2781,5 +2781,10 @@
         "breach_action": "Block promotion to operational environment. Model provider or program team must complete baseline documentation and update BoAIM."
       }
     }
-  ]
+  ],
+  "dod_rai_strategy_citation_format": "DoD RAI Strategy and Implementation Pathway (June 2022) citations combine one or more DoD AI Ethical Principles (Responsible, Equitable, Traceable, Reliable, Governable) with, where the Pathway text supports it, a Tenet goal or a numbered line of effort in the form 'LOE n.n.n (gloss)'. Multiple citations separated by '; '. Principle-only values mean the Pathway names no line of effort for the control's subject. Verified against the Pathway text (July 2026). Do not substitute invented LOE numbers.",
+  "dodi_5000_90_citation_format": "DoDI 5000.90 (December 31, 2020) is 'Cybersecurity for Acquisition Decision Authorities and Program Managers'. Citations use 'Section N.N (gloss)' from the instruction's actual text. Identity finding (July 2026): the instruction contains no AI-specific requirements; original schema hints attributing AI system registration, transparency cards, and AI acquisition or data rights provisions to it were misattributions, and no successor DoD issuance establishes those requirements as of July 2026 (they trace to the RAI S&I Pathway and voluntary CDAO RAI Toolkit artifacts). 'N/A' means the instruction does not address the control's subject. Do not substitute invented section numbers.",
+  "dodi_5000_89_citation_format": "DoDI 5000.89 'Test and Evaluation' (November 19, 2020) citations use 'Section N.N (gloss)'. The instruction contains no AI, ML, or autonomy-specific text; citations are limited to T&E requirements the control operationalizes. Multiple citations separated by '; '. 'N/A' means confirmed silence. Verified against the instruction text (July 2026).",
+  "cc_srg_citation_format": "DISA split the Cloud Computing SRG into two documents on January 30, 2025: the Cloud Computing Mission Owner SRG and the Cloud Service Provider (CSP) SRG V1R2. Citations are prefixed with the document ('Mission Owner SRG Section N.N' or 'CSP SRG Section N.N') with a gloss in parentheses, multiple citations separated by '; '. The pre-2025 monolithic CC SRG v1r4 numbering is superseded. Neither document addresses AI; citations are limited to cloud security requirements the control operationalizes. 'N/A' means confirmed silence. Verified July 2026.",
+  "cmmc_2_0_citation_format": "CMMC citations use the 32 CFR 170.14(c)(1) requirement IDs 'DD.L#-REQ' (e.g., AC.L2-3.1.3) with the requirement subject in parentheses. Level 2 IDs are the NIST SP 800-171 R2 requirements verbatim and mirror this file's resolved nist_800_171 values; Level 3 IDs (suffix 'e') are the NIST SP 800-172 selections in Table 1 to 32 CFR 170.14(c)(4) and are marked '- Level 3'. Multiple citations separated by '; '. CMMC contains no AI-specific requirements. Verified against eCFR (July 2026)."
 }

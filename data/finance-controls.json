@@ -1,1417 +1,1420 @@
 {
-  "schema_version": "0.1",
-  "srf_version": "1.0",
-  "description": "Finance-sector control schema for the CoSAI AI Shared Responsibility Framework. Maps SRF layers and accountable personas to the MRM lifecycle (SR 26-2 principles), with threshold tuples and OCSF evidence pointers per control.",
-  "regulatory_context": "SR 26-2 (Federal Reserve / OCC / FDIC, April 2026) puts generative and agentic AI explicitly out of scope while directing institutions to apply existing MRM principles by materiality. This schema operationalizes those principles for AI systems across all five SRF layers.",
-  "scaling_rule": "The schema defines measurement methods and parameter names; it does not encode fixed values. Each institution sets parameter values per model tier according to SR 26-2's risk-based materiality approach. The same schema applies to a community bank and a GSIB; only the tier table differs. Exception: zero-tolerance controls (where any non-zero value is a control failure regardless of tier) and verification controls (where the required outcome is binary and must be 100%) carry fixed param values by design. These are identified by param_type 'zero-tolerance' or 'verification'.",
-  "id_convention": "SRF-{layer}-{mrm_stage: DEV|VAL|MON|ECH}-{seq}",
-  "mapping_status_note": "FINOS AIGF and SR 26-2 mapping IDs marked TBD require verification against the live FINOS framework (air-governance-framework.finos.org) and the SR 26-2 letter text before publishing. Do not substitute invented IDs.",
-  "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' (spelled out, sub-provisions as 'Article 10(2)(f)') and 'Annex X', an optional short gloss in parentheses, multiple citations separated by '; '. 'TBD:' prefix marks an unverified mapping; 'N/A' means no EU AI Act nexus. Do not substitute invented article numbers.",
-  "controls": [
-    {
-      "id": "SRF-L1-DEV-001",
-      "layer": "L1",
-      "component": "Processes & Governance",
-      "title": "AI Risk Appetite Statement with Named Accountable Executive",
-      "description": "The institution must publish a board-approved AI risk appetite statement that names a specific senior executive accountable for AI risk. The statement must define risk tolerance thresholds for each operating model (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) and be reviewed on the cadence defined in SRF-L1-MON-002.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: SR 26-2 governance section; verify against letter text at federalreserve.gov/supervisionreg/srletters/SR2602.htm",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "risk_appetite_statement_approved",
-        "description": "Binary: board-approved AI risk appetite statement exists, names an accountable executive, and covers all operating models in use.",
-        "evidence": {
-          "ocsf_class": "TBD: L1 policy controls rely on records management and board minutes, not streaming OCSF telemetry. Candidate: audit_activity class if supported by SIEM ingestion of board governance records.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "annual-review",
-        "breach_action": "escalate-to-board-risk-committee"
-      }
+ "schema_version": "0.1",
+ "srf_version": "1.0",
+ "description": "Finance-sector control schema for the CoSAI AI Shared Responsibility Framework. Maps SRF layers and accountable personas to the MRM lifecycle (SR 26-2 principles), with threshold tuples and OCSF evidence pointers per control.",
+ "regulatory_context": "SR 26-2 (Federal Reserve / OCC / FDIC, April 2026) puts generative and agentic AI explicitly out of scope while directing institutions to apply existing MRM principles by materiality. This schema operationalizes those principles for AI systems across all five SRF layers.",
+ "scaling_rule": "The schema defines measurement methods and parameter names; it does not encode fixed values. Each institution sets parameter values per model tier according to SR 26-2's risk-based materiality approach. The same schema applies to a community bank and a GSIB; only the tier table differs. Exception: zero-tolerance controls (where any non-zero value is a control failure regardless of tier) and verification controls (where the required outcome is binary and must be 100%) carry fixed param values by design. These are identified by param_type 'zero-tolerance' or 'verification'.",
+ "id_convention": "SRF-{layer}-{mrm_stage: DEV|VAL|MON|ECH}-{seq}",
+ "mapping_status_note": "FINOS AIGF, SR 26-2, EU AI Act, and CSA AICM mappings verified against primary sources 2026-07-05 (AIGF catalogue, SR 26-2 attachment text, Regulation (EU) 2024/1689 final numbering with draft Article 62 corrected to Article 73, AICM v1.0.3 spreadsheet). Do not substitute invented IDs.",
+ "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' (spelled out, sub-provisions as 'Article 10(2)(f)') and 'Annex X', an optional short gloss in parentheses, multiple citations separated by '; '. 'TBD:' prefix marks an unverified mapping; 'N/A' means no EU AI Act nexus. Do not substitute invented article numbers.",
+ "controls": [
+  {
+   "id": "SRF-L1-DEV-001",
+   "layer": "L1",
+   "component": "Processes & Governance",
+   "title": "AI Risk Appetite Statement with Named Accountable Executive",
+   "description": "The institution must publish a board-approved AI risk appetite statement that names a specific senior executive accountable for AI risk. The statement must define risk tolerance thresholds for each operating model (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) and be reviewed on the cadence defined in SRF-L1-MON-002.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-RC-022 (Regulatory Compliance and Oversight)",
+    "aicm": "GRC-02 (Risk Management Program)",
+    "sr26_2": "Section VI (Governance and Controls)",
+    "eu_ai_act": "Article 9 (Risk management system)"
+   },
+   "threshold": {
+    "metric": "risk_appetite_statement_approved",
+    "description": "Binary: board-approved AI risk appetite statement exists, names an accountable executive, and covers all operating models in use.",
+    "evidence": {
+     "ocsf_class": "TBD: L1 policy controls rely on records management and board minutes, not streaming OCSF telemetry. Candidate: audit_activity class if supported by SIEM ingestion of board governance records.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L1-DEV-002",
-      "layer": "L1",
-      "component": "Business Units & Accountability",
-      "title": "AI Model Inventory and Tier Classification Policy",
-      "description": "The institution must maintain a complete inventory of AI models in use, with each model assigned a materiality tier (e.g., Tier 1: high materiality, Tier 2: moderate, Tier 3: low) per SR 26-2's risk-based approach. Tier assignment criteria must be documented and approved by the accountable executive named in SRF-L1-DEV-001.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model inventory and tiering section; verify against letter text",
-        "eu_ai_act": "Article 9 (risk management system): TBD confirm article applicability"
-      },
-      "threshold": {
-        "metric": "tier_classification_policy_approved",
-        "description": "Binary: tier classification methodology documented, approved, and applied to all models entering production.",
-        "evidence": {
-          "ocsf_class": "TBD: policy artifact; not directly observable via OCSF streaming events at L1.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-model-onboarding",
-        "breach_action": "block-model-production-promotion"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "annual-review",
+    "breach_action": "escalate-to-board-risk-committee"
+   }
+  },
+  {
+   "id": "SRF-L1-DEV-002",
+   "layer": "L1",
+   "component": "Business Units & Accountability",
+   "title": "AI Model Inventory and Tier Classification Policy",
+   "description": "The institution must maintain a complete inventory of AI models in use, with each model assigned a materiality tier (e.g., Tier 1: high materiality, Tier 2: moderate, Tier 3: low) per SR 26-2's risk-based approach. Tier assignment criteria must be documented and approved by the accountable executive named in SRF-L1-DEV-001.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "GRC-10 (AI Impact Assessment); GRC-02 (Risk Management Program)",
+    "sr26_2": "Section VI (Model Inventory); Section III (model materiality)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "tier_classification_policy_approved",
+    "description": "Binary: tier classification methodology documented, approved, and applied to all models entering production.",
+    "evidence": {
+     "ocsf_class": "TBD: policy artifact; not directly observable via OCSF streaming events at L1.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L1-DEV-003",
-      "layer": "L1",
-      "component": "Capabilities & Business Strategy",
-      "title": "Acceptable Use Policy with Named Business-Unit Accountable Individual",
-      "description": "Each business unit deploying AI systems must designate a named individual (not a team, role title, or org-unit) as the accountable signatory for the acceptable use policy covering that unit's AI systems. The AUP must specify permitted use cases, prohibited outputs, user categories, and escalation paths, and must address each operating model in scope. A business-unit-level signature without a named individual does not satisfy SR 26-2's governance accountability expectations and will be a finding under examiner review. The named individual must be recorded in the model inventory alongside the models they are accountable for, and updated when the individual changes (see SRF-L1-MON-003).",
-      "accountable_persona": "ai-system-governance",
-      "named_individual_constraint": "Must be a specific named employee. Cannot be a shared mailbox, team name, or role title. Must have sufficient seniority and authority to enforce the AUP within their business unit.",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: governance accountability section; SR 26-2 inherits named-accountability expectations from SR 11-7",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "business_unit_named_aup_signatory_coverage",
-        "description": "Percentage of business units with AI systems in production that have a current AUP acknowledgment signed by a named individual (not a team or role), linked to that individual's identity record in the HR or IAM system.",
-        "evidence": {
-          "ocsf_class": "TBD: records management artifact. Where AUP acknowledgment is captured via an IAM or GRC system, authentication events (authentication OCSF class) at the acknowledgment step can confirm a specific user identity completed the sign-off.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "tier-defined",
-        "window": "annual-review",
-        "breach_action": "suspend-ai-system-access-for-non-compliant-business-unit; notify-mrm-head"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-model-onboarding",
+    "breach_action": "block-model-production-promotion"
+   }
+  },
+  {
+   "id": "SRF-L1-DEV-003",
+   "layer": "L1",
+   "component": "Capabilities & Business Strategy",
+   "title": "Acceptable Use Policy with Named Business-Unit Accountable Individual",
+   "description": "Each business unit deploying AI systems must designate a named individual (not a team, role title, or org-unit) as the accountable signatory for the acceptable use policy covering that unit's AI systems. The AUP must specify permitted use cases, prohibited outputs, user categories, and escalation paths, and must address each operating model in scope. A business-unit-level signature without a named individual does not satisfy SR 26-2's governance accountability expectations and will be a finding under examiner review. The named individual must be recorded in the model inventory alongside the models they are accountable for, and updated when the individual changes (see SRF-L1-MON-003).",
+   "accountable_persona": "ai-system-governance",
+   "named_individual_constraint": "Must be a specific named employee. Cannot be a shared mailbox, team name, or role title. Must have sufficient seniority and authority to enforce the AUP within their business unit.",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use)",
+    "aicm": "GRC-09 (Acceptable Use of the AI Service)",
+    "sr26_2": "Section VI (Roles and Responsibilities)",
+    "eu_ai_act": "Article 26 (Deployer obligations)"
+   },
+   "threshold": {
+    "metric": "business_unit_named_aup_signatory_coverage",
+    "description": "Percentage of business units with AI systems in production that have a current AUP acknowledgment signed by a named individual (not a team or role), linked to that individual's identity record in the HR or IAM system.",
+    "evidence": {
+     "ocsf_class": "TBD: records management artifact. Where AUP acknowledgment is captured via an IAM or GRC system, authentication events (authentication OCSF class) at the acknowledgment step can confirm a specific user identity completed the sign-off.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L1-DEV-004",
-      "layer": "L1",
-      "component": "Processes & Governance",
-      "title": "Agent Business Process Authorization Policy",
-      "cross_layer_controls": [
-        "SRF-L3-DEV-003",
-        "SRF-L4-DEV-002"
-      ],
-      "cross_layer_note": "The agent authorization scope defined here must be reflected in the tool allow-list (SRF-L3-DEV-003) and in the gateway authorization entitlements (SRF-L4-DEV-002). A change to this policy must trigger re-review of both downstream controls. ECH reviews at L3 and L4 must verify alignment with the current version of this policy.",
-      "description": "Before any Agent-PaaS system is deployed to act autonomously on the institution's behalf, executing transactions, communicating with clients, initiating workflows, or making decisions that produce regulatory or financial consequences; the institution must produce a written agent authorization policy for each business process the agent is permitted to act within. The policy must specify: the bounded scope of agent authority (which actions are permitted, which require human approval), the named human business owner accountable for agent actions within that process, the escalation path when an agent action falls outside its authorized scope, and the conditions under which the agent must halt and refer to a human. SR 26-2 puts agentic AI out of scope but existing MRM principles require human accountability for model outputs. When an agent acts, the accountable human must be named at L1 before deployment, not identified after an incident. This control applies to Agent-PaaS only; AI-SaaS and AI-PaaS systems that do not act autonomously are out of scope.",
-      "accountable_persona": "ai-system-governance",
-      "named_business_owner_constraint": "Each agent business process authorization must name a specific individual as the accountable business owner. The named owner is responsible for reviewing agent action logs at the cadence defined in the policy and for escalating anomalies to the MRM function.",
-      "operating_models": [
-        "Agent-PaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 agentic AI risk catalogue likely addresses agent authorization; verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: agentic AI is out of scope in SR 26-2, but existing MRM governance principles (human accountability for model outcomes) apply by analogy. Verify with legal/compliance before citing.",
-        "eu_ai_act": "TBD: EU AI Act Article 14 (human oversight) is directly applicable to high-risk AI systems acting autonomously; confirm risk classification"
-      },
-      "threshold": {
-        "metric": "agent_process_authorization_policy_exists",
-        "description": "Binary: for every Agent-PaaS deployment in production, a written agent authorization policy exists naming an accountable business owner and defining the bounded scope of agent authority for each business process the agent acts within.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "Agent actions observable via api_activity events (actor.process or actor.user identifying the agent) can be cross-referenced against the authorized action scope defined in the policy to detect out-of-scope actions.",
-          "ocsf_version": "1.8.0",
-          "supplemental": "ai_operation events (message_context, role-based interaction tracking) provide session-level context for agent action audit trails."
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-production-promotion",
-        "breach_action": "block-agent-production-deployment; notify-cro-and-legal"
-      }
+    "operator": ">=",
+    "param": "tier-defined",
+    "window": "annual-review",
+    "breach_action": "suspend-ai-system-access-for-non-compliant-business-unit; notify-mrm-head"
+   }
+  },
+  {
+   "id": "SRF-L1-DEV-004",
+   "layer": "L1",
+   "component": "Processes & Governance",
+   "title": "Agent Business Process Authorization Policy",
+   "cross_layer_controls": [
+    "SRF-L3-DEV-003",
+    "SRF-L4-DEV-002"
+   ],
+   "cross_layer_note": "The agent authorization scope defined here must be reflected in the tool allow-list (SRF-L3-DEV-003) and in the gateway authorization entitlements (SRF-L4-DEV-002). A change to this policy must trigger re-review of both downstream controls. ECH reviews at L3 and L4 must verify alignment with the current version of this policy.",
+   "description": "Before any Agent-PaaS system is deployed to act autonomously on the institution's behalf, executing transactions, communicating with clients, initiating workflows, or making decisions that produce regulatory or financial consequences; the institution must produce a written agent authorization policy for each business process the agent is permitted to act within. The policy must specify: the bounded scope of agent authority (which actions are permitted, which require human approval), the named human business owner accountable for agent actions within that process, the escalation path when an agent action falls outside its authorized scope, and the conditions under which the agent must halt and refer to a human. SR 26-2 puts agentic AI out of scope but existing MRM principles require human accountability for model outputs. When an agent acts, the accountable human must be named at L1 before deployment, not identified after an incident. This control applies to Agent-PaaS only; AI-SaaS and AI-PaaS systems that do not act autonomously are out of scope.",
+   "accountable_persona": "ai-system-governance",
+   "named_business_owner_constraint": "Each agent business process authorization must name a specific individual as the accountable business owner. The named owner is responsible for reviewing agent action logs at the cadence defined in the policy and for escalating anomalies to the MRM function.",
+   "operating_models": [
+    "Agent-PaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-024 (Agent Action Authorization Bypass); AIR-PREV-018 (Agent Authority Least Privilege Framework)",
+    "aicm": "AIS-11 (Agents Security Boundaries); GRC-15 (Human supervision)",
+    "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
+    "eu_ai_act": "Article 14 (Human oversight)"
+   },
+   "threshold": {
+    "metric": "agent_process_authorization_policy_exists",
+    "description": "Binary: for every Agent-PaaS deployment in production, a written agent authorization policy exists naming an accountable business owner and defining the bounded scope of agent authority for each business process the agent acts within.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "Agent actions observable via api_activity events (actor.process or actor.user identifying the agent) can be cross-referenced against the authorized action scope defined in the policy to detect out-of-scope actions.",
+     "ocsf_version": "1.8.0",
+     "supplemental": "ai_operation events (message_context, role-based interaction tracking) provide session-level context for agent action audit trails."
     },
-    {
-      "id": "SRF-L1-VAL-001",
-      "layer": "L1",
-      "component": "Processes & Governance",
-      "title": "Independent Review of AI Risk Appetite by Second Line",
-      "description": "The second line of defense (model risk management or independent risk function) must perform an annual independent review of the AI risk appetite statement (SRF-L1-DEV-001) and tier classification policy (SRF-L1-DEV-002). The review must assess whether thresholds remain appropriate given changes to the model portfolio, operating models, and regulatory guidance.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "independent-validation",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: effective challenge and independent validation section; verify against letter text",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "independent_review_completed",
-        "description": "Binary: second-line independent review of AI risk appetite completed within the past 12 months, with findings documented and remediation tracked.",
-        "evidence": {
-          "ocsf_class": "TBD: audit artifact. Not directly observable via OCSF streaming events.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "12mo",
-        "breach_action": "escalate-to-cro-and-audit-committee"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-production-promotion",
+    "breach_action": "block-agent-production-deployment; notify-cro-and-legal"
+   }
+  },
+  {
+   "id": "SRF-L1-VAL-001",
+   "layer": "L1",
+   "component": "Processes & Governance",
+   "title": "Independent Review of AI Risk Appetite by Second Line",
+   "description": "The second line of defense (model risk management or independent risk function) must perform an annual independent review of the AI risk appetite statement (SRF-L1-DEV-001) and tier classification policy (SRF-L1-DEV-002). The review must assess whether thresholds remain appropriate given changes to the model portfolio, operating models, and regulatory guidance.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "independent-validation",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "A&A-02 (Independent Assessments)",
+    "sr26_2": "Section III (effective challenge)",
+    "eu_ai_act": "Article 9 (Risk management system)"
+   },
+   "threshold": {
+    "metric": "independent_review_completed",
+    "description": "Binary: second-line independent review of AI risk appetite completed within the past 12 months, with findings documented and remediation tracked.",
+    "evidence": {
+     "ocsf_class": "TBD: audit artifact. Not directly observable via OCSF streaming events.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L1-MON-001",
-      "layer": "L1",
-      "component": "Business Units & Accountability",
-      "title": "Model Tier Classification Coverage Rate",
-      "description": "Ongoing monitoring of the percentage of AI models in production that have an assigned materiality tier per the policy in SRF-L1-DEV-002. Any model that has been in production longer than the onboarding window without a tier assignment constitutes a breach.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model inventory ongoing monitoring section",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "model_tier_classification_coverage_rate",
-        "description": "Percentage of AI models in production inventory that have a current, approved tier assignment.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "If AI platform APIs surface model registration events, map model_id from api_activity events against the tier classification register. Gap = unclassified models.",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "tier-defined",
-        "window": "30d",
-        "breach_action": "flag-unclassified-models-for-immediate-tier-assignment; notify-mrm-head"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "12mo",
+    "breach_action": "escalate-to-cro-and-audit-committee"
+   }
+  },
+  {
+   "id": "SRF-L1-MON-001",
+   "layer": "L1",
+   "component": "Business Units & Accountability",
+   "title": "Model Tier Classification Coverage Rate",
+   "description": "Ongoing monitoring of the percentage of AI models in production that have an assigned materiality tier per the policy in SRF-L1-DEV-002. Any model that has been in production longer than the onboarding window without a tier assignment constitutes a breach.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "GRC-10 (AI Impact Assessment)",
+    "sr26_2": "Section VI (Model Inventory)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "model_tier_classification_coverage_rate",
+    "description": "Percentage of AI models in production inventory that have a current, approved tier assignment.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "If AI platform APIs surface model registration events, map model_id from api_activity events against the tier classification register. Gap = unclassified models.",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L1-MON-002",
-      "layer": "L1",
-      "component": "Processes & Governance",
-      "title": "AI Governance Committee Review Cadence",
-      "description": "The AI governance committee (or equivalent body) must hold documented reviews of the AI model portfolio at the cadence required by the institution's tier policy. Tier-1 models require quarterly review; Tier-2 and Tier-3 review cadence is institution-defined per SR 26-2's materiality principle. This control monitors that reviews occur as scheduled.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: ongoing monitoring and governance cadence; verify against letter text",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "governance_review_cadence_adherence",
-        "description": "Percentage of scheduled governance reviews that were completed within the required window, across all model tiers.",
-        "evidence": {
-          "ocsf_class": "TBD: calendar and records management artifact, not streaming telemetry. Could be derived from GRC system audit logs if accessible via OCSF.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "tier-defined",
-        "window": "90d",
-        "breach_action": "alert-mrm-head; document-missed-review; reschedule-within-15d"
-      }
+    "operator": ">=",
+    "param": "tier-defined",
+    "window": "30d",
+    "breach_action": "flag-unclassified-models-for-immediate-tier-assignment; notify-mrm-head"
+   }
+  },
+  {
+   "id": "SRF-L1-MON-002",
+   "layer": "L1",
+   "component": "Processes & Governance",
+   "title": "AI Governance Committee Review Cadence",
+   "description": "The AI governance committee (or equivalent body) must hold documented reviews of the AI model portfolio at the cadence required by the institution's tier policy. Tier-1 models require quarterly review; Tier-2 and Tier-3 review cadence is institution-defined per SR 26-2's materiality principle. This control monitors that reviews occur as scheduled.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "GRC-01 (Governance Program Policy and Procedures)",
+    "sr26_2": "Section VI (Governance and Controls)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "governance_review_cadence_adherence",
+    "description": "Percentage of scheduled governance reviews that were completed within the required window, across all model tiers.",
+    "evidence": {
+     "ocsf_class": "TBD: calendar and records management artifact, not streaming telemetry. Could be derived from GRC system audit logs if accessible via OCSF.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L1-MON-003",
-      "layer": "L1",
-      "component": "Business Units & Accountability",
-      "title": "Governance Role Identity Lifecycle Monitoring",
-      "description": "When any named individual in an AI governance accountability role changes, including the accountable executive (SRF-L1-DEV-001), business-unit AUP signatories (SRF-L1-DEV-003), agent business process owners (SRF-L1-DEV-004), and the MRM function head; the vacancy or transition must be resolved within the SLA defined per role tier. A stale name on a governance document is an accountability gap and a regulatory finding. This control monitors open vacancies against SLA and flags overdue reassignments. SLA tiers: Tier-1 roles (accountable executive, MRM head) must be reassigned within 30 days of vacancy; Tier-2 roles (business-unit signatories, agent process owners) within 60 days. Institutions may tighten but not loosen these defaults.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: governance accountability currency; SR 26-2 inherits SR 11-7 expectation that named roles are current and active",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "governance_role_vacancy_age",
-        "description": "Number of days any named governance accountability role has been vacant or held by a departed/transferred employee without a confirmed successor. Breach when vacancy exceeds the SLA tier for that role.",
-        "evidence": {
-          "ocsf_class": "TBD: requires integration with HR system offboarding events or IAM deprovisioning events. Candidate: account_change OCSF class (account deactivation events) cross-referenced against the governance role registry.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "<=",
-        "param": "tier-defined (Tier-1: 30d, Tier-2: 60d)",
-        "window": "continuous",
-        "breach_action": "alert-cro-and-audit-committee; flag-affected-models-as-governance-gap-pending-reassignment",
-        "param_type": "tier-defined"
-      }
+    "operator": ">=",
+    "param": "tier-defined",
+    "window": "90d",
+    "breach_action": "alert-mrm-head; document-missed-review; reschedule-within-15d"
+   }
+  },
+  {
+   "id": "SRF-L1-MON-003",
+   "layer": "L1",
+   "component": "Business Units & Accountability",
+   "title": "Governance Role Identity Lifecycle Monitoring",
+   "description": "When any named individual in an AI governance accountability role changes, including the accountable executive (SRF-L1-DEV-001), business-unit AUP signatories (SRF-L1-DEV-003), agent business process owners (SRF-L1-DEV-004), and the MRM function head; the vacancy or transition must be resolved within the SLA defined per role tier. A stale name on a governance document is an accountability gap and a regulatory finding. This control monitors open vacancies against SLA and flags overdue reassignments. SLA tiers: Tier-1 roles (accountable executive, MRM head) must be reassigned within 30 days of vacancy; Tier-2 roles (business-unit signatories, agent process owners) within 60 days. Institutions may tighten but not loosen these defaults.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "GRC-06 (Governance Responsibility Model)",
+    "sr26_2": "Section VI (Roles and Responsibilities)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "governance_role_vacancy_age",
+    "description": "Number of days any named governance accountability role has been vacant or held by a departed/transferred employee without a confirmed successor. Breach when vacancy exceeds the SLA tier for that role.",
+    "evidence": {
+     "ocsf_class": "TBD: requires integration with HR system offboarding events or IAM deprovisioning events. Candidate: account_change OCSF class (account deactivation events) cross-referenced against the governance role registry.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L1-ECH-001",
-      "layer": "L1",
-      "component": "Processes & Governance",
-      "title": "Board-Level Effective Challenge of AI Risk Profile",
-      "description": "The board risk committee (or equivalent) must conduct annual effective challenge of the institution's AI risk profile, including review of the risk appetite statement, tier distribution, open findings from independent validation, and any material incidents from the prior period. Challenge must be documented with evidence of substantive board-level inquiry, not passive acceptance.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "effective-challenge",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: effective challenge section; SR 26-2 inherited this concept from SR 11-7 §IV. Verify exact section in updated letter.",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "board_effective_challenge_documented",
-        "description": "Binary: board risk committee review of AI risk profile completed in the past 12 months with documented substantive challenge (questions, findings, or required management actions recorded in board minutes).",
-        "evidence": {
-          "ocsf_class": "TBD: board minutes and governance records; not observable via OCSF streaming telemetry. Consider integrating GRC audit trail if SIEM-accessible.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "12mo",
-        "breach_action": "escalate-to-audit-committee; flag-in-regulatory-exam-preparation"
-      }
+    "operator": "<=",
+    "param": "tier-defined (Tier-1: 30d, Tier-2: 60d)",
+    "window": "continuous",
+    "breach_action": "alert-cro-and-audit-committee; flag-affected-models-as-governance-gap-pending-reassignment",
+    "param_type": "tier-defined"
+   }
+  },
+  {
+   "id": "SRF-L1-ECH-001",
+   "layer": "L1",
+   "component": "Processes & Governance",
+   "title": "Board-Level Effective Challenge of AI Risk Profile",
+   "description": "The board risk committee (or equivalent) must conduct annual effective challenge of the institution's AI risk profile, including review of the risk appetite statement, tier distribution, open findings from independent validation, and any material incidents from the prior period. Challenge must be documented with evidence of substantive board-level inquiry, not passive acceptance.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "effective-challenge",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "A&A-02 (Independent Assessments); GRC-02 (Risk Management Program)",
+    "sr26_2": "Section III (effective challenge)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "board_effective_challenge_documented",
+    "description": "Binary: board risk committee review of AI risk profile completed in the past 12 months with documented substantive challenge (questions, findings, or required management actions recorded in board minutes).",
+    "evidence": {
+     "ocsf_class": "TBD: board minutes and governance records; not observable via OCSF streaming telemetry. Consider integrating GRC audit trail if SIEM-accessible.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L2-DEV-001",
-      "layer": "L2",
-      "component": "AI Training Data",
-      "title": "Training and RAG Data Provenance Documentation",
-      "description": "Before a model enters validation, the data provider must produce a provenance record for every training dataset and RAG corpus used, covering: source, licensing terms, collection date, preprocessing steps applied, known biases documented, and the data owner accountable for ongoing quality. The record must be stored in the model inventory and linked to the model card. For third-party data sources, the provenance record must additionally name an internal data steward accountable for the vendor relationship and for validating that the source meets the institution's data quality and classification standards. The SRF's single-accountable-party principle applies regardless of whether the data provider is internal or external; accountability does not transfer to the vendor.",
-      "accountable_persona": "data-provider",
-      "data_source_type_field": {
-        "description": "Required field on each provenance record entry. Distinguishes internal data sources from third-party vendors so that the internal_steward requirement can be enforced.",
-        "values": [
-          "internal",
-          "third-party"
-        ],
-        "constraint": "When data_source_type == 'third-party', internal_steward must be a named individual, not a team or role title."
-      },
-      "internal_steward_field": {
-        "description": "Required on each provenance record entry where data_source_type == 'third-party'. Names the institution employee accountable for the vendor data relationship, quality attestation, and ongoing monitoring. Must be linked to the institution's vendor management record for the data provider.",
-        "constraint": "Cannot be the same individual as the model developer or application developer for that model."
-      },
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model development documentation section; verify against letter text",
-        "eu_ai_act": "TBD: Article 10 (data and data governance) likely applicable; confirm"
-      },
-      "threshold": {
-        "metric": "provenance_record_completeness",
-        "description": "Binary: complete provenance record exists for all training and RAG datasets linked to the model, with no missing required fields.",
-        "evidence": {
-          "ocsf_class": "TBD: provenance is a records artifact. If data pipeline events are captured, candidate: api_activity events at data ingestion endpoints could provide partial lineage.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-validation-gate",
-        "breach_action": "block-model-from-entering-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "12mo",
+    "breach_action": "escalate-to-audit-committee; flag-in-regulatory-exam-preparation"
+   }
+  },
+  {
+   "id": "SRF-L2-DEV-001",
+   "layer": "L2",
+   "component": "AI Training Data",
+   "title": "Training and RAG Data Provenance Documentation",
+   "description": "Before a model enters validation, the data provider must produce a provenance record for every training dataset and RAG corpus used, covering: source, licensing terms, collection date, preprocessing steps applied, known biases documented, and the data owner accountable for ongoing quality. The record must be stored in the model inventory and linked to the model card. For third-party data sources, the provenance record must additionally name an internal data steward accountable for the vendor relationship and for validating that the source meets the institution's data quality and classification standards. The SRF's single-accountable-party principle applies regardless of whether the data provider is internal or external; accountability does not transfer to the vendor.",
+   "accountable_persona": "data-provider",
+   "data_source_type_field": {
+    "description": "Required field on each provenance record entry. Distinguishes internal data sources from third-party vendors so that the internal_steward requirement can be enforced.",
+    "values": [
+     "internal",
+     "third-party"
+    ],
+    "constraint": "When data_source_type == 'third-party', internal_steward must be a named individual, not a team or role title."
+   },
+   "internal_steward_field": {
+    "description": "Required on each provenance record entry where data_source_type == 'third-party'. Names the institution employee accountable for the vendor data relationship, quality attestation, and ongoing monitoring. Must be linked to the institution's vendor management record for the data provider.",
+    "constraint": "Cannot be the same individual as the model developer or application developer for that model."
+   },
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-006 (Data Quality & Classification/Sensitivity); AIR-RC-023 (Intellectual Property and Copyright)",
+    "aicm": "DSP-20 (Data Provenance and Transparency)",
+    "sr26_2": "Section IV (Model Development)",
+    "eu_ai_act": "Article 10 (Data and data governance)"
+   },
+   "threshold": {
+    "metric": "provenance_record_completeness",
+    "description": "Binary: complete provenance record exists for all training and RAG datasets linked to the model, with no missing required fields.",
+    "evidence": {
+     "ocsf_class": "TBD: provenance is a records artifact. If data pipeline events are captured, candidate: api_activity events at data ingestion endpoints could provide partial lineage.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L2-DEV-002",
-      "layer": "L2",
-      "component": "Privacy Controls & Policies",
-      "title": "Data Classification for AI-Accessible Data Stores",
-      "description": "All data stores accessible by AI systems at runtime (RAG corpora, grounding databases, tool-accessible APIs) must have a current data classification label (e.g., public, internal, confidential, restricted) before the system enters production. Classification must be performed by or reviewed by the accountable data owner, not the application developer.",
-      "accountable_persona": "data-provider",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD",
-        "eu_ai_act": "TBD: Article 10 (data governance); GDPR Article 25 (data protection by design) may also apply"
-      },
-      "threshold": {
-        "metric": "ai_accessible_store_classification_coverage",
-        "description": "Percentage of data stores accessible by AI systems in production that carry a current, approved data classification label.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "Cross-reference api_activity events (resource.uid or dst_endpoint.resource) against the data classification register to identify unclassified stores being accessed by AI systems.",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "tier-defined",
-        "window": "at-production-promotion",
-        "breach_action": "block-production-promotion; notify-data-owner"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-validation-gate",
+    "breach_action": "block-model-from-entering-validation"
+   }
+  },
+  {
+   "id": "SRF-L2-DEV-002",
+   "layer": "L2",
+   "component": "Privacy Controls & Policies",
+   "title": "Data Classification for AI-Accessible Data Stores",
+   "description": "All data stores accessible by AI systems at runtime (RAG corpora, grounding databases, tool-accessible APIs) must have a current data classification label (e.g., public, internal, confidential, restricted) before the system enters production. Classification must be performed by or reviewed by the accountable data owner, not the application developer.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-006 (Data Quality & Classification/Sensitivity); AIR-PREV-012 (Role-Based Access Control for AI Data)",
+    "aicm": "DSP-04 (Data Classification); DSP-03 (Data Inventory)",
+    "sr26_2": "Section IV (Model Development)",
+    "eu_ai_act": "Article 10 (Data and data governance)"
+   },
+   "threshold": {
+    "metric": "ai_accessible_store_classification_coverage",
+    "description": "Percentage of data stores accessible by AI systems in production that carry a current, approved data classification label.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "Cross-reference api_activity events (resource.uid or dst_endpoint.resource) against the data classification register to identify unclassified stores being accessed by AI systems.",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L2-DEV-003",
-      "layer": "L2",
-      "component": "Master Data Management",
-      "title": "Training Data Quality Baseline and PSI Reference Distribution",
-      "description": "For each model using institution-provided training data, the data provider must establish a reference distribution at the time of initial training. This reference distribution anchors Population Stability Index (PSI) calculations during ongoing monitoring (SRF-L2-MON-001). The baseline must cover all features used by the model and be stored alongside the model artifacts.",
-      "accountable_persona": "data-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model development; baseline establishment for ongoing monitoring",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "psi_reference_distribution_stored",
-        "description": "Binary: reference distribution artifact exists in model registry for all monitored features, linked to model version.",
-        "evidence": {
-          "ocsf_class": "TBD: model registry artifact event; not directly observable via OCSF streaming telemetry.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-validation-gate",
-        "breach_action": "block-model-from-entering-validation"
-      }
+    "operator": ">=",
+    "param": "tier-defined",
+    "window": "at-production-promotion",
+    "breach_action": "block-production-promotion; notify-data-owner"
+   }
+  },
+  {
+   "id": "SRF-L2-DEV-003",
+   "layer": "L2",
+   "component": "Master Data Management",
+   "title": "Training Data Quality Baseline and PSI Reference Distribution",
+   "description": "For each model using institution-provided training data, the data provider must establish a reference distribution at the time of initial training. This reference distribution anchors Population Stability Index (PSI) calculations during ongoing monitoring (SRF-L2-MON-001). The baseline must cover all features used by the model and be stored alongside the model artifacts.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-OP-019 (Data Quality and Drift)",
+    "aicm": "DSP-23 (Data Integrity Check); DSP-24 (Data Differentiation and Relevance)",
+    "sr26_2": "Section IV (Model Development)",
+    "eu_ai_act": "Article 10 (Data and data governance)"
+   },
+   "threshold": {
+    "metric": "psi_reference_distribution_stored",
+    "description": "Binary: reference distribution artifact exists in model registry for all monitored features, linked to model version.",
+    "evidence": {
+     "ocsf_class": "TBD: model registry artifact event; not directly observable via OCSF streaming telemetry.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L2-VAL-001",
-      "layer": "L2",
-      "component": "AI Training Data",
-      "title": "Independent Validation of Training Data Quality and Representativeness",
-      "description": "The independent validation function must assess training data quality before a model is approved for production. Assessment must cover: representativeness of training data relative to the production population, absence of prohibited data (per SRF-L2-DEV-002 classification), bias indicators across protected classes relevant to the use case, and completeness of the provenance record (SRF-L2-DEV-001). Findings must be documented with disposition (accepted, conditionally accepted, or rejected).",
-      "accountable_persona": "data-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "independent-validation",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: independent validation of model inputs section; verify against letter text",
-        "eu_ai_act": "TBD: Article 10 (data governance); Article 9 (risk management)"
-      },
-      "threshold": {
-        "metric": "data_validation_completed_with_disposition",
-        "description": "Binary: independent validation report for training data quality exists, covers all required assessment areas, and records a formal disposition.",
-        "evidence": {
-          "ocsf_class": "TBD: validation report artifact; not streaming telemetry.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "pre-production-approval",
-        "breach_action": "block-production-approval"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-validation-gate",
+    "breach_action": "block-model-from-entering-validation"
+   }
+  },
+  {
+   "id": "SRF-L2-VAL-001",
+   "layer": "L2",
+   "component": "AI Training Data",
+   "title": "Independent Validation of Training Data Quality and Representativeness",
+   "description": "The independent validation function must assess training data quality before a model is approved for production. Assessment must cover: representativeness of training data relative to the production population, absence of prohibited data (per SRF-L2-DEV-002 classification), bias indicators across protected classes relevant to the use case, and completeness of the provenance record (SRF-L2-DEV-001). Findings must be documented with disposition (accepted, conditionally accepted, or rejected).",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "independent-validation",
+   "mappings": {
+    "finos_aigf": "AIR-OP-019 (Data Quality and Drift); AIR-PREV-005 (System Acceptance Testing)",
+    "aicm": "DSP-24 (Data Differentiation and Relevance); DSP-23 (Data Integrity Check)",
+    "sr26_2": "Section V (Conceptual Soundness)",
+    "eu_ai_act": "Article 10 (Data and data governance); Article 9 (Risk management system)"
+   },
+   "threshold": {
+    "metric": "data_validation_completed_with_disposition",
+    "description": "Binary: independent validation report for training data quality exists, covers all required assessment areas, and records a formal disposition.",
+    "evidence": {
+     "ocsf_class": "TBD: validation report artifact; not streaming telemetry.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L2-MON-001",
-      "layer": "L2",
-      "component": "AI Training Data",
-      "title": "Training and RAG Data Drift Monitoring (PSI)",
-      "description": "For models using institution-provided training data or runtime RAG corpora, the data provider must monitor Population Stability Index (PSI) against the reference distribution established in SRF-L2-DEV-003. PSI breach thresholds follow MRM convention: PSI >= 0.1 triggers investigation; PSI >= 0.25 triggers re-validation. Tier-1 models require continuous or daily monitoring; lower tiers follow institution-defined cadence per SR 26-2's materiality principle.",
-      "accountable_persona": "data-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: ongoing monitoring of model inputs and data quality; verify against letter text",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "psi_score",
-        "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1–0.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
-        "evidence": {
-          "ocsf_class": "ai_operation",
-          "attribute": "message_context: input feature distributions observable from ai_operation events at inference time can be aggregated to compute PSI against the stored reference distribution.",
-          "ocsf_version": "1.8.0",
-          "ocsf_class_status": "unverified-proposal"
-        },
-        "operator": "<",
-        "param": "tier-defined",
-        "window": "tier-defined",
-        "breach_action": "alert-data-provider; escalate-to-mrm-if-psi-ge-0.25; initiate-re-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "pre-production-approval",
+    "breach_action": "block-production-approval"
+   }
+  },
+  {
+   "id": "SRF-L2-MON-001",
+   "layer": "L2",
+   "component": "AI Training Data",
+   "title": "Training and RAG Data Drift Monitoring (PSI)",
+   "description": "For models using institution-provided training data or runtime RAG corpora, the data provider must monitor Population Stability Index (PSI) against the reference distribution established in SRF-L2-DEV-003. PSI breach thresholds follow MRM convention: PSI >= 0.1 triggers investigation; PSI >= 0.25 triggers re-validation. Tier-1 models require continuous or daily monitoring; lower tiers follow institution-defined cadence per SR 26-2's materiality principle.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-OP-019 (Data Quality and Drift); AIR-DET-004 (AI System Observability)",
+    "aicm": "MDS-10 (Model Continuous Monitoring); DSP-23 (Data Integrity Check)",
+    "sr26_2": "Section V (Ongoing Model Monitoring)",
+    "eu_ai_act": "Article 10 (Data and data governance)"
+   },
+   "threshold": {
+    "metric": "psi_score",
+    "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1–0.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
+    "evidence": {
+     "ocsf_class": "ai_operation",
+     "attribute": "message_context: input feature distributions observable from ai_operation events at inference time can be aggregated to compute PSI against the stored reference distribution.",
+     "ocsf_version": "1.8.0",
+     "ocsf_class_status": "unverified-proposal"
     },
-    {
-      "id": "SRF-L2-MON-002",
-      "layer": "L2",
-      "component": "Privacy Controls & Policies",
-      "title": "Data Classification Coverage Rate for AI-Accessible Stores",
-      "cross_layer_controls": [
-        "SRF-L4-DEV-003",
-        "SRF-L4-MON-003"
-      ],
-      "cross_layer_note": "If a data store accessible by a Tier-1 or Tier-2 model is reclassified upward (e.g., from internal to confidential or restricted), the reclassification must trigger re-evaluation of the L4 compute configuration (SRF-L4-DEV-003) to confirm confidential compute requirements are still met. The breach action for an upward reclassification event must notify ai-platform-provider in addition to the data owner.",
-      "description": "Ongoing monitoring of the percentage of data stores accessible by AI systems in production that carry a current data classification. New data stores connected to AI systems after initial production approval must be classified before use. This control catches classification drift as AI systems are extended to new data sources over time. Upward reclassification of an existing store (sensitivity level increasing) is treated as a breach event requiring re-evaluation of platform-level compute controls at L4, not only a coverage metric update.",
-      "accountable_persona": "data-provider",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "ai_accessible_store_classification_coverage_rate",
-        "description": "Percentage of data stores accessed by AI systems in the monitoring window that appear in the classification register with a current label.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "Cross-reference api_activity resource identifiers (resource.uid, dst_endpoint.resource) observed in the monitoring window against the data classification register. Unmatched resources are unclassified.",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "tier-defined",
-        "window": "30d",
-        "breach_action": "alert-data-owner; quarantine-unclassified-store-from-ai-access-pending-classification"
-      }
+    "operator": "<",
+    "param": "tier-defined",
+    "window": "tier-defined",
+    "breach_action": "alert-data-provider; escalate-to-mrm-if-psi-ge-0.25; initiate-re-validation"
+   }
+  },
+  {
+   "id": "SRF-L2-MON-002",
+   "layer": "L2",
+   "component": "Privacy Controls & Policies",
+   "title": "Data Classification Coverage Rate for AI-Accessible Stores",
+   "cross_layer_controls": [
+    "SRF-L4-DEV-003",
+    "SRF-L4-MON-003"
+   ],
+   "cross_layer_note": "If a data store accessible by a Tier-1 or Tier-2 model is reclassified upward (e.g., from internal to confidential or restricted), the reclassification must trigger re-evaluation of the L4 compute configuration (SRF-L4-DEV-003) to confirm confidential compute requirements are still met. The breach action for an upward reclassification event must notify ai-platform-provider in addition to the data owner.",
+   "description": "Ongoing monitoring of the percentage of data stores accessible by AI systems in production that carry a current data classification. New data stores connected to AI systems after initial production approval must be classified before use. This control catches classification drift as AI systems are extended to new data sources over time. Upward reclassification of an existing store (sensitivity level increasing) is treated as a breach event requiring re-evaluation of platform-level compute controls at L4, not only a coverage metric update.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-006 (Data Quality & Classification/Sensitivity)",
+    "aicm": "DSP-04 (Data Classification)",
+    "sr26_2": "N/A",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "ai_accessible_store_classification_coverage_rate",
+    "description": "Percentage of data stores accessed by AI systems in the monitoring window that appear in the classification register with a current label.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "Cross-reference api_activity resource identifiers (resource.uid, dst_endpoint.resource) observed in the monitoring window against the data classification register. Unmatched resources are unclassified.",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L2-MON-003",
-      "layer": "L2",
-      "component": "Master Data Management",
-      "title": "Agent Runtime Memory Store Integrity Monitoring",
-      "description": "For Agent-PaaS deployments, the data provider (in coordination with the agentic platform provider at L3/L4) must monitor agent runtime memory stores: episodic memory, working memory, and any mutable knowledge store the agent reads from or writes to, for unauthorized or anomalous write operations. This control targets memory poisoning: the injection of malicious or incorrect content into an agent's memory during a session, which can corrupt subsequent reasoning across that session or persist across sessions if memory is durable. Monitoring must cover: write-access events by actor (agent identity, tool, or external input), write rate relative to session baseline, and content that deviates significantly from the memory store's established distribution. Accountability for the integrity of the data in the store sits at L2 (data-provider); the implementing telemetry sits at L3/L4 (agentic-platform-provider).",
-      "accountable_persona": "data-provider",
-      "implementing_persona_note": "Telemetry and enforcement implemented by agentic-platform-provider at L3/L4. Data-provider is accountable for defining acceptable write patterns and integrity standards for the memory store content.",
-      "operating_models": [
-        "Agent-PaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 memory poisoning risk; verify specific control ID at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: SR 26-2 puts agentic AI out of scope, but existing MRM ongoing monitoring principles apply to agent memory as a model input. Verify applicable section.",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 10 (data governance for AI systems)"
-      },
-      "threshold": {
-        "metric": "memory_anomalous_write_rate",
-        "description": "Rate of write operations to agent memory stores that deviate from the session baseline (unexpected actor, write volume spike, or content distribution shift). A zero-tolerance threshold applies to writes by actors outside the authorized write-access list.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "Monitor api_activity events on memory store endpoints (write operations). Cross-reference actor identity (actor.user.uid or actor.process.name) against the authorized write-access list for the memory store. Flag any write from an unauthorized actor as a Severity-1 event.",
-          "ocsf_version": "1.8.0",
-          "supplemental": "ai_operation events may provide session-level context (message_context) to identify the originating agent session for a given memory write."
-        },
-        "operator": "==",
-        "param": "0 unauthorized-actor writes",
-        "window": "per-session",
-        "breach_action": "terminate-agent-session; quarantine-memory-store; alert-data-provider-and-agentic-platform-provider; initiate-forensic-review",
-        "param_type": "zero-tolerance"
-      }
+    "operator": ">=",
+    "param": "tier-defined",
+    "window": "30d",
+    "breach_action": "alert-data-owner; quarantine-unclassified-store-from-ai-access-pending-classification"
+   }
+  },
+  {
+   "id": "SRF-L2-MON-003",
+   "layer": "L2",
+   "component": "Master Data Management",
+   "title": "Agent Runtime Memory Store Integrity Monitoring",
+   "description": "For Agent-PaaS deployments, the data provider (in coordination with the agentic platform provider at L3/L4) must monitor agent runtime memory stores: episodic memory, working memory, and any mutable knowledge store the agent reads from or writes to, for unauthorized or anomalous write operations. This control targets memory poisoning: the injection of malicious or incorrect content into an agent's memory during a session, which can corrupt subsequent reasoning across that session or persist across sessions if memory is durable. Monitoring must cover: write-access events by actor (agent identity, tool, or external input), write rate relative to session baseline, and content that deviates significantly from the memory store's established distribution. Accountability for the integrity of the data in the store sits at L2 (data-provider); the implementing telemetry sits at L3/L4 (agentic-platform-provider).",
+   "accountable_persona": "data-provider",
+   "implementing_persona_note": "Telemetry and enforcement implemented by agentic-platform-provider at L3/L4. Data-provider is accountable for defining acceptable write patterns and integrity standards for the memory store content.",
+   "operating_models": [
+    "Agent-PaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-027 (Agent State Persistence Poisoning)",
+    "aicm": "DSP-21 (Data Poisoning Prevention & Detection); AIS-14 (AI Cache Protection)",
+    "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
+    "eu_ai_act": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+   },
+   "threshold": {
+    "metric": "memory_anomalous_write_rate",
+    "description": "Rate of write operations to agent memory stores that deviate from the session baseline (unexpected actor, write volume spike, or content distribution shift). A zero-tolerance threshold applies to writes by actors outside the authorized write-access list.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "Monitor api_activity events on memory store endpoints (write operations). Cross-reference actor identity (actor.user.uid or actor.process.name) against the authorized write-access list for the memory store. Flag any write from an unauthorized actor as a Severity-1 event.",
+     "ocsf_version": "1.8.0",
+     "supplemental": "ai_operation events may provide session-level context (message_context) to identify the originating agent session for a given memory write."
     },
-    {
-      "id": "SRF-L2-ECH-001",
-      "layer": "L2",
-      "component": "Master Data Management",
-      "title": "Effective Challenge of Data Quality Standards and Drift Thresholds",
-      "description": "The independent validation or second-line risk function must annually challenge whether the PSI thresholds (SRF-L2-MON-001) and classification coverage targets (SRF-L2-MON-002) remain appropriate. Challenge must assess: whether conventional PSI thresholds are calibrated to the institution's specific model population, whether new data modalities (e.g., multimodal inputs, agent tool outputs) require additional drift metrics, and whether any Tier-1 model has exceeded its drift threshold without triggering a re-validation.",
-      "accountable_persona": "data-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "effective-challenge",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: effective challenge of monitoring standards; verify against letter text",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "data_standards_challenge_documented",
-        "description": "Binary: annual second-line challenge of L2 monitoring thresholds completed, with findings documented and any required threshold adjustments tracked to closure.",
-        "evidence": {
-          "ocsf_class": "TBD: governance artifact; not streaming telemetry.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "12mo",
-        "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
-      }
+    "operator": "==",
+    "param": "0 unauthorized-actor writes",
+    "window": "per-session",
+    "breach_action": "terminate-agent-session; quarantine-memory-store; alert-data-provider-and-agentic-platform-provider; initiate-forensic-review",
+    "param_type": "zero-tolerance"
+   }
+  },
+  {
+   "id": "SRF-L2-ECH-001",
+   "layer": "L2",
+   "component": "Master Data Management",
+   "title": "Effective Challenge of Data Quality Standards and Drift Thresholds",
+   "description": "The independent validation or second-line risk function must annually challenge whether the PSI thresholds (SRF-L2-MON-001) and classification coverage targets (SRF-L2-MON-002) remain appropriate. Challenge must assess: whether conventional PSI thresholds are calibrated to the institution's specific model population, whether new data modalities (e.g., multimodal inputs, agent tool outputs) require additional drift metrics, and whether any Tier-1 model has exceeded its drift threshold without triggering a re-validation.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "effective-challenge",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "A&A-02 (Independent Assessments)",
+    "sr26_2": "Section III (effective challenge)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "data_standards_challenge_documented",
+    "description": "Binary: annual second-line challenge of L2 monitoring thresholds completed, with findings documented and any required threshold adjustments tracked to closure.",
+    "evidence": {
+     "ocsf_class": "TBD: governance artifact; not streaming telemetry.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L3-DEV-001",
-      "layer": "L3",
-      "component": "Application Platforms",
-      "title": "Input Validation and Prompt Injection Defense Design",
-      "description": "Before a model-backed application enters validation, the application developer must document and implement input validation controls covering: maximum input length enforcement, character set and encoding validation, detection of prompt injection patterns (instruction override attempts, role-switch instructions, jailbreak patterns), and sanitization of user-supplied content before it reaches the model context. For RAG pipelines, retrieved content must be treated as untrusted input and passed through the same validation chain as user input. Defense-in-depth is required: a single detection layer is not sufficient. Design must be documented and reviewable by the independent validation function.",
-      "accountable_persona": "application-developer",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 prompt injection risk; verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model development controls section; input validation is a model implementation control",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 15 (accuracy and robustness)",
-        "owasp_llm": "LLM01: Prompt Injection"
-      },
-      "threshold": {
-        "metric": "input_validation_design_documented",
-        "description": "Binary: input validation design document exists, covers all required layers, and has been reviewed by a party independent of the developer who wrote it.",
-        "evidence": {
-          "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L3-MON-001.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-validation-gate",
-        "breach_action": "block-model-from-entering-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "12mo",
+    "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
+   }
+  },
+  {
+   "id": "SRF-L3-DEV-001",
+   "layer": "L3",
+   "component": "Application Platforms",
+   "title": "Input Validation and Prompt Injection Defense Design",
+   "description": "Before a model-backed application enters validation, the application developer must document and implement input validation controls covering: maximum input length enforcement, character set and encoding validation, detection of prompt injection patterns (instruction override attempts, role-switch instructions, jailbreak patterns), and sanitization of user-supplied content before it reaches the model context. For RAG pipelines, retrieved content must be treated as untrusted input and passed through the same validation chain as user input. Defense-in-depth is required: a single detection layer is not sufficient. Design must be documented and reviewable by the independent validation function.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-010 (Prompt Injection); AIR-PREV-003 (User/App/Model Firewalling/Filtering)",
+    "aicm": "AIS-08 (Input Validation); AIS-15 (Prompt Differentiation)",
+    "sr26_2": "Section IV (Model Development)",
+    "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
+    "owasp_llm": "LLM01: Prompt Injection"
+   },
+   "threshold": {
+    "metric": "input_validation_design_documented",
+    "description": "Binary: input validation design document exists, covers all required layers, and has been reviewed by a party independent of the developer who wrote it.",
+    "evidence": {
+     "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L3-MON-001.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L3-DEV-002",
-      "layer": "L3",
-      "component": "APIs & Fine-tuned Models",
-      "title": "Output Filtering and Content Safety Design",
-      "description": "The application developer must implement output filtering controls before model outputs reach end users or downstream systems. Required layers: a content safety classifier or rules engine that blocks prohibited output categories (defined by the institution's acceptable use policy at SRF-L1-DEV-003), a PII detection and redaction layer for outputs destined for external parties or low-clearance users, and structured output validation for applications that parse model outputs into downstream decisions or workflows. For fine-tuned models, the developer must document whether fine-tuning altered the base model's built-in safety behaviors and what compensating controls are in place. Output filters must be applied after every model call, including intermediate steps in agentic chains.",
-      "accountable_persona": "application-developer",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model implementation controls",
-        "eu_ai_act": "TBD: Article 10 (data governance); Article 13 (transparency); Article 15 (robustness)",
-        "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
-      },
-      "threshold": {
-        "metric": "output_filter_design_documented",
-        "description": "Binary: output filtering design covers all required layers, documents fine-tuning safety impact where applicable, and has been reviewed independently.",
-        "evidence": {
-          "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L3-MON-002.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-validation-gate",
-        "breach_action": "block-model-from-entering-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-validation-gate",
+    "breach_action": "block-model-from-entering-validation"
+   }
+  },
+  {
+   "id": "SRF-L3-DEV-002",
+   "layer": "L3",
+   "component": "APIs & Fine-tuned Models",
+   "title": "Output Filtering and Content Safety Design",
+   "description": "The application developer must implement output filtering controls before model outputs reach end users or downstream systems. Required layers: a content safety classifier or rules engine that blocks prohibited output categories (defined by the institution's acceptable use policy at SRF-L1-DEV-003), a PII detection and redaction layer for outputs destined for external parties or low-clearance users, and structured output validation for applications that parse model outputs into downstream decisions or workflows. For fine-tuned models, the developer must document whether fine-tuning altered the base model's built-in safety behaviors and what compensating controls are in place. Output filters must be applied after every model call, including intermediate steps in agentic chains.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-003 (User/App/Model Firewalling/Filtering); AIR-PREV-017 (AI Firewall Implementation and Management)",
+    "aicm": "AIS-09 (Output Validation)",
+    "sr26_2": "Section IV (Model Development)",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
+    "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
+   },
+   "threshold": {
+    "metric": "output_filter_design_documented",
+    "description": "Binary: output filtering design covers all required layers, documents fine-tuning safety impact where applicable, and has been reviewed independently.",
+    "evidence": {
+     "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L3-MON-002.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L3-DEV-003",
-      "layer": "L3",
-      "component": "Agents & Orchestration Models",
-      "title": "Tool-Execution Authorization Design for Agentic Systems",
-      "cross_layer_controls": [
-        "SRF-L1-DEV-004",
-        "SRF-L4-DEV-002"
-      ],
-      "cross_layer_note": "Tool allow-lists defined here must be consistent with the agent authorization scope in the L1 policy (SRF-L1-DEV-004) and must be enforceable at the gateway layer (SRF-L4-DEV-002). A change to the L1 policy must trigger re-review of this control. Changes to this control must be reflected in gateway entitlement configuration.",
-      "description": "For Agent-PaaS deployments, the agentic platform and framework provider must design and document a tool-execution authorization scheme that enforces least-privilege access for each tool the agent can invoke. Required design elements: an explicit allow-list of tools per agent role (no implicit allow-all), per-tool authorization checks that verify the agent's current session context and user delegation before execution, a confirmation gate for irreversible or high-consequence tool calls (as defined in the agent authorization policy at SRF-L1-DEV-004), and an audit trail linking each tool execution to the agent session, the human user or system that initiated the session, and the business process the agent is authorized to act within. Tool authorization must be re-checked at each step in a multi-step orchestration chain, not only at session start.",
-      "accountable_persona": "agentic-platform-provider",
-      "operating_models": [
-        "Agent-PaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 insecure plugin/tool design and supply-chain tampering risks; verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: agentic AI out of scope; apply existing model implementation controls by analogy",
-        "eu_ai_act": "TBD: Article 14 (human oversight); Article 9 (risk management)",
-        "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
-      },
-      "threshold": {
-        "metric": "tool_authorization_design_documented",
-        "description": "Binary: tool-execution authorization design document exists covering all required elements, and has been reviewed by a party independent of the framework developer.",
-        "evidence": {
-          "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L3-MON-003.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-validation-gate",
-        "breach_action": "block-agent-from-entering-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-validation-gate",
+    "breach_action": "block-model-from-entering-validation"
+   }
+  },
+  {
+   "id": "SRF-L3-DEV-003",
+   "layer": "L3",
+   "component": "Agents & Orchestration Models",
+   "title": "Tool-Execution Authorization Design for Agentic Systems",
+   "cross_layer_controls": [
+    "SRF-L1-DEV-004",
+    "SRF-L4-DEV-002"
+   ],
+   "cross_layer_note": "Tool allow-lists defined here must be consistent with the agent authorization scope in the L1 policy (SRF-L1-DEV-004) and must be enforceable at the gateway layer (SRF-L4-DEV-002). A change to the L1 policy must trigger re-review of this control. Changes to this control must be reflected in gateway entitlement configuration.",
+   "description": "For Agent-PaaS deployments, the agentic platform and framework provider must design and document a tool-execution authorization scheme that enforces least-privilege access for each tool the agent can invoke. Required design elements: an explicit allow-list of tools per agent role (no implicit allow-all), per-tool authorization checks that verify the agent's current session context and user delegation before execution, a confirmation gate for irreversible or high-consequence tool calls (as defined in the agent authorization policy at SRF-L1-DEV-004), and an audit trail linking each tool execution to the agent session, the human user or system that initiated the session, and the business process the agent is authorized to act within. Tool authorization must be re-checked at each step in a multi-step orchestration chain, not only at session start.",
+   "accountable_persona": "agentic-platform-provider",
+   "operating_models": [
+    "Agent-PaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-025 (Tool Chain Manipulation and Injection); AIR-PREV-018 (Agent Authority Least Privilege Framework); AIR-PREV-019 (Tool Chain Validation and Sanitization)",
+    "aicm": "AIS-11 (Agents Security Boundaries); IAM-19 (Agent Access Restriction)",
+    "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
+    "eu_ai_act": "Article 14 (Human oversight); Article 9 (Risk management system)",
+    "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
+   },
+   "threshold": {
+    "metric": "tool_authorization_design_documented",
+    "description": "Binary: tool-execution authorization design document exists covering all required elements, and has been reviewed by a party independent of the framework developer.",
+    "evidence": {
+     "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L3-MON-003.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L3-VAL-001",
-      "layer": "L3",
-      "component": "Application Platforms",
-      "title": "Independent Validation of Application-Level Security Controls",
-      "description": "Before production approval, the independent validation function must conduct adversarial testing of the application's security controls. Required scope: prompt injection attempts across at least the OWASP LLM Top 10 attack categories relevant to the architecture, output filter bypass attempts (including indirect injection via RAG retrieval), tool-execution authorization bypass for Agent-PaaS deployments, and chain-of-thought leakage tests for multi-step orchestrations. Testing must be performed by a team with no development accountability for the controls being tested. Findings must be documented with severity ratings, and any Critical or High findings must be remediated before production approval. Tier-1 models require external red-team involvement or independent security firm engagement.",
-      "accountable_persona": "application-developer",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "independent-validation",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: independent validation section; effective challenge of model implementation controls",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 15 (robustness testing)",
-        "owasp_llm": "LLM01 through LLM10: full top 10 scope for adversarial testing"
-      },
-      "threshold": {
-        "metric": "adversarial_validation_completed",
-        "description": "Binary: independent adversarial test report exists covering required scope, with all Critical and High findings dispositioned (remediated or accepted with documented rationale) before production approval.",
-        "evidence": {
-          "ocsf_class": "TBD: test report artifact. Security finding events generated during red-team testing may be captured as security_finding OCSF class events if tooling supports it.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "pre-production-approval",
-        "breach_action": "block-production-approval-until-critical-and-high-findings-remediated"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-validation-gate",
+    "breach_action": "block-agent-from-entering-validation"
+   }
+  },
+  {
+   "id": "SRF-L3-VAL-001",
+   "layer": "L3",
+   "component": "Application Platforms",
+   "title": "Independent Validation of Application-Level Security Controls",
+   "description": "Before production approval, the independent validation function must conduct adversarial testing of the application's security controls. Required scope: prompt injection attempts across at least the OWASP LLM Top 10 attack categories relevant to the architecture, output filter bypass attempts (including indirect injection via RAG retrieval), tool-execution authorization bypass for Agent-PaaS deployments, and chain-of-thought leakage tests for multi-step orchestrations. Testing must be performed by a team with no development accountability for the controls being tested. Findings must be documented with severity ratings, and any Critical or High findings must be remediated before production approval. Tier-1 models require external red-team involvement or independent security firm engagement.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "independent-validation",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-005 (System Acceptance Testing); AIR-SEC-010 (Prompt Injection)",
+    "aicm": "AIS-05 (Application Security Testing); MDS-06 (Adversarial Attack Analysis)",
+    "sr26_2": "Section V (Model Validation)",
+    "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
+    "owasp_llm": "LLM01 through LLM10: full top 10 scope for adversarial testing"
+   },
+   "threshold": {
+    "metric": "adversarial_validation_completed",
+    "description": "Binary: independent adversarial test report exists covering required scope, with all Critical and High findings dispositioned (remediated or accepted with documented rationale) before production approval.",
+    "evidence": {
+     "ocsf_class": "TBD: test report artifact. Security finding events generated during red-team testing may be captured as security_finding OCSF class events if tooling supports it.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L3-MON-001",
-      "layer": "L3",
-      "component": "Application Platforms",
-      "title": "Prompt Injection Detection Rate Monitoring",
-      "description": "The application developer must monitor the rate of detected prompt injection attempts against the application in production. Detection rate is the proportion of inputs flagged by the injection detection layer (SRF-L3-DEV-001) relative to total inputs. A sustained elevation in detection rate is a signal of active attack or a shift in the user population that warrants investigation. A sudden drop in detection rate when attack volume is expected to be constant may indicate detector degradation. Both conditions are breach events. Tier-1 models require continuous monitoring; lower tiers follow the institution-defined cadence.",
-      "accountable_persona": "application-developer",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 prompt injection risk; verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: ongoing monitoring of model implementation controls",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 15 (robustness)",
-        "owasp_llm": "LLM01: Prompt Injection"
-      },
-      "threshold": {
-        "metric": "prompt_injection_detection_rate",
-        "description": "Rate of inputs flagged as prompt injection attempts per unit time. Breach conditions: (1) rate exceeds the upper control limit defined at baseline (active attack signal); (2) rate drops below the lower control limit when traffic volume is stable (detector degradation signal).",
-        "evidence": {
-          "ocsf_class": "ai_operation",
-          "attribute": "message_context: input content and role context observable in ai_operation events. Injection detection labels applied at the application layer should be emitted as security_finding events or as enriched fields on ai_operation events.",
-          "ocsf_version": "1.8.0",
-          "ocsf_class_status": "unverified-proposal"
-        },
-        "operator": "within-control-limits",
-        "param": "tier-defined (upper and lower control limits set at baseline)",
-        "window": "tier-defined",
-        "breach_action": "alert-application-developer; escalate-to-security-team-if-upper-limit-exceeded; escalate-to-mrm-if-lower-limit-breached"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "pre-production-approval",
+    "breach_action": "block-production-approval-until-critical-and-high-findings-remediated"
+   }
+  },
+  {
+   "id": "SRF-L3-MON-001",
+   "layer": "L3",
+   "component": "Application Platforms",
+   "title": "Prompt Injection Detection Rate Monitoring",
+   "description": "The application developer must monitor the rate of detected prompt injection attempts against the application in production. Detection rate is the proportion of inputs flagged by the injection detection layer (SRF-L3-DEV-001) relative to total inputs. A sustained elevation in detection rate is a signal of active attack or a shift in the user population that warrants investigation. A sudden drop in detection rate when attack volume is expected to be constant may indicate detector degradation. Both conditions are breach events. Tier-1 models require continuous monitoring; lower tiers follow the institution-defined cadence.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-010 (Prompt Injection); AIR-DET-004 (AI System Observability)",
+    "aicm": "LOG-14 (Input Monitoring); AIS-08 (Input Validation)",
+    "sr26_2": "Section V (Ongoing Model Monitoring)",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
+    "owasp_llm": "LLM01: Prompt Injection"
+   },
+   "threshold": {
+    "metric": "prompt_injection_detection_rate",
+    "description": "Rate of inputs flagged as prompt injection attempts per unit time. Breach conditions: (1) rate exceeds the upper control limit defined at baseline (active attack signal); (2) rate drops below the lower control limit when traffic volume is stable (detector degradation signal).",
+    "evidence": {
+     "ocsf_class": "ai_operation",
+     "attribute": "message_context: input content and role context observable in ai_operation events. Injection detection labels applied at the application layer should be emitted as security_finding events or as enriched fields on ai_operation events.",
+     "ocsf_version": "1.8.0",
+     "ocsf_class_status": "unverified-proposal"
     },
-    {
-      "id": "SRF-L3-MON-002",
-      "layer": "L3",
-      "component": "APIs & Fine-tuned Models",
-      "title": "Output Filter Block-Rate Monitoring",
-      "description": "The application developer must monitor the rate at which the output filter (SRF-L3-DEV-002) blocks or redacts model outputs in production. An elevated block rate signals model behavior drift, a shift in user inputs driving prohibited outputs, or a fine-tuning regression. A declining block rate over time may indicate filter degradation or evasion. Both are breach conditions. The block rate must be broken down by filter category (content safety, PII redaction, structured output validation) so that category-level anomalies are visible independently.",
-      "accountable_persona": "application-developer",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: ongoing monitoring of model outputs and implementation controls",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 13 (transparency)",
-        "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
-      },
-      "threshold": {
-        "metric": "output_filter_block_rate_by_category",
-        "description": "Rate of model outputs blocked or redacted per filter category per unit time. Breach when any category's block rate falls outside its established control limits.",
-        "evidence": {
-          "ocsf_class": "ai_operation",
-          "attribute": "message_context: output content observable in ai_operation events. Filter decisions should be emitted as enriched fields on ai_operation events or as separate security_finding events, tagged by filter category.",
-          "ocsf_version": "1.8.0",
-          "ocsf_class_status": "unverified-proposal"
-        },
-        "operator": "within-control-limits",
-        "param": "tier-defined per filter category",
-        "window": "tier-defined",
-        "breach_action": "alert-application-developer; investigate-category-causing-breach; escalate-to-mrm-if-unresolved-within-sla"
-      }
+    "operator": "within-control-limits",
+    "param": "tier-defined (upper and lower control limits set at baseline)",
+    "window": "tier-defined",
+    "breach_action": "alert-application-developer; escalate-to-security-team-if-upper-limit-exceeded; escalate-to-mrm-if-lower-limit-breached"
+   }
+  },
+  {
+   "id": "SRF-L3-MON-002",
+   "layer": "L3",
+   "component": "APIs & Fine-tuned Models",
+   "title": "Output Filter Block-Rate Monitoring",
+   "description": "The application developer must monitor the rate at which the output filter (SRF-L3-DEV-002) blocks or redacts model outputs in production. An elevated block rate signals model behavior drift, a shift in user inputs driving prohibited outputs, or a fine-tuning regression. A declining block rate over time may indicate filter degradation or evasion. Both are breach conditions. The block rate must be broken down by filter category (content safety, PII redaction, structured output validation) so that category-level anomalies are visible independently.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-003 (User/App/Model Firewalling/Filtering); AIR-DET-004 (AI System Observability)",
+    "aicm": "LOG-15 (Output Monitoring); AIS-09 (Output Validation)",
+    "sr26_2": "Section V (Ongoing Model Monitoring)",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
+    "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
+   },
+   "threshold": {
+    "metric": "output_filter_block_rate_by_category",
+    "description": "Rate of model outputs blocked or redacted per filter category per unit time. Breach when any category's block rate falls outside its established control limits.",
+    "evidence": {
+     "ocsf_class": "ai_operation",
+     "attribute": "message_context: output content observable in ai_operation events. Filter decisions should be emitted as enriched fields on ai_operation events or as separate security_finding events, tagged by filter category.",
+     "ocsf_version": "1.8.0",
+     "ocsf_class_status": "unverified-proposal"
     },
-    {
-      "id": "SRF-L3-MON-003",
-      "layer": "L3",
-      "component": "Agents & Orchestration Models",
-      "title": "Tool-Execution Authorization Failure Rate Monitoring",
-      "description": "For Agent-PaaS deployments, the agentic platform provider must monitor the rate of tool-execution authorization failures: attempts by an agent to invoke a tool it is not authorized to call, or invocations that fail the per-call authorization check (SRF-L3-DEV-003). A rising authorization failure rate signals prompt injection driving out-of-scope tool calls, agent scope creep, or a misconfigured allow-list. Any attempt to invoke a tool outside the agent's allow-list is a Severity-1 event regardless of whether it succeeded. Authorization failures must be correlated with the originating session and user to support forensic review.",
-      "accountable_persona": "agentic-platform-provider",
-      "operating_models": [
-        "Agent-PaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 insecure plugin/tool design; persistent agent compromise; verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: apply existing ongoing monitoring principles to agentic tool execution",
-        "eu_ai_act": "TBD: Article 14 (human oversight); Article 9 (risk management)",
-        "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
-      },
-      "threshold": {
-        "metric": "tool_authorization_failure_rate",
-        "description": "Count of tool invocation attempts that fail authorization checks per session and per time window. Zero tolerance for out-of-allow-list invocation attempts; tier-defined thresholds for per-call authorization check failures.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "api_activity events on tool endpoints where authorization fails (status: Failure, status_code: 403 or equivalent). Cross-reference actor identity (agent session id) with the tool allow-list for that agent role to distinguish out-of-scope attempts from misconfiguration failures.",
-          "ocsf_version": "1.8.0",
-          "supplemental": "ai_operation events provide session-level context to trace authorization failures back to the triggering prompt or orchestration step."
-        },
-        "operator": "==",
-        "param": "0 out-of-allow-list attempts; tier-defined for per-call failures",
-        "window": "per-session and rolling-24h",
-        "breach_action": "terminate-agent-session-on-out-of-allow-list-attempt; alert-agentic-platform-provider; escalate-to-security-team; notify-l1-agent-business-process-owner",
-        "param_type": "zero-tolerance"
-      }
+    "operator": "within-control-limits",
+    "param": "tier-defined per filter category",
+    "window": "tier-defined",
+    "breach_action": "alert-application-developer; investigate-category-causing-breach; escalate-to-mrm-if-unresolved-within-sla"
+   }
+  },
+  {
+   "id": "SRF-L3-MON-003",
+   "layer": "L3",
+   "component": "Agents & Orchestration Models",
+   "title": "Tool-Execution Authorization Failure Rate Monitoring",
+   "description": "For Agent-PaaS deployments, the agentic platform provider must monitor the rate of tool-execution authorization failures: attempts by an agent to invoke a tool it is not authorized to call, or invocations that fail the per-call authorization check (SRF-L3-DEV-003). A rising authorization failure rate signals prompt injection driving out-of-scope tool calls, agent scope creep, or a misconfigured allow-list. Any attempt to invoke a tool outside the agent's allow-list is a Severity-1 event regardless of whether it succeeded. Authorization failures must be correlated with the originating session and user to support forensic review.",
+   "accountable_persona": "agentic-platform-provider",
+   "operating_models": [
+    "Agent-PaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-024 (Agent Action Authorization Bypass); AIR-DET-021 (Agent Decision Audit and Explainability)",
+    "aicm": "IAM-19 (Agent Access Restriction); LOG-13 (Failures and Anomalies Reporting)",
+    "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
+    "eu_ai_act": "Article 14 (Human oversight)",
+    "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
+   },
+   "threshold": {
+    "metric": "tool_authorization_failure_rate",
+    "description": "Count of tool invocation attempts that fail authorization checks per session and per time window. Zero tolerance for out-of-allow-list invocation attempts; tier-defined thresholds for per-call authorization check failures.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "api_activity events on tool endpoints where authorization fails (status: Failure, status_code: 403 or equivalent). Cross-reference actor identity (agent session id) with the tool allow-list for that agent role to distinguish out-of-scope attempts from misconfiguration failures.",
+     "ocsf_version": "1.8.0",
+     "supplemental": "ai_operation events provide session-level context to trace authorization failures back to the triggering prompt or orchestration step."
     },
-    {
-      "id": "SRF-L3-ECH-001",
-      "layer": "L3",
-      "component": "Application Platforms",
-      "title": "Effective Challenge of Application Security Control Thresholds",
-      "description": "The independent validation or second-line risk function must annually challenge whether the application-level security control thresholds established in SRF-L3-MON-001, SRF-L3-MON-002, and SRF-L3-MON-003 remain appropriate. Challenge must assess: whether control limits reflect the current threat environment (updated OWASP LLM Top 10 categories, new injection techniques observed in the prior period), whether any Tier-1 application has operated outside its control limits without triggering a documented response, whether fine-tuning or model version changes since last validation have altered the output filter's effectiveness, and whether the agentic tool allow-lists remain appropriately scoped given changes to business processes since initial deployment.",
-      "accountable_persona": "application-developer",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "effective-challenge",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: effective challenge of ongoing monitoring standards and thresholds",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "application_security_challenge_documented",
-        "description": "Binary: annual second-line challenge of L3 monitoring thresholds completed, covering all required assessment areas, with findings and any threshold adjustments tracked to closure.",
-        "evidence": {
-          "ocsf_class": "TBD: governance artifact; not streaming telemetry.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "12mo",
-        "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
-      }
+    "operator": "==",
+    "param": "0 out-of-allow-list attempts; tier-defined for per-call failures",
+    "window": "per-session and rolling-24h",
+    "breach_action": "terminate-agent-session-on-out-of-allow-list-attempt; alert-agentic-platform-provider; escalate-to-security-team; notify-l1-agent-business-process-owner",
+    "param_type": "zero-tolerance"
+   }
+  },
+  {
+   "id": "SRF-L3-ECH-001",
+   "layer": "L3",
+   "component": "Application Platforms",
+   "title": "Effective Challenge of Application Security Control Thresholds",
+   "description": "The independent validation or second-line risk function must annually challenge whether the application-level security control thresholds established in SRF-L3-MON-001, SRF-L3-MON-002, and SRF-L3-MON-003 remain appropriate. Challenge must assess: whether control limits reflect the current threat environment (updated OWASP LLM Top 10 categories, new injection techniques observed in the prior period), whether any Tier-1 application has operated outside its control limits without triggering a documented response, whether fine-tuning or model version changes since last validation have altered the output filter's effectiveness, and whether the agentic tool allow-lists remain appropriately scoped given changes to business processes since initial deployment.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "effective-challenge",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "A&A-02 (Independent Assessments)",
+    "sr26_2": "Section III (effective challenge)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "application_security_challenge_documented",
+    "description": "Binary: annual second-line challenge of L3 monitoring thresholds completed, covering all required assessment areas, with findings and any threshold adjustments tracked to closure.",
+    "evidence": {
+     "ocsf_class": "TBD: governance artifact; not streaming telemetry.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L4-DEV-001",
-      "layer": "L4",
-      "component": "Guardrails & Safety Systems",
-      "title": "Platform-Level Guardrail Design and Configuration Baseline",
-      "description": "The AI platform provider must design, configure, and document platform-level guardrails before any model is served in production. Platform guardrails operate below the application layer (SRF-L3-DEV-001/002) and provide a defense-in-depth layer that persists even when application controls are misconfigured or bypassed. Required elements: input guardrails that intercept and evaluate requests before they reach the model, output guardrails that evaluate model responses before returning them to the caller, a configuration baseline that specifies which guardrail policies are active per model tier, and a change-control process requiring re-validation when guardrail configuration changes. Guardrail configuration must be immutable to application-layer callers; applications may request guardrail policies but cannot disable them.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model implementation controls; platform-level safety systems",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 15 (accuracy and robustness)"
-      },
-      "threshold": {
-        "metric": "guardrail_configuration_baseline_approved",
-        "description": "Binary: guardrail configuration baseline document exists per model tier, has been reviewed independently, and is stored in version control with change-control enforcement.",
-        "evidence": {
-          "ocsf_class": "TBD: configuration artifact. Runtime evidence available via SRF-L4-MON-001.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-validation-gate",
-        "breach_action": "block-model-from-entering-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "12mo",
+    "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
+   }
+  },
+  {
+   "id": "SRF-L4-DEV-001",
+   "layer": "L4",
+   "component": "Guardrails & Safety Systems",
+   "title": "Platform-Level Guardrail Design and Configuration Baseline",
+   "description": "The AI platform provider must design, configure, and document platform-level guardrails before any model is served in production. Platform guardrails operate below the application layer (SRF-L3-DEV-001/002) and provide a defense-in-depth layer that persists even when application controls are misconfigured or bypassed. Required elements: input guardrails that intercept and evaluate requests before they reach the model, output guardrails that evaluate model responses before returning them to the caller, a configuration baseline that specifies which guardrail policies are active per model tier, and a change-control process requiring re-validation when guardrail configuration changes. Guardrail configuration must be immutable to application-layer callers; applications may request guardrail policies but cannot disable them.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-017 (AI Firewall Implementation and Management); AIR-PREV-003 (User/App/Model Firewalling/Filtering)",
+    "aicm": "TVM-11 (Guardrails)",
+    "sr26_2": "Section IV (Model Development)",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity); Article 9 (Risk management system)"
+   },
+   "threshold": {
+    "metric": "guardrail_configuration_baseline_approved",
+    "description": "Binary: guardrail configuration baseline document exists per model tier, has been reviewed independently, and is stored in version control with change-control enforcement.",
+    "evidence": {
+     "ocsf_class": "TBD: configuration artifact. Runtime evidence available via SRF-L4-MON-001.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L4-DEV-002",
-      "layer": "L4",
-      "component": "LLM Routers & Gateways",
-      "title": "LLM Gateway Authentication and Authorization Design",
-      "cross_layer_controls": [
-        "SRF-L1-DEV-004",
-        "SRF-L3-DEV-003"
-      ],
-      "cross_layer_note": "Gateway authorization entitlements must reflect the agent authorization scope from the L1 policy (SRF-L1-DEV-004) and must enforce the tool allow-lists defined at L3 (SRF-L3-DEV-003). Any change to either upstream control must trigger re-review of gateway entitlement configuration. The L4 ECH review must verify alignment with current L1 and L3 versions.",
-      "description": "The AI platform provider must design and document authentication and authorization controls for all LLM gateway and router endpoints before production deployment. Required elements: mutual authentication for all model API calls (service-to-service mTLS or equivalent), per-caller authorization that enforces model access entitlements (a caller authorized for Tier-3 models cannot invoke Tier-1 endpoints), rate limiting and quota enforcement per caller identity to prevent abuse, and audit logging of all gateway requests with caller identity, model invoked, and token usage. For Agent-PaaS, the gateway must distinguish agent-identity calls from human-identity calls and apply appropriate authorization policies to each. Gateway credentials must be rotated on a schedule defined by the institution's secrets management policy.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model infrastructure controls; access management",
-        "eu_ai_act": "TBD: Article 9 (risk management)"
-      },
-      "threshold": {
-        "metric": "gateway_authn_authz_design_documented",
-        "description": "Binary: gateway authentication and authorization design document covers all required elements and has been reviewed independently. Credential rotation schedule is documented and enforced.",
-        "evidence": {
-          "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L4-MON-002.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-validation-gate",
-        "breach_action": "block-model-from-entering-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-validation-gate",
+    "breach_action": "block-model-from-entering-validation"
+   }
+  },
+  {
+   "id": "SRF-L4-DEV-002",
+   "layer": "L4",
+   "component": "LLM Routers & Gateways",
+   "title": "LLM Gateway Authentication and Authorization Design",
+   "cross_layer_controls": [
+    "SRF-L1-DEV-004",
+    "SRF-L3-DEV-003"
+   ],
+   "cross_layer_note": "Gateway authorization entitlements must reflect the agent authorization scope from the L1 policy (SRF-L1-DEV-004) and must enforce the tool allow-lists defined at L3 (SRF-L3-DEV-003). Any change to either upstream control must trigger re-review of gateway entitlement configuration. The L4 ECH review must verify alignment with current L1 and L3 versions.",
+   "description": "The AI platform provider must design and document authentication and authorization controls for all LLM gateway and router endpoints before production deployment. Required elements: mutual authentication for all model API calls (service-to-service mTLS or equivalent), per-caller authorization that enforces model access entitlements (a caller authorized for Tier-3 models cannot invoke Tier-1 endpoints), rate limiting and quota enforcement per caller identity to prevent abuse, and audit logging of all gateway requests with caller identity, model invoked, and token usage. For Agent-PaaS, the gateway must distinguish agent-identity calls from human-identity calls and apply appropriate authorization policies to each. Gateway credentials must be rotated on a schedule defined by the institution's secrets management policy.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-012 (Role-Based Access Control for AI Data)",
+    "aicm": "IAM-14 (Strong Authentication); IAM-16 (Authorization Mechanisms)",
+    "sr26_2": "N/A",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "gateway_authn_authz_design_documented",
+    "description": "Binary: gateway authentication and authorization design document covers all required elements and has been reviewed independently. Credential rotation schedule is documented and enforced.",
+    "evidence": {
+     "ocsf_class": "TBD: design artifact. Runtime evidence available via SRF-L4-MON-002.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L4-DEV-003",
-      "layer": "L4",
-      "component": "Compute Infrastructure",
-      "title": "Confidential Compute Configuration for Tier-1 Models",
-      "description": "Tier-1 AI models processing confidential or restricted data (as classified per SRF-L2-DEV-002) must be configured to run in confidential compute environments (e.g., AMD SEV-SNP, Intel TDX, or equivalent trusted execution environment) that provide hardware-enforced memory encryption and isolation. The platform provider must document the confidential compute configuration, generate a cryptographic attestation report at deployment, and store the attestation alongside the model artifact in the model registry. Attestation must be re-generated after any infrastructure change that could affect the trusted execution environment. This control applies to Tier-1 models only; lower tiers follow institution-defined policy.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "tier_applicability": "Tier-1 models only at development gate; all tiers must document confidential compute policy decision (use or justified exception).",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: infrastructure security for model serving environments",
-        "eu_ai_act": "TBD: Article 9 (risk management for high-risk AI systems)"
-      },
-      "threshold": {
-        "metric": "confidential_compute_attestation_stored",
-        "description": "Binary: cryptographic attestation report exists in model registry for Tier-1 model deployments, linked to the model version and infrastructure configuration hash.",
-        "evidence": {
-          "ocsf_class": "TBD: attestation artifact generated at deployment. If attestation service emits events, candidate: api_activity events from the attestation endpoint at model load time.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-deployment",
-        "breach_action": "block-tier-1-model-deployment-until-attestation-generated"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-validation-gate",
+    "breach_action": "block-model-from-entering-validation"
+   }
+  },
+  {
+   "id": "SRF-L4-DEV-003",
+   "layer": "L4",
+   "component": "Compute Infrastructure",
+   "title": "Confidential Compute Configuration for Tier-1 Models",
+   "description": "Tier-1 AI models processing confidential or restricted data (as classified per SRF-L2-DEV-002) must be configured to run in confidential compute environments (e.g., AMD SEV-SNP, Intel TDX, or equivalent trusted execution environment) that provide hardware-enforced memory encryption and isolation. The platform provider must document the confidential compute configuration, generate a cryptographic attestation report at deployment, and store the attestation alongside the model artifact in the model registry. Attestation must be re-generated after any infrastructure change that could affect the trusted execution environment. This control applies to Tier-1 models only; lower tiers follow institution-defined policy.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "tier_applicability": "Tier-1 models only at development gate; all tiers must document confidential compute policy decision (use or justified exception).",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "CEK-03 (Data Encryption, including in-use)",
+    "sr26_2": "N/A",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "confidential_compute_attestation_stored",
+    "description": "Binary: cryptographic attestation report exists in model registry for Tier-1 model deployments, linked to the model version and infrastructure configuration hash.",
+    "evidence": {
+     "ocsf_class": "TBD: attestation artifact generated at deployment. If attestation service emits events, candidate: api_activity events from the attestation endpoint at model load time.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L4-VAL-001",
-      "layer": "L4",
-      "component": "Guardrails & Safety Systems",
-      "title": "Independent Validation of Platform Security Controls",
-      "description": "Before a model is approved for production, the independent validation function must assess the effectiveness of the platform's guardrail configuration and gateway security controls. Required scope: guardrail bypass testing (attempts to reach the model with inputs that should be blocked, from the application layer), gateway authentication and authorization boundary testing (confirming callers cannot access model tiers above their entitlement), confidential compute attestation verification for Tier-1 models, and review of the guardrail change-control record since the last validation. Validation findings must include a tested bypass rate: the proportion of attempted guardrail bypasses that succeeded during testing. Any bypass success rate above zero for Critical guardrail categories is a blocking finding.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "independent-validation",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: independent validation of model infrastructure and safety controls",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 15 (robustness)"
-      },
-      "threshold": {
-        "metric": "platform_validation_completed_bypass_rate_zero",
-        "description": "Binary: independent validation report exists covering all required scope. Tested bypass rate for Critical guardrail categories is zero. All High findings are dispositioned before production approval.",
-        "evidence": {
-          "ocsf_class": "TBD: validation report artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "pre-production-approval",
-        "breach_action": "block-production-approval-until-critical-bypass-findings-remediated"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-deployment",
+    "breach_action": "block-tier-1-model-deployment-until-attestation-generated"
+   }
+  },
+  {
+   "id": "SRF-L4-VAL-001",
+   "layer": "L4",
+   "component": "Guardrails & Safety Systems",
+   "title": "Independent Validation of Platform Security Controls",
+   "description": "Before a model is approved for production, the independent validation function must assess the effectiveness of the platform's guardrail configuration and gateway security controls. Required scope: guardrail bypass testing (attempts to reach the model with inputs that should be blocked, from the application layer), gateway authentication and authorization boundary testing (confirming callers cannot access model tiers above their entitlement), confidential compute attestation verification for Tier-1 models, and review of the guardrail change-control record since the last validation. Validation findings must include a tested bypass rate: the proportion of attempted guardrail bypasses that succeeded during testing. Any bypass success rate above zero for Critical guardrail categories is a blocking finding.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "independent-validation",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-005 (System Acceptance Testing)",
+    "aicm": "A&A-02 (Independent Assessments); TVM-06 (Penetration Testing)",
+    "sr26_2": "Section V (Model Validation)",
+    "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "platform_validation_completed_bypass_rate_zero",
+    "description": "Binary: independent validation report exists covering all required scope. Tested bypass rate for Critical guardrail categories is zero. All High findings are dispositioned before production approval.",
+    "evidence": {
+     "ocsf_class": "TBD: validation report artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L4-MON-001",
-      "layer": "L4",
-      "component": "Guardrails & Safety Systems",
-      "title": "Guardrail Bypass Rate Monitoring",
-      "description": "The AI platform provider must monitor the rate at which requests or responses bypass platform-level guardrails in production. A bypass occurs when an input that should have been intercepted reaches the model, or when a model output that should have been blocked is returned to the caller. Bypass rate is the proportion of guardrail evaluation events that result in a bypass verdict relative to total evaluations. Bypass events must be classified by guardrail category and severity. Zero-tolerance applies to Critical category bypasses (e.g., guardrails covering regulated content, PII in outputs, or financial advice prohibitions). Tier-defined thresholds apply to lower-severity categories. Bypass rate monitoring operates at the platform layer independently of application-layer output filter monitoring (SRF-L3-MON-002); both layers must report. Where model serving is operated by a distinct ai-model-serving vendor, that vendor is accountable for reporting guardrail evaluation events to the ai-platform-provider; the ai-platform-provider retains accountability for the aggregate bypass rate.",
-      "accountable_persona": "ai-platform-provider",
-      "persona_split_note": "Guardrail infrastructure is owned by ai-platform-provider. Where ai-model-serving is a distinct vendor, it must emit guardrail evaluation telemetry to the platform. Accountability for the bypass rate metric and breach response rests with ai-platform-provider.",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: ongoing monitoring of model safety controls and implementation",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 15 (robustness)"
-      },
-      "threshold": {
-        "metric": "guardrail_bypass_rate_by_category",
-        "description": "Rate of guardrail bypass events per category per monitoring window. Zero tolerance for Critical category bypasses; tier-defined thresholds for lower-severity categories.",
-        "evidence": {
-          "ocsf_class": "ai_operation",
-          "attribute": "Guardrail evaluation results should be emitted as enriched fields on ai_operation events or as dedicated security_finding events, tagged by guardrail category, verdict (blocked/bypassed), and severity. Token usage metrics in ai_operation can help distinguish legitimate completions from bypass-driven completions.",
-          "ocsf_version": "1.8.0",
-          "ocsf_class_status": "unverified-proposal"
-        },
-        "operator": "<=",
-        "param": "tier-defined (0 for Critical; tier-defined for lower severity)",
-        "window": "24h",
-        "breach_action": "alert-ai-platform-provider; escalate-to-l1-governance-on-critical-bypass; initiate-guardrail-configuration-review",
-        "param_type": "zero-tolerance"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "pre-production-approval",
+    "breach_action": "block-production-approval-until-critical-bypass-findings-remediated"
+   }
+  },
+  {
+   "id": "SRF-L4-MON-001",
+   "layer": "L4",
+   "component": "Guardrails & Safety Systems",
+   "title": "Guardrail Bypass Rate Monitoring",
+   "description": "The AI platform provider must monitor the rate at which requests or responses bypass platform-level guardrails in production. A bypass occurs when an input that should have been intercepted reaches the model, or when a model output that should have been blocked is returned to the caller. Bypass rate is the proportion of guardrail evaluation events that result in a bypass verdict relative to total evaluations. Bypass events must be classified by guardrail category and severity. Zero-tolerance applies to Critical category bypasses (e.g., guardrails covering regulated content, PII in outputs, or financial advice prohibitions). Tier-defined thresholds apply to lower-severity categories. Bypass rate monitoring operates at the platform layer independently of application-layer output filter monitoring (SRF-L3-MON-002); both layers must report. Where model serving is operated by a distinct ai-model-serving vendor, that vendor is accountable for reporting guardrail evaluation events to the ai-platform-provider; the ai-platform-provider retains accountability for the aggregate bypass rate.",
+   "accountable_persona": "ai-platform-provider",
+   "persona_split_note": "Guardrail infrastructure is owned by ai-platform-provider. Where ai-model-serving is a distinct vendor, it must emit guardrail evaluation telemetry to the platform. Accountability for the bypass rate metric and breach response rests with ai-platform-provider.",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-017 (AI Firewall Implementation and Management); AIR-DET-004 (AI System Observability)",
+    "aicm": "TVM-11 (Guardrails); LOG-03 (Security Monitoring and Alerting)",
+    "sr26_2": "Section V (Ongoing Model Monitoring)",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "guardrail_bypass_rate_by_category",
+    "description": "Rate of guardrail bypass events per category per monitoring window. Zero tolerance for Critical category bypasses; tier-defined thresholds for lower-severity categories.",
+    "evidence": {
+     "ocsf_class": "ai_operation",
+     "attribute": "Guardrail evaluation results should be emitted as enriched fields on ai_operation events or as dedicated security_finding events, tagged by guardrail category, verdict (blocked/bypassed), and severity. Token usage metrics in ai_operation can help distinguish legitimate completions from bypass-driven completions.",
+     "ocsf_version": "1.8.0",
+     "ocsf_class_status": "unverified-proposal"
     },
-    {
-      "id": "SRF-L4-MON-002",
-      "layer": "L4",
-      "component": "LLM Routers & Gateways",
-      "title": "Gateway Authentication Failure Rate Monitoring",
-      "description": "The AI platform provider must monitor the rate of authentication and authorization failures at all LLM gateway and router endpoints. Authentication failures (invalid credentials, expired tokens, missing credentials) and authorization failures (valid caller attempting to access an unauthorized model tier or endpoint) must be tracked separately. A sustained elevation in authentication failures may indicate credential stuffing, rotation failures, or misconfigured callers. A spike in authorization failures may indicate an application attempting to escalate model access beyond its entitlement, or an agent attempting to invoke a higher-tier model than its authorization permits. All authorization failures for Tier-1 model endpoints are Severity-1 events regardless of rate. Where ai-model-serving operates the inference endpoint directly, it is accountable for authentication failures at that endpoint; the ai-platform-provider is accountable for authorization failures at the routing and gateway layer.",
-      "accountable_persona": "ai-platform-provider",
-      "persona_split_note": "Authentication at the inference endpoint: ai-model-serving. Authorization at the gateway and routing layer: ai-platform-provider. Where the same vendor fills both roles, the split is internal. Where they are distinct vendors, each is accountable for their respective failure events.",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: ongoing monitoring of model infrastructure access controls",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "gateway_authn_failure_rate",
-        "description": "Rate of authentication and authorization failures per gateway endpoint per monitoring window, tracked separately by failure type. Tier-1 authorization failures: zero tolerance. All others: tier-defined control limits.",
-        "evidence": {
-          "ocsf_class": "authentication",
-          "attribute": "authentication OCSF class events at gateway endpoints where status == Failure. Cross-reference actor identity and target resource (model endpoint) to classify as authn failure vs. authz failure. Supplement with api_activity events for authorization boundary checks.",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "within-control-limits",
-        "param": "tier-defined (Tier-1 authz failures: 0; all others: tier-defined)",
-        "window": "1h",
-        "breach_action": "alert-ai-platform-provider; escalate-to-security-team-on-tier-1-authz-failure; investigate-credential-rotation-status-on-authn-spike",
-        "param_type": "zero-tolerance"
-      }
+    "operator": "<=",
+    "param": "tier-defined (0 for Critical; tier-defined for lower severity)",
+    "window": "24h",
+    "breach_action": "alert-ai-platform-provider; escalate-to-l1-governance-on-critical-bypass; initiate-guardrail-configuration-review",
+    "param_type": "zero-tolerance"
+   }
+  },
+  {
+   "id": "SRF-L4-MON-002",
+   "layer": "L4",
+   "component": "LLM Routers & Gateways",
+   "title": "Gateway Authentication Failure Rate Monitoring",
+   "description": "The AI platform provider must monitor the rate of authentication and authorization failures at all LLM gateway and router endpoints. Authentication failures (invalid credentials, expired tokens, missing credentials) and authorization failures (valid caller attempting to access an unauthorized model tier or endpoint) must be tracked separately. A sustained elevation in authentication failures may indicate credential stuffing, rotation failures, or misconfigured callers. A spike in authorization failures may indicate an application attempting to escalate model access beyond its entitlement, or an agent attempting to invoke a higher-tier model than its authorization permits. All authorization failures for Tier-1 model endpoints are Severity-1 events regardless of rate. Where ai-model-serving operates the inference endpoint directly, it is accountable for authentication failures at that endpoint; the ai-platform-provider is accountable for authorization failures at the routing and gateway layer.",
+   "accountable_persona": "ai-platform-provider",
+   "persona_split_note": "Authentication at the inference endpoint: ai-model-serving. Authorization at the gateway and routing layer: ai-platform-provider. Where the same vendor fills both roles, the split is internal. Where they are distinct vendors, each is accountable for their respective failure events.",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-DET-004 (AI System Observability)",
+    "aicm": "LOG-03 (Security Monitoring and Alerting); IAM-14 (Strong Authentication)",
+    "sr26_2": "N/A",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "gateway_authn_failure_rate",
+    "description": "Rate of authentication and authorization failures per gateway endpoint per monitoring window, tracked separately by failure type. Tier-1 authorization failures: zero tolerance. All others: tier-defined control limits.",
+    "evidence": {
+     "ocsf_class": "authentication",
+     "attribute": "authentication OCSF class events at gateway endpoints where status == Failure. Cross-reference actor identity and target resource (model endpoint) to classify as authn failure vs. authz failure. Supplement with api_activity events for authorization boundary checks.",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L4-MON-003",
-      "layer": "L4",
-      "component": "Compute Infrastructure",
-      "title": "Confidential Compute Attestation Validity Monitoring",
-      "description": "For Tier-1 models deployed in confidential compute environments (SRF-L4-DEV-003), the AI platform provider must continuously monitor that the cryptographic attestation for each running instance remains valid. Attestation validity may lapse due to infrastructure patching, node migration, hypervisor updates, or certificate expiry. A Tier-1 model running without a valid attestation has lost its confidentiality guarantee and must be treated as an unprotected workload until attestation is re-established. Attestation status must be checked at model load, on a scheduled polling interval, and on any infrastructure event that could affect the trusted execution environment. Where ai-model-serving operates the compute instances directly, it is jointly accountable with ai-platform-provider for attestation validity; the ai-platform-provider retains accountability for reporting to L1 governance on breach.",
-      "accountable_persona": "ai-platform-provider",
-      "persona_split_note": "Where ai-model-serving operates compute instances, it is accountable for attestation at the instance level. ai-platform-provider is accountable for the monitoring system, aggregate validity status, and L1 governance escalation on breach. Joint accountability; ai-platform-provider is the primary for examiner purposes.",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "tier_applicability": "Tier-1 models only.",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: ongoing monitoring of model infrastructure security controls",
-        "eu_ai_act": "TBD: Article 9 (risk management)"
-      },
-      "threshold": {
-        "metric": "confidential_compute_attestation_valid",
-        "description": "Binary per Tier-1 model instance: current cryptographic attestation is valid, has not expired, and matches the expected configuration hash for that deployment.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "api_activity events from the attestation verification service, polled on schedule. A verification response indicating expired or invalid attestation triggers the breach action. Cross-reference with infrastructure change events to correlate attestation lapses with infrastructure operations.",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true per Tier-1 instance",
-        "window": "continuous; polling interval tier-defined",
-        "breach_action": "suspend-tier-1-model-serving-on-attestation-lapse; alert-ai-platform-provider; notify-l1-governance; restore-only-after-valid-attestation-confirmed",
-        "param_type": "fixed"
-      }
+    "operator": "within-control-limits",
+    "param": "tier-defined (Tier-1 authz failures: 0; all others: tier-defined)",
+    "window": "1h",
+    "breach_action": "alert-ai-platform-provider; escalate-to-security-team-on-tier-1-authz-failure; investigate-credential-rotation-status-on-authn-spike",
+    "param_type": "zero-tolerance"
+   }
+  },
+  {
+   "id": "SRF-L4-MON-003",
+   "layer": "L4",
+   "component": "Compute Infrastructure",
+   "title": "Confidential Compute Attestation Validity Monitoring",
+   "description": "For Tier-1 models deployed in confidential compute environments (SRF-L4-DEV-003), the AI platform provider must continuously monitor that the cryptographic attestation for each running instance remains valid. Attestation validity may lapse due to infrastructure patching, node migration, hypervisor updates, or certificate expiry. A Tier-1 model running without a valid attestation has lost its confidentiality guarantee and must be treated as an unprotected workload until attestation is re-established. Attestation status must be checked at model load, on a scheduled polling interval, and on any infrastructure event that could affect the trusted execution environment. Where ai-model-serving operates the compute instances directly, it is jointly accountable with ai-platform-provider for attestation validity; the ai-platform-provider retains accountability for reporting to L1 governance on breach.",
+   "accountable_persona": "ai-platform-provider",
+   "persona_split_note": "Where ai-model-serving operates compute instances, it is accountable for attestation at the instance level. ai-platform-provider is accountable for the monitoring system, aggregate validity status, and L1 governance escalation on breach. Joint accountability; ai-platform-provider is the primary for examiner purposes.",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "tier_applicability": "Tier-1 models only.",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "CEK-03 (Data Encryption, including in-use); LOG-10 (Encryption Monitoring and Reporting)",
+    "sr26_2": "N/A",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "confidential_compute_attestation_valid",
+    "description": "Binary per Tier-1 model instance: current cryptographic attestation is valid, has not expired, and matches the expected configuration hash for that deployment.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "api_activity events from the attestation verification service, polled on schedule. A verification response indicating expired or invalid attestation triggers the breach action. Cross-reference with infrastructure change events to correlate attestation lapses with infrastructure operations.",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L4-ECH-001",
-      "layer": "L4",
-      "component": "Guardrails & Safety Systems",
-      "title": "Effective Challenge of Platform Security Controls and Thresholds",
-      "description": "The independent validation or second-line risk function must annually challenge whether the platform-level security controls and monitoring thresholds remain appropriate. Challenge must assess: whether the guardrail configuration baseline reflects the current model portfolio and threat environment, whether any guardrail bypass events in the prior period were dispositioned correctly and within SLA, whether gateway credential rotation has been executed on schedule, whether any Tier-1 model ran without valid confidential compute attestation during the prior period, and whether new operating models or model serving architectures introduced since last validation require additional platform controls not currently in scope.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "effective-challenge",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: effective challenge of model infrastructure controls and ongoing monitoring standards",
-        "eu_ai_act": "TBD"
-      },
-      "threshold": {
-        "metric": "platform_security_challenge_documented",
-        "description": "Binary: annual second-line challenge of L4 controls completed, covering all required assessment areas, with findings and any required control updates tracked to closure.",
-        "evidence": {
-          "ocsf_class": "TBD: governance artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "12mo",
-        "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
-      }
+    "operator": "==",
+    "param": "true per Tier-1 instance",
+    "window": "continuous; polling interval tier-defined",
+    "breach_action": "suspend-tier-1-model-serving-on-attestation-lapse; alert-ai-platform-provider; notify-l1-governance; restore-only-after-valid-attestation-confirmed",
+    "param_type": "fixed"
+   }
+  },
+  {
+   "id": "SRF-L4-ECH-001",
+   "layer": "L4",
+   "component": "Guardrails & Safety Systems",
+   "title": "Effective Challenge of Platform Security Controls and Thresholds",
+   "description": "The independent validation or second-line risk function must annually challenge whether the platform-level security controls and monitoring thresholds remain appropriate. Challenge must assess: whether the guardrail configuration baseline reflects the current model portfolio and threat environment, whether any guardrail bypass events in the prior period were dispositioned correctly and within SLA, whether gateway credential rotation has been executed on schedule, whether any Tier-1 model ran without valid confidential compute attestation during the prior period, and whether new operating models or model serving architectures introduced since last validation require additional platform controls not currently in scope.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "effective-challenge",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "A&A-02 (Independent Assessments)",
+    "sr26_2": "Section III (effective challenge)",
+    "eu_ai_act": "N/A"
+   },
+   "threshold": {
+    "metric": "platform_security_challenge_documented",
+    "description": "Binary: annual second-line challenge of L4 controls completed, covering all required assessment areas, with findings and any required control updates tracked to closure.",
+    "evidence": {
+     "ocsf_class": "TBD: governance artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L5-DEV-001",
-      "layer": "L5",
-      "component": "Model Governance",
-      "title": "Model Card Completeness and Security Disclosure",
-      "description": "Before a foundation model is made available to institution consumers (via API, download, or marketplace), the model provider must publish a model card that meets the minimum completeness standard for financial services deployment. Required fields: intended use cases and explicitly out-of-scope use cases, known failure modes and documented evaluation results on safety benchmarks, training data description at the level of detail needed for MRM provenance review (SRF-L2-DEV-001 alignment), known limitations relevant to regulated use cases (credit, insurance, financial advice), security evaluation summary covering at minimum prompt injection resistance, jailbreak resistance, and data exfiltration risk, and the vulnerability disclosure process and contact (SRF-L5-MON-002 alignment). Model cards must be versioned and updated with each model release.",
-      "accountable_persona": "model-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model documentation requirements; model card content as a model development artifact",
-        "eu_ai_act": "TBD: Article 11 (technical documentation); Article 13 (transparency and information provision)"
-      },
-      "threshold": {
-        "metric": "model_card_completeness",
-        "description": "Binary: model card exists, covers all required fields, is versioned, and is publicly accessible at the time the model is offered to institution consumers.",
-        "evidence": {
-          "ocsf_class": "TBD: document artifact. Completeness can be assessed programmatically if the model card is machine-readable (e.g., Hugging Face model card schema) by checking required field presence.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-model-release",
-        "breach_action": "block-model-from-institution-deployment-until-model-card-complete"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "12mo",
+    "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
+   }
+  },
+  {
+   "id": "SRF-L5-DEV-001",
+   "layer": "L5",
+   "component": "Model Governance",
+   "title": "Model Card Completeness and Security Disclosure",
+   "description": "Before a foundation model is made available to institution consumers (via API, download, or marketplace), the model provider must publish a model card that meets the minimum completeness standard for financial services deployment. Required fields: intended use cases and explicitly out-of-scope use cases, known failure modes and documented evaluation results on safety benchmarks, training data description at the level of detail needed for MRM provenance review (SRF-L2-DEV-001 alignment), known limitations relevant to regulated use cases (credit, insurance, financial advice), security evaluation summary covering at minimum prompt injection resistance, jailbreak resistance, and data exfiltration risk, and the vulnerability disclosure process and contact (SRF-L5-MON-002 alignment). Model cards must be versioned and updated with each model release.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use); AIR-OP-017 (Lack of Explainability)",
+    "aicm": "MDS-03 (Model Documentation); MDS-04 (Model Documentation Requirements)",
+    "sr26_2": "Section VII (Vendor and Other Third-Party Products); Section VI (Documentation)",
+    "eu_ai_act": "Article 11 (Technical documentation); Article 53 (General-purpose AI model provider obligations)"
+   },
+   "threshold": {
+    "metric": "model_card_completeness",
+    "description": "Binary: model card exists, covers all required fields, is versioned, and is publicly accessible at the time the model is offered to institution consumers.",
+    "evidence": {
+     "ocsf_class": "TBD: document artifact. Completeness can be assessed programmatically if the model card is machine-readable (e.g., Hugging Face model card schema) by checking required field presence.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L5-DEV-002",
-      "layer": "L5",
-      "component": "Model Distribution",
-      "title": "Model Artifact Signing and Supply-Chain Provenance",
-      "description": "The model provider must cryptographically sign all model artifacts (weights, tokenizer, configuration files) before distribution. The signing key must be managed under the provider's documented key management policy, with the public key published in a verifiable trust store. The model provider must also publish a Software Bill of Materials (SBOM) or equivalent supply-chain provenance record for each model release, covering training framework versions, key dependencies, and any third-party components incorporated into the model architecture. This provenance record enables the ai-platform-provider to verify model integrity at load (SRF-L5-MON-001) and supports the institution's third-party risk management obligations under SR 26-2's inherited vendor management principles.",
-      "accountable_persona": "model-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 supply-chain tampering in AI agents; verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: third-party model vendor management; model supply-chain integrity",
-        "eu_ai_act": "TBD: Article 11 (technical documentation); Article 17 (quality management)"
-      },
-      "threshold": {
-        "metric": "model_artifact_signed_and_sbom_published",
-        "description": "Binary: all model artifacts for the release are cryptographically signed with a key in the published trust store, and an SBOM or equivalent provenance record is published alongside the model.",
-        "evidence": {
-          "ocsf_class": "TBD: signing artifact. Verification event occurs at load time (see SRF-L5-MON-001).",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-model-release",
-        "breach_action": "block-model-from-institution-deployment-until-signed-artifacts-available"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-model-release",
+    "breach_action": "block-model-from-institution-deployment-until-model-card-complete"
+   }
+  },
+  {
+   "id": "SRF-L5-DEV-002",
+   "layer": "L5",
+   "component": "Model Distribution",
+   "title": "Model Artifact Signing and Supply-Chain Provenance",
+   "description": "The model provider must cryptographically sign all model artifacts (weights, tokenizer, configuration files) before distribution. The signing key must be managed under the provider's documented key management policy, with the public key published in a verifiable trust store. The model provider must also publish a Software Bill of Materials (SBOM) or equivalent supply-chain provenance record for each model release, covering training framework versions, key dependencies, and any third-party components incorporated into the model architecture. This provenance record enables the ai-platform-provider to verify model integrity at load (SRF-L5-MON-001) and supports the institution's third-party risk management obligations under SR 26-2's inherited vendor management principles.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-008 (Tampering With the Foundational Model)",
+    "aicm": "MDS-09 (Model Signing/Ownership Verification); MDS-01 (Training Pipeline Security)",
+    "sr26_2": "Section VII (Vendor and Other Third-Party Products)",
+    "eu_ai_act": "Article 17 (Quality management system); Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "model_artifact_signed_and_sbom_published",
+    "description": "Binary: all model artifacts for the release are cryptographically signed with a key in the published trust store, and an SBOM or equivalent provenance record is published alongside the model.",
+    "evidence": {
+     "ocsf_class": "TBD: signing artifact. Verification event occurs at load time (see SRF-L5-MON-001).",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L5-DEV-003",
-      "layer": "L5",
-      "component": "Foundation Models",
-      "title": "Pre-Release Security Evaluation Baseline",
-      "description": "Before a foundation model is made available to institution consumers, the model provider must conduct and publish a security evaluation covering the model's behavior on categories of risk relevant to financial services deployment. Required evaluation categories: prompt injection resistance (resistance to direct and indirect injection attacks), jailbreak resistance across documented bypass techniques, tendency to produce ungrounded financial claims (hallucination in financial contexts), data exfiltration risk (tendency to reproduce training data verbatim), and behavior on agentic tool-use scenarios including tool-call refusal when out of scope. Evaluation methodology and benchmark datasets used must be disclosed. Results must be quantitative where possible and updated with each major model version.",
-      "accountable_persona": "model-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "development",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model development documentation; evaluation of model fitness for purpose",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 15 (accuracy robustness and cybersecurity)",
-        "owasp_llm": "LLM01: Prompt Injection; LLM06: Sensitive Information Disclosure; LLM09: Overreliance"
-      },
-      "threshold": {
-        "metric": "security_evaluation_published",
-        "description": "Binary: security evaluation report covering all required categories is published with the model release, with quantitative results and disclosed methodology.",
-        "evidence": {
-          "ocsf_class": "TBD: evaluation report artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "at-model-release",
-        "breach_action": "block-model-from-institution-deployment-until-evaluation-published"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-model-release",
+    "breach_action": "block-model-from-institution-deployment-until-signed-artifacts-available"
+   }
+  },
+  {
+   "id": "SRF-L5-DEV-003",
+   "layer": "L5",
+   "component": "Foundation Models",
+   "title": "Pre-Release Security Evaluation Baseline",
+   "description": "Before a foundation model is made available to institution consumers, the model provider must conduct and publish a security evaluation covering the model's behavior on categories of risk relevant to financial services deployment. Required evaluation categories: prompt injection resistance (resistance to direct and indirect injection attacks), jailbreak resistance across documented bypass techniques, tendency to produce ungrounded financial claims (hallucination in financial contexts), data exfiltration risk (tendency to reproduce training data verbatim), and behavior on agentic tool-use scenarios including tool-call refusal when out of scope. Evaluation methodology and benchmark datasets used must be disclosed. Results must be quantitative where possible and updated with each major model version.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "development",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-005 (System Acceptance Testing)",
+    "aicm": "MDS-06 (Adversarial Attack Analysis); MDS-07 (Model Hardening)",
+    "sr26_2": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)",
+    "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
+    "owasp_llm": "LLM01: Prompt Injection; LLM06: Sensitive Information Disclosure; LLM09: Overreliance"
+   },
+   "threshold": {
+    "metric": "security_evaluation_published",
+    "description": "Binary: security evaluation report covering all required categories is published with the model release, with quantitative results and disclosed methodology.",
+    "evidence": {
+     "ocsf_class": "TBD: evaluation report artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L5-VAL-001",
-      "layer": "L5",
-      "component": "Foundation Models",
-      "title": "Independent Evaluation of Model Security Properties",
-      "description": "Before institution deployment of a Tier-1 or Tier-2 model, the institution's independent validation function (or a commissioned third party) must conduct its own security evaluation of the foundation model, independent of the model provider's published evaluation (SRF-L5-DEV-003). This is required because the provider's evaluation is self-reported and may not cover the institution's specific deployment context, use case constraints, or threat model. The independent evaluation must cover: reproduction of key benchmark results from the provider's evaluation to validate claims, institution-specific red-teaming for the intended use case, and assessment of whether the model's known failure modes are adequately addressed by the application and platform controls (SRF-L3, SRF-L4). Findings must be incorporated into the model's validation report and linked to the model card.",
-      "accountable_persona": "model-provider",
-      "co_accountable_persona": "ai-system-governance",
-      "accountability_split": {
-        "model-provider": "Accountable for providing access, documentation, model artifacts, and cooperation sufficient to enable independent evaluation. A provider that withholds artifacts necessary for evaluation is in breach of this control.",
-        "ai-system-governance": "Accountable for commissioning the evaluation, ensuring it covers the required scope, and incorporating findings into the institution's validation report. Cannot delegate this accountability to the model-provider.",
-        "examiner_routing": "Findings about evaluation completeness or scope route to ai-system-governance. Findings about provider cooperation or artifact availability route to model-provider."
-      },
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "independent-validation",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: independent validation section; third-party model evaluation obligations",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 62 (reporting obligations)"
-      },
-      "threshold": {
-        "metric": "independent_model_evaluation_completed",
-        "description": "Binary: independent evaluation completed by a party with no development accountability for the model, covering required scope, with findings documented and incorporated into the validation report.",
-        "evidence": {
-          "ocsf_class": "TBD: validation report artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "pre-production-approval",
-        "breach_action": "block-tier-1-and-tier-2-model-production-approval"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "at-model-release",
+    "breach_action": "block-model-from-institution-deployment-until-evaluation-published"
+   }
+  },
+  {
+   "id": "SRF-L5-VAL-001",
+   "layer": "L5",
+   "component": "Foundation Models",
+   "title": "Independent Evaluation of Model Security Properties",
+   "description": "Before institution deployment of a Tier-1 or Tier-2 model, the institution's independent validation function (or a commissioned third party) must conduct its own security evaluation of the foundation model, independent of the model provider's published evaluation (SRF-L5-DEV-003). This is required because the provider's evaluation is self-reported and may not cover the institution's specific deployment context, use case constraints, or threat model. The independent evaluation must cover: reproduction of key benchmark results from the provider's evaluation to validate claims, institution-specific red-teaming for the intended use case, and assessment of whether the model's known failure modes are adequately addressed by the application and platform controls (SRF-L3, SRF-L4). Findings must be incorporated into the model's validation report and linked to the model card.",
+   "accountable_persona": "model-provider",
+   "co_accountable_persona": "ai-system-governance",
+   "accountability_split": {
+    "model-provider": "Accountable for providing access, documentation, model artifacts, and cooperation sufficient to enable independent evaluation. A provider that withholds artifacts necessary for evaluation is in breach of this control.",
+    "ai-system-governance": "Accountable for commissioning the evaluation, ensuring it covers the required scope, and incorporating findings into the institution's validation report. Cannot delegate this accountability to the model-provider.",
+    "examiner_routing": "Findings about evaluation completeness or scope route to ai-system-governance. Findings about provider cooperation or artifact availability route to model-provider."
+   },
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "independent-validation",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-005 (System Acceptance Testing); AIR-DET-015 (Using Large Language Models for Automated Evaluation)",
+    "aicm": "MDS-06 (Adversarial Attack Analysis); A&A-02 (Independent Assessments)",
+    "sr26_2": "Section V (Model Validation); Section VII (Vendor and Other Third-Party Products)",
+    "eu_ai_act": "Article 9 (Risk management system)"
+   },
+   "threshold": {
+    "metric": "independent_model_evaluation_completed",
+    "description": "Binary: independent evaluation completed by a party with no development accountability for the model, covering required scope, with findings documented and incorporated into the validation report.",
+    "evidence": {
+     "ocsf_class": "TBD: validation report artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L5-MON-001",
-      "layer": "L5",
-      "component": "Model Distribution",
-      "title": "Model Signature Verification at Load",
-      "cross_layer_controls": [
-        "SRF-L4-DEV-001"
-      ],
-      "cross_layer_note": "Signing infrastructure accountability: model-provider (L5). Verification execution accountability: ai-platform-provider (L4). A verification failure finding is a joint incident: the model-provider must investigate signing infrastructure integrity; the ai-platform-provider must suspend the affected model version. Neither control substitutes for the other. Examiner findings route to the party accountable for the failed component.",
-      "description": "Every time a foundation model artifact is loaded into an inference environment, the ai-platform-provider must verify the cryptographic signature against the model provider's published trust store (SRF-L5-DEV-002). A load event that cannot be verified must be rejected; the model must not serve requests from an unsigned or unverifiable artifact. Signature verification must be logged with the model version, artifact hash, and verification result. This control detects supply-chain tampering: an attacker substituting a malicious model artifact for a legitimate one. Accountability for the signing infrastructure sits with the model-provider (L5); accountability for executing verification at load sits with the ai-platform-provider (L4). Both controls are required; neither substitutes for the other.",
-      "accountable_persona": "model-provider",
-      "implementing_persona_note": "Verification at load is executed by ai-platform-provider (L4). Model-provider is accountable for maintaining the signing infrastructure and published trust store that makes verification possible. Cross-layer dependency: this control and SRF-L4 platform controls are jointly required.",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: AIGF v2.0 supply-chain tampering in AI agents; verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: model infrastructure integrity; ongoing monitoring of model supply chain",
-        "eu_ai_act": "TBD: Article 9 (risk management); Article 17 (quality management system)"
-      },
-      "threshold": {
-        "metric": "model_signature_verification_success_rate",
-        "description": "Percentage of model load events where signature verification succeeds. Any verification failure for a currently deployed model version is a Severity-1 event.",
-        "evidence": {
-          "ocsf_class": "api_activity",
-          "attribute": "api_activity events at the model loading endpoint, enriched with artifact hash and signature verification result (pass/fail). A failure status on a load event triggers the breach action.",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "1.0 (100% verification success)",
-        "window": "per-load-event",
-        "breach_action": "reject-model-load; alert-ai-platform-provider-and-model-provider; initiate-supply-chain-incident-response; suspend-affected-model-version",
-        "param_type": "verification"
-      }
+    "operator": "==",
+    "param": "true",
+    "window": "pre-production-approval",
+    "breach_action": "block-tier-1-and-tier-2-model-production-approval"
+   }
+  },
+  {
+   "id": "SRF-L5-MON-001",
+   "layer": "L5",
+   "component": "Model Distribution",
+   "title": "Model Signature Verification at Load",
+   "cross_layer_controls": [
+    "SRF-L4-DEV-001"
+   ],
+   "cross_layer_note": "Signing infrastructure accountability: model-provider (L5). Verification execution accountability: ai-platform-provider (L4). A verification failure finding is a joint incident: the model-provider must investigate signing infrastructure integrity; the ai-platform-provider must suspend the affected model version. Neither control substitutes for the other. Examiner findings route to the party accountable for the failed component.",
+   "description": "Every time a foundation model artifact is loaded into an inference environment, the ai-platform-provider must verify the cryptographic signature against the model provider's published trust store (SRF-L5-DEV-002). A load event that cannot be verified must be rejected; the model must not serve requests from an unsigned or unverifiable artifact. Signature verification must be logged with the model version, artifact hash, and verification result. This control detects supply-chain tampering: an attacker substituting a malicious model artifact for a legitimate one. Accountability for the signing infrastructure sits with the model-provider (L5); accountability for executing verification at load sits with the ai-platform-provider (L4). Both controls are required; neither substitutes for the other.",
+   "accountable_persona": "model-provider",
+   "implementing_persona_note": "Verification at load is executed by ai-platform-provider (L4). Model-provider is accountable for maintaining the signing infrastructure and published trust store that makes verification possible. Cross-layer dependency: this control and SRF-L4 platform controls are jointly required.",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "AIR-SEC-008 (Tampering With the Foundational Model)",
+    "aicm": "MDS-09 (Model Signing/Ownership Verification); MDS-08 (Model Integrity Checks)",
+    "sr26_2": "Section VII (Vendor and Other Third-Party Products)",
+    "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+   },
+   "threshold": {
+    "metric": "model_signature_verification_success_rate",
+    "description": "Percentage of model load events where signature verification succeeds. Any verification failure for a currently deployed model version is a Severity-1 event.",
+    "evidence": {
+     "ocsf_class": "api_activity",
+     "attribute": "api_activity events at the model loading endpoint, enriched with artifact hash and signature verification result (pass/fail). A failure status on a load event triggers the breach action.",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L5-MON-002",
-      "layer": "L5",
-      "component": "Model Governance",
-      "title": "Vulnerability Disclosure SLA Adherence",
-      "description": "The model provider must operate a public vulnerability disclosure program for foundation models used by financial institutions, with documented SLAs for acknowledgment and remediation. The institution must monitor the provider's disclosure feed and track open vulnerabilities against the SLA. Required SLA tiers: Critical vulnerabilities (active exploitation or CVSS >= 9.0 equivalent for AI risk): acknowledgment within 24 hours, remediation or documented mitigation within 7 days; High vulnerabilities: acknowledgment within 72 hours, remediation within 30 days. Institutions using a model with an open Critical vulnerability beyond SLA must treat the model as impaired and escalate to L1 governance. This control monitors both provider SLA adherence and the institution's response to disclosed vulnerabilities.",
-      "accountable_persona": "model-provider",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "ongoing-monitoring",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: third-party vendor management; ongoing monitoring of model provider obligations",
-        "eu_ai_act": "TBD: Article 62 (reporting of serious incidents); Article 72 (post-market monitoring)"
-      },
-      "threshold": {
-        "metric": "vulnerability_disclosure_sla_adherence",
-        "description": "Binary per open vulnerability: provider has acknowledged and provided remediation or mitigation within the SLA window for the vulnerability's severity tier.",
-        "evidence": {
-          "ocsf_class": "TBD: disclosure feed artifact. If provider publishes machine-readable advisories (e.g., OSV format), these can be ingested and tracked programmatically. Candidate: security_finding OCSF class events generated from advisory ingestion.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true per open vulnerability within SLA window",
-        "window": "continuous; checked on disclosure and at SLA boundary",
-        "breach_action": "escalate-critical-sla-breach-to-l1-governance; initiate-model-impairment-review; engage-provider-via-vendor-management-process"
-      }
+    "operator": "==",
+    "param": "1.0 (100% verification success)",
+    "window": "per-load-event",
+    "breach_action": "reject-model-load; alert-ai-platform-provider-and-model-provider; initiate-supply-chain-incident-response; suspend-affected-model-version",
+    "param_type": "verification"
+   }
+  },
+  {
+   "id": "SRF-L5-MON-002",
+   "layer": "L5",
+   "component": "Model Governance",
+   "title": "Vulnerability Disclosure SLA Adherence",
+   "description": "The model provider must operate a public vulnerability disclosure program for foundation models used by financial institutions, with documented SLAs for acknowledgment and remediation. The institution must monitor the provider's disclosure feed and track open vulnerabilities against the SLA. Required SLA tiers: Critical vulnerabilities (active exploitation or CVSS >= 9.0 equivalent for AI risk): acknowledgment within 24 hours, remediation or documented mitigation within 7 days; High vulnerabilities: acknowledgment within 72 hours, remediation within 30 days. Institutions using a model with an open Critical vulnerability beyond SLA must treat the model as impaired and escalate to L1 governance. This control monitors both provider SLA adherence and the institution's response to disclosed vulnerabilities.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "ongoing-monitoring",
+   "mappings": {
+    "finos_aigf": "N/A",
+    "aicm": "TVM-09 (Vulnerability Management Reporting); TVM-07 (Vulnerability Remediation Schedule)",
+    "sr26_2": "Section VII (Vendor and Other Third-Party Products)",
+    "eu_ai_act": "Article 73 (Reporting of serious incidents); Article 72 (Post-market monitoring)"
+   },
+   "threshold": {
+    "metric": "vulnerability_disclosure_sla_adherence",
+    "description": "Binary per open vulnerability: provider has acknowledged and provided remediation or mitigation within the SLA window for the vulnerability's severity tier.",
+    "evidence": {
+     "ocsf_class": "TBD: disclosure feed artifact. If provider publishes machine-readable advisories (e.g., OSV format), these can be ingested and tracked programmatically. Candidate: security_finding OCSF class events generated from advisory ingestion.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-    {
-      "id": "SRF-L5-ECH-001",
-      "layer": "L5",
-      "component": "Model Governance",
-      "title": "Effective Challenge of Model Governance Standards",
-      "description": "The institution's independent validation or second-line risk function must annually challenge whether the model governance requirements placed on foundation model providers remain appropriate and are being met. Challenge must assess: whether model cards for deployed models remain current and complete relative to the standard in SRF-L5-DEV-001, whether any model provider has missed vulnerability disclosure SLAs in the prior period and whether the institution's response was adequate, whether the model provider's published security evaluation methodology remains credible relative to the current threat environment, whether new model versions deployed in the prior year received independent evaluation per SRF-L5-VAL-001, and whether model signing and SBOM practices have been maintained across all model versions in use. Findings must be reported to the MRM head and factored into the institution's third-party model risk ratings.",
-      "accountable_persona": "model-provider",
-      "accountable_persona_note": "Challenge is conducted by the institution's ai-system-governance (L1) on behalf of MRM. Model-provider is the subject of the challenge. Accountability for commissioning and completing the challenge sits with the institution.",
-      "operating_models": [
-        "AI-PaaS",
-        "Agent-PaaS",
-        "IaaS"
-      ],
-      "mrm_stage": "effective-challenge",
-      "mappings": {
-        "finos_aigf": "TBD: verify at air-governance-framework.finos.org",
-        "aicm": "TBD",
-        "sr26_2": "TBD: effective challenge of third-party model provider governance; vendor risk management",
-        "eu_ai_act": "TBD: Article 72 (post-market monitoring obligations)"
-      },
-      "threshold": {
-        "metric": "model_governance_challenge_documented",
-        "description": "Binary: annual challenge of L5 model governance standards completed, covering all required assessment areas, with findings reported to MRM head and factored into third-party model risk ratings.",
-        "evidence": {
-          "ocsf_class": "TBD: governance artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "window": "12mo",
-        "breach_action": "escalate-to-cro; flag-in-annual-mrm-report; review-institution-model-provider-relationships"
-      }
-    }
-  ]
+    "operator": "==",
+    "param": "true per open vulnerability within SLA window",
+    "window": "continuous; checked on disclosure and at SLA boundary",
+    "breach_action": "escalate-critical-sla-breach-to-l1-governance; initiate-model-impairment-review; engage-provider-via-vendor-management-process"
+   }
+  },
+  {
+   "id": "SRF-L5-ECH-001",
+   "layer": "L5",
+   "component": "Model Governance",
+   "title": "Effective Challenge of Model Governance Standards",
+   "description": "The institution's independent validation or second-line risk function must annually challenge whether the model governance requirements placed on foundation model providers remain appropriate and are being met. Challenge must assess: whether model cards for deployed models remain current and complete relative to the standard in SRF-L5-DEV-001, whether any model provider has missed vulnerability disclosure SLAs in the prior period and whether the institution's response was adequate, whether the model provider's published security evaluation methodology remains credible relative to the current threat environment, whether new model versions deployed in the prior year received independent evaluation per SRF-L5-VAL-001, and whether model signing and SBOM practices have been maintained across all model versions in use. Findings must be reported to the MRM head and factored into the institution's third-party model risk ratings.",
+   "accountable_persona": "model-provider",
+   "accountable_persona_note": "Challenge is conducted by the institution's ai-system-governance (L1) on behalf of MRM. Model-provider is the subject of the challenge. Accountability for commissioning and completing the challenge sits with the institution.",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+   ],
+   "mrm_stage": "effective-challenge",
+   "mappings": {
+    "finos_aigf": "AIR-PREV-007 (Legal and Contractual Frameworks for AI Systems)",
+    "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)",
+    "sr26_2": "Section VII (Vendor and Other Third-Party Products); Section III (effective challenge)",
+    "eu_ai_act": "Article 72 (Post-market monitoring)"
+   },
+   "threshold": {
+    "metric": "model_governance_challenge_documented",
+    "description": "Binary: annual challenge of L5 model governance standards completed, covering all required assessment areas, with findings reported to MRM head and factored into third-party model risk ratings.",
+    "evidence": {
+     "ocsf_class": "TBD: governance artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
+    },
+    "operator": "==",
+    "param": "true",
+    "window": "12mo",
+    "breach_action": "escalate-to-cro; flag-in-annual-mrm-report; review-institution-model-provider-relationships"
+   }
+  }
+ ],
+ "finos_aigf_citation_format": "FINOS AIGF citations use the catalogue IDs 'AIR-{OP|SEC|RC|PREV|DET}-NNN' with the entry title in parentheses, multiple citations separated by '; '. Verified against the Approved-Specification set at air-governance-framework.finos.org (July 2026). 'N/A' means no AIGF nexus.",
+ "sr26_2_citation_format": "SR 26-2 citations reference the attachment 'Supervisory Guidance on Model Risk Management' (SR2602a1.pdf, April 17, 2026) in the form 'Section N (heading or subheading)'. 'Section III footnote 3' marks controls for generative or agentic AI, which the guidance places out of scope while MRM principles are applied by analogy. 'N/A' means the guidance does not address the control's subject. Verified against the letter text (July 2026).",
+ "aicm_citation_format": "CSA AICM citations use the control IDs '{DOMAIN}-NN' with the control title in parentheses, multiple citations separated by '; '. Verified against the AICM v1.0.3 spreadsheet (243 controls, 18 domains; July 2026). 'N/A' means no AICM nexus."
 }

@@ -1,1381 +1,1516 @@
 {
-  "schema_version": "0.1",
-  "srf_version": "1.0",
-  "industry": "public-sector",
-  "description": "Public-sector control schema for the CoSAI AI Shared Responsibility Framework. Scoped to U.S. federal civilian agencies (FCEB). Maps SRF layers and accountable personas to OMB M-25-21 minimum practices, OMB M-25-22 acquisition requirements, FedRAMP 20x Key Security Indicators, NIST AI RMF 1.0, NIST AI 600-1 (Generative AI Profile), NIST COSAiS overlays (draft), and OWASP LLM Top 10. Each control carries a responsibility_split value aligned to FedRAMP Customer Responsibility Matrix categories.",
-  "regulatory_context": "OMB M-25-21 (April 3, 2025) requires federal civilian agencies to apply seven minimum risk management practices to every high-impact AI use case and report compliance to OMB by September 22, 2026. Use cases that cannot meet the minimum practices must be discontinued. FedRAMP 20x is moving AI services into agencies through machine-readable Key Security Indicators rather than point-in-time documents; the first AI 20x Low authorizations landed January 2026, OpenAI holds 20x Moderate, and IBM authorized 11 AI products including watsonx in April 2026. FedRAMP authorizes the CSP side only; this schema fills the agency side of the shared responsibility split for AI-specific obligations. OMB M-25-22 (April 2025) governs AI acquisition, data rights, vendor lock-in avoidance, and transparency requirements. NIST COSAiS overlays are still in draft; mappings to those overlays are marked TBD pending final publication.",
-  "id_convention": "SRF-{layer}-{stage: ACQ|VAL|MON|OVR}-{seq}",
-  "mapping_status_note": "M-25-21 and M-25-22 section references, FedRAMP 20x KSI names, and COSAiS overlay identifiers marked TBD require verification against the primary PDFs and fedramp.gov before publishing. Do not substitute invented IDs. COSAiS overlays are all draft as of June 2026; mark all COSAiS mappings TBD with a revisit note.",
-  "generated": "2026-06-12",
-  "lifecycle_stages": ["acquisition-integration", "pre-deployment-validation", "ongoing-monitoring", "human-oversight-remedy"],
-  "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-  "responsibility_split_values": {
-    "csp": "The cloud service provider (AI vendor) is solely responsible.",
-    "agency": "The agency is solely responsible.",
-    "shared": "Responsibility is split between CSP and agency; both must implement assigned controls.",
-    "inherited": "The agency inherits this control from a FedRAMP-authorized CSP or interagency shared service; agency must verify inheritance is documented in the CRM."
+ "schema_version": "0.1",
+ "srf_version": "1.0",
+ "industry": "public-sector",
+ "description": "Public-sector control schema for the CoSAI AI Shared Responsibility Framework. Scoped to U.S. federal civilian agencies (FCEB). Maps SRF layers and accountable personas to OMB M-25-21 minimum practices, OMB M-25-22 acquisition requirements, FedRAMP 20x Key Security Indicators, NIST AI RMF 1.0, NIST AI 600-1 (Generative AI Profile), NIST COSAiS overlays (draft), and OWASP LLM Top 10. Each control carries a responsibility_split value aligned to FedRAMP Customer Responsibility Matrix categories.",
+ "regulatory_context": "OMB M-25-21 (April 3, 2025) requires federal civilian agencies to apply seven minimum risk management practices to every high-impact AI use case and report compliance to OMB by September 22, 2026. Use cases that cannot meet the minimum practices must be discontinued. FedRAMP 20x is moving AI services into agencies through machine-readable Key Security Indicators rather than point-in-time documents; the first AI 20x Low authorizations landed January 2026, OpenAI holds 20x Moderate, and IBM authorized 11 AI products including watsonx in April 2026. FedRAMP authorizes the CSP side only; this schema fills the agency side of the shared responsibility split for AI-specific obligations. OMB M-25-22 (April 2025) governs AI acquisition, data rights, vendor lock-in avoidance, and transparency requirements. NIST COSAiS overlays are still in draft; mappings to those overlays are marked TBD pending final publication.",
+ "id_convention": "SRF-{layer}-{stage: ACQ|VAL|MON|OVR}-{seq}",
+ "mapping_status_note": "M-25-21, M-25-22, and FedRAMP 20x KSI mappings verified against primary sources 2026-07-05 (memo texts and the machine-readable Consolidated Rules for 2026). COSAiS mappings remain TBD pending initial public drafts of the NISTIR 8605 overlays. Do not substitute invented IDs.",
+ "generated": "2026-06-12",
+ "lifecycle_stages": [
+  "acquisition-integration",
+  "pre-deployment-validation",
+  "ongoing-monitoring",
+  "human-oversight-remedy"
+ ],
+ "operating_models": [
+  "AI-SaaS",
+  "AI-PaaS",
+  "Agent-Ops",
+  "Shared-Service"
+ ],
+ "responsibility_split_values": {
+  "csp": "The cloud service provider (AI vendor) is solely responsible.",
+  "agency": "The agency is solely responsible.",
+  "shared": "Responsibility is split between CSP and agency; both must implement assigned controls.",
+  "inherited": "The agency inherits this control from a FedRAMP-authorized CSP or interagency shared service; agency must verify inheritance is documented in the CRM."
+ },
+ "controls": [
+  {
+   "id": "SRF-L1-ACQ-001",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "AI Use-Case Inventory Completeness and Public Posting",
+   "description": "The agency must maintain a current inventory of all AI use cases, confirm completeness against known system deployments, and publicly post the inventory per M-25-21 transparency requirements. Each entry must record the use case, operating component, point of contact, and whether the use case has been designated high-impact.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 3(a)(v) (Update AI Use Case Inventories)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 1.1 (policies, processes, procedures, and practices across the organization); MAP 1.1 (context is established for the AI risk assessment)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "ai_use_case_inventory_coverage_pct",
+    "description": "Percentage of known production AI use cases appearing in the current public inventory. Tier-configurable; recommended minimum 95% for agencies with high-impact designations.",
+    "evidence": {
+     "ocsf_class": "Document management artifact at L1. Inventory publication is a governance record. Candidate OCSF class: audit_activity (3002) if the inventory system emits publication or update events to SIEM.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
+    },
+    "operator": ">=",
+    "param": "TIER_AI_INVENTORY_COVERAGE_PCT",
+    "param_type": "tier-configurable",
+    "window": "quarterly",
+    "breach_action": "identify-unregistered-use-cases; notify-CAIO; escalate-to-AI-governance-board"
+   }
   },
-  "controls": [
-
-    {
-      "id": "SRF-L1-ACQ-001",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "AI Use-Case Inventory Completeness and Public Posting",
-      "description": "The agency must maintain a current inventory of all AI use cases, confirm completeness against known system deployments, and publicly post the inventory per M-25-21 transparency requirements. Each entry must record the use case, operating component, point of contact, and whether the use case has been designated high-impact.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 Section on public use-case inventories and transparency; verify section references against whitehouse.gov memo PDF",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 1.1 (policies, processes, procedures, and practices across the organization); MAP 1.1 (context is established for the AI risk assessment)",
-        "cosais": "TBD: COSAiS predictive-AI overlay governance dimension; revisit when initial public draft is final",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "ai_use_case_inventory_coverage_pct",
-        "description": "Percentage of known production AI use cases appearing in the current public inventory. Tier-configurable; recommended minimum 95% for agencies with high-impact designations.",
-        "evidence": {
-          "ocsf_class": "Document management artifact at L1. Inventory publication is a governance record. Candidate OCSF class: audit_activity (3002) if the inventory system emits publication or update events to SIEM.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "TIER_AI_INVENTORY_COVERAGE_PCT",
-        "param_type": "tier-configurable",
-        "window": "quarterly",
-        "breach_action": "identify-unregistered-use-cases; notify-CAIO; escalate-to-AI-governance-board"
-      }
+  {
+   "id": "SRF-L1-ACQ-002",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "High-Impact AI Designation with Named Designating Official",
+   "description": "For each AI use case, the agency must document whether a high-impact designation has been made under M-25-21, name the official who made the designation, and record the rationale. Use cases pending designation must have an open action item with a target date. Designation status must be reviewed at least annually.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(a) (Determining High-Impact AI); Section 6 (categories presumed high-impact)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 1.2 (organizational teams document AI risk and benefit); MAP 2.1 (scientific findings, known and foreseeable impacts are characterized)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "high_impact_designation_documented",
+    "description": "Binary: every AI use case in the inventory carries a documented designation decision, names the designating official, and was reviewed within the prior annual cycle.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Designation records are governance documents. Candidate: audit_activity (3002) for designation event logging.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-ACQ-002",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "High-Impact AI Designation with Named Designating Official",
-      "description": "For each AI use case, the agency must document whether a high-impact designation has been made under M-25-21, name the official who made the designation, and record the rationale. Use cases pending designation must have an open action item with a target date. Designation status must be reviewed at least annually.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 high-impact AI designation criteria and reporting requirements; verify section references against memo PDF",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 1.2 (organizational teams document AI risk and benefit); MAP 2.1 (scientific findings, known and foreseeable impacts are characterized)",
-        "cosais": "TBD: COSAiS overlay governance dimension; revisit on final publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "high_impact_designation_documented",
-        "description": "Binary: every AI use case in the inventory carries a documented designation decision, names the designating official, and was reviewed within the prior annual cycle.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Designation records are governance documents. Candidate: audit_activity (3002) for designation event logging.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "annual-review",
-        "breach_action": "flag-undesignated-use-cases; halt-new-high-impact-deployments-pending-designation; notify-CAIO"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "annual-review",
+    "breach_action": "flag-undesignated-use-cases; halt-new-high-impact-deployments-pending-designation; notify-CAIO"
+   }
+  },
+  {
+   "id": "SRF-L1-ACQ-003",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "CAIO Appointment and AI Governance Board Charter Currency",
+   "description": "The agency must have a confirmed Chief AI Officer (CAIO) in place per M-25-21 and an active AI governance board with a current charter. The charter must define membership, decision rights, meeting cadence, and escalation paths for high-impact AI use cases.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 3(a)(i) (Chief AI Officers); Section 3(a)(ii) (Agency AI Governance Board)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 1.1 (policies, processes, procedures documented and in effect); GOVERN 2.1 (roles and responsibilities for AI risk management are designated)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "caio_and_governance_board_active",
+    "description": "Binary: a confirmed CAIO is in place, an AI governance board exists with a current charter reviewed within the prior annual cycle, and meeting minutes from the prior quarter are on file.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Governance documents are policy records.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-ACQ-003",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "CAIO Appointment and AI Governance Board Charter Currency",
-      "description": "The agency must have a confirmed Chief AI Officer (CAIO) in place per M-25-21 and an active AI governance board with a current charter. The charter must define membership, decision rights, meeting cadence, and escalation paths for high-impact AI use cases.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 CAIO appointment and governance board requirements; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 1.1 (policies, processes, procedures documented and in effect); GOVERN 2.1 (roles and responsibilities for AI risk management are designated)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "caio_and_governance_board_active",
-        "description": "Binary: a confirmed CAIO is in place, an AI governance board exists with a current charter reviewed within the prior annual cycle, and meeting minutes from the prior quarter are on file.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Governance documents are policy records.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "annual-review",
-        "breach_action": "escalate-to-agency-head; notify-OMB-liaison; freeze-new-high-impact-AI-approvals"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "annual-review",
+    "breach_action": "escalate-to-agency-head; notify-OMB-liaison; freeze-new-high-impact-AI-approvals"
+   }
+  },
+  {
+   "id": "SRF-L1-ACQ-004",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "M-25-21 Compliance Plan Currency",
+   "description": "The agency must maintain a published compliance plan addressing all seven M-25-21 minimum practices for high-impact AI. The plan must identify which use cases are in scope, assign responsible offices, and specify target dates for any practices not yet fully implemented. It must be updated whenever material changes occur or at least annually.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 3(b)(ii) (Develop Compliance Plans)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 1.1; GOVERN 4.1 (AI risk management is integrated into broader enterprise risk management)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "compliance_plan_current",
+    "description": "Binary: a compliance plan exists, addresses all seven minimum practices, assigns responsible offices, and was updated within the prior annual cycle.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Compliance plan is a governance record.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-ACQ-004",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "M-25-21 Compliance Plan Currency",
-      "description": "The agency must maintain a published compliance plan addressing all seven M-25-21 minimum practices for high-impact AI. The plan must identify which use cases are in scope, assign responsible offices, and specify target dates for any practices not yet fully implemented. It must be updated whenever material changes occur or at least annually.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 agency compliance plan and September 22, 2026 reporting requirement; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 1.1; GOVERN 4.1 (AI risk management is integrated into broader enterprise risk management)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "compliance_plan_current",
-        "description": "Binary: a compliance plan exists, addresses all seven minimum practices, assigns responsible offices, and was updated within the prior annual cycle.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Compliance plan is a governance record.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "annual-review",
-        "breach_action": "escalate-to-CAIO; notify-OMB-liaison; block-new-high-impact-AI-onboarding"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "annual-review",
+    "breach_action": "escalate-to-CAIO; notify-OMB-liaison; block-new-high-impact-AI-onboarding"
+   }
+  },
+  {
+   "id": "SRF-L1-MON-005",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "Discontinuation and Waiver Process Readiness",
+   "description": "For high-impact AI use cases that cannot meet the minimum practices by the September 22, 2026 deadline, the agency must have a documented discontinuation or waiver process. The process must name the approving official, specify the criteria for waiver, and set a remediation timeline. Discontinued use cases must be removed from the public inventory.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(a)(i) (Implementing Risk Management Practices and Termination of Non-Compliant AI); Section 4(a)(ii) (Authorizing Waivers from Minimum Practices)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 1.4 (AI risk management frameworks are established for decommissioning); MANAGE 4.1 (post-deployment AI risks are monitored and tracked)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "discontinuation_process_documented",
+    "description": "Binary: a discontinuation and waiver process exists, names the approving official, and specifies criteria and remediation timelines.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Candidate: audit_activity (3002) for discontinuation event logging.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-MON-005",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "Discontinuation and Waiver Process Readiness",
-      "description": "For high-impact AI use cases that cannot meet the minimum practices by the September 22, 2026 deadline, the agency must have a documented discontinuation or waiver process. The process must name the approving official, specify the criteria for waiver, and set a remediation timeline. Discontinued use cases must be removed from the public inventory.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 discontinuation requirement for non-compliant high-impact use cases; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 1.4 (AI risk management frameworks are established for decommissioning); MANAGE 4.1 (post-deployment AI risks are monitored and tracked)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "discontinuation_process_documented",
-        "description": "Binary: a discontinuation and waiver process exists, names the approving official, and specifies criteria and remediation timelines.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Candidate: audit_activity (3002) for discontinuation event logging.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "annual-review",
-        "breach_action": "notify-CAIO; escalate-to-AI-governance-board; schedule-emergency-compliance-review"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "annual-review",
+    "breach_action": "notify-CAIO; escalate-to-AI-governance-board; schedule-emergency-compliance-review"
+   }
+  },
+  {
+   "id": "SRF-L1-OVR-006",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "Public Feedback Channel for High-Impact AI",
+   "description": "For each high-impact AI use case that affects the public, the agency must operate a public feedback channel allowing affected individuals to report concerns, errors, or adverse outcomes. The channel must be listed in the public use-case inventory entry and reviewed by the responsible office on the cadence defined in the compliance plan.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "human-oversight-remedy",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(vii) (Consult and Incorporate Feedback from End Users and the Public)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MANAGE 4.2 (mechanisms are in place to collect and analyze feedback); GOVERN 6.1 (policies for engaging AI actors across life cycle)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "public_feedback_channel_operational",
+    "description": "Binary: a feedback channel exists for each public-facing high-impact use case, is listed in the inventory entry, and logs show review within the prior quarter.",
+    "evidence": {
+     "ocsf_class": "Document management artifact and operational log. Candidate: api_activity (6003) if the feedback channel is a web form with logging.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-OVR-006",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "Public Feedback Channel for High-Impact AI",
-      "description": "For each high-impact AI use case that affects the public, the agency must operate a public feedback channel allowing affected individuals to report concerns, errors, or adverse outcomes. The channel must be listed in the public use-case inventory entry and reviewed by the responsible office on the cadence defined in the compliance plan.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "human-oversight-remedy",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 end-user and public feedback minimum practice; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "MANAGE 4.2 (mechanisms are in place to collect and analyze feedback); GOVERN 6.1 (policies for engaging AI actors across life cycle)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "public_feedback_channel_operational",
-        "description": "Binary: a feedback channel exists for each public-facing high-impact use case, is listed in the inventory entry, and logs show review within the prior quarter.",
-        "evidence": {
-          "ocsf_class": "Document management artifact and operational log. Candidate: api_activity (6003) if the feedback channel is a web form with logging.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "quarterly",
-        "breach_action": "re-establish-feedback-channel; notify-CAIO; update-public-inventory-entry"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "quarterly",
+    "breach_action": "re-establish-feedback-channel; notify-CAIO; update-public-inventory-entry"
+   }
+  },
+  {
+   "id": "SRF-L1-ACQ-007",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "AI Acquisition Contract Compliance with M-25-22",
+   "description": "All AI service contracts entered or renewed after the M-25-22 effective date must include the required performance terms, data rights clauses (agency data not used to train vendor models without consent), vendor lock-in avoidance provisions, and transparency requirements. The contracting officer and CAIO office must jointly certify compliance for each contract.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "Section 4(d)(iii) (Contract Terms); Section 4(c)(ii) (Protections Against Vendor Lock-In)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 5.1 (organizational risk policies include supply chain risk); GOVERN 5.2 (risk management frameworks include third-party AI providers)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "m_25_22_contract_compliance_pct",
+    "description": "Percentage of AI service contracts entered or renewed since M-25-22 that include all required clauses. Recommended minimum 100%.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Contract records are governance documents.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-ACQ-007",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "AI Acquisition Contract Compliance with M-25-22",
-      "description": "All AI service contracts entered or renewed after the M-25-22 effective date must include the required performance terms, data rights clauses (agency data not used to train vendor models without consent), vendor lock-in avoidance provisions, and transparency requirements. The contracting officer and CAIO office must jointly certify compliance for each contract.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 performance-based acquisition terms, data rights, vendor lock-in avoidance, and transparency requirements; verify section references",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 5.1 (organizational risk policies include supply chain risk); GOVERN 5.2 (risk management frameworks include third-party AI providers)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "m_25_22_contract_compliance_pct",
-        "description": "Percentage of AI service contracts entered or renewed since M-25-22 that include all required clauses. Recommended minimum 100%.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Contract records are governance documents.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "1.0",
-        "param_type": "zero-tolerance",
-        "window": "annual-review",
-        "breach_action": "notify-contracting-officer; escalate-to-CAIO; flag-for-contract-remediation"
-      }
+    "operator": "==",
+    "param": "1.0",
+    "param_type": "zero-tolerance",
+    "window": "annual-review",
+    "breach_action": "notify-contracting-officer; escalate-to-CAIO; flag-for-contract-remediation"
+   }
+  },
+  {
+   "id": "SRF-L1-ACQ-008",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "AI Staff Training and Assessment Coverage",
+   "description": "Staff operating or overseeing high-impact AI use cases must complete agency-approved AI literacy and risk training before deployment and on the annual cadence defined in the compliance plan, per M-25-21 human training and assessment requirements. Training completion rates must be tracked by use case and reported to the CAIO.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(iv) (Ensure Adequate Human Training and Assessment)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 3.1 (AI risk and benefit management is reflected in workforce and capacity planning); GOVERN 3.2 (AI risk awareness training is provided)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "ai_staff_training_completion_pct",
+    "description": "Percentage of staff operating or overseeing high-impact AI use cases who have completed current required training. Tier-configurable; recommended minimum 95%.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Training records are HR governance data.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-ACQ-008",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "AI Staff Training and Assessment Coverage",
-      "description": "Staff operating or overseeing high-impact AI use cases must complete agency-approved AI literacy and risk training before deployment and on the annual cadence defined in the compliance plan, per M-25-21 human training and assessment requirements. Training completion rates must be tracked by use case and reported to the CAIO.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 human training and assessment minimum practice; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 3.1 (AI risk and benefit management is reflected in workforce and capacity planning); GOVERN 3.2 (AI risk awareness training is provided)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "ai_staff_training_completion_pct",
-        "description": "Percentage of staff operating or overseeing high-impact AI use cases who have completed current required training. Tier-configurable; recommended minimum 95%.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Training records are HR governance data.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "TIER_STAFF_TRAINING_COMPLETION_PCT",
-        "param_type": "tier-configurable",
-        "window": "annual-review",
-        "breach_action": "identify-untrained-staff; suspend-oversight-role-pending-training; notify-CAIO"
-      }
+    "operator": ">=",
+    "param": "TIER_STAFF_TRAINING_COMPLETION_PCT",
+    "param_type": "tier-configurable",
+    "window": "annual-review",
+    "breach_action": "identify-untrained-staff; suspend-oversight-role-pending-training; notify-CAIO"
+   }
+  },
+  {
+   "id": "SRF-L1-MON-009",
+   "layer": "L1",
+   "component": "Governance and Processes",
+   "title": "AI Governance Board Review Cadence for High-Impact Use Cases",
+   "description": "The agency AI governance board must formally review all high-impact AI use cases at the cadence specified in the board charter. Each review must assess minimum-practice compliance status, open remediation items, and any material changes since the prior review. Minutes must be retained and available to OMB on request.",
+   "accountable_persona": "ai-system-governance",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 3(a)(ii) (Agency AI Governance Board); Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 2.2 (AI risk management accountability is maintained); MANAGE 4.1 (post-deployment AI risks are monitored)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "governance_board_review_on_cadence",
+    "description": "Binary: board meeting minutes confirm reviews of all high-impact use cases at the charter-specified cadence in the prior review period.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Meeting minutes are governance records.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L1-MON-009",
-      "layer": "L1",
-      "component": "Governance and Processes",
-      "title": "AI Governance Board Review Cadence for High-Impact Use Cases",
-      "description": "The agency AI governance board must formally review all high-impact AI use cases at the cadence specified in the board charter. Each review must assess minimum-practice compliance status, open remediation items, and any material changes since the prior review. Minutes must be retained and available to OMB on request.",
-      "accountable_persona": "ai-system-governance",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 governance board oversight requirements; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 2.2 (AI risk management accountability is maintained); MANAGE 4.1 (post-deployment AI risks are monitored)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "governance_board_review_on_cadence",
-        "description": "Binary: board meeting minutes confirm reviews of all high-impact use cases at the charter-specified cadence in the prior review period.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Meeting minutes are governance records.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "quarterly",
-        "breach_action": "convene-emergency-board-session; notify-CAIO; document-gap-in-compliance-plan"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "quarterly",
+    "breach_action": "convene-emergency-board-session; notify-CAIO; document-gap-in-compliance-plan"
+   }
+  },
+  {
+   "id": "SRF-L2-ACQ-001",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "Authority-to-Use Verification for Training and RAG Data",
+   "description": "Before ingesting data into AI training pipelines or retrieval-augmented generation (RAG) stores, the agency must verify authority to use, including Privacy Act System of Records Notice (SORN) coverage for Privacy Act-protected records, copyright clearance for third-party content, and data rights confirmation for vendor-supplied datasets.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(ii) (Complete AI Impact Assessment)",
+    "m_25_22": "Section 3(d) (Protect IP Rights and Use of Government Data)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MAP 2.2 (scientific rigor and data quality are characterized for intended context); MAP 3.5 (organizational risk tolerances are considered)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM03: Training Data Poisoning"
+   },
+   "threshold": {
+    "metric": "training_rag_data_authority_verified",
+    "description": "Binary: every data source ingested into training or RAG pipelines has a documented authority-to-use determination on file before ingestion.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Data ingestion events may emit api_activity (6003) if the pipeline is instrumented.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-ACQ-001",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "Authority-to-Use Verification for Training and RAG Data",
-      "description": "Before ingesting data into AI training pipelines or retrieval-augmented generation (RAG) stores, the agency must verify authority to use, including Privacy Act System of Records Notice (SORN) coverage for Privacy Act-protected records, copyright clearance for third-party content, and data rights confirmation for vendor-supplied datasets.",
-      "accountable_persona": "data-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 AI impact assessment data provenance requirements; verify section references",
-        "m_25_22": "TBD: M-25-22 agency data rights and training data consent provisions; verify section references",
-        "fedramp_20x_ksi": "TBD: verify applicable KSI names at fedramp.gov before crosswalking",
-        "nist_ai_rmf": "MAP 2.2 (scientific rigor and data quality are characterized for intended context); MAP 3.5 (organizational risk tolerances are considered)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM03: Training Data Poisoning"
-      },
-      "threshold": {
-        "metric": "training_rag_data_authority_verified",
-        "description": "Binary: every data source ingested into training or RAG pipelines has a documented authority-to-use determination on file before ingestion.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Data ingestion events may emit api_activity (6003) if the pipeline is instrumented.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-ingestion",
-        "breach_action": "halt-ingestion; notify-data-governance-officer; escalate-to-privacy-officer"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-ingestion",
+    "breach_action": "halt-ingestion; notify-data-governance-officer; escalate-to-privacy-officer"
+   }
+  },
+  {
+   "id": "SRF-L2-ACQ-002",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "Agency Data Egress Block to Commercial Model Training",
+   "description": "Agency data must not be used to train commercial AI vendor models without explicit agency consent, per M-25-22 data rights requirements. The data-sharing configuration of each AI service must be audited at onboarding and after any vendor terms-of-service update to confirm no training data sharing is enabled.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "Section 3(d)(iv) (Use of Government Data: contracts permanently prohibit training publicly or commercially available AI on nonpublic agency data absent consent)",
+    "fedramp_20x_ksi": "KSI-CNA-ULN (logical networking enforces traffic flow controls)",
+    "nist_ai_rmf": "GOVERN 5.2 (risk management includes third-party AI providers and data practices); MAP 5.1 (likelihood of impacts on individuals is assessed)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM10: Unbounded Consumption"
+   },
+   "threshold": {
+    "metric": "vendor_training_data_sharing_disabled",
+    "description": "Binary: data-sharing configuration for every AI service confirms training data sharing is disabled or contractually prohibited per M-25-22.",
+    "evidence": {
+     "ocsf_class": "Configuration management artifact. Candidate: configuration_change (5001) if vendor portals emit configuration events.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-ACQ-002",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "Agency Data Egress Block to Commercial Model Training",
-      "description": "Agency data must not be used to train commercial AI vendor models without explicit agency consent, per M-25-22 data rights requirements. The data-sharing configuration of each AI service must be audited at onboarding and after any vendor terms-of-service update to confirm no training data sharing is enabled.",
-      "accountable_persona": "data-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 agency data not used to train vendor models without consent; verify section references",
-        "fedramp_20x_ksi": "TBD: verify applicable KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.2 (risk management includes third-party AI providers and data practices); MAP 5.1 (likelihood of impacts on individuals is assessed)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM10: Unbounded Consumption"
-      },
-      "threshold": {
-        "metric": "vendor_training_data_sharing_disabled",
-        "description": "Binary: data-sharing configuration for every AI service confirms training data sharing is disabled or contractually prohibited per M-25-22.",
-        "evidence": {
-          "ocsf_class": "Configuration management artifact. Candidate: configuration_change (5001) if vendor portals emit configuration events.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-onboarding-and-after-tos-changes",
-        "breach_action": "suspend-service; notify-CAIO; notify-data-protection-officer; escalate-to-legal"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-onboarding-and-after-tos-changes",
+    "breach_action": "suspend-service; notify-CAIO; notify-data-protection-officer; escalate-to-legal"
+   }
+  },
+  {
+   "id": "SRF-L2-ACQ-003",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "PII and CUI Classification Coverage for AI-Accessible Data Stores",
+   "description": "Data stores accessible by AI systems must have complete PII and Controlled Unclassified Information (CUI) classification coverage. Unclassified data stores must be labelled before AI systems are granted access. Classification coverage must be tracked as a percentage of data stores and reported to the ISSO.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(ii) (Complete AI Impact Assessment)",
+    "m_25_22": "Section 3(c) (Protect Privacy)",
+    "fedramp_20x_ksi": "KSI-PIY-GIV (automated real-time inventories of information resources)",
+    "nist_ai_rmf": "MAP 2.2 (data quality and sensitivity characterized); MAP 5.1 (impacts on individuals assessed)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM06: Sensitive Information Disclosure"
+   },
+   "threshold": {
+    "metric": "ai_accessible_data_store_classification_coverage_pct",
+    "description": "Percentage of AI-accessible data stores with complete PII and CUI classification. Tier-configurable; recommended minimum 100% for high-impact use cases.",
+    "evidence": {
+     "ocsf_class": "file_activity (1001) if the data classification tooling emits events; otherwise document management artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-ACQ-003",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "PII and CUI Classification Coverage for AI-Accessible Data Stores",
-      "description": "Data stores accessible by AI systems must have complete PII and Controlled Unclassified Information (CUI) classification coverage. Unclassified data stores must be labelled before AI systems are granted access. Classification coverage must be tracked as a percentage of data stores and reported to the ISSO.",
-      "accountable_persona": "data-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 AI impact assessment data sensitivity requirements; verify section references",
-        "m_25_22": "TBD: M-25-22 data rights and sensitivity provisions; verify section references",
-        "fedramp_20x_ksi": "TBD: verify data classification KSI at fedramp.gov",
-        "nist_ai_rmf": "MAP 2.2 (data quality and sensitivity characterized); MAP 5.1 (impacts on individuals assessed)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM06: Sensitive Information Disclosure"
-      },
-      "threshold": {
-        "metric": "ai_accessible_data_store_classification_coverage_pct",
-        "description": "Percentage of AI-accessible data stores with complete PII and CUI classification. Tier-configurable; recommended minimum 100% for high-impact use cases.",
-        "evidence": {
-          "ocsf_class": "file_activity (1001) if the data classification tooling emits events; otherwise document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "TIER_DATA_CLASSIFICATION_COVERAGE_PCT",
-        "param_type": "tier-configurable",
-        "window": "quarterly",
-        "breach_action": "suspend-AI-access-to-unclassified-stores; notify-ISSO; escalate-to-privacy-officer"
-      }
+    "operator": ">=",
+    "param": "TIER_DATA_CLASSIFICATION_COVERAGE_PCT",
+    "param_type": "tier-configurable",
+    "window": "quarterly",
+    "breach_action": "suspend-AI-access-to-unclassified-stores; notify-ISSO; escalate-to-privacy-officer"
+   }
+  },
+  {
+   "id": "SRF-L2-MON-004",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "Input Distribution Shift Monitoring (PSI)",
+   "description": "For high-impact AI use cases, the agency or application developer must monitor the distribution of AI system inputs against a baseline established at deployment. Population Stability Index (PSI) or an equivalent measure must be computed on a cadence appropriate to the use case risk level and alerts triggered when drift exceeds the configured threshold.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MANAGE 2.4 (AI risk treatments are tracked); MEASURE 2.5 (ongoing monitoring tracks fairness and performance)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM09: Misinformation"
+   },
+   "threshold": {
+    "metric": "input_psi",
+    "description": "Population Stability Index on input features. Tier-configurable; common threshold is PSI < 0.2 (stable), 0.2-0.25 (moderate drift, investigate), > 0.25 (significant drift, re-validate).",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for drift alerts; api_activity (6003) for inference logging that feeds PSI computation.",
+     "attribute": "finding.severity_id; api_activity.request.data",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-MON-004",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "Input Distribution Shift Monitoring (PSI)",
-      "description": "For high-impact AI use cases, the agency or application developer must monitor the distribution of AI system inputs against a baseline established at deployment. Population Stability Index (PSI) or an equivalent measure must be computed on a cadence appropriate to the use case risk level and alerts triggered when drift exceeds the configured threshold.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 ongoing monitoring minimum practice; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify monitoring KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 2.4 (AI risk treatments are tracked); MEASURE 2.5 (ongoing monitoring tracks fairness and performance)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM09: Misinformation"
-      },
-      "threshold": {
-        "metric": "input_psi",
-        "description": "Population Stability Index on input features. Tier-configurable; common threshold is PSI < 0.2 (stable), 0.2-0.25 (moderate drift, investigate), > 0.25 (significant drift, re-validate).",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for drift alerts; api_activity (6003) for inference logging that feeds PSI computation.",
-          "attribute": "finding.severity_id; api_activity.request.data",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "<",
-        "param": "TIER_INPUT_PSI_THRESHOLD",
-        "param_type": "tier-configurable",
-        "window": "rolling-30d",
-        "breach_action": "alert-application-developer; trigger-re-validation; notify-ISSO; pause-high-impact-outputs-pending-review"
-      }
+    "operator": "<",
+    "param": "TIER_INPUT_PSI_THRESHOLD",
+    "param_type": "tier-configurable",
+    "window": "rolling-30d",
+    "breach_action": "alert-application-developer; trigger-re-validation; notify-ISSO; pause-high-impact-outputs-pending-review"
+   }
+  },
+  {
+   "id": "SRF-L2-ACQ-005",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "AI Interaction Log Retention Compliance (NARA)",
+   "description": "AI interaction logs for high-impact use cases may be federal records subject to NARA retention schedules. The agency records officer must determine retention obligations for each use case and configure log retention accordingly. Logs used as evidence for M-25-21 minimum-practice compliance must be retained through the compliance reporting period.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-MLA-LET (maintained list of logged event types); KSI-MLA-RVL (logs persistently reviewed and audited)",
+    "nist_ai_rmf": "GOVERN 1.3 (organizational policies include recordkeeping); MANAGE 4.1 (monitoring includes log completeness)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "ai_interaction_log_retention_compliant",
+    "description": "Binary: NARA retention determination exists for each high-impact use case, log retention is configured accordingly, and the records officer has confirmed compliance within the prior annual cycle.",
+    "evidence": {
+     "ocsf_class": "audit_activity (3002) for log retention configuration events.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-ACQ-005",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "AI Interaction Log Retention Compliance (NARA)",
-      "description": "AI interaction logs for high-impact use cases may be federal records subject to NARA retention schedules. The agency records officer must determine retention obligations for each use case and configure log retention accordingly. Logs used as evidence for M-25-21 minimum-practice compliance must be retained through the compliance reporting period.",
-      "accountable_persona": "data-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 ongoing monitoring and evidence retention requirements; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify audit log retention KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 1.3 (organizational policies include recordkeeping); MANAGE 4.1 (monitoring includes log completeness)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "ai_interaction_log_retention_compliant",
-        "description": "Binary: NARA retention determination exists for each high-impact use case, log retention is configured accordingly, and the records officer has confirmed compliance within the prior annual cycle.",
-        "evidence": {
-          "ocsf_class": "audit_activity (3002) for log retention configuration events.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "annual-review",
-        "breach_action": "notify-records-officer; escalate-to-ISSO; halt-log-deletion-pending-determination"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "annual-review",
+    "breach_action": "notify-records-officer; escalate-to-ISSO; halt-log-deletion-pending-determination"
+   }
+  },
+  {
+   "id": "SRF-L2-MON-006",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "AI Output Accuracy Monitoring Against Human Baseline",
+   "description": "For high-impact AI use cases with measurable accuracy requirements, the agency must track output accuracy against a validated human-reviewer baseline established before deployment. Accuracy must be re-measured on the cadence defined in the compliance plan and reviewed at each governance board cycle.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MEASURE 2.5 (ongoing monitoring tracks performance); MANAGE 2.4 (risk treatments tracked)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM09: Misinformation"
+   },
+   "threshold": {
+    "metric": "ai_output_accuracy_delta_vs_baseline",
+    "description": "Degradation in output accuracy versus the human-reviewer baseline. Tier-configurable; alert if accuracy drops more than configured percentage points.",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for accuracy degradation alerts.",
+     "attribute": "finding.severity_id",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-MON-006",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "AI Output Accuracy Monitoring Against Human Baseline",
-      "description": "For high-impact AI use cases with measurable accuracy requirements, the agency must track output accuracy against a validated human-reviewer baseline established before deployment. Accuracy must be re-measured on the cadence defined in the compliance plan and reviewed at each governance board cycle.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 ongoing monitoring minimum practice; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify performance monitoring KSI at fedramp.gov",
-        "nist_ai_rmf": "MEASURE 2.5 (ongoing monitoring tracks performance); MANAGE 2.4 (risk treatments tracked)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM09: Misinformation"
-      },
-      "threshold": {
-        "metric": "ai_output_accuracy_delta_vs_baseline",
-        "description": "Degradation in output accuracy versus the human-reviewer baseline. Tier-configurable; alert if accuracy drops more than configured percentage points.",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for accuracy degradation alerts.",
-          "attribute": "finding.severity_id",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "<=",
-        "param": "TIER_ACCURACY_DEGRADATION_THRESHOLD_PCT",
-        "param_type": "tier-configurable",
-        "window": "rolling-30d",
-        "breach_action": "alert-application-developer; trigger-re-validation; notify-ISSO; pause-high-stakes-outputs"
-      }
+    "operator": "<=",
+    "param": "TIER_ACCURACY_DEGRADATION_THRESHOLD_PCT",
+    "param_type": "tier-configurable",
+    "window": "rolling-30d",
+    "breach_action": "alert-application-developer; trigger-re-validation; notify-ISSO; pause-high-stakes-outputs"
+   }
+  },
+  {
+   "id": "SRF-L2-MON-007",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "Bias and Disparate Impact Monitoring for Citizen-Facing Use Cases",
+   "description": "For high-impact AI use cases affecting citizen eligibility, benefits, or enforcement decisions, the agency must track output rates across protected demographic groups and test for disparate impact. Disparate impact analysis must be performed before deployment and repeated on the cadence defined in the compliance plan.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "Section 4(b)(ii) (Complete AI Impact Assessment); Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MEASURE 2.2 (AI system trustworthiness characteristics are evaluated for relevant population groups); MEASURE 2.5 (ongoing monitoring tracks fairness)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "disparate_impact_ratio",
+    "description": "Four-fifths (80%) rule: adverse outcome rate for a protected group must not fall below 0.8 times the rate for the most favored group. Tier-configurable.",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for disparate impact alerts.",
+     "attribute": "finding.severity_id",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-MON-007",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "Bias and Disparate Impact Monitoring for Citizen-Facing Use Cases",
-      "description": "For high-impact AI use cases affecting citizen eligibility, benefits, or enforcement decisions, the agency must track output rates across protected demographic groups and test for disparate impact. Disparate impact analysis must be performed before deployment and repeated on the cadence defined in the compliance plan.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 AI impact assessment and ongoing monitoring for high-impact use cases; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "MEASURE 2.2 (AI system trustworthiness characteristics are evaluated for relevant population groups); MEASURE 2.5 (ongoing monitoring tracks fairness)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "disparate_impact_ratio",
-        "description": "Four-fifths (80%) rule: adverse outcome rate for a protected group must not fall below 0.8 times the rate for the most favored group. Tier-configurable.",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for disparate impact alerts.",
-          "attribute": "finding.severity_id",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "TIER_DISPARATE_IMPACT_RATIO_THRESHOLD",
-        "param_type": "tier-configurable",
-        "window": "rolling-90d",
-        "breach_action": "suspend-adverse-decisions-for-affected-groups; notify-CAIO; escalate-to-civil-rights-officer; trigger-root-cause-analysis"
-      }
+    "operator": ">=",
+    "param": "TIER_DISPARATE_IMPACT_RATIO_THRESHOLD",
+    "param_type": "tier-configurable",
+    "window": "rolling-90d",
+    "breach_action": "suspend-adverse-decisions-for-affected-groups; notify-CAIO; escalate-to-civil-rights-officer; trigger-root-cause-analysis"
+   }
+  },
+  {
+   "id": "SRF-L2-ACQ-008",
+   "layer": "L2",
+   "component": "Data and Input Control",
+   "title": "FedRAMP Authorization Status Verification for AI Data Services",
+   "description": "Any cloud data service feeding AI systems must hold a FedRAMP authorization at or above the required FIPS 199 impact level for the data it handles. The agency ISSO must verify authorization status at onboarding and re-verify quarterly against the current FedRAMP marketplace authorization list.",
+   "accountable_persona": "data-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "Section 4(e)(i) (Authorization To Operate Compliance)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 1.5 (organizational risk tolerances for AI supply chain are established)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "fedramp_authorization_current",
+    "description": "Binary: every AI data service in use holds a current FedRAMP authorization at or above the required impact level, confirmed against the current marketplace listing.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. FedRAMP marketplace verification may be logged via api_activity (6003).",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L2-ACQ-008",
-      "layer": "L2",
-      "component": "Data and Input Control",
-      "title": "FedRAMP Authorization Status Verification for AI Data Services",
-      "description": "Any cloud data service feeding AI systems must hold a FedRAMP authorization at or above the required FIPS 199 impact level for the data it handles. The agency ISSO must verify authorization status at onboarding and re-verify quarterly against the current FedRAMP marketplace authorization list.",
-      "accountable_persona": "data-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 acquisition due diligence requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify authorization status KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 1.5 (organizational risk tolerances for AI supply chain are established)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "fedramp_authorization_current",
-        "description": "Binary: every AI data service in use holds a current FedRAMP authorization at or above the required impact level, confirmed against the current marketplace listing.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. FedRAMP marketplace verification may be logged via api_activity (6003).",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "quarterly",
-        "breach_action": "suspend-service-pending-authorization-verification; notify-ISSO; escalate-to-Authorizing-Official"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "quarterly",
+    "breach_action": "suspend-service-pending-authorization-verification; notify-ISSO; escalate-to-Authorizing-Official"
+   }
+  },
+  {
+   "id": "SRF-L3-VAL-001",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "Pre-Deployment Testing Coverage for High-Impact Use Cases",
+   "description": "Before deploying or materially modifying a high-impact AI use case, the agency application developer must complete a pre-deployment test plan covering functional accuracy, safety boundaries, bias and fairness, and security. Test results must be reviewed and signed off by the CAIO office before go-live, per M-25-21 pre-deployment testing minimum practice.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "pre-deployment-validation",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(i) (Conduct Pre-Deployment Testing)",
+    "m_25_22": "Section 4(d)(i) (Testing and Evaluation)",
+    "fedramp_20x_ksi": "KSI-CMT-VTD (automated testing and validation of changes)",
+    "nist_ai_rmf": "MEASURE 2.1 (approaches for evaluating AI system trustworthiness are established); MEASURE 2.6 (evaluations are completed and results documented)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM09: Misinformation; LLM05: Improper Output Handling"
+   },
+   "threshold": {
+    "metric": "pre_deployment_test_plan_completed",
+    "description": "Binary: a completed and CAIO-reviewed pre-deployment test report exists for the current version of every high-impact AI use case.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Test execution may emit api_activity (6003) if the testing pipeline is instrumented.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-VAL-001",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "Pre-Deployment Testing Coverage for High-Impact Use Cases",
-      "description": "Before deploying or materially modifying a high-impact AI use case, the agency application developer must complete a pre-deployment test plan covering functional accuracy, safety boundaries, bias and fairness, and security. Test results must be reviewed and signed off by the CAIO office before go-live, per M-25-21 pre-deployment testing minimum practice.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "pre-deployment-validation",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 pre-deployment testing minimum practice; verify section references",
-        "m_25_22": "TBD: M-25-22 performance-based acquisition testing requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify testing KSI at fedramp.gov",
-        "nist_ai_rmf": "MEASURE 2.1 (approaches for evaluating AI system trustworthiness are established); MEASURE 2.6 (evaluations are completed and results documented)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM09: Misinformation; LLM05: Improper Output Handling"
-      },
-      "threshold": {
-        "metric": "pre_deployment_test_plan_completed",
-        "description": "Binary: a completed and CAIO-reviewed pre-deployment test report exists for the current version of every high-impact AI use case.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Test execution may emit api_activity (6003) if the testing pipeline is instrumented.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-deployment",
-        "breach_action": "block-deployment; notify-CAIO; escalate-to-AI-governance-board"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-deployment",
+    "breach_action": "block-deployment; notify-CAIO; escalate-to-AI-governance-board"
+   }
+  },
+  {
+   "id": "SRF-L3-VAL-002",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "AI Impact Assessment Completion for High-Impact Use Cases",
+   "description": "Before deploying a high-impact AI use case, the agency must complete an AI impact assessment documenting potential harms to individuals and communities, mitigation measures, and residual risks. The assessment must be reviewed by the AI governance board and retained as part of the ATO documentation package.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "pre-deployment-validation",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(ii) (Complete AI Impact Assessment)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MAP 5.1 (likelihood of impacts on individuals is assessed); MAP 5.2 (practices for risk assessment are in use); MEASURE 2.6 (evaluations are completed and results documented)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "ai_impact_assessment_completed",
+    "description": "Binary: a completed and governance-board-reviewed AI impact assessment exists for the current version of every high-impact AI use case.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Impact assessment is a governance record.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-VAL-002",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "AI Impact Assessment Completion for High-Impact Use Cases",
-      "description": "Before deploying a high-impact AI use case, the agency must complete an AI impact assessment documenting potential harms to individuals and communities, mitigation measures, and residual risks. The assessment must be reviewed by the AI governance board and retained as part of the ATO documentation package.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "pre-deployment-validation",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 AI impact assessment minimum practice; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "MAP 5.1 (likelihood of impacts on individuals is assessed); MAP 5.2 (practices for risk assessment are in use); MEASURE 2.6 (evaluations are completed and results documented)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "ai_impact_assessment_completed",
-        "description": "Binary: a completed and governance-board-reviewed AI impact assessment exists for the current version of every high-impact AI use case.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Impact assessment is a governance record.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-deployment",
-        "breach_action": "block-deployment; notify-CAIO; escalate-to-AI-governance-board"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-deployment",
+    "breach_action": "block-deployment; notify-CAIO; escalate-to-AI-governance-board"
+   }
+  },
+  {
+   "id": "SRF-L3-VAL-003",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "Prompt Injection Detection for Citizen-Facing AI Systems",
+   "description": "AI applications that process citizen-supplied text input must deploy prompt injection detection controls before production. Detection coverage must be tested as part of the pre-deployment security test plan and re-tested after material model or configuration changes.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "pre-deployment-validation",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "Section 4(b)(i) (Conduct Pre-Deployment Testing)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MEASURE 2.1 (trustworthiness evaluation includes security); MEASURE 2.6",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM01: Prompt Injection"
+   },
+   "threshold": {
+    "metric": "prompt_injection_detection_deployed",
+    "description": "Binary: prompt injection detection is deployed and tested for every citizen-facing AI application before production.",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for prompt injection alerts.",
+     "attribute": "finding.type_uid; finding.severity_id",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-VAL-003",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "Prompt Injection Detection for Citizen-Facing AI Systems",
-      "description": "AI applications that process citizen-supplied text input must deploy prompt injection detection controls before production. Detection coverage must be tested as part of the pre-deployment security test plan and re-tested after material model or configuration changes.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "pre-deployment-validation",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 pre-deployment testing and security requirements; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify input validation KSI at fedramp.gov",
-        "nist_ai_rmf": "MEASURE 2.1 (trustworthiness evaluation includes security); MEASURE 2.6",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM01: Prompt Injection"
-      },
-      "threshold": {
-        "metric": "prompt_injection_detection_deployed",
-        "description": "Binary: prompt injection detection is deployed and tested for every citizen-facing AI application before production.",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for prompt injection alerts.",
-          "attribute": "finding.type_uid; finding.severity_id",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-deployment",
-        "breach_action": "block-deployment; notify-ISSO; escalate-to-application-security-team"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-deployment",
+    "breach_action": "block-deployment; notify-ISSO; escalate-to-application-security-team"
+   }
+  },
+  {
+   "id": "SRF-L3-OVR-004",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "Human Oversight Gate for Adverse Citizen-Facing Decisions",
+   "description": "AI systems that generate or inform adverse decisions affecting citizens (benefits denials, eligibility determinations, enforcement actions) must route those decisions through a human oversight gate before they are finalized. The gate must be documented in the impact assessment and tested in the pre-deployment plan.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "human-oversight-remedy",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(v) (Provide Additional Human Oversight, Intervention, and Accountability)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MANAGE 3.2 (AI risks are tracked and overseen by designated individuals); GOVERN 6.2 (policies for human oversight are established)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "human_oversight_gate_operational",
+    "description": "Binary: a human oversight gate is implemented and confirmed operational for every adverse-decision workflow in high-impact AI use cases.",
+    "evidence": {
+     "ocsf_class": "audit_activity (3002) for oversight gate approval events.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-OVR-004",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "Human Oversight Gate for Adverse Citizen-Facing Decisions",
-      "description": "AI systems that generate or inform adverse decisions affecting citizens (benefits denials, eligibility determinations, enforcement actions) must route those decisions through a human oversight gate before they are finalized. The gate must be documented in the impact assessment and tested in the pre-deployment plan.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "human-oversight-remedy",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 human oversight and intervention minimum practice; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "MANAGE 3.2 (AI risks are tracked and overseen by designated individuals); GOVERN 6.2 (policies for human oversight are established)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "human_oversight_gate_operational",
-        "description": "Binary: a human oversight gate is implemented and confirmed operational for every adverse-decision workflow in high-impact AI use cases.",
-        "evidence": {
-          "ocsf_class": "audit_activity (3002) for oversight gate approval events.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "continuous",
-        "breach_action": "suspend-adverse-decision-outputs; notify-CAIO; escalate-to-AI-governance-board; notify-affected-citizens-of-delay"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "continuous",
+    "breach_action": "suspend-adverse-decision-outputs; notify-CAIO; escalate-to-AI-governance-board; notify-affected-citizens-of-delay"
+   }
+  },
+  {
+   "id": "SRF-L3-OVR-005",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "Remedy and Appeal Mechanism Coverage",
+   "description": "For each high-impact AI use case affecting citizens, the agency must document and publish a remedy and appeal mechanism that allows affected individuals to challenge an AI-informed decision and receive human review. The mechanism must specify the accountable office, review timeline, and available remedies.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "human-oversight-remedy",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(vi) (Offer Consistent Remedies or Appeals)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MANAGE 3.2; GOVERN 6.2 (policies for human oversight and remedy)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "remedy_appeal_mechanism_documented",
+    "description": "Binary: a documented and published remedy and appeal mechanism exists for every citizen-facing high-impact AI use case.",
+    "evidence": {
+     "ocsf_class": "Document management artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-OVR-005",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "Remedy and Appeal Mechanism Coverage",
-      "description": "For each high-impact AI use case affecting citizens, the agency must document and publish a remedy and appeal mechanism that allows affected individuals to challenge an AI-informed decision and receive human review. The mechanism must specify the accountable office, review timeline, and available remedies.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "human-oversight-remedy",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 remedies or appeals minimum practice; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "MANAGE 3.2; GOVERN 6.2 (policies for human oversight and remedy)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "remedy_appeal_mechanism_documented",
-        "description": "Binary: a documented and published remedy and appeal mechanism exists for every citizen-facing high-impact AI use case.",
-        "evidence": {
-          "ocsf_class": "Document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-deployment",
-        "breach_action": "suspend-adverse-decision-outputs; notify-CAIO; escalate-to-legal-and-compliance"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-deployment",
+    "breach_action": "suspend-adverse-decision-outputs; notify-CAIO; escalate-to-legal-and-compliance"
+   }
+  },
+  {
+   "id": "SRF-L3-MON-006",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "Agentic Task Boundary Enforcement for Casework Automation",
+   "description": "AI agents used in casework, benefits processing, or citizen service workflows must operate within defined task boundaries specifying permitted actions, data access scopes, and escalation triggers. Boundary violations must be logged and trigger automated suspension of the agent session pending human review.",
+   "accountable_persona": "agentic-platform-provider",
+   "operating_models": [
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "Section 4(b)(v) (Provide Additional Human Oversight, Intervention, and Accountability)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-CNA-DFP (strictly defined functionality and privileges)",
+    "nist_ai_rmf": "MANAGE 3.2; MEASURE 2.7 (AI system trustworthiness is evaluated for agentic contexts)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM06: Sensitive Information Disclosure; LLM08: Excessive Agency"
+   },
+   "threshold": {
+    "metric": "agent_task_boundary_violations_per_session",
+    "description": "Count of agent task boundary violations per session. Zero tolerance for high-impact casework agents.",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for boundary violation events.",
+     "attribute": "finding.type_uid; finding.severity_id",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-MON-006",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "Agentic Task Boundary Enforcement for Casework Automation",
-      "description": "AI agents used in casework, benefits processing, or citizen service workflows must operate within defined task boundaries specifying permitted actions, data access scopes, and escalation triggers. Boundary violations must be logged and trigger automated suspension of the agent session pending human review.",
-      "accountable_persona": "agentic-platform-provider",
-      "operating_models": ["Agent-Ops"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 human oversight and intervention for agentic AI; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify agent containment KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 3.2; MEASURE 2.7 (AI system trustworthiness is evaluated for agentic contexts)",
-        "cosais": "TBD: COSAiS multi-agent overlay; revisit on final publication",
-        "owasp_llm": "LLM06: Sensitive Information Disclosure; LLM08: Excessive Agency"
-      },
-      "threshold": {
-        "metric": "agent_task_boundary_violations_per_session",
-        "description": "Count of agent task boundary violations per session. Zero tolerance for high-impact casework agents.",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for boundary violation events.",
-          "attribute": "finding.type_uid; finding.severity_id",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "0",
-        "param_type": "zero-tolerance",
-        "window": "per-session",
-        "breach_action": "suspend-agent-session; notify-ISSO; escalate-to-human-caseworker; log-to-audit-trail"
-      }
+    "operator": "==",
+    "param": "0",
+    "param_type": "zero-tolerance",
+    "window": "per-session",
+    "breach_action": "suspend-agent-session; notify-ISSO; escalate-to-human-caseworker; log-to-audit-trail"
+   }
+  },
+  {
+   "id": "SRF-L3-VAL-007",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "Shared-Service AI Inheritance Chain Documentation",
+   "description": "For AI systems deployed through interagency shared services (such as GSA platforms), the consuming agency must document the complete inheritance chain: which controls are inherited from the shared-service ATO, which are shared, and which are the agency's sole responsibility. The inheritance chain must be reviewed and confirmed at each ATO renewal cycle.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "Shared-Service"
+   ],
+   "public_sector_stage": "pre-deployment-validation",
+   "responsibility_split": "inherited",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-SCR-MIT (persistent supply chain risk identification and mitigation)",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain risk includes shared-service providers); GOVERN 5.2",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "inheritance_chain_documented",
+    "description": "Binary: a current inheritance chain document exists for every shared-service AI deployment, reviewed at each ATO renewal.",
+    "evidence": {
+     "ocsf_class": "Document management artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-VAL-007",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "Shared-Service AI Inheritance Chain Documentation",
-      "description": "For AI systems deployed through interagency shared services (such as GSA platforms), the consuming agency must document the complete inheritance chain: which controls are inherited from the shared-service ATO, which are shared, and which are the agency's sole responsibility. The inheritance chain must be reviewed and confirmed at each ATO renewal cycle.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["Shared-Service"],
-      "public_sector_stage": "pre-deployment-validation",
-      "responsibility_split": "inherited",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 governance and oversight for shared-service AI; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify CRM inheritance KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk includes shared-service providers); GOVERN 5.2",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "inheritance_chain_documented",
-        "description": "Binary: a current inheritance chain document exists for every shared-service AI deployment, reviewed at each ATO renewal.",
-        "evidence": {
-          "ocsf_class": "Document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "ato-renewal-cycle",
-        "breach_action": "flag-shared-service-deployment; notify-ISSO; escalate-to-Authorizing-Official"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "ato-renewal-cycle",
+    "breach_action": "flag-shared-service-deployment; notify-ISSO; escalate-to-Authorizing-Official"
+   }
+  },
+  {
+   "id": "SRF-L3-OVR-008",
+   "layer": "L3",
+   "component": "Application and Integration",
+   "title": "AI Output Explanation for Adverse Citizen Decisions",
+   "description": "For adverse decisions informed by AI, the agency must provide an explanation to the affected citizen describing, in plain language, the factors that contributed to the decision. The explanation must not require the citizen to have technical knowledge and must accompany any notice of the adverse decision.",
+   "accountable_persona": "application-developer",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "human-oversight-remedy",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(vi) (Offer Consistent Remedies or Appeals)",
+    "m_25_22": "Section 3(d)(v) (Documentation, Transparency, and Accessibility)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MANAGE 3.2; GOVERN 6.2",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "adverse_decision_explanation_provided",
+    "description": "Binary: every adverse-decision notice issued by a high-impact AI use case includes a plain-language explanation of contributing factors.",
+    "evidence": {
+     "ocsf_class": "audit_activity (3002) for decision notice issuance events.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L3-OVR-008",
-      "layer": "L3",
-      "component": "Application and Integration",
-      "title": "AI Output Explanation for Adverse Citizen Decisions",
-      "description": "For adverse decisions informed by AI, the agency must provide an explanation to the affected citizen describing, in plain language, the factors that contributed to the decision. The explanation must not require the citizen to have technical knowledge and must accompany any notice of the adverse decision.",
-      "accountable_persona": "application-developer",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "human-oversight-remedy",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 remedies or appeals and end-user feedback minimum practices; verify section references",
-        "m_25_22": "TBD: M-25-22 transparency requirements for AI-informed decisions; verify section references",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "MANAGE 3.2; GOVERN 6.2",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "adverse_decision_explanation_provided",
-        "description": "Binary: every adverse-decision notice issued by a high-impact AI use case includes a plain-language explanation of contributing factors.",
-        "evidence": {
-          "ocsf_class": "audit_activity (3002) for decision notice issuance events.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-decision",
-        "breach_action": "suspend-notice-issuance; notify-CAIO; escalate-to-legal; remediate-notice-template"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-decision",
+    "breach_action": "suspend-notice-issuance; notify-CAIO; escalate-to-legal; remediate-notice-template"
+   }
+  },
+  {
+   "id": "SRF-L4-ACQ-001",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "AI Service FedRAMP Authorization at Required Impact Level",
+   "description": "Every AI service (model API, platform, or data processing service) used in a federal AI use case must hold a current FedRAMP authorization at or above the FIPS 199 impact level required for the data it processes. For high-impact AI use cases, Moderate or High authorization is required. The ISSO must verify and document authorization status before service onboarding.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "inherited",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "Section 4(e)(i) (Authorization To Operate Compliance)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 1.5",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "ai_service_fedramp_authorization_level_met",
+    "description": "Binary: every AI service in use for the given use case holds a current FedRAMP authorization at or above the required FIPS 199 level, confirmed in the FedRAMP marketplace.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Marketplace verification may be logged via api_activity (6003).",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-ACQ-001",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "AI Service FedRAMP Authorization at Required Impact Level",
-      "description": "Every AI service (model API, platform, or data processing service) used in a federal AI use case must hold a current FedRAMP authorization at or above the FIPS 199 impact level required for the data it processes. For high-impact AI use cases, Moderate or High authorization is required. The ISSO must verify and document authorization status before service onboarding.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Shared-Service"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "inherited",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 acquisition due diligence and authorization requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify authorization boundary KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 1.5",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "ai_service_fedramp_authorization_level_met",
-        "description": "Binary: every AI service in use for the given use case holds a current FedRAMP authorization at or above the required FIPS 199 level, confirmed in the FedRAMP marketplace.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Marketplace verification may be logged via api_activity (6003).",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-onboarding-and-quarterly",
-        "breach_action": "suspend-service; notify-ISSO; escalate-to-Authorizing-Official; notify-CAIO"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-onboarding-and-quarterly",
+    "breach_action": "suspend-service; notify-ISSO; escalate-to-Authorizing-Official; notify-CAIO"
+   }
+  },
+  {
+   "id": "SRF-L4-ACQ-002",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "Guardrail Configuration Baseline and Change Control",
+   "description": "The agency agentic platform provider must establish and document a guardrail configuration baseline for each AI platform deployment. Changes to guardrail configurations must go through a formal change-control process, be logged, and require ISSO review before applying to production high-impact use cases.",
+   "accountable_persona": "agentic-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "Section 4(b)(i) (Conduct Pre-Deployment Testing); Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-SVC-ACM (automated configuration management); KSI-CMT-RMV (version-controlled change deployment)",
+    "nist_ai_rmf": "MANAGE 1.3 (responses to AI risks are selected); MEASURE 2.6",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM07: System Prompt Leakage; LLM08: Excessive Agency"
+   },
+   "threshold": {
+    "metric": "guardrail_baseline_documented_and_change_controlled",
+    "description": "Binary: a current guardrail configuration baseline exists, is under change control, and no unauthorized configuration changes have been detected in the prior review period.",
+    "evidence": {
+     "ocsf_class": "configuration_change (5001) for all guardrail configuration changes.",
+     "attribute": "configuration_change.category_uid; configuration_change.actor",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-ACQ-002",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "Guardrail Configuration Baseline and Change Control",
-      "description": "The agency agentic platform provider must establish and document a guardrail configuration baseline for each AI platform deployment. Changes to guardrail configurations must go through a formal change-control process, be logged, and require ISSO review before applying to production high-impact use cases.",
-      "accountable_persona": "agentic-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 pre-deployment testing and ongoing monitoring for platform controls; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify configuration management KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 1.3 (responses to AI risks are selected); MEASURE 2.6",
-        "cosais": "TBD: COSAiS single-agent overlay; revisit on final publication",
-        "owasp_llm": "LLM07: System Prompt Leakage; LLM08: Excessive Agency"
-      },
-      "threshold": {
-        "metric": "guardrail_baseline_documented_and_change_controlled",
-        "description": "Binary: a current guardrail configuration baseline exists, is under change control, and no unauthorized configuration changes have been detected in the prior review period.",
-        "evidence": {
-          "ocsf_class": "configuration_change (5001) for all guardrail configuration changes.",
-          "attribute": "configuration_change.category_uid; configuration_change.actor",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "continuous",
-        "breach_action": "revert-unauthorized-change; notify-ISSO; escalate-to-Authorizing-Official; trigger-incident-response"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "continuous",
+    "breach_action": "revert-unauthorized-change; notify-ISSO; escalate-to-Authorizing-Official; trigger-incident-response"
+   }
+  },
+  {
+   "id": "SRF-L4-ACQ-003",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "Gateway Authentication and Authorization for AI API Access",
+   "description": "All agency access to AI model APIs and platform services must route through an agency-controlled API gateway enforcing authentication, authorization, and rate limiting. Direct-to-model access outside the gateway is prohibited for high-impact use cases. The gateway configuration must be documented in the system security plan.",
+   "accountable_persona": "agentic-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-IAM-JIT (least-privileged, role- and attribute-based, just-in-time authorization); KSI-IAM-SNU (secure authentication for non-user accounts)",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain access controls); MAP 1.5",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM04: Data and Model Poisoning; LLM02: Sensitive Information Disclosure"
+   },
+   "threshold": {
+    "metric": "ai_api_gateway_enforced",
+    "description": "Binary: all AI API access for high-impact use cases routes through an authenticated agency-controlled gateway; no unauthorized direct access paths detected.",
+    "evidence": {
+     "ocsf_class": "network_activity (4001) for gateway traffic logs; api_activity (6003) for API call logs.",
+     "attribute": "network_activity.connection_info; api_activity.http_request",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-ACQ-003",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "Gateway Authentication and Authorization for AI API Access",
-      "description": "All agency access to AI model APIs and platform services must route through an agency-controlled API gateway enforcing authentication, authorization, and rate limiting. Direct-to-model access outside the gateway is prohibited for high-impact use cases. The gateway configuration must be documented in the system security plan.",
-      "accountable_persona": "agentic-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify authentication and access control KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain access controls); MAP 1.5",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM04: Data and Model Poisoning; LLM02: Sensitive Information Disclosure"
-      },
-      "threshold": {
-        "metric": "ai_api_gateway_enforced",
-        "description": "Binary: all AI API access for high-impact use cases routes through an authenticated agency-controlled gateway; no unauthorized direct access paths detected.",
-        "evidence": {
-          "ocsf_class": "network_activity (4001) for gateway traffic logs; api_activity (6003) for API call logs.",
-          "attribute": "network_activity.connection_info; api_activity.http_request",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "continuous",
-        "breach_action": "block-direct-access-path; notify-ISSO; escalate-to-incident-response; log-to-audit-trail"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "continuous",
+    "breach_action": "block-direct-access-path; notify-ISSO; escalate-to-incident-response; log-to-audit-trail"
+   }
+  },
+  {
+   "id": "SRF-L4-MON-004",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "CUI Encryption and Access Monitoring for AI Workloads",
+   "description": "CUI processed or stored by AI workloads must be encrypted at rest and in transit per FIPS 140-3 requirements. Access to CUI-holding stores by AI processes must be logged and monitored for anomalous access patterns. The ISSO must review access logs on the cadence defined in the system security plan.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-SVC-SIN (information encrypted or otherwise secured); KSI-MLA-RVL (logs persistently reviewed and audited)",
+    "nist_ai_rmf": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM06: Sensitive Information Disclosure"
+   },
+   "threshold": {
+    "metric": "cui_encryption_and_access_logging_compliant",
+    "description": "Binary: CUI encryption at rest and in transit is verified, and access logging is confirmed active with no gaps in the prior review period.",
+    "evidence": {
+     "ocsf_class": "file_activity (1001) for file-level access; network_activity (4001) for transit encryption verification.",
+     "attribute": "file_activity.actor; network_activity.tls",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-MON-004",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "CUI Encryption and Access Monitoring for AI Workloads",
-      "description": "CUI processed or stored by AI workloads must be encrypted at rest and in transit per FIPS 140-3 requirements. Access to CUI-holding stores by AI processes must be logged and monitored for anomalous access patterns. The ISSO must review access logs on the cadence defined in the system security plan.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify CUI encryption and access logging KSI at fedramp.gov",
-        "nist_ai_rmf": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM06: Sensitive Information Disclosure"
-      },
-      "threshold": {
-        "metric": "cui_encryption_and_access_logging_compliant",
-        "description": "Binary: CUI encryption at rest and in transit is verified, and access logging is confirmed active with no gaps in the prior review period.",
-        "evidence": {
-          "ocsf_class": "file_activity (1001) for file-level access; network_activity (4001) for transit encryption verification.",
-          "attribute": "file_activity.actor; network_activity.tls",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "continuous",
-        "breach_action": "suspend-CUI-access-by-AI-processes; notify-ISSO; escalate-to-data-protection-officer; initiate-breach-assessment"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "continuous",
+    "breach_action": "suspend-CUI-access-by-AI-processes; notify-ISSO; escalate-to-data-protection-officer; initiate-breach-assessment"
+   }
+  },
+  {
+   "id": "SRF-L4-MON-005",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "Audit Log Completeness Aligned to FedRAMP 20x KSI Evidence",
+   "description": "Audit logs for AI platform components must meet FedRAMP 20x Key Security Indicator evidence expectations: machine-readable, pulled from production environments, and covering authentication, authorization, configuration changes, and API activity. Log completeness must be assessed against the KSI evidence requirements at each ATO renewal and after any material platform change.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-MLA-LET (maintained list of logged event types); KSI-MLA-OSM (SIEM or similar persistently reviewed)",
+    "nist_ai_rmf": "MEASURE 2.5 (ongoing monitoring includes audit capabilities); MANAGE 4.1",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "audit_log_completeness_pct",
+    "description": "Percentage of required KSI log fields present and populated in production audit logs. Recommended minimum 100% for High-impact systems; tier-configurable for Moderate and Low.",
+    "evidence": {
+     "ocsf_class": "audit_activity (3002) as the primary OCSF class for log completeness verification; api_activity (6003) for API audit trails.",
+     "attribute": "audit_activity.category_uid; audit_activity.actor",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-MON-005",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "Audit Log Completeness Aligned to FedRAMP 20x KSI Evidence",
-      "description": "Audit logs for AI platform components must meet FedRAMP 20x Key Security Indicator evidence expectations: machine-readable, pulled from production environments, and covering authentication, authorization, configuration changes, and API activity. Log completeness must be assessed against the KSI evidence requirements at each ATO renewal and after any material platform change.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops", "Shared-Service"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify audit log completeness KSI names and required fields at fedramp.gov; KSI set is still evolving through pilot phases",
-        "nist_ai_rmf": "MEASURE 2.5 (ongoing monitoring includes audit capabilities); MANAGE 4.1",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "audit_log_completeness_pct",
-        "description": "Percentage of required KSI log fields present and populated in production audit logs. Recommended minimum 100% for High-impact systems; tier-configurable for Moderate and Low.",
-        "evidence": {
-          "ocsf_class": "audit_activity (3002) as the primary OCSF class for log completeness verification; api_activity (6003) for API audit trails.",
-          "attribute": "audit_activity.category_uid; audit_activity.actor",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "TIER_AUDIT_LOG_COMPLETENESS_PCT",
-        "param_type": "tier-configurable",
-        "window": "continuous",
-        "breach_action": "alert-ISSO; identify-missing-log-fields; escalate-to-Authorizing-Official-if-High-system"
-      }
+    "operator": ">=",
+    "param": "TIER_AUDIT_LOG_COMPLETENESS_PCT",
+    "param_type": "tier-configurable",
+    "window": "continuous",
+    "breach_action": "alert-ISSO; identify-missing-log-fields; escalate-to-Authorizing-Official-if-High-system"
+   }
+  },
+  {
+   "id": "SRF-L4-MON-006",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "Model Serving Availability SLA for Mission-Critical Use Cases",
+   "description": "For high-impact AI use cases designated mission-critical, the agency must document and enforce an availability SLA for the model serving layer. The SLA must be reflected in the AI service contract per M-25-22 performance-based acquisition terms. Availability must be monitored continuously and reported at each governance board review.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "Section 4(d)(iii)(F) (Vendor Performance Requirements)",
+    "fedramp_20x_ksi": "KSI-CNA-RVP (denial of service protection persistently reviewed)",
+    "nist_ai_rmf": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM10: Unbounded Consumption"
+   },
+   "threshold": {
+    "metric": "model_serving_availability_pct",
+    "description": "Percentage uptime of the model serving layer over the measurement window. Tier-configurable; recommended minimum 99.5% for mission-critical High systems.",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for availability alerts; api_activity (6003) for availability monitoring.",
+     "attribute": "detection_finding.severity_id",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-MON-006",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "Model Serving Availability SLA for Mission-Critical Use Cases",
-      "description": "For high-impact AI use cases designated mission-critical, the agency must document and enforce an availability SLA for the model serving layer. The SLA must be reflected in the AI service contract per M-25-22 performance-based acquisition terms. Availability must be monitored continuously and reported at each governance board review.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 ongoing monitoring for mission-critical AI; verify section references",
-        "m_25_22": "TBD: M-25-22 performance-based acquisition SLA requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify availability KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM10: Unbounded Consumption"
-      },
-      "threshold": {
-        "metric": "model_serving_availability_pct",
-        "description": "Percentage uptime of the model serving layer over the measurement window. Tier-configurable; recommended minimum 99.5% for mission-critical High systems.",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for availability alerts; api_activity (6003) for availability monitoring.",
-          "attribute": "detection_finding.severity_id",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": ">=",
-        "param": "TIER_MODEL_AVAILABILITY_PCT",
-        "param_type": "tier-configurable",
-        "window": "rolling-30d",
-        "breach_action": "escalate-to-vendor; notify-CAIO; activate-continuity-plan; log-SLA-breach-for-contract-reporting"
-      }
+    "operator": ">=",
+    "param": "TIER_MODEL_AVAILABILITY_PCT",
+    "param_type": "tier-configurable",
+    "window": "rolling-30d",
+    "breach_action": "escalate-to-vendor; notify-CAIO; activate-continuity-plan; log-SLA-breach-for-contract-reporting"
+   }
+  },
+  {
+   "id": "SRF-L4-VAL-007",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "Security Control Inheritance Verification at ATO Boundary",
+   "description": "Before authorizing a new AI service, the agency Authorizing Official and ISSO must verify that all security controls within the FedRAMP authorization boundary are properly inherited and that agency-responsible controls are implemented and documented. The Customer Responsibility Matrix must be completed for AI-specific controls, including M-25-21 obligations.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "pre-deployment-validation",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "Section 4(b)(i) (Conduct Pre-Deployment Testing)",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-SCR-MIT (persistent supply chain risk identification and mitigation)",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain risk); GOVERN 5.2",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "ato_crm_completed_for_ai_controls",
+    "description": "Binary: the Customer Responsibility Matrix is completed for all AI-specific controls before ATO is granted, and agency-responsible controls are implemented and documented.",
+    "evidence": {
+     "ocsf_class": "Document management artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-VAL-007",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "Security Control Inheritance Verification at ATO Boundary",
-      "description": "Before authorizing a new AI service, the agency Authorizing Official and ISSO must verify that all security controls within the FedRAMP authorization boundary are properly inherited and that agency-responsible controls are implemented and documented. The Customer Responsibility Matrix must be completed for AI-specific controls, including M-25-21 obligations.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Shared-Service"],
-      "public_sector_stage": "pre-deployment-validation",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 governance and pre-deployment requirements for AI-specific controls; verify section references",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify CRM completion KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk); GOVERN 5.2",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "ato_crm_completed_for_ai_controls",
-        "description": "Binary: the Customer Responsibility Matrix is completed for all AI-specific controls before ATO is granted, and agency-responsible controls are implemented and documented.",
-        "evidence": {
-          "ocsf_class": "Document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-ato",
-        "breach_action": "block-ATO-issuance; notify-Authorizing-Official; escalate-to-ISSO"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-ato",
+    "breach_action": "block-ATO-issuance; notify-Authorizing-Official; escalate-to-ISSO"
+   }
+  },
+  {
+   "id": "SRF-L4-MON-008",
+   "layer": "L4",
+   "component": "Platform and Infrastructure",
+   "title": "Continuous Vulnerability Scanning for AI Platform Components",
+   "description": "AI platform components (model serving infrastructure, gateway, RAG pipeline) must be included in the agency continuous vulnerability scanning program. Critical and high-severity findings must be remediated within the timelines defined in the system security plan and reported to the ISSO at each ATO continuous monitoring cycle.",
+   "accountable_persona": "ai-platform-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities); KSI-CNA-MAT (minimal attack surface persistently reviewed)",
+    "nist_ai_rmf": "MANAGE 2.4 (risk treatments tracked); MEASURE 2.5",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM09: Misinformation; LLM04: Data and Model Poisoning"
+   },
+   "threshold": {
+    "metric": "critical_high_vuln_remediation_within_sla_pct",
+    "description": "Percentage of critical and high-severity vulnerabilities in AI platform components remediated within the SSP-defined timeline. Zero tolerance for overdue critical findings.",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for vulnerability findings.",
+     "attribute": "finding.severity_id; finding.remediation",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L4-MON-008",
-      "layer": "L4",
-      "component": "Platform and Infrastructure",
-      "title": "Continuous Vulnerability Scanning for AI Platform Components",
-      "description": "AI platform components (model serving infrastructure, gateway, RAG pipeline) must be included in the agency continuous vulnerability scanning program. Critical and high-severity findings must be remediated within the timelines defined in the system security plan and reported to the ISSO at each ATO continuous monitoring cycle.",
-      "accountable_persona": "ai-platform-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "N/A",
-        "fedramp_20x_ksi": "TBD: verify vulnerability management KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 2.4 (risk treatments tracked); MEASURE 2.5",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM09: Misinformation; LLM04: Data and Model Poisoning"
-      },
-      "threshold": {
-        "metric": "critical_high_vuln_remediation_within_sla_pct",
-        "description": "Percentage of critical and high-severity vulnerabilities in AI platform components remediated within the SSP-defined timeline. Zero tolerance for overdue critical findings.",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for vulnerability findings.",
-          "attribute": "finding.severity_id; finding.remediation",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "1.0",
-        "param_type": "zero-tolerance",
-        "window": "continuous-monitoring-cycle",
-        "breach_action": "escalate-to-ISSO; notify-Authorizing-Official; initiate-POA-and-M-if-remediation-delayed"
-      }
+    "operator": "==",
+    "param": "1.0",
+    "param_type": "zero-tolerance",
+    "window": "continuous-monitoring-cycle",
+    "breach_action": "escalate-to-ISSO; notify-Authorizing-Official; initiate-POA-and-M-if-remediation-delayed"
+   }
+  },
+  {
+   "id": "SRF-L5-ACQ-001",
+   "layer": "L5",
+   "component": "Model and Supplier",
+   "title": "Model Documentation Completeness per M-25-22 Transparency Terms",
+   "description": "AI vendors must provide model documentation covering training data sources, known limitations, evaluation results, and applicable use-case constraints, per M-25-22 transparency requirements. The agency must verify documentation completeness at contract execution and before renewing or expanding use.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "csp",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "Section 3(d)(v) (Documentation, Transparency, and Accessibility); Section 4(c)(i) (AI Use Transparency Requirements)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 5.2 (third-party AI provider transparency); MAP 4.1 (risks of receiving AI from third parties are enumerated)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "model_documentation_complete",
+    "description": "Binary: vendor-supplied model documentation addresses all M-25-22 required transparency fields and is on file before contract execution or renewal.",
+    "evidence": {
+     "ocsf_class": "Document management artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L5-ACQ-001",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "Model Documentation Completeness per M-25-22 Transparency Terms",
-      "description": "AI vendors must provide model documentation covering training data sources, known limitations, evaluation results, and applicable use-case constraints, per M-25-22 transparency requirements. The agency must verify documentation completeness at contract execution and before renewing or expanding use.",
-      "accountable_persona": "model-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "csp",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 vendor transparency and model documentation requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify model documentation KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.2 (third-party AI provider transparency); MAP 4.1 (risks of receiving AI from third parties are enumerated)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "model_documentation_complete",
-        "description": "Binary: vendor-supplied model documentation addresses all M-25-22 required transparency fields and is on file before contract execution or renewal.",
-        "evidence": {
-          "ocsf_class": "Document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "per-contract",
-        "breach_action": "escalate-to-contracting-officer; hold-contract-execution; notify-CAIO"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "per-contract",
+    "breach_action": "escalate-to-contracting-officer; hold-contract-execution; notify-CAIO"
+   }
+  },
+  {
+   "id": "SRF-L5-MON-002",
+   "layer": "L5",
+   "component": "Model and Supplier",
+   "title": "Vendor Performance and Drift Disclosure SLA",
+   "description": "AI vendors must disclose material changes to model performance or behavior (drift, retraining events, capability changes) within the timeline specified in the contract, per M-25-22 transparency requirements. The agency must verify SLA compliance at each contract review period and escalate gaps to the contracting officer.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "csp",
+   "mappings": {
+    "m_25_21": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "Section 4(d)(iii)(E) (Ongoing Testing and Monitoring); Section 4(d)(iii)(F) (Vendor Performance Requirements)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "MANAGE 2.4 (risk treatments tracked); MAP 4.1",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "vendor_drift_disclosure_within_sla",
+    "description": "Binary: no outstanding overdue model performance or drift disclosures from the vendor per contract SLA terms.",
+    "evidence": {
+     "ocsf_class": "Document management artifact. Vendor disclosure events may be logged via api_activity (6003).",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L5-MON-002",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "Vendor Performance and Drift Disclosure SLA",
-      "description": "AI vendors must disclose material changes to model performance or behavior (drift, retraining events, capability changes) within the timeline specified in the contract, per M-25-22 transparency requirements. The agency must verify SLA compliance at each contract review period and escalate gaps to the contracting officer.",
-      "accountable_persona": "model-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "csp",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 ongoing monitoring for model performance; verify section references",
-        "m_25_22": "TBD: M-25-22 vendor transparency and performance disclosure requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify model change disclosure KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 2.4 (risk treatments tracked); MAP 4.1",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "vendor_drift_disclosure_within_sla",
-        "description": "Binary: no outstanding overdue model performance or drift disclosures from the vendor per contract SLA terms.",
-        "evidence": {
-          "ocsf_class": "Document management artifact. Vendor disclosure events may be logged via api_activity (6003).",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "contract-review-cycle",
-        "breach_action": "notify-contracting-officer; escalate-to-CAIO; trigger-re-validation; document-SLA-breach"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "contract-review-cycle",
+    "breach_action": "notify-contracting-officer; escalate-to-CAIO; trigger-re-validation; document-SLA-breach"
+   }
+  },
+  {
+   "id": "SRF-L5-ACQ-003",
+   "layer": "L5",
+   "component": "Model and Supplier",
+   "title": "Model Artifact Signing and Provenance Verification",
+   "description": "AI model artifacts (model weights, containerized inference images, fine-tuned adapters) used in agency deployments must be cryptographically signed by the vendor and the signatures verified before deployment. Unsigned or unverifiable artifacts must not be deployed to production.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-PaaS",
+    "Agent-Ops"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "shared",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-SVC-VRI (cryptographic validation of resource integrity)",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management includes artifact integrity); MAP 4.1",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM04: Data and Model Poisoning"
+   },
+   "threshold": {
+    "metric": "model_artifact_signature_verified",
+    "description": "Binary: all model artifacts deployed to production carry valid vendor signatures verified before deployment; no unsigned artifact deployed.",
+    "evidence": {
+     "ocsf_class": "api_activity (6003) for artifact pull and signature verification events.",
+     "attribute": "api_activity.http_request; api_activity.status_code",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L5-ACQ-003",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "Model Artifact Signing and Provenance Verification",
-      "description": "AI model artifacts (model weights, containerized inference images, fine-tuned adapters) used in agency deployments must be cryptographically signed by the vendor and the signatures verified before deployment. Unsigned or unverifiable artifacts must not be deployed to production.",
-      "accountable_persona": "model-provider",
-      "operating_models": ["AI-PaaS", "Agent-Ops"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "shared",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 supply chain integrity requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify artifact signing KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management includes artifact integrity); MAP 4.1",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM04: Data and Model Poisoning"
-      },
-      "threshold": {
-        "metric": "model_artifact_signature_verified",
-        "description": "Binary: all model artifacts deployed to production carry valid vendor signatures verified before deployment; no unsigned artifact deployed.",
-        "evidence": {
-          "ocsf_class": "api_activity (6003) for artifact pull and signature verification events.",
-          "attribute": "api_activity.http_request; api_activity.status_code",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-deployment",
-        "breach_action": "block-deployment; notify-ISSO; escalate-to-supply-chain-risk-manager"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-deployment",
+    "breach_action": "block-deployment; notify-ISSO; escalate-to-supply-chain-risk-manager"
+   }
+  },
+  {
+   "id": "SRF-L5-MON-004",
+   "layer": "L5",
+   "component": "Model and Supplier",
+   "title": "Vendor Vulnerability Disclosure SLA",
+   "description": "AI vendors must disclose security vulnerabilities in their models or platforms within the timeline required by the contract and M-25-22 terms. The agency must track open disclosures and verify remediation or mitigation within SLA. Outstanding overdue disclosures must be escalated to the contracting officer and ISSO.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "csp",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "N/A",
+    "fedramp_20x_ksi": "KSI-PIY-RVD (vulnerability disclosure program effectiveness persistently reviewed)",
+    "nist_ai_rmf": "MANAGE 2.4 (risk treatments tracked); GOVERN 5.2",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "LLM04: Data and Model Poisoning"
+   },
+   "threshold": {
+    "metric": "vendor_vuln_disclosure_within_sla",
+    "description": "Binary: no outstanding overdue vendor vulnerability disclosures per contract SLA terms.",
+    "evidence": {
+     "ocsf_class": "detection_finding (2004) for vulnerability disclosures.",
+     "attribute": "finding.severity_id; finding.remediation",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L5-MON-004",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "Vendor Vulnerability Disclosure SLA",
-      "description": "AI vendors must disclose security vulnerabilities in their models or platforms within the timeline required by the contract and M-25-22 terms. The agency must track open disclosures and verify remediation or mitigation within SLA. Outstanding overdue disclosures must be escalated to the contracting officer and ISSO.",
-      "accountable_persona": "model-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "csp",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 vendor security disclosure requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify vulnerability disclosure KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 2.4 (risk treatments tracked); GOVERN 5.2",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "LLM04: Data and Model Poisoning"
-      },
-      "threshold": {
-        "metric": "vendor_vuln_disclosure_within_sla",
-        "description": "Binary: no outstanding overdue vendor vulnerability disclosures per contract SLA terms.",
-        "evidence": {
-          "ocsf_class": "detection_finding (2004) for vulnerability disclosures.",
-          "attribute": "finding.severity_id; finding.remediation",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "continuous",
-        "breach_action": "notify-contracting-officer; escalate-to-ISSO; initiate-interim-mitigation; document-SLA-breach"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "continuous",
+    "breach_action": "notify-contracting-officer; escalate-to-ISSO; initiate-interim-mitigation; document-SLA-breach"
+   }
+  },
+  {
+   "id": "SRF-L5-ACQ-005",
+   "layer": "L5",
+   "component": "Model and Supplier",
+   "title": "Model Portability Evidence for Vendor Lock-In Avoidance",
+   "description": "Per M-25-22 vendor lock-in avoidance requirements, the agency must obtain evidence before contract execution that the AI service supports data export in standard formats and that the agency can migrate to an alternative provider without losing access to its data, fine-tuning assets, or interaction history.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS"
+   ],
+   "public_sector_stage": "acquisition-integration",
+   "responsibility_split": "csp",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "Section 4(c)(ii) (Protections Against Vendor Lock-In); Section 4(d)(iii)(C) (Vendor Lock-In Protections)",
+    "fedramp_20x_ksi": "N/A",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain risk includes lock-in); MAP 4.1",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "model_portability_evidence_on_file",
+    "description": "Binary: portability evidence (data export documentation, migration path description) is on file before contract execution.",
+    "evidence": {
+     "ocsf_class": "Document management artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L5-ACQ-005",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "Model Portability Evidence for Vendor Lock-In Avoidance",
-      "description": "Per M-25-22 vendor lock-in avoidance requirements, the agency must obtain evidence before contract execution that the AI service supports data export in standard formats and that the agency can migrate to an alternative provider without losing access to its data, fine-tuning assets, or interaction history.",
-      "accountable_persona": "model-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS"],
-      "public_sector_stage": "acquisition-integration",
-      "responsibility_split": "csp",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 vendor lock-in avoidance provisions; verify section references",
-        "fedramp_20x_ksi": "N/A",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk includes lock-in); MAP 4.1",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "model_portability_evidence_on_file",
-        "description": "Binary: portability evidence (data export documentation, migration path description) is on file before contract execution.",
-        "evidence": {
-          "ocsf_class": "Document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "per-contract",
-        "breach_action": "escalate-to-contracting-officer; hold-contract-execution; notify-CAIO"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "per-contract",
+    "breach_action": "escalate-to-contracting-officer; hold-contract-execution; notify-CAIO"
+   }
+  },
+  {
+   "id": "SRF-L5-MON-006",
+   "layer": "L5",
+   "component": "Model and Supplier",
+   "title": "AI Model Version Change Notification and Re-Validation Trigger",
+   "description": "When a vendor updates or replaces an AI model version used in a high-impact use case, the agency must be notified in advance per the contract SLA, conduct a re-validation assessment, and confirm that the new model version meets all pre-deployment testing requirements before continuing production use.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "csp",
+   "mappings": {
+    "m_25_21": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)",
+    "m_25_22": "Section 4(d)(iii)(G) (New Feature Notification)",
+    "fedramp_20x_ksi": "KSI-CMT-LMC (modifications logged and monitored)",
+    "nist_ai_rmf": "MANAGE 2.4 (post-deployment risk tracking); MEASURE 2.6",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "model_version_change_revalidation_completed",
+    "description": "Binary: every vendor model version change on a high-impact use case triggers a re-validation assessment that is completed before the new version enters production.",
+    "evidence": {
+     "ocsf_class": "Document management artifact for re-validation report; api_activity (6003) for model version change events.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L5-MON-006",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "AI Model Version Change Notification and Re-Validation Trigger",
-      "description": "When a vendor updates or replaces an AI model version used in a high-impact use case, the agency must be notified in advance per the contract SLA, conduct a re-validation assessment, and confirm that the new model version meets all pre-deployment testing requirements before continuing production use.",
-      "accountable_persona": "model-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "csp",
-      "mappings": {
-        "m_25_21": "TBD: M-25-21 ongoing monitoring and re-validation after material changes; verify section references",
-        "m_25_22": "TBD: M-25-22 vendor change notification requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify model version change notification KSI at fedramp.gov",
-        "nist_ai_rmf": "MANAGE 2.4 (post-deployment risk tracking); MEASURE 2.6",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "model_version_change_revalidation_completed",
-        "description": "Binary: every vendor model version change on a high-impact use case triggers a re-validation assessment that is completed before the new version enters production.",
-        "evidence": {
-          "ocsf_class": "Document management artifact for re-validation report; api_activity (6003) for model version change events.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "zero-tolerance",
-        "window": "per-model-version-change",
-        "breach_action": "block-new-model-version-in-production; notify-CAIO; escalate-to-Authorizing-Official; initiate-expedited-re-validation"
-      }
+    "operator": "==",
+    "param": "true",
+    "param_type": "zero-tolerance",
+    "window": "per-model-version-change",
+    "breach_action": "block-new-model-version-in-production; notify-CAIO; escalate-to-Authorizing-Official; initiate-expedited-re-validation"
+   }
+  },
+  {
+   "id": "SRF-L5-MON-007",
+   "layer": "L5",
+   "component": "Model and Supplier",
+   "title": "Third-Party AI Supply Chain Risk Assessment",
+   "description": "The agency must conduct a supply chain risk assessment for each AI vendor covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually.",
+   "accountable_persona": "model-provider",
+   "operating_models": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Shared-Service"
+   ],
+   "public_sector_stage": "ongoing-monitoring",
+   "responsibility_split": "agency",
+   "mappings": {
+    "m_25_21": "N/A",
+    "m_25_22": "Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)",
+    "fedramp_20x_ksi": "KSI-SCR-MIT (persistent supply chain risk identification and mitigation); KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities)",
+    "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)",
+    "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+    "owasp_llm": "N/A"
+   },
+   "threshold": {
+    "metric": "supply_chain_risk_assessment_current",
+    "description": "Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, and was refreshed within the prior annual cycle.",
+    "evidence": {
+     "ocsf_class": "Document management artifact.",
+     "attribute": "TBD",
+     "ocsf_version": "1.8.0"
     },
-
-    {
-      "id": "SRF-L5-MON-007",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "Third-Party AI Supply Chain Risk Assessment",
-      "description": "The agency must conduct a supply chain risk assessment for each AI vendor covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually.",
-      "accountable_persona": "model-provider",
-      "operating_models": ["AI-SaaS", "AI-PaaS", "Shared-Service"],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "TBD: M-25-22 supply chain risk and acquisition due diligence requirements; verify section references",
-        "fedramp_20x_ksi": "TBD: verify supply chain risk KSI at fedramp.gov",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)",
-        "cosais": "TBD: revisit on final COSAiS publication",
-        "owasp_llm": "N/A"
-      },
-      "threshold": {
-        "metric": "supply_chain_risk_assessment_current",
-        "description": "Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, and was refreshed within the prior annual cycle.",
-        "evidence": {
-          "ocsf_class": "Document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "annual-review",
-        "breach_action": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
-      }
-    }
-
-  ]
+    "operator": "==",
+    "param": "true",
+    "param_type": "verification",
+    "window": "annual-review",
+    "breach_action": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
+   }
+  }
+ ],
+ "m_25_21_citation_format": "M-25-21 citations use the form 'Section N(x)(y) (Title)' following the memo's implementation sections: Section 3 agency governance (3(a) roles and bodies, 3(b) responsible adoption, 3(c) federal bodies), Section 4 public trust (4(a) determining high-impact AI and waivers, 4(b)(i-vii) minimum risk management practices), Sections 5 and 6 high-impact definition and presumed categories. Verified against the memo text (whitehouse.gov, April 3, 2025) in July 2026. 'N/A' means no nexus.",
+ "m_25_22_citation_format": "M-25-22 citations use the form 'Section N(x) (Title)': Section 3 agency-level requirements (3(c) privacy, 3(d) IP rights and government data), Section 4 acquisition lifecycle (4(a) requirements, 4(b) market research, 4(c) solicitation, 4(d) selection and award incl. 4(d)(iii) contract terms A-G, 4(e) administration, 4(f) closeout). Verified against the memo text (whitehouse.gov, April 3, 2025) in July 2026. 'N/A' means no nexus.",
+ "fedramp_20x_ksi_citation_format": "FedRAMP 20x citations use Key Security Indicator IDs 'KSI-{FAMILY}-{INDICATOR}' with a statement gloss in parentheses, multiple citations separated by '; '. Verified against the machine-readable FedRAMP Consolidated Rules for 2026 (github.com/FedRAMP/rules) in July 2026; families CED, CMT, CNA, IAM, INR, MLA, PIY, RPL, SCR, SVC. 'N/A' means no KSI covers the control's subject."
 }

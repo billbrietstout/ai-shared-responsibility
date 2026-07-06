@@ -48,6 +48,28 @@ python3 build/verify_knowledge_layer.py            # integrity checks (CI-friend
 Run all three after editing the glossary page or any `/data` file, then commit
 the regenerated JSON.
 
+## OSCAL vertical catalog and profiles
+
+`generate_oscal_verticals.py` reads the six `data/*-controls.json` files and
+writes `export/srf-oscal-verticals-catalog.json` (OSCAL 1.2.2 catalog, 258
+controls grouped by SRF layer with one subgroup per vertical) plus one
+`export/srf-{vertical}.profile.json` per vertical. Thresholds become OSCAL
+parameters, verified regulatory mappings become links into back-matter, and
+TBD or N/A mappings stay verbatim as props (never invented links). Control
+IDs are namespaced (`fin-srf-l1-dev-001`) because SRF IDs repeat across
+verticals; the original ID is in prop `srf-id`.
+
+```bash
+python3 build/generate_oscal_verticals.py   # regenerate catalog + profiles
+python3 build/verify_oscal.py               # schema + referential integrity
+```
+
+The verifier checks referential integrity offline and validates against the
+official OSCAL 1.2.2 JSON schemas when they are reachable (or pass
+`--schema-dir` with local copies of the release-asset schemas). Run both
+after editing any `data/*-controls.json`, then commit the regenerated JSON.
+See `oscal-vertical-mapping-plan.md` at the project root for the design.
+
 ## Retrieval validation tool
 
 `/llm/test/` is a static, client-side RAG simulation. It loads

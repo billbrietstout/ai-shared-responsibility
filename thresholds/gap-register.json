@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-04",
+  "generated": "2026-07-06",
   "oscal_catalog": {
     "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
     "title": "Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures",
@@ -472,5 +472,4189 @@
       "best_case": "cadence_only",
       "objective_can_bind": false
     }
-  ]
+  ],
+  "verticals": {
+    "finance": {
+      "source_file": "finance-controls.json",
+      "control_count": 40,
+      "with_bindings": 0,
+      "without_bindings": 40,
+      "oscal_profile": "https://aisharedresponsibility.com/export/srf-finance.profile.json",
+      "controls": [
+        {
+          "id": "SRF-L1-DEV-001",
+          "title": "AI Risk Appetite Statement with Named Accountable Executive",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "risk_appetite_statement_approved",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-board-risk-committee"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-002",
+          "title": "AI Model Inventory and Tier Classification Policy",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "tier_classification_policy_approved",
+            "operator": "==",
+            "param": "true",
+            "window": "at-model-onboarding",
+            "breach_action": "block-model-production-promotion"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-003",
+          "title": "Acceptable Use Policy with Named Business-Unit Accountable Individual",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "business_unit_named_aup_signatory_coverage",
+            "operator": ">=",
+            "param": "tier-defined",
+            "window": "annual-review",
+            "breach_action": "suspend-ai-system-access-for-non-compliant-business-unit; notify-mrm-head"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-004",
+          "title": "Agent Business Process Authorization Policy",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "agent_process_authorization_policy_exists",
+            "operator": "==",
+            "param": "true",
+            "window": "at-production-promotion",
+            "breach_action": "block-agent-production-deployment; notify-cro-and-legal"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-VAL-001",
+          "title": "Independent Review of AI Risk Appetite by Second Line",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "independent_review_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-cro-and-audit-committee"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-MON-001",
+          "title": "Model Tier Classification Coverage Rate",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "model_tier_classification_coverage_rate",
+            "operator": ">=",
+            "param": "tier-defined",
+            "window": "30d",
+            "breach_action": "flag-unclassified-models-for-immediate-tier-assignment; notify-mrm-head"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-MON-002",
+          "title": "AI Governance Committee Review Cadence",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "governance_review_cadence_adherence",
+            "operator": ">=",
+            "param": "tier-defined",
+            "window": "90d",
+            "breach_action": "alert-mrm-head; document-missed-review; reschedule-within-15d"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-MON-003",
+          "title": "Governance Role Identity Lifecycle Monitoring",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "governance_role_vacancy_age",
+            "operator": "<=",
+            "param": "tier-defined (Tier-1: 30d, Tier-2: 60d)",
+            "window": "continuous",
+            "breach_action": "alert-cro-and-audit-committee; flag-affected-models-as-governance-gap-pending-reassignment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ECH-001",
+          "title": "Board-Level Effective Challenge of AI Risk Profile",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "board_effective_challenge_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-audit-committee; flag-in-regulatory-exam-preparation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-001",
+          "title": "Training and RAG Data Provenance Documentation",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "provenance_record_completeness",
+            "operator": "==",
+            "param": "true",
+            "window": "at-validation-gate",
+            "breach_action": "block-model-from-entering-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-002",
+          "title": "Data Classification for AI-Accessible Data Stores",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "ai_accessible_store_classification_coverage",
+            "operator": ">=",
+            "param": "tier-defined",
+            "window": "at-production-promotion",
+            "breach_action": "block-production-promotion; notify-data-owner"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-003",
+          "title": "Training Data Quality Baseline and PSI Reference Distribution",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "psi_reference_distribution_stored",
+            "operator": "==",
+            "param": "true",
+            "window": "at-validation-gate",
+            "breach_action": "block-model-from-entering-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-VAL-001",
+          "title": "Independent Validation of Training Data Quality and Representativeness",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "data_validation_completed_with_disposition",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-production-approval",
+            "breach_action": "block-production-approval"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-001",
+          "title": "Training and RAG Data Drift Monitoring (PSI)",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "psi_score",
+            "operator": "<",
+            "param": "tier-defined",
+            "window": "tier-defined",
+            "breach_action": "alert-data-provider; escalate-to-mrm-if-psi-ge-0.25; initiate-re-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-002",
+          "title": "Data Classification Coverage Rate for AI-Accessible Stores",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "ai_accessible_store_classification_coverage_rate",
+            "operator": ">=",
+            "param": "tier-defined",
+            "window": "30d",
+            "breach_action": "alert-data-owner; quarantine-unclassified-store-from-ai-access-pending-classification"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-003",
+          "title": "Agent Runtime Memory Store Integrity Monitoring",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "memory_anomalous_write_rate",
+            "operator": "==",
+            "param": "0 unauthorized-actor writes",
+            "window": "per-session",
+            "breach_action": "terminate-agent-session; quarantine-memory-store; alert-data-provider-and-agentic-platform-provider; initiate-forensic-review"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ECH-001",
+          "title": "Effective Challenge of Data Quality Standards and Drift Thresholds",
+          "srf_layer": "L2",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "data_standards_challenge_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-001",
+          "title": "Input Validation and Prompt Injection Defense Design",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "input_validation_design_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "at-validation-gate",
+            "breach_action": "block-model-from-entering-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-002",
+          "title": "Output Filtering and Content Safety Design",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "output_filter_design_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "at-validation-gate",
+            "breach_action": "block-model-from-entering-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-003",
+          "title": "Tool-Execution Authorization Design for Agentic Systems",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "tool_authorization_design_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "at-validation-gate",
+            "breach_action": "block-agent-from-entering-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-001",
+          "title": "Independent Validation of Application-Level Security Controls",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "adversarial_validation_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-production-approval",
+            "breach_action": "block-production-approval-until-critical-and-high-findings-remediated"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-MON-001",
+          "title": "Prompt Injection Detection Rate Monitoring",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "prompt_injection_detection_rate",
+            "operator": "within-control-limits",
+            "param": "tier-defined (upper and lower control limits set at baseline)",
+            "window": "tier-defined",
+            "breach_action": "alert-application-developer; escalate-to-security-team-if-upper-limit-exceeded; escalate-to-mrm-if-lower-limit-breached"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-MON-002",
+          "title": "Output Filter Block-Rate Monitoring",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "output_filter_block_rate_by_category",
+            "operator": "within-control-limits",
+            "param": "tier-defined per filter category",
+            "window": "tier-defined",
+            "breach_action": "alert-application-developer; investigate-category-causing-breach; escalate-to-mrm-if-unresolved-within-sla"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-MON-003",
+          "title": "Tool-Execution Authorization Failure Rate Monitoring",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "tool_authorization_failure_rate",
+            "operator": "==",
+            "param": "0 out-of-allow-list attempts; tier-defined for per-call failures",
+            "window": "per-session and rolling-24h",
+            "breach_action": "terminate-agent-session-on-out-of-allow-list-attempt; alert-agentic-platform-provider; escalate-to-security-team; notify-l1-agent-business-process-owner"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-ECH-001",
+          "title": "Effective Challenge of Application Security Control Thresholds",
+          "srf_layer": "L3",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "application_security_challenge_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-001",
+          "title": "Platform-Level Guardrail Design and Configuration Baseline",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "guardrail_configuration_baseline_approved",
+            "operator": "==",
+            "param": "true",
+            "window": "at-validation-gate",
+            "breach_action": "block-model-from-entering-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-002",
+          "title": "LLM Gateway Authentication and Authorization Design",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "gateway_authn_authz_design_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "at-validation-gate",
+            "breach_action": "block-model-from-entering-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-003",
+          "title": "Confidential Compute Configuration for Tier-1 Models",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "confidential_compute_attestation_stored",
+            "operator": "==",
+            "param": "true",
+            "window": "at-deployment",
+            "breach_action": "block-tier-1-model-deployment-until-attestation-generated"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-VAL-001",
+          "title": "Independent Validation of Platform Security Controls",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "platform_validation_completed_bypass_rate_zero",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-production-approval",
+            "breach_action": "block-production-approval-until-critical-bypass-findings-remediated"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-001",
+          "title": "Guardrail Bypass Rate Monitoring",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "guardrail_bypass_rate_by_category",
+            "operator": "<=",
+            "param": "tier-defined (0 for Critical; tier-defined for lower severity)",
+            "window": "24h",
+            "breach_action": "alert-ai-platform-provider; escalate-to-l1-governance-on-critical-bypass; initiate-guardrail-configuration-review"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-002",
+          "title": "Gateway Authentication Failure Rate Monitoring",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "gateway_authn_failure_rate",
+            "operator": "within-control-limits",
+            "param": "tier-defined (Tier-1 authz failures: 0; all others: tier-defined)",
+            "window": "1h",
+            "breach_action": "alert-ai-platform-provider; escalate-to-security-team-on-tier-1-authz-failure; investigate-credential-rotation-status-on-authn-spike"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-003",
+          "title": "Confidential Compute Attestation Validity Monitoring",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "confidential_compute_attestation_valid",
+            "operator": "==",
+            "param": "true per Tier-1 instance",
+            "window": "continuous; polling interval tier-defined",
+            "breach_action": "suspend-tier-1-model-serving-on-attestation-lapse; alert-ai-platform-provider; notify-l1-governance; restore-only-after-valid-attestation-confirmed"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ECH-001",
+          "title": "Effective Challenge of Platform Security Controls and Thresholds",
+          "srf_layer": "L4",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "platform_security_challenge_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-cro; flag-in-annual-mrm-report"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-001",
+          "title": "Model Card Completeness and Security Disclosure",
+          "srf_layer": "L5",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "model_card_completeness",
+            "operator": "==",
+            "param": "true",
+            "window": "at-model-release",
+            "breach_action": "block-model-from-institution-deployment-until-model-card-complete"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-002",
+          "title": "Model Artifact Signing and Supply-Chain Provenance",
+          "srf_layer": "L5",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "model_artifact_signed_and_sbom_published",
+            "operator": "==",
+            "param": "true",
+            "window": "at-model-release",
+            "breach_action": "block-model-from-institution-deployment-until-signed-artifacts-available"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-003",
+          "title": "Pre-Release Security Evaluation Baseline",
+          "srf_layer": "L5",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "security_evaluation_published",
+            "operator": "==",
+            "param": "true",
+            "window": "at-model-release",
+            "breach_action": "block-model-from-institution-deployment-until-evaluation-published"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-VAL-001",
+          "title": "Independent Evaluation of Model Security Properties",
+          "srf_layer": "L5",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "independent_model_evaluation_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-production-approval",
+            "breach_action": "block-tier-1-and-tier-2-model-production-approval"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-001",
+          "title": "Model Signature Verification at Load",
+          "srf_layer": "L5",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "model_signature_verification_success_rate",
+            "operator": "==",
+            "param": "1.0 (100% verification success)",
+            "window": "per-load-event",
+            "breach_action": "reject-model-load; alert-ai-platform-provider-and-model-provider; initiate-supply-chain-incident-response; suspend-affected-model-version"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-002",
+          "title": "Vulnerability Disclosure SLA Adherence",
+          "srf_layer": "L5",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "vulnerability_disclosure_sla_adherence",
+            "operator": "==",
+            "param": "true per open vulnerability within SLA window",
+            "window": "continuous; checked on disclosure and at SLA boundary",
+            "breach_action": "escalate-critical-sla-breach-to-l1-governance; initiate-model-impairment-review; engage-provider-via-vendor-management-process"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ECH-001",
+          "title": "Effective Challenge of Model Governance Standards",
+          "srf_layer": "L5",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "model_governance_challenge_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-cro; flag-in-annual-mrm-report; review-institution-model-provider-relationships"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        }
+      ]
+    },
+    "public-sector": {
+      "source_file": "public-sector-controls.json",
+      "control_count": 40,
+      "with_bindings": 0,
+      "without_bindings": 40,
+      "oscal_profile": "https://aisharedresponsibility.com/export/srf-public-sector.profile.json",
+      "controls": [
+        {
+          "id": "SRF-L1-ACQ-001",
+          "title": "AI Use-Case Inventory Completeness and Public Posting",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_use_case_inventory_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_AI_INVENTORY_COVERAGE_PCT",
+            "window": "quarterly",
+            "breach_action": "identify-unregistered-use-cases; notify-CAIO; escalate-to-AI-governance-board"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-002",
+          "title": "High-Impact AI Designation with Named Designating Official",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "high_impact_designation_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "flag-undesignated-use-cases; halt-new-high-impact-deployments-pending-designation; notify-CAIO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-003",
+          "title": "CAIO Appointment and AI Governance Board Charter Currency",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "caio_and_governance_board_active",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-agency-head; notify-OMB-liaison; freeze-new-high-impact-AI-approvals"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-004",
+          "title": "M-25-21 Compliance Plan Currency",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "compliance_plan_current",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-CAIO; notify-OMB-liaison; block-new-high-impact-AI-onboarding"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-MON-005",
+          "title": "Discontinuation and Waiver Process Readiness",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "discontinuation_process_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "notify-CAIO; escalate-to-AI-governance-board; schedule-emergency-compliance-review"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-OVR-006",
+          "title": "Public Feedback Channel for High-Impact AI",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "public_feedback_channel_operational",
+            "operator": "==",
+            "param": "true",
+            "window": "quarterly",
+            "breach_action": "re-establish-feedback-channel; notify-CAIO; update-public-inventory-entry"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-007",
+          "title": "AI Acquisition Contract Compliance with M-25-22",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "m_25_22_contract_compliance_pct",
+            "operator": "==",
+            "param": "1.0",
+            "window": "annual-review",
+            "breach_action": "notify-contracting-officer; escalate-to-CAIO; flag-for-contract-remediation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-008",
+          "title": "AI Staff Training and Assessment Coverage",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_staff_training_completion_pct",
+            "operator": ">=",
+            "param": "TIER_STAFF_TRAINING_COMPLETION_PCT",
+            "window": "annual-review",
+            "breach_action": "identify-untrained-staff; suspend-oversight-role-pending-training; notify-CAIO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-MON-009",
+          "title": "AI Governance Board Review Cadence for High-Impact Use Cases",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "governance_board_review_on_cadence",
+            "operator": "==",
+            "param": "true",
+            "window": "quarterly",
+            "breach_action": "convene-emergency-board-session; notify-CAIO; document-gap-in-compliance-plan"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-001",
+          "title": "Authority-to-Use Verification for Training and RAG Data",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "training_rag_data_authority_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "per-ingestion",
+            "breach_action": "halt-ingestion; notify-data-governance-officer; escalate-to-privacy-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-002",
+          "title": "Agency Data Egress Block to Commercial Model Training",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "vendor_training_data_sharing_disabled",
+            "operator": "==",
+            "param": "true",
+            "window": "per-onboarding-and-after-tos-changes",
+            "breach_action": "suspend-service; notify-CAIO; notify-data-protection-officer; escalate-to-legal"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-003",
+          "title": "PII and CUI Classification Coverage for AI-Accessible Data Stores",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_accessible_data_store_classification_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_DATA_CLASSIFICATION_COVERAGE_PCT",
+            "window": "quarterly",
+            "breach_action": "suspend-AI-access-to-unclassified-stores; notify-ISSO; escalate-to-privacy-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-004",
+          "title": "Input Distribution Shift Monitoring (PSI)",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "input_psi",
+            "operator": "<",
+            "param": "TIER_INPUT_PSI_THRESHOLD",
+            "window": "rolling-30d",
+            "breach_action": "alert-application-developer; trigger-re-validation; notify-ISSO; pause-high-impact-outputs-pending-review"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-005",
+          "title": "AI Interaction Log Retention Compliance (NARA)",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_interaction_log_retention_compliant",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "notify-records-officer; escalate-to-ISSO; halt-log-deletion-pending-determination"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-006",
+          "title": "AI Output Accuracy Monitoring Against Human Baseline",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_output_accuracy_delta_vs_baseline",
+            "operator": "<=",
+            "param": "TIER_ACCURACY_DEGRADATION_THRESHOLD_PCT",
+            "window": "rolling-30d",
+            "breach_action": "alert-application-developer; trigger-re-validation; notify-ISSO; pause-high-stakes-outputs"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-007",
+          "title": "Bias and Disparate Impact Monitoring for Citizen-Facing Use Cases",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "disparate_impact_ratio",
+            "operator": ">=",
+            "param": "TIER_DISPARATE_IMPACT_RATIO_THRESHOLD",
+            "window": "rolling-90d",
+            "breach_action": "suspend-adverse-decisions-for-affected-groups; notify-CAIO; escalate-to-civil-rights-officer; trigger-root-cause-analysis"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-008",
+          "title": "FedRAMP Authorization Status Verification for AI Data Services",
+          "srf_layer": "L2",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "fedramp_authorization_current",
+            "operator": "==",
+            "param": "true",
+            "window": "quarterly",
+            "breach_action": "suspend-service-pending-authorization-verification; notify-ISSO; escalate-to-Authorizing-Official"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-001",
+          "title": "Pre-Deployment Testing Coverage for High-Impact Use Cases",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "pre_deployment_test_plan_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; notify-CAIO; escalate-to-AI-governance-board"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-002",
+          "title": "AI Impact Assessment Completion for High-Impact Use Cases",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_impact_assessment_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; notify-CAIO; escalate-to-AI-governance-board"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-003",
+          "title": "Prompt Injection Detection for Citizen-Facing AI Systems",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "prompt_injection_detection_deployed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; notify-ISSO; escalate-to-application-security-team"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OVR-004",
+          "title": "Human Oversight Gate for Adverse Citizen-Facing Decisions",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "human_oversight_gate_operational",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "suspend-adverse-decision-outputs; notify-CAIO; escalate-to-AI-governance-board; notify-affected-citizens-of-delay"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OVR-005",
+          "title": "Remedy and Appeal Mechanism Coverage",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "remedy_appeal_mechanism_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "suspend-adverse-decision-outputs; notify-CAIO; escalate-to-legal-and-compliance"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-MON-006",
+          "title": "Agentic Task Boundary Enforcement for Casework Automation",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "agent_task_boundary_violations_per_session",
+            "operator": "==",
+            "param": "0",
+            "window": "per-session",
+            "breach_action": "suspend-agent-session; notify-ISSO; escalate-to-human-caseworker; log-to-audit-trail"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-007",
+          "title": "Shared-Service AI Inheritance Chain Documentation",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "inheritance_chain_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "ato-renewal-cycle",
+            "breach_action": "flag-shared-service-deployment; notify-ISSO; escalate-to-Authorizing-Official"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OVR-008",
+          "title": "AI Output Explanation for Adverse Citizen Decisions",
+          "srf_layer": "L3",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "adverse_decision_explanation_provided",
+            "operator": "==",
+            "param": "true",
+            "window": "per-decision",
+            "breach_action": "suspend-notice-issuance; notify-CAIO; escalate-to-legal; remediate-notice-template"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-001",
+          "title": "AI Service FedRAMP Authorization at Required Impact Level",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_service_fedramp_authorization_level_met",
+            "operator": "==",
+            "param": "true",
+            "window": "per-onboarding-and-quarterly",
+            "breach_action": "suspend-service; notify-ISSO; escalate-to-Authorizing-Official; notify-CAIO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-002",
+          "title": "Guardrail Configuration Baseline and Change Control",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "guardrail_baseline_documented_and_change_controlled",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "revert-unauthorized-change; notify-ISSO; escalate-to-Authorizing-Official; trigger-incident-response"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-003",
+          "title": "Gateway Authentication and Authorization for AI API Access",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ai_api_gateway_enforced",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "block-direct-access-path; notify-ISSO; escalate-to-incident-response; log-to-audit-trail"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-004",
+          "title": "CUI Encryption and Access Monitoring for AI Workloads",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "cui_encryption_and_access_logging_compliant",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "suspend-CUI-access-by-AI-processes; notify-ISSO; escalate-to-data-protection-officer; initiate-breach-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-005",
+          "title": "Audit Log Completeness Aligned to FedRAMP 20x KSI Evidence",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "audit_log_completeness_pct",
+            "operator": ">=",
+            "param": "TIER_AUDIT_LOG_COMPLETENESS_PCT",
+            "window": "continuous",
+            "breach_action": "alert-ISSO; identify-missing-log-fields; escalate-to-Authorizing-Official-if-High-system"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-006",
+          "title": "Model Serving Availability SLA for Mission-Critical Use Cases",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "model_serving_availability_pct",
+            "operator": ">=",
+            "param": "TIER_MODEL_AVAILABILITY_PCT",
+            "window": "rolling-30d",
+            "breach_action": "escalate-to-vendor; notify-CAIO; activate-continuity-plan; log-SLA-breach-for-contract-reporting"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-VAL-007",
+          "title": "Security Control Inheritance Verification at ATO Boundary",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "ato_crm_completed_for_ai_controls",
+            "operator": "==",
+            "param": "true",
+            "window": "per-ato",
+            "breach_action": "block-ATO-issuance; notify-Authorizing-Official; escalate-to-ISSO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-008",
+          "title": "Continuous Vulnerability Scanning for AI Platform Components",
+          "srf_layer": "L4",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "critical_high_vuln_remediation_within_sla_pct",
+            "operator": "==",
+            "param": "1.0",
+            "window": "continuous-monitoring-cycle",
+            "breach_action": "escalate-to-ISSO; notify-Authorizing-Official; initiate-POA-and-M-if-remediation-delayed"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-001",
+          "title": "Model Documentation Completeness per M-25-22 Transparency Terms",
+          "srf_layer": "L5",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "model_documentation_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "per-contract",
+            "breach_action": "escalate-to-contracting-officer; hold-contract-execution; notify-CAIO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-002",
+          "title": "Vendor Performance and Drift Disclosure SLA",
+          "srf_layer": "L5",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "vendor_drift_disclosure_within_sla",
+            "operator": "==",
+            "param": "true",
+            "window": "contract-review-cycle",
+            "breach_action": "notify-contracting-officer; escalate-to-CAIO; trigger-re-validation; document-SLA-breach"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-003",
+          "title": "Model Artifact Signing and Provenance Verification",
+          "srf_layer": "L5",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "model_artifact_signature_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; notify-ISSO; escalate-to-supply-chain-risk-manager"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-004",
+          "title": "Vendor Vulnerability Disclosure SLA",
+          "srf_layer": "L5",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "vendor_vuln_disclosure_within_sla",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "notify-contracting-officer; escalate-to-ISSO; initiate-interim-mitigation; document-SLA-breach"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-005",
+          "title": "Model Portability Evidence for Vendor Lock-In Avoidance",
+          "srf_layer": "L5",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "model_portability_evidence_on_file",
+            "operator": "==",
+            "param": "true",
+            "window": "per-contract",
+            "breach_action": "escalate-to-contracting-officer; hold-contract-execution; notify-CAIO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-006",
+          "title": "AI Model Version Change Notification and Re-Validation Trigger",
+          "srf_layer": "L5",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "model_version_change_revalidation_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-model-version-change",
+            "breach_action": "block-new-model-version-in-production; notify-CAIO; escalate-to-Authorizing-Official; initiate-expedited-re-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-007",
+          "title": "Third-Party AI Supply Chain Risk Assessment",
+          "srf_layer": "L5",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "supply_chain_risk_assessment_current",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        }
+      ]
+    },
+    "healthcare": {
+      "source_file": "healthcare-controls.json",
+      "control_count": 40,
+      "with_bindings": 0,
+      "without_bindings": 40,
+      "oscal_profile": "https://aisharedresponsibility.com/export/srf-healthcare.profile.json",
+      "controls": [
+        {
+          "id": "SRF-L1-DEV-001",
+          "title": "Clinical AI Risk Classification Policy",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "risk_classification_policy_approved",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "block-new-ai-system-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-002",
+          "title": "Clinical AI System Inventory and Registry",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "ai_system_registry_completeness",
+            "operator": "==",
+            "param": "true",
+            "window": "at-system-onboarding",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-003",
+          "title": "Clinical AI Ethics Committee and Oversight Charter",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "ai_governance_body_chartered",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-board"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-HOR-001",
+          "title": "Clinical AI Governance Review Cadence",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "governance_review_completed_on_cadence",
+            "operator": "==",
+            "param": "true",
+            "window": "per-approved-cadence",
+            "breach_action": "escalate-to-cmo"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-HOR-002",
+          "title": "Acceptable Use Policy for Clinical AI",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "aup_current_and_enforced",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "suspend-ai-clinical-access"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-HOR-003",
+          "title": "Clinician Override Documentation Policy",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "override_documentation_policy_enforced",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "escalate-to-cmo-and-governance-body"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-PMS-001",
+          "title": "FDA Regulatory Filing Currency",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "regulatory_filing_current",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "escalate-to-legal-and-suspend-system"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-PMS-002",
+          "title": "Medical Device Adverse Event Reporting Readiness",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "mdr_reporting_process_tested",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-test",
+            "breach_action": "escalate-to-quality-and-compliance"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-PMS-003",
+          "title": "PCCP Algorithm Change Governance",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "pccp_change_governance_active",
+            "operator": "==",
+            "param": "true",
+            "window": "at-each-model-update",
+            "breach_action": "rollback-and-escalate-to-regulatory"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-001",
+          "title": "Training Data Provenance and Consent Documentation",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "training_data_provenance_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "at-model-development",
+            "breach_action": "block-model-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-002",
+          "title": "Demographic Representation Assessment",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "demographic_representation_rate",
+            "operator": ">=",
+            "param": "{min_representation_fraction}",
+            "window": "at-model-development",
+            "breach_action": "block-model-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-003",
+          "title": "PHI Isolation in Non-Production Environments",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "phi_detected_in_nonprod_rate",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "immediate-environment-lockdown-and-incident-response"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-VV-001",
+          "title": "External Validation Dataset Independence",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "validation_cohort_independence_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-VV-002",
+          "title": "Subgroup Performance Equivalence",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "subgroup_performance_gap_rate",
+            "operator": "<=",
+            "param": "{max_subgroup_performance_gap}",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment-and-remediate-bias"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-PMS-001",
+          "title": "Input Distribution Drift Monitoring",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "psi_score",
+            "operator": "<=",
+            "param": "{max_psi_score}",
+            "window": "rolling-30d",
+            "breach_action": "trigger-revalidation-and-notify-governance"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-PMS-002",
+          "title": "Real-World Data Quality Scoring",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "data_completeness_rate",
+            "operator": ">=",
+            "param": "{min_data_completeness_rate}",
+            "window": "per-inference",
+            "breach_action": "flag-recommendation-to-clinician-with-data-quality-warning"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-PMS-003",
+          "title": "Agent Context Store Integrity",
+          "srf_layer": "L2",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "context_store_integrity_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "per-agent-session",
+            "breach_action": "invalidate-session-and-alert-clinical-staff"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-001",
+          "title": "Human-in-the-Loop Gate for High-Stakes Outputs",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "hitl_gate_enforced",
+            "operator": "==",
+            "param": "true",
+            "window": "per-high-risk-inference",
+            "breach_action": "block-autonomous-action-and-alert-developer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-002",
+          "title": "AI Explanation Coverage for Clinical Decisions",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "explanation_coverage_rate",
+            "operator": ">=",
+            "param": "{min_explanation_coverage_rate}",
+            "window": "rolling-7d",
+            "breach_action": "alert-product-team-and-notify-governance"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-003",
+          "title": "Adversarial Robustness Testing Before Clinical Deployment",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "adversarial_testing_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VV-001",
+          "title": "Clinical Workflow Usability Validation",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "usability_study_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VV-002",
+          "title": "Prompt Injection and Input Manipulation Defense",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "injection_defense_validated",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-PMS-001",
+          "title": "Clinician Override Rate Monitoring",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "clinician_override_rate",
+            "operator": "<=",
+            "param": "{max_clinician_override_rate}",
+            "window": "rolling-30d",
+            "breach_action": "trigger-governance-review-and-consider-model-revalidation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-PMS-002",
+          "title": "Safety-Critical Output Filter Bypass Rate",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "output_filter_bypass_rate",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "immediate-patient-safety-escalation-and-system-suspend"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-PMS-003",
+          "title": "Agentic Task Boundary Enforcement",
+          "srf_layer": "L3",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "unauthorized_scope_access_rate",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "terminate-agent-session-and-revoke-token"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-001",
+          "title": "SMART on FHIR Authentication and Scoped Authorization",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "smart_fhir_auth_enforced",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "revoke-access-and-alert-security"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-002",
+          "title": "FHIR AuditEvent Logging Completeness",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "audit_log_completeness_rate",
+            "operator": ">=",
+            "param": "{min_audit_completeness_rate}",
+            "window": "rolling-24h",
+            "breach_action": "alert-platform-team-and-escalate-to-compliance"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-003",
+          "title": "PHI Encryption at Rest and in Transit",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "phi_encryption_enforced",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "immediate-breach-response-and-hipaa-incident-declaration"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-VV-001",
+          "title": "Platform Security Assessment Before Clinical Deployment",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "platform_pentest_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-VV-002",
+          "title": "Clinical Guardrail Configuration Baseline Verification",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "guardrail_configuration_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "at-deployment",
+            "breach_action": "block-clinical-activation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-PMS-001",
+          "title": "Unauthorized Access Attempt Monitoring",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "confirmed_unauthorized_access_rate",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "immediate-security-incident-response-and-hipaa-breach-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-PMS-002",
+          "title": "Clinical AI Platform Availability SLA",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "platform_availability_rate",
+            "operator": ">=",
+            "param": "{min_platform_availability_rate}",
+            "window": "rolling-30d",
+            "breach_action": "alert-operations-and-review-contingency-plan"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-PMS-003",
+          "title": "Runtime Model Artifact Integrity Verification",
+          "srf_layer": "L4",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "model_artifact_integrity_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "at-each-model-load",
+            "breach_action": "block-model-serve-and-initiate-incident-response"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-001",
+          "title": "Model Card and SaMD Definition Statement",
+          "srf_layer": "L5",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "model_card_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "at-model-development",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-002",
+          "title": "Software of Unknown Provenance (SOUP) Documentation",
+          "srf_layer": "L5",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "soup_documentation_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "at-model-development",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-003",
+          "title": "Pre-Deployment Safety Evaluation (ISO 14971)",
+          "srf_layer": "L5",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "iso14971_risk_file_approved",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-VV-001",
+          "title": "Independent Clinical Validation",
+          "srf_layer": "L5",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "independent_validation_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "pre-deployment",
+            "breach_action": "block-clinical-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-VV-002",
+          "title": "Model Artifact Signing and Supply-Chain Provenance",
+          "srf_layer": "L5",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "model_artifact_signed",
+            "operator": "==",
+            "param": "true",
+            "window": "at-artifact-build",
+            "breach_action": "block-artifact-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-PMS-001",
+          "title": "Post-Market Performance Monitoring Plan",
+          "srf_layer": "L5",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "pms_plan_active",
+            "operator": "==",
+            "param": "true",
+            "window": "per-monitoring-cadence",
+            "breach_action": "alert-governance-body-and-notify-regulatory"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-PMS-002",
+          "title": "Vulnerability Disclosure and Patch Response SLA",
+          "srf_layer": "L5",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "cve_critical_patch_days",
+            "operator": "<=",
+            "param": "{max_cve_critical_patch_days}",
+            "window": "per-cve",
+            "breach_action": "escalate-to-security-and-regulatory-and-consider-system-suspension"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        }
+      ]
+    },
+    "insurance": {
+      "source_file": "insurance-controls.json",
+      "control_count": 40,
+      "with_bindings": 0,
+      "without_bindings": 40,
+      "oscal_profile": "https://aisharedresponsibility.com/export/srf-insurance.profile.json",
+      "controls": [
+        {
+          "id": "SRF-L1-DEV-001",
+          "title": "AIS Program Document Currency and Board Approval",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "ais_program_board_approved",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-board; notify-chief-compliance-officer; block-new-ai-system-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-002",
+          "title": "AI System Inventory Coverage",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "ai_system_inventory_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_AI_INVENTORY_COVERAGE_PCT",
+            "window": "quarterly",
+            "breach_action": "identify-unregistered-systems; suspend-unregistered-ai-deployments; report-to-chief-compliance-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-003",
+          "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "vendor_register_accountable_officer_coverage",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "identify-vendors-without-accountable-officer; freeze-new-vendor-onboarding; escalate-to-chief-risk-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-004",
+          "title": "Adverse-Decision Appeal Process Documentation",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "adverse_decision_appeal_process_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-chief-compliance-officer; halt-AI-assisted-adverse-decisions-pending-remediation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-005",
+          "title": "Governance Framework Availability Readiness for CO Regulation 10-1-1",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "co_framework_package_availability_ready",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "immediate-escalation-to-general-counsel; suspend-AI-use-in-CO-auto-and-health-lines-pending-remediation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-MON-001",
+          "title": "AI Risk Appetite Statement Review Cadence",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "risk_appetite_statement_reviewed",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-board-risk-committee; flag-in-annual-compliance-report"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-MON-002",
+          "title": "Senior Management Accountability Designation for AI Governance",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "senior_officer_designation_current",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-board; flag-for-regulatory-disclosure"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-TPO-001",
+          "title": "Third-Party AIS Program Alignment Review",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "vendor_ais_program_review_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "12mo",
+            "breach_action": "escalate-to-chief-risk-officer; freeze-new-vendor-deployments; initiate-remediation-plan"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-TPO-002",
+          "title": "Market Conduct Exam Readiness Documentation Package",
+          "srf_layer": "L1",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "exam_readiness_package_current",
+            "operator": "==",
+            "param": "true",
+            "window": "6mo",
+            "breach_action": "escalate-to-general-counsel; convene-exam-readiness-task-force"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-001",
+          "title": "ECDIS Source Documentation and Permissible-Purpose Verification",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "ecdis_permissible_purpose_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "suspend-ECDIS-source-from-production; escalate-to-chief-compliance-officer; initiate-permissible-purpose-review"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-002",
+          "title": "Protected-Class Proxy Variable Screening",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "proxy_variable_screen_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; escalate-to-chief-compliance-officer; initiate-proxy-variable-remediation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DEV-003",
+          "title": "Training Data Representativeness by Line of Business",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "training_data_representativeness_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; document-representativeness-gap; initiate-data-remediation-or-scope-restriction"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-VAL-001",
+          "title": "External Data Source Permissible Use Audit",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "external_data_permissible_use_audited",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; escalate-to-legal; remove-unaudited-data-sources"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-001",
+          "title": "Input Drift Monitoring via Population Stability Index",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "input_psi_max",
+            "operator": "<",
+            "param": "TIER_PSI_DRIFT_THRESHOLD",
+            "window": "monthly",
+            "breach_action": "trigger-model-review; notify-model-owner; escalate-to-chief-actuary-if-drift-persists-two-cycles"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-002",
+          "title": "Consumer Data Minimization in Agent Context Stores",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "agent_context_pii_retention_violation_count",
+            "operator": "==",
+            "param": "0",
+            "window": "per-session",
+            "breach_action": "purge-affected-context-stores; notify-data-privacy-officer; suspend-affected-agent-workflows-pending-investigation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-MON-003",
+          "title": "Algorithmic Model Input Completeness Monitoring",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "model_input_missing_rate_pct",
+            "operator": "<",
+            "param": "TIER_INPUT_MISSING_RATE_THRESHOLD_PCT",
+            "window": "monthly",
+            "breach_action": "investigate-data-pipeline; notify-model-owner; escalate-if-persists-two-cycles"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-TPO-001",
+          "title": "Vendor Data Lineage Documentation",
+          "srf_layer": "L2",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "vendor_data_lineage_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "suspend-vendor-data-source; request-documentation; escalate-to-chief-risk-officer-if-not-remediated-within-30-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-001",
+          "title": "Prompt Injection Defense for Consumer-Facing AI",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "prompt_injection_defense_validated",
+            "operator": "==",
+            "param": "0",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; require-security-remediation; re-validate-before-release"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-DEV-002",
+          "title": "Agentic Task Boundary Enforcement for Claims Automation",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "agent_boundary_enforcement_validated",
+            "operator": "==",
+            "param": "0",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; require-technical-boundary-remediation; escalate-to-chief-claims-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-001",
+          "title": "Adverse-Action Explanation Coverage with Reason Codes",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "adverse_action_explanation_coverage_pct",
+            "operator": "==",
+            "param": "100",
+            "window": "per-decision",
+            "breach_action": "suspend-AI-assisted-adverse-decisions; escalate-to-chief-compliance-officer; initiate-explanation-remediation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-002",
+          "title": "Human Review Gate for Adverse Underwriting and Claims Decisions",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "adverse_decision_human_review_gate_bypass_count",
+            "operator": "==",
+            "param": "0",
+            "window": "per-decision",
+            "breach_action": "void-bypassed-decision; notify-affected-consumer; escalate-to-chief-claims-officer; regulatory-disclosure-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-003",
+          "title": "Explainability Validation for Rate and Underwriting Models",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "explainability_validation_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; require-explainability-validation; escalate-to-chief-actuary"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-MON-001",
+          "title": "Unfair-Discrimination Outcome Testing Cadence",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "adverse_impact_ratio_max",
+            "operator": ">=",
+            "param": "TIER_ADVERSE_IMPACT_RATIO_MIN",
+            "window": "TIER_FAIRNESS_TESTING_CADENCE",
+            "breach_action": "initiate-model-review; notify-chief-compliance-officer; consider-model-suspension-pending-remediation; regulatory-disclosure-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-MON-002",
+          "title": "Consumer Complaint Monitoring for AI-Driven Decisions",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "ai_complaint_rate_per_1000_decisions",
+            "operator": "<",
+            "param": "TIER_COMPLAINT_RATE_THRESHOLD",
+            "window": "quarterly",
+            "breach_action": "trigger-model-review; notify-accountable-officer; escalate-if-trend-continues-two-quarters"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-TPO-001",
+          "title": "Vendor Application Interface Security Testing",
+          "srf_layer": "L3",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "vendor_interface_security_test_completed",
+            "operator": "==",
+            "param": "0",
+            "window": "per-integration",
+            "breach_action": "block-vendor-integration; require-remediation; re-test-before-release"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-001",
+          "title": "Model Gateway Authentication Configuration",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "unauthenticated_model_gateway_access_count",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "block-unauthenticated-access-immediately; page-platform-security-team; initiate-incident-response"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-002",
+          "title": "Guardrail Configuration Baseline Documentation",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "guardrail_baseline_documented_and_current",
+            "operator": "==",
+            "param": "true",
+            "window": "per-change",
+            "breach_action": "revert-unapproved-change; notify-platform-security-team; review-change-management-process"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DEV-003",
+          "title": "PII Encryption at Rest and in Transit",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "pii_unencrypted_at_rest_or_in_transit_count",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "isolate-affected-data-store; page-security-team; initiate-incident-response; regulatory-disclosure-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-VAL-001",
+          "title": "Platform Security Assessment",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "platform_security_assessment_completed",
+            "operator": "==",
+            "param": "0",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; remediate-open-findings; re-assess-before-release"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-001",
+          "title": "Vendor-Model Isolation and Egress Control",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "vendor_model_egress_violation_count",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "block-egress-immediately; isolate-affected-system; initiate-incident-response; notify-data-privacy-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-002",
+          "title": "Audit Log Completeness for AI-Assisted Decisions",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "audit_log_completeness_pct",
+            "operator": ">=",
+            "param": "TIER_AUDIT_LOG_COMPLETENESS_PCT",
+            "window": "daily",
+            "breach_action": "investigate-logging-gap; notify-platform-team; escalate-to-chief-compliance-officer-if-gap-exceeds-24h"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-MON-003",
+          "title": "Runtime Anomaly Detection for AI Workloads",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "runtime_anomaly_mean_time_to_detect_hours",
+            "operator": "<=",
+            "param": "TIER_RUNTIME_ANOMALY_DETECT_HOURS",
+            "window": "continuous",
+            "breach_action": "page-security-operations; initiate-incident-response; isolate-anomalous-workload-if-high-severity"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-TPO-001",
+          "title": "Third-Party Platform Access Review",
+          "srf_layer": "L4",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "stale_vendor_access_count",
+            "operator": "==",
+            "param": "0",
+            "window": "quarterly",
+            "breach_action": "deprovision-stale-access; notify-accountable-officer; update-vendor-register"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-001",
+          "title": "Model Card with Intended Line-of-Business Statement",
+          "srf_layer": "L5",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "model_card_current",
+            "operator": "==",
+            "param": "true",
+            "window": "per-material-change",
+            "breach_action": "suspend-model-from-new-deployments; require-model-card-update; notify-chief-actuary"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DEV-002",
+          "title": "Model Artifact Signing and Supply-Chain Provenance",
+          "srf_layer": "L5",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "unsigned_model_artifact_deployment_count",
+            "operator": "==",
+            "param": "0",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; alert-security-team; investigate-supply-chain-integrity"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-VAL-001",
+          "title": "Pre-Deployment Fairness Evaluation by Line of Business",
+          "srf_layer": "L5",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "pre_deployment_fairness_eval_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; require-fairness-evaluation; escalate-to-chief-actuary-and-chief-compliance-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-VAL-002",
+          "title": "Independent Model Validation",
+          "srf_layer": "L5",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "independent_model_validation_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "block-deployment; require-independent-validation; escalate-to-chief-risk-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-001",
+          "title": "Post-Deployment Performance and Drift Disclosure SLA from Vendors",
+          "srf_layer": "L5",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "vendor_perf_disclosure_sla_breach_count",
+            "operator": "==",
+            "param": "0",
+            "window": "TIER_VENDOR_DISCLOSURE_WINDOW",
+            "breach_action": "notify-vendor; escalate-to-vendor-accountable-officer; assess-model-suspension; factor-into-vendor-risk-rating"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-MON-002",
+          "title": "CVE Vulnerability Disclosure SLA from Model Provider",
+          "srf_layer": "L5",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "cve_disclosure_sla_breach_count",
+            "operator": "==",
+            "param": "0",
+            "window": "TIER_CVE_DISCLOSURE_WINDOW",
+            "breach_action": "notify-vendor; escalate-to-security-team; assess-emergency-patch; factor-into-vendor-risk-rating"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-TPO-001",
+          "title": "Vendor Model Due-Diligence Evidence Package (NAIC Third-Party Oversight)",
+          "srf_layer": "L5",
+          "defined_in": "insurance-controls.json",
+          "threshold": {
+            "metric": "vendor_model_due_diligence_package_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "identify-missing-artifacts; engage-vendor; escalate-to-chief-risk-officer; assess-model-suspension-if-package-cannot-be-completed"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        }
+      ]
+    },
+    "defense": {
+      "source_file": "defense-controls.json",
+      "control_count": 53,
+      "with_bindings": 0,
+      "without_bindings": 53,
+      "oscal_profile": "https://aisharedresponsibility.com/export/srf-defense.profile.json",
+      "controls": [
+        {
+          "id": "SRF-L1-ACQ-001",
+          "title": "AI Use Case Registry and CDAO Reporting",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "ai_registry_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_AI_REGISTRY_COVERAGE_PCT",
+            "window": "quarterly",
+            "breach_action": "identify-unregistered-systems; notify-program-manager; escalate-to-CDAO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-002",
+          "title": "Responsible AI Officer Designation",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "rai_officer_designation_current",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "flag-gap-to-CDAO; initiate-designation-within-30-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-003",
+          "title": "AI Governance Board with CDAO Oversight Link",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "governance_board_meeting_cadence_met",
+            "operator": "==",
+            "param": "true",
+            "window": "quarterly",
+            "breach_action": "schedule-missed-meeting; notify-RAI-officer; document-gap"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-004",
+          "title": "DoD RAI Compliance Plan (Five-Principle Assessment)",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "rai_compliance_plan_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "block-deployment; notify-RAI-officer; produce-plan-within-60-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-005",
+          "title": "AI Acquisition Requirements per DoDI 5000.90",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "ai_acq_requirements_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-contract",
+            "breach_action": "flag-contract-for-modification; notify-contracting-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-006",
+          "title": "AI Supply Chain Risk Assessment",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "supply_chain_risk_assessment_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "per-acquisition",
+            "breach_action": "block-contract-award; notify-PM; escalate-to-program-security-officer"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-007",
+          "title": "Operator and Commander AI Training Program",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "ai_training_completion_pct",
+            "operator": ">=",
+            "param": "TIER_TRAINING_COMPLETION_PCT",
+            "window": "annual",
+            "breach_action": "restrict-system-access-for-untrained-personnel; notify-supervisor"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-OPS-008",
+          "title": "AI Incident Reporting to CDAO",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "incident_report_timeliness_pct",
+            "operator": ">=",
+            "param": "TIER_INCIDENT_REPORT_TIMELINESS_PCT",
+            "window": "rolling-90-day",
+            "breach_action": "escalate-to-RAI-officer; submit-late-report-with-explanation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-ACQ-009",
+          "title": "NSS Boundary Classification Determination",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "nss_determination_memo_exists",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "block-ATO; notify-AO; produce-determination-memo"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-TEVV-010",
+          "title": "TEVV Plan Existence and Approval Before Operational Deployment",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "tevv_plan_approved_before_deployment",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "block-deployment; notify-PM; escalate-to-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-001",
+          "title": "CUI Classification and Marking on AI Inputs and Outputs",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "cui_marking_compliance_pct",
+            "operator": ">=",
+            "param": "TIER_CUI_MARKING_COMPLIANCE_PCT",
+            "window": "quarterly",
+            "breach_action": "quarantine-unclassified-assets; notify-ISSO; remediate-within-10-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-002",
+          "title": "IL-Level Data Boundary Enforcement and Tenant Isolation",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "cross_boundary_data_flow_alerts",
+            "operator": "==",
+            "param": "TIER_CROSS_BOUNDARY_ALERTS",
+            "window": "continuous",
+            "breach_action": "block-data-flow; alert-ISSO; open-security-incident"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-003",
+          "title": "Training Data Authority-to-Use Documentation",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "training_data_atu_documented_pct",
+            "operator": ">=",
+            "param": "TIER_ATU_DOCUMENTED_PCT",
+            "window": "annual",
+            "breach_action": "suspend-use-of-undocumented-data; notify-data-steward; remediate-within-30-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-004",
+          "title": "Data Egress Controls per Classification Level",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "unauthorized_egress_events",
+            "operator": "==",
+            "param": "TIER_UNAUTHORIZED_EGRESS_EVENTS",
+            "window": "continuous",
+            "breach_action": "block-egress; alert-ISSO; open-security-incident; notify-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-005",
+          "title": "Adversarial Input Detection (Prompt Injection and Data Poisoning)",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "adversarial_detection_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_ADVERSARIAL_DETECTION_PCT",
+            "window": "continuous",
+            "breach_action": "block-input; alert-SOC; escalate-to-cybersecurity-team"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-006",
+          "title": "Bias and Disparate Impact Monitoring on Consequential Decisions",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "bias_analysis_current",
+            "operator": "==",
+            "param": "TIER_BIAS_ANALYSIS_CURRENT",
+            "window": "annual",
+            "breach_action": "notify-RAI-officer; schedule-analysis; document-gap"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-007",
+          "title": "AI Decision Log Retention per NARA Requirements",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "decision_log_retention_compliant",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "notify-records-manager; extend-retention-period; document-gap"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-ACQ-008",
+          "title": "Contractor Data Isolation from DoD Data Planes",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "contractor_data_isolation_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "notify-contracting-officer; restrict-contractor-access; open-security-incident"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-TEVV-001",
+          "title": "TEVV Plan Execution per DoDI 5000.89",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "tevv_report_signed_before_deployment",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "block-deployment; notify-PM; escalate-to-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-TEVV-002",
+          "title": "AI Impact Assessment Before Operational Deployment",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "impact_assessment_approved",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "block-deployment; notify-PM; schedule-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OVR-003",
+          "title": "Human Oversight Gate for Use-of-Force-Adjacent Decisions",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "human_gate_bypass_events",
+            "operator": "==",
+            "param": "TIER_HUMAN_GATE_BYPASS_EVENTS",
+            "window": "continuous",
+            "breach_action": "halt-system; notify-commander; open-safety-incident; report-to-CDAO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OVR-004",
+          "title": "Operator Interface Override Capability",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "override_capability_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "per-TEVV-cycle",
+            "breach_action": "restrict-AI-assisted-operations; notify-PM; remediate-before-next-operational-use"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OVR-005",
+          "title": "Remedy and Appeal Mechanism for Adverse Administrative Decisions",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "remedy_mechanism_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "suspend-adverse-decisions; notify-RAI-officer; publish-procedure-within-30-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OPS-006",
+          "title": "Agentic Task Boundary Enforcement",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "boundary_violation_events",
+            "operator": "==",
+            "param": "TIER_BOUNDARY_VIOLATION_EVENTS",
+            "window": "continuous",
+            "breach_action": "suspend-agent; alert-SOC; notify-PM"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OPS-007",
+          "title": "Prompt Injection Detection at Application Layer",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "prompt_injection_detection_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_PROMPT_INJECTION_DETECTION_PCT",
+            "window": "continuous",
+            "breach_action": "block-input; alert-SOC; notify-ISSO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-ACQ-008",
+          "title": "Shared Service Inheritance Chain Documentation",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "inheritance_chain_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-ATO-cycle",
+            "breach_action": "flag-incomplete-ATO; notify-ISSO; remediate-before-ATO-approval"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OPS-009",
+          "title": "Plain-Language Output Explanation for Operators",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "explanation_availability_pct",
+            "operator": ">=",
+            "param": "TIER_EXPLANATION_AVAILABILITY_PCT",
+            "window": "per-TEVV-cycle",
+            "breach_action": "notify-PM; remediate-interface-before-next-TEVV"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-001",
+          "title": "DISA Provisional Authorization at Required IL Before Deployment",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "disa_pa_current",
+            "operator": "==",
+            "param": "TIER_DISA_PA_CURRENT",
+            "window": "annual",
+            "breach_action": "block-deployment; notify-PM; identify-alternative-PA-platform"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-002",
+          "title": "STIG Baseline Configuration Enforcement",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "stig_open_findings_cat1",
+            "operator": "==",
+            "param": "TIER_STIG_OPEN_CAT1_FINDINGS",
+            "window": "continuous",
+            "breach_action": "notify-ISSO; remediate-or-accept-risk-within-30-days; report-to-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-003",
+          "title": "IL-Appropriate Cloud Region Enforcement",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "out_of_region_processing_events",
+            "operator": "==",
+            "param": "TIER_OUT_OF_REGION_EVENTS",
+            "window": "continuous",
+            "breach_action": "block-processing; alert-ISSO; notify-AO; open-security-incident"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-004",
+          "title": "CUI and Classified Data Encryption to NSA-Approved Standards",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "encryption_compliance_pct",
+            "operator": ">=",
+            "param": "TIER_ENCRYPTION_COMPLIANCE_PCT",
+            "window": "quarterly",
+            "breach_action": "quarantine-non-compliant-store; notify-ISSO; remediate-within-30-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-005",
+          "title": "Audit Log Completeness per DISA Requirements",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "audit_log_completeness_pct",
+            "operator": ">=",
+            "param": "TIER_AUDIT_LOG_COMPLETENESS_PCT",
+            "window": "quarterly",
+            "breach_action": "notify-ISSO; remediate-logging-gaps; notify-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-006",
+          "title": "API Gateway Authentication and Authorization",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "unauthenticated_api_request_pct",
+            "operator": "==",
+            "param": "TIER_UNAUTH_API_REQUESTS",
+            "window": "continuous",
+            "breach_action": "block-request; alert-SOC; notify-ISSO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-007",
+          "title": "CMMC Level 2 Assessment for Contractor-Owned CUI Platforms",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "cmmc_l2_assessment_current",
+            "operator": "==",
+            "param": "TIER_CMMC_L2_CURRENT",
+            "window": "triennial",
+            "breach_action": "block-CUI-processing; notify-contracting-officer; initiate-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-ACQ-008",
+          "title": "CMMC Level 3 Assessment for Higher-Value Contractor Platforms",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "cmmc_l3_assessment_current",
+            "operator": "==",
+            "param": "TIER_CMMC_L3_CURRENT",
+            "window": "triennial",
+            "breach_action": "block-higher-value-program-data; notify-contracting-officer; initiate-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-009",
+          "title": "Continuous Vulnerability Scanning via DISA ACAS",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "acas_scan_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_ACAS_COVERAGE_PCT",
+            "window": "weekly",
+            "breach_action": "notify-ISSO; expand-scan-scope; report-gap-to-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-010",
+          "title": "Mission-Critical AI Availability SLA",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "availability_sla_compliance_pct",
+            "operator": ">=",
+            "param": "TIER_AVAILABILITY_SLA_PCT",
+            "window": "monthly",
+            "breach_action": "notify-operational-commander; activate-degraded-mode; open-availability-incident"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-001",
+          "title": "Model Transparency Card per DoDI 5000.90",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "transparency_card_delivered",
+            "operator": "==",
+            "param": "true",
+            "window": "per-model-version",
+            "breach_action": "block-deployment; notify-contracting-officer; request-card-from-vendor"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-OPS-002",
+          "title": "Vendor Model Drift Disclosure SLA",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "drift_disclosure_sla_compliance_pct",
+            "operator": ">=",
+            "param": "TIER_DRIFT_DISCLOSURE_SLA_PCT",
+            "window": "rolling-12-month",
+            "breach_action": "notify-contracting-officer; initiate-contract-remedy; trigger-re-validation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-003",
+          "title": "Model Artifact Signing and Bill of AI Materials",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "boaim_current_and_signed",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "notify-PM; re-verify-signatures; update-BoAIM-within-30-days"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-OPS-004",
+          "title": "Vulnerability Disclosure SLA and Patch Cadence",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "critical_vuln_patch_timeliness_pct",
+            "operator": ">=",
+            "param": "TIER_CRITICAL_PATCH_TIMELINESS_PCT",
+            "window": "rolling-90-day",
+            "breach_action": "notify-ISSO; apply-emergency-patch; report-to-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-005",
+          "title": "Model Portability to Avoid Vendor Lock-In",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "portability_plan_approved",
+            "operator": "==",
+            "param": "TIER_PORTABILITY_PLAN_APPROVED",
+            "window": "per-contract",
+            "breach_action": "notify-contracting-officer; add-portability-clause-at-next-modification"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-OPS-006",
+          "title": "Re-Validation Trigger on Model Version Change",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "revalidation_completed_before_deployment",
+            "operator": "==",
+            "param": "true",
+            "window": "per-model-version",
+            "breach_action": "block-deployment; notify-PM; complete-revalidation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-007",
+          "title": "Personnel Security Clearance for IL6 Model Infrastructure Access",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "uncleared_il6_access_events",
+            "operator": "==",
+            "param": "TIER_UNCLEARED_IL6_ACCESS",
+            "window": "continuous",
+            "breach_action": "revoke-access; notify-security-officer; open-security-incident; report-to-AO"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-ACQ-008",
+          "title": "Supply Chain Risk Assessment for AI Components and Foundation Model Providers",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "model_scrm_assessment_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "block-contract-award; notify-PM; complete-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-OVR-011",
+          "title": "Human Oversight Escalation Chain Documented and Rehearsed",
+          "srf_layer": "L1",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "oversight_escalation_chain_rehearsed",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "Escalate to CDAO liaison and program manager. Conduct tabletop within 30 days. Update ATO package."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-TEVV-009",
+          "title": "Training and RAG Data Integrity Verification Before Deployment",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "data_integrity_signoff_before_deployment",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "Block promotion to IOC. Data authority must complete sign-off. Log gap in TEVV report."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OVR-010",
+          "title": "AI Decision Log Human Review Cadence for High-Stakes Operations",
+          "srf_layer": "L2",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "decision_log_review_cadence_met",
+            "operator": ">=",
+            "param": "TIER_DECISION_LOG_REVIEW_COVERAGE_PCT",
+            "window": "annual",
+            "breach_action": "Notify CDAO liaison and program manager. Complete overdue reviews. Assess whether anomalous patterns were missed during the gap period."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-TEVV-010",
+          "title": "Red Team and Adversarial Robustness Test Before Deployment",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "adversarial_robustness_assessment_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "Block IOC. Program manager and ISSO must remediate critical findings and re-run assessment. Document in TEVV report."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-TEVV-011",
+          "title": "Bias and Equitable Treatment Assessment Before Deployment",
+          "srf_layer": "L3",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "bias_assessment_complete_before_ioc",
+            "operator": "==",
+            "param": "true",
+            "window": "per-system",
+            "breach_action": "Block IOC until assessment is complete and reviewed by RAI Officer. Document gap in TEVV report."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-TEVV-011",
+          "title": "Platform Security Configuration Validated Against CC SRG Baseline Before ATO",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "cc_srg_baseline_validation_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "per-ATO-cycle",
+            "breach_action": "Block ATO. Remediate CAT I findings. ISSO re-validates and updates ATO package."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OVR-012",
+          "title": "Platform-Level Emergency Stop Capability Tested",
+          "srf_layer": "L4",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "emergency_stop_test_current",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "Notify program manager and CDAO liaison. Conduct emergency stop test within 30 days. Document result in program record."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-TEVV-009",
+          "title": "Model Behavioral Baseline Documented Before Initial Deployment",
+          "srf_layer": "L5",
+          "defined_in": "defense-controls.json",
+          "threshold": {
+            "metric": "model_behavioral_baseline_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-model-version",
+            "breach_action": "Block promotion to operational environment. Model provider or program team must complete baseline documentation and update BoAIM."
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        }
+      ]
+    },
+    "manufacturing": {
+      "source_file": "manufacturing-controls.json",
+      "control_count": 45,
+      "with_bindings": 0,
+      "without_bindings": 45,
+      "oscal_profile": "https://aisharedresponsibility.com/export/srf-manufacturing.profile.json",
+      "controls": [
+        {
+          "id": "SRF-L1-DES-001",
+          "title": "EU AI Act Risk Classification and Registry",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "all_high_risk_systems_registered",
+            "operator": "==",
+            "param": "true",
+            "window": "per-market-placement",
+            "breach_action": "identify-unregistered-systems; halt-market-placement; notify-compliance-manager; initiate-registration"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DES-002",
+          "title": "AI Governance Committee with OT and Safety Representation",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "governance_committee_active",
+            "operator": "==",
+            "param": "true",
+            "window": "quarterly",
+            "breach_action": "convene-committee; appoint-missing-roles; document-composition"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DES-003",
+          "title": "AI Use Case Inventory with Operating Model and Risk Tier",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "inventory_staleness_days",
+            "operator": "<=",
+            "param": "TIER_INVENTORY_STALENESS_DAYS",
+            "window": "monthly",
+            "breach_action": "review-and-update-inventory; notify-governance-committee"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-VAL-004",
+          "title": "Conformity Assessment Program Management",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "conformity_assessment_register_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "quarterly",
+            "breach_action": "assign-assessment-route; engage-notified-body-if-required; update-register"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-OPS-005",
+          "title": "Incident Reporting Plan to Market Surveillance Authority",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "incident_plan_tested",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "draft-or-update-incident-plan; schedule-tabletop-exercise"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DES-006",
+          "title": "Third-Party AI System Procurement Policy",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "procurement_policy_active",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "draft-or-update-procurement-policy; communicate-to-procurement"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-OPS-007",
+          "title": "Post-Market Monitoring Plan per EU AI Act Article 72",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "post_market_plan_active",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "create-post-market-plan; assign-owner; define-escalation-thresholds"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DES-008",
+          "title": "Fundamental Rights Impact Assessment (FRIA)",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "fria_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "schedule-fria; assign-assessor; document-findings"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-CHG-009",
+          "title": "AI Discontinuation and Decommission Procedure",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "decommission_procedure_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "draft-decommission-procedure; review-with-ot-safety-team"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-CHG-010",
+          "title": "OT Change Management Policy for AI Systems",
+          "srf_layer": "L1",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ot_change_policy_active",
+            "operator": "==",
+            "param": "true",
+            "window": "annual",
+            "breach_action": "draft-ot-change-policy; align-with-plant-safety-officer; communicate-to-ot-engineering"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DES-001",
+          "title": "Sensor and Historian Data Provenance Documentation",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "data_provenance_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-model-version",
+            "breach_action": "document-data-sources; assign-data-provider; include-in-technical-file"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-DES-002",
+          "title": "Training Data Authority-to-Use for Production Data",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "training_atu_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-training-run",
+            "breach_action": "obtain-authorization; document-legal-basis; pause-training-until-authorized"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-003",
+          "title": "OT/IT Data Boundary Enforcement",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ot_data_boundary_violations",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "block-unapproved-traversal; alert-ot-security; initiate-conduit-review"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-004",
+          "title": "Input Data Drift Monitoring",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "input_psi_score",
+            "operator": "<=",
+            "param": "TIER_INPUT_PSI_THRESHOLD",
+            "window": "TIER_DRIFT_MONITORING_WINDOW",
+            "breach_action": "alert-data-provider; investigate-root-cause; consider-retraining-or-fallback"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-VAL-005",
+          "title": "Training Data Bias Assessment for Consequential AI",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "bias_assessment_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-model-version",
+            "breach_action": "complete-bias-assessment; document-mitigations; update-technical-file"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-006",
+          "title": "Adversarial Input Detection for OT-Edge AI",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "adversarial_input_alert_coverage",
+            "operator": ">=",
+            "param": "TIER_OT_ANOMALY_DETECTION_COVERAGE_PCT",
+            "window": "continuous",
+            "breach_action": "deploy-anomaly-detection; alert-ot-security; investigate-uncovered-systems"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-007",
+          "title": "AI Decision Log Retention per EU AI Act Article 12",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ai_log_retention_days",
+            "operator": ">=",
+            "param": "TIER_LOG_RETENTION_DAYS",
+            "window": "continuous",
+            "breach_action": "extend-log-retention; verify-tamper-evidence; alert-compliance-team"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L2-OPS-008",
+          "title": "Production Data Egress Audit for Cloud AI Services",
+          "srf_layer": "L2",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "undocumented_egress_events",
+            "operator": "==",
+            "param": "0",
+            "window": "monthly",
+            "breach_action": "investigate-egress; halt-if-feasible; notify-dpo-and-ot-security"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-001",
+          "title": "EU AI Act Technical Documentation Completeness",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "technical_documentation_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "complete-missing-elements; update-technical-file; delay-market-placement"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-002",
+          "title": "Pre-Deployment Testing for Safety-Critical AI",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "safety_critical_test_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "complete-test-plan; execute-tests; resolve-failures-before-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OPS-003",
+          "title": "Human Oversight Gate for Safety-Critical AI Outputs",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "safety_gate_bypass_count",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "alert-plant-safety-officer; investigate-bypass; verify-gate-implementation"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-004",
+          "title": "Safety Interlock Integration Verification",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "sis_integration_verified",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "halt-deployment; remediate-integration; retest-before-resuming"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-005",
+          "title": "EU AI Act Conformity Assessment Completed Before Market Placement",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "conformity_assessment_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "complete-conformity-assessment; sign-declaration; update-technical-file"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-006",
+          "title": "FAT/SAT Test Coverage for AI-Enabled Machinery",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "fat_sat_ai_coverage_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "extend-fat-sat-scope; retest-ai-failure-modes; delay-commissioning"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-VAL-007",
+          "title": "Operator Override Interface Verification",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "override_interface_tested",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "implement-override-capability; test-offline-function; document-results"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OPS-008",
+          "title": "Agentic Task Boundary Enforcement for Autonomous Systems",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "authority_boundary_violation_count",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "halt-agent; alert-operator; review-boundary-definition"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OPS-009",
+          "title": "Prompt Injection and Adversarial Input Detection for AI Assistants",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "prompt_injection_detection_active",
+            "operator": "==",
+            "param": "true",
+            "window": "continuous",
+            "breach_action": "enable-injection-detection; review-detection-configuration; alert-security-team"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L3-OPS-010",
+          "title": "Explanation Availability for AI-Assisted Quality and Safety Decisions",
+          "srf_layer": "L3",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "explanation_capability_available",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "implement-explanation-interface; test-offline-access; update-technical-file"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DES-001",
+          "title": "OT Network Zone Segmentation per IEC 62443",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ot_zone_assignment_documented",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "assign-zone; document-conduit; obtain-ot-security-sign-off"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DES-002",
+          "title": "OT-Edge AI Hardware Security Baseline",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ot_hw_baseline_applied",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "apply-baseline; audit-configuration; document-deviations-with-risk-acceptance"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-003",
+          "title": "Air-Gap or Approved-Conduit Enforcement for Safety-Critical OT AI",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "unapproved_ot_connection_count",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "block-connection; alert-ot-security-and-plant-safety-officer; investigate-source"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-CHG-004",
+          "title": "Patch and Update Change Management for OT AI",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ot_patch_change_record_completeness",
+            "operator": ">=",
+            "param": "TIER_CHANGE_RECORD_COMPLETENESS_PCT",
+            "window": "per-change",
+            "breach_action": "complete-change-record; conduct-safety-impact-assessment; verify-rollback"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-005",
+          "title": "OT SIEM and Anomaly Detection Coverage",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ot_siem_coverage_pct",
+            "operator": ">=",
+            "param": "TIER_OT_SIEM_COVERAGE_PCT",
+            "window": "quarterly",
+            "breach_action": "extend-siem-coverage; deploy-sensors; alert-ot-security"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-006",
+          "title": "Remote Access Security for OT AI Maintenance",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "unauthenticated_remote_session_count",
+            "operator": "==",
+            "param": "0",
+            "window": "continuous",
+            "breach_action": "terminate-session; alert-ot-security; review-access-controls"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-007",
+          "title": "Encrypted Communication for AI Data in Transit",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "unencrypted_ai_data_in_transit_count",
+            "operator": "<=",
+            "param": "TIER_UNENCRYPTED_FLOW_TOLERANCE",
+            "window": "monthly",
+            "breach_action": "enable-encryption; document-alternative-if-ot-constrained; obtain-risk-acceptance"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-DES-008",
+          "title": "AI Software Bill of Materials (SBOM/AIBOM) for OT AI Components",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "aibom_current",
+            "operator": "==",
+            "param": "true",
+            "window": "per-change",
+            "breach_action": "create-aibom; update-after-changes; include-in-technical-file"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L4-OPS-009",
+          "title": "Availability SLA for AI in Critical Production Processes",
+          "srf_layer": "L4",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "ai_availability_pct",
+            "operator": ">=",
+            "param": "TIER_AI_AVAILABILITY_PCT",
+            "window": "monthly",
+            "breach_action": "escalate-to-platform-provider; activate-degraded-mode-procedure; investigate-root-cause"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-VAL-001",
+          "title": "EU AI Act Technical File Completeness - Model Supplier Obligations",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "supplier_technical_file_complete",
+            "operator": "==",
+            "param": "true",
+            "window": "per-supplier-engagement",
+            "breach_action": "request-missing-documentation; delay-deployment; escalate-to-procurement"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-OPS-002",
+          "title": "Model Drift and Performance Degradation Monitoring",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "model_performance_vs_baseline",
+            "operator": ">=",
+            "param": "TIER_MODEL_PERFORMANCE_FLOOR",
+            "window": "TIER_MODEL_MONITORING_WINDOW",
+            "breach_action": "alert-model-provider; investigate-drift-cause; consider-retraining-or-fallback"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-CHG-003",
+          "title": "Model Version Change Management Trigger",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "model_change_record_completeness",
+            "operator": "==",
+            "param": "true",
+            "window": "per-change",
+            "breach_action": "create-change-record; conduct-revalidation-assessment; delay-deployment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-OPS-004",
+          "title": "Vulnerability Disclosure SLA for AI Model Supplier",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "vuln_sla_days_critical",
+            "operator": "<=",
+            "param": "TIER_VULN_SLA_DAYS_CRITICAL",
+            "window": "per-vulnerability",
+            "breach_action": "escalate-to-vendor; implement-compensating-control; notify-ot-security"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DES-005",
+          "title": "BoAIM and Model Artifact Signing",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "model_artifact_signed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "obtain-boaim; verify-signature; halt-deployment-if-verification-fails"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-VAL-006",
+          "title": "Functional Safety Validation for AI in Safety-Instrumented Systems",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "sil_validation_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-deployment",
+            "breach_action": "engage-functional-safety-engineer; complete-sil-assessment; document-safety-case"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DES-007",
+          "title": "Model Portability and Lock-In Avoidance Documentation",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "portability_documentation_provided",
+            "operator": "==",
+            "param": "true",
+            "window": "per-supplier-engagement",
+            "breach_action": "request-portability-documentation; evaluate-lock-in-risk; escalate-to-procurement"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L5-DES-008",
+          "title": "Model Supplier Due Diligence and Supply Chain Risk Assessment",
+          "srf_layer": "L5",
+          "defined_in": "manufacturing-controls.json",
+          "threshold": {
+            "metric": "supplier_due_diligence_completed",
+            "operator": "==",
+            "param": "true",
+            "window": "per-supplier-engagement",
+            "breach_action": "complete-due-diligence; obtain-ot-security-review; delay-contract-signature"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        }
+      ]
+    }
+  }
 }

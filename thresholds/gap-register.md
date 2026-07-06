@@ -1,6 +1,6 @@
 # OSCAL Parameter Gap Register: AI SRF Threshold Controls vs NIST SP 800-53 rev 5
 
-Generated 2026-07-04 by `generate-gap-register.py` against Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures, catalog version 5.2.0 (OSCAL 1.2.2).
+Generated 2026-07-06 by `generate-gap-register.py` against Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures, catalog version 5.2.0 (OSCAL 1.2.2).
 
 ## Purpose
 
@@ -84,6 +84,46 @@ Layer `ai_model_provider`, defined in `healthcare.profile.yaml`. Objective: indi
 
 Best case across bindings: `cadence_only`. Objective can bind to an ODP: **no**.
 
+## Findings by industry vertical
+
+The six industry vertical control sets (`data/*-controls.json`, also published as OSCAL profiles under `/export/`) each declare a measured threshold per control. This section records, per vertical, how many of those thresholds have a proposed 800-53 binding and classifies the bindings that exist. Controls without bindings are the backlog for the COSAiS overlay effort: generative and agentic thresholds should bind to NISTIR 8605B (Generative AI) and 8605D (Agentic AI) as those overlays publish, since both are 800-53 overlays that carry organization-defined parameters; predictive-AI thresholds map to 8605A. Until then they are classified `no_binding` here rather than bound to invented anchors.
+
+### Finance (finance-controls.json)
+
+40 controls; 0 with 800-53 bindings, 40 classified `no_binding`. OSCAL profile: https://aisharedresponsibility.com/export/srf-finance.profile.json
+
+Unbound thresholds by layer: L1: 9; L2: 8; L3: 8; L4: 8; L5: 7.
+
+### Public Sector (public-sector-controls.json)
+
+40 controls; 0 with 800-53 bindings, 40 classified `no_binding`. OSCAL profile: https://aisharedresponsibility.com/export/srf-public-sector.profile.json
+
+Unbound thresholds by layer: L1: 9; L2: 8; L3: 8; L4: 8; L5: 7.
+
+### Healthcare (healthcare-controls.json)
+
+40 controls; 0 with 800-53 bindings, 40 classified `no_binding`. OSCAL profile: https://aisharedresponsibility.com/export/srf-healthcare.profile.json
+
+Unbound thresholds by layer: L1: 9; L2: 8; L3: 8; L4: 8; L5: 7.
+
+### Insurance (insurance-controls.json)
+
+40 controls; 0 with 800-53 bindings, 40 classified `no_binding`. OSCAL profile: https://aisharedresponsibility.com/export/srf-insurance.profile.json
+
+Unbound thresholds by layer: L1: 9; L2: 8; L3: 8; L4: 8; L5: 7.
+
+### Defense (defense-controls.json)
+
+53 controls; 0 with 800-53 bindings, 53 classified `no_binding`. OSCAL profile: https://aisharedresponsibility.com/export/srf-defense.profile.json
+
+Unbound thresholds by layer: L1: 11; L2: 10; L3: 11; L4: 12; L5: 9.
+
+### Manufacturing (manufacturing-controls.json)
+
+45 controls; 0 with 800-53 bindings, 45 classified `no_binding`. OSCAL profile: https://aisharedresponsibility.com/export/srf-manufacturing.profile.json
+
+Unbound thresholds by layer: L1: 10; L2: 8; L3: 10; L4: 9; L5: 8.
+
 ## Summary finding
 
 Of 6 threshold controls, 6 resolve to live anchor controls in rev 5; the catalog's breadth is not the problem. The gap is uniformly one of parameter typing: no rev 5 ODP can express a measured objective. The best any binding achieves is `cadence_only`, where a frequency ODP can carry how often something is reviewed or tested but not what value it must hold, over what window, with what tolerated shortfall.
@@ -92,7 +132,8 @@ Of 6 threshold controls, 6 resolve to live anchor controls in rev 5; the catalog
 
 1. **For the AI overlay (SP 800-53 Control Overlays for Securing AI Systems):** where an overlay control governs continuously measurable AI behavior (inventory coverage, guardrail coverage at inference, override responsiveness, attestation currency, drift within declared bounds), define ODPs structured as measured objectives rather than freeform strings: target value, comparison, evaluation window, and tolerated shortfall. The `objective` object of the AI SRF threshold schema is a candidate shape.
 2. **For OSCAL:** parameters currently admit labels, guidelines, and fixed selections. A typed parameter constraint (numeric with unit and window semantics) would let profiles carry operational thresholds natively, and would let a resolved threshold emit `set-parameter` values that provably match the live alerting configuration.
-3. **For the AI RMF Critical Infrastructure profile:** each prioritized outcome could name the measurable indicator that would make it auditable. The healthcare drift control (AISRF-MODEL-002) is a worked example of a profile-driven addition with a concrete SLI bound to `ca-7`, whose `ca-07_odp.01` (system-level metrics) is exactly the right hook but is untyped today.
+3. **For the COSAiS overlay series (NISTIR 8605, 8605A-D):** the industry vertical sections above enumerate 258 measured thresholds with no 800-53 binding yet. Where an overlay control covers the same behavior (guardrail coverage, drift bounds, oversight responsiveness), the overlay's ODPs are the natural home for these objectives; typed measured-objective ODPs in 8605B (Generative AI) and 8605D (Agentic AI) would let the vertical OSCAL profiles bind directly as the overlays publish.
+4. **For the AI RMF Critical Infrastructure profile:** each prioritized outcome could name the measurable indicator that would make it auditable. The healthcare drift control (AISRF-MODEL-002) is a worked example of a profile-driven addition with a concrete SLI bound to `ca-7`, whose `ca-07_odp.01` (system-level metrics) is exactly the right hook but is untyped today.
 
 ---
 

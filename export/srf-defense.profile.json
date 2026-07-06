@@ -1,0 +1,641 @@
+{
+ "profile": {
+  "uuid": "02106ad0-9d1c-5526-9266-c99a86ff43e8",
+  "metadata": {
+   "title": "CoSAI AI SRF — Defense Vertical Profile (Proposed Extension)",
+   "last-modified": "2026-07-06T07:26:52+00:00",
+   "version": "0.1.0",
+   "oscal-version": "1.2.2",
+   "props": [
+    {
+     "name": "vertical",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "defense"
+    },
+    {
+     "name": "source",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "https://aisharedresponsibility.com/data/defense-controls.json"
+    },
+    {
+     "name": "control-count",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "53"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "cc_srg"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "cmmc_2_0"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "dod_rai_strategy"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "dodi_5000_89"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "dodi_5000_90"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "nist_800_171"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "nist_ai_rmf"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "owasp_llm"
+    }
+   ],
+   "links": [
+    {
+     "href": "https://aisharedresponsibility.com/defense/",
+     "rel": "canonical"
+    },
+    {
+     "href": "https://aisharedresponsibility.com/defense/controls/",
+     "rel": "reference",
+     "text": "Defense controls page"
+    },
+    {
+     "href": "#c5d89a8d-2be1-526a-977f-3cc51013206f",
+     "rel": "reference",
+     "text": "DoD Cloud Computing SRGs (Mission Owner SRG and CSP SRG V1R2, January 2025)"
+    },
+    {
+     "href": "#c749265b-4f91-5a8d-a8d0-366cdfd9ea2b",
+     "rel": "reference",
+     "text": "Cybersecurity Maturity Model Certification (CMMC) 2.0"
+    },
+    {
+     "href": "#27bd17b5-97b5-5d65-8009-3cf0b5c3faff",
+     "rel": "reference",
+     "text": "DoD Responsible AI Strategy and Implementation Pathway"
+    },
+    {
+     "href": "#8613c5f9-9d01-5ebc-8cc6-19adffb697fe",
+     "rel": "reference",
+     "text": "DoDI 5000.89 — Test and Evaluation"
+    },
+    {
+     "href": "#289aed16-d1f7-58b5-b179-0353578d8705",
+     "rel": "reference",
+     "text": "DoDI 5000.90 — Cybersecurity for Acquisition Decision Authorities"
+    },
+    {
+     "href": "#6ad9542e-0cd4-52bb-9a0e-4902b8f6b3ab",
+     "rel": "reference",
+     "text": "NIST SP 800-171 — Protecting Controlled Unclassified Information"
+    },
+    {
+     "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
+     "rel": "reference",
+     "text": "NIST AI Risk Management Framework"
+    },
+    {
+     "href": "#c403b49d-9023-519a-a9f4-fefbab79a3ce",
+     "rel": "reference",
+     "text": "OWASP Top 10 for Large Language Model Applications"
+    }
+   ],
+   "remarks": "DoD AI governance is anchored by the DoD Responsible AI Strategy and Implementation Pathway (June 2022), which established five RAI principles: Responsible, Equitable, Traceable, Reliable, Governable (RETR-G). DoDI 5000.90 (December 2020) governs cybersecurity risk management by acquisition decision authorities and program managers, including supply chain risk; it contains no AI-specific requirements. DoDI 5000.89 (November 2020) sets test and evaluation policy that AI TEVV planning operationalizes. AI-specific artifacts such as transparency cards derive from the RAI S&I Pathway and the CDAO RAI Toolkit, not from a 5000-series instruction. CMMC 2.0 (32 CFR Part 170, effective December 2024) governs contractor cybersecurity posture for CUI but does not address AI governance; this schema adds the AI layer CMMC lacks. Cloud deployments require a DISA Provisional Authorization (PA) at the required IL; the CC SRG defines what the CSP must implement. This schema covers the component and contractor side of those splits. IL6 systems operate in classified cloud environments (AWS C2S, Azure Government Secret, Oracle NSR) where commercial paths do not apply. Industry vertical schemas are independently proposed extensions and are not part of the official CoSAI release. Mapping IDs marked TBD are unverified and are carried verbatim as props, never as links; do not substitute invented IDs. Generated from data/*-controls.json."
+  },
+  "imports": [
+   {
+    "href": "https://aisharedresponsibility.com/export/srf-oscal-verticals-catalog.json",
+    "include-controls": [
+     {
+      "with-ids": [
+       "def-srf-l1-acq-001",
+       "def-srf-l1-acq-002",
+       "def-srf-l1-acq-003",
+       "def-srf-l1-acq-004",
+       "def-srf-l1-acq-005",
+       "def-srf-l1-acq-006",
+       "def-srf-l1-acq-007",
+       "def-srf-l1-ops-008",
+       "def-srf-l1-acq-009",
+       "def-srf-l1-tevv-010",
+       "def-srf-l2-acq-001",
+       "def-srf-l2-ops-002",
+       "def-srf-l2-acq-003",
+       "def-srf-l2-ops-004",
+       "def-srf-l2-ops-005",
+       "def-srf-l2-ops-006",
+       "def-srf-l2-ops-007",
+       "def-srf-l2-acq-008",
+       "def-srf-l3-tevv-001",
+       "def-srf-l3-tevv-002",
+       "def-srf-l3-ovr-003",
+       "def-srf-l3-ovr-004",
+       "def-srf-l3-ovr-005",
+       "def-srf-l3-ops-006",
+       "def-srf-l3-ops-007",
+       "def-srf-l3-acq-008",
+       "def-srf-l3-ops-009",
+       "def-srf-l4-acq-001",
+       "def-srf-l4-acq-002",
+       "def-srf-l4-acq-003",
+       "def-srf-l4-ops-004",
+       "def-srf-l4-ops-005",
+       "def-srf-l4-ops-006",
+       "def-srf-l4-acq-007",
+       "def-srf-l4-acq-008",
+       "def-srf-l4-ops-009",
+       "def-srf-l4-ops-010",
+       "def-srf-l5-acq-001",
+       "def-srf-l5-ops-002",
+       "def-srf-l5-acq-003",
+       "def-srf-l5-ops-004",
+       "def-srf-l5-acq-005",
+       "def-srf-l5-ops-006",
+       "def-srf-l5-acq-007",
+       "def-srf-l5-acq-008",
+       "def-srf-l1-ovr-011",
+       "def-srf-l2-tevv-009",
+       "def-srf-l2-ovr-010",
+       "def-srf-l3-tevv-010",
+       "def-srf-l3-tevv-011",
+       "def-srf-l4-tevv-011",
+       "def-srf-l4-ovr-012",
+       "def-srf-l5-tevv-009"
+      ]
+     }
+    ]
+   }
+  ],
+  "merge": {
+   "as-is": true
+  },
+  "modify": {
+   "set-parameters": [
+    {
+     "param-id": "def-srf-l1-acq-001-p1",
+     "values": [
+      "TIER_AI_REGISTRY_COVERAGE_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-acq-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-acq-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-acq-004-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-acq-005-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-acq-006-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-acq-007-p1",
+     "values": [
+      "TIER_TRAINING_COMPLETION_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-ops-008-p1",
+     "values": [
+      "TIER_INCIDENT_REPORT_TIMELINESS_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-acq-009-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-tevv-010-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-acq-001-p1",
+     "values": [
+      "TIER_CUI_MARKING_COMPLIANCE_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-ops-002-p1",
+     "values": [
+      "TIER_CROSS_BOUNDARY_ALERTS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-acq-003-p1",
+     "values": [
+      "TIER_ATU_DOCUMENTED_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-ops-004-p1",
+     "values": [
+      "TIER_UNAUTHORIZED_EGRESS_EVENTS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-ops-005-p1",
+     "values": [
+      "TIER_ADVERSARIAL_DETECTION_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-ops-006-p1",
+     "values": [
+      "TIER_BIAS_ANALYSIS_CURRENT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-ops-007-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-acq-008-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-tevv-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-tevv-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-ovr-003-p1",
+     "values": [
+      "TIER_HUMAN_GATE_BYPASS_EVENTS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-ovr-004-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-ovr-005-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-ops-006-p1",
+     "values": [
+      "TIER_BOUNDARY_VIOLATION_EVENTS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-ops-007-p1",
+     "values": [
+      "TIER_PROMPT_INJECTION_DETECTION_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-acq-008-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-ops-009-p1",
+     "values": [
+      "TIER_EXPLANATION_AVAILABILITY_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-acq-001-p1",
+     "values": [
+      "TIER_DISA_PA_CURRENT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-acq-002-p1",
+     "values": [
+      "TIER_STIG_OPEN_CAT1_FINDINGS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-acq-003-p1",
+     "values": [
+      "TIER_OUT_OF_REGION_EVENTS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-ops-004-p1",
+     "values": [
+      "TIER_ENCRYPTION_COMPLIANCE_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-ops-005-p1",
+     "values": [
+      "TIER_AUDIT_LOG_COMPLETENESS_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-ops-006-p1",
+     "values": [
+      "TIER_UNAUTH_API_REQUESTS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-acq-007-p1",
+     "values": [
+      "TIER_CMMC_L2_CURRENT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-acq-008-p1",
+     "values": [
+      "TIER_CMMC_L3_CURRENT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-ops-009-p1",
+     "values": [
+      "TIER_ACAS_COVERAGE_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-ops-010-p1",
+     "values": [
+      "TIER_AVAILABILITY_SLA_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-acq-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-ops-002-p1",
+     "values": [
+      "TIER_DRIFT_DISCLOSURE_SLA_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-acq-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-ops-004-p1",
+     "values": [
+      "TIER_CRITICAL_PATCH_TIMELINESS_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-acq-005-p1",
+     "values": [
+      "TIER_PORTABILITY_PLAN_APPROVED"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-ops-006-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-acq-007-p1",
+     "values": [
+      "TIER_UNCLEARED_IL6_ACCESS"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-acq-008-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l1-ovr-011-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-tevv-009-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l2-ovr-010-p1",
+     "values": [
+      "TIER_DECISION_LOG_REVIEW_COVERAGE_PCT"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-tevv-010-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l3-tevv-011-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-tevv-011-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l4-ovr-012-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "def-srf-l5-tevv-009-p1",
+     "values": [
+      "true"
+     ]
+    }
+   ]
+  },
+  "back-matter": {
+   "resources": [
+    {
+     "uuid": "c749265b-4f91-5a8d-a8d0-366cdfd9ea2b",
+     "title": "Cybersecurity Maturity Model Certification (CMMC) 2.0",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "cmmc_2_0"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://dodcio.defense.gov/cmmc/"
+      }
+     ]
+    },
+    {
+     "uuid": "c5d89a8d-2be1-526a-977f-3cc51013206f",
+     "title": "DoD Cloud Computing SRGs (Mission Owner SRG and CSP SRG V1R2, January 2025)",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "cc_srg"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://public.cyber.mil/dccs/"
+      }
+     ]
+    },
+    {
+     "uuid": "27bd17b5-97b5-5d65-8009-3cf0b5c3faff",
+     "title": "DoD Responsible AI Strategy and Implementation Pathway",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "dod_rai_strategy"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://media.defense.gov/2022/Jun/22/2003022604/-1/-1/0/Department-of-Defense-Responsible-Artificial-Intelligence-Strategy-and-Implementation-Pathway.PDF"
+      }
+     ]
+    },
+    {
+     "uuid": "8613c5f9-9d01-5ebc-8cc6-19adffb697fe",
+     "title": "DoDI 5000.89 — Test and Evaluation",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "dodi_5000_89"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/500089p.pdf"
+      }
+     ]
+    },
+    {
+     "uuid": "289aed16-d1f7-58b5-b179-0353578d8705",
+     "title": "DoDI 5000.90 — Cybersecurity for Acquisition Decision Authorities",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "dodi_5000_90"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.esd.whs.mil/Portals/54/Documents/DD/issuances/dodi/500090p.pdf"
+      }
+     ]
+    },
+    {
+     "uuid": "c00b1cec-7990-5779-b1cf-10a2e792f026",
+     "title": "NIST AI Risk Management Framework",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "nist_ai_rmf"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.nist.gov/itl/ai-risk-management-framework"
+      }
+     ]
+    },
+    {
+     "uuid": "6ad9542e-0cd4-52bb-9a0e-4902b8f6b3ab",
+     "title": "NIST SP 800-171 — Protecting Controlled Unclassified Information",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "nist_800_171"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://csrc.nist.gov/pubs/sp/800/171/r3/final"
+      }
+     ]
+    },
+    {
+     "uuid": "c403b49d-9023-519a-a9f4-fefbab79a3ce",
+     "title": "OWASP Top 10 for Large Language Model Applications",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "owasp_llm"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

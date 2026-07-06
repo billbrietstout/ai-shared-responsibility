@@ -1,6 +1,16 @@
 # Plan: Map OSCAL to SRF by Industry Vertical
 
-Status: proposed, 2026-07-05. Owner: Bill. Scope: extend the OSCAL representation of the SRF from the core accountability matrix to the six industry verticals, sequencing finance and public-sector first.
+Status: executed, 2026-07-05. Owner: Bill. Scope: extend the OSCAL representation of the SRF from the core accountability matrix to the six industry verticals, sequencing finance and public-sector first.
+
+## Execution status (2026-07-05)
+
+Workstreams A, C, D, and E are done; B is cross-linked but not converged.
+
+Built: `build/generate_oscal_verticals.py` emits `export/srf-oscal-verticals-catalog.json` (OSCAL 1.2.2, 258 controls, layer groups with one subgroup per vertical) and six `export/srf-{vertical}.profile.json` files, each importing the catalog, selecting its controls, and binding all threshold parameters. Control IDs are namespaced (`fin-srf-l1-dev-001`) because SRF IDs repeat across verticals; the original ID rides in prop `srf-id`. TBD and N/A mappings stay verbatim as props with class `unresolved`; verified mappings become links into 13 back-matter framework resources; EU AI Act citations are parsed with the canonical grammar. `build/verify_oscal.py` checks referential integrity offline (every internal href resolves, every param bound, profiles resolve against the catalog, no TBD in link text) and applies the official schemas when reachable. All seven documents also validate against compliance-trestle's metaschema-derived OSCAL models. `thresholds/generate-gap-register.py` now emits one gap section per vertical (258 thresholds, all currently `no_binding`) and names COSAiS 8605B/8605D as binding targets as they publish. Profiles are listed in `data/index.json` exports and linked from each `/{vertical}/controls/` page.
+
+All seven documents pass the official OSCAL 1.2.2 JSON schemas (verified 2026-07-05 with `verify_oscal.py`, zero warnings).
+
+Remaining: resolve TBD FINOS AIGF and SR 26-2 IDs against live sources so finance links replace props (same later for NAIC, Colorado, NYDFS, M-25-21 section numbers); the workstream B convergence pass onto the `thresholds/` schema; spot-check the handful of back-matter URLs added for frameworks not in `data/regulations.json` (M-25-21/22 PDFs, NAIC bulletin, NYDFS CL 7); optional OSCAL validation badge per vertical page. The remaining content work is sized and sequenced in `oscal-content-work-scope.md`.
 
 ## 1. Where we are today
 

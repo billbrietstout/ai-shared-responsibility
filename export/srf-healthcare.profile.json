@@ -1,0 +1,524 @@
+{
+ "profile": {
+  "uuid": "407b54ff-672d-5f71-85da-afa2c36d6d00",
+  "metadata": {
+   "title": "CoSAI AI SRF — Healthcare Vertical Profile (Proposed Extension)",
+   "last-modified": "2026-07-06T07:26:52+00:00",
+   "version": "0.1.0",
+   "oscal-version": "1.2.2",
+   "props": [
+    {
+     "name": "vertical",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "healthcare"
+    },
+    {
+     "name": "source",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "https://aisharedresponsibility.com/data/healthcare-controls.json"
+    },
+    {
+     "name": "control-count",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "40"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "eu_ai_act"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "fda_pccp"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "fda_tplc"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "hipaa"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "iec_62304"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "iso_14971"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "onc_hti1"
+    }
+   ],
+   "links": [
+    {
+     "href": "https://aisharedresponsibility.com/healthcare/",
+     "rel": "canonical"
+    },
+    {
+     "href": "https://aisharedresponsibility.com/healthcare/controls/",
+     "rel": "reference",
+     "text": "Healthcare controls page"
+    },
+    {
+     "href": "#51bbabe9-02b8-5813-994d-891f4c95ef21",
+     "rel": "reference",
+     "text": "EU Artificial Intelligence Act (Regulation (EU) 2024/1689)"
+    },
+    {
+     "href": "#5c236a56-0fd8-52fc-880b-5e213d233a3f",
+     "rel": "reference",
+     "text": "FDA Predetermined Change Control Plan Guidance"
+    },
+    {
+     "href": "#df7383c9-314e-55e0-97c8-40d19485fcd7",
+     "rel": "reference",
+     "text": "FDA Total Product Lifecycle for AI/ML-Based SaMD"
+    },
+    {
+     "href": "#8d9146e5-7a72-5eac-a274-e74a728227e7",
+     "rel": "reference",
+     "text": "HIPAA (Health Insurance Portability and Accountability Act)"
+    },
+    {
+     "href": "#8670371b-4bcd-57ff-860c-f76b86fe9aef",
+     "rel": "reference",
+     "text": "IEC 62304 — Medical Device Software Lifecycle Processes"
+    },
+    {
+     "href": "#9b4bdb6c-5956-583c-a67b-554142092ad9",
+     "rel": "reference",
+     "text": "ISO 14971 — Application of Risk Management to Medical Devices"
+    },
+    {
+     "href": "#8e4fc90b-6135-5c7a-81da-30efe01e36ad",
+     "rel": "reference",
+     "text": "ONC HTI-1 Final Rule (45 CFR 170.315)"
+    }
+   ],
+   "remarks": "The FDA's January 2025 draft guidance on lifecycle management for AI-enabled device software functions (TPLC) and the August 2025 final guidance on Predetermined Change Control Plans establish the primary governance framework for AI-enabled medical devices. PCCP crosswalk references in this schema follow the five guiding principles published by FDA, Health Canada, and MHRA in 2023. ONC's HTI-1 Final Rule (effective January 2025) adds algorithmic transparency requirements for AI embedded in certified health IT. The EU AI Act classifies clinical AI as high-risk with full compliance obligations from August 2026. This schema operationalizes those frameworks across all five SRF layers. Industry vertical schemas are independently proposed extensions and are not part of the official CoSAI release. Mapping IDs marked TBD are unverified and are carried verbatim as props, never as links; do not substitute invented IDs. Generated from data/*-controls.json."
+  },
+  "imports": [
+   {
+    "href": "https://aisharedresponsibility.com/export/srf-oscal-verticals-catalog.json",
+    "include-controls": [
+     {
+      "with-ids": [
+       "hc-srf-l1-dev-001",
+       "hc-srf-l1-dev-002",
+       "hc-srf-l1-dev-003",
+       "hc-srf-l1-hor-001",
+       "hc-srf-l1-hor-002",
+       "hc-srf-l1-hor-003",
+       "hc-srf-l1-pms-001",
+       "hc-srf-l1-pms-002",
+       "hc-srf-l1-pms-003",
+       "hc-srf-l2-dev-001",
+       "hc-srf-l2-dev-002",
+       "hc-srf-l2-dev-003",
+       "hc-srf-l2-vv-001",
+       "hc-srf-l2-vv-002",
+       "hc-srf-l2-pms-001",
+       "hc-srf-l2-pms-002",
+       "hc-srf-l2-pms-003",
+       "hc-srf-l3-dev-001",
+       "hc-srf-l3-dev-002",
+       "hc-srf-l3-dev-003",
+       "hc-srf-l3-vv-001",
+       "hc-srf-l3-vv-002",
+       "hc-srf-l3-pms-001",
+       "hc-srf-l3-pms-002",
+       "hc-srf-l3-pms-003",
+       "hc-srf-l4-dev-001",
+       "hc-srf-l4-dev-002",
+       "hc-srf-l4-dev-003",
+       "hc-srf-l4-vv-001",
+       "hc-srf-l4-vv-002",
+       "hc-srf-l4-pms-001",
+       "hc-srf-l4-pms-002",
+       "hc-srf-l4-pms-003",
+       "hc-srf-l5-dev-001",
+       "hc-srf-l5-dev-002",
+       "hc-srf-l5-dev-003",
+       "hc-srf-l5-vv-001",
+       "hc-srf-l5-vv-002",
+       "hc-srf-l5-pms-001",
+       "hc-srf-l5-pms-002"
+      ]
+     }
+    ]
+   }
+  ],
+  "merge": {
+   "as-is": true
+  },
+  "modify": {
+   "set-parameters": [
+    {
+     "param-id": "hc-srf-l1-dev-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-dev-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-dev-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-hor-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-hor-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-hor-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-pms-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-pms-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l1-pms-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-dev-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-dev-002-p1",
+     "values": [
+      "{min_representation_fraction}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-dev-003-p1",
+     "values": [
+      "0"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-vv-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-vv-002-p1",
+     "values": [
+      "{max_subgroup_performance_gap}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-pms-001-p1",
+     "values": [
+      "{max_psi_score}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-pms-002-p1",
+     "values": [
+      "{min_data_completeness_rate}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l2-pms-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-dev-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-dev-002-p1",
+     "values": [
+      "{min_explanation_coverage_rate}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-dev-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-vv-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-vv-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-pms-001-p1",
+     "values": [
+      "{max_clinician_override_rate}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-pms-002-p1",
+     "values": [
+      "0"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l3-pms-003-p1",
+     "values": [
+      "0"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-dev-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-dev-002-p1",
+     "values": [
+      "{min_audit_completeness_rate}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-dev-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-vv-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-vv-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-pms-001-p1",
+     "values": [
+      "0"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-pms-002-p1",
+     "values": [
+      "{min_platform_availability_rate}"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l4-pms-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l5-dev-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l5-dev-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l5-dev-003-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l5-vv-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l5-vv-002-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l5-pms-001-p1",
+     "values": [
+      "true"
+     ]
+    },
+    {
+     "param-id": "hc-srf-l5-pms-002-p1",
+     "values": [
+      "{max_cve_critical_patch_days}"
+     ]
+    }
+   ]
+  },
+  "back-matter": {
+   "resources": [
+    {
+     "uuid": "51bbabe9-02b8-5813-994d-891f4c95ef21",
+     "title": "EU Artificial Intelligence Act (Regulation (EU) 2024/1689)",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "eu_ai_act"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+      }
+     ]
+    },
+    {
+     "uuid": "5c236a56-0fd8-52fc-880b-5e213d233a3f",
+     "title": "FDA Predetermined Change Control Plan Guidance",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "fda_pccp"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence-enabled-device-software-functions"
+      }
+     ]
+    },
+    {
+     "uuid": "df7383c9-314e-55e0-97c8-40d19485fcd7",
+     "title": "FDA Total Product Lifecycle for AI/ML-Based SaMD",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "fda_tplc"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-software-medical-device"
+      }
+     ]
+    },
+    {
+     "uuid": "8d9146e5-7a72-5eac-a274-e74a728227e7",
+     "title": "HIPAA (Health Insurance Portability and Accountability Act)",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "hipaa"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.hhs.gov/hipaa/index.html"
+      }
+     ]
+    },
+    {
+     "uuid": "8670371b-4bcd-57ff-860c-f76b86fe9aef",
+     "title": "IEC 62304 — Medical Device Software Lifecycle Processes",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "iec_62304"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://webstore.iec.ch/publication/22794"
+      }
+     ]
+    },
+    {
+     "uuid": "9b4bdb6c-5956-583c-a67b-554142092ad9",
+     "title": "ISO 14971 — Application of Risk Management to Medical Devices",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "iso_14971"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.iso.org/standard/72704.html"
+      }
+     ]
+    },
+    {
+     "uuid": "8e4fc90b-6135-5c7a-81da-30efe01e36ad",
+     "title": "ONC HTI-1 Final Rule (45 CFR 170.315)",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "onc_hti1"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.healthit.gov/topic/laws-regulation-and-policy/health-data-technology-and-interoperability"
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

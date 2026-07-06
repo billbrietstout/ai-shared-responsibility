@@ -1,0 +1,25 @@
+# COSAiS AI Control Overlays feedback on the Platform layer
+
+COSAiS AI Control Overlays feedback on the Platform layer (platform services that expose AI capabilities through APIs: model serving and inference endpoints, guardrails, LLM routers, MCP gateways, agent runtimes, fine-tuning services).
+
+From an OSCAL perspective, there's a gap around guardrail enforcement coverage at inference. Same flaw as the other layers: modern AI platforms need faster, verifiable (OSCAL), continuous measurements, and the controls cannot carry them. SI-10 (Information Input Validation) and SI-15 (Information Output Filtering) each have a single untyped ODP, so neither can carry a measured objective. So an organization can say it implements SI-10 and SI-15 because guardrails are configured on the platform, but there is no measurement of what fraction of inference traffic actually passes through them. Direct model endpoints, streaming APIs, fallback routes, and fine-tuned model deployments can all bypass the guardrail path silently. Without a coverage objective, "we have guardrails" passes audit while a fraction of inference traffic runs unfiltered, and at platform request volumes even a small uncovered fraction is a large absolute number of unguarded calls.
+
+Proposed enhancement: introduce a coverage objective parameter (or enhancement) on SI-10 and SI-15. It should support:
+
+* Target value (e.g., 99.9% of inference calls pass through configured guardrail enforcement). The error budget here should be small and burn-rate alerted; at inference volumes, budget exhaustion means thousands of unfiltered calls, not a missed review.
+* Comparison operator ( = < > >= <= )
+* Measurement window (e.g., rolling 30 days). Not the same as ODP cadence; cadence sets how often a check runs, the window is the period over which the coverage ratio is computed.
+* Reconciliation method: guardrail/gateway telemetry reconciled against model endpoint logs. This is what makes the denominator honest; counting only gateway-observed calls makes coverage unfalsifiable, since bypass traffic never reaches the gateway.
+
+Other AI related items at the Platform layer which should also include coverage objectives:
+
+* Inference endpoint inventory and gateway coverage: percent of model endpoints reachable only through the governed router or gateway rather than directly. Nearest controls CM-8 and SC-7, cadence-only and untyped. This is the denominator enabler for the layer: guardrail coverage is only measurable if you know every path to a model.
+* Guardrail policy parity across models and routes: percent of models behind a router with an equivalent guardrail policy applied. Cross-model integration (multiple foundation models behind one API layer) makes it easy for one model to get the full policy while a fallback model gets none. No 800-53 control models per-route policy consistency.
+* Agent runtime isolation coverage: percent of agent runtimes executing in isolated sandboxes with resource caps and egress restrictions. SC-39 (Process Isolation) has no ODPs to carry a ratio. Agents execute untrusted, model-generated actions; isolation is the containment layer when guardrails miss.
+* MCP server and dependency provenance: percent of deployed MCP servers and plugins sourced from signed, reviewed origins. SR-4 (Provenance) ODPs are cadence-only. Supply chain and protocol-level threats for MCP deployments are documented; the missing piece is a measurable deployment-side check.
+* Model integrity verification at load: percent of served model versions with verified signatures or attestations before serving. SI-7 (Software, Firmware, and Information Integrity) has untyped ODPs. Model provenance is produced at the supply chain layer; the platform layer is where it must be verified, and nothing measures whether it is.
+* Fine-tune safety regression coverage: percent of fine-tuned models passing post-tune safety evaluation before deployment. Fine-tuning can silently degrade base-model guardrail behavior, so a tuned model behind the same endpoint is not the model that was assessed. CM-3/CM-4 are cadence-only and have no concept of a model-weights change class.
+* Platform adversarial testing coverage: percent of agent runtime environments and inference services red-teamed against known AI attack vectors within a defined period of deployment or major change. CA-8 is cadence-only with no parameter for attack classes covered.
+* Inference logging coverage: percent of inference calls logged with the metadata needed to reconstruct guardrail decisions (policy version applied, verdict, route). AU-12 ODPs select components and event types, not call coverage. Without this, none of the above ratios can be evidenced.
+
+Timing note: same as the other layers. The COSAiS overlays (generative AI assistants, single-agent, multi-agent) are the natural home for these, and most are still pre-draft, so this is the window. But overlays select and tailor controls; they cannot add typed, measurable parameters. That requires parameter-level change in the SP 800-53 catalog itself.
