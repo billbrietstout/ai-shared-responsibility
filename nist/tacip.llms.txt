@@ -1,0 +1,71 @@
+# Trustworthy AI in Critical Infrastructure Profile (TACIP)
+
+> A NIST AI RMF profile (community-of-interest discussion draft) that translates trustworthy-AI objectives into actionable risk-management Practices, Tasks, and Implementations for the 16 U.S. critical-infrastructure sectors. This file is a concise, linked index for LLMs and agents. NOT official NIST output — a proof-of-concept machine-readable companion to the public draft.
+
+Structure: Practice `N` → Task `N.M` → Implementation `N.M.K`. Every node has a stable ID, typed fields (AI RMF mappings, trustworthiness characteristics, references, cross-references), and a deep-link anchor.
+
+## Data files
+- [index.html](./index.html): human-readable static document (stable heading anchors).
+- [tacip-profile.json](./tacip-profile.json): the whole profile as structured data.
+- [tacip-schema.json](./tacip-schema.json): JSON Schema for a profile node.
+- [references.json](./references.json): cross-sector reference crosswalk (by reference and by practice).
+- [suggestions.json](./suggestions.json): reviewer/team-proposed additions, keyed by node id.
+
+Note: some nodes carry a `proposed` array — reviewer/team suggestions (source ids TBD-*/CAND-*) that fill the draft's TBD and Candidate fields. These are NOT part of the NIST draft and are flagged for editorial review.
+
+## Trustworthiness characteristics (CI-adapted)
+Safe, Secure, Resilient, Explainable & Interpretable, Accountable & Transparent, Privacy Enhanced, Fair, Accurate, Valid, Reliable, & Bias Managed.
+
+## Practices
+### Practice 1: Establish requirements for success
+Define performance, safety, and security benchmarks that establish the baseline for existing and proposed systems to ensure AI-driven systems align with the organization's mission …
+AI RMF: Govern 1.1: Legal and regulatory requirements; Govern 1.2: The characteristics of trustworthy AI.
+Tasks: 1.1 Identify current requirements; 1.2 Create quantitative baselines for existing systems in both normal and challenging conditions; 1.3 Implement evaluation and test plans, including TEVV, across the AI lifecycle; 1.4 Establish Domain Knowledge and Linguistic Alignment Requirements
+
+### Practice 2: Define AI Robustness, Resilience, and Quality of Service expectations
+Establish safeguards which maintain essential service delivery and functional safety when AI system performance deviates from expected levels, regardless of the cause.
+Tasks: 2.1 Establish AI usage thresholds and rate control mechanisms; 2.2 Establish requirements for redundancy in AI-Driven functions; 2.3 Establish protocols for and regularly perform systematic, and achievable Testing, Evaluation, Validation, and Verification (TEVV); 2.4 Perform Linguistic and Domain-Context Robustness Testing; 2.5 Verify and Ensure Policy Robustness Against Component, Hardware, and Data Schema Variance
+
+### Practice 3: Define risks, policies, and oversight for automated AI and agentic behavior
+Establish well-defined, deterministic, actionable boundaries, policies, and oversight for high-risk actions that may cause disruption to safety-critical (cyber-)physical processes.
+AI RMF: Govern 1.1: Legal and regulatory requirements involving AI; Govern 1.2: The characteristics of trustworthy AI; Govern 1.4: The risk management process and its outcomes; Govern 2.1: Roles, responsibilities and communication related to mapping, measuring, and managing AI risks.
+Tasks: 3.1 Identify risk tradeoffs; 3.2 Implement independent guardrails ("safety wrappers") for AI outputs; 3.3 Establish Failure Notification Requirements; 3.4 Monitor for anomalous AI behavior; 3.5 Define and control risks to adjacent and related systems; 3.6 Mitigate automation complacency and skills degradation; 3.7 Govern and mitigate risks from unauthorized, transient, and "Shadow AI" systems
+
+### Practice 4: Define procedures for emergency avoidance override, recovery, and situation awareness
+Establish and maintain documented procedures that allow operators to intervene in, suspend, or override AI system actions that are unreliable, unexpected, or potentially harmful to…
+AI RMF: Govern 1.4: The risk management process and its outcomes are established; Govern 2.1: Roles, responsibilities and communication related to mapping, measuring, and managing AI risks; Govern 3.2: Roles and responsibilities for human-AI configurations and oversight of AI systems; Govern 4.1: Critical thinking and safety-first mindset to minimize potential negative impacts.
+Tasks: 4.1 Establish "break glass" intervention procedures; 4.2 Ensure that personnel are able to gain and maintain situational awareness; 4.3 Establish independent ("out-of-band") communication, monitoring, alerting, and control capabilities; 4.4 Attention Governance and Alert/Alarm Flood Mitigation; 4.5 Define operational regimes for human-on-the-loop and human-out-of-the-loop operation
+
+### Practice 5: Implement identity and access management (IdAM) for AI agents, systems, and tools
+Establish IdAM controls for AI agents and tools appropriate to their roles, auditability, risk, and oversight, at points in the AI system lifecycle from deployment through to decom…
+AI RMF: Govern 2.1 (AI risk accountability roles and responsibilities); Govern 2.2 (AI risk management training); Govern 2.3 (Executive leadership responsibility); Govern 3.2 (roles and responsibilities for human-AI configurations and oversight of AI systems).
+Tasks: 5.1 Require identities and authentication for AI entities; 5.2 Determine and enforce specific access requirements; 5.3 Enforce principles of least agency and least privilege for AI entities; 5.4 Implement continuous security monitoring for AI entity actions
+
+### Practice 6: Integrate visibility of the external supply chain of AI into vendor and 3rd party risk management
+Enforce pre-acquisition and procurement-phase governance over external vendor dependencies and third-party assets.
+AI RMF: Govern 1.6: Inventory AI systems and resource them according to risk priorities; Govern 6.1: third-party AI risk policy and procedures; Govern 6.2: contingency processes for supply-chain AI risks.
+Tasks: 6.1 Develop policies for AI supply chain requirements; 6.2 Align AI and existing CI asset lifecycle management; 6.3 Identify and control dataflows across the AI supply chain
+
+### Practice 7: Manage internal AI supply chain and data provenance
+Establish post-acquisition operational oversight for AI assets under direct organizational control.
+Tasks: 7.1 Maintain an Internal Registry of AI Deployments; 7.2 Validate data provenance for model inputs; 7.3 Manage Version Control and Logging for Internal AI Safety Mechanisms; 7.4 Define Authorization and Access Controls for AI Modifications; 7.5 Conduct Impact Assessments and Risk Management for AI System and Model Updates; 7.6 Establish processes for internal AI component deprecation and decommissioning
+
+### Practice 8: Incorporate AI-aware incident analysis and response procedures
+Develop and implement protocols for responding to and investigating AI-related failures, addressing the unique challenges posed by probabilistic and non-deterministic system behavi…
+Tasks: 8.1 Identify scenarios requiring deterministic root cause analysis and incident reconstruction; 8.2 Identify additional controls that may be required in scenarios where deterministic root cause analysis is not possible; 8.3 Designate roles for AI incident governance; 8.4 Define external reporting and regulatory disclosure protocols following AI incidents; 8.5 Pre-arrange specialized resources for investigating and recovering from AI incidents
+
+### Practice 9: Provide calibrated, needs-based AI risk management training
+Establish a systematic program for AI risk management training tailored to specific operational roles and decision-making responsibilities.
+Tasks: 9.1 Perform role-based AI risk competency mapping; 9.2 Deliver specialized training on human-AI interaction and automation bias; 9.3 Establish audit-ready systems for verifying workforce readiness
+
+### Practice 10: Implement multi-tiered AI system logging and audit capabilities
+Establish a framework for the systematic capture and preservation of operational telemetry across the AI lifecycle to ensure decision-making logic remains transparent and verifiabl…
+Tasks: 10.1 Define decision-level logging and metadata retention policies; 10.2 Establish data integrity and tamper-evidence controls for AI telemetry and logging; 10.3 Implement systematic audit review and performance trend analysis
+
+### Practice 11: Maintain AI-aware mission continuity and disaster recovery planning
+Establish a strategic framework for mission continuity to manage the immediate term alternative operating modes, and the longer-term recovery and restoration of essential functions…
+Tasks: 11.1 Identify and prioritize AI-dependent essential functions; 11.2 Define manual and alternative operating procedures for long-term mission continuity; 11.3 Pre-allocate operational resources for alternative service delivery; 11.4 Establish system integrity re-validation and re-commissioning protocols; 11.5 Execute periodic mission continuity simulations and stress tests
+
+### Practice 12: Validate AI-Generated Operational Logic and Artifacts
+Establish rigorous validation and verification protocols for AI-generated artifacts, including code, configurations, and procedures, that direct or influence the execution of criti…
+Tasks: 12.1 Establish Governance and Accountability for AI-Generated Execution Artifacts; 12.2 Implement Multi-Layered Validation of Machine-Authored Logic; 12.3 Manage Operational Continuity and Resilience for Generated Artifacts
