@@ -68,6 +68,8 @@ def classify(rel):
         return "tool", ["srf.framework.cosai-srf"] + GLOSS[:6]
     if top == "framework" and len(seg) == 1:
         return "framework", LAYERS + ACCT + ["srf.concept.operating-model", "srf.concept.persona"]
+    if rel == "framework/security-lifecycle":
+        return "reference", ["srf.framework.cosai-srf"] + LAYERS + ["srf.data.threats"]
     if rel == "framework/nice-mapping":
         return "mapping", ROLES8 + ["srf.framework.cosai-srf"]
     if top == "operating-models":
@@ -115,6 +117,7 @@ def classify(rel):
         if "policy-pyramid" in rel:      return "tool", LAYERS + ["srf.concept.responsibility-cascade"]
         if "srf-stress" in rel:          return "tool", ACCT + LAYERS
         if "regulation-discovery" in rel:return "tool", ext_frameworks()[:6] + LAYERS
+        if "redteam-scope" in rel:       return "tool", ["srf.framework.cosai-srf"] + LAYERS + ["srf.data.threats"]
         if "prompts" in rel:             return "tool", ["srf.framework.cosai-srf"] + ACCT
         if "schema" in rel:              return "tool", ["srf.framework.cosai-srf", "srf.concept.control"]
         if "security" in rel or "controls-assessment" in rel or "assessment" in rel:

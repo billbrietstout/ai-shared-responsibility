@@ -2,7 +2,7 @@
   "$schema_version": "1.0",
   "description": "Concept graph nodes for the CoSAI SRF. Node types: concept, framework, role, control. Edges are in /ontology/edges.json.",
   "srf_version": "1.0",
-  "updated": "2026-07-10",
+  "updated": "2026-07-13",
   "node_schema": {
     "id": "string",
     "label": "string",
@@ -11,7 +11,7 @@
     "related": "[id]",
     "subtype": "string (optional)"
   },
-  "count": 309,
+  "count": 311,
   "nodes": [
     {
       "id": "srf.framework.cosai-srf",
@@ -51,6 +51,7 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L1",
       "related": [
+        "ext.framework.cis-controls",
         "ext.framework.csa-aicm",
         "ext.framework.eu-ai-act",
         "ext.framework.fda-ai-ml",
@@ -120,6 +121,7 @@
         "srf.control.public-sector.SRF-L1-MON-005",
         "srf.control.public-sector.SRF-L1-MON-009",
         "srf.control.public-sector.SRF-L1-OVR-006",
+        "srf.data.threats",
         "srf.framework.cosai-srf",
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
@@ -136,6 +138,7 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L2",
       "related": [
+        "ext.framework.cis-controls",
         "ext.framework.csa-aicm",
         "ext.framework.eu-ai-act",
         "ext.framework.gao-ai-accountability-framework",
@@ -197,6 +200,7 @@
         "srf.control.public-sector.SRF-L2-MON-004",
         "srf.control.public-sector.SRF-L2-MON-006",
         "srf.control.public-sector.SRF-L2-MON-007",
+        "srf.data.threats",
         "srf.framework.cosai-srf",
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
@@ -212,6 +216,7 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L3",
       "related": [
+        "ext.framework.cis-controls",
         "ext.framework.csa-aicm",
         "ext.framework.eu-ai-act",
         "ext.framework.fda-ai-ml",
@@ -276,6 +281,7 @@
         "srf.control.public-sector.SRF-L3-VAL-002",
         "srf.control.public-sector.SRF-L3-VAL-003",
         "srf.control.public-sector.SRF-L3-VAL-007",
+        "srf.data.threats",
         "srf.framework.cosai-srf",
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
@@ -292,6 +298,7 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L4",
       "related": [
+        "ext.framework.cis-controls",
         "ext.framework.csa-aicm",
         "ext.framework.iso-22989",
         "ext.framework.iso-42001",
@@ -354,6 +361,7 @@
         "srf.control.public-sector.SRF-L4-MON-006",
         "srf.control.public-sector.SRF-L4-MON-008",
         "srf.control.public-sector.SRF-L4-VAL-007",
+        "srf.data.threats",
         "srf.framework.cosai-srf",
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
@@ -371,6 +379,7 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L5",
       "related": [
+        "ext.framework.cis-controls",
         "ext.framework.csa-aicm",
         "ext.framework.eu-ai-act",
         "ext.framework.fda-ai-ml",
@@ -428,6 +437,7 @@
         "srf.control.public-sector.SRF-L5-MON-004",
         "srf.control.public-sector.SRF-L5-MON-006",
         "srf.control.public-sector.SRF-L5-MON-007",
+        "srf.data.threats",
         "srf.framework.cosai-srf",
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
@@ -1465,6 +1475,19 @@
       ]
     },
     {
+      "id": "ext.framework.cis-controls",
+      "label": "CIS Critical Security Controls",
+      "type": "framework",
+      "url": "https://www.cisecurity.org/controls",
+      "related": [
+        "srf.layer.L1",
+        "srf.layer.L2",
+        "srf.layer.L3",
+        "srf.layer.L4",
+        "srf.layer.L5"
+      ]
+    },
+    {
       "id": "ext.framework.mitre-atlas",
       "label": "MITRE ATLAS",
       "type": "framework",
@@ -1517,6 +1540,20 @@
         "srf.layer.L2",
         "srf.layer.L5"
       ]
+    },
+    {
+      "id": "srf.data.threats",
+      "label": "Threat-to-accountability crosswalk",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/data/threats.json",
+      "related": [
+        "srf.layer.L1",
+        "srf.layer.L2",
+        "srf.layer.L3",
+        "srf.layer.L4",
+        "srf.layer.L5"
+      ],
+      "subtype": "dataset"
     },
     {
       "id": "srf.control.finance.SRF-L1-DEV-001",

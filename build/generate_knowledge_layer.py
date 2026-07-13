@@ -39,7 +39,7 @@ SITE = "https://aisharedresponsibility.com"
 # regenerates these files and diffs them against what is committed, so the value
 # must be reproducible from committed source rather than the wall clock (otherwise
 # any push validated by CI on a later UTC day fails). Bump it when publishing an update.
-UPDATED = "2026-07-10"
+UPDATED = "2026-07-13"
 SRF_VERSION = "1.0"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -302,6 +302,23 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
         for code in item.get("srf_layers", []):
             add_edge(nid, "maps_to_layer", layer_id(code))
 
+    # Canonical data catalog resources referenced by page llm:concepts.
+    # These are first-class machine-readable artifacts under /data/, not
+    # glossary vocabulary; keep the srf.data.* namespace for them.
+    data_catalog = [
+        {
+            "id": "srf.data.threats",
+            "label": "Threat-to-accountability crosswalk",
+            "url": f"{SITE}/data/threats.json",
+            "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
+        },
+    ]
+    for item in data_catalog:
+        add_node(item["id"], item["label"], "concept", item["url"],
+                 subtype="dataset")
+        for code in item.get("srf_layers", []):
+            add_edge(item["id"], "maps_to_layer", layer_id(code))
+
     # Some verticals (notably healthcare) assign accountability to a
     # sector-specific specialization of a canonical persona. Register those as
     # role nodes too so every accountable_to edge resolves.
@@ -401,7 +418,7 @@ def build_ids(nodes, terms):
         "description": "Canonical ID registry. Every concept, layer, role, "
                        "operating model, and control has one stable id, a "
                        "human name, and a URL. IDs are namespaced: srf.layer.*, "
-                       "srf.opmodel.*, srf.role.*, srf.concept.*, "
+                       "srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, "
                        "srf.control.<vertical>.*, ext.framework.*.",
         "srf_version": SRF_VERSION,
         "updated": UPDATED,
@@ -411,6 +428,7 @@ def build_ids(nodes, terms):
             "srf.opmodel": "One of the four operating models",
             "srf.role": "One of the SRF personas",
             "srf.concept": "A glossary vocabulary concept",
+            "srf.data": "A machine-readable data catalog resource under /data/",
             "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
             "ext.framework": "An external standard or regulation",
         },
