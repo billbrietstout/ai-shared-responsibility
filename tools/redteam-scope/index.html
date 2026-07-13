@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Red Team Scoping Tool: CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Scope an AI red team engagement with the CoSAI AI Shared Responsibility Framework. Pick your operating model and autonomy tier, get testable, authorization-required, and out-of-scope layers with pre-assigned finding ownership, and export a signed scoping record to PDF."
+    />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="/shared/vendor/jspdf-2.5.1.umd.min.js"></script>
+    <script defer src="app.js"></script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "CoSAI SRF Red Team Scoping Tool",
+  "url": "https://aisharedresponsibility.com/tools/redteam-scope/",
+  "description": "Generates a signable AI red team engagement scoping record. Resolves testable, authorization-required, and out-of-scope SRF layers by operating model, pre-assigns finding ownership, and exports to PDF and JSON.",
+  "applicationCategory": "BusinessApplication",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/",
+    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+  },
+  "isAccessibleForFree": true,
+  "about": {
+    "@type": "TechArticle",
+    "name": "CoSAI AI Shared Responsibility Framework",
+    "url": "https://aisharedresponsibility.com/framework/",
+    "description": "Five-layer enterprise architecture model (L1 AI Business & Usage through L5 AI Model Provider), eight personas, four operating models."
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-redteam-scope" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.data.threats" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <svg class="header-shield" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M20 3L5 9v10c0 9 6.5 17.4 15 19.4C29.5 36.4 36 28 36 19V9L20 3z" fill="#2d5be3" opacity=".3" />
+          <path d="M20 6L8 11v8c0 7.4 5.2 14.3 12 16.4C26.8 33.3 32 26.4 32 19v-8L20 6z" stroke="#2d5be3" stroke-width="1.5" fill="none" />
+          <path d="M13 20l4 4 10-10" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div>
+          <div class="header-title">Red Team Scoping Tool</div>
+          <div class="header-sub">Testable, authorization-required, and out-of-scope layers, pre-assigned finding ownership, signed and exportable</div>
+        </div>
+        <div class="header-badge">SCOPE</div>
+        <a class="header-home" href="/tools/">← All tools</a>
+      </div>
+    </header>
+
+    <div id="boot-error" class="boot-error" role="alert" hidden>
+      Could not load framework data. If you opened this page via <code>file://</code>, some
+      browsers block local <code>fetch()</code>. Serve the directory over HTTP
+      (<code>python3 -m http.server</code>) and reload.
+    </div>
+
+    <main id="main" class="layout" data-llm="redteam-scoping-tool">
+      <div class="state-bar" role="group" aria-label="Scoping record actions">
+        <span class="state-bar__label" id="privacy-note">Your record stays in this browser. Nothing leaves your device.</span>
+        <button id="btn-export" class="btn btn--ghost" type="button">Export JSON</button>
+        <button id="btn-import" class="btn btn--ghost" type="button">Import JSON</button>
+        <input id="file-import" type="file" accept="application/json,.json" hidden />
+        <button id="btn-pdf" class="btn btn--primary" type="button">Download PDF</button>
+        <button id="btn-reset" class="btn btn--ghost" type="button">Reset</button>
+      </div>
+
+      <section class="intro-block" aria-labelledby="intro-heading" data-llm="redteam-scoping-tool">
+        <h1 id="intro-heading" class="intro-block__title">Red Team Scoping Tool</h1>
+        <p class="intro-block__lede">
+          Engagement scoping needs an answer before the first probe: which layers
+          may you test at all, and who owns each finding. The operating model
+          decides that split. Under AI-SaaS, the platform and model layers belong
+          to the provider; testing them without authorization is out of scope. This
+          tool reads the SRF layer model and operating-model matrix, resolves
+          testable, authorization-required, and out-of-scope layers, pre-assigns
+          finding ownership, and produces a signable scoping record. It supplies
+          the accountability overlay only; methodology comes from the
+          <a href="https://genai.owasp.org/resource/genai-red-teaming-guide/" target="_blank" rel="noopener">OWASP GenAI Red Teaming Guide</a>
+          and attack taxonomy from
+          <a href="https://csrc.nist.gov/pubs/ai/100/2/e2023/final" target="_blank" rel="noopener">NIST AI 100-2</a>.
+        </p>
+      </section>
+
+      <div class="privacy-strip" role="note">
+        <svg class="privacy-strip__icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <rect x="4" y="9" width="12" height="8" rx="1.5" />
+          <path d="M7 9V6.5a3 3 0 0 1 6 0V9" />
+          <circle cx="10" cy="13" r="1.1" fill="currentColor" stroke="none" />
+        </svg>
+        <p class="privacy-strip__text">
+          <strong>Runs in your browser. No data leaves your device.</strong>
+          Engagement details, authorization references, and scope notes stay
+          local and are never sent anywhere.
+        </p>
+      </div>
+
+      <div class="grid">
+        <!-- ─── Left: form ──────────────────────────────────────────── -->
+        <form id="rt-form" class="panel" autocomplete="off">
+          <fieldset class="fs">
+            <legend class="fs__legend">1. The engagement</legend>
+            <div class="field">
+              <label class="field__label" for="f-system">Target system / use case name</label>
+              <input id="f-system" class="field__input" type="text" maxlength="200" placeholder="e.g. Claims triage assistant" />
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-org">Target organization</label>
+                <input id="f-org" class="field__input" type="text" maxlength="200" placeholder="Customer / business unit under test" />
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-vendor">Provider / vendor <span class="field__hint">(if any)</span></label>
+                <input id="f-vendor" class="field__input" type="text" maxlength="200" placeholder="e.g. Acme AI Platform" />
+              </div>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-testers">Testing party</label>
+              <input id="f-testers" class="field__input" type="text" maxlength="200" placeholder="Internal red team, or named third-party firm" />
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-model">Operating model</label>
+                <select id="f-model" class="field__input"></select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-vertical">Industry context <span class="field__hint">(optional)</span></label>
+                <select id="f-vertical" class="field__input">
+                  <option value="">General / not sector-specific</option>
+                  <option value="finance">Financial services</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="insurance">Insurance</option>
+                  <option value="public-sector">Public sector</option>
+                  <option value="defense">Defense / DoD</option>
+                  <option value="manufacturing">Manufacturing</option>
+                </select>
+              </div>
+            </div>
+            <p id="model-desc" class="model-desc"></p>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-autonomy">Agent autonomy</label>
+                <select id="f-autonomy" class="field__input">
+                  <option value="">Not agentic / N/A</option>
+                  <option value="L0">L0 — No autonomy (human does the work)</option>
+                  <option value="L1">L1 — Assisted (human acts, AI suggests)</option>
+                  <option value="L2">L2 — Partial (AI acts on approval)</option>
+                  <option value="L3">L3 — Conditional (AI acts, human on the loop)</option>
+                  <option value="L4">L4 — High (AI acts, human can intervene)</option>
+                  <option value="L5">L5 — Full (AI acts independently)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-window">Engagement window</label>
+                <input id="f-window" class="field__input" type="text" maxlength="120" placeholder="e.g. 2026-08-04 to 2026-08-15" />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend class="fs__legend">2. Scope by layer</legend>
+            <p class="fs__hint">
+              Tier is derived from your operating model. <strong>Testable directly</strong> means the
+              target org owns the layer. <strong>Authorization required</strong> means the layer is
+              shared or provider-evaluated; record what you were granted before testing it.
+              <strong>Out of scope</strong> means the provider owns the layer outright; do not test it
+              without separately negotiated authorization. Every in-scope layer still needs one named
+              finding owner: shared is not a valid final answer.
+            </p>
+            <div id="layers"></div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend class="fs__legend">3. Evidence handling</legend>
+            <p class="fs__hint">
+              Standard obligations for this engagement. Adjust in the notes field for anything
+              engagement-specific.
+            </p>
+            <ul class="evidence-list">
+              <li>Capture full prompts, injected payloads, model outputs, and tool-call logs for every finding before remediation begins.</li>
+              <li>Preserve a timestamped timeline: probe sent, response observed, and any downstream action triggered.</li>
+              <li>Route provider-owned layer findings through the provider's disclosure channel; do not publish before their agreed window closes.</li>
+              <li>Retain evidence per the target org's incident evidence policy; treat it as sensitive regardless of finding severity.</li>
+            </ul>
+            <div class="field">
+              <label class="field__label" for="f-evidence-notes">Evidence handling notes <span class="field__hint">(optional)</span></label>
+              <textarea id="f-evidence-notes" class="field__input" rows="2" maxlength="1000" placeholder="Engagement-specific retention, chain-of-custody, or disclosure terms"></textarea>
+            </div>
+          </fieldset>
+
+          <fieldset class="fs">
+            <legend class="fs__legend">4. Sign-off</legend>
+            <div class="field">
+              <label class="field__label" for="f-gaps">Rules of engagement / exclusions</label>
+              <textarea id="f-gaps" class="field__input" rows="3" maxlength="2000" placeholder="Excluded techniques, blackout windows, production data handling, kill-switch contact"></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-decision">Authorization status</label>
+                <select id="f-decision" class="field__input">
+                  <option value="Approved">Approved</option>
+                  <option value="Approved with conditions">Approved with conditions</option>
+                  <option value="Deferred">Deferred</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-date">Authorization date</label>
+                <input id="f-date" class="field__input" type="date" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label class="field__label" for="f-approver">Authorizer name &amp; role</label>
+                <input id="f-approver" class="field__input" type="text" maxlength="200" placeholder="e.g. J. Rivera, AI System Governance lead" />
+              </div>
+              <div class="field">
+                <label class="field__label" for="f-review">Re-scope by <span class="field__hint">(optional)</span></label>
+                <input id="f-review" class="field__input" type="date" />
+              </div>
+            </div>
+          </fieldset>
+        </form>
+
+        <!-- ─── Right: live record preview ──────────────────────────── -->
+        <aside class="panel preview" aria-label="Scoping record preview">
+          <div id="record" class="record"></div>
+        </aside>
+      </div>
+
+      <p class="footnote">
+        This scoping record applies the CoSAI AI Shared Responsibility Framework's accountability
+        overlay to an engagement: which layers your operating model puts in scope, and who owns each
+        finding. It does not define attack techniques, test methodology, or severity; consult the
+        <a href="https://genai.owasp.org/resource/genai-red-teaming-guide/" target="_blank" rel="noopener">OWASP GenAI Red Teaming Guide</a>
+        and <a href="https://csrc.nist.gov/pubs/ai/100/2/e2023/final" target="_blank" rel="noopener">NIST AI 100-2</a>
+        for those. Governance artifact, not legal advice; verify testing authorization against your
+        contracts before probing any provider-owned layer.
+      </p>
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

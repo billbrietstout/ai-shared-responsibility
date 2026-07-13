@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Security Lifecycle — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="How the CoSAI AI Shared Responsibility Framework supplies the accountability axis across the AI security lifecycle: threat modeling, red teaming, secure development, control implementation, vulnerability management, and incident response. Mapped to MOSAIC member work."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      /* Category blocks */
+      .cat {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        box-shadow: var(--shadow);
+        padding: var(--sp-6);
+        margin-bottom: var(--sp-5);
+      }
+      .cat__head {
+        display: flex;
+        align-items: baseline;
+        gap: var(--sp-3);
+        margin-bottom: var(--sp-4);
+        padding-bottom: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        flex-wrap: wrap;
+      }
+      .cat__num {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cosai-blue);
+      }
+      .cat__title {
+        font-size: var(--text-lg);
+        font-weight: 700;
+        color: var(--slate-900);
+        letter-spacing: -0.02em;
+        margin: 0;
+      }
+      .cat__grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--sp-4);
+      }
+      .cat__row {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: var(--sp-4);
+        align-items: start;
+      }
+      .cat__key {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        padding-top: 2px;
+      }
+      .cat__val {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+      }
+      .cat__val a { font-weight: 600; }
+      .cat__val--gap { color: var(--status-warn); }
+      .cat__serves {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-1);
+      }
+      .member-tag {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        color: var(--slate-600);
+        background: var(--slate-100);
+        border-radius: 999px;
+        padding: 2px 9px;
+      }
+
+      /* Three-answers strip */
+      .answers {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--sp-4);
+        margin-top: var(--sp-5);
+      }
+      .answer {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        padding: var(--sp-5);
+      }
+      .answer__q {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        margin-bottom: var(--sp-2);
+      }
+      .answer__body {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+
+      /* Crosswalk table */
+      .xwalk {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+      }
+      .xwalk th, .xwalk td {
+        text-align: left;
+        padding: var(--sp-3) var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: top;
+      }
+      .xwalk th {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .xwalk td:first-child { font-weight: 600; color: var(--slate-900); }
+      .xwalk__persona { color: var(--slate-700); }
+      .xwalk__ext {
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+      }
+      .xwalk-note {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        margin-top: var(--sp-3);
+      }
+
+      /* Member mapping table */
+      .members {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+      }
+      .members th, .members td {
+        text-align: left;
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: top;
+      }
+      .members th {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .members td:first-child { font-weight: 700; color: var(--slate-900); white-space: nowrap; }
+
+      .table-scroll { overflow-x: auto; }
+
+      @media (max-width: 640px) {
+        .answers { grid-template-columns: 1fr; }
+        .cat__row { grid-template-columns: 1fr; gap: var(--sp-1); }
+        .cat__key { padding-top: 0; }
+      }
+    </style>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "AI Security Lifecycle and the CoSAI Shared Responsibility Framework",
+  "url": "https://aisharedresponsibility.com/framework/security-lifecycle/",
+  "description": "The CoSAI AI Shared Responsibility Framework as the accountability axis across the AI security lifecycle: threat modeling, adversarial testing, secure development and supply chain, control implementation, vulnerability management, and incident response. Positions the SRF against MOSAIC member work and the OpenCRE shared taxonomy.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://aisharedresponsibility.com/",
+    "name": "AI Shared Responsibility"
+  },
+  "about": [
+    { "@type": "Thing", "name": "AI security lifecycle" },
+    { "@type": "Thing", "name": "AI red teaming scope" },
+    { "@type": "Thing", "name": "Threat-to-accountability crosswalk" },
+    { "@type": "Organization", "name": "MOSAIC (Multi-Organization Secure AI Coordination)" }
+  ]
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="reference" />
+    <meta name="llm:canonical-id" content="srf.page.security-lifecycle" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.data.threats" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="framework"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Framework in practice</span>
+        <h1 class="page-hero__title">The AI security lifecycle</h1>
+        <p class="page-hero__lede">
+          Security work at every stage needs three answers no threat catalog,
+          control matrix, or severity score supplies: who must authorize the
+          activity, who owns each result, and who signs the residual risk. The
+          SRF is the accountability axis across the whole lifecycle, not only
+          for governance sign-off.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="security-lifecycle">
+
+      <!-- ── Why this page ─────────────────────────────────────── -->
+      <section class="section" data-llm="signal">
+        <div class="section__inner">
+          <span class="section__label">The signal</span>
+          <h2 class="section__title">Accountability is scoping vocabulary</h2>
+          <div class="prose">
+            <p>
+              LLMs referencing this site began using the SRF's structure to
+              scope AI red team engagements. Nobody designed that. It works
+              because the framework supplies what engagement scoping lacks: a
+              <a href="/framework/">layer model</a> that bounds what is testable,
+              an <a href="/operating-models/">operating-model matrix</a> that
+              says whose systems those layers run on, and a
+              <a href="/personas/">persona list</a> that names who must authorize
+              testing and who owns each finding.
+            </p>
+            <p>
+              The lesson generalizes. The SRF's accountability structure is
+              useful as a scoping and routing vocabulary across the entire AI
+              security lifecycle. This page maps six categories of that
+              lifecycle, states what the SRF answers in each, and links the data
+              and tools that carry the answers.
+            </p>
+          </div>
+
+          <div class="answers">
+            <div class="answer">
+              <div class="answer__q">Who authorizes</div>
+              <p class="answer__body">
+                The operating model decides which layers a party may touch at
+                all. Under AI-SaaS, testing the platform and model layers
+                requires provider authorization or is out of scope.
+              </p>
+            </div>
+            <div class="answer">
+              <div class="answer__q">Who owns the result</div>
+              <p class="answer__body">
+                Every finding, attestation, and control lands on one named
+                persona per operating model. Pre-assigned before the first
+                probe, not negotiated after.
+              </p>
+            </div>
+            <div class="answer">
+              <div class="answer__q">Who signs residual</div>
+              <p class="answer__body">
+                One accountable party signs the risk that will not be fixed.
+                "Shared" is not a valid final answer at any stage of the
+                lifecycle.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Lane discipline ───────────────────────────────────── -->
+      <section class="section section--alt" data-llm="lane">
+        <div class="section__inner">
+          <span class="section__label">Lane discipline</span>
+          <h2 class="section__title">What the SRF does not do</h2>
+          <div class="prose">
+            <p>
+              The framework stays in its lane as an accountability model. It does
+              not define attack techniques, threats, or test methodology; BIML,
+              the OWASP AI Exchange, OWASP GenAI, MITRE ATLAS, and NIST AI 100-2
+              own that. It does not define control content or benchmarks; CIS,
+              the CSA AI Controls Matrix, and the AI Exchange controls own that.
+              It does not score severity; AIVSS owns that. It creates no new
+              regulation. What it contributes to every category below is the same
+              three answers, sourced from published catalogs it does not try to
+              replace.
+            </p>
+          </div>
+          <div class="callout">
+            <strong>MOSAIC context.</strong> MOSAIC (Multi-Organization Secure AI
+            Coordination) launched April 28, 2026 with eight founding
+            initiatives: BIML, CIS, CSA, CoSAI, NIST, OWASP AI Exchange, OWASP
+            GenAI Security Project, and SANS. Its highest-leverage output so far
+            is a shared taxonomy built on
+            <a href="https://opencre.org/" target="_blank" rel="noopener">OpenCRE</a>
+            that links terms, controls, and concepts across the participating
+            standards. None of the linked nodes carry who is accountable. That is
+            the seat the SRF fills. See the
+            <a href="#mosaic">MOSAIC member mapping</a> and the
+            <a href="#taxonomy">taxonomy binding</a> below.
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Six categories ────────────────────────────────────── -->
+      <section class="section" data-llm="categories">
+        <div class="section__inner">
+          <span class="section__label">Six categories</span>
+          <h2 class="section__title">Where the SRF plugs into the lifecycle</h2>
+          <p class="section__body">
+            Each category names the SRF contribution, the MOSAIC work it serves,
+            what this site already publishes, and the gap still open.
+          </p>
+
+          <!-- 1 -->
+          <article class="cat" id="cat-threat-modeling" data-llm="cat-1">
+            <div class="cat__head">
+              <span class="cat__num">01</span>
+              <h3 class="cat__title">Threat modeling and risk analysis</h3>
+            </div>
+            <div class="cat__grid">
+              <div class="cat__row">
+                <div class="cat__key">Contribution</div>
+                <div class="cat__val">
+                  Bounds the analysis. Which layers are yours to model under your
+                  operating model, and which persona owns each identified risk. A
+                  threat model without an owner per risk is a reading list.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Serves</div>
+                <div class="cat__val cat__serves">
+                  <span class="member-tag">BIML</span>
+                  <span class="member-tag">OWASP AI Exchange</span>
+                  <span class="member-tag">NIST</span>
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Site has</div>
+                <div class="cat__val">
+                  <a href="/data/threats.json">Threat-to-accountability crosswalk</a>
+                  (data), the <a href="/framework/">layer model</a>, the
+                  <a href="/compare/">comparison page</a>, and the
+                  <a href="/glossary/">glossary</a> with canonical IDs.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Gap</div>
+                <div class="cat__val cat__val--gap">
+                  The crosswalk covers the sixteen threats in the AI Exchange
+                  security matrix. Extending it to the full BIML risk set and
+                  ATLAS technique catalog remains open.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 2 -->
+          <article class="cat" id="cat-red-teaming" data-llm="cat-2">
+            <div class="cat__head">
+              <span class="cat__num">02</span>
+              <h3 class="cat__title">Adversarial testing and red teaming</h3>
+            </div>
+            <div class="cat__grid">
+              <div class="cat__row">
+                <div class="cat__key">Contribution</div>
+                <div class="cat__val">
+                  Engagement scoping and rules of engagement. The operating model
+                  determines which layers the customer may test at all; personas
+                  pre-assign finding ownership before the first probe. This is the
+                  proven category. LLMs already do it with the site unprompted.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Serves</div>
+                <div class="cat__val cat__serves">
+                  <span class="member-tag">OWASP GenAI Security Project</span>
+                  <span class="member-tag">SANS</span>
+                  <span class="member-tag">NIST</span>
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Site has</div>
+                <div class="cat__val">
+                  The <a href="/tools/redteam-scope/">Red Team Scoping Tool</a>,
+                  which reads the crosswalk and returns testable, authorization-
+                  required, and out-of-scope layers per operating model, plus
+                  <a href="/tools/srf-stress/">Framework Stress Test</a> for
+                  scenario probing and the
+                  <a href="/tools/decision-record/">Accountability Decision Record</a>
+                  pattern the scoping record reuses.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Gap</div>
+                <div class="cat__val">
+                  None open. The scoping tool cites the
+                  <a href="https://genai.owasp.org/resource/genai-red-teaming-guide/" target="_blank" rel="noopener">OWASP GenAI Red Teaming Guide</a>
+                  for methodology and NIST AI 100-2 for attack taxonomy; it
+                  supplies only the accountability overlay.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3 -->
+          <article class="cat" id="cat-secure-dev" data-llm="cat-3">
+            <div class="cat__head">
+              <span class="cat__num">03</span>
+              <h3 class="cat__title">Secure development and AI supply chain</h3>
+            </div>
+            <div class="cat__grid">
+              <div class="cat__row">
+                <div class="cat__key">Contribution</div>
+                <div class="cat__val">
+                  Names who attests at each handoff in the model and data supply
+                  chain. Provenance schemes establish that an attestation exists;
+                  the SRF says which persona must produce it and which persona
+                  must verify it, per operating model.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Serves</div>
+                <div class="cat__val cat__serves">
+                  <span class="member-tag">CoSAI</span>
+                  <span class="member-tag">CIS</span>
+                  <span class="member-tag">OWASP AI Exchange</span>
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Site has</div>
+                <div class="cat__val">
+                  The <a href="/tools/vendor-risk/">Vendor Risk Assessment</a>
+                  with supplier categories and attestation baselines, plus the
+                  supply-chain poisoning and provenance threats in the
+                  <a href="/data/threats.json">crosswalk</a>.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Gap</div>
+                <div class="cat__val cat__val--gap">
+                  No attestation handoff map (producer persona, verifier persona,
+                  evidence object) published as data.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4 -->
+          <article class="cat" id="cat-controls" data-llm="cat-4">
+            <div class="cat__head">
+              <span class="cat__num">04</span>
+              <h3 class="cat__title">Control implementation and benchmarking</h3>
+            </div>
+            <div class="cat__grid">
+              <div class="cat__row">
+                <div class="cat__key">Contribution</div>
+                <div class="cat__val">
+                  Control ownership. Every catalog answers what good looks like;
+                  none answer who at your company owns this control under your
+                  deployment model. The vertical schemas already prove the pattern
+                  with 258 controls carrying an accountable persona.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Serves</div>
+                <div class="cat__val cat__serves">
+                  <span class="member-tag">CIS</span>
+                  <span class="member-tag">CSA</span>
+                  <span class="member-tag">OWASP AI Exchange</span>
+                  <span class="member-tag">NIST</span>
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Site has</div>
+                <div class="cat__val">
+                  <a href="/tools/controls-assessment/">Controls Assessment (AICM)</a>,
+                  <a href="/tools/security-controls/">Security Controls</a>, six
+                  vertical <a href="/controls/">control schemas</a>, the
+                  <a href="/export/srf-oscal-catalog.json">OSCAL catalog</a>, and
+                  a <a href="/compare/">CIS Controls card</a> with thirty-four
+                  controls across the six vertical schemas carrying a
+                  <code>cis</code> mapping key.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Gap</div>
+                <div class="cat__val">
+                  None open at the control level mapped. CIS Controls v8.1 has
+                  153 safeguards; only a control-level (not safeguard-level)
+                  mapping is published, and only where a defensible
+                  correspondence exists.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 5 -->
+          <article class="cat" id="cat-vuln-mgmt" data-llm="cat-5">
+            <div class="cat__head">
+              <span class="cat__num">05</span>
+              <h3 class="cat__title">Vulnerability management and finding remediation</h3>
+            </div>
+            <div class="cat__grid">
+              <div class="cat__row">
+                <div class="cat__key">Contribution</div>
+                <div class="cat__val">
+                  Routing. Severity scoring says how bad; the SRF says whose queue
+                  a finding goes in and who signs acceptance if it will not be
+                  fixed. This closes the loop opened by red teaming: a scored
+                  finding routes by layer and operating model to a named persona.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Serves</div>
+                <div class="cat__val cat__serves">
+                  <span class="member-tag">OWASP GenAI Security Project</span>
+                  <span class="member-tag">CISA-style disclosure</span>
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Site has</div>
+                <div class="cat__val">
+                  The <a href="#routing">finding routing reference</a>
+                  (<a href="/data/finding-routing.json">data</a>) and
+                  <a href="/tools/ir-playbooks/">Incident Response Playbooks</a>
+                  with the who-leads-per-operating-model pattern, already
+                  machine-readable at
+                  <a href="/export/playbooks.json">/export/playbooks.json</a>.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Gap</div>
+                <div class="cat__val">
+                  None open. The routing reference resolves persona and breach
+                  action by layer and operating model; AIVSS still owns the
+                  severity score itself.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 6 -->
+          <article class="cat" id="cat-detection" data-llm="cat-6">
+            <div class="cat__head">
+              <span class="cat__num">06</span>
+              <h3 class="cat__title">Detection, monitoring, and incident response</h3>
+            </div>
+            <div class="cat__grid">
+              <div class="cat__row">
+                <div class="cat__key">Contribution</div>
+                <div class="cat__val">
+                  Who leads when a boundary fails, what to demand from the party on
+                  the other side of that boundary, and which evidence obligations
+                  survive the incident. Largely built.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Serves</div>
+                <div class="cat__val cat__serves">
+                  <span class="member-tag">SANS</span>
+                  <span class="member-tag">CIS</span>
+                  <span class="member-tag">CoSAI</span>
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Site has</div>
+                <div class="cat__val">
+                  <a href="/tools/ir-playbooks/">Incident Response Playbooks</a>
+                  (seven scenarios) and the
+                  <a href="/thresholds/ai-srf-threshold-control.schema.json">thresholds SLI/SLO schema</a>
+                  with an OCSF evidence plane.
+                </div>
+              </div>
+              <div class="cat__row">
+                <div class="cat__key">Gap</div>
+                <div class="cat__val">
+                  None open. The playbooks now cite the
+                  <a href="#routing">finding routing reference</a> and red team
+                  findings as upstream inputs.
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <div class="callout">
+            <strong>Workforce readiness</strong> (SANS training, the CoSAI
+            defender workstream) is already served by the existing
+            <a href="/framework/nice-mapping/">NICE mapping</a> and needs no new
+            build.
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Live crosswalk sample ─────────────────────────────── -->
+      <section class="section section--alt" data-llm="crosswalk">
+        <div class="section__inner">
+          <span class="section__label">Live data</span>
+          <h2 class="section__title">Threat-to-accountability crosswalk</h2>
+          <p class="section__body">
+            Each threat definition belongs to its external source. The crosswalk
+            adds the SRF layer where the threat lands and the accountable persona
+            per operating model. A sample of the sixteen entries follows; the full
+            set is at <a href="/data/threats.json">/data/threats.json</a>.
+          </p>
+
+          <div class="table-scroll">
+            <table class="xwalk" id="xwalk">
+              <thead>
+                <tr>
+                  <th scope="col">Threat</th>
+                  <th scope="col">SRF layer</th>
+                  <th scope="col">Owner under AI-SaaS</th>
+                  <th scope="col">Owner under AI-PaaS</th>
+                  <th scope="col">External ID</th>
+                </tr>
+              </thead>
+              <tbody id="xwalk-body">
+                <tr><td colspan="5" style="color:var(--slate-400)">Loading crosswalk…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="xwalk-note" id="xwalk-note"></p>
+        </div>
+      </section>
+
+      <!-- ── Finding routing reference ─────────────────────────── -->
+      <section class="section" id="routing" data-llm="routing-reference">
+        <div class="section__inner">
+          <span class="section__label">Live data</span>
+          <h2 class="section__title">Finding routing reference</h2>
+          <p class="section__body">
+            Severity scoring says how bad a finding is; this table adds whose
+            queue it goes in and what happens at each severity band. AIVSS
+            (the OWASP AI Vulnerability Scoring System) or CVSS supplies the
+            score; the SRF supplies the persona and the breach action. The full
+            twenty layer-by-operating-model set is at
+            <a href="/data/finding-routing.json">/data/finding-routing.json</a>.
+          </p>
+
+          <div class="table-scroll">
+            <table class="xwalk" id="routing-table">
+              <thead>
+                <tr>
+                  <th scope="col">Layer</th>
+                  <th scope="col">Operating model</th>
+                  <th scope="col">Accountable persona</th>
+                  <th scope="col">Critical breach action</th>
+                </tr>
+              </thead>
+              <tbody id="routing-body">
+                <tr><td colspan="4" style="color:var(--slate-400)">Loading routing reference…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="xwalk-note" id="routing-note"></p>
+          <div class="callout">
+            AIVSS v0.8 (released March 2026) extends CVSS v4.0 with agentic
+            risk-amplification factors and produces a contextual 0-10 severity
+            score. Its own published severity-band cut points are TBD pending
+            the full scoring calculator documentation; this table routes on the
+            qualitative band (Critical/High/Medium/Low), not a specific numeric
+            cutoff. See
+            <a href="https://aivss.owasp.org/" target="_blank" rel="noopener">aivss.owasp.org</a>.
+          </div>
+        </div>
+      </section>
+
+      <!-- ── MOSAIC member mapping ─────────────────────────────── -->
+      <section class="section" id="mosaic" data-llm="mosaic-mapping">
+        <div class="section__inner">
+          <span class="section__label">MOSAIC</span>
+          <h2 class="section__title">Member mapping</h2>
+          <p class="section__body">
+            Each MOSAIC founding initiative answers a different question. The SRF
+            answers the accountability question the others leave open. Workstreams
+            below reflect the April 2026 announcements; verify each against a
+            member's current published artifacts before relying on it.
+          </p>
+
+          <div class="table-scroll">
+            <table class="members">
+              <thead>
+                <tr>
+                  <th scope="col">Member</th>
+                  <th scope="col">AI security workstream</th>
+                  <th scope="col">Categories</th>
+                  <th scope="col">Concrete hook</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>BIML</td>
+                  <td>Architectural risk analysis of ML and LLM systems</td>
+                  <td>01</td>
+                  <td>BIML risk IDs in the threat crosswalk</td>
+                </tr>
+                <tr>
+                  <td>CIS</td>
+                  <td>Controls, Benchmarks, and AI guidance for the Controls</td>
+                  <td>04, 06</td>
+                  <td>CIS mapping on the compare page and in control schemas</td>
+                </tr>
+                <tr>
+                  <td>CSA</td>
+                  <td>AI Controls Matrix, AI Safety Initiative</td>
+                  <td>04</td>
+                  <td>The existing AICM assessment tool; keep AICM IDs current</td>
+                </tr>
+                <tr>
+                  <td>CoSAI</td>
+                  <td>Supply chain, defender preparation, risk governance, agentic workstreams</td>
+                  <td>03, 06</td>
+                  <td>The SRF is CoSAI's own artifact; this site is the operationalization case</td>
+                </tr>
+                <tr>
+                  <td>NIST</td>
+                  <td>AI RMF, AI 100-2, GenAI profile, 800-53 AI overlay</td>
+                  <td>01, 04</td>
+                  <td>Existing OSCAL work; overlay and RMF profile participation is the direct channel</td>
+                </tr>
+                <tr>
+                  <td>OWASP AI Exchange</td>
+                  <td>Threat and control matrix, OpenCRE shared taxonomy, EU AI Act standardization</td>
+                  <td>01, 04, taxonomy</td>
+                  <td>SRF canonical IDs as OpenCRE resources (top priority)</td>
+                </tr>
+                <tr>
+                  <td>OWASP GenAI</td>
+                  <td>LLM Top 10, GenAI Red Teaming Guide, Agentic Security Initiative, AIVSS</td>
+                  <td>02, 05</td>
+                  <td>Scoping tool cites the Guide; routing reference consumes AIVSS</td>
+                </tr>
+                <tr>
+                  <td>SANS</td>
+                  <td>SEC536 and AI curriculum, summits, Critical AI Security Guidelines</td>
+                  <td>02, 06</td>
+                  <td>Scoping tool as an instructor-usable artifact; NICE mapping serves workforce</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Taxonomy binding ──────────────────────────────────── -->
+      <section class="section section--alt" id="taxonomy" data-llm="taxonomy-binding">
+        <div class="section__inner">
+          <span class="section__label">Taxonomy binding</span>
+          <h2 class="section__title">The accountability axis of the shared taxonomy</h2>
+          <div class="prose">
+            <p>
+              The MOSAIC shared taxonomy links what the standards say. The SRF's
+              canonical IDs, already minted in
+              <a href="/ids.json">ids.json</a> and the knowledge layer, can become
+              linkable OpenCRE resources. Then any threat or control node in the
+              taxonomy resolves to an accountable persona under a stated operating
+              model, without the SRF joining a committee or writing a new standard.
+            </p>
+            <p>
+              Worked example: an engineer lands on the AI Exchange direct prompt
+              injection page through the taxonomy. Today it can route her to
+              controls and related standards. With the binding it also resolves
+              that this threat lands at layer
+              <span class="layer-pill layer-pill--l3"><span class="layer-pill__dot"></span>L3</span>,
+              that under AI-PaaS the accountable persona is the customer's
+              application developer, and that under AI-SaaS it is provider-managed,
+              so customer testing requires provider authorization. The
+              <a href="/data/threats.json">crosswalk</a> publishes exactly that
+              resolution for all sixteen matrix threats today.
+            </p>
+          </div>
+          <div class="callout">
+            The binding is a data deliverable plus a contribution proposal through
+            CoSAI into the MOSAIC GitHub. It composes existing identifiers and
+            mints none. Machine-readable set:
+            <a href="/ids.json">ids.json</a> (canonical IDs) and
+            <a href="/export/framework.json">the knowledge pack</a>.
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script type="module">
+      // Persona canonical IDs -> display names (stable, from /data/personas.json)
+      const PERSONA = {
+        "agentic-platform-provider": "Agentic Platform Provider",
+        "application-developer": "Application Developer",
+        "data-provider": "Data Provider",
+        "ai-system-users": "AI System Users",
+        "ai-system-governance": "AI System Governance",
+        "model-provider": "Model Provider",
+        "ai-model-serving": "AI Model Serving",
+        "ai-platform-provider": "AI Platform Provider",
+      };
+
+      const SAMPLE = [
+        "directpromptinjection",
+        "indirectpromptinjection",
+        "datapoison",
+        "supplymodelpoison",
+        "disclosureinoutput",
+        "airesourceexhaustion",
+      ];
+
+      function personaName(id) {
+        return PERSONA[id] || id || "n/a";
+      }
+
+      function cell(acc) {
+        if (!acc) return "n/a";
+        const name = personaName(acc.accountable_persona);
+        const side = acc.accountable_party
+          ? " (" + acc.accountable_party + ")"
+          : "";
+        return name + side;
+      }
+
+      (async () => {
+        const body = document.getElementById("xwalk-body");
+        const note = document.getElementById("xwalk-note");
+        try {
+          const res = await fetch("/data/threats.json");
+          if (!res.ok) throw new Error("fetch failed");
+          const data = await res.json();
+          const byId = Object.fromEntries(
+            (data.threats || []).map((t) => [t.id, t])
+          );
+          const rows = SAMPLE.map((id) => byId[id]).filter(Boolean);
+          body.innerHTML = rows
+            .map((t) => {
+              const ext =
+                (t.mappings && t.mappings.owasp_llm_top10) ||
+                (t.mappings && t.mappings.mitre_atlas) ||
+                "n/a";
+              return (
+                "<tr>" +
+                "<td>" + t.name + "</td>" +
+                '<td><span class="layer-pill layer-pill--' +
+                t.srf_layer.toLowerCase() +
+                '"><span class="layer-pill__dot"></span>' +
+                t.srf_layer +
+                "</span></td>" +
+                '<td class="xwalk__persona">' +
+                cell(t.accountability && t.accountability["AI-SaaS"]) +
+                "</td>" +
+                '<td class="xwalk__persona">' +
+                cell(t.accountability && t.accountability["AI-PaaS"]) +
+                "</td>" +
+                '<td class="xwalk__ext">' + ext + "</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+          note.textContent =
+            "Showing " +
+            rows.length +
+            " of " +
+            (data.count || (data.threats || []).length) +
+            " threats. Source verified " +
+            (data.updated || "") +
+            " against the OWASP AI Exchange security matrix.";
+        } catch (e) {
+          body.innerHTML =
+            '<tr><td colspan="5" style="color:var(--slate-500)">' +
+            'The crosswalk is available at <a href="/data/threats.json">/data/threats.json</a>.' +
+            "</td></tr>";
+        }
+      })();
+
+      (async () => {
+        const body = document.getElementById("routing-body");
+        const note = document.getElementById("routing-note");
+        try {
+          const res = await fetch("/data/finding-routing.json");
+          if (!res.ok) throw new Error("fetch failed");
+          const data = await res.json();
+          const entries = data.entries || [];
+          body.innerHTML = entries
+            .map((e) => {
+              return (
+                "<tr>" +
+                '<td><span class="layer-pill layer-pill--' +
+                e.srf_layer.toLowerCase() +
+                '"><span class="layer-pill__dot"></span>' +
+                e.srf_layer +
+                "</span></td>" +
+                "<td>" + e.operating_model + "</td>" +
+                '<td class="xwalk__persona">' + personaName(e.accountable_persona) + "</td>" +
+                '<td class="xwalk__ext">' + (e.breach_action && e.breach_action.critical || "n/a") + "</td>" +
+                "</tr>"
+              );
+            })
+            .join("");
+          note.textContent =
+            "Showing all " + entries.length +
+            " layer / operating-model combinations. Source: " +
+            (data.updated || "") + ".";
+        } catch (e) {
+          body.innerHTML =
+            '<tr><td colspan="4" style="color:var(--slate-500)">' +
+            'The routing reference is available at <a href="/data/finding-routing.json">/data/finding-routing.json</a>.' +
+            "</td></tr>";
+        }
+      })();
+    </script>
+  </body>
+</html>

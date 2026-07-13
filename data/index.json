@@ -1,7 +1,7 @@
 {
  "description": "Machine-readable data index for aisharedresponsibility.com. All files are static JSON served from /data/. Framework concepts (layers, personas, operating models) are defined in the CoSAI AI Shared Responsibility Framework v1.0.",
  "framework_reference": "https://aisharedresponsibility.com/framework/",
- "updated": "2026-07-05",
+ "updated": "2026-07-13",
  "files": [
   {
    "file": "layers.json",
@@ -190,6 +190,44 @@
    "srf_version": "1.0",
    "related_page": "https://aisharedresponsibility.com/manufacturing/",
    "controls_page": "https://aisharedresponsibility.com/manufacturing/controls/"
+  },
+  {
+   "file": "threats.json",
+   "url": "https://aisharedresponsibility.com/data/threats.json",
+   "description": "Threat-to-accountability crosswalk. The sixteen OWASP AI Exchange security-matrix threats, each mapped to the SRF layer where it lands and the accountable persona per operating model. Includes external IDs (OWASP LLM Top 10 2025, MITRE ATLAS, BIML LLM24) and related vertical control IDs. Threat definitions and severity belong to their external sources; this file adds who authorizes, who owns each finding, and who signs residual risk.",
+   "schema_keys": [
+    "id",
+    "name",
+    "ai_exchange",
+    "impact",
+    "attack_surface",
+    "srf_layer",
+    "affected_layers",
+    "layer_rationale",
+    "accountability",
+    "mappings",
+    "related_controls"
+   ],
+   "record_count": 16,
+   "srf_version": "1.0",
+   "related_page": "https://aisharedresponsibility.com/framework/security-lifecycle/"
+  },
+  {
+   "file": "finding-routing.json",
+   "url": "https://aisharedresponsibility.com/data/finding-routing.json",
+   "description": "Finding routing reference. Twenty layer-by-operating-model entries resolving an AIVSS- or CVSS-scored finding to one accountable persona and a kebab-case breach-action escalation ladder across four severity bands (critical, high, medium, low). Closes the loop opened by the threat crosswalk and the red team scoping tool. The SRF does not score severity; AIVSS and CVSS own that.",
+   "schema_keys": [
+    "srf_layer",
+    "layer_name",
+    "operating_model",
+    "accountable_persona",
+    "accountable_party",
+    "note",
+    "breach_action"
+   ],
+   "record_count": 20,
+   "srf_version": "1.0",
+   "related_page": "https://aisharedresponsibility.com/framework/security-lifecycle/#routing"
   },
   {
    "file": "vendor-risk.json",

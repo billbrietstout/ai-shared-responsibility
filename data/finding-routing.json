@@ -1,0 +1,328 @@
+{
+  "$schema_version": "0.1",
+  "srf_version": "1.0",
+  "updated": "2026-07-12",
+  "description": "Finding routing reference for the CoSAI AI Shared Responsibility Framework. Severity scoring says how bad a finding is; this file adds whose queue it goes in and what happens at each severity band. It does not score severity itself; that belongs to the OWASP AIVSS (AI Vulnerability Scoring System) for agentic and AI-specific findings, or CVSS for conventional vulnerabilities in the same stack. This closes the loop opened by the threat-to-accountability crosswalk (/data/threats.json) and the red team scoping tool (/tools/redteam-scope/): a scored finding routes by SRF layer and operating model to one named persona and one breach action.",
+  "accountability_convention": "One accountable persona per layer per operating model, consistent with /data/threats.json and /data/layers.json. Where the layer's operating-model default is \"shared\" or \"model-evaluation\", the note records the counterparty obligation, because shared is not a valid final answer. breach_action strings follow the kebab-case convention used in /thresholds/gap-register.json and are illustrative escalation ladders, not a fixed controlled vocabulary; adapt them to your own incident and change-management tooling.",
+  "severity_bands": [
+    {
+      "id": "critical",
+      "label": "Critical",
+      "cvss_style_range": "9.0–10.0",
+      "note": "Score-band cut point follows the CVSS v4.0 qualitative scale that AIVSS v0.8 extends with agentic risk-amplification factors (autonomy, tool use, dynamic identity, persistent memory, self-modification). AIVSS's own published band boundaries are TBD pending the full v0.8 scoring calculator documentation; the qualitative label (Critical/High/Medium/Low/None) is what this routing table keys on, independent of the exact numeric cutoff."
+    },
+    {
+      "id": "high",
+      "label": "High",
+      "cvss_style_range": "7.0–8.9",
+      "note": "See critical band note on source and TBD numeric precision."
+    },
+    {
+      "id": "medium",
+      "label": "Medium",
+      "cvss_style_range": "4.0–6.9",
+      "note": "See critical band note on source and TBD numeric precision."
+    },
+    {
+      "id": "low",
+      "label": "Low",
+      "cvss_style_range": "0.1–3.9",
+      "note": "See critical band note on source and TBD numeric precision."
+    }
+  ],
+  "sources": {
+    "aivss": {
+      "name": "OWASP AI Vulnerability Scoring System (AIVSS)",
+      "url": "https://aivss.owasp.org/",
+      "version": "v0.8 (released March 2026)",
+      "note": "Extends CVSS v4.0 with agentic risk-amplification factors, producing a contextual 0-10 severity score for agentic AI vulnerabilities. Use for agentic and AI-specific findings; conventional application or infrastructure findings in the same stack may still score under plain CVSS."
+    },
+    "nist_ai_100_2": {
+      "name": "NIST AI 100-2 E2023: Adversarial Machine Learning, A Taxonomy and Terminology of Attacks and Mitigations",
+      "url": "https://csrc.nist.gov/pubs/ai/100/2/e2023/final",
+      "note": "Attack taxonomy referenced by the red team scoping tool; not a severity scorer."
+    }
+  },
+  "entries": [
+    {
+      "srf_layer": "L1",
+      "layer_name": "AI Business & Usage",
+      "operating_model": "AI-SaaS",
+      "accountable_persona": "ai-system-governance",
+      "accountable_party": "customer",
+      "note": "Business governance stays with the deploying org even where the layer default is shared; the provider's own governance obligations are a counterparty input, not a substitute.",
+      "breach_action": {
+        "critical": "escalate-to-ai-system-governance-and-board-risk-committee-within-1h; pause-affected-ai-system-pending-review",
+        "high": "open-p1-governance-review; notify-ai-system-governance-within-24h; document-in-risk-register",
+        "medium": "open-standard-governance-review; assign-to-ai-system-governance; remediate-within-slo-window",
+        "low": "log-to-governance-backlog; review-at-next-policy-cycle"
+      }
+    },
+    {
+      "srf_layer": "L1",
+      "layer_name": "AI Business & Usage",
+      "operating_model": "AI-PaaS",
+      "accountable_persona": "ai-system-governance",
+      "accountable_party": "customer",
+      "note": "Layer is customer-owned under this operating model.",
+      "breach_action": {
+        "critical": "escalate-to-ai-system-governance-and-board-risk-committee-within-1h; pause-affected-ai-system-pending-review",
+        "high": "open-p1-governance-review; notify-ai-system-governance-within-24h; document-in-risk-register",
+        "medium": "open-standard-governance-review; assign-to-ai-system-governance; remediate-within-slo-window",
+        "low": "log-to-governance-backlog; review-at-next-policy-cycle"
+      }
+    },
+    {
+      "srf_layer": "L1",
+      "layer_name": "AI Business & Usage",
+      "operating_model": "Agent-PaaS",
+      "accountable_persona": "ai-system-governance",
+      "accountable_party": "customer",
+      "note": "Layer is customer-owned under this operating model.",
+      "breach_action": {
+        "critical": "escalate-to-ai-system-governance-and-board-risk-committee-within-1h; pause-affected-ai-system-pending-review",
+        "high": "open-p1-governance-review; notify-ai-system-governance-within-24h; document-in-risk-register",
+        "medium": "open-standard-governance-review; assign-to-ai-system-governance; remediate-within-slo-window",
+        "low": "log-to-governance-backlog; review-at-next-policy-cycle"
+      }
+    },
+    {
+      "srf_layer": "L1",
+      "layer_name": "AI Business & Usage",
+      "operating_model": "IaaS",
+      "accountable_persona": "ai-system-governance",
+      "accountable_party": "customer",
+      "note": "Layer is customer-owned under this operating model.",
+      "breach_action": {
+        "critical": "escalate-to-ai-system-governance-and-board-risk-committee-within-1h; pause-affected-ai-system-pending-review",
+        "high": "open-p1-governance-review; notify-ai-system-governance-within-24h; document-in-risk-register",
+        "medium": "open-standard-governance-review; assign-to-ai-system-governance; remediate-within-slo-window",
+        "low": "log-to-governance-backlog; review-at-next-policy-cycle"
+      }
+    },
+    {
+      "srf_layer": "L2",
+      "layer_name": "AI Information",
+      "operating_model": "AI-SaaS",
+      "accountable_persona": "data-provider",
+      "accountable_party": "shared",
+      "note": "Provider owns integrity of data behind the managed application; customer stays accountable for context data it supplies. Name the single lead per finding rather than routing to both.",
+      "breach_action": {
+        "critical": "escalate-to-data-provider-and-ai-system-governance-within-1h; quarantine-affected-dataset-or-index",
+        "high": "open-p1-remediation-ticket; assign-to-data-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-data-provider; remediate-within-slo-window",
+        "low": "log-to-data-quality-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L2",
+      "layer_name": "AI Information",
+      "operating_model": "AI-PaaS",
+      "accountable_persona": "data-provider",
+      "accountable_party": "shared",
+      "note": "Customer leads for fine-tune and augmentation data it brings; provider owns data planes it manages. Name the single lead per finding.",
+      "breach_action": {
+        "critical": "escalate-to-data-provider-and-ai-system-governance-within-1h; quarantine-affected-dataset-or-index",
+        "high": "open-p1-remediation-ticket; assign-to-data-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-data-provider; remediate-within-slo-window",
+        "low": "log-to-data-quality-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L2",
+      "layer_name": "AI Information",
+      "operating_model": "Agent-PaaS",
+      "accountable_persona": "data-provider",
+      "accountable_party": "shared",
+      "note": "Customer leads for agent context and memory stores it populates; provider owns integrity of managed state. Name the single lead per finding.",
+      "breach_action": {
+        "critical": "escalate-to-data-provider-and-ai-system-governance-within-1h; quarantine-affected-dataset-or-index",
+        "high": "open-p1-remediation-ticket; assign-to-data-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-data-provider; remediate-within-slo-window",
+        "low": "log-to-data-quality-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L2",
+      "layer_name": "AI Information",
+      "operating_model": "IaaS",
+      "accountable_persona": "data-provider",
+      "accountable_party": "customer",
+      "note": "Customer owns the entire data pipeline.",
+      "breach_action": {
+        "critical": "escalate-to-data-provider-and-ai-system-governance-within-1h; quarantine-affected-dataset-or-index",
+        "high": "open-p1-remediation-ticket; assign-to-data-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-data-provider; remediate-within-slo-window",
+        "low": "log-to-data-quality-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L3",
+      "layer_name": "AI Application",
+      "operating_model": "AI-SaaS",
+      "accountable_persona": "application-developer",
+      "accountable_party": "provider",
+      "note": "Provider's application team owns input and output defenses. Customer probing of these defenses requires provider authorization; see the red team scoping tool.",
+      "breach_action": {
+        "critical": "escalate-to-application-developer-on-call-within-1h; disable-affected-feature-pending-fix; block-production-promotion",
+        "high": "open-p1-remediation-ticket; assign-to-application-developer; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-application-developer; remediate-within-slo-window",
+        "low": "log-to-application-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L3",
+      "layer_name": "AI Application",
+      "operating_model": "AI-PaaS",
+      "accountable_persona": "application-developer",
+      "accountable_party": "customer",
+      "note": "Customer builds the application and owns injection and output defenses; platform provider supplies guardrail primitives as a supporting input.",
+      "breach_action": {
+        "critical": "escalate-to-application-developer-on-call-within-1h; disable-affected-feature-pending-fix; block-production-promotion",
+        "high": "open-p1-remediation-ticket; assign-to-application-developer; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-application-developer; remediate-within-slo-window",
+        "low": "log-to-application-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L3",
+      "layer_name": "AI Application",
+      "operating_model": "Agent-PaaS",
+      "accountable_persona": "agentic-platform-provider",
+      "accountable_party": "provider",
+      "note": "Orchestration runtime provider leads on input mediation and tool-execution safety; customer's application-developer remains accountable for injection paths opened by its own agent definitions. Name the single lead per finding.",
+      "breach_action": {
+        "critical": "escalate-to-agentic-platform-provider-on-call-within-1h; suspend-affected-agent-and-revoke-tool-scopes; block-production-promotion",
+        "high": "open-p1-remediation-ticket; assign-to-agentic-platform-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-agentic-platform-provider; remediate-within-slo-window",
+        "low": "log-to-application-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L3",
+      "layer_name": "AI Application",
+      "operating_model": "IaaS",
+      "accountable_persona": "application-developer",
+      "accountable_party": "customer",
+      "note": "Customer owns input confidentiality and output handling end to end.",
+      "breach_action": {
+        "critical": "escalate-to-application-developer-on-call-within-1h; disable-affected-feature-pending-fix; block-production-promotion",
+        "high": "open-p1-remediation-ticket; assign-to-application-developer; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-application-developer; remediate-within-slo-window",
+        "low": "log-to-application-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L4",
+      "layer_name": "AI Platform",
+      "operating_model": "AI-SaaS",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_party": "provider",
+      "note": "Provider owns serving-environment integrity, capacity, and rate limiting end to end.",
+      "breach_action": {
+        "critical": "escalate-to-ai-platform-provider-on-call-within-1h; invoke-provider-breach-notification-clause; isolate-affected-serving-environment",
+        "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket-with-provider; track-to-slo-window",
+        "low": "log-to-vendor-scorecard; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L4",
+      "layer_name": "AI Platform",
+      "operating_model": "AI-PaaS",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_party": "provider",
+      "note": "Provider owns platform availability, capacity, and isolation; customer's application-developer owns request budgeting in the application it builds.",
+      "breach_action": {
+        "critical": "escalate-to-ai-platform-provider-on-call-within-1h; invoke-provider-breach-notification-clause; isolate-affected-serving-environment",
+        "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket-with-provider; track-to-slo-window",
+        "low": "log-to-vendor-scorecard; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L4",
+      "layer_name": "AI Platform",
+      "operating_model": "Agent-PaaS",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_party": "provider",
+      "note": "Provider owns runtime availability; customer owns bounding agent loops that can self-inflict exhaustion.",
+      "breach_action": {
+        "critical": "escalate-to-ai-platform-provider-on-call-within-1h; invoke-provider-breach-notification-clause; isolate-affected-serving-environment",
+        "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket-with-provider; track-to-slo-window",
+        "low": "log-to-vendor-scorecard; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L4",
+      "layer_name": "AI Platform",
+      "operating_model": "IaaS",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_party": "customer",
+      "note": "Customer owns serving capacity, isolation, and limits; infrastructure provider retains obligations for underlying infrastructure only.",
+      "breach_action": {
+        "critical": "escalate-to-ai-platform-provider-on-call-within-1h; isolate-affected-serving-environment; block-production-promotion",
+        "high": "open-p1-remediation-ticket; assign-to-ai-platform-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-ai-platform-provider; remediate-within-slo-window",
+        "low": "log-to-platform-backlog; review-at-next-control-cycle"
+      }
+    },
+    {
+      "srf_layer": "L5",
+      "layer_name": "AI Model Provider",
+      "operating_model": "AI-SaaS",
+      "accountable_persona": "model-provider",
+      "accountable_party": "provider",
+      "note": "Provider owns model robustness, training-environment security, and the model supply chain end to end.",
+      "breach_action": {
+        "critical": "escalate-to-model-provider-on-call-within-1h; pin-to-prior-known-good-model-version; invoke-provider-breach-notification-clause",
+        "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket-with-provider; track-to-slo-window",
+        "low": "log-to-vendor-scorecard; review-at-next-model-card-refresh"
+      }
+    },
+    {
+      "srf_layer": "L5",
+      "layer_name": "AI Model Provider",
+      "operating_model": "AI-PaaS",
+      "accountable_persona": "model-provider",
+      "accountable_party": "provider",
+      "note": "Provider owns the foundation model; customer owns model evaluation against its own use cases before and during adoption.",
+      "breach_action": {
+        "critical": "escalate-to-model-provider-on-call-within-1h; pin-to-prior-known-good-model-version; invoke-provider-breach-notification-clause",
+        "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket-with-provider; track-to-slo-window",
+        "low": "log-to-vendor-scorecard; review-at-next-model-card-refresh"
+      }
+    },
+    {
+      "srf_layer": "L5",
+      "layer_name": "AI Model Provider",
+      "operating_model": "Agent-PaaS",
+      "accountable_persona": "model-provider",
+      "accountable_party": "shared",
+      "note": "Lead sits with the model provider for the foundation model; customer owns validating model behavior under its own agent workloads. Name the single lead per finding.",
+      "breach_action": {
+        "critical": "escalate-to-model-provider-on-call-within-1h; pin-to-prior-known-good-model-version; invoke-provider-breach-notification-clause",
+        "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket-with-provider; track-to-slo-window",
+        "low": "log-to-vendor-scorecard; review-at-next-model-card-refresh"
+      }
+    },
+    {
+      "srf_layer": "L5",
+      "layer_name": "AI Model Provider",
+      "operating_model": "IaaS",
+      "accountable_persona": "model-provider",
+      "accountable_party": "customer",
+      "note": "Customer trains or hosts its own model and owns its robustness, provenance, and rollback.",
+      "breach_action": {
+        "critical": "escalate-to-model-provider-on-call-within-1h; roll-back-to-prior-known-good-model-version; block-production-promotion",
+        "high": "open-p1-remediation-ticket; assign-to-model-provider; notify-ai-system-governance-within-24h",
+        "medium": "open-standard-remediation-ticket; assign-to-model-provider; remediate-within-slo-window",
+        "low": "log-to-model-backlog; review-at-next-model-card-refresh"
+      }
+    }
+  ]
+}

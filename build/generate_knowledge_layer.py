@@ -30,12 +30,16 @@ import json
 import os
 import re
 import sys
-from datetime import date
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 SITE = "https://aisharedresponsibility.com"
-TODAY = date.today().isoformat()
+# Editorial "last updated" date stamped into every generated artifact.
+# Keep this a FIXED literal, NOT date.today(): the CI "regeneration drift gate"
+# regenerates these files and diffs them against what is committed, so the value
+# must be reproducible from committed source rather than the wall clock (otherwise
+# any push validated by CI on a later UTC day fails). Bump it when publishing an update.
+UPDATED = "2026-07-10"
 SRF_VERSION = "1.0"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -161,7 +165,7 @@ def build_glossary_outputs(terms):
                        "/api/glossary/<anchor>.json and carries a canonical_id "
                        "that resolves to a single ontology node.",
         "srf_version": SRF_VERSION,
-        "updated": TODAY,
+        "updated": UPDATED,
         "canonical_page": f"{SITE}/glossary/",
         "api": {
             "index": f"{SITE}/api/glossary/index.json",
@@ -174,7 +178,7 @@ def build_glossary_outputs(terms):
     index = {
         "$schema_version": "1.0",
         "description": "Index of all glossary terms. Fetch any single term at its api_url.",
-        "updated": TODAY,
+        "updated": UPDATED,
         "count": len(terms),
         "terms": [
             {
@@ -203,7 +207,7 @@ def build_glossary_outputs(terms):
             "see_also": t["see_also"],
             "ontology_node": f"{SITE}/ontology/nodes.json#{t['canonical_id']}",
             "srf_version": SRF_VERSION,
-            "updated": TODAY,
+            "updated": UPDATED,
         }
     return registry, index, per_term
 
@@ -348,7 +352,7 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
                        "concept, framework, role, control. Edges are in "
                        "/ontology/edges.json.",
         "srf_version": SRF_VERSION,
-        "updated": TODAY,
+        "updated": UPDATED,
         "node_schema": {"id": "string", "label": "string",
                         "type": "concept|framework|role|control",
                         "url": "string", "related": "[id]",
@@ -362,7 +366,7 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
                        "Every source and target is a node id in "
                        "/ontology/nodes.json.",
         "srf_version": SRF_VERSION,
-        "updated": TODAY,
+        "updated": UPDATED,
         "relations": sorted({e["rel"] for e in edges}),
         "count": len(edges),
         "edges": edges,
@@ -400,7 +404,7 @@ def build_ids(nodes, terms):
                        "srf.opmodel.*, srf.role.*, srf.concept.*, "
                        "srf.control.<vertical>.*, ext.framework.*.",
         "srf_version": SRF_VERSION,
-        "updated": TODAY,
+        "updated": UPDATED,
         "namespaces": {
             "srf.framework": "The framework itself",
             "srf.layer": "One of the five architecture layers L1-L5",
@@ -424,7 +428,7 @@ def build_exports(terms, nodes, edges, layers, personas, matrix):
     export_glossary = {
         "$schema_version": "1.0",
         "description": "Flattened glossary definitions for bulk agent ingestion.",
-        "updated": TODAY,
+        "updated": UPDATED,
         "definitions": [
             {
                 "id": t["canonical_id"],
@@ -441,7 +445,7 @@ def build_exports(terms, nodes, edges, layers, personas, matrix):
     export_ontology = {
         "$schema_version": "1.0",
         "description": "Flattened ontology: nodes and typed relationships.",
-        "updated": TODAY,
+        "updated": UPDATED,
         "nodes": list(nodes.values()),
         "edges": edges,
     }
@@ -465,7 +469,7 @@ def build_exports(terms, nodes, edges, layers, personas, matrix):
                        "framework for agent consumption: concepts, relationships, "
                        "and definitions. IDs resolve via /ids.json.",
         "srf_version": SRF_VERSION,
-        "updated": TODAY,
+        "updated": UPDATED,
         "counts": {
             "concepts": len(concepts),
             "relationships": len(relationships),
