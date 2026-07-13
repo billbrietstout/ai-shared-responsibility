@@ -223,7 +223,7 @@
   function metaRow(label, value) {
     var r = el("div", "rec-meta__row");
     r.appendChild(el("span", "rec-meta__k", label));
-    r.appendChild(el("span", "rec-meta__v", value || "—"));
+    r.appendChild(el("span", "rec-meta__v", value || "None"));
     return r;
   }
 
@@ -399,7 +399,7 @@
 
     var m = DATA.models.filter(function (x) { return x.id === state.model; })[0];
     var metaPairs = [
-      ["Target org", state.org], ["Testing party", state.testers || "—"], ["Provider", state.vendor || "—"],
+      ["Target org", state.org], ["Testing party", state.testers || "None"], ["Provider", state.vendor || "None"],
       ["Operating model", m ? m.name : state.model],
       ["Industry", state.vertical ? verticalLabel(state.vertical) : "General"]
     ];
@@ -408,7 +408,7 @@
     setF(9, "normal", slate);
     metaPairs.forEach(function (p) {
       setF(9, "bold", slate); text(p[0] + ":", M, y);
-      setF(9, "normal", navy); text(p[1] || "—", M + 96, y);
+      setF(9, "normal", navy); text(p[1] || "None", M + 96, y);
       y += 14;
     });
     y += 8;
@@ -421,7 +421,7 @@
     DATA.layers.forEach(function (layer) {
       var tier = layerTier(layer);
       setF(10, "bold", navy); text(layer.id, M, y);
-      setF(9, "normal", slate); text(layer.short + " — " + tier.label, M + 24, y);
+      setF(9, "normal", slate); text(layer.short + " · " + tier.label, M + 24, y);
       var owner = resolveOwner(layer.id);
       var unresolved = layerUnresolved(layer);
       setF(10, unresolved ? "bolditalic" : "normal", unresolved ? [185, 28, 28] : navy);
