@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lifecycle Prompt Builder · AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Build a grounded, copy-ready AI governance prompt for one persona, one industry vertical, one AI security lifecycle stage, and one operating model. Names the single accountable party, resolves shared to one owner, and points the agent at the exact CoSAI SRF data file and on-site tool for that stage."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "CoSAI SRF Lifecycle Prompt Builder",
+  "url": "https://aisharedresponsibility.com/tools/prompts/lifecycle/",
+  "description": "Generates a grounded system prompt for a chosen persona, industry vertical, AI security lifecycle stage, and operating model. Names one accountable party, resolves shared to a single owner, cites canonical IDs, and points the agent at the exact data file and on-site tool for the stage.",
+  "applicationCategory": "BusinessApplication",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/",
+    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+  },
+  "isAccessibleForFree": true,
+  "about": {
+    "@type": "TechArticle",
+    "name": "AI security lifecycle and the CoSAI Shared Responsibility Framework",
+    "url": "https://aisharedresponsibility.com/framework/security-lifecycle/",
+    "description": "Six lifecycle stages, each mapped to the on-site tool and data file that carry the accountability answer."
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-prompts-lifecycle" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade, srf.concept.autonomy-level, srf.concept.human-override-tier" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="header" role="banner">
+      <div class="header-inner">
+        <svg class="header-shield" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M20 3L5 9v10c0 9 6.5 17.4 15 19.4C29.5 36.4 36 28 36 19V9L20 3z" fill="#2d5be3" opacity=".3" />
+          <path d="M20 6L8 11v8c0 7.4 5.2 14.3 12 16.4C26.8 33.3 32 26.4 32 19v-8L20 6z" stroke="#2d5be3" stroke-width="1.5" fill="none" />
+          <path d="M13 20l4 4 10-10" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <div>
+          <div class="header-title">Lifecycle Prompt Builder</div>
+          <div class="header-sub">Persona, vertical, lifecycle stage, operating model into one grounded, copy-ready prompt</div>
+        </div>
+        <div class="header-badge">PROMPT</div>
+        <a class="header-home" href="/tools/prompts/">← System Instructions</a>
+      </div>
+    </header>
+
+    <main id="main" class="layout" data-llm="lifecycle-prompt-builder">
+
+      <section class="intro-block" aria-labelledby="intro-heading" data-llm="lifecycle-prompt-builder">
+        <h1 id="intro-heading" class="intro-block__title">Lifecycle Prompt Builder</h1>
+        <p class="intro-block__lede">
+          The <a href="/tools/prompts/">System Instructions</a> page gives you role and sector
+          slices. The <a href="/framework/security-lifecycle/">AI security lifecycle</a> page maps
+          six stages to the tool and data file that carry each accountability answer. This builder
+          stitches the two together. Pick a persona, an industry vertical, a lifecycle stage, and an
+          operating model. It returns one prompt that names the single accountable party, resolves
+          any "shared" default to one owner, cites the canonical IDs, and points your agent at the
+          exact data file and on-site tool for that stage.
+        </p>
+      </section>
+
+      <div class="grid">
+        <!-- ─── Left: selectors ─────────────────────────────────────── -->
+        <form id="lp-form" class="panel" autocomplete="off" aria-label="Prompt inputs">
+          <fieldset class="fs">
+            <legend class="fs__legend">Choose four inputs</legend>
+
+            <div class="field">
+              <label class="field__label" for="f-persona">Persona <span class="field__hint">(the vantage you work from)</span></label>
+              <select id="f-persona" class="field__input"></select>
+              <p id="persona-note" class="field__note"></p>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="f-vertical">Industry vertical</label>
+              <select id="f-vertical" class="field__input"></select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="f-stage">Lifecycle stage</label>
+              <select id="f-stage" class="field__input"></select>
+              <p id="stage-note" class="field__note"></p>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="f-model">Operating model</label>
+              <select id="f-model" class="field__input"></select>
+              <p id="model-note" class="field__note"></p>
+            </div>
+          </fieldset>
+
+          <div class="resolve" id="resolve" aria-live="polite">
+            <div class="resolve__row">
+              <span class="resolve__k">Accountable layer</span>
+              <span class="resolve__v" id="r-layer">…</span>
+            </div>
+            <div class="resolve__row">
+              <span class="resolve__k">Single accountable party</span>
+              <span class="resolve__v" id="r-party">…</span>
+            </div>
+            <div class="resolve__row">
+              <span class="resolve__k">Shared resolution</span>
+              <span class="resolve__v" id="r-shared">…</span>
+            </div>
+          </div>
+        </form>
+
+        <!-- ─── Right: generated prompt ─────────────────────────────── -->
+        <aside class="panel prompt-side" aria-label="Generated prompt">
+          <div class="prompt-block" id="prompt-block">
+            <div class="prompt-block__header">
+              <span class="prompt-block__label" id="prompt-label">Lifecycle prompt</span>
+              <button class="prompt-block__copy" type="button" onclick="copyPrompt('prompt-block', this)">Copy</button>
+            </div>
+            <pre id="prompt-text">Choose a persona, vertical, lifecycle stage, and operating model to generate a prompt.</pre>
+          </div>
+        </aside>
+      </div>
+
+      <!-- ─── Static recipe matrix (JS-free fallback) ─────────────── -->
+      <section class="recipe" aria-labelledby="recipe-heading" data-llm="recipe-matrix">
+        <h2 id="recipe-heading" class="recipe__title">Recipe matrix: stage to tool and data file</h2>
+        <p class="recipe__lede">
+          Each lifecycle stage maps to one on-site tool and one data file. This table is the core of
+          the builder and works with JavaScript disabled. The generated prompt above adds the
+          persona, vertical, operating model, and the single resolved accountable party.
+        </p>
+        <div class="table-scroll">
+          <table class="recipe-table">
+            <thead>
+              <tr>
+                <th scope="col">Lifecycle stage</th>
+                <th scope="col">On-site tool</th>
+                <th scope="col">Data file</th>
+                <th scope="col">Accountability answer it carries</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <strong>01</strong> Threat modeling and risk analysis
+                  <a class="recipe-table__ref" href="/framework/security-lifecycle/#cat-threat-modeling">reference</a>
+                </td>
+                <td><a href="/tools/layer-matrix/">Layer Accountability Matrix</a></td>
+                <td><a href="/data/threats.json">/data/threats.json</a></td>
+                <td>Which layers are yours to model, and the persona who owns each identified risk.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>02</strong> Adversarial testing and red teaming
+                  <a class="recipe-table__ref" href="/framework/security-lifecycle/#cat-red-teaming">reference</a>
+                </td>
+                <td><a href="/tools/redteam-scope/">Red Team Scoping Tool</a></td>
+                <td><a href="/data/threats.json">/data/threats.json</a></td>
+                <td>Which layers are testable, which need provider authorization, and who owns each finding before testing starts.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>03</strong> Secure development and AI supply chain
+                  <a class="recipe-table__ref" href="/framework/security-lifecycle/#cat-secure-dev">reference</a>
+                </td>
+                <td><a href="/tools/vendor-risk/">Vendor Risk Assessment</a></td>
+                <td><a href="/data/vendor-risk.json">/data/vendor-risk.json</a></td>
+                <td>Which persona produces each attestation at a supply-chain handoff, and which persona verifies it.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>04</strong> Control implementation and benchmarking
+                  <a class="recipe-table__ref" href="/framework/security-lifecycle/#cat-controls">reference</a>
+                </td>
+                <td><a href="/tools/controls-assessment/">Controls Assessment (AICM)</a></td>
+                <td><a href="/controls/">Vertical control schema</a> (per industry)</td>
+                <td>The accountable persona for each control under your deployment model.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>05</strong> Vulnerability management and finding remediation
+                  <a class="recipe-table__ref" href="/framework/security-lifecycle/#cat-vuln-mgmt">reference</a>
+                </td>
+                <td><a href="/tools/ir-playbooks/">Incident Response Playbooks</a></td>
+                <td><a href="/data/finding-routing.json">/data/finding-routing.json</a></td>
+                <td>Whose queue a scored finding goes in, and who signs residual acceptance if it will not be fixed.</td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>06</strong> Detection, monitoring, and incident response
+                  <a class="recipe-table__ref" href="/framework/security-lifecycle/#cat-detection">reference</a>
+                </td>
+                <td><a href="/tools/ir-playbooks/">Incident Response Playbooks</a></td>
+                <td><a href="/data/finding-routing.json">/data/finding-routing.json</a></td>
+                <td>Who leads when a boundary fails, what to demand from the other side, and which evidence obligations survive the incident.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="recipe__foot">
+          Personas, layers, operating models, and the resolved owners come from
+          <a href="/data/personas.json">/data/personas.json</a>,
+          <a href="/data/layers.json">/data/layers.json</a>,
+          <a href="/data/matrix.json">/data/matrix.json</a>, and the authoritative resolver
+          <a href="/data/finding-routing.json">/data/finding-routing.json</a>. Canonical IDs are in
+          <a href="/ids.json">/ids.json</a>.
+        </p>
+      </section>
+
+      <p class="footnote">
+        The builder applies the CoSAI AI Shared Responsibility Framework rule of exactly one
+        accountable party per activity. Where a layer's operating-model default is "shared" or
+        "model evaluation," the resolver names the single lead and records the counterparty
+        obligation, because shared is not a valid final answer. The generated prompt is a grounding
+        artifact, not legal advice, and does not by itself transfer liability. Verify named owners
+        against your contracts and internal delegations of authority.
+      </p>
+
+      <div style="margin-top: var(--sp-4);">
+        <a class="btn btn--ghost" href="/tools/prompts/">← Back to System Instructions</a>
+      </div>
+    </main>
+
+    <site-footer></site-footer>
+
+    <script>
+      function copyPrompt(blockId, btn) {
+        const pre = document.querySelector('#' + blockId + ' pre');
+        if (!pre) return;
+        navigator.clipboard.writeText(pre.innerText).then(() => {
+          btn.textContent = 'Copied!';
+          btn.classList.add('prompt-block__copy--copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('prompt-block__copy--copied');
+          }, 2000);
+        });
+      }
+    </script>
+  </body>
+</html>
