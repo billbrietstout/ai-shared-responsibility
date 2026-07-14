@@ -37,7 +37,7 @@ These are proposals for a working session with the OpenCRE maintainers, not publ
 
 ## What this is not
 
-The SRF stays in its accountability lane. Attack techniques, threats, and test methodology belong to BIML, the AI Exchange, ATLAS, and NIST AI 100-2. Control content and benchmarks belong to CIS, CSA AICM, and the AI Exchange controls. Severity scoring belongs to AIVSS. The SRF creates no regulatory obligations. The binding adds accountability data to the taxonomy and nothing else.
+The SRF limits itself to accountability. Attack techniques, threats, and test methodology belong to BIML, the AI Exchange, ATLAS, and NIST AI 100-2. Control content and benchmarks belong to CIS, CSA AICM, and the AI Exchange controls. Severity scoring belongs to AIVSS. The SRF creates no regulatory obligations. The binding adds accountability data to the taxonomy and nothing else.
 
 ## Worked example
 
