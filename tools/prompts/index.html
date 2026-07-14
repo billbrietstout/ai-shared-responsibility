@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>System Instructions — AI Shared Responsibility</title>
+    <title>System Instructions · AI Shared Responsibility</title>
     <meta
       name="description"
       content="Versioned system instructions for grounding AI assistants in the CoSAI AI Shared Responsibility Framework. Core prompt, role variants, and sector context parameters."
@@ -61,6 +61,34 @@
         white-space: pre-wrap;
         word-break: break-word;
         font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+        max-height: 2400px;
+        transition: max-height 0.25s ease, padding 0.25s ease, opacity 0.2s ease;
+      }
+      .prompt-block.is-collapsed pre {
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+      }
+      .prompt-block__actions {
+        display: flex;
+        gap: var(--sp-2);
+        align-items: center;
+      }
+      .prompt-block__toggle {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: rgba(255,255,255,0.55);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: var(--radius);
+        padding: 4px 10px;
+        cursor: pointer;
+        transition: background 0.1s, color 0.1s;
+      }
+      .prompt-block__toggle:hover {
+        background: rgba(255,255,255,0.14);
+        color: rgba(255,255,255,0.9);
       }
 
       /* ── Section label ────────────────────────────────────────────── */
@@ -268,12 +296,29 @@
 
       .param-wrap { position: relative; margin-bottom: var(--sp-3); }
       .param-wrap pre { margin-bottom: 0; padding-right: 52px; }
+      .param-body { position: relative; }
+      .param-wrap.is-collapsed .param-body { display: none; }
       .param-wrap .copy-btn {
         position: absolute;
         top: 6px;
         right: 6px;
         margin: 0;
       }
+      .param-toggle {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--slate-500);
+        background: var(--slate-100);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        padding: 3px 8px;
+        cursor: pointer;
+        transition: background 0.1s, color 0.1s;
+        display: block;
+        width: fit-content;
+        margin-top: var(--sp-4);
+      }
+      .param-toggle:hover { background: var(--slate-200); color: var(--slate-700); }
 
       .variant-card__modifier {
         font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
@@ -360,14 +405,17 @@
       <!-- Core prompt -->
       <p class="section-label">Core system instruction</p>
 
-      <div class="prompt-block" id="core-block">
+      <div class="prompt-block is-collapsed" id="core-block">
         <div class="prompt-block__header">
           <span class="prompt-block__label">SRF v2.0 &middot; Core &middot; May 2026</span>
-          <button class="prompt-block__copy" onclick="copyPrompt('core-block', this)">Copy</button>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" onclick="togglePrompt('core-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" onclick="copyPrompt('core-block', this)">Copy</button>
+          </div>
         </div>
         <pre># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: governance-analysis
@@ -379,7 +427,7 @@ You are an expert AI Governance Analyst using the CoSAI AI Shared Responsibility
 Core Principles (never violate):
 - There must be exactly one accountable party per activity/component. Use RACI (Responsible, Accountable, Consulted, Informed) but always identify the single Accountable owner.
 - Responsibilities cascade from the AI Business &amp; Usage layer downward through AI Information &rarr; AI Application &rarr; AI Platform &rarr; AI Model Provider.
-- For agentic systems, always classify autonomy level (L0&ndash;L5) and reference required human override tiers (T1&ndash;T5).
+- For agentic systems, always classify autonomy level (L0-L5) and reference required human override tiers (T1-T5).
 - Ground every analysis in the official SRF sections, matrices, and evidence requirements. Cite them explicitly.
 - Flag ambiguities, responsibility gaps, and contract boundary issues clearly.
 - Balance safety, security, and compliance with innovation. Avoid overly restrictive "safety theater."
@@ -411,14 +459,17 @@ Be precise, actionable, and neutral. Prioritize clarity for executives, auditors
         your questions directly.
       </p>
 
-      <div class="prompt-block" id="primer-block">
+      <div class="prompt-block is-collapsed" id="primer-block">
         <div class="prompt-block__header">
           <span class="prompt-block__label">Site-aware primer &middot; aisharedresponsibility.com</span>
-          <button class="prompt-block__copy" onclick="copyPrompt('primer-block', this)">Copy</button>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" onclick="togglePrompt('primer-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" onclick="copyPrompt('primer-block', this)">Copy</button>
+          </div>
         </div>
         <pre># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: site-primer
@@ -430,12 +481,12 @@ You are helping me explore the CoSAI AI Shared Responsibility Framework (SRF) us
 About the site:
 - aisharedresponsibility.com is an independent companion site to the CoSAI SRF v1.0
 - It publishes the base framework, six industry vertical schemas, interactive tools, and practitioner guides
-- Vertical schemas (finance, healthcare, insurance, public sector, defense, manufacturing) are independently proposed extensions — not part of the official CoSAI v1.0 release
+- Vertical schemas (finance, healthcare, insurance, public sector, defense, manufacturing) are independently proposed extensions, not part of the official CoSAI v1.0 release
 
 Core SRF rules (never contradict these):
 - There must be exactly one accountable party per activity. "Shared" is not a valid final answer.
 - Accountability cascades from L1 (AI Business &amp; Usage) down through L2 (AI Information) &rarr; L3 (AI Application) &rarr; L4 (AI Platform) &rarr; L5 (AI Model Provider).
-- For agentic systems, autonomy level (L0&ndash;L5) and human override tier (T1&ndash;T5) must be specified.
+- For agentic systems, autonomy level (L0-L5) and human override tier (T1-T5) must be specified.
 
 Key pages by topic:
 - Framework overview: /framework/
@@ -446,7 +497,7 @@ Key pages by topic:
 - Regulations reference: /regulations/
 - System instructions and governance prompts: /tools/prompts/
 
-When I ask about a specific vertical or regulation, reference the relevant section. If I ask something the framework does not resolve, say so — do not invent assignments.</pre>
+When I ask about a specific vertical or regulation, reference the relevant section. If I ask something the framework does not resolve, say so; do not invent assignments.</pre>
       </div>
 
       <!-- Response structure -->
@@ -470,7 +521,7 @@ When I ask about a specific vertical or regulation, reference the relevant secti
           <div class="steps-list__num"></div>
           <div class="steps-list__body">
             <p class="steps-list__title">Autonomy &amp; Agentic Considerations</p>
-            <p class="steps-list__desc">For agentic systems: autonomy level (L0&ndash;L5), required human override tier, identity delegation boundaries, and MCP/tooling governance.</p>
+            <p class="steps-list__desc">For agentic systems: autonomy level (L0-L5), required human override tier, identity delegation boundaries, and MCP/tooling governance.</p>
           </div>
         </li>
         <li>
@@ -548,7 +599,7 @@ Lead with a one-paragraph board-ready summary of accountability owners and top r
           </div>
           <pre class="variant-card__modifier"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: auditor
 # purpose: role-variant
@@ -566,7 +617,7 @@ Expand step 6 (Evidence Requirements) into a full audit test plan. For each acco
             Emphasize L3 Application and L4 Platform controls. For each responsibility, specify the implementing system, API boundary, and logging and monitoring requirement.
           </p>
           <div class="variant-card__focus">
-            <span>L3&ndash;L4 controls</span>
+            <span>L3-L4 controls</span>
             <span>API boundaries</span>
             <span>Observability</span>
           </div>
@@ -596,7 +647,7 @@ Emphasize L3 (AI Application) and L4 (AI Platform) controls. For each accountabi
           </div>
           <pre class="variant-card__modifier"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: legal
 # purpose: role-variant
@@ -624,7 +675,7 @@ Translate each gap and recommendation into draft contract clause language. For e
             <p class="sector-card__name">Financial Services</p>
             <pre class="sector-card__param"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
@@ -650,7 +701,7 @@ Translate each gap and recommendation into draft contract clause language. For e
             <p class="sector-card__name">Healthcare</p>
             <pre class="sector-card__param"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
@@ -676,7 +727,7 @@ Translate each gap and recommendation into draft contract clause language. For e
             <p class="sector-card__name">Insurance</p>
             <pre class="sector-card__param"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
@@ -702,7 +753,7 @@ Translate each gap and recommendation into draft contract clause language. For e
             <p class="sector-card__name">Public Sector</p>
             <pre class="sector-card__param"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
@@ -728,7 +779,7 @@ Translate each gap and recommendation into draft contract clause language. For e
             <p class="sector-card__name">Defense / DoD</p>
             <pre class="sector-card__param"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
@@ -754,7 +805,7 @@ Translate each gap and recommendation into draft contract clause language. For e
             <p class="sector-card__name">Manufacturing</p>
             <pre class="sector-card__param"># framework: CoSAI AI Shared Responsibility Framework v1.0
 # framework_domain: AI Governance / Accountability
-# layer: all (L1–L5)
+# layer: all (L1-L5)
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
@@ -780,7 +831,7 @@ Translate each gap and recommendation into draft contract clause language. For e
       <div class="roadmap-block">
         <p class="roadmap-block__title">Scenario packs and version registry</p>
         <p>
-          <strong>Scenario packs</strong> will provide few-shot examples for the 10&ndash;15 most common governance workflows: third-party model evaluation, incident post-mortem, autonomy classification, contract clause generation, and sector-specific edge cases across all six verticals.
+          <strong>Scenario packs</strong> will provide few-shot examples for the 10 to 15 most common governance workflows: third-party model evaluation, incident post-mortem, autonomy classification, contract clause generation, and sector-specific edge cases across all six verticals.
         </p>
         <p>
           <strong>Version registry</strong> will pin each prompt to a specific SRF release and include a testing harness that validates outputs against framework rules. Community contributions will be accepted via the GitHub repository.
@@ -799,10 +850,18 @@ Translate each gap and recommendation into draft contract clause language. For e
     <site-footer></site-footer>
 
     <script>
+      function togglePrompt(blockId, btn) {
+        const block = document.getElementById(blockId);
+        if (!block) return;
+        const collapsed = block.classList.toggle('is-collapsed');
+        btn.textContent = collapsed ? 'Show' : 'Hide';
+        btn.setAttribute('aria-expanded', String(!collapsed));
+      }
+
       function copyPrompt(blockId, btn) {
         const pre = document.querySelector('#' + blockId + ' pre');
         if (!pre) return;
-        navigator.clipboard.writeText(pre.innerText).then(() => {
+        navigator.clipboard.writeText(pre.textContent).then(() => {
           btn.textContent = 'Copied!';
           btn.classList.add('prompt-block__copy--copied');
           setTimeout(() => {
@@ -827,14 +886,30 @@ Translate each gap and recommendation into draft contract clause language. For e
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.variant-card__modifier, .sector-card__param').forEach(pre => {
           const wrap = document.createElement('div');
-          wrap.className = 'param-wrap';
+          wrap.className = 'param-wrap is-collapsed';
           pre.parentNode.insertBefore(wrap, pre);
-          wrap.appendChild(pre);
+
+          const toggle = document.createElement('button');
+          toggle.className = 'param-toggle';
+          toggle.textContent = 'Show prompt';
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.onclick = () => {
+            const collapsed = wrap.classList.toggle('is-collapsed');
+            toggle.textContent = collapsed ? 'Show prompt' : 'Hide prompt';
+            toggle.setAttribute('aria-expanded', String(!collapsed));
+          };
+          wrap.appendChild(toggle);
+
+          const body = document.createElement('div');
+          body.className = 'param-body';
+          wrap.appendChild(body);
+          body.appendChild(pre);
+
           const btn = document.createElement('button');
           btn.className = 'copy-btn';
           btn.textContent = 'Copy';
           btn.onclick = () => copyEl(pre, btn);
-          wrap.appendChild(btn);
+          body.appendChild(btn);
         });
       });
     </script>
