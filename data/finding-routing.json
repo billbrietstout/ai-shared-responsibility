@@ -2,7 +2,7 @@
   "$schema_version": "0.1",
   "srf_version": "1.0",
   "updated": "2026-07-12",
-  "description": "Finding routing reference for the CoSAI AI Shared Responsibility Framework. Severity scoring says how bad a finding is; this file adds whose queue it goes in and what happens at each severity band. It does not score severity itself; that belongs to the OWASP AIVSS (AI Vulnerability Scoring System) for agentic and AI-specific findings, or CVSS for conventional vulnerabilities in the same stack. This closes the loop opened by the threat-to-accountability crosswalk (/data/threats.json) and the red team scoping tool (/tools/redteam-scope/): a scored finding routes by SRF layer and operating model to one named persona and one breach action.",
+  "description": "Finding routing reference for the CoSAI AI Shared Responsibility Framework. Severity scoring rates how bad a finding is. This file adds whose queue it goes in and what happens at each severity band. It does not score severity itself. That belongs to the OWASP AIVSS (AI Vulnerability Scoring System) for agentic and AI-specific findings, or CVSS for conventional vulnerabilities in the same stack. A finding scored there, or pre-assigned by the threat-to-accountability crosswalk (/data/threats.json) and the red team scoping tool (/tools/redteam-scope/), routes by SRF layer and operating model to one named persona and one breach action.",
   "accountability_convention": "One accountable persona per layer per operating model, consistent with /data/threats.json and /data/layers.json. Where the layer's operating-model default is \"shared\" or \"model-evaluation\", the note records the counterparty obligation, because shared is not a valid final answer. breach_action strings follow the kebab-case convention used in /thresholds/gap-register.json and are illustrative escalation ladders, not a fixed controlled vocabulary; adapt them to your own incident and change-management tooling.",
   "severity_bands": [
     {
@@ -50,7 +50,7 @@
       "operating_model": "AI-SaaS",
       "accountable_persona": "ai-system-governance",
       "accountable_party": "customer",
-      "note": "Business governance stays with the deploying org even where the layer default is shared; the provider's own governance obligations are a counterparty input, not a substitute.",
+      "note": "Business governance stays with the deploying org even where the layer default is shared. The provider's own governance obligations feed in as counterparty input and do not replace it.",
       "breach_action": {
         "critical": "escalate-to-ai-system-governance-and-board-risk-committee-within-1h; pause-affected-ai-system-pending-review",
         "high": "open-p1-governance-review; notify-ai-system-governance-within-24h; document-in-risk-register",
@@ -106,7 +106,7 @@
       "operating_model": "AI-SaaS",
       "accountable_persona": "data-provider",
       "accountable_party": "shared",
-      "note": "Provider owns integrity of data behind the managed application; customer stays accountable for context data it supplies. Name the single lead per finding rather than routing to both.",
+      "note": "The provider owns integrity of data behind the managed application. The customer stays accountable for context data it supplies. Name the single lead per finding rather than routing to both.",
       "breach_action": {
         "critical": "escalate-to-data-provider-and-ai-system-governance-within-1h; quarantine-affected-dataset-or-index",
         "high": "open-p1-remediation-ticket; assign-to-data-provider; notify-ai-system-governance-within-24h",
@@ -120,7 +120,7 @@
       "operating_model": "AI-PaaS",
       "accountable_persona": "data-provider",
       "accountable_party": "shared",
-      "note": "Customer leads for fine-tune and augmentation data it brings; provider owns data planes it manages. Name the single lead per finding.",
+      "note": "The customer leads for fine-tune and augmentation data it brings. The provider owns data planes it manages. Name the single lead per finding.",
       "breach_action": {
         "critical": "escalate-to-data-provider-and-ai-system-governance-within-1h; quarantine-affected-dataset-or-index",
         "high": "open-p1-remediation-ticket; assign-to-data-provider; notify-ai-system-governance-within-24h",
@@ -134,7 +134,7 @@
       "operating_model": "Agent-PaaS",
       "accountable_persona": "data-provider",
       "accountable_party": "shared",
-      "note": "Customer leads for agent context and memory stores it populates; provider owns integrity of managed state. Name the single lead per finding.",
+      "note": "The customer leads for agent context and memory stores it populates. The provider owns integrity of managed state. Name the single lead per finding.",
       "breach_action": {
         "critical": "escalate-to-data-provider-and-ai-system-governance-within-1h; quarantine-affected-dataset-or-index",
         "high": "open-p1-remediation-ticket; assign-to-data-provider; notify-ai-system-governance-within-24h",
@@ -176,7 +176,7 @@
       "operating_model": "AI-PaaS",
       "accountable_persona": "application-developer",
       "accountable_party": "customer",
-      "note": "Customer builds the application and owns injection and output defenses; platform provider supplies guardrail primitives as a supporting input.",
+      "note": "The customer builds the application and owns injection and output defenses. The platform provider supplies guardrail primitives as a supporting input.",
       "breach_action": {
         "critical": "escalate-to-application-developer-on-call-within-1h; disable-affected-feature-pending-fix; block-production-promotion",
         "high": "open-p1-remediation-ticket; assign-to-application-developer; notify-ai-system-governance-within-24h",
@@ -232,7 +232,7 @@
       "operating_model": "AI-PaaS",
       "accountable_persona": "ai-platform-provider",
       "accountable_party": "provider",
-      "note": "Provider owns platform availability, capacity, and isolation; customer's application-developer owns request budgeting in the application it builds.",
+      "note": "The provider owns platform availability, capacity, and isolation. The customer's application-developer owns request budgeting in the application it builds.",
       "breach_action": {
         "critical": "escalate-to-ai-platform-provider-on-call-within-1h; invoke-provider-breach-notification-clause; isolate-affected-serving-environment",
         "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
@@ -246,7 +246,7 @@
       "operating_model": "Agent-PaaS",
       "accountable_persona": "ai-platform-provider",
       "accountable_party": "provider",
-      "note": "Provider owns runtime availability; customer owns bounding agent loops that can self-inflict exhaustion.",
+      "note": "The provider owns runtime availability. The customer owns bounding agent loops that can exhaust it.",
       "breach_action": {
         "critical": "escalate-to-ai-platform-provider-on-call-within-1h; invoke-provider-breach-notification-clause; isolate-affected-serving-environment",
         "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
@@ -260,7 +260,7 @@
       "operating_model": "IaaS",
       "accountable_persona": "ai-platform-provider",
       "accountable_party": "customer",
-      "note": "Customer owns serving capacity, isolation, and limits; infrastructure provider retains obligations for underlying infrastructure only.",
+      "note": "The customer owns serving capacity, isolation, and limits. The infrastructure provider retains obligations for underlying infrastructure only.",
       "breach_action": {
         "critical": "escalate-to-ai-platform-provider-on-call-within-1h; isolate-affected-serving-environment; block-production-promotion",
         "high": "open-p1-remediation-ticket; assign-to-ai-platform-provider; notify-ai-system-governance-within-24h",
@@ -288,7 +288,7 @@
       "operating_model": "AI-PaaS",
       "accountable_persona": "model-provider",
       "accountable_party": "provider",
-      "note": "Provider owns the foundation model; customer owns model evaluation against its own use cases before and during adoption.",
+      "note": "The provider owns the foundation model. The customer owns model evaluation against its own use cases before and during adoption.",
       "breach_action": {
         "critical": "escalate-to-model-provider-on-call-within-1h; pin-to-prior-known-good-model-version; invoke-provider-breach-notification-clause",
         "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",
@@ -302,7 +302,7 @@
       "operating_model": "Agent-PaaS",
       "accountable_persona": "model-provider",
       "accountable_party": "shared",
-      "note": "Lead sits with the model provider for the foundation model; customer owns validating model behavior under its own agent workloads. Name the single lead per finding.",
+      "note": "Lead sits with the model provider for the foundation model. The customer owns validating model behavior under its own agent workloads. Name the single lead per finding.",
       "breach_action": {
         "critical": "escalate-to-model-provider-on-call-within-1h; pin-to-prior-known-good-model-version; invoke-provider-breach-notification-clause",
         "high": "open-p1-remediation-ticket-with-provider; notify-ai-system-governance-within-24h",

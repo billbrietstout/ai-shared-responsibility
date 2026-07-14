@@ -2,7 +2,7 @@
   "$schema_version": "0.1",
   "srf_version": "1.0",
   "updated": "2026-07-12",
-  "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity; every threat definition here belongs to its external source. This file adds the three answers no threat catalog carries: who must authorize the mitigating activity, who owns each finding, and who signs the residual risk.",
+  "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers.",
   "id_convention": "Entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Threat names and the impact and attack_surface fields are taken verbatim from the AI Exchange AI security matrix. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json.",
   "accountability_convention": "One accountable persona per threat per operating model. The responsibility object quotes the customer and provider cell values verbatim from /data/matrix.json for the threat's primary SRF layer. Where the matrix says shared, this file still names a single accountable lead and records the counterparty obligation in the note, because shared is not a valid final answer.",
   "verification": {
@@ -379,7 +379,7 @@
       "attack_surface": "Runtime, model use",
       "srf_layer": "L5",
       "affected_layers": ["L3", "L5"],
-      "layer_rationale": "Sensitive training data escapes through model output. The model layer owns what the model memorized; the application layer owns output filtering as a compensating control.",
+      "layer_rationale": "Sensitive training data escapes through model output. The model layer owns what the model memorized. The application layer owns output filtering as a compensating control.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",

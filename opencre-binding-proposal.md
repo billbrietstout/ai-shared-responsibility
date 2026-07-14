@@ -8,7 +8,7 @@ The MOSAIC shared taxonomy, built on OpenCRE by the OWASP AI Exchange, links wha
 
 ## What the SRF contributes
 
-Every MOSAIC participant answers a different question. BIML, the AI Exchange, and ATLAS say what can go wrong. CIS, CSA, and the AI Exchange controls say what good looks like. AIVSS says how bad a finding is. The SRF answers the three questions the others leave open, for every activity in the AI security lifecycle:
+Each MOSAIC participant covers different ground. BIML, the AI Exchange, and ATLAS document what can go wrong. CIS, CSA, and the AI Exchange controls document what good looks like. AIVSS rates how bad a finding is. None of them record accountability. The SRF adds that, for every activity in the AI security lifecycle:
 
 1. Who must authorize the activity.
 2. Who owns each result.
@@ -37,11 +37,11 @@ These are proposals for a working session with the OpenCRE maintainers, not publ
 
 ## What this is not
 
-The SRF stays in its accountability lane. It does not define attack techniques, threats, or test methodology (BIML, the AI Exchange, ATLAS, and NIST AI 100-2 own that). It does not define control content or benchmarks (CIS, CSA AICM, and the AI Exchange controls own that). It does not score severity (AIVSS owns that). It creates no regulatory obligations. The binding adds one axis to the taxonomy: accountability.
+The SRF stays in its accountability lane. Attack techniques, threats, and test methodology belong to BIML, the AI Exchange, ATLAS, and NIST AI 100-2. Control content and benchmarks belong to CIS, CSA AICM, and the AI Exchange controls. Severity scoring belongs to AIVSS. The SRF creates no regulatory obligations. The binding adds accountability data to the taxonomy and nothing else.
 
 ## Worked example
 
-An engineer lands on the AI Exchange's direct prompt injection page through the taxonomy. Today the taxonomy can take her to controls and to related standards. With the binding, it can also resolve: this threat lands at SRF layer L3; under AI-PaaS the accountable persona is the application developer on the customer side; under AI-SaaS it is provider-managed, so customer testing requires provider authorization. The companion crosswalk (`data/threats.json` on the site) publishes exactly this resolution for the sixteen threats in the AI Exchange security matrix, with mappings to the LLM Top 10, ATLAS techniques, and BIML risk IDs.
+The AI Exchange page for direct prompt injection links to controls and related standards through the taxonomy today. With the binding it can also resolve the accountability data. The threat lands at SRF layer L3. Under AI-PaaS the accountable persona is the application developer on the customer side. Under AI-SaaS the layer is provider-managed, so customer testing requires provider authorization. The companion crosswalk (`data/threats.json` on the site) publishes this resolution for the sixteen threats in the AI Exchange security matrix, with mappings to the LLM Top 10, ATLAS techniques, and BIML risk IDs.
 
 ## Ask
 
