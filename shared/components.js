@@ -112,7 +112,7 @@ class SiteFooter extends HTMLElement {
       <footer class="footer">
         <div class="footer__inner">
           <span>
-            &copy; ${year} The CoSAI Wizards Authors.
+            &copy; ${year} <a href="https://www.linkedin.com/in/billstout/">Bill Stout</a>, built with Claude Fable 5.
             Content licensed
             <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>;
             code
