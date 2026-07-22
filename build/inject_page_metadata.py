@@ -88,6 +88,10 @@ def classify(rel):
         return "industries", ["srf.framework.cosai-srf", "srf.concept.control"] + LAYERS
     if top == "about":
         return "about", ["srf.framework.cosai-srf"]
+    if top == "agentic-ai-security":
+        return "reference", ["srf.framework.cosai-srf"] + ACCT + [
+            "srf.concept.agentic-system", "srf.concept.autonomy-level",
+            "srf.concept.human-override-tier"]
     if top == "changelog":
         return "reference", ["srf.framework.cosai-srf"]
     if top == "developers":
