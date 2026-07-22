@@ -4,11 +4,64 @@
 
 ## Scope and Method {#scope-and-method}
 
-This document draws from forty-one publicly available papers, listed in full under [Source Documents](#sources). Sections 1 through 11 cover agent-specific security: identity, delegation, autonomy, and the Model Context Protocol. Sections 12 through 20 cover the broader supply-chain, data, governance, and application-security material that agentic systems sit on top of without being specific to agents themselves. The two halves are meant to be read together, since almost every agent-specific rule in the first half assumes a foundation from the second half is already in place; an organization that has solved delegation-chain narrowing but not model provenance has only secured half the stack.
+This document draws from forty-one publicly available papers. Sections 1 through 11 cover agent-specific security: identity, delegation, autonomy, and the Model Context Protocol. Sections 12 through 20 cover the broader supply-chain, data, governance, and application-security material that agentic systems sit on top of without being specific to agents themselves. Sections 21 and 22 were added after checking this document against a separate, independently compiled catalog of classic security engineering principles (Saltzer and Schroeder, NIST SP 800-27, ISO 27001, CIS's own design principles, and Microsoft's immutable laws of security); both name places where that older, broader body of principles asks a question this AI-security corpus does not yet answer, rather than restating material the first twenty sections already cover. The two halves are meant to be read together, since almost every agent-specific rule in the first half assumes a foundation from the second half is already in place; an organization that has solved delegation-chain narrowing but not model provenance has only secured half the stack.
 
-Rather than summarizing each paper on its own, the document groups the recurring axioms, invariant rules, and principles by topic, so a single idea can be cited once even when three or four different organizations independently arrived at it. Each claim below names the source or sources it came from, using the short codes defined in the source table, so a reader can trace any single sentence back to its origin without re-reading the whole paper. Each section also closes with an OpenCRE crosswalk line, naming the OpenCRE topic categories the section's sources map to, so the material can be cross-referenced against OpenCRE's own taxonomy rather than treated as a closed, self-contained vocabulary.
+Rather than summarizing each paper on its own, the document groups the recurring axioms, invariant rules, and principles by topic, so a single idea can be cited once even when three or four different organizations independently arrived at it. Each claim below names the source or sources it came from, using the short codes defined in the [Source Documents](#sources) table directly below, placed here rather than at the end so a code is defined before the first time it's used, not after. Each section also closes with an OpenCRE crosswalk line, naming the OpenCRE topic categories the section's sources map to, so the material can be cross-referenced against OpenCRE's own taxonomy rather than treated as a closed, self-contained vocabulary.
 
 Where sources disagree, or where one organization's position goes further than the rest, that difference is called out rather than smoothed into a false consensus. Several sections note where a rule first appeared in an older, narrower paper and was later restated in stronger form by a newer one; where that happens, both are cited, since the earlier paper is often more specific about the mechanism even when the newer one states the principle more forcefully.
+
+## Source Documents {#sources}
+
+**Agentic security (Sections 1-11)**
+
+| Code | Title | Organization | Date | Link |
+|---|---|---|---|---|
+| CIS-AGENTS | Artificial Intelligence (AI) Agents Companion Guide (CIS Controls v8.1) | Center for Internet Security | April 20, 2026 | https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-agents-companion-guide |
+| CIS-MCP | Model Context Protocol (MCP) Companion Guide (CIS Controls v8.1) | Center for Internet Security | April 20, 2026 | https://www.cisecurity.org/insights/white-papers/controls-v8-1-model-context-protocol-companion-guide |
+| CSA-IAM | Agentic AI Identity & Access Management: A New Approach | Cloud Security Alliance | 2026 | https://cloudsecurityalliance.org/artifacts/agentic-ai-identity-and-access-management-a-new-approach |
+| COSAI-SBD | CoSAI Principles for Secure-by-Design Agentic Systems | Coalition for Secure AI | July 14, 2025 | https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/main/model-context-protocol-security.md |
+| COSAI-MCP | Model Context Protocol (MCP) Security | Coalition for Secure AI | Jan 27, 2026 | https://github.com/cosai-oasis (model-context-protocol-security.md) |
+| COSAI-FUTURE | The Future of Agentic Security: From Chatbots to Autonomous Swarms | Coalition for Secure AI | March 16, 2026 | https://www.coalitionforsecureai.org/wp-content/uploads/2026/03/the-future-of-agentic-security.pdf |
+| COSAI-IAM | Agentic Identity and Access Management | Coalition for Secure AI | April 17, 2026 | https://www.coalitionforsecureai.org/wp-content/uploads/2026/04/agentic-identity-and-access-control.pdf |
+| OWASP-MCP-CHEAT | CheatSheet: A Practical Guide for Securely Using Third-Party MCP Servers 1.0 | OWASP GenAI Security Project | Nov 4, 2025 | https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/ |
+| OWASP-TOP10 | OWASP Top 10 for Agentic Applications 2026 | OWASP GenAI Security Project | Dec 9, 2025 | https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/ |
+| OWASP-MCP-DEV | A Practical Guide for Secure MCP Server Development | OWASP GenAI Security Project | Feb 16, 2026 | https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/ |
+| OWASP-STATE | State of Agentic AI Security and Governance 2.01 | OWASP GenAI Security Project | June 1, 2026 | https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/ |
+| COSAI-SRF | AI Shared Responsibility Framework (SRF) v1.0 | Coalition for Secure AI | May 26, 2026 | https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf |
+
+**Supply chain and general AI security (Sections 12-20)**
+
+| Code | Title | Organization | Date | Link |
+|---|---|---|---|---|
+| BIML-SE | Security Engineering for Machine Learning (IEEE Computer) | Berryville Institute of Machine Learning | Aug 2019 | https://apothecaryshed.files.wordpress.com/2019/08/biml-computer-8.19.pdf |
+| BIML-ARA | An Architectural Risk Analysis of Machine Learning Systems (BIML-78) | Berryville Institute of Machine Learning | Jan 20, 2020 | https://berryvilleiml.com/results/ara.pdf |
+| BIML-LLM24 | An Architectural Risk Analysis of Large Language Models (BIML-LLM24) | Berryville Institute of Machine Learning | Jan 24, 2024 | https://berryvilleiml.com/results/BIML-LLM24.pdf |
+| BIML-23RISKS | 23 Security Risks in Black-Box Large Language Model Foundation Models (IEEE Computer) | Berryville Institute of Machine Learning | April 2024 | https://apothecaryshed.com/wp-content/uploads/2024/05/23_Security_Risks_in_Black-Box_Large_Language_Model_Foundation_Models.pdf |
+| BIML-NOMETER | No Security Meter for AI | Berryville Institute of Machine Learning | May 13, 2026 | https://berryvilleiml.com/results/no-security-meter-ai.pdf |
+| CIS-LLM | Artificial Intelligence and Large Language Models (LLM) Companion Guide (CIS Controls v8.1) | Center for Internet Security | April 20, 2026 | https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-llm-companion-guide |
+| CSA-AICM1 | AI Controls Matrix (AICM) v1 | Cloud Security Alliance | July 10, 2025 | https://cloudsecurityalliance.org/artifacts/ai-controls-matrix |
+| CSA-AICM11 | AI Controls Matrix (AICM) v1.1 | Cloud Security Alliance | June 22, 2026 | https://cloudsecurityalliance.org/artifacts/ai-controls-matrix-v1-1 |
+| CSA-STATE | The State of Cloud and AI Security 2025 | Cloud Security Alliance | 2025 | https://cloudsecurityalliance.org/artifacts/the-state-of-cloud-and-ai-security-2025 |
+| CSA-DATA | Data Security within AI Environments | Cloud Security Alliance | 2025/2026 | https://cloudsecurityalliance.org/artifacts/data-security-within-ai-environments |
+| CSA-VULN | AI Vulnerability: Security Program Guide for CISOs | Cloud Security Alliance | Sept/Oct 2025 | https://github.com/cosai-oasis/ws1-supply-chain/blob/main/risks-and-controls-for-the-ai-supply-chain-v1.md |
+| COSAI-SUPPLY | Establish Risks and Controls for the AI Supply Chain | Coalition for Secure AI | 2024 (v1) | https://github.com/cosai-oasis/ws1-supply-chain/blob/main/signing-ml-artifacts.md |
+| COSAI-SIGN | Signing ML Artifacts: Building Towards Tamper-Proof ML Metadata Records | Coalition for Secure AI | Sept 29, 2025 | https://github.com/cosai-oasis/ws2-defenders/blob/main/preparing-defenders-of-ai-systems.md |
+| COSAI-DEFEND | Preparing Defenders of AI Systems | Coalition for Secure AI | 2024 | https://github.com/cosai-oasis/ws2-defenders/blob/main/incident-response/AI%20Incident%20Response.md |
+| COSAI-IR | AI Incident Response Framework | Coalition for Secure AI | Oct 30, 2025 | https://github.com/cosai-oasis/cosai-tsc/blob/main/security-principles-for-agentic-systems.md |
+| NIST-RMF | AI Risk Management Framework (AI RMF 1.0) | National Institute of Standards and Technology | Jan 26, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
+| NIST-PLAYBOOK | AI RMF Playbook | National Institute of Standards and Technology | March 30, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
+| NIST-GAI | AI RMF: Generative Artificial Intelligence Profile (NIST AI 600-1) | National Institute of Standards and Technology | July 26, 2024 | https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf |
+| NIST-ADVML | Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2) | National Institute of Standards and Technology | 2024, updated 2025 | https://nvlpubs.nist.gov/nistpubs/ai/ |
+| OWASP-AIEXCHANGE | AI Exchange (owaspai.org): AI Security Overview & Controls Guide | OWASP AI Exchange | Living document, 2022-2026 | https://owaspai.org/ |
+| OWASP-LLMTOP10 | OWASP Top 10 for LLM Applications & Generative AI (2025) | OWASP GenAI Security Project | 2025 | https://genai.owasp.org/llm-top-10/ |
+| OWASP-IR | GenAI Incident Response Guide 1.0 | OWASP GenAI Security Project | July 28, 2025 | https://genai.owasp.org/resource/genai-incident-response-guide-1-0/ |
+| OWASP-SOLUTIONS | Solutions Reference Guide Q2/Q3'25 | OWASP GenAI Security Project | Nov 4, 2025 | https://genai.owasp.org/resource/owasp-genai-security-project-solutions-reference-guide-q2_q325/ |
+| OWASP-REDTEAM | Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling v1.0 | OWASP GenAI Security Project | Feb 4, 2026 | https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/ |
+| OWASP-DATASEC | OWASP GenAI Data Security Risks & Mitigations 2026 | OWASP GenAI Security Project | March 17, 2026 | https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/ |
+| SANS-CAISG1 | Critical AI Security Guidelines v1.0 | SANS Institute | March 31, 2025 | https://www.sans.org/mlp/critical-ai-security-guidelines |
+| SANS-CAISG11 | Critical AI Security Guidelines v1.1 (draft) | SANS Institute | April 2025 | https://github.com/sans-community/ai-guidelines |
+| SANS-CAISG12 | Critical AI Security Guidelines v1.2 | SANS Institute | 2026 | https://www.aigl.blog/critical-ai-security-guidelines-v1-2/ |
+| SANS-BLUEPRINT | Own AI Securely: The SANS Secure AI Blueprint | SANS Institute | 2025 | https://www.sans.org/white-papers/own-ai-securely-sans-secure-ai-blueprint |
 
 ## 1. Agent Identity and Non-Human Principals {#agent-identity}
 
@@ -51,6 +104,7 @@ OWASP-MCP-DEV names the specific failure this design prevents: passing a raw ups
 - Delegation chains stay traceable back to the human principal that originated them (OWASP-STATE, COSAI-FUTURE)
 - Revoking a delegation at any point in a chain automatically invalidates every downstream delegation built on it (COSAI-IAM)
 - A retrieval or query agent never operates with broader entitlements than the identity that invoked it, regardless of the agent's own standing access (COSAI-FUTURE)
+- An authoring agent never self-approves its own pull request or bypasses CI/CD to deploy a unilateral change; write access stops at the declarative repository, with production deployment enforced through immutable GitOps rather than direct agent write access to the runtime (COSAI-FUTURE)
 
 **OpenCRE crosswalk:** Access Control, Authentication, Session Management, Authorization.
 
@@ -64,6 +118,7 @@ The underlying logic connects back to the untrusted-input problem covered in [Un
 - Access grants expire automatically instead of persisting past the task that required them (OWASP-TOP10, OWASP-MCP-CHEAT)
 - Environment teardown is a guaranteed platform property, not best-effort cleanup (COSAI-FUTURE)
 - Ephemeral execution functions as a containment strategy for attacks that can't be reliably filtered at the input layer (COSAI-FUTURE, cross-referenced with OWASP-STATE)
+- Network egress from an autonomous execution environment defaults to deny, with swarm topology bounded rather than left open-ended, pairing network-level containment with the compute-level containment ephemerality already provides (COSAI-FUTURE)
 
 **OpenCRE crosswalk:** Secure Product Design, Configuration Management, Access Control.
 
@@ -176,6 +231,7 @@ BIML-LLM24 and BIML-23RISKS extend this to foundation models specifically: a fou
 - Training data curation, provenance, and integrity are a foundational control, not an afterthought (BIML-LLM24, BIML-23RISKS)
 - Red-teaming and anthropomorphizing a model are treated with explicit skepticism as sufficient validation on their own (BIML-LLM24, BIML-23RISKS, BIML-NOMETER)
 - Recursive pollution, meaning a model trained on its own or another model's output, degrades integrity across generations and has to be guarded against directly (BIML-LLM24, BIML-23RISKS)
+- Reusing a pretrained or transfer-learned model carries the risk of an inherited backdoor or Trojan planted in the original training run, which no amount of downstream fine-tuning reliably removes (BIML-ARA)
 - Randomness used for model weights and thresholds relies on cryptographic-grade generators, never naive or predictable ones (BIML-23RISKS)
 - Security assurance follows a process-based model, measuring the rigor of development rather than scoring model output as a proxy for security (BIML-NOMETER)
 
@@ -208,6 +264,7 @@ OWASP-REDTEAM makes a related point from the testing side rather than the taxono
 - No mitigation offers an absolute guarantee; empirical defenses remain vulnerable to attacker techniques that haven't been invented yet (NIST-ADVML)
 - A robustness-accuracy trade-off is treated as inherent to current mitigation techniques, not a solvable engineering gap (NIST-ADVML)
 - Predictive AI and generative AI require related but distinct attack taxonomies rather than one taxonomy applied uniformly to both (NIST-ADVML)
+- A standardized, common terminology is used across the ML and cybersecurity communities, so an attack described by a data scientist and a security engineer resolves to the same classification rather than two incompatible vocabularies (NIST-ADVML)
 
 **OpenCRE crosswalk:** Threat Modeling, Data Protection, Supply Chain, Vulnerability Management, Secure Product Design, Training and Awareness.
 
@@ -288,11 +345,12 @@ CIS-LLM requires a strict separation between system prompts, user input, and ret
 
 ## 20. Enterprise AI Security Programs and Organizational Readiness {#enterprise-readiness}
 
-SANS-CAISG1 opens with a stance the rest of the corpus assumes but rarely states directly: the biggest risk of AI is not using it, so a security team's job is to secure adoption, not block it, and the guidance itself is explicitly point-in-time given how fast the landscape moves, which is a candid acknowledgment that a guidelines document in this space has a shorter useful shelf life than most security guidance historically has. It's also blunt that a model's guardrails are never a sufficient boundary on their own: a model must never have access to data or actions it isn't permitted to disclose or take, regardless of how strong its guardrails are, which restates the access-control-never-delegated-to-the-model rule from [General LLM and GenAI Application Security](#llm-appsec) as an architectural requirement rather than a policy statement, meaning the access simply shouldn't exist for the model to disclose in the first place, rather than existing and being suppressed by a guardrail.
+SANS-CAISG1 opens with a stance the rest of the corpus assumes but rarely states directly: the biggest risk of AI is not using it, so a security team's job is to secure adoption, not block it, and the guidance itself is explicitly point-in-time given how fast the landscape moves, which is a candid acknowledgment that a guidelines document in this space has a shorter useful shelf life than most security guidance historically has. It also states a design axiom that cuts against the impulse to solve agentic risk by layering on more controls: complexity is the enemy of security, so a simpler agent architecture with fewer moving parts is treated as a genuine security advantage in its own right, not merely an operational convenience traded off against safety. It's also blunt that a model's guardrails are never a sufficient boundary on their own: a model must never have access to data or actions it isn't permitted to disclose or take, regardless of how strong its guardrails are, which restates the access-control-never-delegated-to-the-model rule from [General LLM and GenAI Application Security](#llm-appsec) as an architectural requirement rather than a policy statement, meaning the access simply shouldn't exist for the model to disclose in the first place, rather than existing and being suppressed by a guardrail.
 
 SANS-BLUEPRINT treats model registries as non-negotiable for production AI governance and places ultimate accountability for AI risk outcomes on the board and executive team, not the security function alone, framing AI as the most transformative technology shift since the internet and organizing its guidance around a three-track accountability model: protect AI, utilize AI, and govern AI, run as distinct but coordinated tracks rather than folded into a single undifferentiated AI security effort. It also states a position phrased more aggressively than anywhere else in the corpus: security teams need to "fight fire with fire," using AI defensively to match the speed of AI-assisted attacks, on the premise that a purely human-paced defensive process cannot keep up with an AI-accelerated offensive one. CSA-STATE, looking at the broader cloud environment AI now runs inside of, finds a widening gap between how fast AI adoption is moving and how ready security programs actually are, and names identity, not infrastructure, as the primary attack surface for both cloud and AI workloads alike, adding that most current security programs remain reactive and incident-focused by default rather than preventive, even though the organizations surveyed generally already know that a preventive posture would serve them better.
 
 - A model's guardrails are never treated as a sufficient security boundary on their own (SANS-CAISG1, SANS-CAISG11)
+- Complexity is treated as the enemy of security in its own right; a simpler architecture is a security advantage, not just an operational one (SANS-CAISG1)
 - Model registries are a non-negotiable governance requirement for production AI (SANS-BLUEPRINT)
 - Ultimate accountability for AI risk outcomes sits with the board and executive team, not the security function alone (SANS-BLUEPRINT)
 - Identity, not infrastructure, is the primary attack surface for both cloud and AI workloads (CSA-STATE)
@@ -302,55 +360,27 @@ SANS-BLUEPRINT treats model registries as non-negotiable for production AI gover
 
 **OpenCRE crosswalk:** Access Control, Data Protection, Log Management, Secure Product Design, Supply Chain, Training and Awareness, Governance Risk and Compliance.
 
-## Source Documents {#sources}
+## 21. System Decommissioning and Availability {#decommissioning-availability}
 
-**Agentic security (Sections 1-11)**
+This section is deliberately short, because the underlying corpus is thin here, and that thinness is itself worth stating plainly rather than padding over. Only two sources address it directly. NIST-GAI requires that a mechanism always exist to deactivate or decommission a GAI system found to pose unacceptable risk, treating shutdown as a designed capability rather than something improvised after the fact once a system is already flagged as dangerous. CSA-AICM1 names Denial of Service as its own explicit threat category within the AI Controls Matrix, alongside model manipulation and data poisoning, rather than folding availability risk into a generic "resilience" catch-all the way several other sources in this corpus tend to.
 
-| Code | Title | Organization | Date | Link |
-|---|---|---|---|---|
-| CIS-AGENTS | Artificial Intelligence (AI) Agents Companion Guide (CIS Controls v8.1) | Center for Internet Security | April 20, 2026 | https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-agents-companion-guide |
-| CIS-MCP | Model Context Protocol (MCP) Companion Guide (CIS Controls v8.1) | Center for Internet Security | April 20, 2026 | https://www.cisecurity.org/insights/white-papers/controls-v8-1-model-context-protocol-companion-guide |
-| CSA-IAM | Agentic AI Identity & Access Management: A New Approach | Cloud Security Alliance | 2026 | https://cloudsecurityalliance.org/artifacts/agentic-ai-identity-and-access-management-a-new-approach |
-| COSAI-SBD | CoSAI Principles for Secure-by-Design Agentic Systems | Coalition for Secure AI | July 14, 2025 | https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/main/model-context-protocol-security.md |
-| COSAI-MCP | Model Context Protocol (MCP) Security | Coalition for Secure AI | Jan 27, 2026 | https://github.com/cosai-oasis (model-context-protocol-security.md) |
-| COSAI-FUTURE | The Future of Agentic Security: From Chatbots to Autonomous Swarms | Coalition for Secure AI | March 16, 2026 | https://www.coalitionforsecureai.org/wp-content/uploads/2026/03/the-future-of-agentic-security.pdf |
-| COSAI-IAM | Agentic Identity and Access Management | Coalition for Secure AI | April 17, 2026 | https://www.coalitionforsecureai.org/wp-content/uploads/2026/04/agentic-identity-and-access-control.pdf |
-| OWASP-MCP-CHEAT | CheatSheet: A Practical Guide for Securely Using Third-Party MCP Servers 1.0 | OWASP GenAI Security Project | Nov 4, 2025 | https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/ |
-| OWASP-TOP10 | OWASP Top 10 for Agentic Applications 2026 | OWASP GenAI Security Project | Dec 9, 2025 | https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/ |
-| OWASP-MCP-DEV | A Practical Guide for Secure MCP Server Development | OWASP GenAI Security Project | Feb 16, 2026 | https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/ |
-| OWASP-STATE | State of Agentic AI Security and Governance 2.01 | OWASP GenAI Security Project | June 1, 2026 | https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/ |
-| COSAI-SRF | AI Shared Responsibility Framework (SRF) v1.0 | Coalition for Secure AI | May 26, 2026 | https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf |
+Neither source goes further than that. No paper in this corpus discusses disaster recovery, business continuity planning, or backup and failover specifically for AI systems, the way CIS Control 11 (Data Recovery) or NIST SP 800-27's contingency-planning principle require for traditional IT. That silence runs across all forty-one sources, not just a couple of them, which makes it a gap in the field's current literature, not a gap this synthesis introduced by summarizing selectively.
 
-**Supply chain and general AI security (Sections 12-20)**
+- A deactivation or decommissioning mechanism is a designed system capability, not an improvised response built after a system is already flagged as unacceptably risky (NIST-GAI)
+- Denial of Service is treated as its own named threat category for AI systems, not folded into a generic resilience catch-all (CSA-AICM1)
+- Disaster recovery, business continuity, and failover planning specific to AI systems have no dedicated treatment anywhere in this corpus, a silence spanning all forty-one sources rather than an oversight in a handful of them
 
-| Code | Title | Organization | Date | Link |
-|---|---|---|---|---|
-| BIML-SE | Security Engineering for Machine Learning (IEEE Computer) | Berryville Institute of Machine Learning | Aug 2019 | https://apothecaryshed.files.wordpress.com/2019/08/biml-computer-8.19.pdf |
-| BIML-ARA | An Architectural Risk Analysis of Machine Learning Systems (BIML-78) | Berryville Institute of Machine Learning | Jan 20, 2020 | https://berryvilleiml.com/results/ara.pdf |
-| BIML-LLM24 | An Architectural Risk Analysis of Large Language Models (BIML-LLM24) | Berryville Institute of Machine Learning | Jan 24, 2024 | https://berryvilleiml.com/results/BIML-LLM24.pdf |
-| BIML-23RISKS | 23 Security Risks in Black-Box Large Language Model Foundation Models (IEEE Computer) | Berryville Institute of Machine Learning | April 2024 | https://apothecaryshed.com/wp-content/uploads/2024/05/23_Security_Risks_in_Black-Box_Large_Language_Model_Foundation_Models.pdf |
-| BIML-NOMETER | No Security Meter for AI | Berryville Institute of Machine Learning | May 13, 2026 | https://berryvilleiml.com/results/no-security-meter-ai.pdf |
-| CIS-LLM | Artificial Intelligence and Large Language Models (LLM) Companion Guide (CIS Controls v8.1) | Center for Internet Security | April 20, 2026 | https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-llm-companion-guide |
-| CSA-AICM1 | AI Controls Matrix (AICM) v1 | Cloud Security Alliance | July 10, 2025 | https://cloudsecurityalliance.org/artifacts/ai-controls-matrix |
-| CSA-AICM11 | AI Controls Matrix (AICM) v1.1 | Cloud Security Alliance | June 22, 2026 | https://cloudsecurityalliance.org/artifacts/ai-controls-matrix-v1-1 |
-| CSA-STATE | The State of Cloud and AI Security 2025 | Cloud Security Alliance | 2025 | https://cloudsecurityalliance.org/artifacts/the-state-of-cloud-and-ai-security-2025 |
-| CSA-DATA | Data Security within AI Environments | Cloud Security Alliance | 2025/2026 | https://cloudsecurityalliance.org/artifacts/data-security-within-ai-environments |
-| CSA-VULN | AI Vulnerability: Security Program Guide for CISOs | Cloud Security Alliance | Sept/Oct 2025 | https://github.com/cosai-oasis/ws1-supply-chain/blob/main/risks-and-controls-for-the-ai-supply-chain-v1.md |
-| COSAI-SUPPLY | Establish Risks and Controls for the AI Supply Chain | Coalition for Secure AI | 2024 (v1) | https://github.com/cosai-oasis/ws1-supply-chain/blob/main/signing-ml-artifacts.md |
-| COSAI-SIGN | Signing ML Artifacts: Building Towards Tamper-Proof ML Metadata Records | Coalition for Secure AI | Sept 29, 2025 | https://github.com/cosai-oasis/ws2-defenders/blob/main/preparing-defenders-of-ai-systems.md |
-| COSAI-DEFEND | Preparing Defenders of AI Systems | Coalition for Secure AI | 2024 | https://github.com/cosai-oasis/ws2-defenders/blob/main/incident-response/AI%20Incident%20Response.md |
-| COSAI-IR | AI Incident Response Framework | Coalition for Secure AI | Oct 30, 2025 | https://github.com/cosai-oasis/cosai-tsc/blob/main/security-principles-for-agentic-systems.md |
-| NIST-RMF | AI Risk Management Framework (AI RMF 1.0) | National Institute of Standards and Technology | Jan 26, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
-| NIST-PLAYBOOK | AI RMF Playbook | National Institute of Standards and Technology | March 30, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
-| NIST-GAI | AI RMF: Generative Artificial Intelligence Profile (NIST AI 600-1) | National Institute of Standards and Technology | July 26, 2024 | https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf |
-| NIST-ADVML | Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2) | National Institute of Standards and Technology | 2024, updated 2025 | https://nvlpubs.nist.gov/nistpubs/ai/ |
-| OWASP-AIEXCHANGE | AI Exchange (owaspai.org): AI Security Overview & Controls Guide | OWASP AI Exchange | Living document, 2022-2026 | https://owaspai.org/ |
-| OWASP-LLMTOP10 | OWASP Top 10 for LLM Applications & Generative AI (2025) | OWASP GenAI Security Project | 2025 | https://genai.owasp.org/llm-top-10/ |
-| OWASP-IR | GenAI Incident Response Guide 1.0 | OWASP GenAI Security Project | July 28, 2025 | https://genai.owasp.org/resource/genai-incident-response-guide-1-0/ |
-| OWASP-SOLUTIONS | Solutions Reference Guide Q2/Q3'25 | OWASP GenAI Security Project | Nov 4, 2025 | https://genai.owasp.org/resource/owasp-genai-security-project-solutions-reference-guide-q2_q325/ |
-| OWASP-REDTEAM | Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling v1.0 | OWASP GenAI Security Project | Feb 4, 2026 | https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/ |
-| OWASP-DATASEC | OWASP GenAI Data Security Risks & Mitigations 2026 | OWASP GenAI Security Project | March 17, 2026 | https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/ |
-| SANS-CAISG1 | Critical AI Security Guidelines v1.0 | SANS Institute | March 31, 2025 | https://www.sans.org/mlp/critical-ai-security-guidelines |
-| SANS-CAISG11 | Critical AI Security Guidelines v1.1 (draft) | SANS Institute | April 2025 | https://github.com/sans-community/ai-guidelines |
-| SANS-CAISG12 | Critical AI Security Guidelines v1.2 | SANS Institute | 2026 | https://www.aigl.blog/critical-ai-security-guidelines-v1-2/ |
-| SANS-BLUEPRINT | Own AI Securely: The SANS Secure AI Blueprint | SANS Institute | 2025 | https://www.sans.org/white-papers/own-ai-securely-sans-secure-ai-blueprint |
+**OpenCRE crosswalk:** Governance Risk and Compliance, Secure Product Design, Vulnerability Management.
+
+## 22. Human Factors and the Limits of Technical Controls {#human-factors}
+
+This section exists mainly to name an absence. Classic security engineering treats a control's usability as inseparable from its effectiveness: Saltzer and Schroeder's psychological acceptability, NIST SP 800-27's call to strive for operational ease of use, and Microsoft's "productivity always wins" all warn that a control too painful for a real operator to live with gets bypassed in practice, regardless of how sound it looks on paper. Almost none of the forty-one sources in this corpus engage with that warning directly. The one partial exception is SANS-CAISG1, covered in [Enterprise AI Security Programs and Organizational Readiness](#enterprise-readiness), whose complexity-is-the-enemy-of-security axiom gestures at the same concern from the design side: a simpler system is easier to secure in part because it's easier for the humans running it to actually understand and operate correctly, though SANS-CAISG1 frames this as an architectural virtue rather than a direct statement about control adoption or operator burnout.
+
+The rest of the corpus is silent on the question. Zero Standing Privilege, continuous re-verification, per-hop delegation checks, dual sign-off for MCP servers, and quarterly autonomy-level reviews are all real, repeatedly-cited controls in this document, and every one of them adds friction for the humans who have to operate around them. None of the forty-one sources ask whether that friction causes those controls to get quietly disabled, worked around, or rubber-stamped under deadline pressure, the way a generation of classic security engineering explicitly warned it would. That is a structural blind spot in the current AI security literature itself, not a synthesis choice made in writing this document, and it is worth an organization's attention precisely because the rest of this whitepaper is built almost entirely out of controls that could fail exactly this way.
+
+- A control's effectiveness is inseparable from whether the humans operating it can tolerate using it, per classic security engineering; this consideration is almost entirely absent from the AI-specific corpus synthesized here
+- A simpler architecture is treated as easier to secure in part because it is easier to operate correctly, though only as an implicit design virtue rather than a direct study of control adoption or bypass (SANS-CAISG1)
+- None of the forty-one sources examine whether the friction created by their own recommended controls, continuous re-verification, dual sign-off, per-hop checks, leads operators to disable or route around them under real-world pressure
+
+**OpenCRE crosswalk:** Training and Awareness, Governance Risk and Compliance.
+
