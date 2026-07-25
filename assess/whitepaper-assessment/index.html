@@ -6,7 +6,7 @@
     <title>Whitepaper Assessment Prompt: CoSAI SRF</title>
     <meta
       name="description"
-      content="Copy-ready prompt for assessing an AI security whitepaper against 87 classic security engineering principles, 120 AI and agentic security principles, and the SRF accountability and regulatory data. Screens the submission itself, maps every claim to a catalog id, and checks threat attribution against the layer that actually owns the control point."
+      content="Copy-ready prompt for assessing an AI security whitepaper against 87 classic security engineering principles, 120 AI and agentic security principles, and the SRF accountability and regulatory data. Screens the submission itself, maps every claim to a catalog id, checks threat attribution against the layer that owns the control point, and reviews working drafts for typos, scattered topics, misdirected links, and machine readability."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -179,8 +179,10 @@
       <p class="page-hero__lede">
         A copy-ready prompt that checks a paper against 87 classic security
         engineering principles, 120 AI and agentic security principles, and the
-        SRF accountability and regulatory data. Paste the prompt, add the paper,
-        and your assistant fetches the catalogs itself. No file uploads.
+        SRF accountability and regulatory data, then reviews a working draft for
+        the mechanical defects that survive ordinary review. Paste the prompt,
+        add the paper, and your assistant fetches the catalogs itself. No file
+        uploads.
       </p>
     </header>
 
@@ -244,7 +246,7 @@
       </div>
 
       <div class="roadmap-block" style="max-width: 720px; margin-bottom: var(--sp-10);">
-        <p class="roadmap-block__title">Two checks that are not principle matching</p>
+        <p class="roadmap-block__title">Three checks that are not principle matching</p>
         <p>
           Step 0 screens the submission itself: undisclosed bot generation,
           self-citation, unverifiable sources, undisclosed vendor sponsorship,
@@ -253,10 +255,19 @@
           review. A paper can align perfectly with both catalogs and still fail
           that screen.
         </p>
-        <p style="margin-bottom: 0;">
+        <p>
           Step 6 grounds accountability and regulatory claims in live data rather
           than the reviewing model's recollection, and reports the
           <code>last_verified</code> date behind every regulatory finding.
+        </p>
+        <p style="margin-bottom: 0;">
+          Step 7 runs on working drafts and covers what review usually misses:
+          typos and inconsistent defined terms, topics scattered across
+          non-adjacent sections, near-duplicate statements, and links that
+          resolve but point at the wrong document. It also checks whether the
+          draft is machine readable, meaning stable heading anchors, a heading
+          tree a parser can walk, and sections that still make sense once a
+          retrieval system has chunked them.
         </p>
       </div>
 
@@ -325,13 +336,40 @@ Read the target whitepaper in full before starting. Then work through these step
 - If the paper claims applicability to a specific industry vertical, fetch https://aisharedresponsibility.com/data/{vertical}-controls.json and check its recommendations against that baseline. State plainly that vertical control schemas are independently proposed extensions to CoSAI SRF v1.0, not the official CoSAI release, since that caveat travels with any finding drawn from them.
 - Cite the specific id or URL behind every finding from this step. A null or unmapped field is acceptable; an invented one is not.
 
-7. REPORT. Produce output in this structure:
+7. CHECK DRAFT MECHANICS AND MACHINE READABILITY, if the document is a working draft rather than a finished publication. Skip for a published paper and say so. Drafts fail on mechanics more often than on substance, and these defects cost little to fix before publication and a lot afterward.
+
+Editorial consistency:
+- Typos, grammar, and inconsistent capitalization of defined terms, for example a persona or layer name written three different ways across sections.
+- The same concept given different names in different sections. This breaks reader comprehension and blocks any later mapping to a canonical id.
+- Acronyms used before first expansion, expanded more than once, or never expanded.
+
+Link and citation health. For every URL check two separate things, because they fail independently:
+- Whether it resolves at all.
+- Whether it resolves to the document the citation names. A URL that returns 200 while pointing at a different paper is the failure a link checker cannot catch, and it survives review precisely because the link works. When a document carries a table of sources, verify each row's URL against that row's own title rather than spot-checking, since one inserted row shifts an entire column and every link still resolves.
+- Whether cited standards carry a version and a date. An undated citation to a moving standard cannot be re-verified later.
+
+Structural coherence:
+- One topic addressed across several non-adjacent sections, which usually means the material wants consolidating or explicit cross-references.
+- Near-duplicate statements making the same point in different words. Name both locations so the author picks which to keep.
+- Statements in different sections that contradict each other.
+- Sections nothing else references, and cross-references pointing at sections that do not exist.
+- A heading hierarchy that skips a level.
+
+Machine readability, for any document meant to be read by an agent as well as a person:
+- Stable explicit anchors on headings, so a specific claim can be cited by URL rather than by page number.
+- A heading tree a parser can walk: one H1, no skipped levels, no heading used purely for visual emphasis.
+- Tables with real header rows rather than bold text imitating headers.
+- Sections that stand on their own when read in isolation. Retrieval systems chunk documents, and a section depending on the previous paragraph for its subject loses meaning once chunked.
+- Whether a machine-readable companion exists, such as a JSON export or an llms.txt index, when the document is meant to be agent-consumable.
+
+8. REPORT. Produce output in this structure:
 - A short summary: paper title, scope, and a one-paragraph verdict on how well it aligns with both principle bases.
 - A submission integrity block: findings from step 0, or a plain statement that none were found. Do not omit this section when clean; a reader needs to know the screen ran, not just that it passed.
 - A table with columns: Extracted Principle | Catalog Match (id, catalog) | Status | Note. Note carries the reasoning for Extended, Novel, or Contradicted entries; leave it blank for clean Matched entries.
 - A short list of catalog categories the paper does not touch, from either catalog.
 - A short list of known gaps from `gap_index` the paper either addresses or conspicuously misses.
 - An accountability and regulatory findings block from step 6, or a plain statement that step 6 did not trigger.
+- A draft mechanics block from step 7, if it ran, grouped as editorial, links and citations, structure, and machine readability. Give a file location or section anchor for every finding so the author can act on it without hunting. Separate defects that block publication from suggestions that improve the draft.
 - A short list of Novel candidates worth raising for potential catalog addition.
 
 Write the report in prose and tables only, no nested bullet trees. Keep the verdict and notes direct: state what the paper does and does not cover, skip hedging language, and do not pad a clean bill of health with caveats.</pre>
