@@ -1,0 +1,1134 @@
+{
+  "$schema_version": "1.0",
+  "description": "Classic security engineering principles, axioms, and invariables, normalized from an OSCAL catalog into a flat checklist. Covers Saltzer and Schroeder, NIST SP 800-27, ISO 27001, CIS Controls v8/v8.1, Microsoft's two law sets, and cloud architecture corollaries. Companion catalog: ai-agentic-principles.json.",
+  "updated": "2026-07-25",
+  "generated_from": "security_principles_reference.oscal.json",
+  "method": "Flattened from nested OSCAL catalog/group/control structure to a flat principle list with a framework lookup table. Entries that different frameworks state as literal restatements of one principle were merged into a single entry citing every source. Entries that are thematically related but analytically distinct stay separate and cross-reference through `related`, since collapsing them would cost checklist resolution. Every original control id remains traceable through `src`. CRE-ID mapping to OpenCRE is not done; category tags are a starting filter, not final mappings.",
+  "source_control_count": 93,
+  "count": 87,
+  "frameworks": {
+    "sch": {
+      "name": "Saltzer and Schroeder Engineering Axioms (1975)",
+      "publisher": "Saltzer, J.H. and Schroeder, M.D., Proceedings of the IEEE, 1975"
+    },
+    "nist27": {
+      "name": "NIST SP 800-27 Rev A: Engineering Principles for Information Technology Security",
+      "publisher": "Stoneburner, Hayden, Feringa, NIST, June 2004",
+      "status": "withdrawn, superseded by SP 800-160 (2016)",
+      "reference": "https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-27ra.pdf"
+    },
+    "iso27001": {
+      "name": "ISO/IEC 27001:2022",
+      "publisher": "ISO/IEC 27001:2022, Information security, cybersecurity and privacy protection"
+    },
+    "cis-design": {
+      "name": "CIS Critical Security Controls v8 / v8.1 Design Principles",
+      "publisher": "Center for Internet Security, cisecurity.org/controls/v8"
+    },
+    "cis18": {
+      "name": "CIS Critical Security Controls v8.1 (18 Controls, reference index)",
+      "publisher": "cisecurity.org/controls/cis-controls-list, verified directly"
+    },
+    "ms-immutable": {
+      "name": "Microsoft Ten Immutable Laws of Security (v2, 2017)",
+      "publisher": "Microsoft",
+      "reference": "https://github.com/MicrosoftDocs/security/blob/main/security-docs/zero-trust/ten-laws-of-security.md"
+    },
+    "ms-risk": {
+      "name": "Microsoft Ten Laws of Cybersecurity Risk (companion set, last updated May 2024)",
+      "publisher": "Microsoft",
+      "reference": "https://github.com/MicrosoftDocs/security/blob/main/security-docs/zero-trust/ten-laws-of-security.md"
+    },
+    "cloud": {
+      "name": "Cloud Architecture Corollaries (industry-synthesized, not a Microsoft publication)",
+      "publisher": "Industry synthesis compiled for this project; not officially published by Microsoft"
+    }
+  },
+  "principles": [
+    {
+      "id": "least-privilege",
+      "statement": "Grant only the minimum access needed to perform a task, nothing more.",
+      "category": "access-control",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-1"
+        },
+        {
+          "fw": "nist27",
+          "ref": "nist-p26"
+        }
+      ],
+      "related": [
+        "cis18-6"
+      ]
+    },
+    {
+      "id": "sch-2",
+      "statement": "Deny by default when a decision is ambiguous or a control fails.",
+      "category": "access-control",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-2"
+        }
+      ]
+    },
+    {
+      "id": "sch-3",
+      "statement": "Check every access to every object, every time.",
+      "category": "access-control",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-3"
+        }
+      ],
+      "related": [
+        "nist-p32"
+      ]
+    },
+    {
+      "id": "sch-6",
+      "statement": "Require more than one condition or party to authorize sensitive actions.",
+      "category": "access-control",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-6"
+        }
+      ]
+    },
+    {
+      "id": "iso-availability",
+      "statement": "Data and systems are accessible to authorized users when needed.",
+      "category": "cia-triad",
+      "src": [
+        {
+          "fw": "iso27001",
+          "ref": "iso-availability"
+        }
+      ]
+    },
+    {
+      "id": "iso-confidentiality",
+      "statement": "Information is accessible only to those authorized to have access.",
+      "category": "cia-triad",
+      "src": [
+        {
+          "fw": "iso27001",
+          "ref": "iso-confidentiality"
+        }
+      ]
+    },
+    {
+      "id": "iso-integrity",
+      "statement": "Data is accurate, complete, and protected from unauthorized alteration.",
+      "category": "cia-triad",
+      "src": [
+        {
+          "fw": "iso27001",
+          "ref": "iso-integrity"
+        }
+      ]
+    },
+    {
+      "id": "cis18-1",
+      "statement": "Inventory and Control of Enterprise Assets",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-1"
+        }
+      ]
+    },
+    {
+      "id": "cis18-10",
+      "statement": "Malware Defenses",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-10"
+        }
+      ]
+    },
+    {
+      "id": "cis18-11",
+      "statement": "Data Recovery",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-11"
+        }
+      ]
+    },
+    {
+      "id": "cis18-12",
+      "statement": "Network Infrastructure Management",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-12"
+        }
+      ]
+    },
+    {
+      "id": "cis18-13",
+      "statement": "Network Monitoring and Defense",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-13"
+        }
+      ],
+      "related": [
+        "corollary-3",
+        "ms-risk-7"
+      ]
+    },
+    {
+      "id": "cis18-14",
+      "statement": "Security Awareness and Skills Training",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-14"
+        }
+      ]
+    },
+    {
+      "id": "cis18-15",
+      "statement": "Service Provider Management",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-15"
+        }
+      ],
+      "related": [
+        "corollary-1"
+      ]
+    },
+    {
+      "id": "cis18-16",
+      "statement": "Application Software Security",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-16"
+        }
+      ],
+      "related": [
+        "corollary-1"
+      ]
+    },
+    {
+      "id": "cis18-17",
+      "statement": "Incident Response Management",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-17"
+        }
+      ]
+    },
+    {
+      "id": "cis18-18",
+      "statement": "Penetration Testing",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-18"
+        }
+      ]
+    },
+    {
+      "id": "cis18-2",
+      "statement": "Inventory and Control of Software Assets",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-2"
+        }
+      ]
+    },
+    {
+      "id": "cis18-3",
+      "statement": "Data Protection",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-3"
+        }
+      ]
+    },
+    {
+      "id": "cis18-4",
+      "statement": "Secure Configuration of Enterprise Assets and Software",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-4"
+        }
+      ]
+    },
+    {
+      "id": "cis18-5",
+      "statement": "Account Management",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-5"
+        }
+      ]
+    },
+    {
+      "id": "cis18-6",
+      "statement": "Access Control Management",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-6"
+        }
+      ],
+      "related": [
+        "least-privilege"
+      ]
+    },
+    {
+      "id": "cis18-7",
+      "statement": "Continuous Vulnerability Management",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-7"
+        }
+      ]
+    },
+    {
+      "id": "cis18-8",
+      "statement": "Audit Log Management",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-8"
+        }
+      ]
+    },
+    {
+      "id": "cis18-9",
+      "statement": "Email and Web Browser Protections",
+      "category": "control-category",
+      "src": [
+        {
+          "fw": "cis18",
+          "ref": "cis18-9"
+        }
+      ]
+    },
+    {
+      "id": "encryption-is-not-sufficient",
+      "statement": "Encryption is only as strong as its key management; encryption alone does not constitute a data protection program.",
+      "category": "data-protection",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-7"
+        },
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-9"
+        }
+      ],
+      "related": [
+        "nist-p9"
+      ]
+    },
+    {
+      "id": "nist-p9",
+      "statement": "Protect information while being processed, in transit, and in storage",
+      "category": "data-protection",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p9"
+        }
+      ],
+      "subgroup": "Risk Based",
+      "related": [
+        "encryption-is-not-sufficient"
+      ]
+    },
+    {
+      "id": "economy-of-mechanism",
+      "statement": "Keep designs small and simple enough to verify and reason about.",
+      "category": "design",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-4"
+        },
+        {
+          "fw": "nist27",
+          "ref": "nist-p24"
+        }
+      ]
+    },
+    {
+      "id": "nist-p12",
+      "statement": "Where possible, base security on open standards for portability and interoperability",
+      "category": "design",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p12"
+        }
+      ],
+      "subgroup": "Ease Of Use",
+      "related": [
+        "sch-5"
+      ]
+    },
+    {
+      "id": "nist-p14",
+      "statement": "Design security to allow for regular adoption of new technology, including a secure and logical upgrade process",
+      "category": "design",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p14"
+        }
+      ],
+      "subgroup": "Ease Of Use"
+    },
+    {
+      "id": "nist-p2",
+      "statement": "Treat security as an integral part of the overall system design",
+      "category": "design",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p2"
+        }
+      ],
+      "subgroup": "Security Foundation"
+    },
+    {
+      "id": "nist-p25",
+      "statement": "Minimize the system elements to be trusted",
+      "category": "design",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p25"
+        }
+      ],
+      "subgroup": "Reduce Vulnerabilities",
+      "related": [
+        "sch-7"
+      ]
+    },
+    {
+      "id": "nist-p27",
+      "statement": "Do not implement unnecessary security mechanisms",
+      "category": "design",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p27"
+        }
+      ],
+      "subgroup": "Reduce Vulnerabilities"
+    },
+    {
+      "id": "nist-p3",
+      "statement": "Clearly delineate the physical and logical security boundaries governed by associated security policies",
+      "category": "design",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p3"
+        }
+      ],
+      "subgroup": "Security Foundation"
+    },
+    {
+      "id": "nist-p31",
+      "statement": "Formulate security measures to address multiple overlapping information domains",
+      "category": "design",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p31"
+        }
+      ],
+      "subgroup": "Design With Network In Mind"
+    },
+    {
+      "id": "sch-5",
+      "statement": "Security should not depend on secrecy of the design (Kerckhoffs's principle).",
+      "category": "design",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-5"
+        }
+      ],
+      "related": [
+        "nist-p12"
+      ]
+    },
+    {
+      "id": "sch-7",
+      "statement": "Minimize shared state between users or components.",
+      "category": "design",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-7"
+        }
+      ],
+      "related": [
+        "nist-p25"
+      ]
+    },
+    {
+      "id": "ms-immutable-1",
+      "statement": "If a bad actor can persuade you to run their program on your computer, it's not solely your computer anymore.",
+      "category": "endpoint-security",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-1"
+        }
+      ]
+    },
+    {
+      "id": "ms-immutable-2",
+      "statement": "If a bad actor can alter the operating system on your computer, it's not your computer anymore.",
+      "category": "endpoint-security",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-2"
+        }
+      ]
+    },
+    {
+      "id": "ms-immutable-8",
+      "statement": "An out-of-date antimalware scanner is only marginally better than no scanner at all.",
+      "category": "endpoint-security",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-8"
+        }
+      ]
+    },
+    {
+      "id": "cis-design-3",
+      "statement": "Every safeguard must be specific and practical to implement.",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "cis-design",
+          "ref": "cis-design-3"
+        }
+      ]
+    },
+    {
+      "id": "cis-design-4",
+      "statement": "Every control, especially in Implementation Group 1, must have unambiguous, checkable criteria.",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "cis-design",
+          "ref": "cis-design-4"
+        }
+      ]
+    },
+    {
+      "id": "cis-design-5",
+      "statement": "Coexist with other frameworks (NIST, CSA, MITRE ATT&CK, OWASP) rather than compete with them.",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "cis-design",
+          "ref": "cis-design-5"
+        }
+      ]
+    },
+    {
+      "id": "iso-annex-a",
+      "statement": "93 controls organized into four themes: organizational, people, physical, and technological.",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "iso27001",
+          "ref": "iso-annex-a"
+        }
+      ]
+    },
+    {
+      "id": "iso-clauses",
+      "statement": "Context, leadership, planning, support, operation, performance evaluation, and improvement requirements for the ISMS.",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "iso27001",
+          "ref": "iso-clauses"
+        }
+      ]
+    },
+    {
+      "id": "ms-risk-6",
+      "statement": "Cybersecurity is a team sport.",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-6"
+        }
+      ]
+    },
+    {
+      "id": "nist-p1",
+      "statement": "Establish a sound security policy as the foundation for design",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p1"
+        }
+      ],
+      "subgroup": "Security Foundation"
+    },
+    {
+      "id": "nist-p13",
+      "statement": "Use common language in developing security requirements",
+      "category": "governance",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p13"
+        }
+      ],
+      "subgroup": "Ease Of Use"
+    },
+    {
+      "id": "nist-p4",
+      "statement": "Ensure that developers are trained in how to develop secure software",
+      "category": "human-factors",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p4"
+        }
+      ],
+      "subgroup": "Security Foundation"
+    },
+    {
+      "id": "psychological-acceptability",
+      "statement": "Security controls that are too painful or that hurt productivity get bypassed by real users, so ease of use is a security requirement, not a nice-to-have.",
+      "category": "human-factors",
+      "src": [
+        {
+          "fw": "sch",
+          "ref": "sch-8"
+        },
+        {
+          "fw": "nist27",
+          "ref": "nist-p15"
+        },
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-3"
+        }
+      ]
+    },
+    {
+      "id": "technology-is-not-a-panacea",
+      "statement": "Technology does not solve people and process problems; it is not a substitute for governance, training, and operational discipline.",
+      "category": "human-factors",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-10"
+        },
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-10"
+        }
+      ]
+    },
+    {
+      "id": "corollary-2",
+      "statement": "If the identity system is compromised, the entire cloud infrastructure is compromised.",
+      "category": "identity",
+      "src": [
+        {
+          "fw": "cloud",
+          "ref": "corollary-2"
+        }
+      ],
+      "related": [
+        "ms-immutable-6",
+        "nist-p33"
+      ]
+    },
+    {
+      "id": "corollary-4",
+      "statement": "Any centralized administrative pathway is a primary target for attackers.",
+      "category": "identity",
+      "src": [
+        {
+          "fw": "cloud",
+          "ref": "corollary-4"
+        }
+      ],
+      "related": [
+        "ms-immutable-6"
+      ]
+    },
+    {
+      "id": "ms-immutable-5",
+      "statement": "Weak passwords trump strong security.",
+      "category": "identity",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-5"
+        }
+      ]
+    },
+    {
+      "id": "ms-immutable-6",
+      "statement": "A computer is only as secure as the administrator is trustworthy.",
+      "category": "identity",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-6"
+        }
+      ],
+      "related": [
+        "corollary-2",
+        "corollary-4",
+        "nist-p33"
+      ]
+    },
+    {
+      "id": "nist-p32",
+      "statement": "Authenticate users and processes to ensure appropriate access control decisions both within and across domains",
+      "category": "identity",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p32"
+        }
+      ],
+      "subgroup": "Design With Network In Mind",
+      "related": [
+        "sch-3"
+      ]
+    },
+    {
+      "id": "nist-p33",
+      "statement": "Use unique identities to ensure accountability",
+      "category": "identity",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p33"
+        }
+      ],
+      "subgroup": "Design With Network In Mind",
+      "related": [
+        "corollary-2",
+        "ms-immutable-6"
+      ]
+    },
+    {
+      "id": "nist-p28",
+      "statement": "Ensure proper security in the shutdown or disposal of a system",
+      "category": "lifecycle",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p28"
+        }
+      ],
+      "subgroup": "Reduce Vulnerabilities"
+    },
+    {
+      "id": "nist-p22",
+      "statement": "Design and implement audit mechanisms to detect unauthorized use and support incident investigations",
+      "category": "monitoring",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p22"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "ms-immutable-3",
+      "statement": "If a bad actor has unrestricted physical access to your computer, it's not your computer anymore.",
+      "category": "physical-security",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-3"
+        }
+      ]
+    },
+    {
+      "id": "ms-immutable-9",
+      "statement": "Absolute anonymity isn't practically achievable, either online or offline.",
+      "category": "privacy",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-9"
+        }
+      ]
+    },
+    {
+      "id": "ms-risk-8",
+      "statement": "Isolated networks aren't automatically secure.",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-8"
+        }
+      ]
+    },
+    {
+      "id": "nist-p16",
+      "statement": "Implement layered security, ensure no single point of vulnerability",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p16"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "nist-p17",
+      "statement": "Design and operate an IT system to limit damage and be resilient in response",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p17"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "nist-p18",
+      "statement": "Provide assurance that the system is, and continues to be, resilient in the face of expected threats",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p18"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "nist-p19",
+      "statement": "Limit or contain vulnerabilities",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p19"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "nist-p20",
+      "statement": "Isolate public access systems from mission-critical resources (data, processes, etc.)",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p20"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "nist-p21",
+      "statement": "Use boundary mechanisms to separate computing systems and network infrastructures",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p21"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "nist-p23",
+      "statement": "Develop and exercise contingency or disaster recovery procedures to ensure appropriate availability",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p23"
+        }
+      ],
+      "subgroup": "Increase Resilience"
+    },
+    {
+      "id": "nist-p30",
+      "statement": "Implement security through a combination of measures distributed physically and logically",
+      "category": "resilience",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p30"
+        }
+      ],
+      "subgroup": "Design With Network In Mind"
+    },
+    {
+      "id": "cis-design-1",
+      "statement": "Controls are selected, dropped, and prioritized based on real attacker behavior and how to stop it.",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "cis-design",
+          "ref": "cis-design-1"
+        }
+      ]
+    },
+    {
+      "id": "cis-design-2",
+      "statement": "Identify the most critical actions to stop the most important attacks; avoid trying to solve every problem.",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "cis-design",
+          "ref": "cis-design-2"
+        }
+      ]
+    },
+    {
+      "id": "ms-risk-1",
+      "statement": "Security success is ruining the attacker's ROI.",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-1"
+        }
+      ]
+    },
+    {
+      "id": "ms-risk-2",
+      "statement": "Not keeping up is falling behind.",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-2"
+        }
+      ]
+    },
+    {
+      "id": "ms-risk-4",
+      "statement": "Attackers don't care.",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-4"
+        }
+      ],
+      "related": [
+        "nist-p6"
+      ]
+    },
+    {
+      "id": "ms-risk-5",
+      "statement": "Ruthless prioritization is a survival skill.",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-5"
+        }
+      ]
+    },
+    {
+      "id": "nist-p10",
+      "statement": "Consider custom products to achieve adequate security",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p10"
+        }
+      ],
+      "subgroup": "Risk Based"
+    },
+    {
+      "id": "nist-p11",
+      "statement": "Protect against all likely classes of attacks",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p11"
+        }
+      ],
+      "subgroup": "Risk Based"
+    },
+    {
+      "id": "nist-p29",
+      "statement": "Identify and prevent common errors and vulnerabilities",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p29"
+        }
+      ],
+      "subgroup": "Reduce Vulnerabilities"
+    },
+    {
+      "id": "nist-p5",
+      "statement": "Reduce risk to an acceptable level",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p5"
+        }
+      ],
+      "subgroup": "Risk Based"
+    },
+    {
+      "id": "nist-p6",
+      "statement": "Assume that external systems are insecure",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p6"
+        }
+      ],
+      "subgroup": "Risk Based",
+      "related": [
+        "ms-risk-4"
+      ]
+    },
+    {
+      "id": "nist-p7",
+      "statement": "Identify potential trade-offs between reducing risk and increased costs or decreased operational effectiveness",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p7"
+        }
+      ],
+      "subgroup": "Risk Based"
+    },
+    {
+      "id": "nist-p8",
+      "statement": "Implement tailored system security measures to meet organizational security goals",
+      "category": "risk-management",
+      "src": [
+        {
+          "fw": "nist27",
+          "ref": "nist-p8"
+        }
+      ],
+      "subgroup": "Risk Based"
+    },
+    {
+      "id": "corollary-1",
+      "statement": "Security is only as strong as the weakest link, including the third-party supply chain.",
+      "category": "supply-chain",
+      "src": [
+        {
+          "fw": "cloud",
+          "ref": "corollary-1"
+        }
+      ],
+      "related": [
+        "cis18-15",
+        "cis18-16"
+      ]
+    },
+    {
+      "id": "ms-immutable-4",
+      "statement": "If you allow a bad actor to run active content on your website, it's not your website anymore.",
+      "category": "web-security",
+      "src": [
+        {
+          "fw": "ms-immutable",
+          "ref": "ms-immutable-4"
+        }
+      ]
+    },
+    {
+      "id": "corollary-3",
+      "statement": "Continuous monitoring and response will always beat static perimeter defense.",
+      "category": "zero-trust",
+      "src": [
+        {
+          "fw": "cloud",
+          "ref": "corollary-3"
+        }
+      ],
+      "related": [
+        "cis18-13",
+        "ms-risk-7"
+      ]
+    },
+    {
+      "id": "ms-risk-7",
+      "statement": "Your network isn't as trustworthy as you think it is.",
+      "category": "zero-trust",
+      "src": [
+        {
+          "fw": "ms-risk",
+          "ref": "ms-risk-7"
+        }
+      ],
+      "related": [
+        "cis18-13",
+        "corollary-3"
+      ]
+    }
+  ]
+}

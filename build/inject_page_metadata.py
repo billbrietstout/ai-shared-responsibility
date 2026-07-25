@@ -122,6 +122,11 @@ def classify(rel):
         if "srf-stress" in rel:          return "tool", ACCT + LAYERS
         if "regulation-discovery" in rel:return "tool", ext_frameworks()[:6] + LAYERS
         if "redteam-scope" in rel:       return "tool", ["srf.framework.cosai-srf"] + LAYERS + ["srf.data.threats"]
+        if "whitepaper-assessment" in rel:
+            return "tool", ["srf.framework.cosai-srf",
+                            "srf.data.security-principles",
+                            "srf.data.ai-agentic-principles",
+                            "srf.data.threats"] + LAYERS
         if "prompts" in rel:             return "tool", ["srf.framework.cosai-srf"] + ACCT
         if "schema" in rel:              return "tool", ["srf.framework.cosai-srf", "srf.concept.control"]
         if "security" in rel or "controls-assessment" in rel or "assessment" in rel:

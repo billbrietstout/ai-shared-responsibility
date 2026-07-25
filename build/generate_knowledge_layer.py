@@ -312,6 +312,18 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
             "url": f"{SITE}/data/threats.json",
             "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
         },
+        {
+            "id": "srf.data.security-principles",
+            "label": "Classic security principles catalog",
+            "url": f"{SITE}/data/security-principles.json",
+            "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
+        },
+        {
+            "id": "srf.data.ai-agentic-principles",
+            "label": "AI and agentic security principles catalog",
+            "url": f"{SITE}/data/ai-agentic-principles.json",
+            "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
+        },
     ]
     for item in data_catalog:
         add_node(item["id"], item["label"], "concept", item["url"],

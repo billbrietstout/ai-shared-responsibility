@@ -1,7 +1,7 @@
 /**
  * srf-analyze — Cloudflare Worker
  *
- * Proxies SRF Stress wizard requests to GitHub Models (Grok Mini).
+ * Proxies SRF Stress wizard requests to GitHub Models (gpt-4o-mini).
  * The GITHUB_TOKEN secret is stored in Cloudflare — never in the browser.
  *
  * Secrets (set once via wrangler):
@@ -21,7 +21,14 @@
  */
 
 const GITHUB_MODELS_URL = "https://models.inference.ai.azure.com/chat/completions";
-const MODEL             = "gpt-4o-mini"; // swap for xai/grok-3-mini when available on GitHub Models
+// gpt-4o-mini sits in the GitHub Models "low" rate limit tier, which carries the
+// largest free-tier input budget on offer: 8000 tokens in, 4000 out, 150 requests
+// per day. Larger models are not an upgrade here. gpt-5 and the o-series cap input
+// at 4000 tokens with 8 to 12 requests per day and need Copilot Pro; xai/grok-3-mini
+// also caps input at 4000. Any swap should be checked against the current table at
+// https://docs.github.com/en/github-models/use-github-models/prototyping-with-ai-models#rate-limits
+// because the caps below were sized to fit this tier.
+const MODEL             = "gpt-4o-mini";
 const MAX_TOKENS        = 1800;
 const TEMPERATURE       = 0.3;
 
