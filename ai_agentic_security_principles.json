@@ -1,0 +1,2182 @@
+{
+  "catalog": {
+    "uuid": "92372290-897f-4ef9-a01a-3823cfca5097",
+    "metadata": {
+      "title": "AI and Agentic Security Principles, Axioms, and Invariables Reference",
+      "version": "1.0.0",
+      "oscal-version": "1.1.2",
+      "last-modified": "2026-07-26T00:00:00Z",
+      "remarks": "Compiled for the MOSAIC AI Security papers project. Split out from security_principles_reference.oscal.json at version 1.0.0 (carrying forward that file's version 1.1.0-1.4.0 additions) so that AI- and agentic-security-specific sources could be maintained at their own pace, independent of the stable classical-security reference. Scope is intentionally broader than the MOSAIC project's original membership: the goal is comprehensive coverage of Axioms, Invariables, and Principles on AI or agentic security wherever they originate, so that this catalog can serve as an error- and gap-check baseline when reviewing or writing AI security white papers, not just a MOSAIC-scoped bibliography. Current coverage: Anthropic (Responsible Scaling Policy, the AI-native SDLC practitioner account, and the Zero Trust for AI Agents framework), OpenAI's Preparedness Framework, Google DeepMind's Frontier Safety Framework, the UK AI Security Institute, Meta's agentic security practices, the OECD AI Principles and agentic AI guidance, OWASP's Top 10 for Agentic Applications 2026, CoSAI's Principles for Secure-by-Design Agentic Systems, the Cloud Security Alliance's Agentic AI Red Teaming Guide, MITRE ATLAS tactics (v5.1.0), the Berryville Institute of Machine Learning's architectural risk analysis, and the ISO/IEC 42001/23894/27090 AI standards family. Known gaps as of this version: MITRE ATLAS techniques and mitigations (only the 16 tactics are itemized), the CSA guide's second and third core principles (only the first, expanded-attack-surface principle, was confirmed against source text), ISO/IEC 27090 remained at FDIS stage and unpublished at last check, and the tier tables / implementation workflow inside Anthropic's Zero Trust for AI Agents eBook were summarized rather than itemized. Several 'related' links in this file point into the companion catalog, security_principles_reference.oscal.json, using a filename-qualified href. Cross-framework 'related' links reflect a first-pass manual clustering and should be refined against the live OpenCRE catalog before final CRE-ID mapping. Given how quickly this field moves, expect this file to need more frequent revisits than its companion."
+    },
+    "groups": [
+      {
+        "id": "anthropic-rsp",
+        "title": "Anthropic Responsible Scaling Policy (RSP v3.1, effective April 2026)",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Anthropic"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://www.anthropic.com/responsible-scaling-policy",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "rsp-1",
+            "title": "Capability thresholds trigger required safeguards",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "As a model's capabilities cross defined AI Safety Level thresholds, specific safeguards must be in place before the model can be trained or deployed."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ],
+            "links": [
+              {
+                "href": "#deepmind-fsf-1",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "rsp-2",
+            "title": "Publish risk reports and safety roadmaps",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Quantify and disclose risk across all deployed models through Frontier Safety Roadmaps and periodic Risk Reports."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "monitoring"
+              }
+            ]
+          },
+          {
+            "id": "rsp-3",
+            "title": "Protected internal reporting of policy noncompliance",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Provide internal channels, including informal inquiry pathways, for reporting potential policy violations, with protection against retaliation."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "governance"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "openai-preparedness-framework",
+        "title": "OpenAI Preparedness Framework (updated April 2025)",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "OpenAI"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://openai.com/index/updating-our-preparedness-framework/",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "openai-pf-1",
+            "title": "Treat safety as a science",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Approach AI safety empirically under uncertainty rather than assuming risks are fully known in advance."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ]
+          },
+          {
+            "id": "openai-pf-2",
+            "title": "Defense in depth",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Stack multiple independent interventions so that no single control failure results in unacceptable risk."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "resilience"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#nist-p16",
+                "rel": "related"
+              },
+              {
+                "href": "#meta-llamafirewall-1",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "openai-pf-3",
+            "title": "Methods that scale",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Prefer safety methods whose effectiveness increases, rather than decreases, as model capability increases."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "design"
+              }
+            ]
+          },
+          {
+            "id": "openai-pf-4",
+            "title": "Preserve human control",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Develop and deploy AI in ways that keep meaningful human control over consequential outcomes."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "human-factors"
+              }
+            ],
+            "links": [
+              {
+                "href": "#deepmind-fsf-3",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "deepmind-fsf",
+        "title": "Google DeepMind Frontier Safety Framework (v3.0)",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Google DeepMind"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://deepmind.google/blog/strengthening-our-frontier-safety-framework/",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "deepmind-fsf-1",
+            "title": "Capability thresholds gate mitigation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Define capability levels (Critical Capability Levels and Tracked Capability Levels) that trigger proportionate mitigations before a model reaches them."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ],
+            "links": [
+              {
+                "href": "#anthropic-rsp-1",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "deepmind-fsf-2",
+            "title": "Treat agents as insider threats",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Apply insider-threat security models to autonomous agents deployed inside an organization rather than assuming trusted-by-default behavior."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-6",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#corollary-2",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "deepmind-fsf-3",
+            "title": "Human checkpoint for consequential actions",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Require a human in the loop to approve consequential actions taken by autonomous agents."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "human-factors"
+              }
+            ],
+            "links": [
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              },
+              {
+                "href": "#openai-pf-4",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "deepmind-fsf-4",
+            "title": "Protect model weights as a security boundary",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Prevent unauthorized access to raw model weights, since weight access lets an attacker bypass safety guardrails entirely."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "data-protection"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#ms-immutable-7",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "uk-aisi",
+        "title": "UK AI Security Institute (AISI) Research Priorities",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "UK AI Security Institute, Department for Science, Innovation and Technology"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://www.aisi.gov.uk/blog",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "aisi-1",
+            "title": "Four research pillars",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Organize AI security research around four pillars: safeguards, control, alignment, and societal resilience."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "governance"
+              }
+            ]
+          },
+          {
+            "id": "aisi-2",
+            "title": "Independent evaluation before trust",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Subject frontier model safety claims to independent scientific evaluation, using open-sourced testing platforms, rather than relying on vendor self-assessment alone."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "monitoring"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "meta-agent-security",
+        "title": "Meta Agentic AI Security Practices",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Meta"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://ai.meta.com/blog/practical-ai-agent-security/",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "meta-rule-of-two",
+            "title": "Rule of Two for agent autonomy",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent that simultaneously has access to sensitive data, processes untrusted content, and can communicate externally requires additional human oversight; permit at most two of the three without added controls."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-6",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#sch-1",
+                "rel": "related"
+              },
+              {
+                "href": "#deepmind-fsf-3",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "meta-llamafirewall-1",
+            "title": "Layered guardrails as final defense, not the only defense",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Place a dedicated guardrail layer (prompt injection detection, agent alignment checks, code safety checks) as a last line of defense around agent actions, not the sole control."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "resilience"
+              }
+            ],
+            "links": [
+              {
+                "href": "#openai-pf-2",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#nist-p16",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "oecd-ai",
+        "title": "OECD AI Principles and Agentic AI Guidance",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "OECD, oecd.ai"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://oecd.ai/en/dashboards/ai-principles/P8",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "oecd-p8",
+            "title": "Robustness, security, and safety across the lifecycle",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "AI systems should be robust, secure, and safe throughout their entire lifecycle so that, under normal use, foreseeable misuse, or adverse conditions, they function appropriately and do not pose unreasonable safety or security risk."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#nist-p17",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#nist-p18",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "oecd-agentic-1",
+            "title": "Agentic systems carry a distinct security profile",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Memory, connected tools, identity and permissions, and multi-step autonomy give agentic AI systems a security profile distinct from single-turn generative AI, calling for stronger memory safeguards, permission design, and sandboxing."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "design"
+              }
+            ],
+            "links": [
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              },
+              {
+                "href": "#deepmind-fsf-2",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "owasp-asi-top10",
+        "title": "OWASP Top 10 for Agentic Applications 2026",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "OWASP GenAI Security Project, Agentic Security Initiative"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "asi-principle-1",
+            "title": "Least-Agency",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Extend the principle of least privilege to agent autonomy: grant an agent only the minimum level of independent decision-making and action required to complete its defined task."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-1",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#nist-p26",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "asi-principle-2",
+            "title": "Strong Observability",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Maintain clear, comprehensive visibility into what agents are doing, why, and which tools they invoke, including logging of goal state, tool-use patterns, and decision pathways."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "monitoring"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#nist-p22",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "asi01",
+            "title": "Agent Goal Hijack",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An attacker manipulates an agent's objective or plan so it pursues an unintended goal."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ]
+          },
+          {
+            "id": "asi02",
+            "title": "Tool Misuse and Exploitation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent is induced to misuse the tools or functions available to it, or those tools are exploited directly."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ]
+          },
+          {
+            "id": "asi03",
+            "title": "Identity and Privilege Abuse",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent's identity or granted privileges are abused to exceed its intended authority."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "asi04",
+            "title": "Agentic Supply Chain Vulnerabilities",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Compromise enters through an agent's dependencies, plugins, or upstream components."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#corollary-1",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "asi05",
+            "title": "Unexpected Code Execution (RCE)",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent executes attacker-controlled code outside its intended scope."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ]
+          },
+          {
+            "id": "asi06",
+            "title": "Memory and Context Poisoning",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Persistent agent memory or context is corrupted to influence future behavior."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ]
+          },
+          {
+            "id": "asi07",
+            "title": "Insecure Inter-Agent Communication",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Communication between cooperating agents is intercepted, spoofed, or manipulated."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ]
+          },
+          {
+            "id": "asi08",
+            "title": "Cascading Failures",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "A failure or compromise in one agent propagates to dependent agents or systems."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ]
+          },
+          {
+            "id": "asi09",
+            "title": "Human-Agent Trust Exploitation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An attacker exploits a human operator's trust in an agent's outputs or recommendations."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ]
+          },
+          {
+            "id": "asi10",
+            "title": "Rogue Agents",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent operates persistently outside its intended authority or control boundary."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#deepmind-fsf-2",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cosai-agentic-principles",
+        "title": "CoSAI Principles for Secure-by-Design Agentic Systems",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Coalition for Secure AI (CoSAI), Technical Steering Committee"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://www.coalitionforsecureai.org/announcing-the-cosai-principles-for-secure-by-design-agentic-systems/",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "cosai-1",
+            "title": "Human-governed and accountable",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Architect agentic systems for meaningful human control with clear accountability, constrained by well-defined authority boundaries aligned with risk tolerance."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "governance"
+              }
+            ],
+            "links": [
+              {
+                "href": "#deepmind-fsf-3",
+                "rel": "related"
+              },
+              {
+                "href": "#openai-pf-4",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "cosai-2",
+            "title": "Bounded and resilient",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Grant agents strict, purpose-specific entitlements rather than broad persistent access; enforce permission boundaries through technical controls, not written policy, with predictable failure modes."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-1",
+                "rel": "related"
+              },
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              },
+              {
+                "href": "#asi-principle-1",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "cosai-3",
+            "title": "Transparent and verifiable",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Support agentic systems with secure AI supply chain controls and comprehensive telemetry of all system activity."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "monitoring"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi-principle-2",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#corollary-1",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "csa-agentic-red-teaming",
+        "title": "CSA Agentic AI Red Teaming Guide (12 threat categories)",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Cloud Security Alliance"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://cloudsecurityalliance.org/artifacts/agentic-ai-red-teaming-guide",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "csa-principle-1",
+            "title": "Test the expanded attack surface",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Do not confine testing to the AI model's inputs and outputs; extend it to the agent's entire operational ecosystem, including tools, memory, and orchestration."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi-principle-2",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-1",
+            "title": "Agent Authorization and Control Hijacking",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An attacker seizes or subverts an agent's authorization or control flow."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-2",
+            "title": "Checker-Out-of-the-Loop",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "A required human or automated checkpoint is bypassed or absent."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#deepmind-fsf-3",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-3",
+            "title": "Agent Critical System Interaction",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent interacts with critical systems in ways that exceed its intended scope."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-4",
+            "title": "Goal and Instruction Manipulation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent's stated goal or instructions are altered by an attacker."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi01",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-5",
+            "title": "Agent Hallucination Exploitation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An attacker exploits an agent's tendency to hallucinate to induce harmful action."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-6",
+            "title": "Agent Impact Chain and Blast Radius",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "The downstream consequences of a compromised agent action are not bounded."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi08",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-7",
+            "title": "Agent Knowledge Base Poisoning",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent's retrieval or knowledge source is corrupted."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi06",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-8",
+            "title": "Agent Memory and Context Manipulation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent's working or persistent memory is manipulated."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi06",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-9",
+            "title": "Multi-Agent Exploitation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Interactions between multiple agents are exploited."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi07",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-10",
+            "title": "Resource and Service Exhaustion",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent's resources or dependent services are exhausted to degrade or deny service."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-11",
+            "title": "Supply Chain and Dependency Attacks",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "An agent's dependencies or supply chain are compromised."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi04",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#corollary-1",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "csa-threat-12",
+            "title": "Agent Untraceability",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Agent actions cannot be reliably attributed or audited after the fact."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "threat-category"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi-principle-2",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "mitre-atlas-tactics",
+        "title": "MITRE ATLAS Tactics (v5.1.0, adversarial ML tactics matrix)",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "MITRE, atlas.mitre.org"
+          },
+          {
+            "name": "status",
+            "value": "13 tactics inherited from ATT&CK, 3 AI-specific (AI Model Access, AI Attack Staging, and AI-context variants of others); techniques and mitigations not itemized here, see live matrix"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://atlas.mitre.org/matrices/ATLAS",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "atlas-aml-ta0002",
+            "title": "Reconnaissance",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0002: adversary goal category 'Reconnaissance' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0003",
+            "title": "Resource Development",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0003: adversary goal category 'Resource Development' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0004",
+            "title": "Initial Access",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0004: adversary goal category 'Initial Access' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0000",
+            "title": "AI Model Access",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0000: adversary goal category 'AI Model Access' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0005",
+            "title": "Execution",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0005: adversary goal category 'Execution' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0006",
+            "title": "Persistence",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0006: adversary goal category 'Persistence' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0012",
+            "title": "Privilege Escalation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0012: adversary goal category 'Privilege Escalation' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0007",
+            "title": "Defense Evasion",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0007: adversary goal category 'Defense Evasion' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0013",
+            "title": "Credential Access",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0013: adversary goal category 'Credential Access' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0008",
+            "title": "Discovery",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0008: adversary goal category 'Discovery' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0015",
+            "title": "Lateral Movement",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0015: adversary goal category 'Lateral Movement' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0009",
+            "title": "Collection",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0009: adversary goal category 'Collection' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0001",
+            "title": "AI Attack Staging",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0001: adversary goal category 'AI Attack Staging' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0014",
+            "title": "Command and Control",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0014: adversary goal category 'Command and Control' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0010",
+            "title": "Exfiltration",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0010: adversary goal category 'Exfiltration' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          },
+          {
+            "id": "atlas-aml-ta0011",
+            "title": "Impact",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "ATLAS tactic AML.TA0011: adversary goal category 'Impact' within the adversarial machine-learning attack lifecycle."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "adversarial-tactic"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "biml-architectural-risk",
+        "title": "Berryville Institute of Machine Learning (BIML) Architectural Risk Analysis",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Berryville Institute of Machine Learning (McGraw, Bonett, Figueroa, Shepardson)"
+          },
+          {
+            "name": "status",
+            "value": "BIML-78 (2020) covers classical ML systems across these 9 components; a 2024 companion analysis extends the same method to LLMs"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://berryvilleiml.com/docs/ara.pdf",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "biml-principle",
+            "title": "Architectural risk analysis over point-in-time testing",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Analyze security risk at the level of ML system architecture and its component interactions, not only through point-in-time penetration testing of a finished system."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "design"
+              }
+            ]
+          },
+          {
+            "id": "biml-1",
+            "title": "Raw data",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the raw data an ML system is built from, including confidentiality, source trustworthiness, and storage."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-2",
+            "title": "Dataset assembly",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the process that assembles raw data into a usable dataset."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-3",
+            "title": "Datasets",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the assembled dataset itself, including integrity and provenance."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-4",
+            "title": "Learning algorithms",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the algorithms used to train a model on a dataset."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-5",
+            "title": "Evaluation",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the process used to evaluate a trained model's performance."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-6",
+            "title": "Inputs",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the inputs an ML system receives at inference time."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-7",
+            "title": "Trained model",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the trained model as an artifact, including theft and tampering."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-8",
+            "title": "Inference algorithm",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the algorithm that produces outputs from the trained model and an input."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          },
+          {
+            "id": "biml-9",
+            "title": "Outputs",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Security of the outputs an ML system produces and how they are consumed downstream."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "ml-architecture"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "iso-ai-standards",
+        "title": "ISO/IEC AI Standards Family (42001, 23894, 27090)",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "International Organization for Standardization / International Electrotechnical Commission"
+          },
+          {
+            "name": "status",
+            "value": "ISO/IEC 42001:2023 published and certifiable; ISO/IEC 23894:2023 published as guidance; ISO/IEC 27090 at FDIS stage as of February 2026, not yet published"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://www.iso.org/standard/56581.html",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "iso42001-scope",
+            "title": "AI management system (AIMS)",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Establish an AI management system, modeled on ISO/IEC 27001, covering AI policy, internal organization, resources, impact assessment, the AI system life cycle, data, information for interested parties, responsible use, and third-party relationships (Annex A, 38 controls across 9 objectives)."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "governance"
+              }
+            ]
+          },
+          {
+            "id": "iso23894-scope",
+            "title": "AI risk management guidance",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Provide guidance for managing risks specific to AI throughout its lifecycle; informative only, not a certifiable standard."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ]
+          },
+          {
+            "id": "iso27090-scope",
+            "title": "AI-specific cybersecurity threats and mitigations",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Provide guidance for addressing cybersecurity threats specific to AI systems throughout their lifecycle, including adversarial attacks, data poisoning, model theft, and inference attacks, and how AI-context variants of denial-of-service and supply chain attacks differ from traditional IT."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ],
+            "links": [
+              {
+                "href": "#biml-principle",
+                "rel": "related"
+              },
+              {
+                "href": "#mitre-atlas-tactics",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "anthropic-ai-native-sdlc",
+        "title": "Anthropic: Securing the AI-Native Software Development Lifecycle",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Anthropic (Jason Clinton, Deputy CISO), Claude blog, July 21, 2026"
+          },
+          {
+            "name": "status",
+            "value": "Companion to Anthropic's separately published 'Zero Trust for Agents' framework, referenced but not itemized here"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://claude.com/blog/how-anthropic-secures-its-ai-native-software-development-lifecycle",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "sdlc-strategy",
+            "title": "Four overarching SDLC security strategies",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Shift security left into the code-generation stage; use hard access and identity boundaries to contain blast radius; combine automated deterministic and agentic reviews before and after production; and insert humans in the loop at the highest-leverage points."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "governance"
+              }
+            ]
+          },
+          {
+            "id": "sdlc-plan",
+            "title": "Connect security agents to organizational context",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "As planning cycles compress, bring security-review agents to where context already lives (chat threads, prior reviews, the codebase) rather than forcing detailed documentation at stages that may no longer need it. Agents need context beyond the code itself."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "design"
+              }
+            ]
+          },
+          {
+            "id": "sdlc-code",
+            "title": "Limit blast radius through least agency and hard boundaries",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Close the loop between vulnerability discovery and updating the instructions that shape how an agent generates code. Limit the blast radius of any single agent (principle of least agency) and constrain what it can access with hard, enforced boundaries."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-1",
+                "rel": "related"
+              },
+              {
+                "href": "#asi-principle-1",
+                "rel": "related"
+              },
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "sdlc-test",
+            "title": "Automated review is a distinct risk type, controlled differently",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Treat automated agentic and deterministic reviews as a different category of risk than human review, controlled through multiple gates and agents with separate context windows rather than a single reviewer. Keep humans in the loop, but place them where they add the most leverage given the codebase's risk tier."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "resilience"
+              }
+            ],
+            "links": [
+              {
+                "href": "#openai-pf-2",
+                "rel": "related"
+              },
+              {
+                "href": "#meta-llamafirewall-1",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "sdlc-deploy",
+            "title": "Dynamic testing cadence should match deployment cadence",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "As code volume and shipping frequency increase, periodic dynamic testing stops being dynamic; scan and test at a cadence that tracks how often code actually deploys."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ]
+          },
+          {
+            "id": "sdlc-monitor",
+            "title": "Single-purpose, minimum-permission identity per agent",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Give every agent a single-purpose identity scoped to the minimum permissions its job requires. Where agents must coordinate with each other, route that coordination through the same auditable channels used for human coordination, not private or unmonitored side channels."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "identity"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-1",
+                "rel": "related"
+              },
+              {
+                "href": "#cosai-2",
+                "rel": "related"
+              },
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "sdlc-boundary-not-trust",
+            "title": "Bound agents by access and action, not by trust in their instructions",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Draw an agent's security boundary around what it can access and do, not around its instructions or an assumption about how it will behave. An incident in which an incident-response agent independently asked another agent to push a fix, caught only at a human review gate, motivated this: instruction-following is not a security control."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-2",
+                "rel": "related"
+              },
+              {
+                "href": "#deepmind-fsf-2",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "sdlc-governance",
+            "title": "Security engineering shifts from monitoring bugs to monitoring loops",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "As review and remediation automate, the security engineer's attention moves from individual bugs and reports to the health of the review loops themselves: whether skills go stale, whether discovered bug classes get fed back into agent instructions, and whether agent decisions are being sampled and audited."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "monitoring"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi-principle-2",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "anthropic-zero-trust-agents",
+        "title": "Anthropic: Zero Trust for AI Agents",
+        "props": [
+          {
+            "name": "publisher",
+            "value": "Anthropic, Claude Security (eBook, May 2026)"
+          },
+          {
+            "name": "status",
+            "value": "Companion framework to the AI-native SDLC article already in this catalog (anthropic-ai-native-sdlc); full document also covers a three-tier maturity model (Foundation/Enterprise/Advanced) and an eight-phase implementation workflow not itemized control-by-control here"
+          }
+        ],
+        "links": [
+          {
+            "href": "https://claude.com/blog/zero-trust-for-ai-agents",
+            "rel": "reference"
+          }
+        ],
+        "controls": [
+          {
+            "id": "zt-triad",
+            "title": "Zero Trust core triad",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Never trust and always verify every access request regardless of origin; assume breach has already occurred and design to limit damage rather than only prevent intrusion; grant only the minimum access necessary for a specific task."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "zero-trust"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#sch-1",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#sch-3",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#nist-p32",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-design-test",
+            "title": "Impossible, not tedious",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "When evaluating any control, ask whether it makes an attack impossible or merely tedious. Friction-based mitigations (extra pivot hops, rate limits, non-standard ports, SMS-based MFA) degrade badly against an adversary with unlimited patience and near-zero per-attempt cost. Prefer controls that remove a capability over controls that only throttle it."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "design"
+              }
+            ]
+          },
+          {
+            "id": "zt-blast-radius",
+            "title": "Size security investment to blast radius",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Blast radius measures the potential damage if an agent is compromised. Security investment should match that exposure, and design should assume every agent's blast radius will eventually be tested."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ],
+            "links": [
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-identity-foundation",
+            "title": "Cryptographically rooted identity is the foundation for every other control",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Without a verifiable, cryptographically rooted identity per agent instance, you cannot enforce access controls, maintain audit trails, or attribute actions. Labels and unique names alone are not identity; identity must be backed by cryptographic material, ideally hardware-rooted for production systems."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "identity"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#nist-p33",
+                "rel": "related"
+              },
+              {
+                "href": "security_principles_reference.oscal.json#ms-immutable-6",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-no-static-secrets",
+            "title": "Static long-lived credentials are not an acceptable baseline",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Static API keys, embedded credentials, and shared service-account passwords are among the first things an attacker with model-assisted code analysis will find; treat them as already compromised. Short-lived, identity-provider-issued tokens with automatic refresh are the minimum viable baseline, not an advanced control."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "identity"
+              }
+            ]
+          },
+          {
+            "id": "zt-privilege-scoping",
+            "title": "Grant privilege dynamically and revoke it automatically",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Static permissions granted at deployment create persistent exposure. Elevate permissions only when a specific task requires them, return to baseline afterward, and move toward just-in-time, just-enough access that expires automatically rather than standing access that must be remembered and revoked manually."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "#cosai-2",
+                "rel": "related"
+              },
+              {
+                "href": "#meta-rule-of-two",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-isolation-primary",
+            "title": "Identity-based isolation is the primary boundary; network segmentation is a backstop",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Enforce isolation at the receiving end: give every workload its own cryptographic identity and have each service accept connections only from callers its policy names. Network segmentation reduces blast radius and noise but is not the primary control, since an attacker who reaches a segment boundary will pivot through it if the far side accepts any caller from that network."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#corollary-3",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-two-metrics",
+            "title": "Instrument dwell time and coverage before investing elsewhere in detection",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Dwell time (how long between an anomaly occurring and a human becoming aware of it) and coverage (the fraction of alerts actually investigated) are the two metrics automation has the greatest leverage to move, and matter most as exploit windows shorten."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "monitoring"
+              }
+            ],
+            "links": [
+              {
+                "href": "#asi-principle-2",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-automate-bookkeeping-not-decisions",
+            "title": "Automate the bookkeeping around incidents, not the decisions",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Have models take notes, capture artifacts, pursue parallel investigation tracks, and draft postmortems. Reserve containment calls, disclosure calls, and customer-communication calls for humans. Human decision speed during an incident should never be rate-limited by evidence collection or write-ups."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "human-factors"
+              }
+            ],
+            "links": [
+              {
+                "href": "#openai-pf-4",
+                "rel": "related"
+              },
+              {
+                "href": "#deepmind-fsf-3",
+                "rel": "related"
+              },
+              {
+                "href": "#sdlc-monitor",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-input-untrusted-by-default",
+            "title": "Treat all natural-language input as untrusted by default",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Agents cannot reliably distinguish legitimate instructions from malicious payloads embedded in user input, uploaded documents, or retrieved content. Validate and clearly delimit untrusted content from system instructions before it can influence agent behavior; do not rely on the model to make this distinction unaided."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "access-control"
+              }
+            ],
+            "links": [
+              {
+                "href": "#sdlc-boundary-not-trust",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-defend-the-defenders",
+            "title": "Apply Zero Trust to the defensive agents themselves",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Agentic security automation (SOAR) is powerful and carries its own blast radius. Run defensive agents with verified integrity, limited privilege, and clear human escalation paths, and log and review their actions like any other agent activity, rather than trusting defensive automation by default."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "governance"
+              }
+            ]
+          },
+          {
+            "id": "zt-ai-bom",
+            "title": "Extend supply chain verification to an AI Bill of Materials",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Track model provenance, training dataset lineage, and fine-tuning parameters with the same rigor applied to code dependencies, using an AI-BOM alongside conventional software composition analysis."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "supply-chain"
+              }
+            ],
+            "links": [
+              {
+                "href": "security_principles_reference.oscal.json#corollary-1",
+                "rel": "related"
+              },
+              {
+                "href": "#asi04",
+                "rel": "related"
+              }
+            ]
+          },
+          {
+            "id": "zt-foundation-floor-raised",
+            "title": "Compressed exploit timelines raise the minimum viable security floor",
+            "parts": [
+              {
+                "name": "statement",
+                "prose": "Because AI-accelerated offense has compressed the gap between vulnerability and exploit from months to hours, controls once considered advanced (short-lived tokens, cryptographically rooted identity, identity-based isolation, automated first-pass alert triage) are now baseline entry requirements, not aspirational targets."
+              }
+            ],
+            "props": [
+              {
+                "name": "category",
+                "value": "risk-management"
+              }
+            ],
+            "links": [
+              {
+                "href": "#openai-pf-3",
+                "rel": "related"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
