@@ -370,10 +370,33 @@ Machine readability, for any document meant to be read by an agent as well as a 
 - A short list of known gaps from `gap_index` the paper either addresses or conspicuously misses.
 - An accountability and regulatory findings block from step 6, or a plain statement that step 6 did not trigger.
 - A draft mechanics block from step 7, if it ran, grouped as editorial, links and citations, structure, and machine readability. Give a file location or section anchor for every finding so the author can act on it without hunting. Separate defects that block publication from suggestions that improve the draft.
-- A short list of Novel candidates worth raising for potential catalog addition.
+- A short list of Novel candidates worth raising for potential catalog addition. Before reporting one as Novel, check https://aisharedresponsibility.com/data/principle-candidates.json: a candidate already recorded there has been triaged, and its `disposition_note` says whether it was judged genuinely new, an extension of an existing entry, or a duplicate. Report a match against that queue rather than proposing it again, and cite the candidate id.
 
 Write the report in prose and tables only, no nested bullet trees. Keep the verdict and notes direct: state what the paper does and does not cover, skip hedging language, and do not pad a clean bill of health with caveats.</pre>
       </div>
+
+      <p class="section-label">What happens to a Novel finding</p>
+      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-6);">
+        A Novel candidate does not go straight into a catalog. It lands first in
+        the
+        <a href="/data/principle-candidates.json">candidate queue</a>, which
+        records the source and its evidentiary tier, the catalog entries it was
+        checked against, and a disposition with reasoning. The queue exists
+        mainly to record rejections: without it, every review re-surfaces the
+        same near-duplicates and someone repeats the triage.
+      </p>
+      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+        Accepting a candidate means editing a source, never a generated catalog.
+        Classic axioms come from the OSCAL file. An AI or agentic principle comes
+        from the synthesis document, and cannot be added without adding its
+        source paper to the source table, because that catalog records what
+        specific published papers assert. A preprint on its own does not carry
+        enough weight to justify addition; it justifies watching for
+        corroboration. The generator enforces the mechanics: it fails the build
+        if a candidate points at a principle id that no longer exists, and warns
+        when a candidate is marked accepted but its statement was never written
+        into a source.
+      </p>
 
       <p class="section-label">Notes on the catalogs</p>
       <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal);">

@@ -1,0 +1,223 @@
+{
+ "$schema_version": "1.0",
+ "WARNING": "These are PROPOSALS, not accepted principles. Nothing in this file is part of the SRF principle catalogs. Do not cite an entry here as an established principle, and do not use this file as a source when assessing a document. The accepted catalogs are /data/security-principles.json and /data/ai-agentic-principles.json.",
+ "description": "Review queue for candidate principles surfaced by whitepaper assessments. A Novel or Extended finding from an assessment lands here first so it can be triaged once, with the reasoning recorded, rather than re-proposed at every future review. This is the one file under /data/ that is hand-maintained rather than generated.",
+ "updated": "2026-07-25",
+ "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/",
+ "lifecycle": {
+  "proposed": "Surfaced by an assessment. No triage done yet.",
+  "triaged": "Checked against both catalogs and their related links. closest_existing and proposed_disposition are filled in. Not yet decided.",
+  "accepted": "Judged a genuine addition. incorporated_into records the source file it was written to; the generator then rebuilds the catalog from that source.",
+  "extended": "Judged a sharpening of an existing entry rather than a new principle. The existing entry may be reworded; no new id is created.",
+  "rejected": "Judged a duplicate, out of scope, or unsupported. disposition_note records why, so the same candidate is not re-proposed.",
+  "deferred": "Plausible but blocked, usually pending an OpenCRE check or a source of sufficient evidentiary weight."
+ },
+ "evidentiary_tiers": {
+  "published-standard": "A published standard or special publication from a recognized body. Highest weight.",
+  "published-framework": "A published framework, guide, or control matrix from an established organization.",
+  "preprint": "A preprint or unreviewed paper. Weakest tier. A preprint alone does not justify catalog addition; it can justify watching for corroboration.",
+  "practitioner-report": "Vendor or practitioner reporting, including incident write-ups."
+ },
+ "incorporation_rules": {
+  "classic": "Additions to security-principles.json are made by editing security_principles_reference.oscal.json. Reserved for settled engineering axioms; contemporary AI-specific findings do not belong there.",
+  "agentic": "Additions to ai-agentic-principles.json are made by editing agentic-ai-security/agentic-security.md. A principle cannot be added without adding its source document to the source table, because the catalog records what specific published papers assert. The generator's CURATION table must be updated in the same change or the build fails.",
+  "after_editing": "Run python3 build/generate_principle_catalogs.py, then commit the regenerated JSON with the source edit."
+ },
+ "count": 4,
+ "candidates": [
+  {
+   "id": "cand-2026-07-001",
+   "statement": "Systematic red-teaming and safety evaluation for hazardous dual-use capabilities, such as biological synthesis assistance or automated cyber exploitation, is an explicit release gate for a foundation model build rather than a post-release assurance activity.",
+   "proposed_category": "governance",
+   "proposed_section": "red-teaming",
+   "source": {
+    "label": "NIST SP 800-218A",
+    "title": "Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile",
+    "url": "https://csrc.nist.gov/pubs/sp/800/218/a/final",
+    "tier": "published-standard",
+    "citation_verified": false,
+    "verification_note": "Title recorded from reviewer report and prior knowledge. Live fetch of the NIST page timed out during triage. Confirm title, publication date, and URL before accepting."
+   },
+   "surfaced_by": {
+    "review_date": "2026-07-25",
+    "reviewer": "bill",
+    "method": "whitepaper-assessment prompt v1.0"
+   },
+   "closest_existing": [
+    {
+     "id": "unacceptable-risk-stops-the-system",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Covers halting a system already judged unacceptably risky. Says nothing about evaluating for specific hazardous capability classes as a precondition of release. Different control point and different timing."
+    },
+    {
+     "id": "skepticism-toward-redteaming-alone",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Warns against treating red-teaming as sufficient validation. Does not address red-teaming as a gate."
+    },
+    {
+     "id": "testing-calibrated-to-system-maturity",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Calibrates testing depth to system maturity, not to hazardous capability class."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "triaged",
+   "opencre_checked": false,
+   "disposition_note": "Reads as a genuine addition. The catalog has no entry making pre-release capability evaluation a build gate, and no entry naming dual-use hazardous capability classes at all. Accepting requires adding NIST SP 800-218A to the synthesis source table as a new source document.",
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-07-002",
+   "statement": "Cryptographic checksums of training and fine-tuning datasets are bound directly into model checkpoint metadata, so the dataset and the checkpoint verify as a single unit rather than as separately attested artifacts.",
+   "proposed_category": "supply-chain",
+   "proposed_section": "supply-chain-provenance",
+   "source": {
+    "label": "NIST SP 800-218A",
+    "title": "Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile",
+    "url": "https://csrc.nist.gov/pubs/sp/800/218/a/final",
+    "tier": "published-standard",
+    "citation_verified": false,
+    "verification_note": "Same source as cand-2026-07-001. Confirm before accepting."
+   },
+   "surfaced_by": {
+    "review_date": "2026-07-25",
+    "reviewer": "bill",
+    "method": "whitepaper-assessment prompt v1.0"
+   },
+   "closest_existing": [
+    {
+     "id": "provenance-via-signed-manifests-sbom",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already names SBOM and AIBOM-style provenance records for model and tool provenance."
+    },
+    {
+     "id": "no-loading-unsigned-artifacts",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already names unsigned datasets, checkpoints, and pipeline artifacts as never loaded, executed, or promoted."
+    },
+    {
+     "id": "signed-artifact-tying-producer-identity",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Requires a signature tying producer identity to exact artifact content."
+    },
+    {
+     "id": "training-data-curation-is-foundational",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Establishes training data provenance as foundational without specifying the binding mechanism."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "triaged",
+   "opencre_checked": false,
+   "disposition_note": "The components are already covered across three entries. What NIST SP 800-218A adds is tighter: binding dataset checksums into checkpoint metadata so the pair verifies together, closing the gap where a dataset and a checkpoint are each signed but nothing proves which dataset produced which checkpoint. Recommend sharpening provenance-via-signed-manifests-sbom rather than creating a new id. Recorded so this is not re-proposed as Novel at the next review.",
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-07-003",
+   "statement": "A security boundary is established for tool-initiated callback events, where an external server pushes unsolicited context or events back to the model or host, rather than only for host-initiated calls outward.",
+   "proposed_category": "mcp-protocol",
+   "proposed_section": "mcp-security",
+   "source": {
+    "label": "arXiv:2503.23278v3",
+    "title": null,
+    "url": "https://arxiv.org/html/2503.23278v3",
+    "tier": "preprint",
+    "citation_verified": false,
+    "verification_note": "Title not recorded. Live fetch of the arXiv page timed out during triage. Do not accept until the title, authors, and version date are confirmed and the claim is located in the text."
+   },
+   "surfaced_by": {
+    "review_date": "2026-07-25",
+    "reviewer": "bill",
+    "method": "whitepaper-assessment prompt v1.0"
+   },
+   "closest_existing": [
+    {
+     "id": "validate-at-every-trust-boundary",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Generic requirement to validate at every boundary crossed. Does not name inbound server-initiated events as a boundary."
+    },
+    {
+     "id": "lethal-trifecta-rule-of-two",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Treats outbound communication as one leg of the trifecta. Says nothing about inbound push."
+    },
+    {
+     "id": "default-deny-egress-bounded-swarm",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Controls egress from the execution environment. Ingress from a tool server is a different direction."
+    },
+    {
+     "id": "containers-not-sufficient-mcp-boundary",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Rejects containers as an MCP boundary without addressing which directions of traffic that boundary must mediate."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "triaged",
+   "opencre_checked": false,
+   "disposition_note": "The strongest of the four on novelty. Every nearby entry assumes the host initiates and the tool responds; none address a server pushing unsolicited events back. Blocked on evidentiary weight: a preprint alone does not justify catalog addition under the tiering rules. Watch for corroboration in a published MCP security guide, then accept.",
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-07-004",
+   "statement": "Security invariants are defined for runtime tool schema updates and dynamic capability discovery, so a tool changing its declared interface mid-session is treated as a change requiring revalidation rather than as normal operation.",
+   "proposed_category": "mcp-protocol",
+   "proposed_section": "mcp-security",
+   "source": {
+    "label": "arXiv:2503.23278v3",
+    "title": null,
+    "url": "https://arxiv.org/html/2503.23278v3",
+    "tier": "preprint",
+    "citation_verified": false,
+    "verification_note": "Same source as cand-2026-07-003. Confirm before accepting."
+   },
+   "surfaced_by": {
+    "review_date": "2026-07-25",
+    "reviewer": "bill",
+    "method": "whitepaper-assessment prompt v1.0"
+   },
+   "closest_existing": [
+    {
+     "id": "pinned-checksum-verified-versions",
+     "catalog": "agentic",
+     "relation": "partial",
+     "note": "Pins and checksums approved server and tool versions to block a silent malicious upgrade. Addresses version substitution between sessions, not schema mutation within one."
+    },
+    {
+     "id": "explicit-per-capability-grants",
+     "catalog": "agentic",
+     "relation": "partial",
+     "note": "Requires each capability to be granted individually. Does not say what happens when the set of capabilities changes at runtime."
+    },
+    {
+     "id": "treat-tool-descriptions-and-content-as-untrusted",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Treats tool descriptions as untrusted content. Concerns the trustworthiness of the description text, not the integrity of a schema change event."
+    },
+    {
+     "id": "continuous-reverification",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Re-verifies access against current context. Applies to access decisions rather than interface definitions."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "triaged",
+   "opencre_checked": false,
+   "disposition_note": "Sits between Extended and Novel. pinned-checksum-verified-versions covers the between-sessions case and explicit-per-capability-grants covers grant breadth, but neither covers a tool mutating its schema mid-session. Leaning Extended off pinned-checksum-verified-versions. Same preprint evidentiary limit as cand-2026-07-003.",
+   "incorporated_into": null
+  }
+ ]
+}

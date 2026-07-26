@@ -567,6 +567,83 @@ def build_agentic():
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Candidate queue integrity
+# ─────────────────────────────────────────────────────────────────────────────
+
+CANDIDATES = "data/principle-candidates.json"
+
+VALID_STATUS = {"proposed", "triaged", "accepted", "extended", "rejected", "deferred"}
+VALID_RELATION = {"covers", "partial", "adjacent"}
+
+
+def check_candidates(classic_ids, agentic_ids):
+    """Validate the hand-maintained candidate queue against the built catalogs.
+
+    The queue is not generated, so nothing keeps it honest automatically. Two
+    things rot silently without this check: a closest_existing id pointing at a
+    principle that has since been renamed or merged away, and a candidate marked
+    accepted whose statement was never actually written into a source. Both
+    would leave the queue quietly wrong while every other check still passes.
+    """
+    path = os.path.join(ROOT, CANDIDATES)
+    if not os.path.exists(path):
+        return {"candidates": 0, "note": "no candidate queue present"}
+
+    with open(path, encoding="utf-8") as fh:
+        data = json.load(fh)
+
+    cands = data.get("candidates", [])
+    if data.get("count") != len(cands):
+        fail(f"{CANDIDATES}: count is {data.get('count')} but there are "
+             f"{len(cands)} candidates")
+
+    seen = set()
+    by_status = {}
+    for c in cands:
+        cid = c.get("id")
+        if not cid:
+            fail(f"{CANDIDATES}: a candidate has no id")
+        if cid in seen:
+            fail(f"{CANDIDATES}: duplicate candidate id {cid!r}")
+        seen.add(cid)
+
+        status = c.get("status")
+        if status not in VALID_STATUS:
+            fail(f"{CANDIDATES}: {cid} has status {status!r}; expected one of "
+                 f"{sorted(VALID_STATUS)}")
+        by_status[status] = by_status.get(status, 0) + 1
+
+        for ref in c.get("closest_existing", []):
+            rid, cat = ref.get("id"), ref.get("catalog")
+            rel = ref.get("relation")
+            if rel not in VALID_RELATION:
+                fail(f"{CANDIDATES}: {cid} closest_existing {rid!r} has relation "
+                     f"{rel!r}; expected one of {sorted(VALID_RELATION)}")
+            pool = classic_ids if cat == "classic" else agentic_ids
+            if cat not in ("classic", "agentic"):
+                fail(f"{CANDIDATES}: {cid} closest_existing {rid!r} names unknown "
+                     f"catalog {cat!r}")
+            if rid not in pool:
+                fail(f"{CANDIDATES}: {cid} closest_existing points at {rid!r}, "
+                     f"which is not in the {cat} catalog. The principle was "
+                     "probably renamed or merged; update the candidate.")
+
+        # An accepted candidate must say where it landed, and a candidate that
+        # has not been accepted must not claim it landed anywhere.
+        landed = c.get("incorporated_into")
+        if status == "accepted" and landed:
+            pass
+        elif status == "accepted" and not landed:
+            print(f"  PENDING  {cid} is accepted but incorporated_into is null; "
+                  "the statement is not in any catalog source yet")
+        elif landed:
+            fail(f"{CANDIDATES}: {cid} has status {status!r} but claims "
+                 f"incorporated_into={landed!r}")
+
+    return {"candidates": len(cands), "by_status": by_status}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -583,6 +660,9 @@ def main():
                        for cid in g["classic_ids"] if cid not in classic_ids})
     if dangling:
         fail(f"gap_index references unknown classic principle ids: {dangling}")
+
+    agentic_ids = {p["id"] for p in agentic}
+    candidates_summary = check_candidates(classic_ids, agentic_ids)
 
     classic_out = {
         "$schema_version": "1.0",
@@ -657,6 +737,7 @@ def main():
         "agentic_merged": merged,
         "agentic_excluded": len(excluded),
         "gap_index_entries": len(gap_index),
+        "candidate_queue": candidates_summary,
     }
 
     if check:
