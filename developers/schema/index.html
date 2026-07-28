@@ -194,6 +194,49 @@
           stays at eight.
         </p>
 
+        <h2 id="jurisdiction-vertical">Jurisdiction to vertical join</h2>
+        <p>
+          Two complementary paths connect a jurisdiction to a business vertical.
+          Prefer the ontology edges for agents.
+        </p>
+        <table class="join-table">
+          <thead>
+            <tr><th>Path</th><th>How</th><th>Use when</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Declared</td>
+              <td>
+                <code>jurisdiction</code> →
+                <code>issued_in_jurisdiction</code> →
+                regulation →
+                <code>applies_to_vertical</code> →
+                <code>srf.vertical.*</code>
+                (from <code>applicable_verticals</code>)
+              </td>
+              <td>Comparative questions, including instruments not yet cited by a control (UK, China, Singapore, Canada, OECD)</td>
+            </tr>
+            <tr>
+              <td>Evidence</td>
+              <td>
+                jurisdiction → regulation ←
+                <code>governed_by</code> ←
+                control →
+                <code>belongs_to_vertical</code> →
+                vertical
+              </td>
+              <td>What the published control schemas actually cite today</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <code>applicable_verticals_source</code> on each regulation records
+          whether the vertical list was derived from control citations,
+          author-declared, or both. Cross-cutting instruments list all six
+          verticals: finance, healthcare, insurance, public-sector, defense,
+          manufacturing.
+        </p>
+
         <h2 id="moral-orientation">Moral orientation tags</h2>
         <p>
           <a href="/data/moral-regulatory-hierarchy.json"><code>/data/moral-regulatory-hierarchy.json</code></a>

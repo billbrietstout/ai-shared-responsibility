@@ -21,8 +21,8 @@ site wins.
 | Layers | `https://aisharedresponsibility.com/data/layers.json` | 5 (L1-L5) |
 | Personas | `https://aisharedresponsibility.com/data/personas.json` | 8 canonical + sector specializations |
 | Responsibility matrix | `https://aisharedresponsibility.com/data/matrix.json` | 4 operating models x 5 layers |
-| Jurisdictions | `https://aisharedresponsibility.com/data/jurisdictions.json` | 6 (international, EU, US federal, multistate, Colorado, New York) |
-| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 40 instruments with jurisdiction + mapping_key for control joins |
+| Jurisdictions | `https://aisharedresponsibility.com/data/jurisdictions.json` | 11 (international, oecd, EU, US federal/multistate/states, UK, China, Singapore, Canada) |
+| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 45 instruments with jurisdiction, mapping_key, and applicable_verticals |
 | Moral regulatory hierarchy | `https://aisharedresponsibility.com/data/moral-regulatory-hierarchy.json` | Requirement-level actor/action/outcome salience (0-3) for EU AI Act, OECD AI Principles, NIST AI RMF, SR 26-2 |
 
 ## Vertical control schemas
@@ -72,3 +72,7 @@ regulation `id`.
 Requirement-level moral tags live in `moral-regulatory-hierarchy.json`.
 Traverse `emphasizes` (with `salience`) and `implements` edges in
 `/ontology/edges.json` rather than re-deriving scores from prose.
+
+Jurisdiction to vertical: prefer `applies_to_vertical` edges from each
+regulation's `applicable_verticals`. The evidence path is jurisdiction →
+regulation ← `governed_by` ← control → `belongs_to_vertical`.

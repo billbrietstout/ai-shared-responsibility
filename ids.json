@@ -1,8 +1,8 @@
 {
   "$schema_version": "1.0",
-  "description": "Canonical ID registry. Every concept, layer, role, operating model, jurisdiction, moral dimension, requirement, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.jurisdiction.*, srf.moral.*, srf.control.<vertical>.*, ext.framework.*, ext.requirement.*.",
+  "description": "Canonical ID registry. Every concept, layer, role, operating model, jurisdiction, moral dimension, requirement, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.jurisdiction.*, srf.moral.*, srf.vertical.*, srf.control.<vertical>.*, ext.framework.*, ext.requirement.*.",
   "srf_version": "1.0",
-  "updated": "2026-07-27",
+  "updated": "2026-07-28",
   "namespaces": {
     "srf.framework": "The framework itself",
     "srf.layer": "One of the five architecture layers L1-L5",
@@ -12,12 +12,34 @@
     "srf.data": "A machine-readable data catalog resource under /data/",
     "srf.jurisdiction": "A jurisdiction that issues a regulation or standard",
     "srf.moral": "A moral-orientation dimension (actor, action, outcome)",
+    "srf.vertical": "An industry vertical that owns a control schema",
     "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
     "ext.framework": "An external standard or regulation",
     "ext.requirement": "A concrete requirement inside an external instrument"
   },
-  "count": 370,
+  "count": 386,
   "ids": [
+    {
+      "id": "ext.framework.canada-directive-adm",
+      "name": "Directive on Automated Decision-Making",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32592"
+    },
+    {
+      "id": "ext.framework.china-deep-synthesis-provisions",
+      "name": "Provisions on the Administration of Deep Synthesis Internet Information Services",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.cac.gov.cn/"
+    },
+    {
+      "id": "ext.framework.china-genai-interim-measures",
+      "name": "Interim Measures for the Management of Generative Artificial Intelligence Services",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.cac.gov.cn/"
+    },
     {
       "id": "ext.framework.cis-controls",
       "name": "CIS Critical Security Controls",
@@ -292,11 +314,25 @@
       "url": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
     },
     {
+      "id": "ext.framework.singapore-model-ai-governance",
+      "name": "Model Artificial Intelligence Governance Framework (Second Edition)",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.pdpc.gov.sg/help-and-resources/2020/01/model-ai-governance-framework"
+    },
+    {
       "id": "ext.framework.sr-26-2",
       "name": "SR 26-2 — Revised Guidance on Model Risk Management",
       "type": "framework",
       "subtype": null,
       "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "ext.framework.uk-ai-regulation-white-paper",
+      "name": "A pro-innovation approach to AI regulation (UK white paper)",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.gov.uk/government/publications/ai-regulation-a-pro-innovation-approach"
     },
     {
       "id": "ext.requirement.eu-ai-act.art-10",
@@ -2399,6 +2435,20 @@
       "url": "https://aisharedresponsibility.com/framework/"
     },
     {
+      "id": "srf.jurisdiction.canada",
+      "name": "Canada",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.china",
+      "name": "People's Republic of China",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
       "id": "srf.jurisdiction.eu",
       "name": "European Union",
       "type": "concept",
@@ -2407,7 +2457,28 @@
     },
     {
       "id": "srf.jurisdiction.international",
-      "name": "International",
+      "name": "International (standards bodies)",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.oecd",
+      "name": "OECD",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.singapore",
+      "name": "Singapore",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.uk",
+      "name": "United Kingdom",
       "type": "concept",
       "subtype": "jurisdiction",
       "url": "https://aisharedresponsibility.com/regulations/"
@@ -2607,6 +2678,48 @@
       "type": "role",
       "subtype": "persona",
       "url": "https://aisharedresponsibility.com/personas/#model-provider"
+    },
+    {
+      "id": "srf.vertical.defense",
+      "name": "Defense",
+      "type": "concept",
+      "subtype": "vertical",
+      "url": "https://aisharedresponsibility.com/defense/"
+    },
+    {
+      "id": "srf.vertical.finance",
+      "name": "Finance",
+      "type": "concept",
+      "subtype": "vertical",
+      "url": "https://aisharedresponsibility.com/finance/"
+    },
+    {
+      "id": "srf.vertical.healthcare",
+      "name": "Healthcare",
+      "type": "concept",
+      "subtype": "vertical",
+      "url": "https://aisharedresponsibility.com/healthcare/"
+    },
+    {
+      "id": "srf.vertical.insurance",
+      "name": "Insurance",
+      "type": "concept",
+      "subtype": "vertical",
+      "url": "https://aisharedresponsibility.com/insurance/"
+    },
+    {
+      "id": "srf.vertical.manufacturing",
+      "name": "Manufacturing",
+      "type": "concept",
+      "subtype": "vertical",
+      "url": "https://aisharedresponsibility.com/manufacturing/"
+    },
+    {
+      "id": "srf.vertical.public-sector",
+      "name": "Public Sector",
+      "type": "concept",
+      "subtype": "vertical",
+      "url": "https://aisharedresponsibility.com/public-sector/"
     }
   ],
   "glossary_xref": [

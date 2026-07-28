@@ -2,18 +2,21 @@
   "$schema_version": "1.0",
   "description": "Typed, directed relationships between ontology nodes. Every source and target is a node id in /ontology/nodes.json. Prefer these edges over re-deriving joins from parallel fields in /data/.",
   "srf_version": "1.0",
-  "updated": "2026-07-27",
+  "updated": "2026-07-28",
   "relations": [
     "accountable_to",
     "applies_in_operating_model",
     "applies_to_layer",
+    "applies_to_vertical",
     "assigns_responsibility",
+    "belongs_to_vertical",
     "contains_layer",
     "defined_in",
     "emphasizes",
     "governed_by",
     "has_operating_model",
     "has_persona",
+    "has_vertical",
     "implements",
     "issued_in_jurisdiction",
     "maps_to_layer",
@@ -22,7 +25,7 @@
     "specializes",
     "subordinate_to"
   ],
-  "count": 2598,
+  "count": 3022,
   "edges": [
     {
       "source": "srf.framework.cosai-srf",
@@ -405,6 +408,36 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "srf.framework.cosai-srf",
+      "rel": "has_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.framework.cosai-srf",
+      "rel": "has_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.framework.cosai-srf",
+      "rel": "has_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.framework.cosai-srf",
+      "rel": "has_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.framework.cosai-srf",
+      "rel": "has_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.framework.cosai-srf",
+      "rel": "has_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
       "source": "ext.framework.nist-ai-rmf",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -433,6 +466,42 @@
       "source": "ext.framework.nist-ai-rmf",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.nist-ai-rmf",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-rmf",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-rmf",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-rmf",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-rmf",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-rmf",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
     },
     {
       "source": "ext.framework.eu-ai-act",
@@ -460,6 +529,42 @@
       "target": "srf.jurisdiction.eu"
     },
     {
+      "source": "ext.framework.eu-ai-act",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.eu-ai-act",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.eu-ai-act",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.eu-ai-act",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.eu-ai-act",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.eu-ai-act",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.iso-42001",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -490,6 +595,42 @@
       "target": "srf.jurisdiction.international"
     },
     {
+      "source": "ext.framework.iso-42001",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-42001",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-42001",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-42001",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-42001",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-42001",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.iso-22989",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -520,6 +661,42 @@
       "target": "srf.jurisdiction.international"
     },
     {
+      "source": "ext.framework.iso-22989",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-22989",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-22989",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-22989",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-22989",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.iso-22989",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.nist-ai-600-1",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -550,6 +727,42 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.nist-ai-600-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-600-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-600-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-600-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-600-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-ai-600-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.nistir-8605a",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -580,6 +793,42 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.nistir-8605a",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nistir-8605a",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nistir-8605a",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nistir-8605a",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nistir-8605a",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nistir-8605a",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.nist-csf-2",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -603,6 +852,42 @@
       "source": "ext.framework.nist-csf-2",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.nist-csf-2",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-csf-2",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-csf-2",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-csf-2",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-csf-2",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-csf-2",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
     },
     {
       "source": "ext.framework.owasp-llm-top10",
@@ -625,6 +910,42 @@
       "target": "srf.jurisdiction.international"
     },
     {
+      "source": "ext.framework.owasp-llm-top10",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.owasp-llm-top10",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.owasp-llm-top10",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.owasp-llm-top10",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.owasp-llm-top10",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.owasp-llm-top10",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.csa-aicm",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -655,6 +976,42 @@
       "target": "srf.jurisdiction.international"
     },
     {
+      "source": "ext.framework.csa-aicm",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.csa-aicm",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.csa-aicm",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.csa-aicm",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.csa-aicm",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.csa-aicm",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.cis-controls",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -685,6 +1042,42 @@
       "target": "srf.jurisdiction.international"
     },
     {
+      "source": "ext.framework.cis-controls",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.cis-controls",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.cis-controls",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.cis-controls",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.cis-controls",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.cis-controls",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.mitre-atlas",
       "rel": "maps_to_layer",
       "target": "srf.layer.L3"
@@ -703,6 +1096,42 @@
       "source": "ext.framework.mitre-atlas",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.international"
+    },
+    {
+      "source": "ext.framework.mitre-atlas",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.mitre-atlas",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.mitre-atlas",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.mitre-atlas",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.mitre-atlas",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.mitre-atlas",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
     },
     {
       "source": "ext.framework.sr-26-2",
@@ -725,6 +1154,12 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.sr-26-2",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.fda-ai-ml",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -743,6 +1178,12 @@
       "source": "ext.framework.fda-ai-ml",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.fda-ai-ml",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-sector"
     },
     {
       "source": "ext.framework.gdpr",
@@ -760,6 +1201,42 @@
       "target": "srf.jurisdiction.eu"
     },
     {
+      "source": "ext.framework.gdpr",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.gdpr",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.gdpr",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.gdpr",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.gdpr",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.gdpr",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
       "source": "ext.framework.gao-ai-accountability-framework",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -778,6 +1255,12 @@
       "source": "ext.framework.gao-ai-accountability-framework",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.gao-ai-accountability-framework",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-sector"
     },
     {
       "source": "ext.framework.oecd-ai-principles",
@@ -806,188 +1289,260 @@
     },
     {
       "source": "ext.framework.oecd-ai-principles",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.oecd"
+    },
+    {
+      "source": "ext.framework.oecd-ai-principles",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.oecd-ai-principles",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.oecd-ai-principles",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.oecd-ai-principles",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.oecd-ai-principles",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.oecd-ai-principles",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.finos-aigf",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.finos-aigf",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.finos-aigf",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.finos-aigf",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "ext.framework.finos-aigf",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.finos-aigf",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.international"
     },
     {
       "source": "ext.framework.finos-aigf",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "derived+declared"
+    },
+    {
+      "source": "ext.framework.hipaa-security-rule",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
     },
     {
-      "source": "ext.framework.finos-aigf",
+      "source": "ext.framework.hipaa-security-rule",
       "rel": "maps_to_layer",
       "target": "srf.layer.L2"
     },
     {
-      "source": "ext.framework.finos-aigf",
+      "source": "ext.framework.hipaa-security-rule",
       "rel": "maps_to_layer",
       "target": "srf.layer.L3"
     },
     {
-      "source": "ext.framework.finos-aigf",
+      "source": "ext.framework.hipaa-security-rule",
       "rel": "maps_to_layer",
       "target": "srf.layer.L4"
     },
     {
-      "source": "ext.framework.finos-aigf",
+      "source": "ext.framework.hipaa-security-rule",
       "rel": "maps_to_layer",
       "target": "srf.layer.L5"
     },
     {
-      "source": "ext.framework.finos-aigf",
+      "source": "ext.framework.hipaa-security-rule",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.hipaa-security-rule",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "derived+declared"
+    },
+    {
+      "source": "ext.framework.fda-tplc",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.fda-tplc",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.fda-tplc",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.fda-tplc",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "ext.framework.fda-tplc",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.fda-tplc",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.fda-tplc",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "derived+declared"
+    },
+    {
+      "source": "ext.framework.fda-pccp",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.fda-pccp",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.fda-pccp",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.fda-pccp",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "ext.framework.fda-pccp",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.fda-pccp",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.fda-pccp",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "derived+declared"
+    },
+    {
+      "source": "ext.framework.onc-hti-1",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.onc-hti-1",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.onc-hti-1",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.onc-hti-1",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "ext.framework.onc-hti-1",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.onc-hti-1",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.onc-hti-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "derived+declared"
+    },
+    {
+      "source": "ext.framework.iec-62304",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.iec-62304",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.iec-62304",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.iec-62304",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "ext.framework.iec-62304",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.iec-62304",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.international"
     },
     {
-      "source": "ext.framework.hipaa-security-rule",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L1"
-    },
-    {
-      "source": "ext.framework.hipaa-security-rule",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L2"
-    },
-    {
-      "source": "ext.framework.hipaa-security-rule",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L3"
-    },
-    {
-      "source": "ext.framework.hipaa-security-rule",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L4"
-    },
-    {
-      "source": "ext.framework.hipaa-security-rule",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L5"
-    },
-    {
-      "source": "ext.framework.hipaa-security-rule",
-      "rel": "issued_in_jurisdiction",
-      "target": "srf.jurisdiction.us-federal"
-    },
-    {
-      "source": "ext.framework.fda-tplc",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L1"
-    },
-    {
-      "source": "ext.framework.fda-tplc",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L2"
-    },
-    {
-      "source": "ext.framework.fda-tplc",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L3"
-    },
-    {
-      "source": "ext.framework.fda-tplc",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L4"
-    },
-    {
-      "source": "ext.framework.fda-tplc",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L5"
-    },
-    {
-      "source": "ext.framework.fda-tplc",
-      "rel": "issued_in_jurisdiction",
-      "target": "srf.jurisdiction.us-federal"
-    },
-    {
-      "source": "ext.framework.fda-pccp",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L1"
-    },
-    {
-      "source": "ext.framework.fda-pccp",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L2"
-    },
-    {
-      "source": "ext.framework.fda-pccp",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L3"
-    },
-    {
-      "source": "ext.framework.fda-pccp",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L4"
-    },
-    {
-      "source": "ext.framework.fda-pccp",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L5"
-    },
-    {
-      "source": "ext.framework.fda-pccp",
-      "rel": "issued_in_jurisdiction",
-      "target": "srf.jurisdiction.us-federal"
-    },
-    {
-      "source": "ext.framework.onc-hti-1",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L1"
-    },
-    {
-      "source": "ext.framework.onc-hti-1",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L2"
-    },
-    {
-      "source": "ext.framework.onc-hti-1",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L3"
-    },
-    {
-      "source": "ext.framework.onc-hti-1",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L4"
-    },
-    {
-      "source": "ext.framework.onc-hti-1",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L5"
-    },
-    {
-      "source": "ext.framework.onc-hti-1",
-      "rel": "issued_in_jurisdiction",
-      "target": "srf.jurisdiction.us-federal"
-    },
-    {
       "source": "ext.framework.iec-62304",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L1"
-    },
-    {
-      "source": "ext.framework.iec-62304",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L2"
-    },
-    {
-      "source": "ext.framework.iec-62304",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L3"
-    },
-    {
-      "source": "ext.framework.iec-62304",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L4"
-    },
-    {
-      "source": "ext.framework.iec-62304",
-      "rel": "maps_to_layer",
-      "target": "srf.layer.L5"
-    },
-    {
-      "source": "ext.framework.iec-62304",
-      "rel": "issued_in_jurisdiction",
-      "target": "srf.jurisdiction.international"
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "derived+declared"
     },
     {
       "source": "ext.framework.iso-14971",
@@ -1018,6 +1573,12 @@
       "source": "ext.framework.iso-14971",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.international"
+    },
+    {
+      "source": "ext.framework.iso-14971",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "derived+declared"
     },
     {
       "source": "ext.framework.naic-ai-model-bulletin",
@@ -1050,6 +1611,12 @@
       "target": "srf.jurisdiction.us-multistate"
     },
     {
+      "source": "ext.framework.naic-ai-model-bulletin",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.naic-ai-eval-tool",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1078,6 +1645,12 @@
       "source": "ext.framework.naic-ai-eval-tool",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-multistate"
+    },
+    {
+      "source": "ext.framework.naic-ai-eval-tool",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "derived+declared"
     },
     {
       "source": "ext.framework.co-reg-10-1-1",
@@ -1110,6 +1683,12 @@
       "target": "srf.jurisdiction.us-colorado"
     },
     {
+      "source": "ext.framework.co-reg-10-1-1",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.nydfs-cl-7-2024",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1140,6 +1719,12 @@
       "target": "srf.jurisdiction.us-new-york"
     },
     {
+      "source": "ext.framework.nydfs-cl-7-2024",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.omb-m-25-21",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1168,6 +1753,12 @@
       "source": "ext.framework.omb-m-25-21",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.omb-m-25-21",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "derived+declared"
     },
     {
       "source": "ext.framework.omb-m-25-22",
@@ -1200,6 +1791,12 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.omb-m-25-22",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.fedramp-20x-ksi",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1228,6 +1825,12 @@
       "source": "ext.framework.fedramp-20x-ksi",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.fedramp-20x-ksi",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "derived+declared"
     },
     {
       "source": "ext.framework.nist-sp-800-171",
@@ -1260,6 +1863,12 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.nist-sp-800-171",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.cmmc-2-0",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1288,6 +1897,12 @@
       "source": "ext.framework.cmmc-2-0",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.cmmc-2-0",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "derived+declared"
     },
     {
       "source": "ext.framework.dod-cc-srg",
@@ -1320,6 +1935,12 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.dod-cc-srg",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.dod-rai-strategy",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1350,6 +1971,12 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.dod-rai-strategy",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.dodi-5000-89",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1380,6 +2007,12 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.dodi-5000-89",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.dodi-5000-90",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1410,6 +2043,12 @@
       "target": "srf.jurisdiction.us-federal"
     },
     {
+      "source": "ext.framework.dodi-5000-90",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.nist-cyber-ai-profile",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1438,6 +2077,42 @@
       "source": "ext.framework.nist-cyber-ai-profile",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.us-federal"
+    },
+    {
+      "source": "ext.framework.nist-cyber-ai-profile",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-cyber-ai-profile",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-cyber-ai-profile",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-cyber-ai-profile",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-cyber-ai-profile",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.nist-cyber-ai-profile",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
     },
     {
       "source": "ext.framework.eu-machinery-regulation",
@@ -1470,6 +2145,12 @@
       "target": "srf.jurisdiction.eu"
     },
     {
+      "source": "ext.framework.eu-machinery-regulation",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.iec-62443",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1500,6 +2181,12 @@
       "target": "srf.jurisdiction.international"
     },
     {
+      "source": "ext.framework.iec-62443",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "derived+declared"
+    },
+    {
       "source": "ext.framework.iec-61508",
       "rel": "maps_to_layer",
       "target": "srf.layer.L1"
@@ -1528,6 +2215,287 @@
       "source": "ext.framework.iec-61508",
       "rel": "issued_in_jurisdiction",
       "target": "srf.jurisdiction.international"
+    },
+    {
+      "source": "ext.framework.iec-61508",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "derived+declared"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.uk"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.uk-ai-regulation-white-paper",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.china"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-genai-interim-measures",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.china"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.china-deep-synthesis-provisions",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.singapore"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.finance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.healthcare",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.insurance",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.defense",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.singapore-model-ai-governance",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.manufacturing",
+      "source_of_truth": "declared-cross-cutting"
+    },
+    {
+      "source": "ext.framework.canada-directive-adm",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.framework.canada-directive-adm",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "ext.framework.canada-directive-adm",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.framework.canada-directive-adm",
+      "rel": "issued_in_jurisdiction",
+      "target": "srf.jurisdiction.canada"
+    },
+    {
+      "source": "ext.framework.canada-directive-adm",
+      "rel": "applies_to_vertical",
+      "target": "srf.vertical.public-sector",
+      "source_of_truth": "declared-sector"
     },
     {
       "source": "srf.data.threats",
@@ -2367,6 +3335,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L1-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-DEV-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -2433,6 +3406,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L1-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -2484,6 +3462,11 @@
       "rel": "implements",
       "target": "ext.requirement.sr-26-2.section-vi",
       "citation": "Section VI (Model Inventory); Section III (model materiality)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L1-DEV-003",
@@ -2548,6 +3531,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L1-DEV-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-DEV-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -2596,6 +3584,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-14",
       "citation": "Article 14 (Human oversight)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L1-VAL-001",
@@ -2659,6 +3652,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L1-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -2704,6 +3702,11 @@
       "rel": "implements",
       "target": "ext.requirement.sr-26-2.section-vi",
       "citation": "Section VI (Model Inventory)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L1-MON-002",
@@ -2755,6 +3758,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L1-MON-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-MON-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -2803,6 +3811,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L1-ECH-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L1-ECH-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -2848,6 +3861,11 @@
       "rel": "implements",
       "target": "ext.requirement.sr-26-2.section-iii",
       "citation": "Section III (effective challenge)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L2-DEV-001",
@@ -2909,6 +3927,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-10",
       "citation": "Article 10 (Data and data governance)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L2-DEV-002",
@@ -2984,6 +4007,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L2-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-DEV-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -3042,6 +4070,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-10",
       "citation": "Article 10 (Data and data governance)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L2-VAL-001",
@@ -3112,6 +4145,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L2-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -3173,6 +4211,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L2-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-MON-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -3212,6 +4255,11 @@
       "rel": "governed_by",
       "target": "ext.framework.csa-aicm",
       "citation": "DSP-04 (Data Classification)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-MON-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L2-MON-003",
@@ -3272,6 +4320,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L2-ECH-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L2-ECH-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -3312,6 +4365,11 @@
       "rel": "implements",
       "target": "ext.requirement.sr-26-2.section-iii",
       "citation": "Section III (effective challenge)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L3-DEV-001",
@@ -3393,6 +4451,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L3-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -3465,6 +4528,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L3-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-DEV-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -3525,6 +4593,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L3-VAL-001",
@@ -3606,6 +4679,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L3-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -3675,6 +4753,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM01: Prompt Injection"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L3-MON-002",
@@ -3750,6 +4833,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L3-MON-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-MON-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -3807,6 +4895,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L3-ECH-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L3-ECH-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -3852,6 +4945,11 @@
       "rel": "implements",
       "target": "ext.requirement.sr-26-2.section-iii",
       "citation": "Section III (effective challenge)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L4-DEV-001",
@@ -3928,6 +5026,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L4-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -3988,6 +5091,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L4-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-DEV-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -4028,6 +5136,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-15",
       "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L4-VAL-001",
@@ -4103,6 +5216,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L4-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -4161,6 +5279,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-15",
       "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L4-MON-002",
@@ -4224,6 +5347,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L4-MON-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-MON-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -4264,6 +5392,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-15",
       "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L4-ECH-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L4-ECH-001",
@@ -4312,6 +5445,11 @@
       "rel": "implements",
       "target": "ext.requirement.sr-26-2.section-iii",
       "citation": "Section III (effective challenge)"
+    },
+    {
+      "source": "srf.control.finance.SRF-L5-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L5-DEV-001",
@@ -4382,6 +5520,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L5-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L5-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -4446,6 +5589,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 16: Application Software Security"
+    },
+    {
+      "source": "srf.control.finance.SRF-L5-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L5-DEV-003",
@@ -4528,6 +5676,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L5-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L5-VAL-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -4595,6 +5748,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L5-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L5-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -4656,6 +5814,11 @@
     },
     {
       "source": "srf.control.finance.SRF-L5-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
+    },
+    {
+      "source": "srf.control.finance.SRF-L5-MON-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -4714,6 +5877,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 7: Continuous Vulnerability Management"
+    },
+    {
+      "source": "srf.control.finance.SRF-L5-ECH-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.finance"
     },
     {
       "source": "srf.control.finance.SRF-L5-ECH-001",
@@ -4784,6 +5952,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L1-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-DEV-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -4830,6 +6003,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L1-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -4861,6 +6039,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-62304",
       "citation": "§5.1: Software development planning"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L1-DEV-003",
@@ -4916,6 +6099,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L1-HOR-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-HOR-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -4962,6 +6150,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L1-HOR-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-HOR-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -4993,6 +6186,11 @@
       "rel": "governed_by",
       "target": "ext.framework.eu-ai-act",
       "citation": "Article 13 (Transparency); Article 4 (AI literacy)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-HOR-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L1-HOR-003",
@@ -5036,6 +6234,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L1-PMS-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-PMS-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -5061,6 +6264,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-62304",
       "citation": "§4.3: Regulatory compliance"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-PMS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L1-PMS-002",
@@ -5095,6 +6303,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§10: Post-production information"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L1-PMS-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L1-PMS-003",
@@ -5135,6 +6348,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§10: Post-production feedback"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L2-DEV-001",
@@ -5190,6 +6408,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L2-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -5230,6 +6453,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L2-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-DEV-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -5261,6 +6489,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-62304",
       "citation": "§5.7: Software testing (data handling)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-VV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L2-VV-001",
@@ -5316,6 +6549,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L2-VV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-VV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -5359,6 +6597,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§5: Risk estimation"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-PMS-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L2-PMS-001",
@@ -5414,6 +6657,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L2-PMS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-PMS-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -5454,6 +6702,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L2-PMS-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L2-PMS-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -5491,6 +6744,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-62304",
       "citation": "§5.7: Data integrity verification"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L3-DEV-001",
@@ -5540,6 +6798,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L3-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -5577,6 +6840,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-62304",
       "citation": "§5.2: Software requirements (output transparency)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L3-DEV-003",
@@ -5626,6 +6894,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L3-VV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-VV-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -5663,6 +6936,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§5.6: Usability risk analysis (per IEC 62366)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-VV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L3-VV-002",
@@ -5709,6 +6987,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§6.4: Risk control verification"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-PMS-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L3-PMS-001",
@@ -5764,6 +7047,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L3-PMS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-PMS-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -5810,6 +7098,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L3-PMS-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L3-PMS-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -5847,6 +7140,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§6: Risk control (scope limitation)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L4-DEV-001",
@@ -5896,6 +7194,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L4-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -5927,6 +7230,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 8: Audit Log Management"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L4-DEV-003",
@@ -5967,6 +7275,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 3: Data Protection"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-VV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L4-VV-001",
@@ -6022,6 +7335,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L4-VV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-VV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -6068,6 +7386,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L4-PMS-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-PMS-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -6108,6 +7431,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L4-PMS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-PMS-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -6145,6 +7473,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§6: Risk control (availability)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L4-PMS-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L4-PMS-003",
@@ -6194,6 +7527,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L5-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L5-DEV-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -6240,6 +7578,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L5-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L5-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -6271,6 +7614,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iso-14971",
       "citation": "§4.2: Hazard identification (from third-party components)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L5-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L5-DEV-003",
@@ -6320,6 +7668,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L5-VV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L5-VV-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -6366,6 +7719,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L5-VV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L5-VV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -6403,6 +7761,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-62304",
       "citation": "§5.5: Software unit implementation (artifact management)"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L5-PMS-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
     },
     {
       "source": "srf.control.healthcare.SRF-L5-PMS-001",
@@ -6458,6 +7821,11 @@
     },
     {
       "source": "srf.control.healthcare.SRF-L5-PMS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.healthcare"
+    },
+    {
+      "source": "srf.control.healthcare.SRF-L5-PMS-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -6507,6 +7875,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 7: Continuous Vulnerability Management"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L1-DEV-001",
@@ -6572,6 +7945,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L1-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -6613,6 +7991,11 @@
       "rel": "governed_by",
       "target": "ext.framework.eu-ai-act",
       "citation": "Article 17 (quality management system, inventory of high-risk systems)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L1-DEV-003",
@@ -6673,6 +8056,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L1-DEV-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-DEV-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -6729,6 +8117,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L1-DEV-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-DEV-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -6752,6 +8145,11 @@
       "rel": "governed_by",
       "target": "ext.framework.co-reg-10-1-1",
       "citation": "Section 5(C) (governance and risk management framework must be available to the Division on request, auto and health benefit plan insurers, July 1, 2026)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L1-MON-001",
@@ -6805,6 +8203,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L1-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-MON-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -6852,6 +8255,11 @@
       "rel": "implements",
       "target": "ext.requirement.sr-26-2.section-iii",
       "citation": "Section III.A, paragraphs 21-24 (Board and Senior Management Oversight)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-TPO-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L1-TPO-001",
@@ -6906,6 +8314,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L1-TPO-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L1-TPO-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -6941,6 +8354,11 @@
       "rel": "governed_by",
       "target": "ext.framework.co-reg-10-1-1",
       "citation": "Section 5(C) (governance and risk management framework must be available to the Division on request)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L2-DEV-001",
@@ -7000,6 +8418,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L2-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -7056,6 +8479,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L2-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-DEV-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -7104,6 +8532,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-10",
       "citation": "Article 10 (training data requirements for high-risk AI systems)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L2-VAL-001",
@@ -7163,6 +8596,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L2-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -7208,6 +8646,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L2-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-MON-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -7233,6 +8676,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM02 (Sensitive Information Disclosure)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-MON-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L2-MON-003",
@@ -7272,6 +8720,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-72",
       "citation": "Article 72 (post-market monitoring, performance indicators)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L2-TPO-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L2-TPO-001",
@@ -7326,6 +8779,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L3-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-DEV-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -7356,6 +8814,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM01 (Prompt Injection)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L3-DEV-002",
@@ -7396,6 +8859,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM06 (Excessive Agency)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L3-VAL-001",
@@ -7449,6 +8917,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L3-VAL-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-VAL-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -7499,6 +8972,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L3-VAL-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-VAL-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -7535,6 +9013,11 @@
       "rel": "governed_by",
       "target": "ext.framework.eu-ai-act",
       "citation": "Article 13 (transparency and provision of information to deployers); Article 86 (right to explanation)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L3-MON-001",
@@ -7594,6 +9077,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L3-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-MON-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -7638,6 +9126,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L3-TPO-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L3-TPO-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -7668,6 +9161,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM01 (Prompt Injection); LLM05 (Improper Output Handling)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L4-DEV-001",
@@ -7710,6 +9208,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L4-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -7745,6 +9248,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-9",
       "citation": "Article 9 (risk management system, technical safeguards)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-DEV-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L4-DEV-003",
@@ -7786,6 +9294,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L4-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-VAL-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -7824,6 +9337,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L4-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -7854,6 +9372,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM02 (Sensitive Information Disclosure)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L4-MON-002",
@@ -7913,6 +9436,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L4-MON-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-MON-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -7946,6 +9474,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L4-TPO-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L4-TPO-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -7970,6 +9503,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-26",
       "citation": "Article 26 (obligations of deployers of high-risk AI systems, general oversight only, no provision addresses API credential or access review specifically)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L5-DEV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L5-DEV-001",
@@ -8024,6 +9562,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L5-DEV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L5-DEV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -8054,6 +9597,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM03 (Supply Chain)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L5-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L5-VAL-001",
@@ -8105,6 +9653,11 @@
       "rel": "implements",
       "target": "ext.requirement.eu-ai-act.art-9",
       "citation": "Article 9 (risk management system, pre-deployment risk assessment for high-risk AI)"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L5-VAL-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L5-VAL-002",
@@ -8165,6 +9718,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L5-MON-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L5-MON-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -8210,6 +9768,11 @@
     },
     {
       "source": "srf.control.insurance.SRF-L5-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L5-MON-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -8240,6 +9803,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 7: Continuous Vulnerability Management"
+    },
+    {
+      "source": "srf.control.insurance.SRF-L5-TPO-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.insurance"
     },
     {
       "source": "srf.control.insurance.SRF-L5-TPO-001",
@@ -8300,6 +9868,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L1-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-ACQ-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -8338,6 +9911,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L1-ACQ-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-ACQ-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -8367,6 +9945,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.2 (organizational teams document AI risk and benefit); MAP 2.1 (scientific findings, known and foreseeable impacts are characterized)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L1-ACQ-003",
@@ -8408,6 +9991,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L1-ACQ-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-ACQ-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -8446,6 +10034,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L1-MON-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-MON-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -8475,6 +10068,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.4 (AI risk management frameworks are established for decommissioning); MANAGE 4.1 (post-deployment AI risks are monitored and tracked)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-OVR-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L1-OVR-006",
@@ -8510,6 +10108,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L1-ACQ-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-ACQ-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -8539,6 +10142,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.1 (organizational risk policies include supply chain risk); GOVERN 5.2 (risk management frameworks include third-party AI providers)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-ACQ-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L1-ACQ-008",
@@ -8574,6 +10182,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L1-MON-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L1-MON-009",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -8603,6 +10216,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 2.2 (AI risk management accountability is maintained); MANAGE 4.1 (post-deployment AI risks are monitored)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L2-ACQ-001",
@@ -8650,6 +10268,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L2-ACQ-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-ACQ-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -8691,6 +10314,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM10: Unbounded Consumption"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L2-ACQ-003",
@@ -8744,6 +10372,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L2-MON-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-MON-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -8785,6 +10418,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM09: Misinformation"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-ACQ-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L2-ACQ-005",
@@ -8826,6 +10464,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L2-MON-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-MON-006",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -8870,6 +10513,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L2-MON-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-MON-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -8899,6 +10547,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.2 (AI system trustworthiness characteristics are evaluated for relevant population groups); MEASURE 2.5 (ongoing monitoring tracks fairness)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L2-ACQ-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L2-ACQ-008",
@@ -8937,6 +10590,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.map-1-5",
       "citation": "GOVERN 5.1 (supply chain risk management); MAP 1.5 (organizational risk tolerances for AI supply chain are established)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L3-VAL-001",
@@ -8996,6 +10654,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L3-VAL-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-VAL-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -9031,6 +10694,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.measure-2-6",
       "citation": "MAP 5.1 (likelihood of impacts on individuals is assessed); MAP 5.2 (practices for risk assessment are in use); MEASURE 2.6 (evaluations are completed and results documented)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-VAL-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L3-VAL-003",
@@ -9078,6 +10746,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L3-OVR-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-OVR-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -9110,6 +10783,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L3-OVR-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-OVR-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -9139,6 +10817,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MANAGE 3.2; GOVERN 6.2 (policies for human oversight and remedy)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-MON-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L3-MON-006",
@@ -9176,6 +10859,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L3-VAL-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-VAL-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -9195,6 +10883,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.1 (supply chain risk includes shared-service providers); GOVERN 5.2"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L3-OVR-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L3-OVR-008",
@@ -9236,6 +10929,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L4-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-ACQ-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -9271,6 +10969,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.map-1-5",
       "citation": "GOVERN 5.1 (supply chain risk management); MAP 1.5"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-ACQ-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L4-ACQ-002",
@@ -9324,6 +11027,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L4-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-ACQ-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -9371,6 +11079,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 6: Access Control Management"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-MON-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L4-MON-004",
@@ -9424,6 +11137,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L4-MON-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-MON-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -9459,6 +11177,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 8: Audit Log Management"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-MON-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L4-MON-006",
@@ -9518,6 +11241,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L4-VAL-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-VAL-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -9553,6 +11281,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.1 (supply chain risk); GOVERN 5.2"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L4-MON-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L4-MON-008",
@@ -9606,6 +11339,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L5-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L5-ACQ-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -9635,6 +11373,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.2 (third-party AI provider transparency); MAP 4.1 (risks of receiving AI from third parties are enumerated)"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L5-MON-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L5-MON-002",
@@ -9682,6 +11425,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L5-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L5-ACQ-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -9712,6 +11460,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM04: Data and Model Poisoning"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L5-MON-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L5-MON-004",
@@ -9759,6 +11512,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L5-ACQ-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L5-ACQ-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -9788,6 +11546,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.1 (supply chain risk includes lock-in); MAP 4.1"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L5-MON-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
     },
     {
       "source": "srf.control.public-sector.SRF-L5-MON-006",
@@ -9847,6 +11610,11 @@
     },
     {
       "source": "srf.control.public-sector.SRF-L5-MON-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.public-sector"
+    },
+    {
+      "source": "srf.control.public-sector.SRF-L5-MON-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -9891,6 +11659,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -9929,6 +11702,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -9958,6 +11736,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.2"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-003",
@@ -9993,6 +11776,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -10022,6 +11810,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.3"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-005",
@@ -10060,6 +11853,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.govern-1-6",
       "citation": "GOVERN 1.6"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-006",
@@ -10125,6 +11923,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -10166,6 +11969,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 4.1"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-OPS-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L1-OPS-008",
@@ -10213,6 +12021,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L1-ACQ-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-ACQ-009",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -10251,6 +12064,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L1-TEVV-010",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-TEVV-010",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -10286,6 +12104,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.1"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L2-ACQ-001",
@@ -10342,6 +12165,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM06"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-OPS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L2-OPS-002",
@@ -10407,6 +12235,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L2-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-ACQ-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -10442,6 +12275,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM03"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-OPS-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L2-OPS-004",
@@ -10507,6 +12345,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L2-OPS-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-OPS-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -10563,6 +12406,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L2-OPS-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-OPS-006",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -10592,6 +12440,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.5"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-OPS-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L2-OPS-007",
@@ -10636,6 +12489,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.5"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-ACQ-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L2-ACQ-008",
@@ -10689,6 +12547,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L3-TEVV-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-TEVV-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -10727,6 +12590,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L3-TEVV-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-TEVV-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -10759,6 +12627,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L3-OVR-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-OVR-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -10778,6 +12651,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MANAGE 1.3"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-OVR-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L3-OVR-004",
@@ -10813,6 +12691,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L3-OVR-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-OVR-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -10842,6 +12725,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MANAGE 4.2"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-OPS-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L3-OPS-006",
@@ -10882,6 +12770,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM08"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-OPS-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L3-OPS-007",
@@ -10941,6 +12834,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L3-ACQ-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-ACQ-008",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -10985,6 +12883,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L3-OPS-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-OPS-009",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -11014,6 +12917,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MANAGE 2.2"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L4-ACQ-001",
@@ -11058,6 +12966,11 @@
       "rel": "governed_by",
       "target": "ext.framework.dod-cc-srg",
       "citation": "Mission Owner SRG Section 3.2 (CSP/CSO Approval Process: DOD Provisional Authorization required)"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-ACQ-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L4-ACQ-002",
@@ -11123,6 +13036,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L4-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-ACQ-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -11164,6 +13082,11 @@
       "rel": "governed_by",
       "target": "ext.framework.dod-cc-srg",
       "citation": "CSP SRG Section 5.2.2 (location and separation requirements by impact level); Mission Owner SRG Section 3.3.3 (IL6 restricted to DOD private/community or federal government community cloud)"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-OPS-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L4-OPS-004",
@@ -11229,6 +13152,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L4-OPS-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-OPS-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -11282,6 +13210,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 8: Audit Log Management"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-OPS-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L4-OPS-006",
@@ -11353,6 +13286,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L4-ACQ-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-ACQ-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -11409,6 +13347,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L4-ACQ-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-ACQ-008",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -11457,6 +13400,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.govern-1-6",
       "citation": "GOVERN 1.6"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-OPS-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L4-OPS-009",
@@ -11528,6 +13476,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L4-OPS-010",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-OPS-010",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -11563,6 +13516,11 @@
       "rel": "governed_by",
       "target": "ext.framework.dod-cc-srg",
       "citation": "Mission Owner SRG Section 3.3.7 (Contract/SLA Requirements: availability-related security controls)"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-ACQ-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L5-ACQ-001",
@@ -11604,6 +13562,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L5-OPS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-OPS-002",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -11633,6 +13596,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.8"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-ACQ-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L5-ACQ-003",
@@ -11687,6 +13655,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L5-OPS-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-OPS-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -11737,6 +13710,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L5-ACQ-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-ACQ-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -11775,6 +13753,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L5-OPS-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-OPS-006",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -11810,6 +13793,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MANAGE 3.1"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-ACQ-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L5-ACQ-007",
@@ -11856,6 +13844,11 @@
       "rel": "governed_by",
       "target": "ext.framework.dod-cc-srg",
       "citation": "CSP SRG Section 4.1 (IL6 facility and personnel clearances authorized by DCSA); CSP SRG Section 5.5.2 (CSP Personnel Requirements)"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-ACQ-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L5-ACQ-008",
@@ -11915,6 +13908,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L1-OVR-011",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L1-OVR-011",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -11944,6 +13942,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.1"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-TEVV-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L2-TEVV-009",
@@ -11997,6 +14000,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L2-OVR-010",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L2-OVR-010",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -12033,6 +14041,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.5"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-TEVV-010",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L3-TEVV-010",
@@ -12104,6 +14117,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L3-TEVV-011",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L3-TEVV-011",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -12133,6 +14151,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.2"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-TEVV-011",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L4-TEVV-011",
@@ -12186,6 +14209,11 @@
     },
     {
       "source": "srf.control.defense.SRF-L4-OVR-012",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
+    },
+    {
+      "source": "srf.control.defense.SRF-L4-OVR-012",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -12216,6 +14244,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.2"
+    },
+    {
+      "source": "srf.control.defense.SRF-L5-TEVV-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.defense"
     },
     {
       "source": "srf.control.defense.SRF-L5-TEVV-009",
@@ -12254,6 +14287,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 1.1"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-DES-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-DES-001",
@@ -12298,6 +14336,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.govern-1-1",
       "citation": "GOVERN 1.1"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-DES-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-DES-002",
@@ -12351,6 +14394,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-DES-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-DES-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -12401,6 +14449,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-VAL-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-VAL-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -12432,6 +14485,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.4"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-OPS-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-OPS-005",
@@ -12471,6 +14529,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 5.1"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-DES-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-DES-006",
@@ -12524,6 +14587,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-OPS-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-OPS-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -12563,6 +14631,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-DES-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-DES-008",
       "rel": "applies_to_layer",
       "target": "srf.layer.L1"
     },
@@ -12593,6 +14666,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MAP 5.1"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-CHG-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-CHG-009",
@@ -12637,6 +14715,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MANAGE 3.1"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L1-CHG-010",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L1-CHG-010",
@@ -12686,6 +14769,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-DES-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-DES-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -12728,6 +14816,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MAP 3.1"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-DES-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-DES-002",
@@ -12775,6 +14868,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-OPS-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-OPS-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -12817,6 +14915,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MAP 3.5"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-OPS-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-OPS-004",
@@ -12876,6 +14979,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-VAL-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-VAL-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -12917,6 +15025,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.11"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-OPS-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-OPS-006",
@@ -12984,6 +15097,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-OPS-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-OPS-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L2"
     },
@@ -13026,6 +15144,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MANAGE 4.2"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L2-OPS-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L2-OPS-008",
@@ -13073,6 +15196,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-VAL-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -13104,6 +15232,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.3"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-VAL-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-VAL-002",
@@ -13156,6 +15289,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-61508",
       "citation": "IEC 61508 (edition-level)"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-OPS-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-OPS-003",
@@ -13217,6 +15355,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-VAL-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-VAL-004",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -13263,6 +15406,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-VAL-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-VAL-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -13294,6 +15442,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.4"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-VAL-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-VAL-006",
@@ -13349,6 +15502,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-VAL-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-VAL-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -13392,6 +15550,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-61508",
       "citation": "IEC 61508 (edition-level)"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-OPS-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-OPS-008",
@@ -13464,6 +15627,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-OPS-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-OPS-009",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -13514,6 +15682,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L3-OPS-010",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L3-OPS-010",
       "rel": "applies_to_layer",
       "target": "srf.layer.L3"
     },
@@ -13555,6 +15728,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.9"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-DES-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-DES-001",
@@ -13601,6 +15779,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.map-1-5",
       "citation": "MAP 1.5"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-DES-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-DES-002",
@@ -13656,6 +15839,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-OPS-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-OPS-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -13705,6 +15893,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-61508",
       "citation": "IEC 61508 (edition-level)"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-CHG-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-CHG-004",
@@ -13760,6 +15953,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-OPS-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-OPS-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -13791,6 +15989,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "MEASURE 2.8"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-OPS-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-OPS-006",
@@ -13837,6 +16040,11 @@
       "rel": "implements",
       "target": "ext.requirement.nist-ai-rmf.map-1-5",
       "citation": "MAP 1.5"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-OPS-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-OPS-007",
@@ -13902,6 +16110,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-DES-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-DES-008",
       "rel": "applies_to_layer",
       "target": "srf.layer.L4"
     },
@@ -13939,6 +16152,11 @@
       "rel": "governed_by",
       "target": "ext.framework.cis-controls",
       "citation": "CIS Control 16: Application Software Security"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L4-OPS-009",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L4-OPS-009",
@@ -13981,6 +16199,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-VAL-001",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-VAL-001",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -14012,6 +16235,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 1.3"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-OPS-002",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-OPS-002",
@@ -14065,6 +16293,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-CHG-003",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-CHG-003",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -14112,6 +16345,11 @@
       "rel": "governed_by",
       "target": "ext.framework.iec-61508",
       "citation": "IEC 61508 (edition-level)"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-OPS-004",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-OPS-004",
@@ -14171,6 +16409,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-DES-005",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-DES-005",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -14208,6 +16451,11 @@
       "rel": "governed_by",
       "target": "ext.framework.owasp-llm-top10",
       "citation": "LLM03 (Supply Chain Vulnerabilities)"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-VAL-006",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-VAL-006",
@@ -14257,6 +16505,11 @@
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-DES-007",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-DES-007",
       "rel": "applies_to_layer",
       "target": "srf.layer.L5"
     },
@@ -14286,6 +16539,11 @@
       "rel": "governed_by",
       "target": "ext.framework.nist-ai-rmf",
       "citation": "GOVERN 6.2"
+    },
+    {
+      "source": "srf.control.manufacturing.SRF-L5-DES-008",
+      "rel": "belongs_to_vertical",
+      "target": "srf.vertical.manufacturing"
     },
     {
       "source": "srf.control.manufacturing.SRF-L5-DES-008",
