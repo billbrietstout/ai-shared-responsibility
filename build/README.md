@@ -45,8 +45,23 @@ ext.requirement.<id>         concrete requirements inside an instrument
 Control-to-regulation joins use `regulations.json` `mapping_key` values against
 each control's `mappings` object, and land in the ontology as `governed_by`
 edges. Sector specializations land as `specializes` edges back to a canonical
-persona. Moral tags in `moral-regulatory-hierarchy.json` land as `part_of`,
-`emphasizes` (with salience), and `implements` edges. Regulation
+persona. `generate_oscal_verticals.py` is safe to rerun. UUIDs come from `uuid5`, and
+`last-modified` is preserved when the rest of the document is unchanged, so a
+rerun on unchanged data leaves the working tree clean and a moved timestamp
+means the content really moved.
+
+`sync_llms_full.py` rewrites the `Regulatory mappings` list inside each control
+block of `llms-full.txt` from the vertical control schemas. That file is
+hand-written prose apart from those lists, so the script touches nothing else.
+Run it after editing any `data/<vertical>-controls.json`; `verify_pages.py`
+fails when a block no longer matches the data.
+
+Moral tags in `moral-regulatory-hierarchy.json` land as `part_of`,
+`emphasizes` (with salience), and `implements` edges. An `implements` edge is
+only emitted for a requirement of the instrument the citation is filed under, so
+`citation_match` text cannot match another instrument's citation string.
+Requirements expected to match nothing are declared in `unmatched_expected`, and
+the verifier fails on any undeclared miss or on a stale declaration. Regulation
 `applicable_verticals` land as `applies_to_vertical` edges to
 `srf.vertical.*`. Prefer `/ontology/edges.json` for multi-hop queries; do not
 hand-edit a parallel edges file under `/data/`.

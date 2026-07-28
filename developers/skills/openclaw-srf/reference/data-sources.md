@@ -21,9 +21,9 @@ site wins.
 | Layers | `https://aisharedresponsibility.com/data/layers.json` | 5 (L1-L5) |
 | Personas | `https://aisharedresponsibility.com/data/personas.json` | 8 canonical + sector specializations |
 | Responsibility matrix | `https://aisharedresponsibility.com/data/matrix.json` | 4 operating models x 5 layers |
-| Jurisdictions | `https://aisharedresponsibility.com/data/jurisdictions.json` | 11 (international, oecd, EU, US federal/multistate/states, UK, China, Singapore, Canada) |
-| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 45 instruments with jurisdiction, mapping_key, and applicable_verticals |
-| Moral regulatory hierarchy | `https://aisharedresponsibility.com/data/moral-regulatory-hierarchy.json` | Requirement-level actor/action/outcome salience (0-3) for EU AI Act, OECD AI Principles, NIST AI RMF, SR 26-2 |
+| Jurisdictions | `https://aisharedresponsibility.com/data/jurisdictions.json` | 17 (international, oecd, EU, US federal/multistate/CA/CO/NY, UK, China, Singapore, Canada, Japan, Australia, Korea, Brazil, India) |
+| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 55 instruments with jurisdiction, mapping_key, and applicable_verticals |
+| Moral regulatory hierarchy | `https://aisharedresponsibility.com/data/moral-regulatory-hierarchy.json` | Requirement-level actor/action/outcome salience (0-3) for 13 priority instruments |
 
 ## Vertical control schemas
 
@@ -55,7 +55,7 @@ accountable persona, applicable operating models, and a regulatory mapping.
 | Glossary registry | `https://aisharedresponsibility.com/glossary.json` | Every SRF term with its definition and canonical anchor |
 | Glossary API | `https://aisharedresponsibility.com/api/glossary/{anchor}.json` | A single term, for example `accountability.json`, `L1.json`, `AI-SaaS.json` |
 | Ontology nodes | `https://aisharedresponsibility.com/ontology/nodes.json` | Concept graph: layers, operating models, personas, jurisdictions, controls, external standards |
-| Ontology edges | `https://aisharedresponsibility.com/ontology/edges.json` | Typed relationships including `governed_by`, `specializes`, and `issued_in_jurisdiction` |
+| Ontology edges | `https://aisharedresponsibility.com/ontology/edges.json` | Typed relationships including `governed_by`, `specializes`, `issued_in_jurisdiction`, and `superseded_by` |
 | Join conventions | `https://aisharedresponsibility.com/developers/schema/` | Preferred join paths; also summarized under `join_hints` in `/data/index.json` |
 
 ## Naming convention
@@ -69,9 +69,24 @@ canonical form is `srf.control.<vertical>.<id>`. A control's `mappings` keys
 join to `regulations.json` via each item's `mapping_key` field, not via the
 regulation `id`.
 
+Before citing an instrument, read its `lifecycle`. The field is absent while the
+instrument is in force, `draft` when the text can still change, and `rescinded`
+once the issuer withdrew it. A rescinded item names its replacement in
+`superseded_by` and carries a matching edge, so the OCC Model Risk Management
+handbook booklet resolves to `sr-26-2`, the revised interagency guidance that
+replaced it in April 2026. Mappings to a `draft` instrument are held at `TBD` on
+purpose, because section numbering moves between drafts.
+
 Requirement-level moral tags live in `moral-regulatory-hierarchy.json`.
 Traverse `emphasizes` (with `salience`) and `implements` edges in
 `/ontology/edges.json` rather than re-deriving scores from prose.
+
+`implements` is scoped to the instrument a citation is filed under, so it always
+sits beside a `governed_by` edge from the same control. A requirement with zero
+`implements` edges means no control implements it, not that the graph is
+incomplete; `unmatched_expected` in the moral file records which ones and why.
+Citations follow the OWASP LLM Top 10 2025 item numbers across all six schemas,
+so `LLM02` is Sensitive Information Disclosure and `LLM06` is Excessive Agency.
 
 Jurisdiction to vertical: control schemas own vertical specificity. Prefer
 `applies_to_vertical` edges from each regulation's `applicable_verticals`

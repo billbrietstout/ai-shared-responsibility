@@ -5,7 +5,7 @@
   "regulatory_context": "SR 26-2 (Federal Reserve / OCC / FDIC, April 2026) puts generative and agentic AI explicitly out of scope while directing institutions to apply existing MRM principles by materiality. This schema operationalizes those principles for AI systems across all five SRF layers.",
   "scaling_rule": "The schema defines measurement methods and parameter names; it does not encode fixed values. Each institution sets parameter values per model tier according to SR 26-2's risk-based materiality approach. The same schema applies to a community bank and a GSIB; only the tier table differs. Exception: zero-tolerance controls (where any non-zero value is a control failure regardless of tier) and verification controls (where the required outcome is binary and must be 100%) carry fixed param values by design. These are identified by param_type 'zero-tolerance' or 'verification'.",
   "id_convention": "SRF-{layer}-{mrm_stage: DEV|VAL|MON|ECH}-{seq}",
-  "mapping_status_note": "FINOS AIGF, SR 26-2, EU AI Act, and CSA AICM mappings verified against primary sources 2026-07-05 (AIGF catalogue, SR 26-2 attachment text, Regulation (EU) 2024/1689 final numbering with draft Article 62 corrected to Article 73, AICM v1.0.3 spreadsheet). Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key.",
+  "mapping_status_note": "FINOS AIGF, SR 26-2, EU AI Act, and CSA AICM mappings verified against primary sources 2026-07-05 (AIGF catalogue, SR 26-2 attachment text, Regulation (EU) 2024/1689 final numbering with draft Article 62 corrected to Article 73, AICM v1.0.3 spreadsheet). Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key. OWASP LLM Top 10 citations normalized 2026-07-28 to the 2025 list that regulations.json pins; 2023 item numbers and retired item names were remapped. NIST AI RMF 1.0 subcategory mappings added 2026-07-28. The AI RMF is the horizontal US risk framework both the model-risk and market-conduct supervisors point to, so every control carries a subcategory.",
   "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' (spelled out, sub-provisions as 'Article 10(2)(f)') and 'Annex X', an optional short gloss in parentheses, multiple citations separated by '; '. 'TBD:' prefix marks an unverified mapping; 'N/A' means no EU AI Act nexus. Do not substitute invented article numbers.",
   "controls": [
     {
@@ -26,7 +26,8 @@
         "finos_aigf": "AIR-RC-022 (Regulatory Compliance and Oversight)",
         "aicm": "GRC-02 (Risk Management Program)",
         "sr26_2": "Section VI (Governance and Controls)",
-        "eu_ai_act": "Article 9 (Risk management system)"
+        "eu_ai_act": "Article 9 (Risk management system)",
+        "nist_ai_rmf": "GOVERN 2.3 (executive leadership takes responsibility for AI risk decisions); MAP 1.5 (organizational risk tolerances are determined and documented)"
       },
       "threshold": {
         "metric": "risk_appetite_statement_approved",
@@ -60,7 +61,8 @@
         "finos_aigf": "N/A",
         "aicm": "GRC-10 (AI Impact Assessment); GRC-02 (Risk Management Program)",
         "sr26_2": "Section VI (Model Inventory); Section III (model materiality)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "GOVERN 1.6 (mechanisms are in place to inventory AI systems, resourced by risk priority)"
       },
       "threshold": {
         "metric": "tier_classification_policy_approved",
@@ -94,7 +96,8 @@
         "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use)",
         "aicm": "GRC-09 (Acceptable Use of the AI Service)",
         "sr26_2": "Section VI (Roles and Responsibilities)",
-        "eu_ai_act": "Article 26 (Deployer obligations)"
+        "eu_ai_act": "Article 26 (Deployer obligations)",
+        "nist_ai_rmf": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
       },
       "threshold": {
         "metric": "business_unit_named_aup_signatory_coverage",
@@ -131,7 +134,8 @@
         "finos_aigf": "AIR-SEC-024 (Agent Action Authorization Bypass); AIR-PREV-018 (Agent Authority Least Privilege Framework)",
         "aicm": "AIS-11 (Agents Security Boundaries); GRC-15 (Human supervision)",
         "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
-        "eu_ai_act": "Article 14 (Human oversight)"
+        "eu_ai_act": "Article 14 (Human oversight)",
+        "nist_ai_rmf": "GOVERN 1.3 (level of risk management activity is set by risk tolerance); GOVERN 3.2 (policies define human-AI configurations and oversight)"
       },
       "threshold": {
         "metric": "agent_process_authorization_policy_exists",
@@ -166,7 +170,8 @@
         "finos_aigf": "N/A",
         "aicm": "A&A-02 (Independent Assessments)",
         "sr26_2": "Section III (effective challenge)",
-        "eu_ai_act": "Article 9 (Risk management system)"
+        "eu_ai_act": "Article 9 (Risk management system)",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV); GOVERN 4.1 (practices foster critical thinking about AI risk)"
       },
       "threshold": {
         "metric": "independent_review_completed",
@@ -200,7 +205,8 @@
         "finos_aigf": "N/A",
         "aicm": "GRC-10 (AI Impact Assessment)",
         "sr26_2": "Section VI (Model Inventory)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "GOVERN 1.6 (AI system inventory completeness is maintained)"
       },
       "threshold": {
         "metric": "model_tier_classification_coverage_rate",
@@ -234,7 +240,8 @@
         "finos_aigf": "N/A",
         "aicm": "GRC-01 (Governance Program Policy and Procedures)",
         "sr26_2": "Section VI (Governance and Controls)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)"
       },
       "threshold": {
         "metric": "governance_review_cadence_adherence",
@@ -268,7 +275,8 @@
         "finos_aigf": "N/A",
         "aicm": "GRC-06 (Governance Responsibility Model)",
         "sr26_2": "Section VI (Roles and Responsibilities)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "GOVERN 2.1 (roles and responsibilities stay documented and current)"
       },
       "threshold": {
         "metric": "governance_role_vacancy_age",
@@ -303,7 +311,8 @@
         "finos_aigf": "N/A",
         "aicm": "A&A-02 (Independent Assessments); GRC-02 (Risk Management Program)",
         "sr26_2": "Section III (effective challenge)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "GOVERN 2.3 (executive leadership takes responsibility for AI risk decisions); GOVERN 4.1 (practices foster critical thinking about AI risk)"
       },
       "threshold": {
         "metric": "board_effective_challenge_documented",
@@ -348,7 +357,8 @@
         "finos_aigf": "AIR-PREV-006 (Data Quality & Classification/Sensitivity); AIR-RC-023 (Intellectual Property and Copyright)",
         "aicm": "DSP-20 (Data Provenance and Transparency)",
         "sr26_2": "Section IV (Model Development)",
-        "eu_ai_act": "Article 10 (Data and data governance)"
+        "eu_ai_act": "Article 10 (Data and data governance)",
+        "nist_ai_rmf": "MAP 4.1 (legal and technology risks of third-party data are mapped); MAP 2.3 (data collection and selection considerations are documented)"
       },
       "threshold": {
         "metric": "provenance_record_completeness",
@@ -383,7 +393,8 @@
         "aicm": "DSP-04 (Data Classification); DSP-03 (Data Inventory)",
         "sr26_2": "Section IV (Model Development)",
         "eu_ai_act": "Article 10 (Data and data governance)",
-        "cis": "CIS Control 3: Data Protection"
+        "cis": "CIS Control 3: Data Protection",
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented)"
       },
       "threshold": {
         "metric": "ai_accessible_store_classification_coverage",
@@ -416,7 +427,8 @@
         "finos_aigf": "AIR-OP-019 (Data Quality and Drift)",
         "aicm": "DSP-23 (Data Integrity Check); DSP-24 (Data Differentiation and Relevance)",
         "sr26_2": "Section IV (Model Development)",
-        "eu_ai_act": "Article 10 (Data and data governance)"
+        "eu_ai_act": "Article 10 (Data and data governance)",
+        "nist_ai_rmf": "MEASURE 2.3 (performance is demonstrated for conditions similar to deployment); MAP 2.3 (data selection considerations are documented)"
       },
       "threshold": {
         "metric": "psi_reference_distribution_stored",
@@ -449,7 +461,8 @@
         "finos_aigf": "AIR-OP-019 (Data Quality and Drift); AIR-PREV-005 (System Acceptance Testing)",
         "aicm": "DSP-24 (Data Differentiation and Relevance); DSP-23 (Data Integrity Check)",
         "sr26_2": "Section V (Conceptual Soundness)",
-        "eu_ai_act": "Article 10 (Data and data governance); Article 9 (Risk management system)"
+        "eu_ai_act": "Article 10 (Data and data governance); Article 9 (Risk management system)",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.11 (fairness and bias are evaluated and documented)"
       },
       "threshold": {
         "metric": "data_validation_completed_with_disposition",
@@ -482,11 +495,12 @@
         "finos_aigf": "AIR-OP-019 (Data Quality and Drift); AIR-DET-004 (AI System Observability)",
         "aicm": "MDS-10 (Model Continuous Monitoring); DSP-23 (Data Integrity Check)",
         "sr26_2": "Section V (Ongoing Model Monitoring)",
-        "eu_ai_act": "Article 10 (Data and data governance)"
+        "eu_ai_act": "Article 10 (Data and data governance)",
+        "nist_ai_rmf": "MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented)"
       },
       "threshold": {
         "metric": "psi_score",
-        "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1–0.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
+        "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1\u20130.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
         "evidence": {
           "ocsf_class": "ai_operation",
           "attribute": "message_context: input feature distributions observable from ai_operation events at inference time can be aggregated to compute PSI against the stored reference distribution.",
@@ -522,7 +536,8 @@
         "finos_aigf": "AIR-PREV-006 (Data Quality & Classification/Sensitivity)",
         "aicm": "DSP-04 (Data Classification)",
         "sr26_2": "N/A",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented)"
       },
       "threshold": {
         "metric": "ai_accessible_store_classification_coverage_rate",
@@ -554,7 +569,8 @@
         "finos_aigf": "AIR-SEC-027 (Agent State Persistence Poisoning)",
         "aicm": "DSP-21 (Data Poisoning Prevention & Detection); AIS-14 (AI Cache Protection)",
         "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
-        "eu_ai_act": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+        "eu_ai_act": "Article 9 (Risk management system); Article 10 (Data and data governance)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)"
       },
       "threshold": {
         "metric": "memory_anomalous_write_rate",
@@ -589,7 +605,8 @@
         "finos_aigf": "N/A",
         "aicm": "A&A-02 (Independent Assessments)",
         "sr26_2": "Section III (effective challenge)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "MEASURE 2.13 (effectiveness of the TEVV metrics and processes is evaluated); MEASURE 4.2 (measurement results are informed by domain expert input)"
       },
       "threshold": {
         "metric": "data_standards_challenge_documented",
@@ -624,7 +641,8 @@
         "aicm": "AIS-08 (Input Validation); AIS-15 (Prompt Differentiation)",
         "sr26_2": "Section IV (Model Development)",
         "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM01: Prompt Injection"
+        "owasp_llm": "LLM01: Prompt Injection",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)"
       },
       "threshold": {
         "metric": "input_validation_design_documented",
@@ -659,7 +677,8 @@
         "aicm": "AIS-09 (Output Validation)",
         "sr26_2": "Section IV (Model Development)",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
+        "owasp_llm": "LLM05: Improper Output Handling; LLM02: Sensitive Information Disclosure",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated and documented)"
       },
       "threshold": {
         "metric": "output_filter_design_documented",
@@ -696,7 +715,8 @@
         "aicm": "AIS-11 (Agents Security Boundaries); IAM-19 (Agent Access Restriction)",
         "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
         "eu_ai_act": "Article 14 (Human oversight); Article 9 (Risk management system)",
-        "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
+        "owasp_llm": "LLM06: Excessive Agency (includes tool and plugin permission scope)",
+        "nist_ai_rmf": "MANAGE 1.3 (responses to high-priority AI risks are developed); MEASURE 2.7 (security and resilience are evaluated)"
       },
       "threshold": {
         "metric": "tool_authorization_design_documented",
@@ -731,7 +751,8 @@
         "aicm": "AIS-05 (Application Security Testing); MDS-06 (Adversarial Attack Analysis)",
         "sr26_2": "Section V (Model Validation)",
         "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM01 through LLM10: full top 10 scope for adversarial testing"
+        "owasp_llm": "LLM01 through LLM10: full 2025 top 10 scope for adversarial testing",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.7 (security and resilience are evaluated)"
       },
       "threshold": {
         "metric": "adversarial_validation_completed",
@@ -766,7 +787,8 @@
         "aicm": "LOG-14 (Input Monitoring); AIS-08 (Input Validation)",
         "sr26_2": "Section V (Ongoing Model Monitoring)",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM01: Prompt Injection"
+        "owasp_llm": "LLM01: Prompt Injection",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 4.1 (post-deployment monitoring plans are implemented)"
       },
       "threshold": {
         "metric": "prompt_injection_detection_rate",
@@ -802,7 +824,8 @@
         "aicm": "LOG-15 (Output Monitoring); AIS-09 (Output Validation)",
         "sr26_2": "Section V (Ongoing Model Monitoring)",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
+        "owasp_llm": "LLM05: Improper Output Handling; LLM02: Sensitive Information Disclosure",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
       },
       "threshold": {
         "metric": "output_filter_block_rate_by_category",
@@ -835,7 +858,8 @@
         "aicm": "IAM-19 (Agent Access Restriction); LOG-13 (Failures and Anomalies Reporting)",
         "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
         "eu_ai_act": "Article 14 (Human oversight)",
-        "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
+        "owasp_llm": "LLM06: Excessive Agency (includes tool and plugin permission scope)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use)"
       },
       "threshold": {
         "metric": "tool_authorization_failure_rate",
@@ -871,7 +895,8 @@
         "finos_aigf": "N/A",
         "aicm": "A&A-02 (Independent Assessments)",
         "sr26_2": "Section III (effective challenge)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "MEASURE 2.13 (effectiveness of the TEVV metrics and processes is evaluated)"
       },
       "threshold": {
         "metric": "application_security_challenge_documented",
@@ -905,7 +930,8 @@
         "aicm": "TVM-11 (Guardrails)",
         "sr26_2": "Section IV (Model Development)",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity); Article 9 (Risk management system)",
-        "cis": "CIS Control 4: Secure Configuration of Enterprise Assets and Software"
+        "cis": "CIS Control 4: Secure Configuration of Enterprise Assets and Software",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 1.3 (responses to high-priority risks are developed)"
       },
       "threshold": {
         "metric": "guardrail_configuration_baseline_approved",
@@ -945,7 +971,8 @@
         "aicm": "IAM-14 (Strong Authentication); IAM-16 (Authorization Mechanisms)",
         "sr26_2": "N/A",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
-        "cis": "CIS Control 6: Access Control Management"
+        "cis": "CIS Control 6: Access Control Management",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)"
       },
       "threshold": {
         "metric": "gateway_authn_authz_design_documented",
@@ -979,7 +1006,8 @@
         "finos_aigf": "N/A",
         "aicm": "CEK-03 (Data Encryption, including in-use)",
         "sr26_2": "N/A",
-        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated)"
       },
       "threshold": {
         "metric": "confidential_compute_attestation_stored",
@@ -1013,7 +1041,8 @@
         "finos_aigf": "AIR-PREV-005 (System Acceptance Testing)",
         "aicm": "A&A-02 (Independent Assessments); TVM-06 (Penetration Testing)",
         "sr26_2": "Section V (Model Validation)",
-        "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+        "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.7 (security and resilience are evaluated)"
       },
       "threshold": {
         "metric": "platform_validation_completed_bypass_rate_zero",
@@ -1047,7 +1076,8 @@
         "finos_aigf": "AIR-PREV-017 (AI Firewall Implementation and Management); AIR-DET-004 (AI System Observability)",
         "aicm": "TVM-11 (Guardrails); LOG-03 (Security Monitoring and Alerting)",
         "sr26_2": "Section V (Ongoing Model Monitoring)",
-        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated); MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use)"
       },
       "threshold": {
         "metric": "guardrail_bypass_rate_by_category",
@@ -1085,7 +1115,8 @@
         "aicm": "LOG-03 (Security Monitoring and Alerting); IAM-14 (Strong Authentication)",
         "sr26_2": "N/A",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
-        "cis": "CIS Control 8: Audit Log Management"
+        "cis": "CIS Control 8: Audit Log Management",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)"
       },
       "threshold": {
         "metric": "gateway_authn_failure_rate",
@@ -1121,7 +1152,8 @@
         "finos_aigf": "N/A",
         "aicm": "CEK-03 (Data Encryption, including in-use); LOG-10 (Encryption Monitoring and Reporting)",
         "sr26_2": "N/A",
-        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)"
       },
       "threshold": {
         "metric": "confidential_compute_attestation_valid",
@@ -1156,7 +1188,8 @@
         "finos_aigf": "N/A",
         "aicm": "A&A-02 (Independent Assessments)",
         "sr26_2": "Section III (effective challenge)",
-        "eu_ai_act": "N/A"
+        "eu_ai_act": "N/A",
+        "nist_ai_rmf": "MEASURE 2.13 (effectiveness of the TEVV metrics and processes is evaluated)"
       },
       "threshold": {
         "metric": "platform_security_challenge_documented",
@@ -1189,7 +1222,8 @@
         "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use); AIR-OP-017 (Lack of Explainability)",
         "aicm": "MDS-03 (Model Documentation); MDS-04 (Model Documentation Requirements)",
         "sr26_2": "Section VII (Vendor and Other Third-Party Products); Section VI (Documentation)",
-        "eu_ai_act": "Article 11 (Technical documentation); Article 53 (General-purpose AI model provider obligations)"
+        "eu_ai_act": "Article 11 (Technical documentation); Article 53 (General-purpose AI model provider obligations)",
+        "nist_ai_rmf": "MAP 2.2 (information about the AI system knowledge limits is documented); MEASURE 2.8 (transparency and accountability are examined)"
       },
       "threshold": {
         "metric": "model_card_completeness",
@@ -1223,7 +1257,8 @@
         "aicm": "MDS-09 (Model Signing/Ownership Verification); MDS-01 (Training Pipeline Security)",
         "sr26_2": "Section VII (Vendor and Other Third-Party Products)",
         "eu_ai_act": "Article 17 (Quality management system); Article 15 (Accuracy, robustness and cybersecurity)",
-        "cis": "CIS Control 16: Application Software Security"
+        "cis": "CIS Control 16: Application Software Security",
+        "nist_ai_rmf": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
       },
       "threshold": {
         "metric": "model_artifact_signed_and_sbom_published",
@@ -1257,7 +1292,8 @@
         "aicm": "MDS-06 (Adversarial Attack Analysis); MDS-07 (Model Hardening)",
         "sr26_2": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)",
         "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM01: Prompt Injection; LLM06: Sensitive Information Disclosure; LLM09: Overreliance"
+        "owasp_llm": "LLM01: Prompt Injection; LLM02: Sensitive Information Disclosure; LLM09: Misinformation",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
       },
       "threshold": {
         "metric": "security_evaluation_published",
@@ -1296,7 +1332,8 @@
         "finos_aigf": "AIR-PREV-005 (System Acceptance Testing); AIR-DET-015 (Using Large Language Models for Automated Evaluation)",
         "aicm": "MDS-06 (Adversarial Attack Analysis); A&A-02 (Independent Assessments)",
         "sr26_2": "Section V (Model Validation); Section VII (Vendor and Other Third-Party Products)",
-        "eu_ai_act": "Article 9 (Risk management system)"
+        "eu_ai_act": "Article 9 (Risk management system)",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.7 (security and resilience are evaluated)"
       },
       "threshold": {
         "metric": "independent_model_evaluation_completed",
@@ -1334,7 +1371,8 @@
         "finos_aigf": "AIR-SEC-008 (Tampering With the Foundational Model)",
         "aicm": "MDS-09 (Model Signing/Ownership Verification); MDS-08 (Model Integrity Checks)",
         "sr26_2": "Section VII (Vendor and Other Third-Party Products)",
-        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)"
+        "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
+        "nist_ai_rmf": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
       },
       "threshold": {
         "metric": "model_signature_verification_success_rate",
@@ -1369,7 +1407,8 @@
         "aicm": "TVM-09 (Vulnerability Management Reporting); TVM-07 (Vulnerability Remediation Schedule)",
         "sr26_2": "Section VII (Vendor and Other Third-Party Products)",
         "eu_ai_act": "Article 73 (Reporting of serious incidents); Article 72 (Post-market monitoring)",
-        "cis": "CIS Control 7: Continuous Vulnerability Management"
+        "cis": "CIS Control 7: Continuous Vulnerability Management",
+        "nist_ai_rmf": "MANAGE 4.3 (incidents and errors are communicated to relevant AI actors); MANAGE 3.1 (third-party resource risks are monitored)"
       },
       "threshold": {
         "metric": "vulnerability_disclosure_sla_adherence",
@@ -1403,7 +1442,8 @@
         "finos_aigf": "AIR-PREV-007 (Legal and Contractual Frameworks for AI Systems)",
         "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)",
         "sr26_2": "Section VII (Vendor and Other Third-Party Products); Section III (effective challenge)",
-        "eu_ai_act": "Article 72 (Post-market monitoring)"
+        "eu_ai_act": "Article 72 (Post-market monitoring)",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); MEASURE 2.13 (effectiveness of measurement is evaluated)"
       },
       "threshold": {
         "metric": "model_governance_challenge_documented",

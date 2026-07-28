@@ -67,6 +67,59 @@ for p in pages:
         if opens != closes:
             parse_err.append(f"{rel}:{tag} {opens}/{closes}")
 
+# 6. llms-full.txt copies each control's mappings verbatim. Those copies drifted
+# from /data before, which meant the prose artifact and the JSON gave agents
+# different citations. build/sync_llms_full.py rewrites them from the data.
+VERTICAL_HEADINGS = {
+    "Financial Services": "finance", "Healthcare": "healthcare",
+    "Insurance": "insurance", "Public Sector": "public-sector",
+    "Defense / DoD": "defense", "Manufacturing": "manufacturing",
+}
+full_path = os.path.join(ROOT, "llms-full.txt")
+if os.path.exists(full_path):
+    controls = {}
+    for slug in VERTICAL_HEADINGS.values():
+        payload = json.load(open(os.path.join(ROOT, "data", f"{slug}-controls.json")))
+        controls[slug] = {c["id"]: c for c in payload["controls"]}
+    lines = open(full_path, encoding="utf-8").read().split("\n")
+    vertical, starts = None, []
+    for idx, line in enumerate(lines):
+        sec = re.match(r"^### (.+?)\s*$", line)
+        if sec and sec.group(1) in VERTICAL_HEADINGS:
+            vertical = VERTICAL_HEADINGS[sec.group(1)]
+        ctl = re.match(r"^##### (SRF-[A-Z0-9-]+):", line)
+        if ctl:
+            starts.append((idx, vertical, ctl.group(1)))
+    stale = []
+    for pos, (idx, vslug, cid) in enumerate(starts):
+        limit = starts[pos + 1][0] if pos + 1 < len(starts) else len(lines)
+        end = limit
+        for probe in range(idx + 1, limit):
+            if re.match(r"^#{2,5} ", lines[probe]):
+                end = probe
+                break
+        body = lines[idx:end]
+        head = next((i for i, l in enumerate(body)
+                     if l.strip() == "Regulatory mappings:"), None)
+        control = controls.get(vslug, {}).get(cid)
+        if control is None:
+            stale.append(f"{vslug}/{cid}: no such control in data")
+            continue
+        want = [f"  - {k}: {v}" for k, v in (control.get("mappings") or {}).items()
+                if k != "mapping_status_note"]
+        if head is None:
+            stale.append(f"{vslug}/{cid}: no mappings block")
+            continue
+        got, cur = [], head + 1
+        while cur < len(body) and re.match(r"^  - [a-z0-9_]+: ", body[cur]):
+            got.append(body[cur])
+            cur += 1
+        if got != want:
+            stale.append(f"{vslug}/{cid}")
+    check(not stale,
+          f"llms-full.txt control mappings match /data "
+          f"({len(stale)} stale, run build/sync_llms_full.py; {stale[:4]})")
+
 check(not no_type, f"all pages have llm:type (missing: {no_type})")
 check(not bad_concepts, f"all llm:concepts resolve to ids.json (bad: {bad_concepts[:5]})")
 check(not no_marker, f"all content pages have >=1 chunk marker (missing: {no_marker})")

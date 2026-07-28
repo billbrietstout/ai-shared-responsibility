@@ -3,7 +3,7 @@
   "uuid": "407b54ff-672d-5f71-85da-afa2c36d6d00",
   "metadata": {
    "title": "CoSAI AI SRF — Healthcare Vertical Profile (Proposed Extension)",
-   "last-modified": "2026-07-06T07:26:52+00:00",
+   "last-modified": "2026-07-28T22:58:14+00:00",
    "version": "0.1.0",
    "oscal-version": "1.2.2",
    "props": [
@@ -21,6 +21,11 @@
      "name": "control-count",
      "ns": "https://aisharedresponsibility.com/ns/oscal",
      "value": "40"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "aicm"
     },
     {
      "name": "regulatory-driver",
@@ -55,7 +60,17 @@
     {
      "name": "regulatory-driver",
      "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "nist_ai_rmf"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
      "value": "onc_hti1"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "owasp_llm"
     }
    ],
    "links": [
@@ -67,6 +82,11 @@
      "href": "https://aisharedresponsibility.com/healthcare/controls/",
      "rel": "reference",
      "text": "Healthcare controls page"
+    },
+    {
+     "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+     "rel": "reference",
+     "text": "CSA AI Controls Matrix"
     },
     {
      "href": "#51bbabe9-02b8-5813-994d-891f4c95ef21",
@@ -99,9 +119,19 @@
      "text": "ISO 14971 — Application of Risk Management to Medical Devices"
     },
     {
+     "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
+     "rel": "reference",
+     "text": "NIST AI Risk Management Framework"
+    },
+    {
      "href": "#8e4fc90b-6135-5c7a-81da-30efe01e36ad",
      "rel": "reference",
      "text": "ONC HTI-1 Final Rule (45 CFR 170.315)"
+    },
+    {
+     "href": "#c403b49d-9023-519a-a9f4-fefbab79a3ce",
+     "rel": "reference",
+     "text": "OWASP Top 10 for Large Language Model Applications"
     }
    ],
    "remarks": "The FDA's January 2025 draft guidance on lifecycle management for AI-enabled device software functions (TPLC) and the August 2025 final guidance on Predetermined Change Control Plans establish the primary governance framework for AI-enabled medical devices. PCCP crosswalk references in this schema follow the five guiding principles published by FDA, Health Canada, and MHRA in 2023. ONC's HTI-1 Final Rule (effective January 2025) adds algorithmic transparency requirements for AI embedded in certified health IT. The EU AI Act classifies clinical AI as high-risk with full compliance obligations from August 2026. This schema operationalizes those frameworks across all five SRF layers. Industry vertical schemas are independently proposed extensions and are not part of the official CoSAI release. Mapping IDs marked TBD are unverified and are carried verbatim as props, never as links; do not substitute invented IDs. Generated from data/*-controls.json."
@@ -407,6 +437,22 @@
   "back-matter": {
    "resources": [
     {
+     "uuid": "97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+     "title": "CSA AI Controls Matrix",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "aicm"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
+      }
+     ]
+    },
+    {
      "uuid": "51bbabe9-02b8-5813-994d-891f4c95ef21",
      "title": "EU Artificial Intelligence Act (Regulation (EU) 2024/1689)",
      "props": [
@@ -503,6 +549,22 @@
      ]
     },
     {
+     "uuid": "c00b1cec-7990-5779-b1cf-10a2e792f026",
+     "title": "NIST AI Risk Management Framework",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "nist_ai_rmf"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.nist.gov/itl/ai-risk-management-framework"
+      }
+     ]
+    },
+    {
      "uuid": "8e4fc90b-6135-5c7a-81da-30efe01e36ad",
      "title": "ONC HTI-1 Final Rule (45 CFR 170.315)",
      "props": [
@@ -515,6 +577,22 @@
      "rlinks": [
       {
        "href": "https://www.healthit.gov/topic/laws-regulation-and-policy/health-data-technology-and-interoperability"
+      }
+     ]
+    },
+    {
+     "uuid": "c403b49d-9023-519a-a9f4-fefbab79a3ce",
+     "title": "OWASP Top 10 for Large Language Model Applications",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "owasp_llm"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
       }
      ]
     }
