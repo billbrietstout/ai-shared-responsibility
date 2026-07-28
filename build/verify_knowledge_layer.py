@@ -70,6 +70,12 @@ missing_juris = [i["id"] for i in regs["items"]
 check(not missing_juris,
       f"every regulation.jurisdiction resolves (bad: {missing_juris[:5]})")
 
+# A duplicated mapping_key would silently collapse in key_to_ext and send a
+# control's governed_by edge to whichever instrument was parsed last.
+declared_keys = [i["mapping_key"] for i in regs["items"] if i.get("mapping_key")]
+dup_keys = sorted({k for k in declared_keys if declared_keys.count(k) > 1})
+check(not dup_keys, f"mapping_key values unique (bad: {dup_keys})")
+
 unmapped_keys = set()
 placeholder = __import__("re").compile(r"^\s*(TBD|N/?A|None|-)\b", __import__("re").I)
 for vertical in ("finance", "healthcare", "insurance",

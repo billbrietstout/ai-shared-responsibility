@@ -122,7 +122,7 @@
         "international"
       ],
       "jurisdiction": "international",
-      "mapping_key": null,
+      "mapping_key": "iso_22989",
       "depth": "full",
       "applicable_verticals": [
         "finance",
@@ -236,7 +236,7 @@
         "voluntary"
       ],
       "jurisdiction": "us-federal",
-      "mapping_key": null,
+      "mapping_key": "nist_csf_2",
       "depth": "full",
       "applicable_verticals": [
         "finance",
@@ -370,7 +370,7 @@
         "us"
       ],
       "jurisdiction": "international",
-      "mapping_key": null,
+      "mapping_key": "mitre_atlas",
       "depth": "full",
       "applicable_verticals": [
         "finance",
@@ -433,7 +433,7 @@
         "mandatory"
       ],
       "jurisdiction": "us-federal",
-      "mapping_key": null,
+      "mapping_key": "fda_ai_ml",
       "depth": "full",
       "applicable_verticals": [
         "healthcare"
@@ -461,7 +461,7 @@
         "mandatory"
       ],
       "jurisdiction": "eu",
-      "mapping_key": null,
+      "mapping_key": "gdpr",
       "depth": "full",
       "applicable_verticals": [
         "finance",
@@ -497,7 +497,7 @@
         "historical"
       ],
       "jurisdiction": "us-federal",
-      "mapping_key": null,
+      "mapping_key": "gao_ai_framework",
       "depth": "full",
       "applicable_verticals": [
         "public-sector"
@@ -1576,6 +1576,6 @@
     }
   ],
   "description": "AI regulations and standards mapped to SRF layers and business verticals. The shared catalog is not one-regulation-per-vertical: sector instruments (HIPAA, NAIC, CMMC) apply to one vertical, while cross-cutting instruments (EU AI Act, NIST AI RMF) may apply to several. When vertical controls cite an instrument, applicable_verticals is the set of citing verticals (derived-from-controls). When no control cites it yet, authors declare a sector or cross-cutting scope so comparative jurisdiction queries still resolve. Join controls on mapping_key. Jurisdiction ids live in data/jurisdictions.json. Prefer ontology applies_to_vertical edges for agents.",
-  "mapping_key_note": "Each vertical control's 'mappings' object is keyed by mapping_key. build/generate_knowledge_layer.py turns those into governed_by edges and emits applies_to_vertical edges from applicable_verticals.",
+  "mapping_key_note": "Each vertical control's 'mappings' object is keyed by mapping_key. build/generate_knowledge_layer.py turns those into governed_by edges and emits applies_to_vertical edges from applicable_verticals. A mapping_key may be declared before any control cites it, which makes the instrument join-ready: the evidence path stays empty until a control adds a real clause citation under that key. mapping_key stays null for comparative anchors that no control is expected to cite.",
   "vertical_join_note": "Control schemas are vertical-specific; this file is a shared instrument catalog. applicable_verticals lists the SRF verticals (finance, healthcare, insurance, public-sector, defense, manufacturing) where the instrument is in scope on this site. Prefer derived-from-controls when mapping_key citations exist. declared-sector is a single-vertical author call. declared-cross-cutting is used only when no control cites the instrument yet and the instrument is horizontal. derived+declared means citations and author scope agree."
 }
