@@ -28,6 +28,7 @@ export/srf-{vertical}.profile.json.
 """
 
 import argparse
+import copy
 import datetime
 import json
 import pathlib
@@ -475,6 +476,33 @@ def build_profile(vslug, vtitle, data, index, now):
     return profile
 
 
+def write_stable(path, doc):
+    """Write an OSCAL document, keeping the stored last-modified when nothing
+    else changed.
+
+    Every UUID here is derived with uuid5, so the only field that moves on a
+    rerun is last-modified. Stamping it with wall-clock time unconditionally
+    made each run rewrite all seven files and assert a modification that did not
+    happen, which buries real changes in diff noise.
+    """
+    key = next(iter(doc))
+    if path.exists():
+        try:
+            prev = json.loads(path.read_text())
+        except (json.JSONDecodeError, OSError):
+            prev = None
+        if prev:
+            fresh, stored = copy.deepcopy(doc), copy.deepcopy(prev)
+            for candidate in (fresh, stored):
+                candidate[next(iter(candidate))].get("metadata", {}) \
+                    .pop("last-modified", None)
+            if fresh == stored:
+                keep = prev[next(iter(prev))]["metadata"].get("last-modified")
+                if keep:
+                    doc[key]["metadata"]["last-modified"] = keep
+    path.write_text(json.dumps(doc, indent=1, ensure_ascii=False) + "\n")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", default=None,
@@ -486,14 +514,14 @@ def main():
 
     catalog, docs, index, _ = build_catalog(root, now)
     out = root / "export" / CATALOG_FILE
-    out.write_text(json.dumps(catalog, indent=1, ensure_ascii=False) + "\n")
+    write_stable(out, catalog)
     print(f"wrote {out.relative_to(root)} "
           f"({sum(len(v) for v in index.values())} controls)")
 
     for vslug, vshort, vtitle, _ in VERTICALS:
         profile = build_profile(vslug, vtitle, docs[vslug], index[vslug], now)
         pout = root / "export" / f"srf-{vslug}.profile.json"
-        pout.write_text(json.dumps(profile, indent=1, ensure_ascii=False) + "\n")
+        write_stable(pout, profile)
         print(f"wrote {pout.relative_to(root)} ({len(index[vslug])} controls)")
 
 

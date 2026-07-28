@@ -144,6 +144,12 @@
               <td><code>regulations[].jurisdiction</code></td>
             </tr>
             <tr>
+              <td><code>superseded_by</code></td>
+              <td>rescinded regulation</td>
+              <td>replacing regulation</td>
+              <td><code>regulations[].superseded_by</code></td>
+            </tr>
+            <tr>
               <td><code>applies_to_layer</code></td>
               <td>control</td>
               <td>layer</td>
@@ -179,9 +185,22 @@
           placeholders such as <code>TBD</code> or <code>N/A</code> are skipped.
         </p>
         <p>
-          Items with <code>depth: "full"</code> are first-class catalog entries.
-          Items with <code>depth: "reference"</code> exist so a control citation
-          can resolve; their metadata may still be thin.
+          Items with <code>depth: "full"</code> are first-class catalog entries,
+          read against the primary source and stamped with
+          <code>last_verified</code>. Items with <code>depth: "reference"</code>
+          exist so a control citation can resolve; they carry
+          <code>verification_status</code> instead and their metadata may still
+          be thin.
+        </p>
+        <p>
+          <code>lifecycle</code> says whether the instrument can be relied on. It
+          is absent while the instrument is in force, <code>draft</code> while the
+          text can still change, and <code>rescinded</code> once the issuer
+          withdrew it. A rescinded item stays in the catalog with
+          <code>superseded_by</code> naming its replacement, so a mapping written
+          against the old text resolves forward instead of dead-ending: the OCC
+          Model Risk Management handbook booklet points at <code>sr-26-2</code>,
+          the revised interagency guidance that replaced it in April 2026.
         </p>
 
         <h2>Sector persona specializations</h2>
@@ -215,7 +234,7 @@
                 <code>srf.vertical.*</code>
                 (from <code>applicable_verticals</code>)
               </td>
-              <td>Comparative questions. When controls cite the instrument, the list is those citing verticals; otherwise an author sector or cross-cutting scope (UK, China, Singapore, OECD)</td>
+              <td>Comparative questions. When controls cite the instrument, the list is those citing verticals; otherwise an author sector or cross-cutting scope (UK, China, Singapore, Japan, Australia, Korea, Brazil, India, OECD)</td>
             </tr>
             <tr>
               <td>Evidence</td>
@@ -277,6 +296,15 @@
           <code>implements</code> (control to requirement when a mapping
           citation matches). This is a descriptive analytical lens, not a claim
           that any country is one moral type.
+        </p>
+        <p>
+          <code>implements</code> refines <code>governed_by</code>: it only fires
+          for a requirement of the instrument the citation is filed under, so
+          every <code>implements</code> edge has a <code>governed_by</code> edge
+          beside it from the same control. Requirements with no implementing
+          control are listed in <code>unmatched_expected</code> with a reason,
+          which keeps a genuine absence (the EU AI Act Article 5 bans are not a
+          control duty) distinct from a citation pattern that stopped matching.
         </p>
 
         <h2>What this page is not</h2>

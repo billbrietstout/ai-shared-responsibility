@@ -70,6 +70,12 @@ missing_juris = [i["id"] for i in regs["items"]
 check(not missing_juris,
       f"every regulation.jurisdiction resolves (bad: {missing_juris[:5]})")
 
+# A duplicated mapping_key would silently collapse in key_to_ext and send a
+# control's governed_by edge to whichever instrument was parsed last.
+declared_keys = [i["mapping_key"] for i in regs["items"] if i.get("mapping_key")]
+dup_keys = sorted({k for k in declared_keys if declared_keys.count(k) > 1})
+check(not dup_keys, f"mapping_key values unique (bad: {dup_keys})")
+
 unmapped_keys = set()
 placeholder = __import__("re").compile(r"^\s*(TBD|N/?A|None|-)\b", __import__("re").I)
 for vertical in ("finance", "healthcare", "insurance",
@@ -151,6 +157,42 @@ if os.path.exists(moral_path):
               e["target"].startswith("ext.requirement.") for e in implements),
           "implements edges run control -> requirement")
 
+    # implements refines governed_by: a control can only implement a requirement
+    # of an instrument it actually cites. Without this, citation_match text from
+    # one instrument silently matches another instrument's citation string.
+    cites = {}
+    for e in edges["edges"]:
+        if e["rel"] == "governed_by":
+            cites.setdefault(e["source"], set()).add(e["target"])
+    orphan_impl = []
+    for e in implements:
+        req = e["target"].replace("ext.requirement.", "")
+        parent = f"ext.framework.{req.rsplit('.', 1)[0]}"
+        if parent not in cites.get(e["source"], ()):
+            orphan_impl.append(f'{e["source"]} -> {req}')
+    check(not orphan_impl,
+          f"every implements edge sits under a governed_by edge to the same "
+          f"instrument (bad: {orphan_impl[:5]})")
+
+    # A requirement whose patterns match nothing is either uncited (fine, its
+    # instrument has no mapping_key) or the patterns miss the citation style the
+    # schemas actually use, which is a silent authoring bug.
+    keyed = {r["id"] for r in J("data/regulations.json")["items"]
+             if r.get("mapping_key")}
+    linked = {e["target"].replace("ext.requirement.", "") for e in implements}
+    expected = moral.get("unmatched_expected", {})
+    dead = sorted(r["id"] for r in reqs
+                  if r["instrument"] in keyed
+                  and r["id"] not in linked
+                  and r["id"] not in expected)
+    check(not dead,
+          f"requirements on cited instruments match at least one control "
+          f"citation (bad: {dead})")
+    stale = sorted(set(expected) & linked)
+    check(not stale,
+          f"unmatched_expected holds no requirement that now matches a citation "
+          f"(bad: {stale})")
+
     for instrument in moral.get("priority_instruments", []):
         nid = f"ext.framework.{instrument}"
         node = next((n for n in nodes["nodes"] if n["id"] == nid), None)
@@ -176,8 +218,79 @@ check(len(atv) > 0, f"applies_to_vertical edges present ({len(atv)})")
 check(all(e["source"].startswith("ext.framework.") and
           e["target"].startswith("srf.vertical.") for e in atv),
       "applies_to_vertical edges run regulation -> vertical")
+
+# An entry claiming derived-from-controls must match the evidence path exactly.
+# A placeholder citation such as "TBD: overlays are pre-draft" is not evidence,
+# so an instrument carrying only placeholders cannot claim a derived list.
+evidence_verticals = {}
+for e in edges["edges"]:
+    if e["rel"] != "governed_by":
+        continue
+    vslug = e["source"].split(".")[2]
+    evidence_verticals.setdefault(e["target"], set()).add(vslug)
+bad_derived = []
+for i in regs["items"]:
+    if i.get("applicable_verticals_source") != "derived-from-controls":
+        continue
+    ev = evidence_verticals.get(f"ext.framework.{i['id']}", set())
+    if ev != set(i.get("applicable_verticals") or []):
+        bad_derived.append(
+            f"{i['id']} declared={sorted(i.get('applicable_verticals') or [])} "
+            f"evidence={sorted(ev)}")
+check(not bad_derived,
+      f"derived-from-controls lists match the evidence path "
+      f"(bad: {bad_derived[:4]})")
+
+# Guard the small controlled vocabularies so a typo cannot quietly create a
+# fourth verification state or a third depth.
+bad_status = sorted({str(i.get("verification_status")) for i in regs["items"]}
+                    - {"None", "unverified", "verified"})
+check(not bad_status, f"verification_status uses a known value (bad: {bad_status})")
+bad_depth = sorted({str(i.get("depth")) for i in regs["items"]}
+                   - {"full", "reference"})
+check(not bad_depth, f"depth uses a known value (bad: {bad_depth})")
+bad_source = sorted({str(i.get("applicable_verticals_source")) for i in regs["items"]}
+                    - {"derived-from-controls", "declared-cross-cutting",
+                       "declared-sector", "derived+declared"})
+check(not bad_source,
+      f"applicable_verticals_source uses a known value (bad: {bad_source})")
+bad_life = sorted({str(i.get("lifecycle")) for i in regs["items"]}
+                  - {"None", "draft", "rescinded"})
+check(not bad_life, f"lifecycle uses a known value (bad: {bad_life})")
+
+# Depth carries a verification promise. A full-depth entry was read against the
+# primary source, so it records last_verified and cannot sit at unverified; a
+# reference entry has not been read that way and must say so. The OECD entry was
+# full depth, unverified, and missing last_verified all at once, which no single
+# vocabulary check above would catch.
+bad_promise = []
+for i in regs["items"]:
+    full = i.get("depth") == "full"
+    if full and i.get("verification_status") == "unverified":
+        bad_promise.append(f"{i['id']}:full-but-unverified")
+    if full and not i.get("last_verified"):
+        bad_promise.append(f"{i['id']}:full-without-last_verified")
+    if not full and not i.get("verification_status"):
+        bad_promise.append(f"{i['id']}:reference-without-status")
+check(not bad_promise,
+      f"depth matches the verification fields (bad: {bad_promise[:5]})")
+
+# A rescinded instrument points at what replaced it, and only a rescinded one
+# does, so a stale mapping resolves forward instead of dead-ending.
+sup = [e for e in edges["edges"] if e["rel"] == "superseded_by"]
+bad_sup = [f"{i['id']}:{i.get('superseded_by')}" for i in regs["items"]
+           if i.get("superseded_by")
+           and (i.get("lifecycle") != "rescinded"
+                or f"ext.framework.{i['superseded_by']}" not in node_ids)]
+check(not bad_sup,
+      f"superseded_by names a real instrument and only appears on a rescinded "
+      f"entry (bad: {bad_sup})")
+check(len(sup) == sum(1 for i in regs["items"] if i.get("superseded_by")),
+      f"superseded_by edges match the data ({len(sup)})")
 # New comparative jurisdictions resolve.
-for jid in ("oecd", "uk", "china", "singapore", "canada"):
+for jid in ("oecd", "uk", "china", "singapore", "canada",
+            "japan", "australia", "south-korea", "brazil", "india",
+            "us-california"):
     check(f"srf.jurisdiction.{jid}" in node_ids, f"jurisdiction node present ({jid})")
 
 # 7. related[] only references real nodes
