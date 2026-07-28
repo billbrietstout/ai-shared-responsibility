@@ -3,70 +3,69 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>SRF Schema Viewer — AI Shared Responsibility</title>
+    <title>SRF Join Conventions — AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Machine-readable governance schemas for the CoSAI AI Shared Responsibility Framework. JSON, YAML, and graph-ontology formats. Coming in v2.0."
+      content="How to join CoSAI SRF machine-readable files: canonical IDs, ontology edges, regulation mapping keys, sector persona specializations, and jurisdiction tags."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
-      .coming-banner {
-        display: flex;
-        align-items: center;
-        gap: var(--sp-3);
-        background: #fffbeb;
-        border: 1px solid #fcd34d;
+      .join-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin: var(--sp-4) 0 var(--sp-8);
+      }
+      .join-table th,
+      .join-table td {
+        text-align: left;
+        vertical-align: top;
+        padding: var(--sp-3) var(--sp-3);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .join-table th {
+        font-size: var(--text-xs);
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        color: var(--slate-500);
+      }
+      .join-table code {
+        font-family: var(--font-mono);
+        font-size: 0.85em;
+        color: var(--slate-800);
+      }
+      .callout {
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
         border-radius: var(--radius-lg);
         padding: var(--sp-4) var(--sp-5);
-        margin-bottom: var(--sp-8);
-      }
-      .coming-banner__badge {
-        flex-shrink: 0;
-        font-size: 0.65rem;
-        font-weight: 800;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        color: #92400e;
-        background: #fde68a;
-        border: 1px solid #fcd34d;
-        border-radius: var(--radius);
-        padding: 3px 8px;
-      }
-      .coming-banner__text {
+        margin: var(--sp-5) 0 var(--sp-8);
         font-size: var(--text-sm);
-        color: #78350f;
+        color: var(--slate-700);
         line-height: var(--leading-normal);
       }
     </style>
-  
+
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "Dataset",
-  "name": "CoSAI SRF Machine-Readable Governance Schemas",
+  "@type": "TechArticle",
+  "name": "CoSAI SRF Join Conventions",
   "url": "https://aisharedresponsibility.com/developers/schema/",
-  "description": "Machine-readable JSON governance schemas for the CoSAI AI Shared Responsibility Framework: layers (L1-L5), personas, responsibility matrix, and industry vertical control schemas.",
+  "description": "How to join CoSAI SRF machine-readable files using canonical IDs and ontology edges.",
   "publisher": {
     "@type": "Organization",
     "name": "AI Shared Responsibility",
-    "url": "https://aisharedresponsibility.com/",
-    "description": "Independent companion site to the CoSAI AI Shared Responsibility Framework, providing controls schemas, regulatory crosswalks, and practitioner tools."
+    "url": "https://aisharedresponsibility.com/"
   },
-  "license": "https://github.com/aisharedresponsibility/aisharedresponsibility.com/blob/main/LICENSE",
-  "isAccessibleForFree": true,
-  "distribution": {
-    "@type": "DataDownload",
-    "contentUrl": "https://aisharedresponsibility.com/data/index.json",
-    "encodingFormat": "application/json"
-  },
-  "keywords": "CoSAI SRF schema JSON layers personas operating models controls"
+  "isAccessibleForFree": true
 }
     </script>
     <!-- llm:meta -->
     <meta name="llm:type" content="developer" />
     <meta name="llm:canonical-id" content="srf.page.developers-schema" />
-    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.control" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.control, srf.data.jurisdictions, srf.data.moral-regulatory-hierarchy, srf.moral.actor, srf.moral.action, srf.moral.outcome" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -76,69 +75,177 @@
 
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
-        <span class="page-hero__eyebrow"><a href="/developers/">Developers</a> / SRF Schema Viewer</span>
-        <h1 class="page-hero__title">SRF Schema Viewer</h1>
+        <span class="page-hero__eyebrow"><a href="/developers/">Developers</a> / Join Conventions</span>
+        <h1 class="page-hero__title">SRF Join Conventions</h1>
         <p class="page-hero__lede">
-          Machine-readable accountability ontologies, evidence manifests, and
-          RACI schemas for the CoSAI AI SRF. Designed for ingestion by GRC
-          platforms, AI gateways, and observability systems.
+          Preferred join paths across the static JSON catalog. Prefer the
+          generated ontology edges over re-deriving associations from parallel
+          fields.
         </p>
       </div>
     </header>
 
-    <main id="main" class="page-body" data-llm="srf-schema-viewer">
-
-      <div class="coming-banner">
-        <span class="coming-banner__badge">Coming in v2.0</span>
-        <span class="coming-banner__text">
-          These schemas are planned for the v2.0 release. The accountability ontology
-          and evidence manifest formats are in active design — open an issue on
-          GitHub to influence the schema before it ships.
-        </span>
-      </div>
+    <main id="main" class="page-body" data-llm="srf-join-conventions">
 
       <div class="prose">
-        <h2>What's planned</h2>
+        <div class="callout">
+          Start at <a href="/data/index.json"><code>/data/index.json</code></a>
+          (see <code>join_hints</code>), resolve every concept through
+          <a href="/ids.json"><code>/ids.json</code></a>, and traverse
+          multi-hop associations via
+          <a href="/ontology/edges.json"><code>/ontology/edges.json</code></a>.
+          Do not invent a second edges file under <code>/data/</code>; the
+          knowledge layer already owns that graph.
+        </div>
+
+        <h2>Canonical ID namespaces</h2>
+        <table class="join-table">
+          <thead>
+            <tr><th>Prefix</th><th>Means</th><th>Example</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>srf.layer.*</code></td><td>Architecture layer</td><td><code>srf.layer.L3</code></td></tr>
+            <tr><td><code>srf.opmodel.*</code></td><td>Operating model</td><td><code>srf.opmodel.ai-paas</code></td></tr>
+            <tr><td><code>srf.role.*</code></td><td>Persona or sector specialization</td><td><code>srf.role.clinical-ai-governance</code></td></tr>
+            <tr><td><code>srf.control.&lt;vertical&gt;.*</code></td><td>Vertical control (namespaced because short IDs collide)</td><td><code>srf.control.defense.SRF-L1-ACQ-001</code></td></tr>
+            <tr><td><code>ext.framework.*</code></td><td>External regulation or standard</td><td><code>ext.framework.eu-ai-act</code></td></tr>
+            <tr><td><code>srf.jurisdiction.*</code></td><td>Jurisdiction vocabulary entry</td><td><code>srf.jurisdiction.us-federal</code></td></tr>
+          </tbody>
+        </table>
+
+        <h2>Preferred edge relations</h2>
+        <table class="join-table">
+          <thead>
+            <tr><th>Relation</th><th>From</th><th>To</th><th>Source field</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>governed_by</code></td>
+              <td>control</td>
+              <td>regulation</td>
+              <td><code>control.mappings.&lt;mapping_key&gt;</code> joined to <code>regulations.mapping_key</code></td>
+            </tr>
+            <tr>
+              <td><code>accountable_to</code></td>
+              <td>control</td>
+              <td>persona / specialization</td>
+              <td><code>control.accountable_persona</code></td>
+            </tr>
+            <tr>
+              <td><code>specializes</code></td>
+              <td>sector specialization</td>
+              <td>canonical persona</td>
+              <td><code>personas.sector_specializations[].specializes</code></td>
+            </tr>
+            <tr>
+              <td><code>issued_in_jurisdiction</code></td>
+              <td>regulation</td>
+              <td>jurisdiction</td>
+              <td><code>regulations[].jurisdiction</code></td>
+            </tr>
+            <tr>
+              <td><code>applies_to_layer</code></td>
+              <td>control</td>
+              <td>layer</td>
+              <td><code>control.layer</code></td>
+            </tr>
+            <tr>
+              <td><code>applies_in_operating_model</code></td>
+              <td>control</td>
+              <td>operating model</td>
+              <td><code>control.operating_models[]</code> (canonical four only)</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <h2>Control ID collision rule</h2>
         <p>
-          The v2.0 framework development plan includes a canonical schema
-          repository covering three artifact types:
-        </p>
-        <p>
-          <strong>Accountability ontology</strong> — A graph-structured model
-          of the five SRF layers, eight personas, and four operating models.
-          Expressed in JSON-LD and YAML. Enables tooling to reason about
-          responsibility assignments without parsing prose.
-        </p>
-        <p>
-          <strong>Evidence manifests</strong> — Structured templates defining
-          what evidence satisfies each accountability assignment by layer and
-          operating model. OSCAL-compatible JSON format for integration with
-          existing GRC workflows.
-        </p>
-        <p>
-          <strong>RACI templates</strong> — Pre-populated responsibility
-          matrices per operating model (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS),
-          exportable as machine-readable JSON and as human-readable PDF.
+          The short form <code>SRF-L1-ACQ-001</code> appears in more than one
+          vertical. Always use the namespaced ID
+          <code>srf.control.&lt;vertical&gt;.&lt;id&gt;</code> when joining,
+          citing, or storing a reference. The short form stays on the control
+          record for human-facing pages.
         </p>
 
-        <h2>Timeline</h2>
+        <h2>Regulation mapping_key</h2>
         <p>
-          Phase 1 (0–3 months from v2.0 launch): schema design, initial
-          governance ontology, and a public GitHub repository for community
-          contribution.
+          Vertical controls cite instruments through a free-form
+          <code>mappings</code> object whose keys are not themselves regulation
+          IDs. Each <code>regulations.json</code> item that is citeable from a
+          control carries a <code>mapping_key</code> that matches those keys
+          exactly (for example <code>eu_ai_act</code>, <code>hipaa</code>,
+          <code>m_25_21</code>). The generator emits a
+          <code>governed_by</code> edge only when the citation is a real string;
+          placeholders such as <code>TBD</code> or <code>N/A</code> are skipped.
+        </p>
+        <p>
+          Items with <code>depth: "full"</code> are first-class catalog entries.
+          Items with <code>depth: "reference"</code> exist so a control citation
+          can resolve; their metadata may still be thin.
         </p>
 
-        <h2>Contribute</h2>
+        <h2>Sector persona specializations</h2>
         <p>
-          The schema design is open for discussion now. If you are working on
-          GRC tooling, AI gateway integrations, or observability systems that
-          need to consume governance data programmatically, open an issue on
-          the GitHub repository to influence the schema design.
+          Healthcare controls assign accountability to clinical names such as
+          <code>clinical-ai-governance</code>. Those names are declared under
+          <code>personas.sector_specializations</code>, each with a
+          <code>specializes</code> pointer to one of the eight canonical
+          personas. They are not additional personas; the canonical count
+          stays at eight.
+        </p>
+
+        <h2 id="moral-orientation">Moral orientation tags</h2>
+        <p>
+          <a href="/data/moral-regulatory-hierarchy.json"><code>/data/moral-regulatory-hierarchy.json</code></a>
+          tags concrete requirements inside priority instruments with
+          independent 0-3 salience on three dimensions:
+        </p>
+        <table class="join-table">
+          <thead>
+            <tr><th>Dimension</th><th>Focus</th><th>Typical signals</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>actor</code></td>
+              <td>Character, duties, competence of people or organizations</td>
+              <td>Named accountability, due diligence, professional obligations</td>
+            </tr>
+            <tr>
+              <td><code>action</code></td>
+              <td>Rightness of the act itself</td>
+              <td>Absolute bans, mandatory process, human-oversight gates</td>
+            </tr>
+            <tr>
+              <td><code>outcome</code></td>
+              <td>Foreseeable or actual impacts and harms</td>
+              <td>Risk-tiering, performance thresholds, continuous monitoring</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Salience scores are independent (not a partition that sums to 1).
+          Each requirement carries a rationale. Instrument-level rollups use
+          maximum salience per dimension so a strongly action-oriented article
+          inside a hybrid statute is not averaged away. Ontology edges:
+          <code>part_of</code> (requirement to instrument),
+          <code>emphasizes</code> (requirement to <code>srf.moral.*</code>,
+          with a <code>salience</code> property), and
+          <code>implements</code> (control to requirement when a mapping
+          citation matches). This is a descriptive analytical lens, not a claim
+          that any country is one moral type.
+        </p>
+
+        <h2>What this page is not</h2>
+        <p>
+          This page documents the join conventions that already ship. A fuller
+          schema viewer (evidence manifests, RACI export templates, JSON-LD
+          packaging) remains planned for v2.0 and is tracked separately.
         </p>
       </div>
 
       <div style="margin-top: var(--sp-8);">
-        <a class="btn btn--primary" href="/developers/">← Back to Developers</a>
+        <a class="btn btn--primary" href="/developers/">Back to Developers</a>
+        <a class="btn" href="/data/index.json" style="margin-left: var(--sp-3);">Open data index</a>
       </div>
     </main>
 

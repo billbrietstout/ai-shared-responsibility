@@ -1,0 +1,423 @@
+{
+  "$schema_version": "1.0",
+  "description": "Moral orientation tags for concrete regulatory requirements, used as a descriptive analytical lens over AI instruments. Each requirement carries independent 0-3 salience on actor, action, and outcome. Pure forms are rare; most instruments mix all three. This file is hand-authored. Instrument-level rollups and ontology edges are derived by build/generate_knowledge_layer.py.",
+  "srf_version": "1.0",
+  "updated": "2026-07-27",
+  "caveats": [
+    "Pure actor, action, or outcome regimes are rare; most national and international rules are hybrids.",
+    "A single provision can carry material weight on more than one dimension; salience scores are independent, not a partition that sums to 1.",
+    "International soft law (notably OECD AI Principles 1.4) sits above or alongside national rules and is itself pluralist.",
+    "These tags describe regulatory orientation. They do not claim that any country or agency is morally one type.",
+    "Salience is an author judgment grounded in the cited text, not a measured quantity. Treat scores as ordinal, not interval."
+  ],
+  "dimensions": {
+    "actor": {
+      "id": "srf.moral.actor",
+      "name": "Actor",
+      "focus": "Character, duties, and competence of the people or organizations who develop, deploy, or oversee AI.",
+      "typical_signals": [
+        "codes of conduct",
+        "named accountability",
+        "due diligence on developers or providers",
+        "professional or organizational obligations",
+        "competence and literacy duties"
+      ]
+    },
+    "action": {
+      "id": "srf.moral.action",
+      "name": "Action",
+      "focus": "Rightness of the act itself, independent of realized harm (deontological).",
+      "typical_signals": [
+        "absolute bans",
+        "mandatory process rules",
+        "human-oversight gates",
+        "documentation duties",
+        "prohibited practices"
+      ]
+    },
+    "outcome": {
+      "id": "srf.moral.outcome",
+      "name": "Outcome",
+      "focus": "Foreseeable or actual impacts and harms (consequentialist).",
+      "typical_signals": [
+        "risk-tiering by harm potential",
+        "robustness and performance thresholds",
+        "continuous monitoring",
+        "liability for results",
+        "post-market performance duties"
+      ]
+    }
+  },
+  "salience_scale": {
+    "0": "Absent from this requirement",
+    "1": "Incidental: present but not the organizing logic",
+    "2": "Material: a real obligation under this requirement",
+    "3": "Defining: the primary moral orientation of this requirement"
+  },
+  "rollup_rule": "For each instrument, each dimension's rollup salience is the maximum salience among that instrument's tagged requirements. Max preserves the signal that an instrument contains a strongly action-oriented (or outcome-oriented) duty somewhere, without averaging it away.",
+  "priority_instruments": [
+    "eu-ai-act",
+    "oecd-ai-principles",
+    "nist-ai-rmf",
+    "sr-26-2"
+  ],
+  "requirements": [
+    {
+      "id": "eu-ai-act.art-5",
+      "instrument": "eu-ai-act",
+      "citation": "Article 5",
+      "citation_match": ["Article 5"],
+      "title": "Prohibited AI practices",
+      "summary": "Absolute bans on specified AI practices (for example social scoring by public authorities, certain biometric categorization, untargeted scraping for facial recognition databases).",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L1", "L3", "L5"],
+      "moral_profile": {
+        "actor": 1,
+        "action": 3,
+        "outcome": 1,
+        "rationale": "The duty is not to perform the listed acts. Claimed benefits do not reopen the ban. Actor duties (who must refrain) and outcome concerns (why these acts were listed) are secondary to the prohibition itself.",
+        "evidence": "Art. 5 absolute prohibitions on specific AI practices"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-6",
+      "instrument": "eu-ai-act",
+      "citation": "Article 6",
+      "citation_match": ["Article 6"],
+      "title": "Classification rules for high-risk AI systems",
+      "summary": "Classifies AI systems as high-risk by reference to Annex III use cases and to AI that is a safety component of products covered by Union harmonization legislation.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L1"],
+      "moral_profile": {
+        "actor": 0,
+        "action": 1,
+        "outcome": 3,
+        "rationale": "Risk class follows foreseeable harm potential of the use case or product role, not the character of the provider or a blanket ban on a technique.",
+        "evidence": "Art. 6 and Annex III harm-based high-risk classification"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-9",
+      "instrument": "eu-ai-act",
+      "citation": "Article 9",
+      "citation_match": ["Article 9"],
+      "title": "Risk management system",
+      "summary": "Requires a continuous iterative risk management system for high-risk AI, including identification, estimation, mitigation, and residual-risk acceptance.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L1", "L3", "L4", "L5"],
+      "moral_profile": {
+        "actor": 1,
+        "action": 2,
+        "outcome": 3,
+        "rationale": "The organizing logic is residual risk to health, safety, and fundamental rights. Mandatory process steps are the means; named provider duties are the carrier of those means.",
+        "evidence": "Art. 9 continuous risk management keyed to foreseeable harms"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-10",
+      "instrument": "eu-ai-act",
+      "citation": "Article 10",
+      "citation_match": ["Article 10"],
+      "title": "Data and data governance",
+      "summary": "Training, validation, and testing data for high-risk AI must meet quality criteria, including relevance, representativeness, and examination for bias.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L2", "L5"],
+      "moral_profile": {
+        "actor": 2,
+        "action": 2,
+        "outcome": 2,
+        "rationale": "Provider data-governance duties (actor) and mandated examination practices (action) both serve bias and performance outcomes. No single dimension dominates.",
+        "evidence": "Art. 10 data quality and bias-examination duties on providers"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-14",
+      "instrument": "eu-ai-act",
+      "citation": "Article 14",
+      "citation_match": ["Article 14"],
+      "title": "Human oversight",
+      "summary": "High-risk AI must be designed so natural persons can oversee it effectively, including the ability to intervene or interrupt.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L1", "L3"],
+      "moral_profile": {
+        "actor": 2,
+        "action": 3,
+        "outcome": 1,
+        "rationale": "The core duty is to build and operate a human-oversight gate. Competence of the overseer matters, but the requirement is structured as a mandatory process and design rule.",
+        "evidence": "Art. 14 human oversight and intervene/interrupt capabilities"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-15",
+      "instrument": "eu-ai-act",
+      "citation": "Article 15",
+      "citation_match": ["Article 15"],
+      "title": "Accuracy, robustness and cybersecurity",
+      "summary": "High-risk AI must achieve an appropriate level of accuracy, robustness, and cybersecurity, and be resilient against errors, faults, and unauthorized attempts to alter use or performance.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L3", "L4", "L5"],
+      "moral_profile": {
+        "actor": 1,
+        "action": 1,
+        "outcome": 3,
+        "rationale": "Performance and resilience thresholds against foreseeable failure and attack modes are the organizing logic. Process and provider duties exist to produce those outcomes.",
+        "evidence": "Art. 15 accuracy, robustness, and cybersecurity performance duties"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-26",
+      "instrument": "eu-ai-act",
+      "citation": "Article 26",
+      "citation_match": ["Article 26"],
+      "title": "Obligations of deployers of high-risk AI systems",
+      "summary": "Deployers must assign human oversight, ensure input data relevance, monitor operation, and keep logs, among other duties.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L1", "L2", "L3"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 2,
+        "outcome": 2,
+        "rationale": "The article assigns a bundle of duties to the deployer role. Process and monitoring requirements are substantial, but the defining move is naming who is obligated.",
+        "evidence": "Art. 26 deployer obligations"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-53",
+      "instrument": "eu-ai-act",
+      "citation": "Article 53",
+      "citation_match": ["Article 53"],
+      "title": "Obligations of providers of general-purpose AI models",
+      "summary": "GPAI model providers must draw up technical documentation, publish a training-data summary, and cooperate with downstream providers, with additional duties for systemic-risk models.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L5"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 2,
+        "outcome": 1,
+        "rationale": "Duties attach to the GPAI provider role (documentation, transparency, cooperation). Systemic-risk overlays add outcome pressure, but the article is structured as provider obligations.",
+        "evidence": "Art. 53 GPAI provider obligations"
+      }
+    },
+    {
+      "id": "eu-ai-act.art-72",
+      "instrument": "eu-ai-act",
+      "citation": "Article 72",
+      "citation_match": ["Article 72"],
+      "title": "Post-market monitoring by providers",
+      "summary": "Providers of high-risk AI must establish and document a post-market monitoring system proportional to the nature of the AI technologies and the risks of the high-risk system.",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+      "srf_layers": ["L1", "L5"],
+      "moral_profile": {
+        "actor": 2,
+        "action": 2,
+        "outcome": 3,
+        "rationale": "Continuous observation of real-world performance and emerging harms is the point. Provider and process duties exist to make that observation happen.",
+        "evidence": "Art. 72 post-market monitoring system"
+      }
+    },
+    {
+      "id": "oecd-ai-principles.1-4",
+      "instrument": "oecd-ai-principles",
+      "citation": "Principle 1.4",
+      "citation_match": ["Principle 1.4", "1.4 Robustness"],
+      "title": "Robustness, security and safety",
+      "summary": "AI systems should be robust, secure, and safe throughout their lifecycle so that in conditions of normal use, foreseeable use or misuse, or other adverse conditions, they function appropriately and do not pose unreasonable safety risk. Includes the capacity to override, repair, and decommission.",
+      "url": "https://oecd.ai/en/dashboards/ai-principles/P7",
+      "srf_layers": ["L1", "L3", "L4", "L5"],
+      "moral_profile": {
+        "actor": 1,
+        "action": 2,
+        "outcome": 3,
+        "rationale": "The principle is framed around foreseeable adverse conditions and unreasonable safety risk. Override, repair, and decommission are mandated capabilities in service of that outcome. Cross-cutting soft law that most national robustness rules reuse.",
+        "evidence": "OECD AI Principle 1.4 robustness, security, safety, and override/repair/decommission"
+      }
+    },
+    {
+      "id": "oecd-ai-principles.1-5",
+      "instrument": "oecd-ai-principles",
+      "citation": "Principle 1.5",
+      "citation_match": ["Principle 1.5"],
+      "title": "Accountability",
+      "summary": "AI actors should be accountable for the proper functioning of AI systems and for respect of the OECD AI Principles, based on their roles and the context.",
+      "url": "https://oecd.ai/en/dashboards/ai-principles/P9",
+      "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 1,
+        "outcome": 1,
+        "rationale": "Accountability attaches to AI actors according to role and context. The principle names who must answer, not which acts are banned or which harm thresholds apply.",
+        "evidence": "OECD AI Principle 1.5 accountability of AI actors"
+      }
+    },
+    {
+      "id": "nist-ai-rmf.govern-1-1",
+      "instrument": "nist-ai-rmf",
+      "citation": "GOVERN 1.1",
+      "citation_match": ["GOVERN 1.1"],
+      "title": "Legal and regulatory requirements incorporated into AI risk policies",
+      "summary": "Legal and regulatory requirements involving AI are understood, managed, and documented.",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "srf_layers": ["L1"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 2,
+        "outcome": 1,
+        "rationale": "Organizational duty to know and manage applicable AI law. The act of incorporating requirements into policy is mandated; harm outcomes are upstream of this control.",
+        "evidence": "NIST AI RMF GOVERN 1.1"
+      }
+    },
+    {
+      "id": "nist-ai-rmf.govern-1-6",
+      "instrument": "nist-ai-rmf",
+      "citation": "GOVERN 1.6",
+      "citation_match": ["GOVERN 1.6"],
+      "title": "Roles and responsibilities for AI risk management",
+      "summary": "Roles and responsibilities for AI risk and the AI risk management function are defined, assigned, and documented.",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "srf_layers": ["L1"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 2,
+        "outcome": 0,
+        "rationale": "The requirement is to name accountable roles. Process documentation is the vehicle; outcome thresholds are not the subject.",
+        "evidence": "NIST AI RMF GOVERN 1.6"
+      }
+    },
+    {
+      "id": "nist-ai-rmf.map-1-5",
+      "instrument": "nist-ai-rmf",
+      "citation": "MAP 1.5",
+      "citation_match": ["MAP 1.5"],
+      "title": "AI system impacts on individuals, groups, and society",
+      "summary": "Impacts to individuals, groups, communities, organizations, and society are characterized and documented.",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "srf_layers": ["L1", "L2", "L3"],
+      "moral_profile": {
+        "actor": 1,
+        "action": 1,
+        "outcome": 3,
+        "rationale": "Impact characterization is consequentialist by design: the requirement exists to surface foreseeable harms and benefits.",
+        "evidence": "NIST AI RMF MAP 1.5"
+      }
+    },
+    {
+      "id": "nist-ai-rmf.measure-2-6",
+      "instrument": "nist-ai-rmf",
+      "citation": "MEASURE 2.6",
+      "citation_match": ["MEASURE 2.6"],
+      "title": "AI system privacy risk measurement",
+      "summary": "AI system privacy risk is examined, documented, and managed based on assessments of privacy-related impacts.",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "srf_layers": ["L2", "L3", "L4"],
+      "moral_profile": {
+        "actor": 1,
+        "action": 2,
+        "outcome": 3,
+        "rationale": "Measurement is keyed to privacy-related impacts. Mandated assessment practice supports that outcome focus.",
+        "evidence": "NIST AI RMF MEASURE 2.6"
+      }
+    },
+    {
+      "id": "nist-ai-rmf.manage-2-4",
+      "instrument": "nist-ai-rmf",
+      "citation": "MANAGE 2.4",
+      "citation_match": ["MANAGE 2.4"],
+      "title": "Risk treatment responses documented and monitored",
+      "summary": "Risk treatment responses, including residual risk acceptance, are documented, monitored, and communicated.",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework",
+      "srf_layers": ["L1", "L3", "L4", "L5"],
+      "moral_profile": {
+        "actor": 2,
+        "action": 2,
+        "outcome": 3,
+        "rationale": "Residual risk acceptance and ongoing monitoring center foreseeable impacts. Named ownership and process steps carry the outcome duty.",
+        "evidence": "NIST AI RMF MANAGE 2.4"
+      }
+    },
+    {
+      "id": "sr-26-2.section-iii",
+      "instrument": "sr-26-2",
+      "citation": "Section III",
+      "citation_match": ["Section III"],
+      "title": "Effective challenge",
+      "summary": "Critical analysis by objective, informed parties that can identify model weaknesses and produce appropriate changes. Independence and competence of the challenger are central.",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf",
+      "srf_layers": ["L1", "L5"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 2,
+        "outcome": 1,
+        "rationale": "Effective challenge is defined by who challenges (informed, objective parties with stature) and the critical-analysis practice they must perform. Harm outcomes motivate the duty but do not structure the section.",
+        "evidence": "SR 26-2 Section III effective challenge"
+      }
+    },
+    {
+      "id": "sr-26-2.section-iv",
+      "instrument": "sr-26-2",
+      "citation": "Section IV",
+      "citation_match": ["Section IV"],
+      "title": "Model development, implementation, and use",
+      "summary": "Expectations for sound development, including conceptual soundness, data suitability, and appropriate use relative to model purpose.",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf",
+      "srf_layers": ["L2", "L3", "L5"],
+      "moral_profile": {
+        "actor": 1,
+        "action": 3,
+        "outcome": 2,
+        "rationale": "The section mandates development and use practices. Outcome concerns (model purpose fitness) matter, but the text is organized as required process for building and deploying models.",
+        "evidence": "SR 26-2 Section IV model development"
+      }
+    },
+    {
+      "id": "sr-26-2.section-v",
+      "instrument": "sr-26-2",
+      "citation": "Section V",
+      "citation_match": ["Section V"],
+      "title": "Model validation and ongoing monitoring",
+      "summary": "Independent validation and ongoing monitoring of model performance, including outcomes analysis and process verification.",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf",
+      "srf_layers": ["L1", "L2", "L5"],
+      "moral_profile": {
+        "actor": 2,
+        "action": 2,
+        "outcome": 3,
+        "rationale": "Performance monitoring and outcomes analysis are the organizing logic. Independence of validators is a material actor duty supporting that outcome focus.",
+        "evidence": "SR 26-2 Section V validation and ongoing monitoring"
+      }
+    },
+    {
+      "id": "sr-26-2.section-vi",
+      "instrument": "sr-26-2",
+      "citation": "Section VI",
+      "citation_match": ["Section VI"],
+      "title": "Governance, policies, and controls",
+      "summary": "Board and senior management accountability, policies, controls, and model inventory expectations for the MRM framework.",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf",
+      "srf_layers": ["L1"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 2,
+        "outcome": 1,
+        "rationale": "Board and senior-management accountability and role clarity define the section. Policies and controls are the mandated acts those actors must maintain.",
+        "evidence": "SR 26-2 Section VI governance and controls"
+      }
+    },
+    {
+      "id": "sr-26-2.section-vii",
+      "instrument": "sr-26-2",
+      "citation": "Section VII",
+      "citation_match": ["Section VII"],
+      "title": "Vendor and other third-party models",
+      "summary": "Institutions remain responsible for MRM of vendor and third-party models commensurate with the models' risk, including due diligence and ongoing monitoring.",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf",
+      "srf_layers": ["L1", "L5"],
+      "moral_profile": {
+        "actor": 3,
+        "action": 2,
+        "outcome": 2,
+        "rationale": "Responsibility stays with the institution regardless of who built the model. Due diligence and monitoring practices serve that accountability, with risk-commensurate intensity pointing at outcomes.",
+        "evidence": "SR 26-2 Section VII vendor and third-party products"
+      }
+    }
+  ]
+}

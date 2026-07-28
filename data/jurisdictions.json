@@ -1,0 +1,55 @@
+{
+  "$schema_version": "1.0",
+  "description": "Controlled vocabulary for the jurisdiction that issues a regulation or standard. Referenced by the 'jurisdiction' field in regulations.json. Levels run from 'international' (standards bodies and multilateral instruments with no binding force of their own) down to 'subnational' (a single US state). 'multistate' covers US model-law bodies such as the NAIC whose instruments bind only once a state adopts them.",
+  "srf_version": "1.0",
+  "updated": "2026-07-27",
+  "levels": {
+    "international": "A standards body or multilateral instrument with no independent force of law.",
+    "supranational": "A treaty-based authority whose instruments bind its member states.",
+    "national": "A sovereign state or one of its federal agencies.",
+    "multistate": "A US model-law or coordinating body whose instruments bind only where a state adopts them.",
+    "subnational": "A single US state or equivalent."
+  },
+  "jurisdictions": [
+    {
+      "id": "international",
+      "name": "International",
+      "level": "international",
+      "parent": null,
+      "note": "ISO/IEC, IEC, OECD, OWASP, MITRE, CIS, CSA, FINOS. Adopted voluntarily or by reference from a binding instrument."
+    },
+    {
+      "id": "eu",
+      "name": "European Union",
+      "level": "supranational",
+      "parent": null,
+      "note": "Regulations apply directly in member states; directives require transposition."
+    },
+    {
+      "id": "us-federal",
+      "name": "United States (federal)",
+      "level": "national",
+      "parent": null,
+      "note": "Statute, agency rule, supervisory guidance, and executive-branch policy such as OMB memoranda."
+    },
+    {
+      "id": "us-multistate",
+      "name": "United States (multistate model law)",
+      "level": "multistate",
+      "parent": "us-federal",
+      "note": "NAIC model bulletins and evaluation tools. Not binding until a state adopts them, so a control citing one may be mandatory in some states and advisory in others."
+    },
+    {
+      "id": "us-colorado",
+      "name": "Colorado",
+      "level": "subnational",
+      "parent": "us-federal"
+    },
+    {
+      "id": "us-new-york",
+      "name": "New York",
+      "level": "subnational",
+      "parent": "us-federal"
+    }
+  ]
+}

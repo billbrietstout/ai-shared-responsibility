@@ -1,19 +1,22 @@
 {
   "$schema_version": "1.0",
-  "description": "Canonical ID registry. Every concept, layer, role, operating model, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.control.<vertical>.*, ext.framework.*.",
+  "description": "Canonical ID registry. Every concept, layer, role, operating model, jurisdiction, moral dimension, requirement, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.jurisdiction.*, srf.moral.*, srf.control.<vertical>.*, ext.framework.*, ext.requirement.*.",
   "srf_version": "1.0",
-  "updated": "2026-07-13",
+  "updated": "2026-07-27",
   "namespaces": {
     "srf.framework": "The framework itself",
     "srf.layer": "One of the five architecture layers L1-L5",
     "srf.opmodel": "One of the four operating models",
-    "srf.role": "One of the SRF personas",
+    "srf.role": "One of the SRF personas or a declared sector specialization",
     "srf.concept": "A glossary vocabulary concept",
     "srf.data": "A machine-readable data catalog resource under /data/",
+    "srf.jurisdiction": "A jurisdiction that issues a regulation or standard",
+    "srf.moral": "A moral-orientation dimension (actor, action, outcome)",
     "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
-    "ext.framework": "An external standard or regulation"
+    "ext.framework": "An external standard or regulation",
+    "ext.requirement": "A concrete requirement inside an external instrument"
   },
-  "count": 313,
+  "count": 370,
   "ids": [
     {
       "id": "ext.framework.cis-controls",
@@ -23,11 +26,53 @@
       "url": "https://www.cisecurity.org/controls"
     },
     {
+      "id": "ext.framework.cmmc-2-0",
+      "name": "Cybersecurity Maturity Model Certification 2.0",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://dodcio.defense.gov/CMMC/"
+    },
+    {
+      "id": "ext.framework.co-reg-10-1-1",
+      "name": "Colorado Division of Insurance Regulation 10-1-1",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://doi.colorado.gov/"
+    },
+    {
       "id": "ext.framework.csa-aicm",
       "name": "CSA AI Controls Matrix",
       "type": "framework",
       "subtype": null,
       "url": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
+    },
+    {
+      "id": "ext.framework.dod-cc-srg",
+      "name": "DoD Cloud Computing Security Requirements Guide",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://public.cyber.mil/dccs/"
+    },
+    {
+      "id": "ext.framework.dod-rai-strategy",
+      "name": "DoD Responsible AI Strategy and Implementation Pathway",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.ai.mil/"
+    },
+    {
+      "id": "ext.framework.dodi-5000-89",
+      "name": "DoDI 5000.89: Test and Evaluation",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.esd.whs.mil/Directives/issuances/dodi/"
+    },
+    {
+      "id": "ext.framework.dodi-5000-90",
+      "name": "DoDI 5000.90: Cybersecurity for Acquisition Decision Authorities and Program Managers",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.esd.whs.mil/Directives/issuances/dodi/"
     },
     {
       "id": "ext.framework.eu-ai-act",
@@ -37,11 +82,46 @@
       "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
     },
     {
+      "id": "ext.framework.eu-machinery-regulation",
+      "name": "EU Machinery Regulation (EU) 2023/1230",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://eur-lex.europa.eu/eli/reg/2023/1230/oj"
+    },
+    {
       "id": "ext.framework.fda-ai-ml",
       "name": "FDA AI/ML-Based Software as a Medical Device",
       "type": "framework",
       "subtype": null,
       "url": "https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-aiml-enabled-medical-devices"
+    },
+    {
+      "id": "ext.framework.fda-pccp",
+      "name": "FDA Predetermined Change Control Plans for AI-enabled device software",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/marketing-submission-recommendations-predetermined-change-control-plan-artificial-intelligence"
+    },
+    {
+      "id": "ext.framework.fda-tplc",
+      "name": "FDA Total Product Life Cycle approach for AI-enabled devices",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-aiml-enabled-medical-devices"
+    },
+    {
+      "id": "ext.framework.fedramp-20x-ksi",
+      "name": "FedRAMP 20x Key Security Indicators",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.fedramp.gov/"
+    },
+    {
+      "id": "ext.framework.finos-aigf",
+      "name": "FINOS AI Governance Framework",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://air-governance-framework.finos.org/"
     },
     {
       "id": "ext.framework.gao-ai-accountability-framework",
@@ -56,6 +136,41 @@
       "type": "framework",
       "subtype": null,
       "url": "https://gdpr-info.eu/"
+    },
+    {
+      "id": "ext.framework.hipaa-security-rule",
+      "name": "HIPAA Security Rule",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.hhs.gov/hipaa/for-professionals/security/"
+    },
+    {
+      "id": "ext.framework.iec-61508",
+      "name": "IEC 61508: Functional safety of electrical, electronic and programmable electronic safety-related systems",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.iec.ch/"
+    },
+    {
+      "id": "ext.framework.iec-62304",
+      "name": "IEC 62304: Medical device software lifecycle processes",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.iec.ch/"
+    },
+    {
+      "id": "ext.framework.iec-62443",
+      "name": "IEC 62443: Security for industrial automation and control systems",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.iec.ch/"
+    },
+    {
+      "id": "ext.framework.iso-14971",
+      "name": "ISO 14971: Application of risk management to medical devices",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.iso.org/standard/72704.html"
     },
     {
       "id": "ext.framework.iso-22989",
@@ -79,6 +194,20 @@
       "url": "https://atlas.mitre.org/"
     },
     {
+      "id": "ext.framework.naic-ai-eval-tool",
+      "name": "NAIC AI Systems Evaluation Tool",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://content.naic.org/"
+    },
+    {
+      "id": "ext.framework.naic-ai-model-bulletin",
+      "name": "NAIC Model Bulletin on the Use of Artificial Intelligence Systems by Insurers",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://content.naic.org/"
+    },
+    {
       "id": "ext.framework.nist-ai-600-1",
       "name": "NIST AI 600-1 — AI RMF: Generative AI Profile",
       "type": "framework",
@@ -100,11 +229,60 @@
       "url": "https://www.nist.gov/cyberframework"
     },
     {
+      "id": "ext.framework.nist-cyber-ai-profile",
+      "name": "NIST Cyber AI Profile",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://csrc.nist.gov/projects/cyber-ai-profile"
+    },
+    {
+      "id": "ext.framework.nist-sp-800-171",
+      "name": "NIST SP 800-171: Protecting Controlled Unclassified Information in Nonfederal Systems",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://csrc.nist.gov/pubs/sp/800/171/r3/final"
+    },
+    {
       "id": "ext.framework.nistir-8605a",
       "name": "NISTIR 8605A — Control Overlays for Securing AI Systems: Using and Fine-Tuning Predictive AI",
       "type": "framework",
       "subtype": null,
       "url": "https://csrc.nist.gov/projects/cosais"
+    },
+    {
+      "id": "ext.framework.nydfs-cl-7-2024",
+      "name": "NYDFS Circular Letter No. 7 (2024): Use of AI Systems in Insurance Underwriting and Pricing",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.dfs.ny.gov/"
+    },
+    {
+      "id": "ext.framework.oecd-ai-principles",
+      "name": "OECD Recommendation of the Council on Artificial Intelligence",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://oecd.ai/en/ai-principles"
+    },
+    {
+      "id": "ext.framework.omb-m-25-21",
+      "name": "OMB M-25-21: Accelerating Federal Use of AI through Innovation, Governance, and Public Trust",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.whitehouse.gov/omb/information-for-agencies/memoranda/"
+    },
+    {
+      "id": "ext.framework.omb-m-25-22",
+      "name": "OMB M-25-22: Driving Efficient Acquisition of Artificial Intelligence in Government",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.whitehouse.gov/omb/information-for-agencies/memoranda/"
+    },
+    {
+      "id": "ext.framework.onc-hti-1",
+      "name": "ONC HTI-1 Final Rule: Decision Support Interventions",
+      "type": "framework",
+      "subtype": null,
+      "url": "https://www.healthit.gov/topic/laws-regulation-and-policy/health-data-technology-and-interoperability-certification-program"
     },
     {
       "id": "ext.framework.owasp-llm-top10",
@@ -118,6 +296,153 @@
       "name": "SR 26-2 — Revised Guidance on Model Risk Management",
       "type": "framework",
       "subtype": null,
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-10",
+      "name": "Article 10: Data and data governance",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-14",
+      "name": "Article 14: Human oversight",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-15",
+      "name": "Article 15: Accuracy, robustness and cybersecurity",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-26",
+      "name": "Article 26: Obligations of deployers of high-risk AI systems",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-5",
+      "name": "Article 5: Prohibited AI practices",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-53",
+      "name": "Article 53: Obligations of providers of general-purpose AI models",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-6",
+      "name": "Article 6: Classification rules for high-risk AI systems",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-72",
+      "name": "Article 72: Post-market monitoring by providers",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.eu-ai-act.art-9",
+      "name": "Article 9: Risk management system",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689"
+    },
+    {
+      "id": "ext.requirement.nist-ai-rmf.govern-1-1",
+      "name": "GOVERN 1.1: Legal and regulatory requirements incorporated into AI risk policies",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+    },
+    {
+      "id": "ext.requirement.nist-ai-rmf.govern-1-6",
+      "name": "GOVERN 1.6: Roles and responsibilities for AI risk management",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+    },
+    {
+      "id": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "name": "MANAGE 2.4: Risk treatment responses documented and monitored",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+    },
+    {
+      "id": "ext.requirement.nist-ai-rmf.map-1-5",
+      "name": "MAP 1.5: AI system impacts on individuals, groups, and society",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+    },
+    {
+      "id": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "name": "MEASURE 2.6: AI system privacy risk measurement",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.nist.gov/itl/ai-risk-management-framework"
+    },
+    {
+      "id": "ext.requirement.oecd-ai-principles.1-4",
+      "name": "Principle 1.4: Robustness, security and safety",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://oecd.ai/en/dashboards/ai-principles/P7"
+    },
+    {
+      "id": "ext.requirement.oecd-ai-principles.1-5",
+      "name": "Principle 1.5: Accountability",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://oecd.ai/en/dashboards/ai-principles/P9"
+    },
+    {
+      "id": "ext.requirement.sr-26-2.section-iii",
+      "name": "Section III: Effective challenge",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "ext.requirement.sr-26-2.section-iv",
+      "name": "Section IV: Model development, implementation, and use",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "ext.requirement.sr-26-2.section-v",
+      "name": "Section V: Model validation and ongoing monitoring",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "ext.requirement.sr-26-2.section-vi",
+      "name": "Section VI: Governance, policies, and controls",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
+    },
+    {
+      "id": "ext.requirement.sr-26-2.section-vii",
+      "name": "Section VII: Vendor and other third-party models",
+      "type": "concept",
+      "subtype": "requirement",
       "url": "https://www.federalreserve.gov/supervisionreg/srletters/SR2602.pdf"
     },
     {
@@ -2039,6 +2364,20 @@
       "url": "https://aisharedresponsibility.com/data/ai-agentic-principles.json"
     },
     {
+      "id": "srf.data.jurisdictions",
+      "name": "Jurisdiction vocabulary for regulations",
+      "type": "concept",
+      "subtype": "dataset",
+      "url": "https://aisharedresponsibility.com/data/jurisdictions.json"
+    },
+    {
+      "id": "srf.data.moral-regulatory-hierarchy",
+      "name": "Moral orientation tags for regulatory requirements",
+      "type": "concept",
+      "subtype": "dataset",
+      "url": "https://aisharedresponsibility.com/data/moral-regulatory-hierarchy.json"
+    },
+    {
       "id": "srf.data.security-principles",
       "name": "Classic security principles catalog",
       "type": "concept",
@@ -2058,6 +2397,48 @@
       "type": "framework",
       "subtype": null,
       "url": "https://aisharedresponsibility.com/framework/"
+    },
+    {
+      "id": "srf.jurisdiction.eu",
+      "name": "European Union",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.international",
+      "name": "International",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.us-colorado",
+      "name": "Colorado",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.us-federal",
+      "name": "United States (federal)",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.us-multistate",
+      "name": "United States (multistate model law)",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
+    },
+    {
+      "id": "srf.jurisdiction.us-new-york",
+      "name": "New York",
+      "type": "concept",
+      "subtype": "jurisdiction",
+      "url": "https://aisharedresponsibility.com/regulations/"
     },
     {
       "id": "srf.layer.L1",
@@ -2093,6 +2474,27 @@
       "type": "concept",
       "subtype": "layer",
       "url": "https://aisharedresponsibility.com/framework/#L5"
+    },
+    {
+      "id": "srf.moral.action",
+      "name": "Action",
+      "type": "concept",
+      "subtype": "moral-dimension",
+      "url": "https://aisharedresponsibility.com/developers/schema/#moral-orientation"
+    },
+    {
+      "id": "srf.moral.actor",
+      "name": "Actor",
+      "type": "concept",
+      "subtype": "moral-dimension",
+      "url": "https://aisharedresponsibility.com/developers/schema/#moral-orientation"
+    },
+    {
+      "id": "srf.moral.outcome",
+      "name": "Outcome",
+      "type": "concept",
+      "subtype": "moral-dimension",
+      "url": "https://aisharedresponsibility.com/developers/schema/#moral-orientation"
     },
     {
       "id": "srf.opmodel.agent-paas",
@@ -2166,7 +2568,7 @@
     },
     {
       "id": "srf.role.clinical-ai-governance",
-      "name": "Clinical Ai Governance",
+      "name": "Clinical AI Governance",
       "type": "role",
       "subtype": "persona",
       "url": "https://aisharedresponsibility.com/healthcare/controls/"

@@ -39,7 +39,7 @@ SITE = "https://aisharedresponsibility.com"
 # regenerates these files and diffs them against what is committed, so the value
 # must be reproducible from committed source rather than the wall clock (otherwise
 # any push validated by CI on a later UTC day fails). Bump it when publishing an update.
-UPDATED = "2026-07-13"
+UPDATED = "2026-07-27"
 SRF_VERSION = "1.0"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -79,7 +79,18 @@ def role_id(pid):         return f"srf.role.{pid}"
 def concept_id(anchor):   return f"srf.concept.{anchor}"
 def control_id(v, cid):   return f"srf.control.{v}.{cid}"
 def ext_id(rid):          return f"ext.framework.{rid}"
+def juris_id(jid):        return f"srf.jurisdiction.{jid}"
+def moral_id(dim):        return f"srf.moral.{dim}"
+def requirement_id(rid):  return f"ext.requirement.{rid}"
 FRAMEWORK_ID = "srf.framework.cosai-srf"
+
+# A control's mappings value is a citation string, or a placeholder meaning the
+# mapping has not been established. Placeholders must never become an edge:
+# an unresolved mapping is not evidence that the regulation governs the control.
+_PLACEHOLDER = re.compile(r"^\s*(TBD|N/?A|None|-)\b", re.I)
+
+def is_placeholder(value):
+    return not isinstance(value, str) or not value.strip() or bool(_PLACEHOLDER.match(value))
 
 # Map a glossary anchor to its canonical node id so the registry never
 # redefines a concept that already exists as a layer / role / operating model.
@@ -215,7 +226,8 @@ def build_glossary_outputs(terms):
 # 3. Build ontology graph
 # ─────────────────────────────────────────────────────────────────────────────
 
-def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
+def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
+                   controls_by_vertical, moral=None):
     nodes = {}   # id -> node
     edges = []
     related = {} # id -> set of neighbour ids
@@ -265,6 +277,24 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
         for code in p.get("srf_layers", []):
             add_edge(nid, "operates_at_layer", layer_id(code))
 
+    # Sector specializations of the eight canonical personas (e.g. healthcare).
+    # Declared in personas.json so every accountable_persona value resolves, and
+    # so the graph carries an explicit specializes edge back to the parent.
+    specialization_ids = set()
+    for s in personas.get("sector_specializations", []):
+        nid = role_id(s["id"])
+        specialization_ids.add(s["id"])
+        add_node(nid, s["name"], "role",
+                 s.get("url", f"{SITE}/{s['vertical']}/controls/"),
+                 subtype="persona")
+        nodes[nid]["sector_specialization"] = True
+        nodes[nid]["vertical"] = s["vertical"]
+        parent = s.get("specializes")
+        if parent:
+            add_edge(nid, "specializes", role_id(parent))
+        for code in s.get("srf_layers", []):
+            add_edge(nid, "operates_at_layer", layer_id(code))
+
     # layer -> persona membership
     for L in layers["layers"]:
         for pname in L.get("personas", []):
@@ -286,6 +316,8 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
         structural.add(opmodel_id(m["id"]))
     for p in personas["personas"]:
         structural.add(role_id(p["id"]))
+    for s in personas.get("sector_specializations", []):
+        structural.add(role_id(s["id"]))
 
     for t in terms:
         cid = t["canonical_id"]
@@ -295,12 +327,33 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
                  f"{SITE}/glossary/#{t['anchor']}", subtype="vocabulary")
         add_edge(cid, "defined_in", FRAMEWORK_ID)
 
-    # external frameworks / regulations mapped to layers
+    # jurisdictions that issue the external instruments
+    for j in jurisdictions["jurisdictions"]:
+        nid = juris_id(j["id"])
+        add_node(nid, j["name"], "concept", f"{SITE}/regulations/",
+                 subtype="jurisdiction")
+        nodes[nid]["level"] = j["level"]
+    for j in jurisdictions["jurisdictions"]:
+        if j.get("parent"):
+            add_edge(juris_id(j["id"]), "subordinate_to", juris_id(j["parent"]))
+
+    # external frameworks / regulations mapped to layers and jurisdictions.
+    # mapping_key is how a vertical control's mappings object names this
+    # instrument; it is the join key for the governed_by edges below.
+    key_to_ext = {}
     for item in regs["items"]:
         nid = ext_id(item["id"])
         add_node(nid, item["name"], "framework", item.get("url", f"{SITE}/regulations/"))
+        if item.get("depth"):
+            nodes[nid]["depth"] = item["depth"]
+        if item.get("verification_status"):
+            nodes[nid]["verification_status"] = item["verification_status"]
         for code in item.get("srf_layers", []):
             add_edge(nid, "maps_to_layer", layer_id(code))
+        if item.get("jurisdiction"):
+            add_edge(nid, "issued_in_jurisdiction", juris_id(item["jurisdiction"]))
+        if item.get("mapping_key"):
+            key_to_ext[item["mapping_key"]] = nid
 
     # Canonical data catalog resources referenced by page llm:concepts.
     # These are first-class machine-readable artifacts under /data/, not
@@ -324,6 +377,18 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
             "url": f"{SITE}/data/ai-agentic-principles.json",
             "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
         },
+        {
+            "id": "srf.data.jurisdictions",
+            "label": "Jurisdiction vocabulary for regulations",
+            "url": f"{SITE}/data/jurisdictions.json",
+            "srf_layers": ["L1"],
+        },
+        {
+            "id": "srf.data.moral-regulatory-hierarchy",
+            "label": "Moral orientation tags for regulatory requirements",
+            "url": f"{SITE}/data/moral-regulatory-hierarchy.json",
+            "srf_layers": ["L1"],
+        },
     ]
     for item in data_catalog:
         add_node(item["id"], item["label"], "concept", item["url"],
@@ -331,9 +396,65 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
         for code in item.get("srf_layers", []):
             add_edge(item["id"], "maps_to_layer", layer_id(code))
 
-    # Some verticals (notably healthcare) assign accountability to a
-    # sector-specific specialization of a canonical persona. Register those as
-    # role nodes too so every accountable_to edge resolves.
+    # Moral orientation dimensions and tagged requirements. Requirements are
+    # external duties (ext.requirement.*); dimensions are analytical tags
+    # (srf.moral.*). Instrument rollups use max salience per dimension.
+    req_matchers = []  # (compiled patterns, requirement node id)
+    if moral:
+        for dim, meta in moral.get("dimensions", {}).items():
+            nid = moral_id(dim)
+            add_node(nid, meta["name"], "concept",
+                     f"{SITE}/developers/schema/#moral-orientation",
+                     subtype="moral-dimension")
+            nodes[nid]["focus"] = meta.get("focus")
+            add_edge(nid, "defined_in", FRAMEWORK_ID)
+
+        rollup = {}  # instrument_id -> {actor: max, action: max, outcome: max}
+        for req in moral.get("requirements", []):
+            rid = requirement_id(req["id"])
+            instrument = req["instrument"]
+            add_node(rid, f'{req["citation"]}: {req["title"]}', "concept",
+                     req.get("url", f"{SITE}/regulations/"),
+                     subtype="requirement")
+            nodes[rid]["instrument"] = instrument
+            nodes[rid]["citation"] = req["citation"]
+            profile = req.get("moral_profile") or {}
+            nodes[rid]["moral_profile"] = {
+                "actor": profile.get("actor", 0),
+                "action": profile.get("action", 0),
+                "outcome": profile.get("outcome", 0),
+            }
+            if profile.get("rationale"):
+                nodes[rid]["moral_rationale"] = profile["rationale"]
+
+            add_edge(rid, "part_of", ext_id(instrument))
+            for code in req.get("srf_layers", []):
+                add_edge(rid, "maps_to_layer", layer_id(code))
+            for dim in ("actor", "action", "outcome"):
+                salience = int(profile.get(dim, 0) or 0)
+                if salience > 0:
+                    add_edge(rid, "emphasizes", moral_id(dim), salience=salience)
+
+            bucket = rollup.setdefault(instrument,
+                                       {"actor": 0, "action": 0, "outcome": 0})
+            for dim in ("actor", "action", "outcome"):
+                bucket[dim] = max(bucket[dim], int(profile.get(dim, 0) or 0))
+
+            patterns = [
+                re.compile(re.escape(p) + r"\b", re.I)
+                for p in req.get("citation_match") or [req["citation"]]
+            ]
+            req_matchers.append((patterns, rid))
+
+        for instrument, scores in rollup.items():
+            nid = ext_id(instrument)
+            if nid in nodes:
+                nodes[nid]["moral_profile_rollup"] = scores
+                nodes[nid]["moral_rollup_rule"] = "max-salience-per-dimension"
+
+    # Safety net for accountable_persona values that are neither a canonical
+    # persona nor a declared sector specialization. Prefer declaring them in
+    # personas.json so the specializes edge is author-controlled.
     canonical_personas = {p["id"] for p in personas["personas"]}
 
     def ensure_role(pid, vertical):
@@ -356,7 +477,7 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
             add_edge(nid, "applies_to_layer", layer_id(c["layer"]))
             persona = c.get("accountable_persona")
             if persona:
-                if persona not in canonical_personas:
+                if persona not in canonical_personas and persona not in specialization_ids:
                     ensure_role(persona, vertical)
                 add_edge(nid, "accountable_to", role_id(persona))
             # Controls may list canonical operating models and/or vertical-specific
@@ -370,6 +491,23 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
                     extra.append(code)
             if extra:
                 nodes[nid]["deployment_models"] = extra
+            # Cite each resolved regulation mapping as a governed_by edge.
+            # The citation string rides as an edge property; placeholders skip.
+            # When a citation names a tagged requirement, also link the
+            # control to that requirement (implements).
+            linked_reqs = set()
+            for mkey, citation in (c.get("mappings") or {}).items():
+                if mkey == "mapping_status_note" or is_placeholder(citation):
+                    continue
+                target = key_to_ext.get(mkey)
+                if target:
+                    add_edge(nid, "governed_by", target, citation=citation)
+                for patterns, req_nid in req_matchers:
+                    if req_nid in linked_reqs:
+                        continue
+                    if any(p.search(citation) for p in patterns):
+                        add_edge(nid, "implements", req_nid, citation=citation)
+                        linked_reqs.add(req_nid)
 
     # finalise related[] (cap to keep nodes readable)
     for nid, node in nodes.items():
@@ -393,7 +531,8 @@ def build_ontology(terms, layers, personas, matrix, regs, controls_by_vertical):
         "$schema_version": "1.0",
         "description": "Typed, directed relationships between ontology nodes. "
                        "Every source and target is a node id in "
-                       "/ontology/nodes.json.",
+                       "/ontology/nodes.json. Prefer these edges over "
+                       "re-deriving joins from parallel fields in /data/.",
         "srf_version": SRF_VERSION,
         "updated": UPDATED,
         "relations": sorted({e["rel"] for e in edges}),
@@ -428,21 +567,27 @@ def build_ids(nodes, terms):
     return {
         "$schema_version": "1.0",
         "description": "Canonical ID registry. Every concept, layer, role, "
-                       "operating model, and control has one stable id, a "
-                       "human name, and a URL. IDs are namespaced: srf.layer.*, "
+                       "operating model, jurisdiction, moral dimension, "
+                       "requirement, and control has one stable id, a human "
+                       "name, and a URL. IDs are namespaced: srf.layer.*, "
                        "srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, "
-                       "srf.control.<vertical>.*, ext.framework.*.",
+                       "srf.jurisdiction.*, srf.moral.*, "
+                       "srf.control.<vertical>.*, ext.framework.*, "
+                       "ext.requirement.*.",
         "srf_version": SRF_VERSION,
         "updated": UPDATED,
         "namespaces": {
             "srf.framework": "The framework itself",
             "srf.layer": "One of the five architecture layers L1-L5",
             "srf.opmodel": "One of the four operating models",
-            "srf.role": "One of the SRF personas",
+            "srf.role": "One of the SRF personas or a declared sector specialization",
             "srf.concept": "A glossary vocabulary concept",
             "srf.data": "A machine-readable data catalog resource under /data/",
+            "srf.jurisdiction": "A jurisdiction that issues a regulation or standard",
+            "srf.moral": "A moral-orientation dimension (actor, action, outcome)",
             "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
             "ext.framework": "An external standard or regulation",
+            "ext.requirement": "A concrete requirement inside an external instrument",
         },
         "count": len(entries),
         "ids": entries,
@@ -523,6 +668,9 @@ def main():
     personas = load("personas.json")
     matrix = load("matrix.json")
     regs = load("regulations.json")
+    jurisdictions = load("jurisdictions.json")
+    moral_path = os.path.join(DATA, "moral-regulatory-hierarchy.json")
+    moral = json.load(open(moral_path, encoding="utf-8")) if os.path.exists(moral_path) else None
 
     verticals = ["finance", "healthcare", "insurance",
                  "public-sector", "defense", "manufacturing"]
@@ -530,7 +678,8 @@ def main():
 
     registry, index, per_term = build_glossary_outputs(terms)
     nodes, edges, nodes_out, edges_out = build_ontology(
-        terms, layers, personas, matrix, regs, controls_by_vertical)
+        terms, layers, personas, matrix, regs, jurisdictions,
+        controls_by_vertical, moral=moral)
     ids = build_ids(nodes, terms)
     exp_g, exp_o, exp_f = build_exports(
         terms, nodes, edges, layers, personas, matrix)
@@ -541,6 +690,14 @@ def main():
         "ontology_edges": len(edges),
         "canonical_ids": ids["count"],
         "controls": sum(len(p["controls"]) for p in controls_by_vertical.values()),
+        "jurisdictions": len(jurisdictions["jurisdictions"]),
+        "regulations": len(regs["items"]),
+        "moral_requirements": len((moral or {}).get("requirements", [])),
+        "governed_by_edges": sum(1 for e in edges if e["rel"] == "governed_by"),
+        "specializes_edges": sum(1 for e in edges if e["rel"] == "specializes"),
+        "emphasizes_edges": sum(1 for e in edges if e["rel"] == "emphasizes"),
+        "implements_edges": sum(1 for e in edges if e["rel"] == "implements"),
+        "part_of_edges": sum(1 for e in edges if e["rel"] == "part_of"),
     }
 
     if check:

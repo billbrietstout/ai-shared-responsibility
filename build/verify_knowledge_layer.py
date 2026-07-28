@@ -54,6 +54,109 @@ bad_e = [(e["source"], e["target"]) for e in edges["edges"]
          if e["source"] not in node_ids or e["target"] not in node_ids]
 check(not bad_e, f"all edges reference existing nodes (bad: {bad_e[:3]})")
 
+# 6b. Control-to-regulation joins resolve via mapping_key, and sector
+# specializations carry an explicit specializes edge to a canonical persona.
+regs = J("data/regulations.json")
+juris = J("data/jurisdictions.json")
+personas = J("data/personas.json")
+key_to_ext = {i["mapping_key"]: f"ext.framework.{i['id']}"
+              for i in regs["items"] if i.get("mapping_key")}
+juris_ids = {j["id"] for j in juris["jurisdictions"]}
+canonical_personas = {p["id"] for p in personas["personas"]}
+specs = personas.get("sector_specializations", [])
+
+missing_juris = [i["id"] for i in regs["items"]
+                 if i.get("jurisdiction") and i["jurisdiction"] not in juris_ids]
+check(not missing_juris,
+      f"every regulation.jurisdiction resolves (bad: {missing_juris[:5]})")
+
+unmapped_keys = set()
+placeholder = __import__("re").compile(r"^\s*(TBD|N/?A|None|-)\b", __import__("re").I)
+for vertical in ("finance", "healthcare", "insurance",
+                 "public-sector", "defense", "manufacturing"):
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        for mkey, citation in (c.get("mappings") or {}).items():
+            if mkey == "mapping_status_note":
+                continue
+            if not isinstance(citation, str) or not citation.strip() or placeholder.match(citation):
+                continue
+            if mkey not in key_to_ext:
+                unmapped_keys.add(mkey)
+check(not unmapped_keys,
+      f"every non-placeholder mappings key has a regulations.mapping_key "
+      f"(bad: {sorted(unmapped_keys)})")
+
+governed = [e for e in edges["edges"] if e["rel"] == "governed_by"]
+check(len(governed) > 0, f"governed_by edges present ({len(governed)})")
+check(all(e["source"].startswith("srf.control.") and
+          e["target"].startswith("ext.framework.") for e in governed),
+      "governed_by edges run control -> ext.framework")
+
+specializes = [e for e in edges["edges"] if e["rel"] == "specializes"]
+check(len(specializes) == len(specs),
+      f"specializes edges match sector_specializations "
+      f"({len(specializes)} vs {len(specs)})")
+bad_spec = []
+for s in specs:
+    parent = s.get("specializes")
+    if parent not in canonical_personas:
+        bad_spec.append(s["id"])
+    if f"srf.role.{s['id']}" not in node_ids:
+        bad_spec.append(s["id"])
+check(not bad_spec,
+      f"every sector specialization resolves and specializes a canonical "
+      f"persona (bad: {bad_spec})")
+
+# 6c. Moral orientation hierarchy: dimensions, requirements, rollups, implements.
+moral_path = os.path.join(ROOT, "data", "moral-regulatory-hierarchy.json")
+if os.path.exists(moral_path):
+    moral = J("data/moral-regulatory-hierarchy.json")
+    dims = moral.get("dimensions", {})
+    check(set(dims) == {"actor", "action", "outcome"},
+          "moral dimensions are exactly actor/action/outcome")
+    for dim in dims:
+        check(f"srf.moral.{dim}" in node_ids,
+              f"moral dimension node present ({dim})")
+    reqs = moral.get("requirements", [])
+    check(len(reqs) > 0, f"moral requirements authored ({len(reqs)})")
+    bad_req = []
+    for req in reqs:
+        rid = f"ext.requirement.{req['id']}"
+        profile = req.get("moral_profile") or {}
+        if rid not in node_ids:
+            bad_req.append(req["id"] + ":missing-node")
+            continue
+        if not profile.get("rationale"):
+            bad_req.append(req["id"] + ":no-rationale")
+        for dim in ("actor", "action", "outcome"):
+            sal = profile.get(dim)
+            if sal not in (0, 1, 2, 3):
+                bad_req.append(req["id"] + f":bad-{dim}")
+        if f"ext.framework.{req['instrument']}" not in node_ids:
+            bad_req.append(req["id"] + ":bad-instrument")
+    check(not bad_req, f"moral requirements well-formed (bad: {bad_req[:5]})")
+
+    emphasizes = [e for e in edges["edges"] if e["rel"] == "emphasizes"]
+    check(len(emphasizes) > 0, f"emphasizes edges present ({len(emphasizes)})")
+    check(all(e.get("salience") in (1, 2, 3) for e in emphasizes),
+          "emphasizes edges carry salience 1-3")
+
+    part_of = [e for e in edges["edges"] if e["rel"] == "part_of"]
+    check(len(part_of) == len(reqs),
+          f"part_of edges match requirements ({len(part_of)} vs {len(reqs)})")
+
+    implements = [e for e in edges["edges"] if e["rel"] == "implements"]
+    check(len(implements) > 0, f"implements edges present ({len(implements)})")
+    check(all(e["source"].startswith("srf.control.") and
+              e["target"].startswith("ext.requirement.") for e in implements),
+          "implements edges run control -> requirement")
+
+    for instrument in moral.get("priority_instruments", []):
+        nid = f"ext.framework.{instrument}"
+        node = next((n for n in nodes["nodes"] if n["id"] == nid), None)
+        check(node and "moral_profile_rollup" in node,
+              f"instrument rollup present on {instrument}")
+
 # 7. related[] only references real nodes
 bad_r = [n["id"] for n in nodes["nodes"]
          if any(r not in node_ids for r in n.get("related", []))]
