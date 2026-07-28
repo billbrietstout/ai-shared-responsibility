@@ -73,6 +73,9 @@ Requirement-level moral tags live in `moral-regulatory-hierarchy.json`.
 Traverse `emphasizes` (with `salience`) and `implements` edges in
 `/ontology/edges.json` rather than re-deriving scores from prose.
 
-Jurisdiction to vertical: prefer `applies_to_vertical` edges from each
-regulation's `applicable_verticals`. The evidence path is jurisdiction →
-regulation ← `governed_by` ← control → `belongs_to_vertical`.
+Jurisdiction to vertical: control schemas own vertical specificity. Prefer
+`applies_to_vertical` edges from each regulation's `applicable_verticals`
+(derived from control citations when present). The evidence path is
+jurisdiction → regulation ← `governed_by` ← control → `belongs_to_vertical`.
+US multistate (NAIC) is a peer root to federal, not `subordinate_to` it;
+only Colorado and New York nest under `us-federal`.

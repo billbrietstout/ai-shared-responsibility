@@ -196,8 +196,9 @@
 
         <h2 id="jurisdiction-vertical">Jurisdiction to vertical join</h2>
         <p>
-          Two complementary paths connect a jurisdiction to a business vertical.
-          Prefer the ontology edges for agents.
+          Control schemas are vertical-specific. The regulations catalog is
+          shared: one instrument can appear in several verticals when those
+          schemas cite it. Prefer the ontology edges for agents.
         </p>
         <table class="join-table">
           <thead>
@@ -214,7 +215,7 @@
                 <code>srf.vertical.*</code>
                 (from <code>applicable_verticals</code>)
               </td>
-              <td>Comparative questions, including instruments not yet cited by a control (UK, China, Singapore, Canada, OECD)</td>
+              <td>Comparative questions. When controls cite the instrument, the list is those citing verticals; otherwise an author sector or cross-cutting scope (UK, China, Singapore, OECD)</td>
             </tr>
             <tr>
               <td>Evidence</td>
@@ -230,11 +231,11 @@
           </tbody>
         </table>
         <p>
-          <code>applicable_verticals_source</code> on each regulation records
-          whether the vertical list was derived from control citations,
-          author-declared, or both. Cross-cutting instruments list all six
-          verticals: finance, healthcare, insurance, public-sector, defense,
-          manufacturing.
+          Sector instruments (HIPAA, NAIC, CMMC) list one vertical.
+          Cited cross-cutting instruments list only the verticals that map them
+          today (for example ISO 42001 → manufacturing). Uncited horizontal
+          instruments may still list all six so comparative jurisdiction queries
+          resolve.
         </p>
 
         <h2 id="moral-orientation">Moral orientation tags</h2>
