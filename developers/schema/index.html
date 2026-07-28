@@ -194,6 +194,50 @@
           stays at eight.
         </p>
 
+        <h2 id="jurisdiction-vertical">Jurisdiction to vertical join</h2>
+        <p>
+          Control schemas are vertical-specific. The regulations catalog is
+          shared: one instrument can appear in several verticals when those
+          schemas cite it. Prefer the ontology edges for agents.
+        </p>
+        <table class="join-table">
+          <thead>
+            <tr><th>Path</th><th>How</th><th>Use when</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Declared</td>
+              <td>
+                <code>jurisdiction</code> →
+                <code>issued_in_jurisdiction</code> →
+                regulation →
+                <code>applies_to_vertical</code> →
+                <code>srf.vertical.*</code>
+                (from <code>applicable_verticals</code>)
+              </td>
+              <td>Comparative questions. When controls cite the instrument, the list is those citing verticals; otherwise an author sector or cross-cutting scope (UK, China, Singapore, OECD)</td>
+            </tr>
+            <tr>
+              <td>Evidence</td>
+              <td>
+                jurisdiction → regulation ←
+                <code>governed_by</code> ←
+                control →
+                <code>belongs_to_vertical</code> →
+                vertical
+              </td>
+              <td>What the published control schemas actually cite today</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Sector instruments (HIPAA, NAIC, CMMC) list one vertical.
+          Cited cross-cutting instruments list only the verticals that map them
+          today (for example ISO 42001 → manufacturing). Uncited horizontal
+          instruments may still list all six so comparative jurisdiction queries
+          resolve.
+        </p>
+
         <h2 id="moral-orientation">Moral orientation tags</h2>
         <p>
           <a href="/data/moral-regulatory-hierarchy.json"><code>/data/moral-regulatory-hierarchy.json</code></a>

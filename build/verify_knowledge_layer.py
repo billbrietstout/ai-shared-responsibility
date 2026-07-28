@@ -157,6 +157,29 @@ if os.path.exists(moral_path):
         check(node and "moral_profile_rollup" in node,
               f"instrument rollup present on {instrument}")
 
+# 6d. Jurisdiction -> regulation -> vertical join.
+vertical_nodes = {f"srf.vertical.{v}" for v in
+                  ("finance", "healthcare", "insurance",
+                   "public-sector", "defense", "manufacturing")}
+check(vertical_nodes <= node_ids, "all six vertical nodes present")
+missing_av = [i["id"] for i in regs["items"] if not i.get("applicable_verticals")]
+check(not missing_av,
+      f"every regulation declares applicable_verticals (bad: {missing_av[:5]})")
+bad_av = []
+for i in regs["items"]:
+    for v in i.get("applicable_verticals") or []:
+        if f"srf.vertical.{v}" not in vertical_nodes:
+            bad_av.append(f"{i['id']}:{v}")
+check(not bad_av, f"applicable_verticals use known vertical slugs (bad: {bad_av[:5]})")
+atv = [e for e in edges["edges"] if e["rel"] == "applies_to_vertical"]
+check(len(atv) > 0, f"applies_to_vertical edges present ({len(atv)})")
+check(all(e["source"].startswith("ext.framework.") and
+          e["target"].startswith("srf.vertical.") for e in atv),
+      "applies_to_vertical edges run regulation -> vertical")
+# New comparative jurisdictions resolve.
+for jid in ("oecd", "uk", "china", "singapore", "canada"):
+    check(f"srf.jurisdiction.{jid}" in node_ids, f"jurisdiction node present ({jid})")
+
 # 7. related[] only references real nodes
 bad_r = [n["id"] for n in nodes["nodes"]
          if any(r not in node_ids for r in n.get("related", []))]

@@ -1,7 +1,7 @@
 {
  "description": "Machine-readable data index for aisharedresponsibility.com. All files are static JSON served from /data/. Framework concepts (layers, personas, operating models) are defined in the CoSAI AI Shared Responsibility Framework v1.0.",
  "framework_reference": "https://aisharedresponsibility.com/framework/",
- "updated": "2026-07-27",
+ "updated": "2026-07-28",
  "files": [
   {
    "file": "layers.json",
@@ -52,7 +52,7 @@
   {
    "file": "jurisdictions.json",
    "url": "https://aisharedresponsibility.com/data/jurisdictions.json",
-   "description": "Controlled vocabulary for the jurisdiction that issues a regulation or standard. Levels: international, supranational, national, multistate, subnational. Referenced by the jurisdiction field on each regulations.json item and materialized as srf.jurisdiction.* nodes in the ontology.",
+   "description": "Controlled vocabulary for the jurisdiction that issues a regulation or standard. Levels: international (standards bodies), oecd (soft law), supranational (eu), national (us-federal, uk, china, singapore, canada), multistate, subnational. Referenced by the jurisdiction field on each regulations.json item and materialized as srf.jurisdiction.* nodes in the ontology.",
    "schema_keys": [
     "id",
     "name",
@@ -60,13 +60,13 @@
     "parent",
     "note"
    ],
-   "record_count": 6,
+   "record_count": 11,
    "related_page": "https://aisharedresponsibility.com/regulations/"
   },
   {
    "file": "regulations.json",
    "url": "https://aisharedresponsibility.com/data/regulations.json",
-   "description": "AI regulations and standards mapped to SRF layers. Includes EU AI Act, NIST AI RMF, ISO 42001, OECD AI Principles, OMB M-25-21, SR 26-2, and the sector instruments cited by vertical control mappings. Each item carries a jurisdiction id, an optional mapping_key that joins to control.mappings, and a depth of full or reference.",
+   "description": "AI regulations and standards mapped to SRF layers and business verticals. Shared catalog: sector instruments apply to one vertical; cited cross-cutting instruments list the verticals that map them; uncited horizontal instruments may list all six. Includes EU AI Act, NIST AI RMF, ISO 42001, OECD AI Principles, UK/China/Singapore/Canada reference instruments, and sector instruments. Each item carries jurisdiction, optional mapping_key, depth, and applicable_verticals.",
    "schema_keys": [
     "updated",
     "stale_threshold_days",
@@ -75,10 +75,12 @@
     "jurisdiction",
     "mapping_key",
     "depth",
+    "applicable_verticals",
+    "applicable_verticals_source",
     "srf_layers",
     "verification_status"
    ],
-   "record_count": 40,
+   "record_count": 45,
    "related_page": "https://aisharedresponsibility.com/regulations/"
   },
   {
@@ -439,6 +441,18 @@
     "from": "srf.control.<vertical>.<id>",
     "to": "ext.requirement.<instrument>.<slug>",
     "join": "control.mappings citation string matches requirements[].citation_match"
+   },
+   {
+    "rel": "applies_to_vertical",
+    "from": "ext.framework.<reg-id>",
+    "to": "srf.vertical.<slug>",
+    "join": "regulations[].applicable_verticals (prefer derived-from-controls when mapping citations exist; else declared sector or cross-cutting)"
+   },
+   {
+    "rel": "belongs_to_vertical",
+    "from": "srf.control.<vertical>.<id>",
+    "to": "srf.vertical.<slug>",
+    "join": "control file / vertical slug"
    }
   ]
  },
