@@ -29,7 +29,9 @@
       "mapping_key": "nist_ai_rmf",
       "depth": "full",
       "applicable_verticals": [
+        "finance",
         "healthcare",
+        "insurance",
         "public-sector",
         "defense",
         "manufacturing"
@@ -99,7 +101,8 @@
       "applicable_verticals": [
         "manufacturing"
       ],
-      "applicable_verticals_source": "derived-from-controls"
+      "applicable_verticals_source": "derived-from-controls",
+      "vertical_scope_note": "A horizontal management-system standard cited only by manufacturing. The clause-level mapping is withheld on purpose: the standard text is paywalled, so manufacturing cites it at edition level (decision 2026-07-05) rather than publishing clause numbers nobody can check. Copying edition-level citations into the other five schemas would add governed_by edges that carry no clause evidence, so the declared list stays at what is actually cited. Same reasoning holds for IEC 62443 and IEC 61508, which are also OT-specific by subject."
     },
     {
       "id": "iso-22989",
@@ -213,7 +216,8 @@
       "applicable_verticals": [
         "public-sector"
       ],
-      "applicable_verticals_source": "derived-from-controls"
+      "applicable_verticals_source": "declared-sector",
+      "vertical_scope_note": "Author-declared scope, no evidence edge. The public-sector schema carries a cosais key on every control, but each value is a TBD placeholder because the overlays were still pre-draft (annotated outline only) when the schema was written, and inventing overlay IDs was rejected. The generator skips placeholders, so the evidence path stays empty until the initial public drafts land and real overlay IDs replace the placeholders."
     },
     {
       "id": "nist-csf-2",
@@ -311,9 +315,15 @@
       "mapping_key": "aicm",
       "depth": "full",
       "applicable_verticals": [
-        "finance"
+        "finance",
+        "healthcare",
+        "insurance",
+        "public-sector",
+        "defense",
+        "manufacturing"
       ],
-      "applicable_verticals_source": "derived-from-controls"
+      "applicable_verticals_source": "derived-from-controls",
+      "version_note": "Catalog pins v1.0.3 on purpose. AICM v1.1 was published 2026-06-22, but the control objective IDs cited by the vertical schemas were verified against 1.0.3. Re-verify every cited objective ID against the newer matrix before bumping this version, since objective numbering can move between releases."
     },
     {
       "id": "cis-controls",

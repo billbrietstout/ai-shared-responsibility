@@ -5,7 +5,7 @@
   "description": "Defense control schema for the CoSAI AI Shared Responsibility Framework. Scoped to DoD components and the defense industrial base (DIB). Maps SRF layers and accountable personas to DoD Responsible AI (RAI) principles, DoDI 5000.90 (AI acquisition), DoDI 5000.89 (TEVV), CMMC 2.0, NIST SP 800-171 Rev 3, NIST AI RMF 1.0, and the DISA Cloud Computing SRG. Controls are parameterized by impact level (IL4/IL5/IL6) and NSS tier (non-nss/nss/both).",
   "regulatory_context": "DoD AI governance is anchored by the DoD Responsible AI Strategy and Implementation Pathway (June 2022), which established five RAI principles: Responsible, Equitable, Traceable, Reliable, Governable (RETR-G). DoDI 5000.90 (December 2020) governs cybersecurity risk management by acquisition decision authorities and program managers, including supply chain risk; it contains no AI-specific requirements. DoDI 5000.89 (November 2020) sets test and evaluation policy that AI TEVV planning operationalizes. AI-specific artifacts such as transparency cards derive from the RAI S&I Pathway and the CDAO RAI Toolkit, not from a 5000-series instruction. CMMC 2.0 (32 CFR Part 170, effective December 2024) governs contractor cybersecurity posture for CUI but does not address AI governance; this schema adds the AI layer CMMC lacks. Cloud deployments require a DISA Provisional Authorization (PA) at the required IL; the CC SRG defines what the CSP must implement. This schema covers the component and contractor side of those splits. IL6 systems operate in classified cloud environments (AWS C2S, Azure Government Secret, Oracle NSR) where commercial paths do not apply.",
   "id_convention": "SRF-{layer}-{ACQ|TEVV|OPS|OVR}-{seq}",
-  "mapping_status_note": "All five defense mapping keys verified against primary sources July 6, 2026 (tranche 4): DoDI 5000.90 and 5000.89 full texts (esd.whs.mil), DoD RAI S&I Pathway (June 2022), the January 30, 2025 Cloud Computing Mission Owner SRG and CSP SRG V1R2, and 32 CFR Part 170 (eCFR). Zero TBDs remain. See the *_citation_format headers, including the DoDI 5000.90 identity finding. N/A means the source was read and does not address the control's subject. Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key. OWASP LLM Top 10 citations normalized 2026-07-28 to the 2025 list that regulations.json pins; 2023 item numbers and retired item names were remapped.",
+  "mapping_status_note": "All five defense mapping keys verified against primary sources July 6, 2026 (tranche 4): DoDI 5000.90 and 5000.89 full texts (esd.whs.mil), DoD RAI S&I Pathway (June 2022), the January 30, 2025 Cloud Computing Mission Owner SRG and CSP SRG V1R2, and 32 CFR Part 170 (eCFR). Zero TBDs remain. See the *_citation_format headers, including the DoDI 5000.90 identity finding. N/A means the source was read and does not address the control's subject. Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key. OWASP LLM Top 10 citations normalized 2026-07-28 to the 2025 list that regulations.json pins; 2023 item numbers and retired item names were remapped. CSA AI Controls Matrix v1.0.3 mappings added 2026-07-28. Applied only where a control objective genuinely corresponds; controls with no AICM nexus carry no aicm key. Objective IDs and titles are reused from the set already verified in the finance schema so no ID is invented.",
   "generated": "2026-06-12",
   "lifecycle_stages": [
     "acquisition",
@@ -121,7 +121,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.2",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-06 (Governance Responsibility Model)"
       },
       "threshold": {
         "metric": "rai_officer_designation_current",
@@ -172,7 +173,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 2.2",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-06 (Governance Responsibility Model)"
       },
       "threshold": {
         "metric": "governance_board_meeting_cadence_met",
@@ -226,7 +228,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.3",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-01 (Governance Program Policy and Procedures)"
       },
       "threshold": {
         "metric": "rai_compliance_plan_complete",
@@ -276,7 +279,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.6",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "STA-11 (Supply Chain Agreement Review)"
       },
       "threshold": {
         "metric": "ai_acq_requirements_documented",
@@ -331,7 +335,8 @@
         "nist_ai_rmf": "MAP 5.1",
         "cc_srg": "N/A",
         "owasp_llm": "LLM03: Supply Chain",
-        "cis": "CIS Control 15: Service Provider Management"
+        "cis": "CIS Control 15: Service Provider Management",
+        "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)"
       },
       "threshold": {
         "metric": "supply_chain_risk_assessment_complete",
@@ -440,7 +445,8 @@
         "nist_800_171": "3.6.1",
         "nist_ai_rmf": "RESPOND 1.1",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "LOG-13 (Failures and Anomalies Reporting)"
       },
       "threshold": {
         "metric": "incident_report_timeliness_pct",
@@ -491,7 +497,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.7",
         "cc_srg": "Mission Owner SRG Section 3.3.3 (Choosing the Information Impact Level: IL5 includes unclassified NSS)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "DSP-04 (Data Classification)"
       },
       "threshold": {
         "metric": "nss_determination_memo_exists",
@@ -542,7 +549,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.1",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-02 (Risk Management Program)"
       },
       "threshold": {
         "metric": "tevv_plan_approved_before_deployment",
@@ -595,7 +603,8 @@
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MAP 1.6",
         "cc_srg": "Mission Owner SRG Section 3.3.3 (CUI assignment to Impact Levels 4 and 5)",
-        "owasp_llm": "LLM02: Sensitive Information Disclosure"
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "aicm": "DSP-04 (Data Classification)"
       },
       "threshold": {
         "metric": "cui_marking_compliance_pct",
@@ -649,7 +658,8 @@
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MEASURE 2.6",
         "cc_srg": "CSP SRG Section 5.2.2 (Impact Level Separation Requirements)",
-        "owasp_llm": "LLM02: Sensitive Information Disclosure"
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "aicm": "DSP-04 (Data Classification)"
       },
       "threshold": {
         "metric": "cross_boundary_data_flow_alerts",
@@ -700,7 +710,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MAP 1.6",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM03: Supply Chain"
+        "owasp_llm": "LLM03: Supply Chain",
+        "aicm": "DSP-20 (Data Provenance and Transparency)"
       },
       "threshold": {
         "metric": "training_data_atu_documented_pct",
@@ -754,7 +765,8 @@
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MANAGE 2.4",
         "cc_srg": "Mission Owner SRG Section 3.3.2 (VDSS security stack and DMZ zone data flow requirements)",
-        "owasp_llm": "LLM02: Sensitive Information Disclosure"
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "aicm": "LOG-15 (Output Monitoring); DSP-04 (Data Classification)"
       },
       "threshold": {
         "metric": "unauthorized_egress_events",
@@ -808,7 +820,8 @@
         "nist_800_171": "3.14.1",
         "nist_ai_rmf": "MEASURE 2.6",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM01: Prompt Injection; LLM04: Data and Model Poisoning"
+        "owasp_llm": "LLM01: Prompt Injection; LLM04: Data and Model Poisoning",
+        "aicm": "AIS-08 (Input Validation); DSP-21 (Data Poisoning Prevention & Detection)"
       },
       "threshold": {
         "metric": "adversarial_detection_coverage_pct",
@@ -857,7 +870,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.5",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-10 (AI Impact Assessment)"
       },
       "threshold": {
         "metric": "bias_analysis_current",
@@ -963,7 +977,8 @@
         "nist_800_171": "3.1.3",
         "nist_ai_rmf": "MAP 5.2",
         "cc_srg": "Mission Owner SRG Section 3.3.3 (third-party developers prohibited from storing DOD CUI in unauthorized impact levels or corporate networks)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "IAM-16 (Authorization Mechanisms)"
       },
       "threshold": {
         "metric": "contractor_data_isolation_verified",
@@ -1014,7 +1029,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.1",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "A&A-02 (Independent Assessments)"
       },
       "threshold": {
         "metric": "tevv_report_signed_before_deployment",
@@ -1066,7 +1082,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MAP 2.1",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-10 (AI Impact Assessment)"
       },
       "threshold": {
         "metric": "impact_assessment_approved",
@@ -1115,7 +1132,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 1.3",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-15 (Human supervision)"
       },
       "threshold": {
         "metric": "human_gate_bypass_events",
@@ -1166,7 +1184,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 1.3",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-15 (Human supervision)"
       },
       "threshold": {
         "metric": "override_capability_verified",
@@ -1267,7 +1286,8 @@
         "nist_800_171": "3.1.1",
         "nist_ai_rmf": "MANAGE 1.3",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM06: Excessive Agency"
+        "owasp_llm": "LLM06: Excessive Agency",
+        "aicm": "AIS-11 (Agents Security Boundaries); IAM-19 (Agent Access Restriction)"
       },
       "threshold": {
         "metric": "boundary_violation_events",
@@ -1319,7 +1339,8 @@
         "nist_800_171": "3.14.2",
         "nist_ai_rmf": "MEASURE 2.6",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM01: Prompt Injection"
+        "owasp_llm": "LLM01: Prompt Injection",
+        "aicm": "AIS-08 (Input Validation); AIS-15 (Prompt Differentiation)"
       },
       "threshold": {
         "metric": "prompt_injection_detection_coverage_pct",
@@ -1367,7 +1388,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.6",
         "cc_srg": "Mission Owner SRG Section 3.3.3 (inheritance of CSP security controls and CSO residual risk)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "STA-14 (Supply Chain Governance Review)"
       },
       "threshold": {
         "metric": "inheritance_chain_documented",
@@ -1467,7 +1489,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.6",
         "cc_srg": "Mission Owner SRG Section 3.2 (CSP/CSO Approval Process: DOD Provisional Authorization required)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "A&A-02 (Independent Assessments)"
       },
       "threshold": {
         "metric": "disa_pa_current",
@@ -1624,7 +1647,8 @@
         "nist_ai_rmf": "MANAGE 2.4",
         "cc_srg": "Mission Owner SRG Section 3.3.4 (Encryption of Data at Rest: FIPS 140-2/3 with Mission Owner key control)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 3: Data Protection"
+        "cis": "CIS Control 3: Data Protection",
+        "aicm": "CEK-03 (Data Encryption, including in-use)"
       },
       "threshold": {
         "metric": "encryption_compliance_pct",
@@ -1678,7 +1702,8 @@
         "nist_ai_rmf": "GOVERN 1.5",
         "cc_srg": "Mission Owner SRG Section 3.3 (CSSP collaboration to ensure required security-relevant data is accessible)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 8: Audit Log Management"
+        "cis": "CIS Control 8: Audit Log Management",
+        "aicm": "LOG-03 (Security Monitoring and Alerting)"
       },
       "threshold": {
         "metric": "audit_log_completeness_pct",
@@ -1732,7 +1757,8 @@
         "nist_ai_rmf": "MANAGE 2.4",
         "cc_srg": "Mission Owner SRG Section 3.3.2 (DOD CAC/PKI authentication for cloud system access)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 6: Access Control Management"
+        "cis": "CIS Control 6: Access Control Management",
+        "aicm": "IAM-14 (Strong Authentication); IAM-16 (Authorization Mechanisms)"
       },
       "threshold": {
         "metric": "unauthenticated_api_request_pct",
@@ -1786,7 +1812,8 @@
         "nist_800_171": "3.12.1",
         "nist_ai_rmf": "GOVERN 1.6",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "A&A-02 (Independent Assessments)"
       },
       "threshold": {
         "metric": "cmmc_l2_assessment_current",
@@ -1839,7 +1866,8 @@
         "nist_800_171": "3.12.1",
         "nist_ai_rmf": "GOVERN 1.6",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "A&A-02 (Independent Assessments)"
       },
       "threshold": {
         "metric": "cmmc_l3_assessment_current",
@@ -1893,7 +1921,8 @@
         "nist_ai_rmf": "MANAGE 2.4",
         "cc_srg": "Mission Owner SRG Section 3.3.2 (vulnerability scanning and VDMS endpoint protections including ACAS)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 7: Continuous Vulnerability Management"
+        "cis": "CIS Control 7: Continuous Vulnerability Management",
+        "aicm": "TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)"
       },
       "threshold": {
         "metric": "acas_scan_coverage_pct",
@@ -1994,7 +2023,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 1.6",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "MDS-03 (Model Documentation); MDS-04 (Model Documentation Requirements)"
       },
       "threshold": {
         "metric": "transparency_card_delivered",
@@ -2042,7 +2072,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.8",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "MDS-10 (Model Continuous Monitoring); STA-11 (Supply Chain Agreement Review)"
       },
       "threshold": {
         "metric": "drift_disclosure_sla_compliance_pct",
@@ -2093,7 +2124,8 @@
         "nist_800_171": "3.14.3",
         "nist_ai_rmf": "MAP 5.1",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM03: Supply Chain"
+        "owasp_llm": "LLM03: Supply Chain",
+        "aicm": "MDS-09 (Model Signing/Ownership Verification); MDS-08 (Model Integrity Checks)"
       },
       "threshold": {
         "metric": "boaim_current_and_signed",
@@ -2145,7 +2177,8 @@
         "nist_800_171": "3.14.1",
         "nist_ai_rmf": "MANAGE 2.4",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)"
       },
       "threshold": {
         "metric": "critical_vuln_patch_timeliness_pct",
@@ -2243,7 +2276,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MANAGE 3.1",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "MDS-10 (Model Continuous Monitoring)"
       },
       "threshold": {
         "metric": "revalidation_completed_before_deployment",
@@ -2292,7 +2326,8 @@
         "nist_800_171": "3.9.1",
         "nist_ai_rmf": "GOVERN 1.6",
         "cc_srg": "CSP SRG Section 4.1 (IL6 facility and personnel clearances authorized by DCSA); CSP SRG Section 5.5.2 (CSP Personnel Requirements)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "IAM-16 (Authorization Mechanisms)"
       },
       "threshold": {
         "metric": "uncleared_il6_access_events",
@@ -2344,7 +2379,8 @@
         "nist_800_171": "3.11.1",
         "nist_ai_rmf": "MAP 5.1",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM03: Supply Chain"
+        "owasp_llm": "LLM03: Supply Chain",
+        "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)"
       },
       "threshold": {
         "metric": "model_scrm_assessment_complete",
@@ -2396,7 +2432,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "GOVERN 5.1",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-15 (Human supervision)"
       },
       "threshold": {
         "metric": "oversight_escalation_chain_rehearsed",
@@ -2451,7 +2488,8 @@
         "nist_800_171": "3.11.1",
         "nist_ai_rmf": "MAP 2.2",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM03: Supply Chain; LLM04: Data and Model Poisoning"
+        "owasp_llm": "LLM03: Supply Chain; LLM04: Data and Model Poisoning",
+        "aicm": "DSP-23 (Data Integrity Check); DSP-21 (Data Poisoning Prevention & Detection)"
       },
       "threshold": {
         "metric": "data_integrity_signoff_before_deployment",
@@ -2505,7 +2543,8 @@
         "nist_800_171": "3.3.1",
         "nist_ai_rmf": "MEASURE 2.5",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-15 (Human supervision); LOG-15 (Output Monitoring)"
       },
       "threshold": {
         "metric": "decision_log_review_cadence_met",
@@ -2560,7 +2599,8 @@
         "nist_800_171": "3.11.2",
         "nist_ai_rmf": "MEASURE 2.6",
         "cc_srg": "N/A",
-        "owasp_llm": "LLM01: Prompt Injection"
+        "owasp_llm": "LLM01: Prompt Injection",
+        "aicm": "MDS-06 (Adversarial Attack Analysis); TVM-06 (Penetration Testing)"
       },
       "threshold": {
         "metric": "adversarial_robustness_assessment_complete",
@@ -2612,7 +2652,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 2.2",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-10 (AI Impact Assessment)"
       },
       "threshold": {
         "metric": "bias_assessment_complete_before_ioc",
@@ -2667,7 +2708,8 @@
         "nist_800_171": "3.4.1",
         "nist_ai_rmf": "MANAGE 2.2",
         "cc_srg": "Mission Owner SRG Section 2.3 (Security Assessment Information: required STIG and SRG assessments)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "A&A-02 (Independent Assessments)"
       },
       "threshold": {
         "metric": "cc_srg_baseline_validation_complete",
@@ -2719,7 +2761,8 @@
         "nist_800_171": "3.1.1",
         "nist_ai_rmf": "GOVERN 5.2",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "GRC-15 (Human supervision)"
       },
       "threshold": {
         "metric": "emergency_stop_test_current",
@@ -2770,7 +2813,8 @@
         "nist_800_171": "N/A",
         "nist_ai_rmf": "MEASURE 1.1",
         "cc_srg": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "aicm": "MDS-03 (Model Documentation)"
       },
       "threshold": {
         "metric": "model_behavioral_baseline_documented",

@@ -218,6 +218,42 @@ check(len(atv) > 0, f"applies_to_vertical edges present ({len(atv)})")
 check(all(e["source"].startswith("ext.framework.") and
           e["target"].startswith("srf.vertical.") for e in atv),
       "applies_to_vertical edges run regulation -> vertical")
+
+# An entry claiming derived-from-controls must match the evidence path exactly.
+# A placeholder citation such as "TBD: overlays are pre-draft" is not evidence,
+# so an instrument carrying only placeholders cannot claim a derived list.
+evidence_verticals = {}
+for e in edges["edges"]:
+    if e["rel"] != "governed_by":
+        continue
+    vslug = e["source"].split(".")[2]
+    evidence_verticals.setdefault(e["target"], set()).add(vslug)
+bad_derived = []
+for i in regs["items"]:
+    if i.get("applicable_verticals_source") != "derived-from-controls":
+        continue
+    ev = evidence_verticals.get(f"ext.framework.{i['id']}", set())
+    if ev != set(i.get("applicable_verticals") or []):
+        bad_derived.append(
+            f"{i['id']} declared={sorted(i.get('applicable_verticals') or [])} "
+            f"evidence={sorted(ev)}")
+check(not bad_derived,
+      f"derived-from-controls lists match the evidence path "
+      f"(bad: {bad_derived[:4]})")
+
+# Guard the small controlled vocabularies so a typo cannot quietly create a
+# fourth verification state or a third depth.
+bad_status = sorted({str(i.get("verification_status")) for i in regs["items"]}
+                    - {"None", "unverified", "verified"})
+check(not bad_status, f"verification_status uses a known value (bad: {bad_status})")
+bad_depth = sorted({str(i.get("depth")) for i in regs["items"]}
+                   - {"full", "reference"})
+check(not bad_depth, f"depth uses a known value (bad: {bad_depth})")
+bad_source = sorted({str(i.get("applicable_verticals_source")) for i in regs["items"]}
+                    - {"derived-from-controls", "declared-cross-cutting",
+                       "declared-sector", "derived+declared"})
+check(not bad_source,
+      f"applicable_verticals_source uses a known value (bad: {bad_source})")
 # New comparative jurisdictions resolve.
 for jid in ("oecd", "uk", "china", "singapore", "canada",
             "japan", "australia", "south-korea", "brazil", "india",

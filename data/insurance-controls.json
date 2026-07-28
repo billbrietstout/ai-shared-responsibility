@@ -5,7 +5,7 @@
   "description": "Insurance-sector control schema for the CoSAI AI Shared Responsibility Framework. Maps SRF layers and accountable personas to NAIC Model Bulletin AIS Program requirements, NAIC AI Systems Evaluation Tool dimensions, Colorado Regulation 10-1-1 (3 CCR 702-10), NYDFS Circular Letter No. 7, EU AI Act articles, and OWASP LLM Top 10.",
   "regulatory_context": "The NAIC Model Bulletin on the Use of AI Systems (December 2023) requires a written AIS Program covering governance, risk management, internal controls, and third-party AI oversight but prescribes no control catalog. Colorado Regulation 10-1-1 (amended effective October 15, 2025) extends ECDIS governance to private passenger auto and health benefit insurers, with governance frameworks due on request from July 1, 2026. The NAIC AI Systems Evaluation Tool multistate pilot (January to September 2026, twelve states) gives examiners a standardized review framework for market conduct exams. This schema operationalizes those requirements with named accountable personas, measurable thresholds, and machine-readable evidence.",
   "id_convention": "SRF-{layer}-{stage: DEV|VAL|MON|TPO}-{seq}",
-  "mapping_status_note": "NAIC Model Bulletin, NAIC AI Systems Evaluation Tool, Colorado Regulation 10-1-1, NYDFS Circular Letter No. 7, EU AI Act, and OWASP LLM Top 10 mappings verified against primary sources 2026-07-05 (adopted bulletin text; DRAFT AI Systems Evaluation Tool 4.0 pilot draft, pre-adoption; Amended Regulation 10-1-1 effective Oct 15, 2025; Circular Letter No. 7 final text; Regulation (EU) 2024/1689 final numbering, correcting Article 28 (Notifying Authorities, unrelated) to Article 25/26 for third-party and deployer citations; OWASP Top 10 for LLM Applications 2025 edition, correcting the pre-2025 LLM numbering used in the original hints). The NAIC AI Systems Evaluation Tool remains an unadopted pilot draft as of July 2026 (adoption anticipated NAIC Fall National Meeting 2026); its exhibit/ref citations should be re-verified on adoption. Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key.",
+  "mapping_status_note": "NAIC Model Bulletin, NAIC AI Systems Evaluation Tool, Colorado Regulation 10-1-1, NYDFS Circular Letter No. 7, EU AI Act, and OWASP LLM Top 10 mappings verified against primary sources 2026-07-05 (adopted bulletin text; DRAFT AI Systems Evaluation Tool 4.0 pilot draft, pre-adoption; Amended Regulation 10-1-1 effective Oct 15, 2025; Circular Letter No. 7 final text; Regulation (EU) 2024/1689 final numbering, correcting Article 28 (Notifying Authorities, unrelated) to Article 25/26 for third-party and deployer citations; OWASP Top 10 for LLM Applications 2025 edition, correcting the pre-2025 LLM numbering used in the original hints). The NAIC AI Systems Evaluation Tool remains an unadopted pilot draft as of July 2026 (adoption anticipated NAIC Fall National Meeting 2026); its exhibit/ref citations should be re-verified on adoption. Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key. NIST AI RMF 1.0 subcategory mappings added 2026-07-28. The AI RMF is the horizontal US risk framework both the model-risk and market-conduct supervisors point to, so every control carries a subcategory. CSA AI Controls Matrix v1.0.3 mappings added 2026-07-28. Applied only where a control objective genuinely corresponds; controls with no AICM nexus carry no aicm key. Objective IDs and titles are reused from the set already verified in the finance schema so no ID is invented.",
   "generated": "2026-06-12",
   "lifecycle_stages": [
     "design-development",
@@ -46,7 +46,9 @@
         "co_reg_10_1_1": "Section 5(A)(2)-(3) (governance structure overseen by the board or a committee of the board, senior management responsibility and accountability)",
         "nydfs_cl7": "Section III.A, paragraphs 21-24 (Board and Senior Management Oversight)",
         "eu_ai_act": "Article 9 (risk management system); Article 17 (quality management system)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 1.1 (legal and regulatory requirements are understood, managed, and documented); GOVERN 2.3 (executive leadership takes responsibility for AI risk decisions)",
+        "aicm": "GRC-01 (Governance Program Policy and Procedures)"
       },
       "threshold": {
         "metric": "ais_program_board_approved",
@@ -83,7 +85,8 @@
         "co_reg_10_1_1": "Section 5(A)(9) (documented up-to-date inventory, including version control, of all utilized ECDIS, algorithms, and predictive models)",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 17 (quality management system, inventory of high-risk systems)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 1.6 (mechanisms are in place to inventory AI systems)"
       },
       "threshold": {
         "metric": "ai_system_inventory_coverage_pct",
@@ -119,7 +122,9 @@
         "co_reg_10_1_1": "Section 5(A)(13) (documented description of the process for selecting external resources including third-party vendors)",
         "nydfs_cl7": "Section III.D, paragraphs 35-37 (Third-Party Vendors: oversight of tools, ECDIS, or AIS developed or deployed by third-party vendors)",
         "eu_ai_act": "Article 26 (obligations of deployers of high-risk AI systems); Article 25 (responsibilities along the AI value chain)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 2.1 (roles and responsibilities are documented)",
+        "aicm": "STA-14 (Supply Chain Governance Review); GRC-06 (Governance Responsibility Model)"
       },
       "threshold": {
         "metric": "vendor_register_accountable_officer_coverage",
@@ -156,7 +161,9 @@
         "co_reg_10_1_1": "Section 5(A)(7) (documented processes and protocols for addressing applicant, policyholder, beneficiary, or covered person complaints and providing information necessary to take meaningful action on an adverse decision)",
         "nydfs_cl7": "Section IV.E, paragraphs 38-41 (Disclosure and Notice: right to request information and specific reasons for an adverse underwriting or pricing decision)",
         "eu_ai_act": "Article 86 (right to explanation of individual decision-making for high-risk AI systems)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 5.1 (policies are in place to collect and integrate feedback from those outside the team); GOVERN 3.2 (policies define human-AI configurations and oversight)",
+        "aicm": "GRC-15 (Human supervision)"
       },
       "threshold": {
         "metric": "adverse_decision_appeal_process_documented",
@@ -193,7 +200,9 @@
         "co_reg_10_1_1": "Section 5(C) (governance and risk management framework must be available to the Division on request, auto and health benefit plan insurers, July 1, 2026)",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 1.1 (legal and regulatory requirements are understood, managed, and documented)",
+        "aicm": "GRC-01 (Governance Program Policy and Procedures)"
       },
       "threshold": {
         "metric": "co_framework_package_availability_ready",
@@ -230,7 +239,9 @@
         "co_reg_10_1_1": "Section 5(A)(14) (documented comprehensive annual reviews of the governance structure and risk management framework)",
         "nydfs_cl7": "Section III.B, paragraph 26 (board, governing body, or senior management reviews and approves ECDIS/AIS policies and procedures at least annually)",
         "eu_ai_act": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MAP 1.5 (organizational risk tolerances are determined); GOVERN 1.5 (periodic review of the risk management process is planned)",
+        "aicm": "GRC-02 (Risk Management Program)"
       },
       "threshold": {
         "metric": "risk_appetite_statement_reviewed",
@@ -267,7 +278,9 @@
         "co_reg_10_1_1": "Section 5(A)(3) (senior management responsibility and accountability for setting and monitoring the overall strategy)",
         "nydfs_cl7": "Section III.A, paragraphs 21-24 (Board and Senior Management Oversight)",
         "eu_ai_act": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 2.3 (executive leadership takes responsibility)",
+        "aicm": "GRC-06 (Governance Responsibility Model)"
       },
       "threshold": {
         "metric": "senior_officer_designation_current",
@@ -303,7 +316,9 @@
         "co_reg_10_1_1": "Section 5(A)(13) (process for selecting external resources and third-party vendors); Section 5(B) (insurer remains responsible for Section 5(A) requirements when using third-party vendors)",
         "nydfs_cl7": "Section III.D, paragraphs 35-37 (Third-Party Vendors)",
         "eu_ai_act": "Article 25 (responsibilities along the AI value chain)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); MANAGE 3.1 (AI risks from third-party resources are monitored)",
+        "aicm": "STA-14 (Supply Chain Governance Review)"
       },
       "threshold": {
         "metric": "vendor_ais_program_review_completed",
@@ -340,7 +355,8 @@
         "co_reg_10_1_1": "Section 5(C) (governance and risk management framework must be available to the Division on request)",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "N/A",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 1.1 (regulatory requirements are documented); MEASURE 2.8 (transparency and accountability are examined)"
       },
       "threshold": {
         "metric": "exam_readiness_package_current",
@@ -376,7 +392,9 @@
         "co_reg_10_1_1": "Section 4(D) (ECDIS definition); Section 5(A)(1) (governing principles ensuring ECDIS, algorithms, and predictive models are designed, developed, used, and monitored to achieve effective oversight and prevent unfair discrimination)",
         "nydfs_cl7": "Section II.A, paragraphs 11-12 (Data Actuarial Validity, Proxy Assessment)",
         "eu_ai_act": "Article 10 (data and data governance for high-risk AI systems)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MAP 4.1 (legal and technology risks of third-party data are mapped); MEASURE 2.10 (privacy risk is examined)",
+        "aicm": "DSP-20 (Data Provenance and Transparency)"
       },
       "threshold": {
         "metric": "ecdis_permissible_purpose_documented",
@@ -413,7 +431,9 @@
         "co_reg_10_1_1": "Section 5(A)(1)(b) (governing principles reasonably designed to prevent unfair discrimination); Section 5(A)(11) (quantitative testing to detect unfair discrimination with respect to race)",
         "nydfs_cl7": "Section II.A, paragraph 12 (Proxy Assessment); Section II.B-C, paragraphs 13-19 (Unfair and Unlawful Discrimination, Analyzing for Unfair or Unlawful Discrimination)",
         "eu_ai_act": "Article 10 (data governance, examination of possible biases and discriminatory data processing for high-risk AI)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.11 (fairness and bias are evaluated and documented)",
+        "aicm": "DSP-24 (Data Differentiation and Relevance)"
       },
       "threshold": {
         "metric": "proxy_variable_screen_completed",
@@ -448,7 +468,9 @@
         "co_reg_10_1_1": "Section 5(A)(11) (documented description of quantitative testing methodology, assumptions, and results - scoped to race, not general representativeness)",
         "nydfs_cl7": "Section II.C, paragraph 18 (Quantitative Assessment metrics: Adverse Impact Ratio, Denial Odds Ratios, Standardized Mean Differences)",
         "eu_ai_act": "Article 10 (training data requirements for high-risk AI systems)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.11 (fairness and bias are evaluated); MAP 2.3 (data collection and selection considerations are documented)",
+        "aicm": "DSP-24 (Data Differentiation and Relevance)"
       },
       "threshold": {
         "metric": "training_data_representativeness_documented",
@@ -485,7 +507,9 @@
         "co_reg_10_1_1": "Section 5(A)(13) (process for selecting external resources including third-party vendors that supply ECDIS)",
         "nydfs_cl7": "Section III.B, paragraph 29(c) (documentation describing how each AIS operates, including ECDIS or other inputs and their sources)",
         "eu_ai_act": "Article 10 (data governance for high-risk AI)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MAP 4.1 (legal and technology risks of third-party data are mapped)",
+        "aicm": "DSP-20 (Data Provenance and Transparency)"
       },
       "threshold": {
         "metric": "external_data_permissible_use_audited",
@@ -521,7 +545,9 @@
         "co_reg_10_1_1": "Section 5(A)(12) (documented description of ongoing monitoring regarding the performance of algorithms and predictive models, including model drift)",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 72 (post-market monitoring, performance drift reporting)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.4 (the deployed AI system is monitored for changes)",
+        "aicm": "MDS-10 (Model Continuous Monitoring)"
       },
       "threshold": {
         "metric": "input_psi_max",
@@ -555,7 +581,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 10 (data governance and minimisation for high-risk AI systems)",
-        "owasp_llm": "LLM02 (Sensitive Information Disclosure)"
+        "owasp_llm": "LLM02 (Sensitive Information Disclosure)",
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented)",
+        "aicm": "DSP-04 (Data Classification); AIS-14 (AI Cache Protection)"
       },
       "threshold": {
         "metric": "agent_context_pii_retention_violation_count",
@@ -590,7 +618,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 72 (post-market monitoring, performance indicators)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.4 (deployed system inputs are monitored); MEASURE 2.5 (validity and reliability are documented)",
+        "aicm": "DSP-23 (Data Integrity Check)"
       },
       "threshold": {
         "metric": "model_input_missing_rate_pct",
@@ -625,7 +655,9 @@
         "co_reg_10_1_1": "Section 5(A)(13) (process for selecting external resources and third-party vendors); Section 5(B) (insurer oversight of external resources)",
         "nydfs_cl7": "Section III.B, paragraph 29(c) (description of ECDIS or other inputs and their sources)",
         "eu_ai_act": "Article 11 (technical documentation for high-risk AI including training data description)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MAP 4.1 (legal and technology risks of third-party data are mapped); GOVERN 6.1 (third-party policies are in place)",
+        "aicm": "DSP-20 (Data Provenance and Transparency); STA-11 (Supply Chain Agreement Review)"
       },
       "threshold": {
         "metric": "vendor_data_lineage_documented",
@@ -660,7 +692,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI systems)",
-        "owasp_llm": "LLM01 (Prompt Injection)"
+        "owasp_llm": "LLM01 (Prompt Injection)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "aicm": "AIS-08 (Input Validation); AIS-15 (Prompt Differentiation)"
       },
       "threshold": {
         "metric": "prompt_injection_defense_validated",
@@ -694,7 +728,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 14 (human oversight for high-risk AI); Article 15 (robustness)",
-        "owasp_llm": "LLM06 (Excessive Agency)"
+        "owasp_llm": "LLM06 (Excessive Agency)",
+        "nist_ai_rmf": "MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use); MEASURE 2.7 (security and resilience are evaluated)",
+        "aicm": "AIS-11 (Agents Security Boundaries); IAM-19 (Agent Access Restriction)"
       },
       "threshold": {
         "metric": "agent_boundary_enforcement_validated",
@@ -731,7 +767,8 @@
         "co_reg_10_1_1": "Section 5(A)(7) (information necessary for the applicant, policyholder, beneficiary, or covered person to take meaningful action in the event of an adverse decision)",
         "nydfs_cl7": "Section IV.E, paragraphs 38-41 (Disclosure and Notice: details about all information upon which the insurer based an adverse underwriting or pricing decision)",
         "eu_ai_act": "Article 86 (right to explanation of individual decision-making for high-risk AI systems)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.9 (the AI model is explained, validated, and documented); MEASURE 2.8 (transparency and accountability are examined)"
       },
       "threshold": {
         "metric": "adverse_action_explanation_coverage_pct",
@@ -768,7 +805,9 @@
         "co_reg_10_1_1": "Section 5(A)(5) (health benefit plan insurers only: a provider acting on behalf of the insurer is ultimately responsible for decisions to modify or deny requests for authorization - the regulation does not extend an equivalent explicit requirement to auto or life lines)",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 14 (human oversight for high-risk AI systems)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 3.2 (policies define human-AI configurations and oversight); MAP 3.5 (processes for human oversight are assessed)",
+        "aicm": "GRC-15 (Human supervision)"
       },
       "threshold": {
         "metric": "adverse_decision_human_review_gate_bypass_count",
@@ -803,7 +842,8 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "Section II.C, paragraph 19 (Qualitative Assessment: explain how the insurer's AIS operates and articulate a logical relationship between ECDIS/model variables and risk)",
         "eu_ai_act": "Article 13 (transparency and provision of information to deployers); Article 86 (right to explanation)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.9 (the AI model is explained, validated, and documented)"
       },
       "threshold": {
         "metric": "explainability_validation_completed",
@@ -840,7 +880,9 @@
         "co_reg_10_1_1": "Section 5(A)(11) (documented description of quantitative testing to detect unfair discrimination with respect to race)",
         "nydfs_cl7": "Section II.C, paragraph 17 (Frequency of Testing: administered prior to production and on a regular cadence thereafter, and after material updates)",
         "eu_ai_act": "Article 72 (post-market monitoring, fairness indicators)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.11 (fairness and bias are evaluated and documented)",
+        "aicm": "GRC-10 (AI Impact Assessment)"
       },
       "threshold": {
         "metric": "adverse_impact_ratio_max",
@@ -877,7 +919,8 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 72 (post-market monitoring, user feedback and complaints)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MANAGE 4.1 (post-deployment monitoring captures input from users); GOVERN 5.1 (external feedback policies are in place)"
       },
       "threshold": {
         "metric": "ai_complaint_rate_per_1000_decisions",
@@ -912,7 +955,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI)",
-        "owasp_llm": "LLM01 (Prompt Injection); LLM05 (Improper Output Handling)"
+        "owasp_llm": "LLM01 (Prompt Injection); LLM05 (Improper Output Handling)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 3.1 (AI risks from third-party resources are monitored)",
+        "aicm": "AIS-05 (Application Security Testing)"
       },
       "threshold": {
         "metric": "vendor_interface_security_test_completed",
@@ -948,7 +993,9 @@
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI systems)",
         "owasp_llm": "LLM05 (Improper Output Handling, also relevant to authentication bypass vectors)",
-        "cis": "CIS Control 6: Access Control Management"
+        "cis": "CIS Control 6: Access Control Management",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "aicm": "IAM-14 (Strong Authentication)"
       },
       "threshold": {
         "metric": "unauthenticated_model_gateway_access_count",
@@ -984,7 +1031,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 9 (risk management system, technical safeguards)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated and documented)",
+        "aicm": "TVM-11 (Guardrails)"
       },
       "threshold": {
         "metric": "guardrail_baseline_documented_and_current",
@@ -1022,7 +1071,9 @@
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (cybersecurity, data protection for high-risk AI)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 3: Data Protection"
+        "cis": "CIS Control 3: Data Protection",
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined); MEASURE 2.7 (security and resilience are evaluated)",
+        "aicm": "CEK-03 (Data Encryption, including in-use)"
       },
       "threshold": {
         "metric": "pii_unencrypted_at_rest_or_in_transit_count",
@@ -1060,7 +1111,9 @@
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 18: Penetration Testing"
+        "cis": "CIS Control 18: Penetration Testing",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "aicm": "TVM-06 (Penetration Testing)"
       },
       "threshold": {
         "metric": "platform_security_assessment_completed",
@@ -1096,7 +1149,8 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (cybersecurity, data integrity and confidentiality)",
-        "owasp_llm": "LLM02 (Sensitive Information Disclosure)"
+        "owasp_llm": "LLM02 (Sensitive Information Disclosure)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 3.1 (AI risks from third-party resources are monitored)"
       },
       "threshold": {
         "metric": "vendor_model_egress_violation_count",
@@ -1134,7 +1188,9 @@
         "nydfs_cl7": "Section III.C, paragraph 34(b) (internal audit verifying records of AIS use and validation)",
         "eu_ai_act": "Article 12 (record-keeping, automatically generated logs for high-risk AI systems)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 8: Audit Log Management"
+        "cis": "CIS Control 8: Audit Log Management",
+        "nist_ai_rmf": "MEASURE 2.8 (transparency and accountability are examined and documented)",
+        "aicm": "LOG-03 (Security Monitoring and Alerting)"
       },
       "threshold": {
         "metric": "audit_log_completeness_pct",
@@ -1169,7 +1225,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (robustness and resilience, detection of anomalous behavior for high-risk AI)",
-        "owasp_llm": "LLM04 (Data and Model Poisoning, detected via runtime behavior)"
+        "owasp_llm": "LLM04 (Data and Model Poisoning, detected via runtime behavior)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)",
+        "aicm": "LOG-13 (Failures and Anomalies Reporting)"
       },
       "threshold": {
         "metric": "runtime_anomaly_mean_time_to_detect_hours",
@@ -1204,7 +1262,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 26 (obligations of deployers of high-risk AI systems, general oversight only, no provision addresses API credential or access review specifically)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MANAGE 3.1 (AI risks from third-party resources are monitored); GOVERN 6.1 (third-party policies are in place)",
+        "aicm": "IAM-16 (Authorization Mechanisms); STA-14 (Supply Chain Governance Review)"
       },
       "threshold": {
         "metric": "stale_vendor_access_count",
@@ -1239,7 +1299,9 @@
         "co_reg_10_1_1": "Section 5(A)(9) (detailed description of each ECDIS, algorithm, and predictive model, their clearly stated purposes, and the outputs generated through their use)",
         "nydfs_cl7": "Section III.B, paragraph 29(b)-(c) (up-to-date inventory of AIS, description of how each AIS operates)",
         "eu_ai_act": "Article 11 (technical documentation for high-risk AI systems); Article 13 (transparency and provision of information to deployers)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MAP 2.2 (information about the AI system knowledge limits is documented); MEASURE 2.8 (transparency and accountability are examined)",
+        "aicm": "MDS-03 (Model Documentation); MDS-04 (Model Documentation Requirements)"
       },
       "threshold": {
         "metric": "model_card_current",
@@ -1274,7 +1336,9 @@
         "co_reg_10_1_1": "N/A",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 15 (cybersecurity, model integrity and supply-chain security)",
-        "owasp_llm": "LLM03 (Supply Chain)"
+        "owasp_llm": "LLM03 (Supply Chain)",
+        "nist_ai_rmf": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)",
+        "aicm": "MDS-09 (Model Signing/Ownership Verification)"
       },
       "threshold": {
         "metric": "unsigned_model_artifact_deployment_count",
@@ -1309,7 +1373,9 @@
         "co_reg_10_1_1": "Section 5(A)(11) (quantitative testing to detect unfair discrimination with respect to race, prior to and during use)",
         "nydfs_cl7": "Section II.C, paragraph 17 (testing prior to production); Section II.B, paragraph 15 (comprehensive three-step assessment)",
         "eu_ai_act": "Article 9 (risk management system, pre-deployment risk assessment for high-risk AI)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 2.11 (fairness and bias are evaluated and documented)",
+        "aicm": "GRC-10 (AI Impact Assessment)"
       },
       "threshold": {
         "metric": "pre_deployment_fairness_eval_completed",
@@ -1345,7 +1411,9 @@
         "co_reg_10_1_1": "Section 5(A)(6) (documented policies and processes ensuring ECDIS, algorithms, and predictive models are documented, tested, and validated - independence of the reviewing function is not specified)",
         "nydfs_cl7": "Section III.C, paragraph 32 (standards for model development, implementation, use, and validation, independent review and effective challenge)",
         "eu_ai_act": "Article 9 (risk management system, testing procedures for high-risk AI - not itself the conformity-assessment provision)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV)",
+        "aicm": "A&A-02 (Independent Assessments)"
       },
       "threshold": {
         "metric": "independent_model_validation_completed",
@@ -1380,7 +1448,9 @@
         "co_reg_10_1_1": "Section 5(A)(12) (ongoing monitoring of algorithm and predictive model performance, including model drift)",
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 72 (post-market monitoring obligations, reporting to deployers)",
-        "owasp_llm": "N/A"
+        "owasp_llm": "N/A",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); MANAGE 4.1 (post-deployment monitoring plans are implemented)",
+        "aicm": "MDS-10 (Model Continuous Monitoring); STA-11 (Supply Chain Agreement Review)"
       },
       "threshold": {
         "metric": "vendor_perf_disclosure_sla_breach_count",
@@ -1416,7 +1486,9 @@
         "nydfs_cl7": "N/A",
         "eu_ai_act": "Article 72 (post-market monitoring, vulnerability disclosure obligations)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 7: Continuous Vulnerability Management"
+        "cis": "CIS Control 7: Continuous Vulnerability Management",
+        "nist_ai_rmf": "MANAGE 3.1 (AI risks from third-party resources are monitored); MANAGE 4.3 (incidents and errors are communicated)",
+        "aicm": "TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)"
       },
       "threshold": {
         "metric": "cve_disclosure_sla_breach_count",
@@ -1453,7 +1525,9 @@
         "nydfs_cl7": "Section III.B, paragraph 29 (comprehensive documentation for AIS and ECDIS, whether developed internally or supplied by third parties)",
         "eu_ai_act": "Article 11 (technical documentation); Article 25 (responsibilities along the AI value chain)",
         "owasp_llm": "N/A",
-        "cis": "CIS Control 15: Service Provider Management"
+        "cis": "CIS Control 15: Service Provider Management",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); MANAGE 3.1 (third-party resource risks are monitored)",
+        "aicm": "STA-11 (Supply Chain Agreement Review); STA-14 (Supply Chain Governance Review)"
       },
       "threshold": {
         "metric": "vendor_model_due_diligence_package_complete",

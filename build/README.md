@@ -45,7 +45,13 @@ ext.requirement.<id>         concrete requirements inside an instrument
 Control-to-regulation joins use `regulations.json` `mapping_key` values against
 each control's `mappings` object, and land in the ontology as `governed_by`
 edges. Sector specializations land as `specializes` edges back to a canonical
-persona. Moral tags in `moral-regulatory-hierarchy.json` land as `part_of`,
+persona. `sync_llms_full.py` rewrites the `Regulatory mappings` list inside each control
+block of `llms-full.txt` from the vertical control schemas. That file is
+hand-written prose apart from those lists, so the script touches nothing else.
+Run it after editing any `data/<vertical>-controls.json`; `verify_pages.py`
+fails when a block no longer matches the data.
+
+Moral tags in `moral-regulatory-hierarchy.json` land as `part_of`,
 `emphasizes` (with salience), and `implements` edges. An `implements` edge is
 only emitted for a requirement of the instrument the citation is filed under, so
 `citation_match` text cannot match another instrument's citation string.
