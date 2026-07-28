@@ -177,7 +177,9 @@ check(all(e["source"].startswith("ext.framework.") and
           e["target"].startswith("srf.vertical.") for e in atv),
       "applies_to_vertical edges run regulation -> vertical")
 # New comparative jurisdictions resolve.
-for jid in ("oecd", "uk", "china", "singapore", "canada"):
+for jid in ("oecd", "uk", "china", "singapore", "canada",
+            "japan", "australia", "south-korea", "brazil", "india",
+            "us-california"):
     check(f"srf.jurisdiction.{jid}" in node_ids, f"jurisdiction node present ({jid})")
 
 # 7. related[] only references real nodes
