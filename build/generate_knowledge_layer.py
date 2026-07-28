@@ -462,7 +462,7 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
                 re.compile(re.escape(p) + r"\b", re.I)
                 for p in req.get("citation_match") or [req["citation"]]
             ]
-            req_matchers.append((patterns, rid))
+            req_matchers.append((patterns, rid, ext_id(instrument)))
 
         for instrument, scores in rollup.items():
             nid = ext_id(instrument)
@@ -513,7 +513,11 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             # Cite each resolved regulation mapping as a governed_by edge.
             # The citation string rides as an edge property; placeholders skip.
             # When a citation names a tagged requirement, also link the
-            # control to that requirement (implements).
+            # control to that requirement (implements). A requirement is only
+            # eligible for the instrument this citation is filed under:
+            # matching text across instruments produced false links, such as a
+            # US ONC citation reading "Training data description" matching a
+            # Chinese requirement whose pattern is "training data".
             linked_reqs = set()
             for mkey, citation in (c.get("mappings") or {}).items():
                 if mkey == "mapping_status_note" or is_placeholder(citation):
@@ -521,8 +525,8 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
                 target = key_to_ext.get(mkey)
                 if target:
                     add_edge(nid, "governed_by", target, citation=citation)
-                for patterns, req_nid in req_matchers:
-                    if req_nid in linked_reqs:
+                for patterns, req_nid, req_ext in req_matchers:
+                    if target != req_ext or req_nid in linked_reqs:
                         continue
                     if any(p.search(citation) for p in patterns):
                         add_edge(nid, "implements", req_nid, citation=citation)

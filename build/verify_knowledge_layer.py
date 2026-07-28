@@ -157,6 +157,42 @@ if os.path.exists(moral_path):
               e["target"].startswith("ext.requirement.") for e in implements),
           "implements edges run control -> requirement")
 
+    # implements refines governed_by: a control can only implement a requirement
+    # of an instrument it actually cites. Without this, citation_match text from
+    # one instrument silently matches another instrument's citation string.
+    cites = {}
+    for e in edges["edges"]:
+        if e["rel"] == "governed_by":
+            cites.setdefault(e["source"], set()).add(e["target"])
+    orphan_impl = []
+    for e in implements:
+        req = e["target"].replace("ext.requirement.", "")
+        parent = f"ext.framework.{req.rsplit('.', 1)[0]}"
+        if parent not in cites.get(e["source"], ()):
+            orphan_impl.append(f'{e["source"]} -> {req}')
+    check(not orphan_impl,
+          f"every implements edge sits under a governed_by edge to the same "
+          f"instrument (bad: {orphan_impl[:5]})")
+
+    # A requirement whose patterns match nothing is either uncited (fine, its
+    # instrument has no mapping_key) or the patterns miss the citation style the
+    # schemas actually use, which is a silent authoring bug.
+    keyed = {r["id"] for r in J("data/regulations.json")["items"]
+             if r.get("mapping_key")}
+    linked = {e["target"].replace("ext.requirement.", "") for e in implements}
+    expected = moral.get("unmatched_expected", {})
+    dead = sorted(r["id"] for r in reqs
+                  if r["instrument"] in keyed
+                  and r["id"] not in linked
+                  and r["id"] not in expected)
+    check(not dead,
+          f"requirements on cited instruments match at least one control "
+          f"citation (bad: {dead})")
+    stale = sorted(set(expected) & linked)
+    check(not stale,
+          f"unmatched_expected holds no requirement that now matches a citation "
+          f"(bad: {stale})")
+
     for instrument in moral.get("priority_instruments", []):
         nid = f"ext.framework.{instrument}"
         node = next((n for n in nodes["nodes"] if n["id"] == nid), None)

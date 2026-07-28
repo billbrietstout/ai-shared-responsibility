@@ -344,11 +344,11 @@
       }
     },
     {
-      "id": "nist-ai-rmf.govern-1-6",
+      "id": "nist-ai-rmf.govern-2-1",
       "instrument": "nist-ai-rmf",
-      "citation": "GOVERN 1.6",
+      "citation": "GOVERN 2.1",
       "citation_match": [
-        "GOVERN 1.6"
+        "GOVERN 2.1"
       ],
       "title": "Roles and responsibilities for AI risk management",
       "summary": "Roles and responsibilities for AI risk and the AI risk management function are defined, assigned, and documented.",
@@ -361,7 +361,7 @@
         "action": 2,
         "outcome": 0,
         "rationale": "The requirement is to name accountable roles. Process documentation is the vehicle; outcome thresholds are not the subject.",
-        "evidence": "NIST AI RMF GOVERN 1.6"
+        "evidence": "NIST AI RMF GOVERN 2.1"
       }
     },
     {
@@ -802,7 +802,8 @@
       "instrument": "cmmc-2-0",
       "citation": "Access Control domain",
       "citation_match": [
-        "CMMC"
+        "AC.L2",
+        "AC.L3"
       ],
       "title": "Access control for CUI environments",
       "summary": "Requires limiters on system access to authorized users and processes protecting Controlled Unclassified Information in defense contractor environments.",
@@ -824,7 +825,8 @@
       "instrument": "cmmc-2-0",
       "citation": "Audit and Accountability domain",
       "citation_match": [
-        "CMMC"
+        "AU.L2",
+        "AU.L3"
       ],
       "title": "Audit logging and accountability",
       "summary": "Requires create, protect, and retain system audit records so actions affecting CUI systems can be traced to accountable parties.",
@@ -952,5 +954,13 @@
         "evidence": "Australia AI Ethics Principles contestability"
       }
     }
-  ]
+  ],
+  "citation_match_note": "citation_match patterns are tested only against citations filed under the mapping_key of this requirement's own instrument. Cross-instrument text collisions therefore cannot create an implements edge, so patterns can stay readable. Patterns must match the citation text a control actually writes: an instrument name alone will not match a schema that cites clause IDs. Requirements listed in unmatched_expected are known to have no implementing control; the verifier fails on any other requirement whose instrument is cited but whose patterns match nothing, and on stale entries that have since matched.",
+  "unmatched_expected": {
+    "eu-ai-act.art-5": "Prohibited practices are a ban on deployment, not a duty a control implements, so no schema cites Article 5.",
+    "eu-ai-act.art-6": "Article 6 sets high-risk classification scope rather than imposing an operational duty.",
+    "gdpr.art-5": "GDPR is join-ready but no vertical schema cites it yet.",
+    "gdpr.art-22": "GDPR is join-ready but no vertical schema cites it yet.",
+    "gdpr.art-35": "GDPR is join-ready but no vertical schema cites it yet."
+  }
 }

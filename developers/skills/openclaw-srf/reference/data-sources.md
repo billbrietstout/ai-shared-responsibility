@@ -73,6 +73,13 @@ Requirement-level moral tags live in `moral-regulatory-hierarchy.json`.
 Traverse `emphasizes` (with `salience`) and `implements` edges in
 `/ontology/edges.json` rather than re-deriving scores from prose.
 
+`implements` is scoped to the instrument a citation is filed under, so it always
+sits beside a `governed_by` edge from the same control. A requirement with zero
+`implements` edges means no control implements it, not that the graph is
+incomplete; `unmatched_expected` in the moral file records which ones and why.
+Citations follow the OWASP LLM Top 10 2025 item numbers across all six schemas,
+so `LLM02` is Sensitive Information Disclosure and `LLM06` is Excessive Agency.
+
 Jurisdiction to vertical: control schemas own vertical specificity. Prefer
 `applies_to_vertical` edges from each regulation's `applicable_verticals`
 (derived from control citations when present). The evidence path is

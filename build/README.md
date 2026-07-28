@@ -46,7 +46,11 @@ Control-to-regulation joins use `regulations.json` `mapping_key` values against
 each control's `mappings` object, and land in the ontology as `governed_by`
 edges. Sector specializations land as `specializes` edges back to a canonical
 persona. Moral tags in `moral-regulatory-hierarchy.json` land as `part_of`,
-`emphasizes` (with salience), and `implements` edges. Regulation
+`emphasizes` (with salience), and `implements` edges. An `implements` edge is
+only emitted for a requirement of the instrument the citation is filed under, so
+`citation_match` text cannot match another instrument's citation string.
+Requirements expected to match nothing are declared in `unmatched_expected`, and
+the verifier fails on any undeclared miss or on a stale declaration. Regulation
 `applicable_verticals` land as `applies_to_vertical` edges to
 `srf.vertical.*`. Prefer `/ontology/edges.json` for multi-hop queries; do not
 hand-edit a parallel edges file under `/data/`.

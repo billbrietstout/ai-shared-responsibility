@@ -5,7 +5,7 @@
   "regulatory_context": "SR 26-2 (Federal Reserve / OCC / FDIC, April 2026) puts generative and agentic AI explicitly out of scope while directing institutions to apply existing MRM principles by materiality. This schema operationalizes those principles for AI systems across all five SRF layers.",
   "scaling_rule": "The schema defines measurement methods and parameter names; it does not encode fixed values. Each institution sets parameter values per model tier according to SR 26-2's risk-based materiality approach. The same schema applies to a community bank and a GSIB; only the tier table differs. Exception: zero-tolerance controls (where any non-zero value is a control failure regardless of tier) and verification controls (where the required outcome is binary and must be 100%) carry fixed param values by design. These are identified by param_type 'zero-tolerance' or 'verification'.",
   "id_convention": "SRF-{layer}-{mrm_stage: DEV|VAL|MON|ECH}-{seq}",
-  "mapping_status_note": "FINOS AIGF, SR 26-2, EU AI Act, and CSA AICM mappings verified against primary sources 2026-07-05 (AIGF catalogue, SR 26-2 attachment text, Regulation (EU) 2024/1689 final numbering with draft Article 62 corrected to Article 73, AICM v1.0.3 spreadsheet). Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key.",
+  "mapping_status_note": "FINOS AIGF, SR 26-2, EU AI Act, and CSA AICM mappings verified against primary sources 2026-07-05 (AIGF catalogue, SR 26-2 attachment text, Regulation (EU) 2024/1689 final numbering with draft Article 62 corrected to Article 73, AICM v1.0.3 spreadsheet). Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key. OWASP LLM Top 10 citations normalized 2026-07-28 to the 2025 list that regulations.json pins; 2023 item numbers and retired item names were remapped.",
   "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' (spelled out, sub-provisions as 'Article 10(2)(f)') and 'Annex X', an optional short gloss in parentheses, multiple citations separated by '; '. 'TBD:' prefix marks an unverified mapping; 'N/A' means no EU AI Act nexus. Do not substitute invented article numbers.",
   "controls": [
     {
@@ -486,7 +486,7 @@
       },
       "threshold": {
         "metric": "psi_score",
-        "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1–0.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
+        "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1\u20130.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
         "evidence": {
           "ocsf_class": "ai_operation",
           "attribute": "message_context: input feature distributions observable from ai_operation events at inference time can be aggregated to compute PSI against the stored reference distribution.",
@@ -659,7 +659,7 @@
         "aicm": "AIS-09 (Output Validation)",
         "sr26_2": "Section IV (Model Development)",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
+        "owasp_llm": "LLM05: Improper Output Handling; LLM02: Sensitive Information Disclosure"
       },
       "threshold": {
         "metric": "output_filter_design_documented",
@@ -696,7 +696,7 @@
         "aicm": "AIS-11 (Agents Security Boundaries); IAM-19 (Agent Access Restriction)",
         "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
         "eu_ai_act": "Article 14 (Human oversight); Article 9 (Risk management system)",
-        "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
+        "owasp_llm": "LLM06: Excessive Agency (includes tool and plugin permission scope)"
       },
       "threshold": {
         "metric": "tool_authorization_design_documented",
@@ -731,7 +731,7 @@
         "aicm": "AIS-05 (Application Security Testing); MDS-06 (Adversarial Attack Analysis)",
         "sr26_2": "Section V (Model Validation)",
         "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM01 through LLM10: full top 10 scope for adversarial testing"
+        "owasp_llm": "LLM01 through LLM10: full 2025 top 10 scope for adversarial testing"
       },
       "threshold": {
         "metric": "adversarial_validation_completed",
@@ -802,7 +802,7 @@
         "aicm": "LOG-15 (Output Monitoring); AIS-09 (Output Validation)",
         "sr26_2": "Section V (Ongoing Model Monitoring)",
         "eu_ai_act": "Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM02: Insecure Output Handling; LLM06: Sensitive Information Disclosure"
+        "owasp_llm": "LLM05: Improper Output Handling; LLM02: Sensitive Information Disclosure"
       },
       "threshold": {
         "metric": "output_filter_block_rate_by_category",
@@ -835,7 +835,7 @@
         "aicm": "IAM-19 (Agent Access Restriction); LOG-13 (Failures and Anomalies Reporting)",
         "sr26_2": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)",
         "eu_ai_act": "Article 14 (Human oversight)",
-        "owasp_llm": "LLM07: Insecure Plugin Design; LLM08: Excessive Agency"
+        "owasp_llm": "LLM06: Excessive Agency (includes tool and plugin permission scope)"
       },
       "threshold": {
         "metric": "tool_authorization_failure_rate",
@@ -1257,7 +1257,7 @@
         "aicm": "MDS-06 (Adversarial Attack Analysis); MDS-07 (Model Hardening)",
         "sr26_2": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)",
         "eu_ai_act": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)",
-        "owasp_llm": "LLM01: Prompt Injection; LLM06: Sensitive Information Disclosure; LLM09: Overreliance"
+        "owasp_llm": "LLM01: Prompt Injection; LLM02: Sensitive Information Disclosure; LLM09: Misinformation"
       },
       "threshold": {
         "metric": "security_evaluation_published",

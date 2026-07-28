@@ -5,7 +5,7 @@
   "description": "Manufacturing control schema for the CoSAI AI Shared Responsibility Framework. Scoped to industrial manufacturers deploying AI in OT/ICS environments, embedding AI in products placed on the EU market, and operating IT-side AI for supply chain, quality, and production management. Controls are parameterized by OT applicability (ot-only, it-only, both) and EU AI Act risk class (high-risk, limited-risk, minimal-risk, N/A).",
   "regulatory_context": "Three converging deadlines anchor this vertical. EU AI Act (Regulation 2024/1689) high-risk provider and deployer obligations take effect August 2, 2026. EU Machinery Regulation (EU) 2023/1230 applies from January 20, 2027, making AI safety components in machinery automatically high-risk under the AI Act. IEC 62443 governs OT/ICS cybersecurity via a zone-and-conduit model; ISA-TR62443-2-2-2025 (December 2025) updated the series but added no AI-specific controls. ISO 42001:2023 provides the quality management system anchor for EU AI Act Article 17 compliance but assigns no accountable party per control. The NIST Cybersecurity Framework Profile for Artificial Intelligence (Cyber AI Profile) was published as a preliminary draft in December 2025 and is not yet final. This schema fills the AI governance gap in each of these frameworks by assigning a named accountable persona, measurable threshold, and machine-readable evidence pointer to every control.",
   "id_convention": "SRF-{layer}-{DES|VAL|OPS|CHG}-{seq}",
-  "mapping_status_note": "EU AI Act article numbers and EU Machinery Regulation annex item numbers marked TBD require verification against primary sources; do not substitute invented references. ISO/IEC 42001, ISA/IEC 62443, and IEC 61508 mappings are deliberately edition-level or part-level: clause-level mapping is not published because the standards texts are paywalled (decision 2026-07-05). Part numbers and edition years are public bibliographic facts. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key.",
+  "mapping_status_note": "EU AI Act article numbers and EU Machinery Regulation annex item numbers marked TBD require verification against primary sources; do not substitute invented references. ISO/IEC 42001, ISA/IEC 62443, and IEC 61508 mappings are deliberately edition-level or part-level: clause-level mapping is not published because the standards texts are paywalled (decision 2026-07-05). Part numbers and edition years are public bibliographic facts. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key. OWASP LLM Top 10 citations normalized 2026-07-28 to the 2025 list that regulations.json pins; 2023 item numbers and retired item names were remapped.",
   "generated": "2026-06-12",
   "lifecycle_stages": [
     "design",
@@ -27,7 +27,7 @@
   "eu_ai_act_risk_classes": {
     "high-risk": "System falls under EU AI Act Annex III or is a safety component under Annex I harmonized legislation.",
     "limited-risk": "System has transparency obligations only (chatbots, synthetic content).",
-    "minimal-risk": "No specific EU AI Act obligations beyond voluntary codes of practice. Note: no controls in this vertical carry this class by design — manufacturing AI in scope skews high-risk (Annex III machinery, safety components) or N/A (OT/ICS cybersecurity controls). The class is defined here for schema completeness.",
+    "minimal-risk": "No specific EU AI Act obligations beyond voluntary codes of practice. Note: no controls in this vertical carry this class by design \u2014 manufacturing AI in scope skews high-risk (Annex III machinery, safety components) or N/A (OT/ICS cybersecurity controls). The class is defined here for schema completeness.",
     "N/A": "EU AI Act risk classification does not apply to this control."
   },
   "responsibility_split_values": {
@@ -69,7 +69,7 @@
       },
       "threshold": {
         "metric": "all_high_risk_systems_registered",
-        "description": "Every high-risk AI system is registered in the EU AI database before market placement or entry into service. EU AI Act Article 49 is a binary obligation — partial registration is not permitted and any unregistered in-scope system constitutes non-compliance.",
+        "description": "Every high-risk AI system is registered in the EU AI database before market placement or entry into service. EU AI Act Article 49 is a binary obligation \u2014 partial registration is not permitted and any unregistered in-scope system constitutes non-compliance.",
         "evidence": {
           "ocsf_class": "Governance document artifact. EU AI database registration record (printout or API confirmation) for each high-risk system, timestamped before market placement date.",
           "attribute": "TBD",
@@ -1853,7 +1853,7 @@
         "nist_ai_rmf": "MAP 5.2",
         "iec_61508": "N/A",
         "nist_cyber_ai": "TBD",
-        "owasp_llm": "LLM03 (Supply Chain Vulnerabilities)"
+        "owasp_llm": "LLM03 (Supply Chain)"
       },
       "threshold": {
         "metric": "model_artifact_signed",
@@ -1980,7 +1980,7 @@
         "nist_ai_rmf": "GOVERN 6.1",
         "iec_61508": "N/A",
         "nist_cyber_ai": "TBD",
-        "owasp_llm": "LLM03 (Supply Chain Vulnerabilities)"
+        "owasp_llm": "LLM03 (Supply Chain)"
       },
       "threshold": {
         "metric": "supplier_due_diligence_completed",

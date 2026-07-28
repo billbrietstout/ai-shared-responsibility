@@ -5,7 +5,7 @@
   "description": "Public-sector control schema for the CoSAI AI Shared Responsibility Framework. Scoped to U.S. federal civilian agencies (FCEB). Maps SRF layers and accountable personas to OMB M-25-21 minimum practices, OMB M-25-22 acquisition requirements, FedRAMP 20x Key Security Indicators, NIST AI RMF 1.0, NIST AI 600-1 (Generative AI Profile), NIST COSAiS overlays (draft), and OWASP LLM Top 10. Each control carries a responsibility_split value aligned to FedRAMP Customer Responsibility Matrix categories.",
   "regulatory_context": "OMB M-25-21 (April 3, 2025) requires federal civilian agencies to apply seven minimum risk management practices to every high-impact AI use case and report compliance to OMB by September 22, 2026. Use cases that cannot meet the minimum practices must be discontinued. FedRAMP 20x is moving AI services into agencies through machine-readable Key Security Indicators rather than point-in-time documents; the first AI 20x Low authorizations landed January 2026, OpenAI holds 20x Moderate, and IBM authorized 11 AI products including watsonx in April 2026. FedRAMP authorizes the CSP side only; this schema fills the agency side of the shared responsibility split for AI-specific obligations. OMB M-25-22 (April 2025) governs AI acquisition, data rights, vendor lock-in avoidance, and transparency requirements. NIST COSAiS overlays are still in draft; mappings to those overlays are marked TBD pending final publication.",
   "id_convention": "SRF-{layer}-{stage: ACQ|VAL|MON|OVR}-{seq}",
-  "mapping_status_note": "M-25-21, M-25-22, and FedRAMP 20x KSI mappings verified against primary sources 2026-07-05 (memo texts and the machine-readable Consolidated Rules for 2026). COSAiS mappings remain TBD pending initial public drafts of the NISTIR 8605 overlays. Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key.",
+  "mapping_status_note": "M-25-21, M-25-22, and FedRAMP 20x KSI mappings verified against primary sources 2026-07-05 (memo texts and the machine-readable Consolidated Rules for 2026). COSAiS mappings remain TBD pending initial public drafts of the NISTIR 8605 overlays. Do not substitute invented IDs. CIS Controls v8.1 mappings added 2026-07-12 as part of the AI security lifecycle plan, verified against the official CIS Controls v8 list (18 controls, 153 safeguards; cisecurity.org) and the CIS Controls v8.1 AI and Large Language Models Companion Guide (published April 20, 2026). Mapped at the control level, not the individual safeguard level, since the Companion Guide interprets safeguards through an AI-aware lens rather than reassigning safeguard numbers. Applied only where a defensible correspondence exists; most controls in this schema have no CIS nexus and carry no cis key. OWASP LLM Top 10 citations normalized 2026-07-28 to the 2025 list that regulations.json pins; 2023 item numbers and retired item names were remapped.",
   "generated": "2026-06-12",
   "lifecycle_stages": [
     "acquisition-integration",
@@ -388,7 +388,7 @@
         "fedramp_20x_ksi": "N/A",
         "nist_ai_rmf": "MAP 2.2 (scientific rigor and data quality are characterized for intended context); MAP 3.5 (organizational risk tolerances are considered)",
         "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
-        "owasp_llm": "LLM03: Training Data Poisoning"
+        "owasp_llm": "LLM04: Data and Model Poisoning"
       },
       "threshold": {
         "metric": "training_rag_data_authority_verified",
@@ -462,7 +462,7 @@
         "fedramp_20x_ksi": "KSI-PIY-GIV (automated real-time inventories of information resources)",
         "nist_ai_rmf": "MAP 2.2 (data quality and sensitivity characterized); MAP 5.1 (impacts on individuals assessed)",
         "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
-        "owasp_llm": "LLM06: Sensitive Information Disclosure"
+        "owasp_llm": "LLM02: Sensitive Information Disclosure"
       },
       "threshold": {
         "metric": "ai_accessible_data_store_classification_coverage_pct",
@@ -870,7 +870,7 @@
         "fedramp_20x_ksi": "KSI-CNA-DFP (strictly defined functionality and privileges)",
         "nist_ai_rmf": "MANAGE 3.2; MEASURE 2.7 (AI system trustworthiness is evaluated for agentic contexts)",
         "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
-        "owasp_llm": "LLM06: Sensitive Information Disclosure; LLM08: Excessive Agency"
+        "owasp_llm": "LLM02: Sensitive Information Disclosure; LLM06: Excessive Agency"
       },
       "threshold": {
         "metric": "agent_task_boundary_violations_per_session",
@@ -1016,7 +1016,7 @@
         "fedramp_20x_ksi": "KSI-SVC-ACM (automated configuration management); KSI-CMT-RMV (version-controlled change deployment)",
         "nist_ai_rmf": "MANAGE 1.3 (responses to AI risks are selected); MEASURE 2.6",
         "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
-        "owasp_llm": "LLM07: System Prompt Leakage; LLM08: Excessive Agency"
+        "owasp_llm": "LLM07: System Prompt Leakage; LLM06: Excessive Agency"
       },
       "threshold": {
         "metric": "guardrail_baseline_documented_and_change_controlled",
@@ -1092,7 +1092,7 @@
         "fedramp_20x_ksi": "KSI-SVC-SIN (information encrypted or otherwise secured); KSI-MLA-RVL (logs persistently reviewed and audited)",
         "nist_ai_rmf": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5",
         "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
-        "owasp_llm": "LLM06: Sensitive Information Disclosure",
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
         "cis": "CIS Control 3: Data Protection"
       },
       "threshold": {
