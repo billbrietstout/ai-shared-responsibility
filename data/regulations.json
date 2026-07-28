@@ -323,7 +323,7 @@
         "manufacturing"
       ],
       "applicable_verticals_source": "derived-from-controls",
-      "version_note": "Catalog pins v1.0.3 on purpose. AICM v1.1 was published 2026-06-22, but the control objective IDs cited by the vertical schemas were verified against 1.0.3. Re-verify every cited objective ID against the newer matrix before bumping this version, since objective numbering can move between releases."
+      "version_note": "Catalog pins v1.0.3 on purpose. AICM v1.1 was released 2026-06-22 with 247 control objectives, up from 243, across the same 18 domains, control specifications and metadata synchronized to CCM v4.1, an added AIUC-1 mapping, and a combined NIST AI 600-1 and AI RMF mapping. The 42 objective IDs the vertical schemas cite were read against 1.0.3, and the v1.1 spreadsheet is behind a CSA account login, so the ID-level diff cannot be done from public sources. Domain prefixes are unchanged, which bounds the risk to renumbering inside a domain. Download v1.1 and re-check all 42 before bumping this version. Press coverage calling Model Security a new v1.1 domain is wrong: MDS ships in 1.0.3, which is where the cited MDS IDs were verified."
     },
     {
       "id": "cis-controls",
@@ -1178,9 +1178,10 @@
       "name": "Interim Measures for the Management of Generative Artificial Intelligence Services",
       "short": "China GenAI Interim Measures",
       "body": "Cyberspace Administration of China (CAC)",
-      "url": "https://www.cac.gov.cn/",
-      "version": "Effective August 2023",
+      "url": "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+      "version": "Effective 15 August 2023",
       "published": "2023-07-13",
+      "last_verified": "2026-07-28",
       "jurisdiction": "china",
       "mapping_key": null,
       "depth": "reference",
@@ -1191,7 +1192,7 @@
         "L3",
         "L5"
       ],
-      "scope": "Binding rules for generative AI services offered to the public in China, covering training-data legality, content safety, labeling, and security assessments. Provider and platform duties map primarily to L1 governance and L5 model provision.",
+      "scope": "Binding rules for generative AI services offered to the public in China, covering training-data legality, content safety, labeling, and security assessments. Adopted at the CAC's 12th office meeting on 23 May 2023 with the agreement of six other ministries, published 13 July 2023, effective 15 August 2023. Article 12 routes content labeling to the Deep Synthesis Provisions rather than restating it, so the two instruments are read together. Provider and platform duties map primarily to L1 governance and L5 model provision.",
       "tags": [
         "regulation",
         "china",
@@ -1213,9 +1214,10 @@
       "name": "Provisions on the Administration of Deep Synthesis Internet Information Services",
       "short": "China Deep Synthesis Provisions",
       "body": "Cyberspace Administration of China (CAC)",
-      "url": "https://www.cac.gov.cn/",
-      "version": "Effective January 2023",
-      "published": "2022-11-25",
+      "url": "https://www.cac.gov.cn/2022-12/11/c_1672221949354811.htm",
+      "version": "Effective 10 January 2023",
+      "published": "2022-12-11",
+      "last_verified": "2026-07-28",
       "jurisdiction": "china",
       "mapping_key": null,
       "depth": "reference",
@@ -1225,7 +1227,7 @@
         "L3",
         "L5"
       ],
-      "scope": "Rules for deep-synthesis and synthetic-media services, including identity labeling and service-provider security obligations.",
+      "scope": "Twenty-five articles governing deep-synthesis and synthetic-media services, including identity labeling and service-provider security obligations. Adopted at the CAC's 21st office meeting on 3 November 2022 with the agreement of the Ministry of Industry and Information Technology and the Ministry of Public Security, published 11 December 2022, effective 10 January 2023. The published date here is the CAC publication date, matching the convention used for the GenAI Interim Measures.",
       "tags": [
         "regulation",
         "china",
@@ -1479,11 +1481,46 @@
       "name": "Australia's AI Ethics Principles",
       "short": "Australia AI Ethics Principles",
       "body": "Department of Industry, Science and Resources (Australia)",
-      "url": "https://www.industry.gov.au/publications/australias-artificial-intelligence-ethics-framework/australias-ai-ethics-principles",
-      "version": "2019",
+      "url": "https://www.industry.gov.au/publications/australias-ai-ethics-principles",
+      "version": "2019, page updated 2 December 2025",
       "published": "2019-11-07",
+      "last_verified": "2026-07-28",
       "jurisdiction": "australia",
-      "scope": "Eight voluntary ethics principles (human wellbeing, human-centred values, fairness, privacy, reliability, transparency, contestability, accountability) used as Australia's national AI soft-law baseline.",
+      "scope": "Eight voluntary ethics principles (human wellbeing, human-centred values, fairness, privacy, reliability, transparency, contestability, accountability) that served as Australia's national AI soft-law baseline. The department published Guidance for AI Adoption on 21 October 2025, which condenses the Voluntary AI Safety Standard's ten guardrails and these eight principles into six essential practices, and its page now describes the principles in the past tense. Cite australia-guidance-ai-adoption for current expectations and keep this entry for the 2019 baseline that other national frameworks were written against.",
+      "applicable_verticals": [
+        "finance",
+        "healthcare",
+        "insurance",
+        "public-sector",
+        "defense",
+        "manufacturing"
+      ],
+      "applicable_verticals_source": "declared-cross-cutting"
+    },
+    {
+      "id": "australia-guidance-ai-adoption",
+      "name": "Guidance for AI Adoption",
+      "short": "Australia Guidance for AI Adoption",
+      "body": "National AI Centre, Department of Industry, Science and Resources (Australia)",
+      "url": "https://www.ai.gov.au/staying-safe-and-responsible/essential-ai-practices/guidance-ai-adoption-implementation-guidance",
+      "version": "Implementation guidance, published 5 May 2026",
+      "published": "2025-10-21",
+      "last_verified": "2026-07-28",
+      "jurisdiction": "australia",
+      "mapping_key": null,
+      "depth": "reference",
+      "verification_status": "verified",
+      "srf_layers": [
+        "L1",
+        "L2",
+        "L3"
+      ],
+      "scope": "Australia's current voluntary AI governance guidance, published 21 October 2025 by the National AI Centre and hosted on ai.gov.au. Six essential practices: decide who is accountable, understand impacts and plan accordingly, measure and manage risks, share essential information, test and monitor, and maintain human control. Ships as two paired documents, Foundations for early-stage use and Implementation Guidance for complex or higher-risk systems. It condenses the ten guardrails of the Voluntary AI Safety Standard and the eight 2019 AI Ethics Principles, so it is the instrument to cite for current Australian expectations.",
+      "tags": [
+        "guidance",
+        "australia",
+        "voluntary"
+      ],
       "applicable_verticals": [
         "finance",
         "healthcare",

@@ -16,7 +16,7 @@ regenerate.
 
 Sources of truth:
   security_principles_reference.oscal.json   OSCAL 1.1.2 catalog, 93 controls
-  agentic-ai-security/agentic-security.md    22-section synthesis, 125 bullets
+  agentic-ai-security/agentic-security.md    22-section synthesis, 126 bullets
 
 Editorial judgment that cannot be derived from either source (stable ids,
 category tags, which restatements merge, which sentences describe an absence
@@ -335,6 +335,7 @@ CURATION = {
         ("provenance-continuously-monitored", "supply-chain"),
         ("internal-model-not-assumed-safer", "supply-chain"),
         ("staged-signature-maturity-path", "supply-chain"),
+        ("aibom-is-a-governance-artifact", "supply-chain"),
         ("classification-labels-propagate", "data-protection"),
     ],
     "adversarial-ml": [

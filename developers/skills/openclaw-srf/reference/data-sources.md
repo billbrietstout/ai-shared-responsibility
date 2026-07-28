@@ -22,7 +22,7 @@ site wins.
 | Personas | `https://aisharedresponsibility.com/data/personas.json` | 8 canonical + sector specializations |
 | Responsibility matrix | `https://aisharedresponsibility.com/data/matrix.json` | 4 operating models x 5 layers |
 | Jurisdictions | `https://aisharedresponsibility.com/data/jurisdictions.json` | 17 (international, oecd, EU, US federal/multistate/CA/CO/NY, UK, China, Singapore, Canada, Japan, Australia, Korea, Brazil, India) |
-| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 54 instruments with jurisdiction, mapping_key, and applicable_verticals |
+| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 55 instruments with jurisdiction, mapping_key, and applicable_verticals |
 | Moral regulatory hierarchy | `https://aisharedresponsibility.com/data/moral-regulatory-hierarchy.json` | Requirement-level actor/action/outcome salience (0-3) for 13 priority instruments |
 
 ## Vertical control schemas
