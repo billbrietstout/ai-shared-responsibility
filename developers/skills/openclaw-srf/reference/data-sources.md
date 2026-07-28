@@ -19,9 +19,10 @@ site wins.
 | File | URL | Records |
 | --- | --- | --- |
 | Layers | `https://aisharedresponsibility.com/data/layers.json` | 5 (L1-L5) |
-| Personas | `https://aisharedresponsibility.com/data/personas.json` | 8 |
+| Personas | `https://aisharedresponsibility.com/data/personas.json` | 8 canonical + sector specializations |
 | Responsibility matrix | `https://aisharedresponsibility.com/data/matrix.json` | 4 operating models x 5 layers |
-| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | AI regulations and standards mapped to SRF layers |
+| Jurisdictions | `https://aisharedresponsibility.com/data/jurisdictions.json` | 6 (international, EU, US federal, multistate, Colorado, New York) |
+| Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 40 instruments with jurisdiction + mapping_key for control joins |
 
 ## Vertical control schemas
 
@@ -49,14 +50,20 @@ accountable persona, applicable operating models, and a regulatory mapping.
 
 | File | URL | Use it for |
 | --- | --- | --- |
-| Canonical ID registry | `https://aisharedresponsibility.com/ids.json` | One stable `srf.*` ID per concept, layer, role, operating model, and control |
+| Canonical ID registry | `https://aisharedresponsibility.com/ids.json` | One stable `srf.*` ID per concept, layer, role, operating model, jurisdiction, and control |
 | Glossary registry | `https://aisharedresponsibility.com/glossary.json` | Every SRF term with its definition and canonical anchor |
 | Glossary API | `https://aisharedresponsibility.com/api/glossary/{anchor}.json` | A single term, for example `accountability.json`, `L1.json`, `AI-SaaS.json` |
-| Ontology nodes | `https://aisharedresponsibility.com/ontology/nodes.json` | Concept graph: layers, operating models, personas, controls, external standards |
-| Ontology edges | `https://aisharedresponsibility.com/ontology/edges.json` | Typed relationships between nodes |
+| Ontology nodes | `https://aisharedresponsibility.com/ontology/nodes.json` | Concept graph: layers, operating models, personas, jurisdictions, controls, external standards |
+| Ontology edges | `https://aisharedresponsibility.com/ontology/edges.json` | Typed relationships including `governed_by`, `specializes`, and `issued_in_jurisdiction` |
+| Join conventions | `https://aisharedresponsibility.com/developers/schema/` | Preferred join paths; also summarized under `join_hints` in `/data/index.json` |
 
 ## Naming convention
 
 Vertical slugs used in URLs: `finance`, `healthcare`, `insurance`,
 `public-sector`, `defense`, `manufacturing`. Use these exact slugs; the site
 uses "healthcare," not "medical."
+
+Control short IDs such as `SRF-L1-ACQ-001` collide across verticals. The
+canonical form is `srf.control.<vertical>.<id>`. A control's `mappings` keys
+join to `regulations.json` via each item's `mapping_key` field, not via the
+regulation `id`.

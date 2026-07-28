@@ -20,7 +20,8 @@ is generated from existing source content; do not hand-edit the generated JSON.
 | `/export/framework.json` | Combined knowledge pack: `{ concepts, relationships, definitions }` |
 
 Sources of truth: `glossary/index.html` (term definitions and anchors) and the
-`/data/*.json` files (layers, personas, matrix, regulations, six control schemas).
+`/data/*.json` files (layers, personas, matrix, regulations, jurisdictions,
+six control schemas).
 
 ## Canonical ID scheme
 
@@ -33,10 +34,16 @@ srf.layer.L1 .. L5            architecture layers
 srf.opmodel.ai-saas|ai-paas|agent-paas|iaas
 srf.role.<persona-id>        personas (incl. sector specializations)
 srf.concept.<anchor>         glossary vocabulary
+srf.jurisdiction.<id>        jurisdiction vocabulary from jurisdictions.json
 srf.control.<vertical>.<id>  vertical controls
 ext.framework.<reg-id>       external standards and regulations
 ```
 
+Control-to-regulation joins use `regulations.json` `mapping_key` values against
+each control's `mappings` object, and land in the ontology as `governed_by`
+edges. Sector specializations land as `specializes` edges back to a canonical
+persona. Prefer `/ontology/edges.json` for multi-hop queries; do not hand-edit
+a parallel edges file under `/data/`.
 ## Regenerate
 
 ```bash

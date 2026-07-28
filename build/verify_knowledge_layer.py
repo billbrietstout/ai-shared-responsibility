@@ -54,6 +54,59 @@ bad_e = [(e["source"], e["target"]) for e in edges["edges"]
          if e["source"] not in node_ids or e["target"] not in node_ids]
 check(not bad_e, f"all edges reference existing nodes (bad: {bad_e[:3]})")
 
+# 6b. Control-to-regulation joins resolve via mapping_key, and sector
+# specializations carry an explicit specializes edge to a canonical persona.
+regs = J("data/regulations.json")
+juris = J("data/jurisdictions.json")
+personas = J("data/personas.json")
+key_to_ext = {i["mapping_key"]: f"ext.framework.{i['id']}"
+              for i in regs["items"] if i.get("mapping_key")}
+juris_ids = {j["id"] for j in juris["jurisdictions"]}
+canonical_personas = {p["id"] for p in personas["personas"]}
+specs = personas.get("sector_specializations", [])
+
+missing_juris = [i["id"] for i in regs["items"]
+                 if i.get("jurisdiction") and i["jurisdiction"] not in juris_ids]
+check(not missing_juris,
+      f"every regulation.jurisdiction resolves (bad: {missing_juris[:5]})")
+
+unmapped_keys = set()
+placeholder = __import__("re").compile(r"^\s*(TBD|N/?A|None|-)\b", __import__("re").I)
+for vertical in ("finance", "healthcare", "insurance",
+                 "public-sector", "defense", "manufacturing"):
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        for mkey, citation in (c.get("mappings") or {}).items():
+            if mkey == "mapping_status_note":
+                continue
+            if not isinstance(citation, str) or not citation.strip() or placeholder.match(citation):
+                continue
+            if mkey not in key_to_ext:
+                unmapped_keys.add(mkey)
+check(not unmapped_keys,
+      f"every non-placeholder mappings key has a regulations.mapping_key "
+      f"(bad: {sorted(unmapped_keys)})")
+
+governed = [e for e in edges["edges"] if e["rel"] == "governed_by"]
+check(len(governed) > 0, f"governed_by edges present ({len(governed)})")
+check(all(e["source"].startswith("srf.control.") and
+          e["target"].startswith("ext.framework.") for e in governed),
+      "governed_by edges run control -> ext.framework")
+
+specializes = [e for e in edges["edges"] if e["rel"] == "specializes"]
+check(len(specializes) == len(specs),
+      f"specializes edges match sector_specializations "
+      f"({len(specializes)} vs {len(specs)})")
+bad_spec = []
+for s in specs:
+    parent = s.get("specializes")
+    if parent not in canonical_personas:
+        bad_spec.append(s["id"])
+    if f"srf.role.{s['id']}" not in node_ids:
+        bad_spec.append(s["id"])
+check(not bad_spec,
+      f"every sector specialization resolves and specializes a canonical "
+      f"persona (bad: {bad_spec})")
+
 # 7. related[] only references real nodes
 bad_r = [n["id"] for n in nodes["nodes"]
          if any(r not in node_ids for r in n.get("related", []))]

@@ -1,7 +1,7 @@
 {
  "description": "Machine-readable data index for aisharedresponsibility.com. All files are static JSON served from /data/. Framework concepts (layers, personas, operating models) are defined in the CoSAI AI Shared Responsibility Framework v1.0.",
  "framework_reference": "https://aisharedresponsibility.com/framework/",
- "updated": "2026-07-25",
+ "updated": "2026-07-27",
  "files": [
   {
    "file": "layers.json",
@@ -22,7 +22,7 @@
   {
    "file": "personas.json",
    "url": "https://aisharedresponsibility.com/data/personas.json",
-   "description": "The eight SRF personas: AI System Users, AI System Governance, Data Provider, Application Developer, Agentic Platform & Framework Providers, AI Model Serving, AI Platform Provider, Model Provider. Each entry maps the persona to its primary SRF layers, ISO/IEC 22989 reference, and responsibilities.",
+   "description": "The eight SRF personas: AI System Users, AI System Governance, Data Provider, Application Developer, Agentic Platform & Framework Providers, AI Model Serving, AI Platform Provider, Model Provider. Also declares sector_specializations (for example clinical-ai-governance) that specialize a canonical persona; every accountable_persona value in a control file resolves to one of these records.",
    "schema_keys": [
     "id",
     "name",
@@ -30,9 +30,11 @@
     "standard_ref",
     "audiences",
     "description",
-    "responsibilities"
+    "responsibilities",
+    "sector_specializations"
    ],
    "record_count": 8,
+   "specialization_count": 4,
    "related_page": "https://aisharedresponsibility.com/personas/"
   },
   {
@@ -48,15 +50,35 @@
    "related_page": "https://aisharedresponsibility.com/operating-models/"
   },
   {
+   "file": "jurisdictions.json",
+   "url": "https://aisharedresponsibility.com/data/jurisdictions.json",
+   "description": "Controlled vocabulary for the jurisdiction that issues a regulation or standard. Levels: international, supranational, national, multistate, subnational. Referenced by the jurisdiction field on each regulations.json item and materialized as srf.jurisdiction.* nodes in the ontology.",
+   "schema_keys": [
+    "id",
+    "name",
+    "level",
+    "parent",
+    "note"
+   ],
+   "record_count": 6,
+   "related_page": "https://aisharedresponsibility.com/regulations/"
+  },
+  {
    "file": "regulations.json",
    "url": "https://aisharedresponsibility.com/data/regulations.json",
-   "description": "AI regulations and standards mapped to SRF layers. Includes EU AI Act, NIST AI RMF, ISO 42001, OMB M-25-21, SR 26-2, and others.",
+   "description": "AI regulations and standards mapped to SRF layers. Includes EU AI Act, NIST AI RMF, ISO 42001, OECD AI Principles, OMB M-25-21, SR 26-2, and the sector instruments cited by vertical control mappings. Each item carries a jurisdiction id, an optional mapping_key that joins to control.mappings, and a depth of full or reference.",
    "schema_keys": [
     "updated",
     "stale_threshold_days",
-    "items"
+    "items",
+    "id",
+    "jurisdiction",
+    "mapping_key",
+    "depth",
+    "srf_layers",
+    "verification_status"
    ],
-   "record_count": 10,
+   "record_count": 40,
    "related_page": "https://aisharedresponsibility.com/regulations/"
   },
   {
@@ -270,7 +292,7 @@
   {
    "file": "ai-agentic-principles.json",
    "url": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
-   "description": "120 contemporary AI and agentic security principles normalized from a 41-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, 2019 to 2026) across 22 topic sections. Includes a gap_index resolving each section's Gap note to the classic principle it points at, and the source documents that assert each claim. Current industry positions rather than settled axioms.",
+   "description": "121 contemporary AI and agentic security principles normalized from a 41-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, 2019 to 2026) across 22 topic sections. Includes a gap_index resolving each section's Gap note to the classic principle it points at, and the source documents that assert each claim. Current industry positions rather than settled axioms.",
    "schema_keys": [
     "id",
     "section",
@@ -335,6 +357,51 @@
    "provider-managed",
    "model-evaluation",
    "N/A"
+  ]
+ },
+ "join_hints": {
+  "canonical_ids": "https://aisharedresponsibility.com/ids.json",
+  "ontology_edges": "https://aisharedresponsibility.com/ontology/edges.json",
+  "documentation": "https://aisharedresponsibility.com/developers/schema/",
+  "preferred_path": "Load /ontology/edges.json and join on source/target IDs from /ids.json. Do not invent a parallel edges file under /data/.",
+  "control_id_collision": "The short control id (e.g. SRF-L1-ACQ-001) repeats across verticals. The canonical form is srf.control.<vertical>.<id>.",
+  "associations": [
+   {
+    "rel": "governed_by",
+    "from": "srf.control.<vertical>.<id>",
+    "to": "ext.framework.<reg-id>",
+    "join": "control.mappings.<mapping_key> cites a non-placeholder string; regulations.json item.mapping_key equals that key"
+   },
+   {
+    "rel": "accountable_to",
+    "from": "srf.control.<vertical>.<id>",
+    "to": "srf.role.<persona-id>",
+    "join": "control.accountable_persona"
+   },
+   {
+    "rel": "specializes",
+    "from": "srf.role.<specialization-id>",
+    "to": "srf.role.<canonical-persona-id>",
+    "join": "personas.sector_specializations[].specializes"
+   },
+   {
+    "rel": "issued_in_jurisdiction",
+    "from": "ext.framework.<reg-id>",
+    "to": "srf.jurisdiction.<id>",
+    "join": "regulations.json item.jurisdiction"
+   },
+   {
+    "rel": "applies_to_layer",
+    "from": "srf.control.<vertical>.<id>",
+    "to": "srf.layer.<L1-L5>",
+    "join": "control.layer"
+   },
+   {
+    "rel": "applies_in_operating_model",
+    "from": "srf.control.<vertical>.<id>",
+    "to": "srf.opmodel.<slug>",
+    "join": "control.operating_models[] for the four canonical models"
+   }
   ]
  },
  "exports": [
