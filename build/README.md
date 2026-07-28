@@ -45,7 +45,12 @@ ext.requirement.<id>         concrete requirements inside an instrument
 Control-to-regulation joins use `regulations.json` `mapping_key` values against
 each control's `mappings` object, and land in the ontology as `governed_by`
 edges. Sector specializations land as `specializes` edges back to a canonical
-persona. `sync_llms_full.py` rewrites the `Regulatory mappings` list inside each control
+persona. `generate_oscal_verticals.py` is safe to rerun. UUIDs come from `uuid5`, and
+`last-modified` is preserved when the rest of the document is unchanged, so a
+rerun on unchanged data leaves the working tree clean and a moved timestamp
+means the content really moved.
+
+`sync_llms_full.py` rewrites the `Regulatory mappings` list inside each control
 block of `llms-full.txt` from the vertical control schemas. That file is
 hand-written prose apart from those lists, so the script touches nothing else.
 Run it after editing any `data/<vertical>-controls.json`; `verify_pages.py`
