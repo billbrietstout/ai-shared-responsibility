@@ -1,8 +1,8 @@
 {
   "$schema_version": "1.0",
-  "description": "Controlled vocabulary for the jurisdiction that issues a regulation or standard. Referenced by the 'jurisdiction' field in regulations.json. Levels run from 'international' (standards bodies and multilateral instruments with no binding force of their own) down to 'subnational' (a single US state). 'multistate' covers US model-law bodies such as the NAIC whose instruments bind only once a state adopts them.",
+  "description": "Controlled vocabulary for the jurisdiction that issues a regulation or standard. Referenced by the 'jurisdiction' field in regulations.json. Levels run from 'international' (standards bodies and multilateral soft law with no independent force of law) down to 'subnational' (a single US state). 'multistate' covers US model-law bodies such as the NAIC whose instruments bind only once a state adopts them. National nodes outside the US (uk, china, singapore, canada) hold thin reference instruments so comparative queries can resolve even before vertical controls cite them.",
   "srf_version": "1.0",
-  "updated": "2026-07-27",
+  "updated": "2026-07-28",
   "levels": {
     "international": "A standards body or multilateral instrument with no independent force of law.",
     "supranational": "A treaty-based authority whose instruments bind its member states.",
@@ -13,10 +13,17 @@
   "jurisdictions": [
     {
       "id": "international",
-      "name": "International",
+      "name": "International (standards bodies)",
       "level": "international",
       "parent": null,
-      "note": "ISO/IEC, IEC, OECD, OWASP, MITRE, CIS, CSA, FINOS. Adopted voluntarily or by reference from a binding instrument."
+      "note": "ISO/IEC, IEC, OWASP, MITRE, CIS, CSA, FINOS and similar. Adopted voluntarily or by reference from a binding instrument. Soft-law fora with a distinct issuer identity (OECD) use their own node."
+    },
+    {
+      "id": "oecd",
+      "name": "OECD",
+      "level": "international",
+      "parent": null,
+      "note": "Intergovernmental soft law. The OECD AI Principles bind no one directly, but supply vocabulary reused by the EU AI Act, NIST AI RMF, and most national strategies."
     },
     {
       "id": "eu",
@@ -36,8 +43,8 @@
       "id": "us-multistate",
       "name": "United States (multistate model law)",
       "level": "multistate",
-      "parent": "us-federal",
-      "note": "NAIC model bulletins and evaluation tools. Not binding until a state adopts them, so a control citing one may be mandatory in some states and advisory in others."
+      "parent": null,
+      "note": "NAIC and similar model-law bodies. Peer to federal statute, not subordinate to it. Instruments bind only where a state adopts them, so a control citing one may be mandatory in some states and advisory in others."
     },
     {
       "id": "us-colorado",
@@ -50,6 +57,34 @@
       "name": "New York",
       "level": "subnational",
       "parent": "us-federal"
+    },
+    {
+      "id": "uk",
+      "name": "United Kingdom",
+      "level": "national",
+      "parent": null,
+      "note": "Pro-innovation regulator-led AI approach rather than a single horizontal AI Act. Sector regulators retain primary enforcement."
+    },
+    {
+      "id": "china",
+      "name": "People's Republic of China",
+      "level": "national",
+      "parent": null,
+      "note": "CAC and related ministry rules on algorithmic recommendation, deep synthesis, and generative AI services."
+    },
+    {
+      "id": "singapore",
+      "name": "Singapore",
+      "level": "national",
+      "parent": null,
+      "note": "Model AI Governance Framework and related IMDA/PDPC guidance. Voluntary baseline widely cited in Asia-Pacific procurement."
+    },
+    {
+      "id": "canada",
+      "name": "Canada",
+      "level": "national",
+      "parent": null,
+      "note": "Federal Directive on Automated Decision-Making for government systems; AIDA remains proposed statute rather than enacted law."
     }
   ]
 }

@@ -39,7 +39,7 @@ SITE = "https://aisharedresponsibility.com"
 # regenerates these files and diffs them against what is committed, so the value
 # must be reproducible from committed source rather than the wall clock (otherwise
 # any push validated by CI on a later UTC day fails). Bump it when publishing an update.
-UPDATED = "2026-07-27"
+UPDATED = "2026-07-28"
 SRF_VERSION = "1.0"
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -82,7 +82,13 @@ def ext_id(rid):          return f"ext.framework.{rid}"
 def juris_id(jid):        return f"srf.jurisdiction.{jid}"
 def moral_id(dim):        return f"srf.moral.{dim}"
 def requirement_id(rid):  return f"ext.requirement.{rid}"
+def vertical_id(vslug):   return f"srf.vertical.{vslug}"
 FRAMEWORK_ID = "srf.framework.cosai-srf"
+
+VERTICALS = [
+    "finance", "healthcare", "insurance",
+    "public-sector", "defense", "manufacturing",
+]
 
 # A control's mappings value is a citation string, or a placeholder meaning the
 # mapping has not been established. Placeholders must never become an edge:
@@ -337,6 +343,13 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
         if j.get("parent"):
             add_edge(juris_id(j["id"]), "subordinate_to", juris_id(j["parent"]))
 
+    # Industry verticals (business lines that own control schemas). Must exist
+    # before regulation applies_to_vertical edges are emitted.
+    for vslug in VERTICALS:
+        add_node(vertical_id(vslug), vslug.replace("-", " ").title(),
+                 "concept", f"{SITE}/{vslug}/", subtype="vertical")
+        add_edge(FRAMEWORK_ID, "has_vertical", vertical_id(vslug))
+
     # external frameworks / regulations mapped to layers and jurisdictions.
     # mapping_key is how a vertical control's mappings object names this
     # instrument; it is the join key for the governed_by edges below.
@@ -354,6 +367,11 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             add_edge(nid, "issued_in_jurisdiction", juris_id(item["jurisdiction"]))
         if item.get("mapping_key"):
             key_to_ext[item["mapping_key"]] = nid
+        for vslug in item.get("applicable_verticals") or []:
+            if vslug in VERTICALS:
+                add_edge(nid, "applies_to_vertical", vertical_id(vslug),
+                         source_of_truth=item.get("applicable_verticals_source",
+                                                  "declared"))
 
     # Canonical data catalog resources referenced by page llm:concepts.
     # These are first-class machine-readable artifacts under /data/, not
@@ -474,6 +492,7 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             add_node(nid, f'{c["id"]}: {c["title"]}', "control",
                      f"{SITE}/{vertical}/controls/#{c['id']}",
                      subtype=vertical)
+            add_edge(nid, "belongs_to_vertical", vertical_id(vertical))
             add_edge(nid, "applies_to_layer", layer_id(c["layer"]))
             persona = c.get("accountable_persona")
             if persona:
@@ -571,7 +590,7 @@ def build_ids(nodes, terms):
                        "requirement, and control has one stable id, a human "
                        "name, and a URL. IDs are namespaced: srf.layer.*, "
                        "srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, "
-                       "srf.jurisdiction.*, srf.moral.*, "
+                       "srf.jurisdiction.*, srf.moral.*, srf.vertical.*, "
                        "srf.control.<vertical>.*, ext.framework.*, "
                        "ext.requirement.*.",
         "srf_version": SRF_VERSION,
@@ -585,6 +604,7 @@ def build_ids(nodes, terms):
             "srf.data": "A machine-readable data catalog resource under /data/",
             "srf.jurisdiction": "A jurisdiction that issues a regulation or standard",
             "srf.moral": "A moral-orientation dimension (actor, action, outcome)",
+            "srf.vertical": "An industry vertical that owns a control schema",
             "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
             "ext.framework": "An external standard or regulation",
             "ext.requirement": "A concrete requirement inside an external instrument",
@@ -698,6 +718,7 @@ def main():
         "emphasizes_edges": sum(1 for e in edges if e["rel"] == "emphasizes"),
         "implements_edges": sum(1 for e in edges if e["rel"] == "implements"),
         "part_of_edges": sum(1 for e in edges if e["rel"] == "part_of"),
+        "applies_to_vertical_edges": sum(1 for e in edges if e["rel"] == "applies_to_vertical"),
     }
 
     if check:

@@ -2,7 +2,7 @@
   "$schema_version": "1.0",
   "description": "Concept graph nodes for the CoSAI SRF. Node types: concept, framework, role, control. Edges are in /ontology/edges.json.",
   "srf_version": "1.0",
-  "updated": "2026-07-27",
+  "updated": "2026-07-28",
   "node_schema": {
     "id": "string",
     "label": "string",
@@ -11,7 +11,7 @@
     "related": "[id]",
     "subtype": "string (optional)"
   },
-  "count": 370,
+  "count": 386,
   "nodes": [
     {
       "id": "srf.framework.cosai-srf",
@@ -45,7 +45,13 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.opmodel.iaas"
+        "srf.opmodel.iaas",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ]
     },
     {
@@ -54,6 +60,9 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L1",
       "related": [
+        "ext.framework.canada-directive-adm",
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
         "ext.framework.cis-controls",
         "ext.framework.cmmc-2-0",
         "ext.framework.co-reg-10-1-1",
@@ -91,7 +100,9 @@
         "ext.framework.omb-m-25-21",
         "ext.framework.omb-m-25-22",
         "ext.framework.onc-hti-1",
+        "ext.framework.singapore-model-ai-governance",
         "ext.framework.sr-26-2",
+        "ext.framework.uk-ai-regulation-white-paper",
         "ext.requirement.eu-ai-act.art-14",
         "ext.requirement.eu-ai-act.art-26",
         "ext.requirement.eu-ai-act.art-5",
@@ -187,6 +198,8 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L2",
       "related": [
+        "ext.framework.canada-directive-adm",
+        "ext.framework.china-genai-interim-measures",
         "ext.framework.cis-controls",
         "ext.framework.cmmc-2-0",
         "ext.framework.co-reg-10-1-1",
@@ -223,7 +236,9 @@
         "ext.framework.omb-m-25-21",
         "ext.framework.omb-m-25-22",
         "ext.framework.onc-hti-1",
+        "ext.framework.singapore-model-ai-governance",
         "ext.framework.sr-26-2",
+        "ext.framework.uk-ai-regulation-white-paper",
         "ext.requirement.eu-ai-act.art-10",
         "ext.requirement.eu-ai-act.art-26",
         "ext.requirement.nist-ai-rmf.map-1-5",
@@ -300,6 +315,9 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L3",
       "related": [
+        "ext.framework.canada-directive-adm",
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
         "ext.framework.cis-controls",
         "ext.framework.cmmc-2-0",
         "ext.framework.co-reg-10-1-1",
@@ -337,6 +355,8 @@
         "ext.framework.omb-m-25-22",
         "ext.framework.onc-hti-1",
         "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.uk-ai-regulation-white-paper",
         "ext.requirement.eu-ai-act.art-14",
         "ext.requirement.eu-ai-act.art-15",
         "ext.requirement.eu-ai-act.art-26",
@@ -456,6 +476,8 @@
         "ext.framework.omb-m-25-22",
         "ext.framework.onc-hti-1",
         "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.uk-ai-regulation-white-paper",
         "ext.requirement.eu-ai-act.art-15",
         "ext.requirement.eu-ai-act.art-9",
         "ext.requirement.nist-ai-rmf.manage-2-4",
@@ -536,6 +558,8 @@
       "type": "concept",
       "url": "https://aisharedresponsibility.com/framework/#L5",
       "related": [
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
         "ext.framework.cis-controls",
         "ext.framework.cmmc-2-0",
         "ext.framework.co-reg-10-1-1",
@@ -573,7 +597,9 @@
         "ext.framework.omb-m-25-22",
         "ext.framework.onc-hti-1",
         "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
         "ext.framework.sr-26-2",
+        "ext.framework.uk-ai-regulation-white-paper",
         "ext.requirement.eu-ai-act.art-10",
         "ext.requirement.eu-ai-act.art-15",
         "ext.requirement.eu-ai-act.art-5",
@@ -1649,7 +1675,7 @@
     },
     {
       "id": "srf.jurisdiction.international",
-      "label": "International",
+      "label": "International (standards bodies)",
       "type": "concept",
       "url": "https://aisharedresponsibility.com/regulations/",
       "related": [
@@ -1663,8 +1689,18 @@
         "ext.framework.iso-22989",
         "ext.framework.iso-42001",
         "ext.framework.mitre-atlas",
-        "ext.framework.oecd-ai-principles",
         "ext.framework.owasp-llm-top10"
+      ],
+      "subtype": "jurisdiction",
+      "level": "international"
+    },
+    {
+      "id": "srf.jurisdiction.oecd",
+      "label": "OECD",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/regulations/",
+      "related": [
+        "ext.framework.oecd-ai-principles"
       ],
       "subtype": "jurisdiction",
       "level": "international"
@@ -1710,7 +1746,6 @@
         "ext.framework.onc-hti-1",
         "ext.framework.sr-26-2",
         "srf.jurisdiction.us-colorado",
-        "srf.jurisdiction.us-multistate",
         "srf.jurisdiction.us-new-york"
       ],
       "subtype": "jurisdiction",
@@ -1723,8 +1758,7 @@
       "url": "https://aisharedresponsibility.com/regulations/",
       "related": [
         "ext.framework.naic-ai-eval-tool",
-        "ext.framework.naic-ai-model-bulletin",
-        "srf.jurisdiction.us-federal"
+        "ext.framework.naic-ai-model-bulletin"
       ],
       "subtype": "jurisdiction",
       "level": "multistate"
@@ -1752,6 +1786,483 @@
       ],
       "subtype": "jurisdiction",
       "level": "subnational"
+    },
+    {
+      "id": "srf.jurisdiction.uk",
+      "label": "United Kingdom",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/regulations/",
+      "related": [
+        "ext.framework.uk-ai-regulation-white-paper"
+      ],
+      "subtype": "jurisdiction",
+      "level": "national"
+    },
+    {
+      "id": "srf.jurisdiction.china",
+      "label": "People's Republic of China",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/regulations/",
+      "related": [
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures"
+      ],
+      "subtype": "jurisdiction",
+      "level": "national"
+    },
+    {
+      "id": "srf.jurisdiction.singapore",
+      "label": "Singapore",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/regulations/",
+      "related": [
+        "ext.framework.singapore-model-ai-governance"
+      ],
+      "subtype": "jurisdiction",
+      "level": "national"
+    },
+    {
+      "id": "srf.jurisdiction.canada",
+      "label": "Canada",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/regulations/",
+      "related": [
+        "ext.framework.canada-directive-adm"
+      ],
+      "subtype": "jurisdiction",
+      "level": "national"
+    },
+    {
+      "id": "srf.vertical.finance",
+      "label": "Finance",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/finance/",
+      "related": [
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
+        "ext.framework.cis-controls",
+        "ext.framework.csa-aicm",
+        "ext.framework.eu-ai-act",
+        "ext.framework.finos-aigf",
+        "ext.framework.gdpr",
+        "ext.framework.iso-22989",
+        "ext.framework.mitre-atlas",
+        "ext.framework.nist-ai-600-1",
+        "ext.framework.nist-csf-2",
+        "ext.framework.nist-cyber-ai-profile",
+        "ext.framework.oecd-ai-principles",
+        "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.sr-26-2",
+        "ext.framework.uk-ai-regulation-white-paper",
+        "srf.control.finance.SRF-L1-DEV-001",
+        "srf.control.finance.SRF-L1-DEV-002",
+        "srf.control.finance.SRF-L1-DEV-003",
+        "srf.control.finance.SRF-L1-DEV-004",
+        "srf.control.finance.SRF-L1-ECH-001",
+        "srf.control.finance.SRF-L1-MON-001",
+        "srf.control.finance.SRF-L1-MON-002",
+        "srf.control.finance.SRF-L1-MON-003",
+        "srf.control.finance.SRF-L1-VAL-001",
+        "srf.control.finance.SRF-L2-DEV-001",
+        "srf.control.finance.SRF-L2-DEV-002",
+        "srf.control.finance.SRF-L2-DEV-003",
+        "srf.control.finance.SRF-L2-ECH-001",
+        "srf.control.finance.SRF-L2-MON-001",
+        "srf.control.finance.SRF-L2-MON-002",
+        "srf.control.finance.SRF-L2-MON-003",
+        "srf.control.finance.SRF-L2-VAL-001",
+        "srf.control.finance.SRF-L3-DEV-001",
+        "srf.control.finance.SRF-L3-DEV-002",
+        "srf.control.finance.SRF-L3-DEV-003",
+        "srf.control.finance.SRF-L3-ECH-001",
+        "srf.control.finance.SRF-L3-MON-001",
+        "srf.control.finance.SRF-L3-MON-002",
+        "srf.control.finance.SRF-L3-MON-003",
+        "srf.control.finance.SRF-L3-VAL-001",
+        "srf.control.finance.SRF-L4-DEV-001",
+        "srf.control.finance.SRF-L4-DEV-002",
+        "srf.control.finance.SRF-L4-DEV-003",
+        "srf.control.finance.SRF-L4-ECH-001",
+        "srf.control.finance.SRF-L4-MON-001",
+        "srf.control.finance.SRF-L4-MON-002",
+        "srf.control.finance.SRF-L4-MON-003",
+        "srf.control.finance.SRF-L4-VAL-001",
+        "srf.control.finance.SRF-L5-DEV-001",
+        "srf.control.finance.SRF-L5-DEV-002",
+        "srf.control.finance.SRF-L5-DEV-003",
+        "srf.control.finance.SRF-L5-ECH-001",
+        "srf.control.finance.SRF-L5-MON-001",
+        "srf.control.finance.SRF-L5-MON-002",
+        "srf.control.finance.SRF-L5-VAL-001",
+        "srf.framework.cosai-srf"
+      ],
+      "subtype": "vertical"
+    },
+    {
+      "id": "srf.vertical.healthcare",
+      "label": "Healthcare",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/healthcare/",
+      "related": [
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
+        "ext.framework.cis-controls",
+        "ext.framework.eu-ai-act",
+        "ext.framework.fda-ai-ml",
+        "ext.framework.fda-pccp",
+        "ext.framework.fda-tplc",
+        "ext.framework.gdpr",
+        "ext.framework.hipaa-security-rule",
+        "ext.framework.iec-62304",
+        "ext.framework.iso-14971",
+        "ext.framework.iso-22989",
+        "ext.framework.mitre-atlas",
+        "ext.framework.nist-ai-600-1",
+        "ext.framework.nist-csf-2",
+        "ext.framework.nist-cyber-ai-profile",
+        "ext.framework.oecd-ai-principles",
+        "ext.framework.onc-hti-1",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.uk-ai-regulation-white-paper",
+        "srf.control.healthcare.SRF-L1-DEV-001",
+        "srf.control.healthcare.SRF-L1-DEV-002",
+        "srf.control.healthcare.SRF-L1-DEV-003",
+        "srf.control.healthcare.SRF-L1-HOR-001",
+        "srf.control.healthcare.SRF-L1-HOR-002",
+        "srf.control.healthcare.SRF-L1-HOR-003",
+        "srf.control.healthcare.SRF-L1-PMS-001",
+        "srf.control.healthcare.SRF-L1-PMS-002",
+        "srf.control.healthcare.SRF-L1-PMS-003",
+        "srf.control.healthcare.SRF-L2-DEV-001",
+        "srf.control.healthcare.SRF-L2-DEV-002",
+        "srf.control.healthcare.SRF-L2-DEV-003",
+        "srf.control.healthcare.SRF-L2-PMS-001",
+        "srf.control.healthcare.SRF-L2-PMS-002",
+        "srf.control.healthcare.SRF-L2-PMS-003",
+        "srf.control.healthcare.SRF-L2-VV-001",
+        "srf.control.healthcare.SRF-L2-VV-002",
+        "srf.control.healthcare.SRF-L3-DEV-001",
+        "srf.control.healthcare.SRF-L3-DEV-002",
+        "srf.control.healthcare.SRF-L3-DEV-003",
+        "srf.control.healthcare.SRF-L3-PMS-001",
+        "srf.control.healthcare.SRF-L3-PMS-002",
+        "srf.control.healthcare.SRF-L3-PMS-003",
+        "srf.control.healthcare.SRF-L3-VV-001",
+        "srf.control.healthcare.SRF-L3-VV-002",
+        "srf.control.healthcare.SRF-L4-DEV-001",
+        "srf.control.healthcare.SRF-L4-DEV-002",
+        "srf.control.healthcare.SRF-L4-DEV-003",
+        "srf.control.healthcare.SRF-L4-PMS-001",
+        "srf.control.healthcare.SRF-L4-PMS-002",
+        "srf.control.healthcare.SRF-L4-PMS-003",
+        "srf.control.healthcare.SRF-L4-VV-001",
+        "srf.control.healthcare.SRF-L4-VV-002",
+        "srf.control.healthcare.SRF-L5-DEV-001",
+        "srf.control.healthcare.SRF-L5-DEV-002",
+        "srf.control.healthcare.SRF-L5-DEV-003",
+        "srf.control.healthcare.SRF-L5-PMS-001",
+        "srf.control.healthcare.SRF-L5-PMS-002",
+        "srf.control.healthcare.SRF-L5-VV-001",
+        "srf.control.healthcare.SRF-L5-VV-002",
+        "srf.framework.cosai-srf"
+      ],
+      "subtype": "vertical"
+    },
+    {
+      "id": "srf.vertical.insurance",
+      "label": "Insurance",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/insurance/",
+      "related": [
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
+        "ext.framework.cis-controls",
+        "ext.framework.co-reg-10-1-1",
+        "ext.framework.eu-ai-act",
+        "ext.framework.gdpr",
+        "ext.framework.iso-22989",
+        "ext.framework.mitre-atlas",
+        "ext.framework.naic-ai-eval-tool",
+        "ext.framework.naic-ai-model-bulletin",
+        "ext.framework.nist-ai-600-1",
+        "ext.framework.nist-csf-2",
+        "ext.framework.nist-cyber-ai-profile",
+        "ext.framework.nydfs-cl-7-2024",
+        "ext.framework.oecd-ai-principles",
+        "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.uk-ai-regulation-white-paper",
+        "srf.control.insurance.SRF-L1-DEV-001",
+        "srf.control.insurance.SRF-L1-DEV-002",
+        "srf.control.insurance.SRF-L1-DEV-003",
+        "srf.control.insurance.SRF-L1-DEV-004",
+        "srf.control.insurance.SRF-L1-DEV-005",
+        "srf.control.insurance.SRF-L1-MON-001",
+        "srf.control.insurance.SRF-L1-MON-002",
+        "srf.control.insurance.SRF-L1-TPO-001",
+        "srf.control.insurance.SRF-L1-TPO-002",
+        "srf.control.insurance.SRF-L2-DEV-001",
+        "srf.control.insurance.SRF-L2-DEV-002",
+        "srf.control.insurance.SRF-L2-DEV-003",
+        "srf.control.insurance.SRF-L2-MON-001",
+        "srf.control.insurance.SRF-L2-MON-002",
+        "srf.control.insurance.SRF-L2-MON-003",
+        "srf.control.insurance.SRF-L2-TPO-001",
+        "srf.control.insurance.SRF-L2-VAL-001",
+        "srf.control.insurance.SRF-L3-DEV-001",
+        "srf.control.insurance.SRF-L3-DEV-002",
+        "srf.control.insurance.SRF-L3-MON-001",
+        "srf.control.insurance.SRF-L3-MON-002",
+        "srf.control.insurance.SRF-L3-TPO-001",
+        "srf.control.insurance.SRF-L3-VAL-001",
+        "srf.control.insurance.SRF-L3-VAL-002",
+        "srf.control.insurance.SRF-L3-VAL-003",
+        "srf.control.insurance.SRF-L4-DEV-001",
+        "srf.control.insurance.SRF-L4-DEV-002",
+        "srf.control.insurance.SRF-L4-DEV-003",
+        "srf.control.insurance.SRF-L4-MON-001",
+        "srf.control.insurance.SRF-L4-MON-002",
+        "srf.control.insurance.SRF-L4-MON-003",
+        "srf.control.insurance.SRF-L4-TPO-001",
+        "srf.control.insurance.SRF-L4-VAL-001",
+        "srf.control.insurance.SRF-L5-DEV-001",
+        "srf.control.insurance.SRF-L5-DEV-002",
+        "srf.control.insurance.SRF-L5-MON-001",
+        "srf.control.insurance.SRF-L5-MON-002",
+        "srf.control.insurance.SRF-L5-TPO-001",
+        "srf.control.insurance.SRF-L5-VAL-001",
+        "srf.control.insurance.SRF-L5-VAL-002",
+        "srf.framework.cosai-srf"
+      ],
+      "subtype": "vertical"
+    },
+    {
+      "id": "srf.vertical.public-sector",
+      "label": "Public Sector",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/public-sector/",
+      "related": [
+        "ext.framework.canada-directive-adm",
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
+        "ext.framework.cis-controls",
+        "ext.framework.fedramp-20x-ksi",
+        "ext.framework.gao-ai-accountability-framework",
+        "ext.framework.gdpr",
+        "ext.framework.iso-22989",
+        "ext.framework.mitre-atlas",
+        "ext.framework.nist-ai-600-1",
+        "ext.framework.nist-ai-rmf",
+        "ext.framework.nist-csf-2",
+        "ext.framework.nist-cyber-ai-profile",
+        "ext.framework.nistir-8605a",
+        "ext.framework.oecd-ai-principles",
+        "ext.framework.omb-m-25-21",
+        "ext.framework.omb-m-25-22",
+        "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.uk-ai-regulation-white-paper",
+        "srf.control.public-sector.SRF-L1-ACQ-001",
+        "srf.control.public-sector.SRF-L1-ACQ-002",
+        "srf.control.public-sector.SRF-L1-ACQ-003",
+        "srf.control.public-sector.SRF-L1-ACQ-004",
+        "srf.control.public-sector.SRF-L1-ACQ-007",
+        "srf.control.public-sector.SRF-L1-ACQ-008",
+        "srf.control.public-sector.SRF-L1-MON-005",
+        "srf.control.public-sector.SRF-L1-MON-009",
+        "srf.control.public-sector.SRF-L1-OVR-006",
+        "srf.control.public-sector.SRF-L2-ACQ-001",
+        "srf.control.public-sector.SRF-L2-ACQ-002",
+        "srf.control.public-sector.SRF-L2-ACQ-003",
+        "srf.control.public-sector.SRF-L2-ACQ-005",
+        "srf.control.public-sector.SRF-L2-ACQ-008",
+        "srf.control.public-sector.SRF-L2-MON-004",
+        "srf.control.public-sector.SRF-L2-MON-006",
+        "srf.control.public-sector.SRF-L2-MON-007",
+        "srf.control.public-sector.SRF-L3-MON-006",
+        "srf.control.public-sector.SRF-L3-OVR-004",
+        "srf.control.public-sector.SRF-L3-OVR-005",
+        "srf.control.public-sector.SRF-L3-OVR-008",
+        "srf.control.public-sector.SRF-L3-VAL-001",
+        "srf.control.public-sector.SRF-L3-VAL-002",
+        "srf.control.public-sector.SRF-L3-VAL-003",
+        "srf.control.public-sector.SRF-L3-VAL-007",
+        "srf.control.public-sector.SRF-L4-ACQ-001",
+        "srf.control.public-sector.SRF-L4-ACQ-002",
+        "srf.control.public-sector.SRF-L4-ACQ-003",
+        "srf.control.public-sector.SRF-L4-MON-004",
+        "srf.control.public-sector.SRF-L4-MON-005",
+        "srf.control.public-sector.SRF-L4-MON-006",
+        "srf.control.public-sector.SRF-L4-MON-008",
+        "srf.control.public-sector.SRF-L4-VAL-007",
+        "srf.control.public-sector.SRF-L5-ACQ-001",
+        "srf.control.public-sector.SRF-L5-ACQ-003",
+        "srf.control.public-sector.SRF-L5-ACQ-005",
+        "srf.control.public-sector.SRF-L5-MON-002",
+        "srf.control.public-sector.SRF-L5-MON-004",
+        "srf.control.public-sector.SRF-L5-MON-006",
+        "srf.control.public-sector.SRF-L5-MON-007",
+        "srf.framework.cosai-srf"
+      ],
+      "subtype": "vertical"
+    },
+    {
+      "id": "srf.vertical.defense",
+      "label": "Defense",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/defense/",
+      "related": [
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
+        "ext.framework.cis-controls",
+        "ext.framework.cmmc-2-0",
+        "ext.framework.dod-cc-srg",
+        "ext.framework.dod-rai-strategy",
+        "ext.framework.dodi-5000-89",
+        "ext.framework.dodi-5000-90",
+        "ext.framework.gdpr",
+        "ext.framework.iso-22989",
+        "ext.framework.mitre-atlas",
+        "ext.framework.nist-ai-600-1",
+        "ext.framework.nist-ai-rmf",
+        "ext.framework.nist-csf-2",
+        "ext.framework.nist-cyber-ai-profile",
+        "ext.framework.nist-sp-800-171",
+        "ext.framework.oecd-ai-principles",
+        "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.uk-ai-regulation-white-paper",
+        "srf.control.defense.SRF-L1-ACQ-001",
+        "srf.control.defense.SRF-L1-ACQ-002",
+        "srf.control.defense.SRF-L1-ACQ-003",
+        "srf.control.defense.SRF-L1-ACQ-004",
+        "srf.control.defense.SRF-L1-ACQ-005",
+        "srf.control.defense.SRF-L1-ACQ-006",
+        "srf.control.defense.SRF-L1-ACQ-007",
+        "srf.control.defense.SRF-L1-ACQ-009",
+        "srf.control.defense.SRF-L1-OPS-008",
+        "srf.control.defense.SRF-L1-OVR-011",
+        "srf.control.defense.SRF-L1-TEVV-010",
+        "srf.control.defense.SRF-L2-ACQ-001",
+        "srf.control.defense.SRF-L2-ACQ-003",
+        "srf.control.defense.SRF-L2-ACQ-008",
+        "srf.control.defense.SRF-L2-OPS-002",
+        "srf.control.defense.SRF-L2-OPS-004",
+        "srf.control.defense.SRF-L2-OPS-005",
+        "srf.control.defense.SRF-L2-OPS-006",
+        "srf.control.defense.SRF-L2-OPS-007",
+        "srf.control.defense.SRF-L2-OVR-010",
+        "srf.control.defense.SRF-L2-TEVV-009",
+        "srf.control.defense.SRF-L3-ACQ-008",
+        "srf.control.defense.SRF-L3-OPS-006",
+        "srf.control.defense.SRF-L3-OPS-007",
+        "srf.control.defense.SRF-L3-OPS-009",
+        "srf.control.defense.SRF-L3-OVR-003",
+        "srf.control.defense.SRF-L3-OVR-004",
+        "srf.control.defense.SRF-L3-OVR-005",
+        "srf.control.defense.SRF-L3-TEVV-001",
+        "srf.control.defense.SRF-L3-TEVV-002",
+        "srf.control.defense.SRF-L3-TEVV-010",
+        "srf.control.defense.SRF-L3-TEVV-011",
+        "srf.control.defense.SRF-L4-ACQ-001",
+        "srf.control.defense.SRF-L4-ACQ-002",
+        "srf.control.defense.SRF-L4-ACQ-003",
+        "srf.control.defense.SRF-L4-ACQ-007",
+        "srf.control.defense.SRF-L4-ACQ-008",
+        "srf.control.defense.SRF-L4-OPS-004",
+        "srf.control.defense.SRF-L4-OPS-005",
+        "srf.control.defense.SRF-L4-OPS-006",
+        "srf.control.defense.SRF-L4-OPS-009",
+        "srf.control.defense.SRF-L4-OPS-010",
+        "srf.control.defense.SRF-L4-OVR-012",
+        "srf.control.defense.SRF-L4-TEVV-011",
+        "srf.control.defense.SRF-L5-ACQ-001",
+        "srf.control.defense.SRF-L5-ACQ-003",
+        "srf.control.defense.SRF-L5-ACQ-005",
+        "srf.control.defense.SRF-L5-ACQ-007",
+        "srf.control.defense.SRF-L5-ACQ-008",
+        "srf.control.defense.SRF-L5-OPS-002",
+        "srf.control.defense.SRF-L5-OPS-004",
+        "srf.control.defense.SRF-L5-OPS-006",
+        "srf.control.defense.SRF-L5-TEVV-009",
+        "srf.framework.cosai-srf"
+      ],
+      "subtype": "vertical"
+    },
+    {
+      "id": "srf.vertical.manufacturing",
+      "label": "Manufacturing",
+      "type": "concept",
+      "url": "https://aisharedresponsibility.com/manufacturing/",
+      "related": [
+        "ext.framework.china-deep-synthesis-provisions",
+        "ext.framework.china-genai-interim-measures",
+        "ext.framework.cis-controls",
+        "ext.framework.eu-ai-act",
+        "ext.framework.eu-machinery-regulation",
+        "ext.framework.gdpr",
+        "ext.framework.iec-61508",
+        "ext.framework.iec-62443",
+        "ext.framework.iso-22989",
+        "ext.framework.iso-42001",
+        "ext.framework.mitre-atlas",
+        "ext.framework.nist-ai-600-1",
+        "ext.framework.nist-ai-rmf",
+        "ext.framework.nist-csf-2",
+        "ext.framework.nist-cyber-ai-profile",
+        "ext.framework.oecd-ai-principles",
+        "ext.framework.owasp-llm-top10",
+        "ext.framework.singapore-model-ai-governance",
+        "ext.framework.uk-ai-regulation-white-paper",
+        "srf.control.manufacturing.SRF-L1-CHG-009",
+        "srf.control.manufacturing.SRF-L1-CHG-010",
+        "srf.control.manufacturing.SRF-L1-DES-001",
+        "srf.control.manufacturing.SRF-L1-DES-002",
+        "srf.control.manufacturing.SRF-L1-DES-003",
+        "srf.control.manufacturing.SRF-L1-DES-006",
+        "srf.control.manufacturing.SRF-L1-DES-008",
+        "srf.control.manufacturing.SRF-L1-OPS-005",
+        "srf.control.manufacturing.SRF-L1-OPS-007",
+        "srf.control.manufacturing.SRF-L1-VAL-004",
+        "srf.control.manufacturing.SRF-L2-DES-001",
+        "srf.control.manufacturing.SRF-L2-DES-002",
+        "srf.control.manufacturing.SRF-L2-OPS-003",
+        "srf.control.manufacturing.SRF-L2-OPS-004",
+        "srf.control.manufacturing.SRF-L2-OPS-006",
+        "srf.control.manufacturing.SRF-L2-OPS-007",
+        "srf.control.manufacturing.SRF-L2-OPS-008",
+        "srf.control.manufacturing.SRF-L2-VAL-005",
+        "srf.control.manufacturing.SRF-L3-OPS-003",
+        "srf.control.manufacturing.SRF-L3-OPS-008",
+        "srf.control.manufacturing.SRF-L3-OPS-009",
+        "srf.control.manufacturing.SRF-L3-OPS-010",
+        "srf.control.manufacturing.SRF-L3-VAL-001",
+        "srf.control.manufacturing.SRF-L3-VAL-002",
+        "srf.control.manufacturing.SRF-L3-VAL-004",
+        "srf.control.manufacturing.SRF-L3-VAL-005",
+        "srf.control.manufacturing.SRF-L3-VAL-006",
+        "srf.control.manufacturing.SRF-L3-VAL-007",
+        "srf.control.manufacturing.SRF-L4-CHG-004",
+        "srf.control.manufacturing.SRF-L4-DES-001",
+        "srf.control.manufacturing.SRF-L4-DES-002",
+        "srf.control.manufacturing.SRF-L4-DES-008",
+        "srf.control.manufacturing.SRF-L4-OPS-003",
+        "srf.control.manufacturing.SRF-L4-OPS-005",
+        "srf.control.manufacturing.SRF-L4-OPS-006",
+        "srf.control.manufacturing.SRF-L4-OPS-007",
+        "srf.control.manufacturing.SRF-L4-OPS-009",
+        "srf.control.manufacturing.SRF-L5-CHG-003",
+        "srf.control.manufacturing.SRF-L5-DES-005",
+        "srf.control.manufacturing.SRF-L5-DES-007",
+        "srf.control.manufacturing.SRF-L5-DES-008",
+        "srf.control.manufacturing.SRF-L5-OPS-002",
+        "srf.control.manufacturing.SRF-L5-OPS-004",
+        "srf.control.manufacturing.SRF-L5-VAL-001",
+        "srf.control.manufacturing.SRF-L5-VAL-006",
+        "srf.framework.cosai-srf"
+      ],
+      "subtype": "vertical"
     },
     {
       "id": "ext.framework.nist-ai-rmf",
@@ -1907,7 +2418,10 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full",
       "moral_profile_rollup": {
@@ -2087,7 +2601,11 @@
         "srf.layer.L1",
         "srf.layer.L2",
         "srf.layer.L3",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing"
       ],
       "depth": "full",
       "moral_profile_rollup": {
@@ -2144,7 +2662,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.manufacturing"
       ],
       "depth": "full"
     },
@@ -2159,7 +2678,13 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2174,7 +2699,13 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2189,7 +2720,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2203,7 +2735,13 @@
         "srf.layer.L1",
         "srf.layer.L2",
         "srf.layer.L3",
-        "srf.layer.L4"
+        "srf.layer.L4",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2265,7 +2803,12 @@
         "srf.jurisdiction.international",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2320,7 +2863,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.finance"
       ],
       "depth": "full"
     },
@@ -2369,7 +2913,13 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2382,7 +2932,13 @@
         "srf.jurisdiction.international",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2435,7 +2991,8 @@
         "srf.jurisdiction.us-federal",
         "srf.layer.L1",
         "srf.layer.L2",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.finance"
       ],
       "depth": "full",
       "moral_profile_rollup": {
@@ -2454,7 +3011,8 @@
         "srf.jurisdiction.us-federal",
         "srf.layer.L1",
         "srf.layer.L3",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.healthcare"
       ],
       "depth": "full"
     },
@@ -2466,7 +3024,13 @@
       "related": [
         "srf.jurisdiction.eu",
         "srf.layer.L1",
-        "srf.layer.L2"
+        "srf.layer.L2",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2479,7 +3043,8 @@
         "srf.jurisdiction.us-federal",
         "srf.layer.L1",
         "srf.layer.L2",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.public-sector"
       ],
       "depth": "full"
     },
@@ -2491,12 +3056,18 @@
       "related": [
         "ext.requirement.oecd-ai-principles.1-4",
         "ext.requirement.oecd-ai-principles.1-5",
-        "srf.jurisdiction.international",
+        "srf.jurisdiction.oecd",
         "srf.layer.L1",
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "full",
       "verification_status": "unverified",
@@ -2546,7 +3117,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.finance"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2576,7 +3148,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.healthcare"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2628,7 +3201,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.healthcare"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2662,7 +3236,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.healthcare"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2694,7 +3269,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.healthcare"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2741,7 +3317,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.healthcare"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2785,7 +3362,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.healthcare"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2828,7 +3406,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.insurance"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2868,7 +3447,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.insurance"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2908,7 +3488,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.insurance"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2943,7 +3524,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.insurance"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -2985,7 +3567,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.public-sector"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3015,7 +3598,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.public-sector"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3048,7 +3632,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.public-sector"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3091,7 +3676,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3133,7 +3719,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3165,7 +3752,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3234,7 +3822,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3255,7 +3844,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3278,7 +3868,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3294,7 +3885,13 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3329,7 +3926,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.manufacturing"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3374,7 +3972,8 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.manufacturing"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -3402,7 +4001,108 @@
         "srf.layer.L2",
         "srf.layer.L3",
         "srf.layer.L4",
-        "srf.layer.L5"
+        "srf.layer.L5",
+        "srf.vertical.manufacturing"
+      ],
+      "depth": "reference",
+      "verification_status": "unverified"
+    },
+    {
+      "id": "ext.framework.uk-ai-regulation-white-paper",
+      "label": "A pro-innovation approach to AI regulation (UK white paper)",
+      "type": "framework",
+      "url": "https://www.gov.uk/government/publications/ai-regulation-a-pro-innovation-approach",
+      "related": [
+        "srf.jurisdiction.uk",
+        "srf.layer.L1",
+        "srf.layer.L2",
+        "srf.layer.L3",
+        "srf.layer.L4",
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
+      ],
+      "depth": "reference",
+      "verification_status": "unverified"
+    },
+    {
+      "id": "ext.framework.china-genai-interim-measures",
+      "label": "Interim Measures for the Management of Generative Artificial Intelligence Services",
+      "type": "framework",
+      "url": "https://www.cac.gov.cn/",
+      "related": [
+        "srf.jurisdiction.china",
+        "srf.layer.L1",
+        "srf.layer.L2",
+        "srf.layer.L3",
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
+      ],
+      "depth": "reference",
+      "verification_status": "unverified"
+    },
+    {
+      "id": "ext.framework.china-deep-synthesis-provisions",
+      "label": "Provisions on the Administration of Deep Synthesis Internet Information Services",
+      "type": "framework",
+      "url": "https://www.cac.gov.cn/",
+      "related": [
+        "srf.jurisdiction.china",
+        "srf.layer.L1",
+        "srf.layer.L3",
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
+      ],
+      "depth": "reference",
+      "verification_status": "unverified"
+    },
+    {
+      "id": "ext.framework.singapore-model-ai-governance",
+      "label": "Model Artificial Intelligence Governance Framework (Second Edition)",
+      "type": "framework",
+      "url": "https://www.pdpc.gov.sg/help-and-resources/2020/01/model-ai-governance-framework",
+      "related": [
+        "srf.jurisdiction.singapore",
+        "srf.layer.L1",
+        "srf.layer.L2",
+        "srf.layer.L3",
+        "srf.layer.L4",
+        "srf.layer.L5",
+        "srf.vertical.defense",
+        "srf.vertical.finance",
+        "srf.vertical.healthcare",
+        "srf.vertical.insurance",
+        "srf.vertical.manufacturing",
+        "srf.vertical.public-sector"
+      ],
+      "depth": "reference",
+      "verification_status": "unverified"
+    },
+    {
+      "id": "ext.framework.canada-directive-adm",
+      "label": "Directive on Automated Decision-Making",
+      "type": "framework",
+      "url": "https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32592",
+      "related": [
+        "srf.jurisdiction.canada",
+        "srf.layer.L1",
+        "srf.layer.L2",
+        "srf.layer.L3",
+        "srf.vertical.public-sector"
       ],
       "depth": "reference",
       "verification_status": "unverified"
@@ -4305,7 +5005,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4324,7 +5025,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4344,7 +5046,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4362,7 +5065,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L1",
         "srf.opmodel.agent-paas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4382,7 +5086,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4400,7 +5105,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4418,7 +5124,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4436,7 +5143,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4454,7 +5162,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4474,7 +5183,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4496,7 +5206,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4516,7 +5227,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4537,7 +5249,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4557,7 +5270,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4574,7 +5288,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4593,7 +5308,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L2",
         "srf.opmodel.agent-paas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4610,7 +5326,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4633,7 +5350,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4655,7 +5373,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4675,7 +5394,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L3",
         "srf.opmodel.agent-paas",
-        "srf.role.agentic-platform-provider"
+        "srf.role.agentic-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4698,7 +5418,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4720,7 +5441,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4742,7 +5464,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4761,7 +5484,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L3",
         "srf.opmodel.agent-paas",
-        "srf.role.agentic-platform-provider"
+        "srf.role.agentic-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4779,7 +5503,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4801,7 +5526,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4821,7 +5547,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4838,7 +5565,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4860,7 +5588,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4880,7 +5609,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4900,7 +5630,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4917,7 +5648,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4935,7 +5667,8 @@
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
         "srf.opmodel.iaas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4956,7 +5689,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -4977,7 +5711,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -5000,7 +5735,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -5021,7 +5757,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -5041,7 +5778,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -5061,7 +5799,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -5082,7 +5821,8 @@
         "srf.opmodel.agent-paas",
         "srf.opmodel.ai-paas",
         "srf.opmodel.iaas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.finance"
       ],
       "subtype": "finance"
     },
@@ -5099,7 +5839,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5120,7 +5861,8 @@
         "ext.framework.iec-62304",
         "ext.framework.onc-hti-1",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5144,7 +5886,8 @@
         "ext.requirement.eu-ai-act.art-14",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5167,7 +5910,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5188,7 +5932,8 @@
         "ext.framework.hipaa-security-rule",
         "ext.framework.onc-hti-1",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5210,7 +5955,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-14",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5230,7 +5976,8 @@
         "ext.framework.fda-tplc",
         "ext.framework.iec-62304",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5251,7 +5998,8 @@
         "ext.framework.iec-62304",
         "ext.framework.iso-14971",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5273,7 +6021,8 @@
         "ext.framework.iec-62304",
         "ext.framework.iso-14971",
         "srf.layer.L1",
-        "srf.role.clinical-ai-governance"
+        "srf.role.clinical-ai-governance",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5297,7 +6046,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5319,7 +6069,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5340,7 +6091,8 @@
         "ext.framework.iec-62304",
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5364,7 +6116,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5387,7 +6140,8 @@
         "ext.requirement.eu-ai-act.art-10",
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5411,7 +6165,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5433,7 +6188,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5455,7 +6211,8 @@
         "ext.framework.iec-62304",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L2",
-        "srf.role.clinical-data-steward"
+        "srf.role.clinical-data-steward",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5475,7 +6232,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-14",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5497,7 +6255,8 @@
         "ext.framework.iec-62304",
         "ext.framework.onc-hti-1",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5519,7 +6278,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5540,7 +6300,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-14",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5563,7 +6324,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5586,7 +6348,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5609,7 +6372,8 @@
         "ext.requirement.eu-ai-act.art-15",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5630,7 +6394,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.clinical-application-developer"
+        "srf.role.clinical-application-developer",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5650,7 +6415,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5670,7 +6436,8 @@
         "ext.framework.hipaa-security-rule",
         "ext.framework.onc-hti-1",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5692,7 +6459,8 @@
         "ext.framework.iec-62304",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5716,7 +6484,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5739,7 +6508,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5761,7 +6531,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5783,7 +6554,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5805,7 +6577,8 @@
         "ext.framework.iec-62304",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L4",
-        "srf.role.health-platform-provider"
+        "srf.role.health-platform-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5828,7 +6601,8 @@
         "ext.framework.iso-14971",
         "ext.framework.onc-hti-1",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5849,7 +6623,8 @@
         "ext.framework.iec-62304",
         "ext.framework.iso-14971",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5872,7 +6647,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5895,7 +6671,8 @@
         "ext.framework.iso-14971",
         "ext.framework.onc-hti-1",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5917,7 +6694,8 @@
         "ext.framework.iec-62304",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5941,7 +6719,8 @@
         "ext.framework.onc-hti-1",
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5965,7 +6744,8 @@
         "ext.framework.iso-14971",
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.healthcare"
       ],
       "subtype": "healthcare",
       "deployment_models": [
@@ -5991,7 +6771,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6012,7 +6793,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6035,7 +6817,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L1",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6058,7 +6841,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6076,7 +6860,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6098,7 +6883,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6120,7 +6906,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6142,7 +6929,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L1",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6162,7 +6950,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6185,7 +6974,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6207,7 +6997,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6229,7 +7020,8 @@
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6251,7 +7043,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6272,7 +7065,8 @@
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6290,7 +7084,8 @@
         "ext.framework.owasp-llm-top10",
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6309,7 +7104,8 @@
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6330,7 +7126,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L2",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6348,7 +7145,8 @@
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L3",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6367,7 +7165,8 @@
         "ext.requirement.eu-ai-act.art-14",
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6388,7 +7187,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6410,7 +7210,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6430,7 +7231,8 @@
         "ext.framework.nydfs-cl-7-2024",
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6452,7 +7254,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6473,7 +7276,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6492,7 +7296,8 @@
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L3",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6511,7 +7316,8 @@
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6530,7 +7336,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6549,7 +7356,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6569,7 +7377,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6588,7 +7397,8 @@
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6611,7 +7421,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6630,7 +7441,8 @@
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6647,7 +7459,8 @@
         "ext.requirement.eu-ai-act.art-26",
         "srf.layer.L4",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6668,7 +7481,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6686,7 +7500,8 @@
         "ext.requirement.eu-ai-act.art-15",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6707,7 +7522,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6729,7 +7545,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6749,7 +7566,8 @@
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6767,7 +7585,8 @@
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6789,7 +7608,8 @@
         "ext.requirement.sr-26-2.section-iii",
         "srf.layer.L5",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.insurance"
       ],
       "subtype": "insurance",
       "deployment_models": [
@@ -6808,7 +7628,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6827,7 +7648,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6847,7 +7669,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6867,7 +7690,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6886,7 +7710,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6905,7 +7730,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6924,7 +7750,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6942,7 +7769,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6961,7 +7789,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -6982,7 +7811,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7003,7 +7833,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector"
     },
@@ -7021,7 +7852,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7042,7 +7874,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7061,7 +7894,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7082,7 +7916,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7100,7 +7935,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7119,7 +7955,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7141,7 +7978,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7160,7 +7998,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7181,7 +8020,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7199,7 +8039,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7217,7 +8058,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7236,7 +8078,8 @@
         "ext.framework.omb-m-25-21",
         "ext.framework.owasp-llm-top10",
         "srf.layer.L3",
-        "srf.role.agentic-platform-provider"
+        "srf.role.agentic-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7252,7 +8095,8 @@
         "ext.framework.fedramp-20x-ksi",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7271,7 +8115,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7290,7 +8135,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7311,7 +8157,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.agentic-platform-provider"
+        "srf.role.agentic-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7332,7 +8179,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.agentic-platform-provider"
+        "srf.role.agentic-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7353,7 +8201,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7373,7 +8222,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7396,7 +8246,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector"
     },
@@ -7412,7 +8263,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7433,7 +8285,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7451,7 +8304,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector"
     },
@@ -7468,7 +8322,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector"
     },
@@ -7483,7 +8338,8 @@
         "ext.framework.owasp-llm-top10",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7503,7 +8359,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector"
     },
@@ -7518,7 +8375,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector"
     },
@@ -7537,7 +8395,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector"
     },
@@ -7554,7 +8413,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.public-sector"
       ],
       "subtype": "public-sector",
       "deployment_models": [
@@ -7573,7 +8433,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7592,7 +8453,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7611,7 +8473,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7630,7 +8493,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7650,7 +8514,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7673,7 +8538,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7694,7 +8560,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7715,7 +8582,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7735,7 +8603,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7755,7 +8624,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7778,7 +8648,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7802,7 +8673,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7822,7 +8694,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7846,7 +8719,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7869,7 +8743,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7888,7 +8763,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7908,7 +8784,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7930,7 +8807,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7949,7 +8827,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7968,7 +8847,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -7985,7 +8865,8 @@
         "ext.framework.dod-rai-strategy",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8004,7 +8885,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8023,7 +8905,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8042,7 +8925,8 @@
         "ext.framework.nist-sp-800-171",
         "ext.framework.owasp-llm-top10",
         "srf.layer.L3",
-        "srf.role.agentic-platform-provider"
+        "srf.role.agentic-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8064,7 +8948,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8084,7 +8969,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense"
     },
@@ -8099,7 +8985,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8120,7 +9007,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense"
     },
@@ -8140,7 +9028,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8160,7 +9049,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense"
     },
@@ -8180,7 +9070,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8202,7 +9093,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8226,7 +9118,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8248,7 +9141,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8269,7 +9163,8 @@
         "ext.requirement.nist-ai-rmf.govern-1-6",
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8293,7 +9188,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8312,7 +9208,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8332,7 +9229,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8350,7 +9248,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense"
     },
@@ -8368,7 +9267,8 @@
         "ext.framework.owasp-llm-top10",
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8389,7 +9289,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8408,7 +9309,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense"
     },
@@ -8424,7 +9326,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8444,7 +9347,8 @@
         "ext.framework.nist-sp-800-171",
         "ext.requirement.nist-ai-rmf.govern-1-6",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8466,7 +9370,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8484,7 +9389,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8506,7 +9412,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8526,7 +9433,8 @@
         "ext.framework.nist-sp-800-171",
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8551,7 +9459,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8570,7 +9479,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8592,7 +9502,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8611,7 +9522,8 @@
         "ext.framework.nist-sp-800-171",
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8631,7 +9543,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.defense"
       ],
       "subtype": "defense",
       "deployment_models": [
@@ -8652,7 +9565,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8674,7 +9588,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8696,7 +9611,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8715,7 +9631,8 @@
         "ext.framework.iso-42001",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L1",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8735,7 +9652,8 @@
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L1",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8757,7 +9675,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8777,7 +9696,8 @@
         "ext.requirement.eu-ai-act.art-72",
         "srf.layer.L1",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8796,7 +9716,8 @@
         "ext.framework.nist-ai-rmf",
         "srf.layer.L1",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8816,7 +9737,8 @@
         "srf.layer.L1",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8837,7 +9759,8 @@
         "ext.framework.iso-42001",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L1",
-        "srf.role.ai-system-governance"
+        "srf.role.ai-system-governance",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8857,7 +9780,8 @@
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8877,7 +9801,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8897,7 +9822,8 @@
         "ext.requirement.eu-ai-act.art-10",
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8919,7 +9845,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8939,7 +9866,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing"
     },
@@ -8959,7 +9887,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "ext.requirement.nist-ai-rmf.measure-2-6",
         "srf.layer.L2",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -8979,7 +9908,8 @@
         "ext.requirement.eu-ai-act.art-26",
         "srf.layer.L2",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9000,7 +9930,8 @@
         "srf.layer.L2",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.data-provider"
+        "srf.role.data-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing"
     },
@@ -9015,7 +9946,8 @@
         "ext.framework.iso-42001",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9037,7 +9969,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9060,7 +9993,8 @@
         "ext.requirement.eu-ai-act.art-14",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9081,7 +10015,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9099,7 +10034,8 @@
         "ext.framework.iso-42001",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9121,7 +10057,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9142,7 +10079,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.requirement.eu-ai-act.art-14",
         "srf.layer.L3",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9167,7 +10105,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
-        "srf.role.agentic-platform-provider"
+        "srf.role.agentic-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9188,7 +10127,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing"
     },
@@ -9205,7 +10145,8 @@
         "srf.layer.L3",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.application-developer"
+        "srf.role.application-developer",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9225,7 +10166,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "ext.requirement.nist-ai-rmf.map-1-5",
         "srf.layer.L4",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9246,7 +10188,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "ext.requirement.nist-ai-rmf.map-1-5",
         "srf.layer.L4",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9267,7 +10210,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "ext.requirement.nist-ai-rmf.map-1-5",
         "srf.layer.L4",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9288,7 +10232,8 @@
         "ext.framework.iso-42001",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L4",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9306,7 +10251,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L4",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9326,7 +10272,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "ext.requirement.nist-ai-rmf.map-1-5",
         "srf.layer.L4",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9349,7 +10296,8 @@
         "srf.layer.L4",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9368,7 +10316,8 @@
         "ext.framework.iso-42001",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L4",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9388,7 +10337,8 @@
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L4",
         "srf.opmodel.ai-saas",
-        "srf.role.ai-platform-provider"
+        "srf.role.ai-platform-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9406,7 +10356,8 @@
         "ext.framework.iso-42001",
         "ext.framework.nist-ai-rmf",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9428,7 +10379,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9449,7 +10401,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9472,7 +10425,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9492,7 +10446,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.framework.owasp-llm-top10",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9513,7 +10468,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.requirement.eu-ai-act.art-9",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9531,7 +10487,8 @@
         "srf.layer.L5",
         "srf.opmodel.ai-paas",
         "srf.opmodel.ai-saas",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [
@@ -9550,7 +10507,8 @@
         "ext.framework.nist-ai-rmf",
         "ext.framework.owasp-llm-top10",
         "srf.layer.L5",
-        "srf.role.model-provider"
+        "srf.role.model-provider",
+        "srf.vertical.manufacturing"
       ],
       "subtype": "manufacturing",
       "deployment_models": [

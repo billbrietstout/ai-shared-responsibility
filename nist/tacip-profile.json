@@ -77,7 +77,23 @@
       "proposed_additions": 114
     },
     "proposed_additions_note": "Nodes may carry a 'proposed' array: reviewer/team suggestions (source ids TBD-* / CAND-*) that fill the draft's TBD and Candidate fields. These are NOT part of the NIST draft and are provided for editorial review.",
-    "generated": "2026-07-08",
+    "join_hints": {
+      "entry_point": "tacip.llms.txt",
+      "canonical": "tacip-profile.json",
+      "canonical_shape": "Nested and self-contained: practices[] -> tasks[] -> implementations[]. Most relationships need no join.",
+      "id_key": "Every node has a stable string `id`: practice = N, task = N.M, implementation = N.M.K. This id is the join key across the files in this directory.",
+      "files": {
+        "tacip-profile.json": "Canonical structured data. Nodes carry typed fields, references, cross_references, and inline `proposed` additions.",
+        "references.json": "Cross-sector reference crosswalk. `by_practice` is keyed by the practice number (join to a practice `id`); `by_reference` lists each reference with the practice numbers it supports.",
+        "suggestions.json": "Reviewer/team-proposed additions keyed by node `id`. This is a FLAT view of the same items already embedded inline under each node's `proposed` array here; join on `id` and do not double-count.",
+        "tacip-schema.json": "JSON Schema for a single node.",
+        "index.html": "Human-readable static document. Deep-link a node with the anchor `#<level>-<dashed-id>`: #practice-3, #task-3-2, #impl-3-2-3."
+      },
+      "internal_edges": "Each node's `cross_references[].id` is a join key to another node within tacip-profile.json (the profile's internal dependency graph).",
+      "external_mappings": "`ai_rmf_mappings` cite NIST AI 100-1 (AI RMF 1.0); `cyber_ai_profile_mappings` cite NIST IR 8596 (draft, mostly pending). These are external framework identifiers, not resolvable within this directory.",
+      "scope": "This directory is standalone. It does NOT join to aisharedresponsibility.com's /ids.json, /ontology, or SRF control ids, and shares no identifiers with the SRF knowledge graph. It is an orphan example."
+    },
+    "generated": "2026-07-27",
     "generator": "Proof-of-concept machine-readable companion. NOT official NIST output. Derived from the public discussion draft to illustrate an LLM-friendly structure."
   },
   "practices": [
@@ -296,7 +312,7 @@
           "references": [
             {
               "citation": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
-              "url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10"
+              "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf"
             },
             {
               "citation": "The following references illustrate how different CI sectors have formalized TEVV-equivalent processes. Readers should look for analogous frameworks within their own sector's regulatory or standards environment."
@@ -852,14 +868,14 @@
         },
         {
           "citation": "NIST AI 200-1: AI Use Taxonomy: A Human-Centered Approach",
-          "url": "https://www.nist.gov/publications/ai-use-taxonomy-human-centered-approach"
+          "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.200-1.pdf"
         },
         {
           "citation": "Table 1. Taxonomy of Human-AI Activities"
         },
         {
           "citation": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
-          "url": "https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-ai-rmf-10"
+          "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf"
         }
       ],
       "cross_references": [
@@ -1399,7 +1415,7 @@
       "references": [
         {
           "citation": "NIST SP 800-190: Application Container Security Guide",
-          "url": "https://csrc.nist.gov/pubs/sp/800/190/final"
+          "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf"
         },
         {
           "citation": "NIST SP 800-61 Rev 3"
@@ -2525,7 +2541,7 @@
                 },
                 {
                   "citation": "NIST SP 800-53 Rev 5: Personally Identifiable Information Processing and Transparency (PT-)",
-                  "url": "https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final"
+                  "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf"
                 }
               ],
               "proposed": [

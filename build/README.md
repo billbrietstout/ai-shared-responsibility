@@ -36,6 +36,7 @@ srf.role.<persona-id>        personas (incl. sector specializations)
 srf.concept.<anchor>         glossary vocabulary
 srf.jurisdiction.<id>        jurisdiction vocabulary from jurisdictions.json
 srf.moral.actor|action|outcome  moral-orientation dimensions
+srf.vertical.<slug>          industry vertical (finance, healthcare, ...)
 srf.control.<vertical>.<id>  vertical controls
 ext.framework.<reg-id>       external standards and regulations
 ext.requirement.<id>         concrete requirements inside an instrument
@@ -45,9 +46,12 @@ Control-to-regulation joins use `regulations.json` `mapping_key` values against
 each control's `mappings` object, and land in the ontology as `governed_by`
 edges. Sector specializations land as `specializes` edges back to a canonical
 persona. Moral tags in `moral-regulatory-hierarchy.json` land as `part_of`,
-`emphasizes` (with salience), and `implements` edges. Prefer
-`/ontology/edges.json` for multi-hop queries; do not hand-edit a parallel
-edges file under `/data/`.## Regenerate
+`emphasizes` (with salience), and `implements` edges. Regulation
+`applicable_verticals` land as `applies_to_vertical` edges to
+`srf.vertical.*`. Prefer `/ontology/edges.json` for multi-hop queries; do not
+hand-edit a parallel edges file under `/data/`.
+
+## Regenerate
 
 ```bash
 python3 build/generate_knowledge_layer.py          # write outputs
