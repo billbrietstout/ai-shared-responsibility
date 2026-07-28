@@ -23,6 +23,7 @@ site wins.
 | Responsibility matrix | `https://aisharedresponsibility.com/data/matrix.json` | 4 operating models x 5 layers |
 | Jurisdictions | `https://aisharedresponsibility.com/data/jurisdictions.json` | 6 (international, EU, US federal, multistate, Colorado, New York) |
 | Regulations | `https://aisharedresponsibility.com/data/regulations.json` | 40 instruments with jurisdiction + mapping_key for control joins |
+| Moral regulatory hierarchy | `https://aisharedresponsibility.com/data/moral-regulatory-hierarchy.json` | Requirement-level actor/action/outcome salience (0-3) for EU AI Act, OECD AI Principles, NIST AI RMF, SR 26-2 |
 
 ## Vertical control schemas
 
@@ -67,3 +68,7 @@ Control short IDs such as `SRF-L1-ACQ-001` collide across verticals. The
 canonical form is `srf.control.<vertical>.<id>`. A control's `mappings` keys
 join to `regulations.json` via each item's `mapping_key` field, not via the
 regulation `id`.
+
+Requirement-level moral tags live in `moral-regulatory-hierarchy.json`.
+Traverse `emphasizes` (with `salience`) and `implements` edges in
+`/ontology/edges.json` rather than re-deriving scores from prose.

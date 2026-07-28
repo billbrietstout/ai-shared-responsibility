@@ -194,6 +194,47 @@
           stays at eight.
         </p>
 
+        <h2 id="moral-orientation">Moral orientation tags</h2>
+        <p>
+          <a href="/data/moral-regulatory-hierarchy.json"><code>/data/moral-regulatory-hierarchy.json</code></a>
+          tags concrete requirements inside priority instruments with
+          independent 0-3 salience on three dimensions:
+        </p>
+        <table class="join-table">
+          <thead>
+            <tr><th>Dimension</th><th>Focus</th><th>Typical signals</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>actor</code></td>
+              <td>Character, duties, competence of people or organizations</td>
+              <td>Named accountability, due diligence, professional obligations</td>
+            </tr>
+            <tr>
+              <td><code>action</code></td>
+              <td>Rightness of the act itself</td>
+              <td>Absolute bans, mandatory process, human-oversight gates</td>
+            </tr>
+            <tr>
+              <td><code>outcome</code></td>
+              <td>Foreseeable or actual impacts and harms</td>
+              <td>Risk-tiering, performance thresholds, continuous monitoring</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Salience scores are independent (not a partition that sums to 1).
+          Each requirement carries a rationale. Instrument-level rollups use
+          maximum salience per dimension so a strongly action-oriented article
+          inside a hybrid statute is not averaged away. Ontology edges:
+          <code>part_of</code> (requirement to instrument),
+          <code>emphasizes</code> (requirement to <code>srf.moral.*</code>,
+          with a <code>salience</code> property), and
+          <code>implements</code> (control to requirement when a mapping
+          citation matches). This is a descriptive analytical lens, not a claim
+          that any country is one moral type.
+        </p>
+
         <h2>What this page is not</h2>
         <p>
           This page documents the join conventions that already ship. A fuller

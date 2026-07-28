@@ -107,6 +107,56 @@ check(not bad_spec,
       f"every sector specialization resolves and specializes a canonical "
       f"persona (bad: {bad_spec})")
 
+# 6c. Moral orientation hierarchy: dimensions, requirements, rollups, implements.
+moral_path = os.path.join(ROOT, "data", "moral-regulatory-hierarchy.json")
+if os.path.exists(moral_path):
+    moral = J("data/moral-regulatory-hierarchy.json")
+    dims = moral.get("dimensions", {})
+    check(set(dims) == {"actor", "action", "outcome"},
+          "moral dimensions are exactly actor/action/outcome")
+    for dim in dims:
+        check(f"srf.moral.{dim}" in node_ids,
+              f"moral dimension node present ({dim})")
+    reqs = moral.get("requirements", [])
+    check(len(reqs) > 0, f"moral requirements authored ({len(reqs)})")
+    bad_req = []
+    for req in reqs:
+        rid = f"ext.requirement.{req['id']}"
+        profile = req.get("moral_profile") or {}
+        if rid not in node_ids:
+            bad_req.append(req["id"] + ":missing-node")
+            continue
+        if not profile.get("rationale"):
+            bad_req.append(req["id"] + ":no-rationale")
+        for dim in ("actor", "action", "outcome"):
+            sal = profile.get(dim)
+            if sal not in (0, 1, 2, 3):
+                bad_req.append(req["id"] + f":bad-{dim}")
+        if f"ext.framework.{req['instrument']}" not in node_ids:
+            bad_req.append(req["id"] + ":bad-instrument")
+    check(not bad_req, f"moral requirements well-formed (bad: {bad_req[:5]})")
+
+    emphasizes = [e for e in edges["edges"] if e["rel"] == "emphasizes"]
+    check(len(emphasizes) > 0, f"emphasizes edges present ({len(emphasizes)})")
+    check(all(e.get("salience") in (1, 2, 3) for e in emphasizes),
+          "emphasizes edges carry salience 1-3")
+
+    part_of = [e for e in edges["edges"] if e["rel"] == "part_of"]
+    check(len(part_of) == len(reqs),
+          f"part_of edges match requirements ({len(part_of)} vs {len(reqs)})")
+
+    implements = [e for e in edges["edges"] if e["rel"] == "implements"]
+    check(len(implements) > 0, f"implements edges present ({len(implements)})")
+    check(all(e["source"].startswith("srf.control.") and
+              e["target"].startswith("ext.requirement.") for e in implements),
+          "implements edges run control -> requirement")
+
+    for instrument in moral.get("priority_instruments", []):
+        nid = f"ext.framework.{instrument}"
+        node = next((n for n in nodes["nodes"] if n["id"] == nid), None)
+        check(node and "moral_profile_rollup" in node,
+              f"instrument rollup present on {instrument}")
+
 # 7. related[] only references real nodes
 bad_r = [n["id"] for n in nodes["nodes"]
          if any(r not in node_ids for r in n.get("related", []))]
