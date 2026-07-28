@@ -94,6 +94,16 @@ def classify(rel):
             "srf.concept.human-override-tier"]
     if top == "changelog":
         return "reference", ["srf.framework.cosai-srf"]
+    if rel == "developers/schema":
+        return "developer", [
+            "srf.framework.cosai-srf",
+            "srf.concept.control",
+            "srf.data.jurisdictions",
+            "srf.data.moral-regulatory-hierarchy",
+            "srf.moral.actor",
+            "srf.moral.action",
+            "srf.moral.outcome",
+        ]
     if top == "developers":
         return "developer", ["srf.framework.cosai-srf", "srf.concept.control"]
     if top == "presentation":
