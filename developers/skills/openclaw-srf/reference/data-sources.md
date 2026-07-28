@@ -55,7 +55,7 @@ accountable persona, applicable operating models, and a regulatory mapping.
 | Glossary registry | `https://aisharedresponsibility.com/glossary.json` | Every SRF term with its definition and canonical anchor |
 | Glossary API | `https://aisharedresponsibility.com/api/glossary/{anchor}.json` | A single term, for example `accountability.json`, `L1.json`, `AI-SaaS.json` |
 | Ontology nodes | `https://aisharedresponsibility.com/ontology/nodes.json` | Concept graph: layers, operating models, personas, jurisdictions, controls, external standards |
-| Ontology edges | `https://aisharedresponsibility.com/ontology/edges.json` | Typed relationships including `governed_by`, `specializes`, and `issued_in_jurisdiction` |
+| Ontology edges | `https://aisharedresponsibility.com/ontology/edges.json` | Typed relationships including `governed_by`, `specializes`, `issued_in_jurisdiction`, and `superseded_by` |
 | Join conventions | `https://aisharedresponsibility.com/developers/schema/` | Preferred join paths; also summarized under `join_hints` in `/data/index.json` |
 
 ## Naming convention
@@ -68,6 +68,14 @@ Control short IDs such as `SRF-L1-ACQ-001` collide across verticals. The
 canonical form is `srf.control.<vertical>.<id>`. A control's `mappings` keys
 join to `regulations.json` via each item's `mapping_key` field, not via the
 regulation `id`.
+
+Before citing an instrument, read its `lifecycle`. The field is absent while the
+instrument is in force, `draft` when the text can still change, and `rescinded`
+once the issuer withdrew it. A rescinded item names its replacement in
+`superseded_by` and carries a matching edge, so the OCC Model Risk Management
+handbook booklet resolves to `sr-26-2`, the revised interagency guidance that
+replaced it in April 2026. Mappings to a `draft` instrument are held at `TBD` on
+purpose, because section numbering moves between drafts.
 
 Requirement-level moral tags live in `moral-regulatory-hierarchy.json`.
 Traverse `emphasizes` (with `salience`) and `implements` edges in

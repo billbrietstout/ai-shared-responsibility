@@ -254,6 +254,39 @@ bad_source = sorted({str(i.get("applicable_verticals_source")) for i in regs["it
                        "declared-sector", "derived+declared"})
 check(not bad_source,
       f"applicable_verticals_source uses a known value (bad: {bad_source})")
+bad_life = sorted({str(i.get("lifecycle")) for i in regs["items"]}
+                  - {"None", "draft", "rescinded"})
+check(not bad_life, f"lifecycle uses a known value (bad: {bad_life})")
+
+# Depth carries a verification promise. A full-depth entry was read against the
+# primary source, so it records last_verified and cannot sit at unverified; a
+# reference entry has not been read that way and must say so. The OECD entry was
+# full depth, unverified, and missing last_verified all at once, which no single
+# vocabulary check above would catch.
+bad_promise = []
+for i in regs["items"]:
+    full = i.get("depth") == "full"
+    if full and i.get("verification_status") == "unverified":
+        bad_promise.append(f"{i['id']}:full-but-unverified")
+    if full and not i.get("last_verified"):
+        bad_promise.append(f"{i['id']}:full-without-last_verified")
+    if not full and not i.get("verification_status"):
+        bad_promise.append(f"{i['id']}:reference-without-status")
+check(not bad_promise,
+      f"depth matches the verification fields (bad: {bad_promise[:5]})")
+
+# A rescinded instrument points at what replaced it, and only a rescinded one
+# does, so a stale mapping resolves forward instead of dead-ending.
+sup = [e for e in edges["edges"] if e["rel"] == "superseded_by"]
+bad_sup = [f"{i['id']}:{i.get('superseded_by')}" for i in regs["items"]
+           if i.get("superseded_by")
+           and (i.get("lifecycle") != "rescinded"
+                or f"ext.framework.{i['superseded_by']}" not in node_ids)]
+check(not bad_sup,
+      f"superseded_by names a real instrument and only appears on a rescinded "
+      f"entry (bad: {bad_sup})")
+check(len(sup) == sum(1 for i in regs["items"] if i.get("superseded_by")),
+      f"superseded_by edges match the data ({len(sup)})")
 # New comparative jurisdictions resolve.
 for jid in ("oecd", "uk", "china", "singapore", "canada",
             "japan", "australia", "south-korea", "brazil", "india",

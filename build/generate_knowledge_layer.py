@@ -361,8 +361,15 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             nodes[nid]["depth"] = item["depth"]
         if item.get("verification_status"):
             nodes[nid]["verification_status"] = item["verification_status"]
+        # lifecycle is absent for an instrument in force and set to draft or
+        # rescinded otherwise, so a consumer can tell a citation it should not
+        # rely on from one it can.
+        if item.get("lifecycle"):
+            nodes[nid]["lifecycle"] = item["lifecycle"]
         for code in item.get("srf_layers", []):
             add_edge(nid, "maps_to_layer", layer_id(code))
+        if item.get("superseded_by"):
+            add_edge(nid, "superseded_by", ext_id(item["superseded_by"]))
         if item.get("jurisdiction"):
             add_edge(nid, "issued_in_jurisdiction", juris_id(item["jurisdiction"]))
         if item.get("mapping_key"):

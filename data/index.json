@@ -66,7 +66,7 @@
   {
    "file": "regulations.json",
    "url": "https://aisharedresponsibility.com/data/regulations.json",
-   "description": "AI regulations and standards mapped to SRF layers and business verticals. Shared catalog: sector instruments apply to one vertical; cited cross-cutting instruments list the verticals that map them; uncited horizontal instruments may list all six. Includes EU AI Act, NIST AI RMF, ISO 42001, OECD AI Principles, national reference instruments (UK/China/Singapore/Canada/Japan/Australia/Korea/Brazil/India), SEC/OCC/FINRA finance anchors, California AB 2013, and sector instruments. Each item carries jurisdiction, optional mapping_key, depth, and applicable_verticals.",
+   "description": "AI regulations and standards mapped to SRF layers and business verticals. Shared catalog: sector instruments apply to one vertical; cited cross-cutting instruments list the verticals that map them; uncited horizontal instruments may list all six. Includes EU AI Act, NIST AI RMF, ISO 42001, OECD AI Principles, national reference instruments (UK/China/Singapore/Canada/Japan/Australia/Korea/Brazil/India), SEC/OCC/FINRA finance anchors, California AB 2013, and sector instruments. Each item carries jurisdiction, optional mapping_key, depth, and applicable_verticals. depth full means the text was read against the primary source, so the item records last_verified; depth reference means it carries verification_status instead. lifecycle is absent for an instrument in force and set to draft or rescinded otherwise, and a rescinded item names its replacement in superseded_by.",
    "schema_keys": [
     "updated",
     "stale_threshold_days",
@@ -80,7 +80,10 @@
     "vertical_scope_note",
     "version_note",
     "srf_layers",
-    "verification_status"
+    "verification_status",
+    "last_verified",
+    "lifecycle",
+    "superseded_by"
    ],
    "record_count": 54,
    "related_page": "https://aisharedresponsibility.com/regulations/"
@@ -413,6 +416,12 @@
     "from": "ext.framework.<reg-id>",
     "to": "srf.jurisdiction.<id>",
     "join": "regulations.json item.jurisdiction"
+   },
+   {
+    "rel": "superseded_by",
+    "from": "ext.framework.<rescinded-reg-id>",
+    "to": "ext.framework.<reg-id>",
+    "join": "regulations.json item.superseded_by, present only where lifecycle is rescinded"
    },
    {
     "rel": "applies_to_layer",
