@@ -1,6 +1,7 @@
 {
   "version": "0.7",
   "source": "CoSAI AI Shared Responsibility Framework §3.1, Draft V0.7",
+  "provenance_note": "The 'provenance' field on each persona distinguishes personas published by CoSAI (provenance: cosai-core) from personas proposed independently on this site to support specific deployment topologies (provenance: proposed-extension). Extension personas are not part of the official CoSAI SRF release. See NOTICE and the vertical-controls disclaimer for the same convention applied elsewhere on this site.",
   "personas": [
     {
       "id": "agentic-platform-provider",
@@ -15,7 +16,8 @@
         "Managing state in multi-turn workflows securely",
         "Integrating APIs securely",
         "Defining cognitive architecture for AI systems"
-      ]
+      ],
+      "provenance": "cosai-core"
     },
     {
       "id": "application-developer",
@@ -29,7 +31,8 @@
         "Implementing safety controls around tool execution",
         "Ensuring input validation and output filtering",
         "Managing user access control mechanisms"
-      ]
+      ],
+      "provenance": "cosai-core"
     },
     {
       "id": "data-provider",
@@ -43,7 +46,8 @@
         "Tracking data provenance and compliance",
         "Implementing privacy protections in data handling",
         "Managing data classification"
-      ]
+      ],
+      "provenance": "cosai-core"
     },
     {
       "id": "ai-system-users",
@@ -57,7 +61,8 @@
         "Adhering to appropriate use policies",
         "Reporting issues or anomalies detected during use",
         "Following usage guidelines to minimize data exposure"
-      ]
+      ],
+      "provenance": "cosai-core"
     },
     {
       "id": "ai-system-governance",
@@ -72,7 +77,8 @@
         "Ensuring compliance with standards, laws, and company policies",
         "Managing a risk register with assigned owners and remediation timelines",
         "Overseeing incident response plans and post-incident analysis"
-      ]
+      ],
+      "provenance": "cosai-core"
     },
     {
       "id": "model-provider",
@@ -86,7 +92,8 @@
         "Model security, safety, and performance validation",
         "Publishing model cards with provenance, benchmarks, and intended use",
         "Maintaining model version and vulnerability disclosures"
-      ]
+      ],
+      "provenance": "cosai-core"
     },
     {
       "id": "ai-model-serving",
@@ -102,7 +109,8 @@
         "Ensuring model and dataset integrity at load-time and during runtime",
         "Monitoring and validating outputs to prevent unintended disclosures",
         "Conducting adversarial simulations to test model serving robustness"
-      ]
+      ],
+      "provenance": "cosai-core"
     },
     {
       "id": "ai-platform-provider",
@@ -117,7 +125,57 @@
         "Providing robust IAM primitives for upstream tenants",
         "Providing configurable data residency, encryption, and region-locking capabilities",
         "Guaranteeing uptime, incident notification, and SLAs bounding the platform's contribution to incident response"
-      ]
+      ],
+      "provenance": "cosai-core"
+    },
+    {
+      "id": "sovereign-participant-node",
+      "name": "Sovereign Participant Node",
+      "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
+      "standard_ref": "No single ISO/IEC 22989:2022 §5.19 role fits without modification. This persona combines the AI Customer, AI Producer, and AI Partner (data provider) roles the standard treats as separate organizations into one sovereign entity performing all three simultaneously.",
+      "cross_layer_note": "Deliberate deviation from the CoSAI persona pattern. Every cosai-core persona above occupies one or two adjacent layers because SRF models a vendor/customer supply chain: distinct organizations at distinct layers. A Tapestry participant is a peer, not a vendor or a customer of the consortium, so it locally instantiates the full stack: it governs its own use (L1), owns its own training data (L2), builds its own sovereign derivatives (L3), runs its own local training compute (L4), and performs local continued pre-training / fine-tuning and submits weight contributions (L5). Do not read the five-layer span as this persona having authority over the Shared Base at every layer; see accountable_to splits in the Federated-Consortium operating model in layers.json, which separate what this persona owns (Participant Sovereign Assets) from what the core owns (Shared Commons).",
+      "audiences": ["customer", "vendor"],
+      "description": "A national government, cultural community, enterprise, hospital, or other institution participating in Project Tapestry as a self-governing node. Retains full control of its own data, source identities, training processes, model updates, configurations, evaluations, and derivatives unless it explicitly and voluntarily contributes an artifact to the Shared Commons. May perform Contributed CPT locally and submit only the resulting model-weight update without disclosing underlying data.",
+      "responsibilities": [
+        "Retaining control of raw, curated, private, sovereign, controlled, or proprietary data (TAP-010, Participant Sovereign Assets)",
+        "Holding sufficient rights and authorization to perform local training and to permit the intended use and distribution of any resulting weight contribution (TAP-010, Weight contribution does not transfer data rights)",
+        "Not introducing legal terms into a submitted contribution that would encumber the Shared Base or reduce the rights of other participants (TAP-010, Weight contribution does not transfer data rights)",
+        "Deciding, without requiring Tapestry permission, whether to keep, deploy, license, sell, or otherwise commercialize its Sovereign Models and related services (TAP-010, Participant Sovereign Assets)",
+        "Participating in consortium governance in proportion to its role, without its contribution size becoming unilateral control (docs/work-groups/governance-participation, Initial questions)"
+      ],
+      "extension_source": {
+        "project": "AI Alliance Project Tapestry",
+        "documents": [
+          "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/architecture/decisions/adr-010-open-commons-sovereign-assets.md",
+          "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/governance/anti-capture-principle.md"
+        ]
+      },
+      "provenance": "proposed-extension"
+    },
+    {
+      "id": "consortium-core-coordinator",
+      "name": "Consortium Core Coordinator",
+      "srf_layers": ["L1", "L4", "L5"],
+      "standard_ref": "No ISO/IEC 22989:2022 §5.19 role fits. The standard has no concept of a shared artifact accountable to the consortium itself rather than to any single organization.",
+      "status_note": "Corresponds to the body TAP-010 names as decider: 'Tapestry Governance Committee (to ratify).' As of TAP-010's Proposed status, this body is not yet formally seated. Treat this persona as provisional until governance ratification. docs/work-groups/governance-participation/README.md lists the operating model and decision-escalation path this persona depends on as an early deliverable, not yet published.",
+      "audiences": ["consultant"],
+      "description": "The accountable party for the Shared Commons: the shared base model, shared training infrastructure, shared protocols and interoperability specifications, public governance rules, and certification marks. Distinct from any single participant node. Accountable for keeping Shared Commons artifacts open and independently usable, and for preventing capture of the commons by any participant, vendor, or operator.",
+      "responsibilities": [
+        "Keeping Tapestry-developed source code, shared protocols, schemas, and interoperability specifications open and independently usable (TAP-010, Shared Commons commitments)",
+        "Evaluating submitted weight contributions for legality, consent, provenance, quality, safety, security, memorization, poisoning, and compatibility before acceptance into the Shared Base (TAP-010, Shared contribution and certification boundaries)",
+        "Designating the body that approves independent auditors and determines when contractual assurance is insufficient (TAP-010, Follow-on decisions; not yet resolved)",
+        "Governing use of Tapestry certification marks, compatibility claims, and governance recognition separately from ownership of private participant assets (TAP-010, Shared contribution and certification boundaries)",
+        "Preventing any participant, vendor, or operator from imposing an exclusive service, proprietary runtime, or other avoidable dependency on the Shared Commons (TAP-010, Shared Commons commitments; anti-capture-principle.md)"
+      ],
+      "extension_source": {
+        "project": "AI Alliance Project Tapestry",
+        "documents": [
+          "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/architecture/decisions/adr-010-open-commons-sovereign-assets.md",
+          "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/governance/anti-capture-principle.md",
+          "https://github.com/The-AI-Alliance/tapestry/tree/develop/docs/work-groups/governance-participation"
+        ]
+      },
+      "provenance": "proposed-extension"
     }
   ],
   "sector_specializations_note": "A vertical may assign accountability to a sector-specific name for one of the eight canonical personas rather than to the persona itself. Those names are declared here so that every accountable_persona value in data/*-controls.json resolves to a record, and so the graph carries an explicit specializes edge back to the canonical persona. They are specializations, not additional personas: the canonical count stays at eight.",

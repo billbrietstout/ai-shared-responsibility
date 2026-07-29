@@ -1,6 +1,7 @@
 {
   "version": "0.7",
   "source": "CoSAI AI Shared Responsibility Framework, Draft V0.7, OASIS Open / Coalition for Secure AI Workstream 2",
+  "operating_model_schema_note": "The four cosai-core operating models (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) each resolve a layer's responsibility to a single string from responsibility_values in matrix.json, because each describes one customer receiving a service from one vendor. The proposed-extension operating model 'Federated-Consortium' cannot honestly resolve to one of those same responsibility_values: TAP-010 splits every layer into two domains, Shared Commons and Participant Sovereign Assets, each with its own accountable party, and collapsing that into one existing value would either overstate the core coordinator's reach into participant-owned assets or overstate a participant's authority over the shared base, both of which TAP-010's anti-capture rule forbids. To avoid breaking existing consumers of operating_models (tools/redteam-scope/app.js, tools/decision-record/app.js, and build/generate_knowledge_layer.py all read layer.operating_models[model] as a plain string), operating_models.Federated-Consortium is kept as the string 'split', a value distinct from the four responsibility_values so it renders visibly as its own case rather than being mistaken for one of the four cosai-core values. The actual two-party breakdown for each layer lives in the new sibling key federated_consortium_split below, which none of the existing code paths read, so nothing currently deployed changes behavior until federated_consortium_split is explicitly wired into a page.",
   "layers": [
     {
       "id": "L1",
@@ -18,7 +19,13 @@
         "AI-SaaS":    "shared",
         "AI-PaaS":    "customer-owned",
         "Agent-PaaS": "customer-owned",
-        "IaaS":       "customer-owned"
+        "IaaS":       "customer-owned",
+        "Federated-Consortium": "split"
+      },
+      "federated_consortium_split": {
+        "shared_commons": "consortium-core-coordinator",
+        "sovereign_assets": "sovereign-participant-node",
+        "note": "Core coordinator sets consortium-wide governance rules, anti-capture policy, and certification standards. Each node governs its own local acceptable-use policy and compliance with its own applicable law (TAP-010, Two governing domains)."
       }
     },
     {
@@ -37,7 +44,13 @@
         "AI-SaaS":    "shared",
         "AI-PaaS":    "shared",
         "Agent-PaaS": "shared",
-        "IaaS":       "customer-owned"
+        "IaaS":       "customer-owned",
+        "Federated-Consortium": "split"
+      },
+      "federated_consortium_split": {
+        "shared_commons": "consortium-core-coordinator",
+        "sovereign_assets": "sovereign-participant-node",
+        "note": "Core coordinator is accountable only for the public metadata catalog (provenance, license, and quality descriptors partners voluntarily submit). Raw data itself is always sovereign_assets and never leaves the node (TAP-010, Weight contribution does not transfer data rights; site Diagram B)."
       }
     },
     {
@@ -56,7 +69,13 @@
         "AI-SaaS":    "shared",
         "AI-PaaS":    "shared",
         "Agent-PaaS": "shared",
-        "IaaS":       "customer-owned"
+        "IaaS":       "customer-owned",
+        "Federated-Consortium": "split"
+      },
+      "federated_consortium_split": {
+        "shared_commons": "N/A",
+        "sovereign_assets": "sovereign-participant-node",
+        "note": "No shared application layer exists in Tapestry's current roadmap phases. Sovereign derivatives, adapters, and experts are explicitly participant-owned with no contribution-back requirement (TAP-010, Participant Sovereign Assets). Revisit if a Phase 3+ shared application layer is adopted."
       }
     },
     {
@@ -75,7 +94,13 @@
         "AI-SaaS":    "shared",
         "AI-PaaS":    "shared",
         "Agent-PaaS": "shared",
-        "IaaS":       "customer-owned"
+        "IaaS":       "customer-owned",
+        "Federated-Consortium": "split"
+      },
+      "federated_consortium_split": {
+        "shared_commons": "consortium-core-coordinator",
+        "sovereign_assets": "sovereign-participant-node",
+        "note": "Core coordinator owns the aggregation infrastructure and weight-update protocol (site: 'centralized technical integration'). Each node owns its own local training compute, which never leaves its control (site Diagram A/B: 'Partner node retains own data & compute')."
       }
     },
     {
@@ -94,7 +119,13 @@
         "AI-SaaS":    "N/A",
         "AI-PaaS":    "model-evaluation",
         "Agent-PaaS": "shared",
-        "IaaS":       "customer-owned"
+        "IaaS":       "customer-owned",
+        "Federated-Consortium": "split"
+      },
+      "federated_consortium_split": {
+        "shared_commons": "consortium-core-coordinator",
+        "sovereign_assets": "sovereign-participant-node",
+        "note": "Core coordinator is accountable for the Shared Base release, its model card, and contribution acceptance/rejection. Each node is accountable for its own local CPT, fine-tuning, and any sovereign derivative model it builds downstream, with no contribution-back requirement (TAP-010, Participant Sovereign Assets)."
       }
     }
   ]
