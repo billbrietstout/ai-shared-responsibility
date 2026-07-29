@@ -25,6 +25,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LAYERS   = [f"srf.layer.L{i}" for i in range(1, 6)]
 OPMODELS = ["srf.opmodel.ai-saas", "srf.opmodel.ai-paas",
             "srf.opmodel.agent-paas", "srf.opmodel.iaas"]
+# Federated-Consortium is a proposed extension, so it is listed only on the pages
+# that actually render it rather than folded into OPMODELS everywhere.
+TAPESTRY = ["srf.opmodel.federated-consortium", "srf.concept.project-tapestry"]
+TAPESTRY_ROLES = ["srf.role.sovereign-participant-node",
+                  "srf.role.consortium-core-coordinator"]
 ROLES8   = ["srf.role.ai-system-users", "srf.role.ai-system-governance",
             "srf.role.data-provider", "srf.role.application-developer",
             "srf.role.agentic-platform-provider", "srf.role.ai-model-serving",
@@ -73,7 +78,10 @@ def classify(rel):
     if rel == "framework/nice-mapping":
         return "mapping", ROLES8 + ["srf.framework.cosai-srf"]
     if top == "operating-models":
-        return "operating-models", OPMODELS + LAYERS
+        return "operating-models", OPMODELS + TAPESTRY + LAYERS
+    if top == "tapestry" and len(seg) > 1 and seg[1] == "controls":
+        return "controls", (LAYERS + TAPESTRY + TAPESTRY_ROLES
+                            + ["srf.concept.control", "srf.concept.accountability"])
     if top == "personas":
         return "personas", ROLES8
     if top == "glossary":

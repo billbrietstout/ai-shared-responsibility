@@ -149,7 +149,13 @@ def build_documents(layers, matrix, personas):
             L["description"],
             ["subtype:layer", "source:cosai-srf"])
 
+    # Only the cosai-core models are offered to OpenCRE. This binding proposes
+    # CoSAI's published framework, so a proposed-extension model defined on this
+    # site does not belong in it under a source:cosai-srf tag. Take the extension
+    # upstream to CoSAI first if it is to be mapped.
     for m in matrix["models"]:
+        if m.get("provenance", "cosai-core") != "cosai-core":
+            continue
         doc(m["name"],
             f'srf.opmodel.{OPMODEL_SLUG[m["id"]]}',
             f'{SITE}/operating-models/#{m["id"]}',

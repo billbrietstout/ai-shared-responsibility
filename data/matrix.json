@@ -1,69 +1,117 @@
 {
   "version": "0.7",
   "source": "CoSAI AI Shared Responsibility Framework §3.2, Draft V0.7",
+  "party_model_note": "Each model declares the two parties whose responsibility its cells describe. The four cosai-core models describe one customer receiving a service from one vendor, so their parties are customer and provider. The proposed-extension model Federated-Consortium describes peers rather than a supply chain, so its parties are the two governing domains TAP-010 defines: the Shared Commons and Participant Sovereign Assets. Read column labels and cell keys from model.parties rather than assuming customer and provider.",
   "models": [
     {
       "id": "AI-SaaS",
       "name": "AI-Enabled SaaS",
       "short": "AI-SaaS",
+      "provenance": "cosai-core",
+      "parties": [
+        { "key": "customer", "label": "Customer responsibility" },
+        { "key": "provider", "label": "Provider responsibility" }
+      ],
       "description": "Provider supplies a managed AI application. Customer retains business governance and supplies context data; provider assumes technical responsibility for the application, platform, and model."
     },
     {
       "id": "AI-PaaS",
       "name": "AI Platform as a Service",
       "short": "AI-PaaS",
+      "provenance": "cosai-core",
+      "parties": [
+        { "key": "customer", "label": "Customer responsibility" },
+        { "key": "provider", "label": "Provider responsibility" }
+      ],
       "description": "Customer builds and operates the application layer on a provider-managed AI platform. Customer owns business governance and the application; provider manages the platform and foundational model."
     },
     {
       "id": "Agent-PaaS",
       "name": "Agentic Platform as a Service",
       "short": "Agent-PaaS",
+      "provenance": "cosai-core",
+      "parties": [
+        { "key": "customer", "label": "Customer responsibility" },
+        { "key": "provider", "label": "Provider responsibility" }
+      ],
       "description": "Customer owns agent definitions and business logic on a provider-managed orchestration runtime. Responsibility at L3 and L5 is shared as both parties control distinct parts of the agentic stack."
     },
     {
       "id": "IaaS",
       "name": "Infrastructure as a Service",
       "short": "IaaS",
+      "provenance": "cosai-core",
+      "parties": [
+        { "key": "customer", "label": "Customer responsibility" },
+        { "key": "provider", "label": "Provider responsibility" }
+      ],
       "description": "Maximum customer responsibility. Customer builds and operates the application, platform, and model layers. Provider is accountable only for the physical and virtual infrastructure underpinning L4."
+    },
+    {
+      "id": "Federated-Consortium",
+      "name": "Federated Consortium",
+      "short": "Federated",
+      "provenance": "proposed-extension",
+      "extension_source": {
+        "project": "AI Alliance Project Tapestry",
+        "documents": [
+          "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/architecture/decisions/adr-010-open-commons-sovereign-assets.md",
+          "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/governance/anti-capture-principle.md"
+        ]
+      },
+      "parties": [
+        { "key": "shared_commons", "label": "Shared Commons (core coordinator)" },
+        { "key": "sovereign_assets", "label": "Sovereign assets (participant node)" }
+      ],
+      "description": "Institutions participate as self-governing peers rather than as customers of a vendor. Every layer splits into two governing domains: a Shared Commons that stays open and independently usable, and Participant Sovereign Assets that each participant controls unless it voluntarily contributes them. A participant runs the full stack locally and contributes only governed model-weight updates.",
+      "controls": "https://aisharedresponsibility.com/data/tapestry-controls.json"
     }
   ],
   "responsibility_values": {
-    "customer-owned":    { "label": "Customer",         "weight": 3 },
-    "shared":            { "label": "Shared",           "weight": 2 },
-    "provider-managed":  { "label": "Provider",         "weight": 1 },
-    "model-evaluation":  { "label": "Model evaluation", "weight": 2 },
-    "N/A":               { "label": "N/A",              "weight": 0 }
+    "customer-owned":    { "label": "Customer",         "weight": 3, "provenance": "cosai-core" },
+    "shared":            { "label": "Shared",           "weight": 2, "provenance": "cosai-core" },
+    "provider-managed":  { "label": "Provider",         "weight": 1, "provenance": "cosai-core" },
+    "model-evaluation":  { "label": "Model evaluation",  "weight": 2, "provenance": "cosai-core" },
+    "N/A":               { "label": "N/A",              "weight": 0, "provenance": "cosai-core" },
+    "participant-owned": { "label": "Participant",      "weight": 3, "provenance": "proposed-extension" },
+    "commons-governed":  { "label": "Commons",          "weight": 2, "provenance": "proposed-extension" }
   },
+  "extension_value_note": "participant-owned and commons-governed exist because neither party in a federated consortium is a customer or a provider. participant-owned carries the same weight as customer-owned, since a participant node holds the same unshared accountability a customer does. commons-governed carries the same weight as shared, since accountability rests with a collective body rather than with one organization.",
   "cells": {
     "L1": {
       "AI-SaaS":    { "customer": "shared",          "provider": "provider-managed" },
       "AI-PaaS":    { "customer": "customer-owned",   "provider": "N/A" },
       "Agent-PaaS": { "customer": "customer-owned",   "provider": "N/A" },
-      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" }
+      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" },
+      "Federated-Consortium": { "shared_commons": "commons-governed", "sovereign_assets": "participant-owned" }
     },
     "L2": {
       "AI-SaaS":    { "customer": "shared",          "provider": "provider-managed" },
       "AI-PaaS":    { "customer": "shared",           "provider": "shared" },
       "Agent-PaaS": { "customer": "shared",           "provider": "shared" },
-      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" }
+      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" },
+      "Federated-Consortium": { "shared_commons": "commons-governed", "sovereign_assets": "participant-owned" }
     },
     "L3": {
       "AI-SaaS":    { "customer": "N/A",             "provider": "provider-managed" },
       "AI-PaaS":    { "customer": "customer-owned",   "provider": "shared" },
       "Agent-PaaS": { "customer": "shared",           "provider": "provider-managed" },
-      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" }
+      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" },
+      "Federated-Consortium": { "shared_commons": "N/A", "sovereign_assets": "participant-owned" }
     },
     "L4": {
       "AI-SaaS":    { "customer": "N/A",             "provider": "provider-managed" },
       "AI-PaaS":    { "customer": "N/A",              "provider": "provider-managed" },
       "Agent-PaaS": { "customer": "N/A",              "provider": "provider-managed" },
-      "IaaS":       { "customer": "customer-owned",   "provider": "shared" }
+      "IaaS":       { "customer": "customer-owned",   "provider": "shared" },
+      "Federated-Consortium": { "shared_commons": "commons-governed", "sovereign_assets": "participant-owned" }
     },
     "L5": {
       "AI-SaaS":    { "customer": "N/A",             "provider": "provider-managed" },
       "AI-PaaS":    { "customer": "model-evaluation", "provider": "provider-managed" },
       "Agent-PaaS": { "customer": "shared",           "provider": "shared" },
-      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" }
+      "IaaS":       { "customer": "customer-owned",   "provider": "N/A" },
+      "Federated-Consortium": { "shared_commons": "commons-governed", "sovereign_assets": "participant-owned" }
     }
   }
 }

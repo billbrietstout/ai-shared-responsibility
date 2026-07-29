@@ -271,7 +271,22 @@
       .resp-chip--shared    { background: #fef3c7; color: #92400e; }
       .resp-chip--provider  { background: #f1f5f9; color: var(--slate-600); }
       .resp-chip--model-eval{ background: #ede9fe; color: #5b21b6; }
+      .resp-chip--participant { background: #dcfce7; color: #166534; }
+      .resp-chip--commons     { background: #ccfbf1; color: #115e59; }
       .resp-chip--na        { color: var(--slate-400); font-size: 10px; letter-spacing: 0.04em; }
+      .model-tab__ext {
+        display: inline-block;
+        margin-left: 6px;
+        padding: 1px 5px;
+        border-radius: 3px;
+        background: #f1f5f9;
+        color: var(--slate-600);
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        vertical-align: 1px;
+      }
       .accent--l1 { background: var(--l1); }
       .accent--l2 { background: var(--l2); }
       .accent--l3 { background: var(--l3); }
@@ -743,11 +758,23 @@
         L3:"AI Application",      L4:"AI Platform", L5:"AI Model Provider",
       };
       const CHIP_MAP = {
-        "customer-owned":   ["customer",   "Customer"],
-        "shared":           ["shared",     "Shared"],
-        "provider-managed": ["provider",   "Provider"],
-        "model-evaluation": ["model-eval", "Model evaluation"],
-        "N/A":              ["na",         "N/A"],
+        "customer-owned":   ["customer",    "Customer"],
+        "shared":           ["shared",      "Shared"],
+        "provider-managed": ["provider",    "Provider"],
+        "model-evaluation": ["model-eval",  "Model evaluation"],
+        "participant-owned":["participant", "Participant"],
+        "commons-governed": ["commons",     "Commons"],
+        "N/A":              ["na",          "N/A"],
+      };
+
+      const LEGEND_TEXT = {
+        "customer-owned":   "Full accountability; provider offers no default controls",
+        "shared":           "Both parties have defined, complementary obligations",
+        "provider-managed": "Provider owns and operates; customer inherits controls",
+        "model-evaluation": "Customer evaluates suitability; provider manages the model",
+        "participant-owned":"The participant node alone is accountable for this layer's sovereign assets",
+        "commons-governed": "A collective body is accountable, and the artifacts stay open and independently usable",
+        "N/A":              "Layer does not apply in this operating model",
       };
 
       function chip(value) {
@@ -771,8 +798,12 @@
 
         function render() {
           const model = data.models.find(m => m.id === active);
+          const parties = model.parties;
+          const used = new Set();
           const rows = ["L1","L2","L3","L4","L5"].map(id => {
             const cell = data.cells[id][active];
+            Object.values(cell).forEach(v => used.add(v));
+            const cols = parties.map(p => `<td class="col-cell">${chip(cell[p.key])}</td>`).join("");
             return `<tr>
               <td><div class="col-layer">
                 <div class="layer-accent accent--${id.toLowerCase()}" aria-hidden="true"></div>
@@ -781,30 +812,38 @@
                   <div class="layer-name">${LAYER_NAMES[id]}</div>
                 </div>
               </div></td>
-              <td class="col-cell">${chip(cell.customer)}</td>
-              <td class="col-cell">${chip(cell.provider)}</td>
+              ${cols}
             </tr>`;
           }).join("");
 
+          const legendItems = Object.keys(LEGEND_TEXT)
+            .filter(v => used.has(v))
+            .map(v => `<div class="legend__item">${chip(v)} ${LEGEND_TEXT[v]}</div>`)
+            .join("");
+
+          const ext = model.provenance === "proposed-extension"
+            ? `<div class="callout callout--warn"><strong>Proposed extension:</strong>
+                 ${model.name} is not part of the CoSAI release. It is proposed on this
+                 site to describe a federation of peer institutions, and its control set
+                 is at <a href="/tapestry/controls/">/tapestry/controls/</a>.</div>`
+            : `<div class="callout"><strong>Direction:</strong> The four CoSAI tabs read
+                 left to right from most provider-managed (AI-SaaS) to most
+                 customer-managed (IaaS). Customer responsibility increases as
+                 organizations move toward infrastructure-layer deployments.</div>`;
+
           root.innerHTML = `
             <div class="model-tabs" role="tablist" aria-label="Select operating model">
-              ${data.models.map(m => `<button class="model-tab${m.id===active?" model-tab--active":""}" role="tab" aria-selected="${m.id===active}" data-model="${m.id}">${m.short}</button>`).join("")}
+              ${data.models.map(m => `<button class="model-tab${m.id===active?" model-tab--active":""}" role="tab" aria-selected="${m.id===active}" data-model="${m.id}">${m.short}${m.provenance === "proposed-extension" ? '<span class="model-tab__ext">Ext</span>' : ""}</button>`).join("")}
             </div>
             <div class="model-desc"><strong>${model.name}:</strong> ${model.description}</div>
             <div class="matrix-wrap">
               <table class="matrix" aria-label="Responsibility matrix for ${model.name}">
-                <thead><tr><th>Layer</th><th>Customer responsibility</th><th>Provider responsibility</th></tr></thead>
+                <thead><tr><th>Layer</th>${parties.map(p => `<th>${p.label}</th>`).join("")}</tr></thead>
                 <tbody>${rows}</tbody>
               </table>
             </div>
-            <div class="legend" aria-label="Legend">
-              <div class="legend__item"><span class="resp-chip resp-chip--customer">Customer</span> Full accountability; provider offers no default controls</div>
-              <div class="legend__item"><span class="resp-chip resp-chip--shared">Shared</span> Both parties have defined, complementary obligations</div>
-              <div class="legend__item"><span class="resp-chip resp-chip--provider">Provider</span> Provider owns and operates; customer inherits controls</div>
-              <div class="legend__item"><span class="resp-chip resp-chip--model-eval">Model evaluation</span> Customer evaluates suitability; provider manages the model</div>
-              <div class="legend__item"><span class="resp-chip resp-chip--na">N/A</span> Layer does not apply in this operating model</div>
-            </div>
-            <div class="callout"><strong>Direction:</strong> Columns read left to right from most provider-managed (AI-SaaS) to most customer-managed (IaaS). Customer responsibility increases as organizations move toward infrastructure-layer deployments.</div>
+            <div class="legend" aria-label="Legend">${legendItems}</div>
+            ${ext}
           `;
 
           root.querySelectorAll(".model-tab").forEach(btn => {
