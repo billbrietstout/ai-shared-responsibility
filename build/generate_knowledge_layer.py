@@ -71,7 +71,16 @@ OPMODEL_SLUG = {
     "AI-PaaS": "ai-paas",
     "Agent-PaaS": "agent-paas",
     "IaaS": "iaas",
+    "Federated-Consortium": "federated-consortium",
 }
+
+# The four cosai-core models resolve a layer to one responsibility value, so a
+# single assigns_responsibility edge carries the whole cell. Federated-Consortium
+# splits each layer into two governing domains with two accountable parties, so
+# its accountability rides on accountable_for_domain edges instead. Keeping it
+# out of assigns_responsibility avoids asserting a value that its cells do not
+# have.
+SPLIT_OPMODELS = {"Federated-Consortium"}
 
 def layer_id(code):       return f"srf.layer.{code}"
 def opmodel_id(code):     return f"srf.opmodel.{OPMODEL_SLUG[code]}"
@@ -233,7 +242,7 @@ def build_glossary_outputs(terms):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
-                   controls_by_vertical, moral=None):
+                   controls_by_vertical, moral=None, tapestry=None):
     nodes = {}   # id -> node
     edges = []
     related = {} # id -> set of neighbour ids
@@ -310,8 +319,28 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
     # operating model -> layer responsibility (from layers.json summary values)
     for L in layers["layers"]:
         for code, value in L.get("operating_models", {}).items():
+            if code not in OPMODEL_SLUG or code in SPLIT_OPMODELS:
+                continue
             add_edge(opmodel_id(code), "assigns_responsibility",
                      layer_id(L["id"]), value=value)
+
+    # Federated-Consortium: one edge per layer per governing domain, naming the
+    # party accountable for that domain at that layer. A domain marked N/A has no
+    # accountable party at that layer and gets no edge.
+    DOMAIN_KEYS = {"shared_commons": "shared-commons",
+                   "sovereign_assets": "sovereign-assets"}
+    for L in layers["layers"]:
+        split = L.get("federated_consortium_split")
+        if not split:
+            continue
+        for field, domain in DOMAIN_KEYS.items():
+            persona = split.get(field)
+            if not persona or persona == "N/A":
+                continue
+            add_edge(layer_id(L["id"]), "accountable_for_domain",
+                     role_id(persona), domain=domain,
+                     operating_model="Federated-Consortium",
+                     note=split.get("note", ""))
 
     # general concept nodes from glossary (only those that are not already
     # a layer / role / operating model)
@@ -539,6 +568,46 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
                         add_edge(nid, "implements", req_nid, citation=citation)
                         linked_reqs.add(req_nid)
 
+    # Project Tapestry accountability controls. These are not an industry
+    # vertical: they describe one deployment topology, the Federated-Consortium
+    # operating model, so they carry no belongs_to_vertical edge. Their
+    # regulatory citations point at project ADRs rather than legal instruments,
+    # so they produce no governed_by edges either. What they do carry is the
+    # domain assignment that makes the two-party split checkable.
+    if tapestry:
+        scope_id = concept_id("project-tapestry")
+        add_node(scope_id, "Project Tapestry (federated consortium extension)",
+                 "concept", f"{SITE}/tapestry/controls/",
+                 subtype="extension-scope")
+        add_edge(scope_id, "extends_operating_model",
+                 opmodel_id("Federated-Consortium"))
+        for c in tapestry["controls"]:
+            nid = control_id("tapestry", c["id"])
+            add_node(nid, f'{c["id"]}: {c["title"]}', "control",
+                     f"{SITE}/tapestry/controls/#{c['id']}", subtype="tapestry")
+            node = nodes[nid]
+            node["accountability_domain"] = c["accountability_domain"]
+            node["disclosure_tier"] = c["threshold"]["disclosure_tier"]
+            node["property_class"] = c["property_class"]
+            node["implementation_status"] = c["implementation_status"]
+            add_edge(nid, "part_of_extension", scope_id)
+            add_edge(nid, "applies_to_layer", layer_id(c["layer"]))
+            add_edge(nid, "accountable_to", role_id(c["accountable_persona"]))
+            for code in c.get("operating_models", []):
+                if code in OPMODEL_SLUG:
+                    add_edge(nid, "applies_in_operating_model", opmodel_id(code))
+            # A control whose content is set by the node's own law points at the
+            # instruments that would resolve it, per jurisdiction. The edge says
+            # "this is where the obligation comes from for some participant",
+            # not "this instrument governs every participant".
+            jb = c.get("jurisdiction_binding") or {}
+            for inst in jb.get("example_instruments", []):
+                target = ext_id(inst)
+                if target in nodes:
+                    add_edge(nid, "resolves_against_instrument", target,
+                             requirement_class=jb.get("requirement_class", ""),
+                             resolves_per=jb.get("resolves_per", "node"))
+
     # finalise related[] (cap to keep nodes readable)
     for nid, node in nodes.items():
         node["related"] = sorted(related[nid])
@@ -706,11 +775,14 @@ def main():
     verticals = ["finance", "healthcare", "insurance",
                  "public-sector", "defense", "manufacturing"]
     controls_by_vertical = {v: load(f"{v}-controls.json") for v in verticals}
+    tapestry_path = os.path.join(DATA, "tapestry-controls.json")
+    tapestry = (json.load(open(tapestry_path, encoding="utf-8"))
+                if os.path.exists(tapestry_path) else None)
 
     registry, index, per_term = build_glossary_outputs(terms)
     nodes, edges, nodes_out, edges_out = build_ontology(
         terms, layers, personas, matrix, regs, jurisdictions,
-        controls_by_vertical, moral=moral)
+        controls_by_vertical, moral=moral, tapestry=tapestry)
     ids = build_ids(nodes, terms)
     exp_g, exp_o, exp_f = build_exports(
         terms, nodes, edges, layers, personas, matrix)
@@ -721,6 +793,9 @@ def main():
         "ontology_edges": len(edges),
         "canonical_ids": ids["count"],
         "controls": sum(len(p["controls"]) for p in controls_by_vertical.values()),
+        "tapestry_controls": len((tapestry or {}).get("controls", [])),
+        "accountable_for_domain_edges": sum(
+            1 for e in edges if e["rel"] == "accountable_for_domain"),
         "jurisdictions": len(jurisdictions["jurisdictions"]),
         "regulations": len(regs["items"]),
         "moral_requirements": len((moral or {}).get("requirements", [])),

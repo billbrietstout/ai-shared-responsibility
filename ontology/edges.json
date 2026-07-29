@@ -4,6 +4,7 @@
   "srf_version": "1.0",
   "updated": "2026-07-28",
   "relations": [
+    "accountable_for_domain",
     "accountable_to",
     "applies_in_operating_model",
     "applies_to_layer",
@@ -13,6 +14,7 @@
     "contains_layer",
     "defined_in",
     "emphasizes",
+    "extends_operating_model",
     "governed_by",
     "has_operating_model",
     "has_persona",
@@ -22,11 +24,13 @@
     "maps_to_layer",
     "operates_at_layer",
     "part_of",
+    "part_of_extension",
+    "resolves_against_instrument",
     "specializes",
     "subordinate_to",
     "superseded_by"
   ],
-  "count": 3548,
+  "count": 3689,
   "edges": [
     {
       "source": "srf.framework.cosai-srf",
@@ -74,6 +78,11 @@
       "target": "srf.opmodel.iaas"
     },
     {
+      "source": "srf.framework.cosai-srf",
+      "rel": "has_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
       "source": "srf.role.agentic-platform-provider",
       "rel": "operates_at_layer",
       "target": "srf.layer.L3"
@@ -117,6 +126,46 @@
       "source": "srf.role.ai-platform-provider",
       "rel": "operates_at_layer",
       "target": "srf.layer.L4"
+    },
+    {
+      "source": "srf.role.sovereign-participant-node",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.role.sovereign-participant-node",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.role.sovereign-participant-node",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "srf.role.sovereign-participant-node",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "srf.role.sovereign-participant-node",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "srf.role.consortium-core-coordinator",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.role.consortium-core-coordinator",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "srf.role.consortium-core-coordinator",
+      "rel": "operates_at_layer",
+      "target": "srf.layer.L5"
     },
     {
       "source": "srf.role.clinical-ai-governance",
@@ -317,6 +366,78 @@
       "rel": "assigns_responsibility",
       "target": "srf.layer.L5",
       "value": "customer-owned"
+    },
+    {
+      "source": "srf.layer.L1",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.consortium-core-coordinator",
+      "domain": "shared-commons",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator sets consortium-wide governance rules, anti-capture policy, and certification standards. Each node governs its own local acceptable-use policy and compliance with its own applicable law (TAP-010, Two governing domains)."
+    },
+    {
+      "source": "srf.layer.L1",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.sovereign-participant-node",
+      "domain": "sovereign-assets",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator sets consortium-wide governance rules, anti-capture policy, and certification standards. Each node governs its own local acceptable-use policy and compliance with its own applicable law (TAP-010, Two governing domains)."
+    },
+    {
+      "source": "srf.layer.L2",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.consortium-core-coordinator",
+      "domain": "shared-commons",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator is accountable only for the public metadata catalog (provenance, license, and quality descriptors partners voluntarily submit). Raw data itself is always sovereign_assets and never leaves the node (TAP-010, Weight contribution does not transfer data rights; site Diagram B)."
+    },
+    {
+      "source": "srf.layer.L2",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.sovereign-participant-node",
+      "domain": "sovereign-assets",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator is accountable only for the public metadata catalog (provenance, license, and quality descriptors partners voluntarily submit). Raw data itself is always sovereign_assets and never leaves the node (TAP-010, Weight contribution does not transfer data rights; site Diagram B)."
+    },
+    {
+      "source": "srf.layer.L3",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.sovereign-participant-node",
+      "domain": "sovereign-assets",
+      "operating_model": "Federated-Consortium",
+      "note": "No shared application layer exists in Tapestry's current roadmap phases. Sovereign derivatives, adapters, and experts are explicitly participant-owned with no contribution-back requirement (TAP-010, Participant Sovereign Assets). Revisit if a Phase 3+ shared application layer is adopted."
+    },
+    {
+      "source": "srf.layer.L4",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.consortium-core-coordinator",
+      "domain": "shared-commons",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator owns the aggregation infrastructure and weight-update protocol (site: 'centralized technical integration'). Each node owns its own local training compute, which never leaves its control (site Diagram A/B: 'Partner node retains own data & compute')."
+    },
+    {
+      "source": "srf.layer.L4",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.sovereign-participant-node",
+      "domain": "sovereign-assets",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator owns the aggregation infrastructure and weight-update protocol (site: 'centralized technical integration'). Each node owns its own local training compute, which never leaves its control (site Diagram A/B: 'Partner node retains own data & compute')."
+    },
+    {
+      "source": "srf.layer.L5",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.consortium-core-coordinator",
+      "domain": "shared-commons",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator is accountable for the Shared Base release, its model card, and contribution acceptance/rejection. Each node is accountable for its own local CPT, fine-tuning, and any sovereign derivative model it builds downstream, with no contribution-back requirement (TAP-010, Participant Sovereign Assets)."
+    },
+    {
+      "source": "srf.layer.L5",
+      "rel": "accountable_for_domain",
+      "target": "srf.role.sovereign-participant-node",
+      "domain": "sovereign-assets",
+      "operating_model": "Federated-Consortium",
+      "note": "Core coordinator is accountable for the Shared Base release, its model card, and contribution acceptance/rejection. Each node is accountable for its own local CPT, fine-tuning, and any sovereign derivative model it builds downstream, with no contribution-back requirement (TAP-010, Participant Sovereign Assets)."
     },
     {
       "source": "srf.concept.layer",
@@ -19640,6 +19761,657 @@
       "rel": "governed_by",
       "target": "ext.framework.csa-aicm",
       "citation": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)"
+    },
+    {
+      "source": "srf.concept.project-tapestry",
+      "rel": "extends_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EVL-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EVL-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EVL-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EVL-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-INT-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-INT-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-INT-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-INT-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-002",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-002",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-002",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-002",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.eu-ai-act",
+      "requirement_class": "local-ai-governance-and-acceptable-use",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.korea-ai-basic-act",
+      "requirement_class": "local-ai-governance-and-acceptable-use",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.china-genai-interim-measures",
+      "requirement_class": "local-ai-governance-and-acceptable-use",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.canada-directive-adm",
+      "requirement_class": "local-ai-governance-and-acceptable-use",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.india-meity-ai-advisory",
+      "requirement_class": "local-ai-governance-and-acceptable-use",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.brazil-pl-2338",
+      "requirement_class": "local-ai-governance-and-acceptable-use",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CRT-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CRT-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CRT-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-CRT-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EXT-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EXT-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EXT-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L1-EXT-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.gdpr",
+      "requirement_class": "lawful-basis-for-training-on-protected-data",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.eu-ai-act",
+      "requirement_class": "lawful-basis-for-training-on-protected-data",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.korea-ai-basic-act",
+      "requirement_class": "lawful-basis-for-training-on-protected-data",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.china-genai-interim-measures",
+      "requirement_class": "lawful-basis-for-training-on-protected-data",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-001",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.hipaa-security-rule",
+      "requirement_class": "lawful-basis-for-training-on-protected-data",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-002",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-002",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-002",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-002",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.gdpr",
+      "requirement_class": "data-localization-and-cross-border-transfer",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.china-genai-interim-measures",
+      "requirement_class": "data-localization-and-cross-border-transfer",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.india-meity-ai-advisory",
+      "requirement_class": "data-localization-and-cross-border-transfer",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.korea-ai-basic-act",
+      "requirement_class": "data-localization-and-cross-border-transfer",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-004",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-004",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-004",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-CON-004",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-002",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-002",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-002",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-002",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-003",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-003",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L2"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-003",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-003",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.gdpr",
+      "requirement_class": "consent-withdrawal-and-erasure",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.hipaa-security-rule",
+      "requirement_class": "consent-withdrawal-and-erasure",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L2-MON-003",
+      "rel": "resolves_against_instrument",
+      "target": "ext.framework.korea-ai-basic-act",
+      "requirement_class": "consent-withdrawal-and-erasure",
+      "resolves_per": "node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-002",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-002",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-002",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L3-MON-002",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-CON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-CON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-CON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-CON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-002",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-002",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L4"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-002",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L4-INT-002",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.sovereign-participant-node"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-002",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-002",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-002",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-EVL-002",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-INT-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-INT-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-INT-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-INT-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-MON-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-MON-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-MON-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-MON-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CRT-001",
+      "rel": "part_of_extension",
+      "target": "srf.concept.project-tapestry"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CRT-001",
+      "rel": "applies_to_layer",
+      "target": "srf.layer.L5"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CRT-001",
+      "rel": "accountable_to",
+      "target": "srf.role.consortium-core-coordinator"
+    },
+    {
+      "source": "srf.control.tapestry.TAP-SRF-L5-CRT-001",
+      "rel": "applies_in_operating_model",
+      "target": "srf.opmodel.federated-consortium"
     }
   ]
 }

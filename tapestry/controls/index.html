@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tapestry Accountability Controls - AI Shared Responsibility - CoSAI SRF</title>
+    <meta
+      name="description"
+      content="Proposed accountability control set for a federated AI consortium, mapping Project Tapestry's governance ADRs onto the CoSAI SRF layers. Filter by layer, lifecycle stage, governing domain, disclosure tier, and status."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/tapestry/controls/" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      /* ── Layout ───────────────────────────────────────────────────── */
+      .browser-layout {
+        display: grid;
+        grid-template-columns: 230px 1fr;
+        gap: var(--sp-8);
+        align-items: start;
+        padding-top: var(--sp-8);
+        padding-bottom: var(--sp-20);
+      }
+      @media (max-width: 860px) {
+        .browser-layout { grid-template-columns: 1fr; }
+        .filter-sidebar { position: static !important; }
+      }
+
+      /* ── Hero ─────────────────────────────────────────────────────── */
+      .controls-hero { padding-top: var(--sp-10); }
+      .controls-hero__title {
+        font-size: var(--text-3xl);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--slate-900);
+        margin: var(--sp-2) 0 var(--sp-2);
+      }
+      .controls-hero__sub {
+        font-size: var(--text-sm);
+        color: var(--slate-500);
+      }
+      .breadcrumb {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        display: flex;
+        gap: var(--sp-2);
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .breadcrumb a { color: var(--slate-500); }
+      .breadcrumb__sep { color: var(--slate-300); }
+
+      /* ── Filter sidebar ───────────────────────────────────────────── */
+      .filter-sidebar { position: sticky; top: 72px; }
+      .filter-group { margin-bottom: var(--sp-5); }
+      .filter-group__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: var(--sp-2);
+        display: block;
+      }
+      .filter-btn {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: var(--sp-1) var(--sp-3);
+        border-radius: var(--radius);
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        font-family: inherit;
+        line-height: 1.75;
+        transition: background 0.1s;
+      }
+      .filter-btn:hover { background: var(--slate-100); color: var(--slate-800); }
+      .filter-btn.active {
+        background: var(--cosai-navy);
+        color: #fff;
+        font-weight: 600;
+      }
+      .filter-btn .count { float: right; font-size: 0.7rem; opacity: 0.65; }
+      .filter-divider {
+        border: none;
+        border-top: 1px solid var(--slate-200);
+        margin: 0 0 var(--sp-5);
+      }
+      .clear-btn {
+        width: 100%;
+        padding: var(--sp-2) var(--sp-3);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        background: #fff;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: var(--text-xs);
+        color: var(--slate-600);
+      }
+      .clear-btn:hover { background: var(--slate-100); }
+
+      /* ── Results header ───────────────────────────────────────────── */
+      .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--sp-4);
+        margin-bottom: var(--sp-4);
+        flex-wrap: wrap;
+      }
+      .results-count { font-size: var(--text-sm); color: var(--slate-500); }
+      .results-count strong { color: var(--slate-900); font-size: var(--text-base); }
+      .search-input {
+        padding: var(--sp-2) var(--sp-3);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        font-family: inherit;
+        font-size: var(--text-sm);
+        min-width: 240px;
+      }
+
+      /* ── Control cards ────────────────────────────────────────────── */
+      .control-list { display: flex; flex-direction: column; gap: var(--sp-3); }
+      .ctrl-card {
+        border: 1px solid var(--slate-200);
+        border-radius: 10px;
+        background: #fff;
+        overflow: hidden;
+      }
+      .ctrl-card__header {
+        display: grid;
+        grid-template-columns: 42px 1fr auto;
+        gap: var(--sp-3);
+        align-items: center;
+        padding: var(--sp-3) var(--sp-4);
+        cursor: pointer;
+      }
+      .ctrl-card__header:hover { background: var(--slate-50, #f8fafc); }
+      .ctrl-card__layer-badge {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 7px;
+        font-size: var(--text-xs);
+        font-weight: 800;
+        color: #fff;
+      }
+      .layer-L1 { background: var(--l1, #1b4965); }
+      .layer-L2 { background: var(--l2, #2c7da0); }
+      .layer-L3 { background: var(--l3, #468faf); }
+      .layer-L4 { background: var(--l4, #61a5c2); }
+      .layer-L5 { background: var(--l5, #89c2d9); }
+      .ctrl-card__id {
+        font-family: var(--font-mono, ui-monospace, monospace);
+        font-size: 0.7rem;
+        color: var(--slate-500);
+        letter-spacing: 0.02em;
+      }
+      .ctrl-card__title {
+        font-size: var(--text-sm);
+        font-weight: 650;
+        color: var(--slate-900);
+        line-height: 1.35;
+      }
+      .ctrl-card__permalink {
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--slate-300);
+        font-size: 0.7rem;
+        padding: 0 4px;
+        font-family: inherit;
+      }
+      .ctrl-card__permalink:hover { color: var(--cosai-navy); }
+      .ctrl-card__pills { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+      .ctrl-card__detail { display: none; padding: 0 var(--sp-4) var(--sp-4); }
+      .ctrl-card.open .ctrl-card__detail { display: block; }
+      .ctrl-desc {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: 1.6;
+        margin: 0 0 var(--sp-4);
+        padding-top: var(--sp-3);
+        border-top: 1px solid var(--slate-100);
+      }
+
+      /* ── Pills ────────────────────────────────────────────────────── */
+      .pill {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 20px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .pill--stage      { background: #f1f5f9; color: var(--slate-600); }
+      .pill--commons    { background: #ccfbf1; color: #115e59; }
+      .pill--sovereign  { background: #dcfce7; color: #166534; }
+      .pill--open       { background: #fef3c7; color: #92400e; }
+      .pill--conflicted { background: #fee2e2; color: #991b1b; }
+      .pill--resolved   { background: #e0f2fe; color: #075985; }
+
+      /* ── Detail fields ────────────────────────────────────────────── */
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: var(--sp-3) var(--sp-5);
+      }
+      .detail-field__label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin-bottom: 2px;
+      }
+      .detail-field__value {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: 1.5;
+      }
+      .detail-field__value code {
+        font-size: 0.78rem;
+        background: var(--slate-100);
+        padding: 1px 5px;
+        border-radius: 3px;
+      }
+
+      /* ── Blocks ───────────────────────────────────────────────────── */
+      .sub-block { margin-top: var(--sp-4); border-radius: 8px; overflow: hidden; }
+      .sub-block__head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--sp-2);
+        padding: 6px 12px;
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .sub-block__body { padding: var(--sp-3) var(--sp-3); }
+      .sub-block--threshold .sub-block__head { background: #e0f2fe; color: #075985; }
+      .sub-block--threshold .sub-block__body { background: #f0f9ff; }
+      .sub-block--tier .sub-block__head { background: #ede9fe; color: #5b21b6; }
+      .sub-block--tier .sub-block__body { background: #f5f3ff; }
+      .sub-block--status .sub-block__head { background: #fef3c7; color: #92400e; }
+      .sub-block--status .sub-block__body { background: #fffbeb; }
+      .sub-block--juris .sub-block__head { background: #f1f5f9; color: var(--slate-600); }
+      .sub-block--juris .sub-block__body { background: #f8fafc; }
+      .sub-block p {
+        margin: 0;
+        font-size: 0.8rem;
+        line-height: 1.6;
+        color: var(--slate-700);
+      }
+
+      /* ── Tier reference table ─────────────────────────────────────── */
+      .tier-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+        margin-top: var(--sp-4);
+      }
+      .tier-table th,
+      .tier-table td {
+        text-align: left;
+        padding: var(--sp-2) var(--sp-3);
+        border-bottom: 1px solid var(--slate-200);
+        vertical-align: top;
+      }
+      .tier-table th {
+        font-size: 0.65rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+      }
+      .tier-table td small { color: var(--slate-500); }
+      .tier-table tr.dominated td { background: #fffbeb; }
+      .score {
+        display: inline-grid;
+        place-items: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 5px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        background: var(--slate-100);
+        color: var(--slate-700);
+      }
+      .empty-state {
+        padding: var(--sp-10);
+        text-align: center;
+        color: var(--slate-500);
+        border: 1px dashed var(--slate-200);
+        border-radius: 10px;
+        font-size: var(--text-sm);
+      }
+      .empty-state strong { display: block; color: var(--slate-800); margin-bottom: 4px; }
+      .note-box {
+        border-radius: 10px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+        font-size: 0.875rem;
+        line-height: 1.55;
+      }
+    </style>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="controls" />
+    <meta name="llm:canonical-id" content="srf.page.tapestry-controls" />
+    <meta name="llm:concepts" content="srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.federated-consortium, srf.concept.project-tapestry, srf.role.sovereign-participant-node, srf.role.consortium-core-coordinator, srf.concept.control, srf.concept.accountability" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <site-nav current="framework"></site-nav>
+
+    <div class="page-body">
+
+      <div class="controls-hero" data-llm="summary">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="/framework/">Framework</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&rsaquo;</span>
+          <a href="/operating-models/?model=Federated-Consortium">Federated Consortium</a>
+          <span class="breadcrumb__sep" aria-hidden="true">&rsaquo;</span>
+          <span>Accountability controls</span>
+        </nav>
+        <h1 class="controls-hero__title">Federated consortium accountability controls</h1>
+        <p class="controls-hero__sub" id="hero-sub">Loading&hellip;</p>
+        <p style="font-size:var(--text-xs);color:var(--slate-500);margin-top:var(--sp-3);max-width:70ch;">
+          A federation of peer institutions cannot use the customer-and-provider split that
+          the other control sets on this site assume. Every layer here divides into two
+          governing domains instead: a Shared Commons that stays open and independently
+          usable, and Participant Sovereign Assets that each participant controls unless it
+          voluntarily contributes them. The controls below assign accountability inside that
+          division, drawing on
+          <a href="https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/architecture/decisions/adr-010-open-commons-sovereign-assets.md"
+             target="_blank" rel="noopener">Project Tapestry's TAP-010</a>.
+        </p>
+      </div>
+
+      <div class="note-box" role="note"
+           style="background:#fffbeb;border:1px solid #fbbf24;color:#78350f;">
+        <strong style="color:#92400e;">Proposed extension, and the source is still in draft.</strong>
+        This control set is not part of CoSAI SRF v1.0 and has not been endorsed by CoSAI or
+        by the AI Alliance. Its source documents carry status <em>Proposed</em> and name a
+        Tapestry Governance Committee that is not yet seated, so several controls below
+        record a duty whose mechanism the source leaves unresolved. Those are marked
+        <span class="pill pill--open">Open</span>. Where two source documents state
+        incompatible requirements, the control is marked
+        <span class="pill pill--conflicted">Conflicted</span> and records both positions
+        rather than picking one.
+      </div>
+
+      <div class="note-box" role="note"
+           style="background:#f0f9ff;border:1px solid #7dd3fc;color:#0c4a6e;">
+        <strong style="color:#075985;">Machine-readable.</strong> Raw schema:
+        <a href="/data/tapestry-controls.json">tapestry-controls.json</a>. Node contribution
+        manifests are published as
+        <a href="/export/tapestry-node-component-definition.json">OSCAL component
+        definitions</a>, which let a participant assert which controls it implements, and at
+        which disclosure tier, without shipping the underlying evidence. The declared rules
+        in the schema are enforced by
+        <code>build/verify_tapestry_accountability.py</code>.
+      </div>
+
+      <section aria-label="Disclosure tiers" data-llm="disclosure-tiers"
+               style="margin-bottom:var(--sp-8)">
+        <h2 style="font-size:var(--text-xl);font-weight:750;color:var(--slate-900);margin:0 0 var(--sp-2)">
+          The five disclosure tiers, on two axes
+        </h2>
+        <p style="font-size:var(--text-sm);color:var(--slate-600);line-height:1.6;max-width:76ch;margin:0">
+          TAP-010 lists five ways evidence about a contribution can be handled, ordered by
+          audience. Audience is not the same thing as assurance, so the table below scores
+          each tier twice. <strong>Strength</strong> is how well the tier resists a
+          participant that misstates its own compliance, which is the property TAP-010 cares
+          about when it asks for guarantees independent of organizational goodwill.
+          <strong>Disclosure</strong> is how far the underlying evidence has to travel.
+          Shaded rows are the tiers that another tier beats on both axes at once.
+        </p>
+        <div style="overflow-x:auto">
+          <table class="tier-table" id="tier-table">
+            <thead>
+              <tr>
+                <th>Tier</th>
+                <th>Who sees the evidence</th>
+                <th>Strength</th>
+                <th>Disclosure</th>
+                <th>Limit</th>
+              </tr>
+            </thead>
+            <tbody id="tier-tbody"></tbody>
+          </table>
+        </div>
+        <p id="frontier-note"
+           style="font-size:0.8rem;color:var(--slate-600);line-height:1.6;max-width:80ch;margin-top:var(--sp-3)"></p>
+      </section>
+
+      <div class="browser-layout">
+
+        <aside class="filter-sidebar" aria-label="Filters">
+
+          <div class="filter-group">
+            <span class="filter-group__label">Layer</span>
+            <button class="filter-btn active" data-filter="layer" data-value="all">
+              All layers <span class="count" id="count-layer-all"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L1">
+              L1 Governance <span class="count" id="count-layer-L1"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L2">
+              L2 Data <span class="count" id="count-layer-L2"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L3">
+              L3 Application <span class="count" id="count-layer-L3"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L4">
+              L4 Platform <span class="count" id="count-layer-L4"></span>
+            </button>
+            <button class="filter-btn" data-filter="layer" data-value="L5">
+              L5 Model <span class="count" id="count-layer-L5"></span>
+            </button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Governing domain</span>
+            <button class="filter-btn active" data-filter="domain" data-value="all">
+              Both domains <span class="count" id="count-domain-all"></span>
+            </button>
+            <button class="filter-btn" data-filter="domain" data-value="shared-commons">
+              Shared Commons <span class="count" id="count-domain-shared-commons"></span>
+            </button>
+            <button class="filter-btn" data-filter="domain" data-value="sovereign-assets">
+              Sovereign assets <span class="count" id="count-domain-sovereign-assets"></span>
+            </button>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Lifecycle stage</span>
+            <div id="stage-filters"></div>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Disclosure tier</span>
+            <div id="tier-filters"></div>
+          </div>
+
+          <hr class="filter-divider" />
+
+          <div class="filter-group">
+            <span class="filter-group__label">Source status</span>
+            <button class="filter-btn active" data-filter="status" data-value="all">
+              Any status <span class="count" id="count-status-all"></span>
+            </button>
+            <button class="filter-btn" data-filter="status" data-value="resolved-in-source">
+              Resolved <span class="count" id="count-status-resolved-in-source"></span>
+            </button>
+            <button class="filter-btn" data-filter="status" data-value="open">
+              Open <span class="count" id="count-status-open"></span>
+            </button>
+            <button class="filter-btn" data-filter="status" data-value="conflicted-in-source">
+              Conflicted <span class="count" id="count-status-conflicted-in-source"></span>
+            </button>
+          </div>
+
+          <hr class="filter-divider" />
+          <button class="clear-btn" id="clear-filters">Clear all filters</button>
+
+        </aside>
+
+        <section aria-label="Controls list" data-llm="controls-list">
+
+          <div class="results-header">
+            <p class="results-count" id="results-count">Loading&hellip;</p>
+            <input
+              type="search"
+              class="search-input"
+              id="search-input"
+              placeholder="Search controls&hellip;"
+              aria-label="Search controls"
+            />
+          </div>
+
+          <div class="control-list" id="control-list">
+            <div class="empty-state"><strong>Loading controls&hellip;</strong></div>
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+    <site-footer></site-footer>
+    <script src="/shared/components.js"></script>
+    <script>
+(function () {
+  "use strict";
+
+  let schema = null;
+  let allControls = [];
+  let filters = { layer: "all", domain: "all", stage: "all", tier: "all", status: "all" };
+  let searchQuery = "";
+
+  const DOMAIN_LABEL = {
+    "shared-commons": "Shared Commons",
+    "sovereign-assets": "Sovereign assets",
+  };
+  const DOMAIN_PILL = {
+    "shared-commons": "commons",
+    "sovereign-assets": "sovereign",
+  };
+  const STATUS_LABEL = {
+    "resolved-in-source": "Resolved",
+    "open": "Open",
+    "conflicted-in-source": "Conflicted",
+  };
+  const STATUS_PILL = {
+    "resolved-in-source": "resolved",
+    "open": "open",
+    "conflicted-in-source": "conflicted",
+  };
+
+  function escHtml(str) {
+    if (str === undefined || str === null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function titleCase(slug) {
+    return String(slug).charAt(0).toUpperCase() + String(slug).slice(1);
+  }
+
+  fetch("/data/tapestry-controls.json")
+    .then(r => r.json())
+    .then(data => {
+      schema = data;
+      allControls = data.controls;
+      buildTierTable();
+      buildDynamicFilters();
+      updateCounts();
+      wireFilters();
+      render();
+      openFromHash();
+    })
+    .catch(() => {
+      document.getElementById("control-list").innerHTML =
+        `<div class="empty-state"><strong>Could not load controls</strong>` +
+        `/data/tapestry-controls.json is not reachable.</div>`;
+    });
+
+  // ── Tier reference table ───────────────────────────────────────────────
+  function dominatedTiers() {
+    const tiers = schema.disclosure_tiers;
+    return new Set(tiers.filter(a => tiers.some(b =>
+      b.id !== a.id &&
+      b.verification_strength > a.verification_strength &&
+      b.disclosure_breadth < a.disclosure_breadth
+    )).map(a => a.id));
+  }
+
+  function buildTierTable() {
+    const dominated = dominatedTiers();
+    const rows = schema.disclosure_tiers
+      .slice()
+      .sort((a, b) => a.verification_strength - b.verification_strength)
+      .map(t => `<tr class="${dominated.has(t.id) ? "dominated" : ""}">
+        <td><strong>${escHtml(t.label)}</strong><br /><small>${escHtml(t.audience)}</small></td>
+        <td>${escHtml(t.evidence_seen_by)}</td>
+        <td><span class="score">${t.verification_strength}</span></td>
+        <td><span class="score">${t.disclosure_breadth}</span></td>
+        <td><small>${escHtml(t.limit)}</small></td>
+      </tr>`).join("");
+    document.getElementById("tier-tbody").innerHTML = rows;
+    document.getElementById("frontier-note").textContent = schema.tier_frontier_note;
+  }
+
+  // ── Filters built from the schema's own vocabularies ───────────────────
+  function buildDynamicFilters() {
+    const stages = Object.keys(schema.lifecycle_stages);
+    document.getElementById("stage-filters").innerHTML =
+      `<button class="filter-btn active" data-filter="stage" data-value="all">
+         All stages <span class="count">${allControls.length}</span>
+       </button>` +
+      stages.map(s => `<button class="filter-btn" data-filter="stage" data-value="${escHtml(s)}">
+         ${escHtml(titleCase(s))}
+         <span class="count">${allControls.filter(c => c.lifecycle_stage === s).length}</span>
+       </button>`).join("");
+
+    const tiers = schema.disclosure_tiers
+      .slice()
+      .sort((a, b) => a.verification_strength - b.verification_strength);
+    document.getElementById("tier-filters").innerHTML =
+      `<button class="filter-btn active" data-filter="tier" data-value="all">
+         Any tier <span class="count">${allControls.length}</span>
+       </button>` +
+      tiers.map(t => `<button class="filter-btn" data-filter="tier" data-value="${escHtml(t.id)}">
+         ${escHtml(t.label)}
+         <span class="count">${allControls.filter(c => c.threshold.disclosure_tier === t.id).length}</span>
+       </button>`).join("");
+  }
+
+  function updateCounts() {
+    const set = (id, n) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = n;
+    };
+    set("count-layer-all", allControls.length);
+    ["L1", "L2", "L3", "L4", "L5"].forEach(l =>
+      set("count-layer-" + l, allControls.filter(c => c.layer === l).length));
+    set("count-domain-all", allControls.length);
+    Object.keys(DOMAIN_LABEL).forEach(d =>
+      set("count-domain-" + d, allControls.filter(c => c.accountability_domain === d).length));
+    set("count-status-all", allControls.length);
+    Object.keys(STATUS_LABEL).forEach(s =>
+      set("count-status-" + s, allControls.filter(c => c.implementation_status === s).length));
+
+    const openN = allControls.filter(c => c.implementation_status !== "resolved-in-source").length;
+    document.getElementById("hero-sub").innerHTML =
+      `<strong>${allControls.length}</strong> controls across 5 SRF layers and 2 governing ` +
+      `domains &middot; ${openN} still unresolved in the source documents &middot; ` +
+      `Filter by layer, domain, stage, disclosure tier, or status`;
+  }
+
+  // ── Filtering ──────────────────────────────────────────────────────────
+  function filtered() {
+    return allControls.filter(c => {
+      if (filters.layer !== "all" && c.layer !== filters.layer) return false;
+      if (filters.domain !== "all" && c.accountability_domain !== filters.domain) return false;
+      if (filters.stage !== "all" && c.lifecycle_stage !== filters.stage) return false;
+      if (filters.tier !== "all" && c.threshold.disclosure_tier !== filters.tier) return false;
+      if (filters.status !== "all" && c.implementation_status !== filters.status) return false;
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        return [c.id, c.title, c.description, c.component, c.accountable_persona]
+          .join(" ").toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }
+
+  function render() {
+    const results = filtered();
+    const list = document.getElementById("control-list");
+    document.getElementById("results-count").innerHTML =
+      `<strong>${results.length}</strong> <span>of ${allControls.length} controls</span>`;
+
+    if (results.length === 0) {
+      list.innerHTML = `<div class="empty-state"><strong>No controls match</strong>` +
+        `Try adjusting the filters or clearing your search.</div>`;
+      return;
+    }
+
+    list.innerHTML = results.map(cardHTML).join("");
+
+    list.querySelectorAll(".ctrl-card").forEach(card => {
+      const header = card.querySelector(".ctrl-card__header");
+      const toggle = () => {
+        card.classList.toggle("open");
+        header.setAttribute("aria-expanded", card.classList.contains("open") ? "true" : "false");
+      };
+      header.addEventListener("click", e => {
+        if (e.target.closest(".ctrl-card__permalink")) return;
+        toggle();
+      });
+      header.addEventListener("keydown", e => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+    });
+  }
+
+  function tierById(id) {
+    return schema.disclosure_tiers.find(t => t.id === id) || {};
+  }
+
+  function cardHTML(c) {
+    const t = c.threshold || {};
+    const tier = tierById(t.disclosure_tier);
+    const pclass = (schema.property_classes || {})[c.property_class] || {};
+
+    const mappingRows = Object.entries(c.mappings || {})
+      .map(([k, v]) => `<div class="detail-field" style="grid-column:1/-1">
+        <div class="detail-field__label">${escHtml(k.replace(/_/g, " "))}</div>
+        <div class="detail-field__value">${escHtml(v)}</div>
+      </div>`).join("");
+
+    const jb = c.jurisdiction_binding;
+    const jurisHTML = jb ? `
+      <div class="sub-block sub-block--juris">
+        <div class="sub-block__head">
+          <span>Resolves per participant</span>
+          <span style="font-weight:600;text-transform:none;letter-spacing:0">
+            ${escHtml(jb.requirement_class)}
+          </span>
+        </div>
+        <div class="sub-block__body">
+          <p>${escHtml(jb.note)}</p>
+          <div class="detail-field" style="margin-top:var(--sp-2)">
+            <div class="detail-field__label">Instruments that would resolve it</div>
+            <div class="detail-field__value">
+              ${(jb.example_instruments || [])
+                .map(i => `<code>${escHtml(i)}</code>`).join(" ")}
+            </div>
+          </div>
+        </div>
+      </div>` : "";
+
+    const statusHTML = c.implementation_status !== "resolved-in-source" ? `
+      <div class="sub-block sub-block--status">
+        <div class="sub-block__head">
+          <span>${escHtml(STATUS_LABEL[c.implementation_status])} in the source</span>
+        </div>
+        <div class="sub-block__body"><p>${escHtml(c.implementation_status_note)}</p></div>
+      </div>` : "";
+
+    const ceilingHTML = c.tier_ceiling_note ? `
+      <div class="sub-block sub-block--tier">
+        <div class="sub-block__head"><span>Anti-capture ceiling</span></div>
+        <div class="sub-block__body"><p>${escHtml(c.tier_ceiling_note)}</p></div>
+      </div>` : "";
+
+    const crossHTML = c.cross_layer_note ? `
+      <div class="sub-block sub-block--juris">
+        <div class="sub-block__head"><span>Cross-layer note</span></div>
+        <div class="sub-block__body"><p>${escHtml(c.cross_layer_note)}</p></div>
+      </div>` : "";
+
+    return `
+      <article class="ctrl-card" id="${escHtml(c.id)}" data-id="${escHtml(c.id)}">
+        <div class="ctrl-card__header" role="button" tabindex="0" aria-expanded="false">
+          <div class="ctrl-card__layer-badge layer-${escHtml(c.layer)}">${escHtml(c.layer)}</div>
+          <div class="ctrl-card__meta">
+            <div class="ctrl-card__id">${escHtml(c.id)}<button class="ctrl-card__permalink"
+              onclick="navigator.clipboard.writeText(location.origin+location.pathname+'#${escHtml(c.id)}');this.textContent='Copied!';setTimeout(()=>this.textContent='#',1200)"
+              title="Copy permalink">#</button></div>
+            <div class="ctrl-card__title">${escHtml(c.title)}</div>
+          </div>
+          <div class="ctrl-card__pills">
+            <span class="pill pill--${DOMAIN_PILL[c.accountability_domain]}">${escHtml(DOMAIN_LABEL[c.accountability_domain])}</span>
+            <span class="pill pill--stage">${escHtml(titleCase(c.lifecycle_stage))}</span>
+            <span class="pill pill--${STATUS_PILL[c.implementation_status]}">${escHtml(STATUS_LABEL[c.implementation_status])}</span>
+          </div>
+        </div>
+        <div class="ctrl-card__detail">
+          <p class="ctrl-desc">${escHtml(c.description)}</p>
+          <div class="detail-grid">
+            <div class="detail-field">
+              <div class="detail-field__label">Component</div>
+              <div class="detail-field__value">${escHtml(c.component)}</div>
+            </div>
+            <div class="detail-field">
+              <div class="detail-field__label">Accountable persona</div>
+              <div class="detail-field__value"><code>${escHtml(c.accountable_persona)}</code></div>
+            </div>
+            <div class="detail-field">
+              <div class="detail-field__label">Bears on the commons</div>
+              <div class="detail-field__value">${c.bears_on_commons ? "Yes" : "No"}</div>
+            </div>
+            <div class="detail-field">
+              <div class="detail-field__label">Property class</div>
+              <div class="detail-field__value"><code>${escHtml(c.property_class)}</code></div>
+            </div>
+            ${mappingRows}
+          </div>
+
+          <div class="sub-block sub-block--threshold">
+            <div class="sub-block__head">
+              <span>Threshold</span>
+              <span style="font-weight:600;text-transform:none;letter-spacing:0">
+                window ${escHtml(t.window)}
+              </span>
+            </div>
+            <div class="sub-block__body">
+              <p style="margin-bottom:var(--sp-3)">${escHtml(t.description)}</p>
+              <div class="detail-grid">
+                <div class="detail-field">
+                  <div class="detail-field__label">Metric</div>
+                  <div class="detail-field__value"><code>${escHtml(t.metric)}</code></div>
+                </div>
+                <div class="detail-field">
+                  <div class="detail-field__label">Operator / param</div>
+                  <div class="detail-field__value"><code>${escHtml(t.operator)} ${escHtml(t.param)}</code></div>
+                </div>
+                <div class="detail-field">
+                  <div class="detail-field__label">Breach action</div>
+                  <div class="detail-field__value"><code>${escHtml(t.breach_action)}</code></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sub-block sub-block--tier">
+            <div class="sub-block__head">
+              <span>Evidence: ${escHtml(tier.label)}</span>
+              <span style="font-weight:600;text-transform:none;letter-spacing:0">
+                strength ${escHtml(tier.verification_strength)} &middot;
+                disclosure ${escHtml(tier.disclosure_breadth)}
+              </span>
+            </div>
+            <div class="sub-block__body">
+              <p>${escHtml(tier.evidence_seen_by)}</p>
+              <p style="margin-top:var(--sp-2);color:var(--slate-500)">
+                Floor for a ${escHtml(c.property_class)} claim is
+                <strong>${escHtml(tierById(pclass.minimum_tier).label)}</strong>.
+                ${escHtml(pclass.rationale)}
+              </p>
+            </div>
+          </div>
+
+          ${ceilingHTML}
+          ${jurisHTML}
+          ${statusHTML}
+          ${crossHTML}
+        </div>
+      </article>`;
+  }
+
+  // ── Wiring ─────────────────────────────────────────────────────────────
+  function wireFilters() {
+    document.querySelectorAll("[data-filter]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const group = btn.dataset.filter;
+        filters[group] = btn.dataset.value;
+        document.querySelectorAll(`[data-filter="${group}"]`)
+          .forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        render();
+      });
+    });
+
+    document.getElementById("clear-filters").addEventListener("click", () => {
+      filters = { layer: "all", domain: "all", stage: "all", tier: "all", status: "all" };
+      searchQuery = "";
+      document.getElementById("search-input").value = "";
+      document.querySelectorAll("[data-filter]").forEach(b => {
+        b.classList.toggle("active", b.dataset.value === "all");
+      });
+      render();
+    });
+
+    document.getElementById("search-input").addEventListener("input", e => {
+      searchQuery = e.target.value.trim();
+      render();
+    });
+  }
+
+  function openFromHash() {
+    const id = decodeURIComponent(location.hash.replace(/^#/, ""));
+    if (!id) return;
+    const card = document.getElementById(id);
+    if (!card) return;
+    card.classList.add("open");
+    card.querySelector(".ctrl-card__header").setAttribute("aria-expanded", "true");
+    card.scrollIntoView({ block: "center" });
+  }
+
+})();
+    </script>
+  </body>
+</html>

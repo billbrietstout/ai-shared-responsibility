@@ -1,79 +1,179 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "srf_version": "1.0",
-  "description": "Starter control set mapping Project Tapestry's governance ADRs onto the SRF accountability pattern, using the Federated-Consortium operating model and its two proposed-extension personas (sovereign-participant-node, consortium-core-coordinator).",
-  "regulatory_context": "TAP-010 (Open Commons and Sovereign Assets, Proposed, Tapestry Governance Committee to ratify) is the operative instrument. It is a project ADR, not an external regulation, so mappings below cite ADR sections directly rather than an external mapping_key.",
+  "description": "Accountability control set mapping Project Tapestry's governance ADRs onto the SRF pattern, using the Federated-Consortium operating model and its two proposed-extension personas (sovereign-participant-node, consortium-core-coordinator).",
   "provenance": "proposed-extension",
-  "status_note": "This is a first-cut, illustrative set (5 controls), not a complete catalog on the scale of the finance/healthcare/etc. vertical schemas (40 controls each). Several controls below cite TAP-010 Follow-on decisions that are explicitly unresolved in the source ADR; those controls carry implementation_status: open rather than a working threshold, consistent with this site's rule that a TBD or unresolved source citation is not a completed control.",
-  "evidence_model": "Tapestry has no telemetry/OCSF evidence layer yet, unlike the finance vertical. Evidence uses TAP-010's own five-tier disclosure model directly: public, consortium-confidential, independent-attestation, technical-evaluation, contractual-representation.",
+  "regulatory_context": "TAP-010 (Open Commons and Sovereign Assets, Proposed, Tapestry Governance Committee to ratify) is the operative instrument, supported by TAP-001, TAP-008, the anti-capture principle, and the Governance & Participation work group charter. These are project ADRs and governance documents, not external regulations, so mappings cite ADR sections directly instead of a mapping_key from data/regulations.json. Controls whose local content depends on a node's own law carry a jurisdiction_binding instead, which resolves through data/jurisdictions.json and data/regulations.json per node.",
+  "source_documents": {
+    "tap-001": "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/architecture/decisions/adr-001-core-plus-sovereign.md",
+    "tap-008": "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/architecture/decisions/adr-008-data-sovereignty.md",
+    "tap-010": "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/architecture/decisions/adr-010-open-commons-sovereign-assets.md",
+    "anti-capture-principle": "https://github.com/The-AI-Alliance/tapestry/blob/develop/docs/governance/anti-capture-principle.md",
+    "governance-participation-work-group": "https://github.com/The-AI-Alliance/tapestry/tree/develop/docs/work-groups/governance-participation"
+  },
+  "id_convention": "TAP-SRF-{layer}-{stage}-{seq}, where stage is the three-letter code for the control's lifecycle_stage: CON contribution, EVL evaluation, INT integration, MON monitoring, CRT certification, EXT exit.",
+  "renamed_from": {
+    "TAP-SRF-L2-DEV-001": "TAP-SRF-L2-CON-001",
+    "TAP-SRF-L5-DEV-001": "TAP-SRF-L5-EVL-001",
+    "TAP-SRF-L1-GOV-001": "TAP-SRF-L1-EVL-001",
+    "TAP-SRF-L4-DEV-001": "TAP-SRF-L4-INT-001",
+    "TAP-SRF-L2-MON-001": "TAP-SRF-L1-MON-001",
+    "note": "The schema_version 0.1 set used vertical-style stage codes (DEV, GOV) that did not match its own lifecycle_stage values, and placed the auditor-approval control at L2 when its component is governance accountability at L1. Nothing outside this file referenced the 0.1 identifiers."
+  },
+  "evidence_model": "Tapestry has no telemetry or OCSF evidence layer, unlike the finance and defense verticals, and no FHIR layer, unlike healthcare. Evidence uses TAP-010's own five-tier disclosure model. A disclosure tier is a governance claim about who may see evidence, not a record that evidence exists, so each tier below carries the two properties needed to reason about it: how strongly it resists a participant that misstates its own compliance, and how far the underlying evidence has to travel.",
+  "accountability_domains": {
+    "shared-commons": {
+      "label": "Shared Commons",
+      "definition": "Artifacts created collectively by Tapestry or voluntarily contributed for shared use. Open, permissively licensed, non-exclusive, independently usable, free of contributor-specific encumbrances.",
+      "default_persona": "consortium-core-coordinator",
+      "source": "TAP-010 §Two governing domains"
+    },
+    "sovereign-assets": {
+      "label": "Participant Sovereign Assets",
+      "definition": "Data, source identities, training processes, model updates, configurations, evaluations, and derivatives a participant has not contributed to the Shared Commons. Controlled by the participant and subject to its own law, consent, governance, confidentiality, and commercial choices.",
+      "default_persona": "sovereign-participant-node",
+      "source": "TAP-010 §Two governing domains"
+    },
+    "join_note": "A control's accountable_persona must equal the value that data/layers.json federated_consortium_split records for that control's layer and accountability_domain. That invariant is what connects this control set to the Federated-Consortium operating model instead of leaving the split as an unread field."
+  },
   "disclosure_tiers": [
-    "public",
-    "consortium-confidential",
-    "independent-attestation",
-    "technical-evaluation",
-    "contractual-representation"
+    {
+      "id": "contractual-representation",
+      "label": "Contractual representation",
+      "audience": "Parties to the consortium agreement",
+      "evidence_seen_by": "No one outside the participant. Only a legal assertion crosses the boundary.",
+      "verification_strength": 1,
+      "disclosure_breadth": 1,
+      "verifies": ["legal-conclusion"],
+      "limit": "The party making the claim is the party being checked. A misstatement surfaces through later dispute rather than at the contribution gate.",
+      "source": "TAP-010 §Proportionate disclosure and verification"
+    },
+    {
+      "id": "consortium-confidential",
+      "label": "Consortium-confidential",
+      "audience": "Authorized governance or review bodies",
+      "evidence_seen_by": "A governance body that may include the participant's competitors, reading artifacts the participant selected.",
+      "verification_strength": 2,
+      "disclosure_breadth": 4,
+      "verifies": ["process-observable"],
+      "limit": "Catches inconsistency in what was submitted. Does not catch omission, because the participant chooses what to submit.",
+      "source": "TAP-010 §Proportionate disclosure and verification"
+    },
+    {
+      "id": "independent-attestation",
+      "label": "Independent attestation",
+      "audience": "Approved auditor or verifier",
+      "evidence_seen_by": "One auditor approved by the consortium, checking against defined requirements.",
+      "verification_strength": 3,
+      "disclosure_breadth": 3,
+      "verifies": ["process-observable", "legal-conclusion"],
+      "limit": "Independent of the participant, but only as good as the auditor and as the requirements the auditor checks against. TAP-010 has not yet designated the body that approves auditors.",
+      "source": "TAP-010 §Proportionate disclosure and verification; §Follow-on decisions item 3"
+    },
+    {
+      "id": "technical-evaluation",
+      "label": "Technical evaluation",
+      "audience": "Contribution pipeline or evaluation environment",
+      "evidence_seen_by": "An automated pipeline measuring the submitted artifact. No human reads the underlying data.",
+      "verification_strength": 4,
+      "disclosure_breadth": 2,
+      "verifies": ["artifact-observable"],
+      "limit": "Bounded by what can be measured in a weight update without raw-data access. Cannot reach a legal conclusion or confirm that a record exists outside the artifact.",
+      "source": "TAP-010 §Proportionate disclosure and verification; §Follow-on decisions item 4"
+    },
+    {
+      "id": "public",
+      "label": "Public",
+      "audience": "Everyone",
+      "evidence_seen_by": "Everyone, enabling unbounded independent re-checking.",
+      "verification_strength": 5,
+      "disclosure_breadth": 5,
+      "verifies": ["artifact-observable", "process-observable", "legal-conclusion"],
+      "limit": "Unavailable to a participant that is legally, culturally, or commercially barred from public disclosure, which is most of Tapestry's intended membership.",
+      "source": "TAP-010 §Proportionate disclosure and verification"
+    }
   ],
-  "lifecycle_stages": [
-    "contribution",
-    "evaluation",
-    "integration",
-    "monitoring"
-  ],
+  "verification_strength_axis": "verification_strength ranks the five tiers on one named axis: resistance to a participant that misstates its own compliance. TAP-010 names this axis when it says stronger technical verification is needed for 'guarantees independent of organizational goodwill' but never ranks the tiers against it. disclosure_breadth is a second, separate axis: how far the underlying evidence has to travel. The tiers are not one scale, because TAP-010's table mixes an audience property (public, consortium-confidential), an actor property (independent-attestation), a method property (technical-evaluation), and a legal-instrument property (contractual-representation).",
+  "tier_frontier_note": "On the two axes together, technical-evaluation strictly dominates both consortium-confidential and independent-attestation for a sovereignty-constrained participant: it is stronger (4 against 2 and 3) and discloses less (2 against 4 and 3). The undominated tiers are contractual-representation, technical-evaluation, and public. This is why TAP-010 §Follow-on decisions item 4, defining how memorization, poisoning, safety, and legal-risk tests operate without raw-data access, is the highest-leverage unresolved item in the ADR: technical evaluation is the only tier that gives strong verification without forcing disclosure, and every participant that cannot disclose needs it. Its limit is real, though. A legal conclusion is not measurable from weights, so contractual-representation and independent-attestation keep a role that technical evaluation cannot take over.",
+  "property_classes": {
+    "artifact-observable": {
+      "definition": "The claim can be measured in the submitted artifact itself: memorization, poisoning, safety behavior, compatibility, quality regression.",
+      "minimum_tier": "technical-evaluation",
+      "rationale": "A measurement exists, and TAP-010 says Tapestry 'does not accept contractual assurance when the documented threat model requires technical proof'."
+    },
+    "process-observable": {
+      "definition": "The claim is about a record or a process outside the artifact: consent records exist, a license permits the use, a provenance chain is documented, a governance approval happened.",
+      "minimum_tier": "independent-attestation",
+      "rationale": "Someone other than the claimant can read the record, so accepting the claimant's own word discards available assurance for nothing."
+    },
+    "legal-conclusion": {
+      "definition": "The claim is a legal judgment rather than a measurement: we hold sufficient rights, this training was lawful under our own law, this contribution encumbers no one.",
+      "minimum_tier": "contractual-representation",
+      "rationale": "A judgment about law cannot be measured from an artifact or read off a single record, so organizational assurance is the honest floor."
+    }
+  },
+  "tier_selection_rule": {
+    "step_1_ceiling": "If a control sits in the sovereign-assets domain and bears_on_commons is false, the ceiling is contractual-representation. Demanding more of a purely local matter is capture of participants, which TAP-010 §Anti-capture in both directions forbids.",
+    "step_2_floor": "Otherwise the floor is the minimum_tier for the control's property_class, measured on verification_strength.",
+    "step_3": "Within those bounds a participant picks the tier it is permitted to use, preferring the lowest disclosure_breadth that meets the floor.",
+    "derived_answer_to_follow_on_3": "TAP-010 §Follow-on decisions item 3 asks when contractual assurance is insufficient. This rule answers it without a new committee judgment: contractual assurance is insufficient whenever the claim is artifact-observable and the control bears on the Shared Commons, because a measurement exists in that case.",
+    "verified_by": "build/verify_tapestry_accountability.py"
+  },
+  "lifecycle_stages": {
+    "contribution": "A participant prepares and submits an artifact toward the Shared Commons.",
+    "evaluation": "The consortium assesses a submission, a standard, or a governance proposal before adopting it.",
+    "integration": "An accepted artifact enters the Shared Commons and the shared infrastructure that carries it.",
+    "monitoring": "Continuing duties after integration, on either side of the boundary.",
+    "certification": "Governing Tapestry conformance claims and the marks that carry them.",
+    "exit": "Preserving a participant's ability to leave and keep operating independently."
+  },
+  "implementation_status_values": {
+    "resolved-in-source": "The source document settles the requirement, so the threshold states a duty that can be checked today.",
+    "open": "The source document raises the requirement and leaves the mechanism unresolved. The control records the duty; it does not assert that a working method exists.",
+    "conflicted-in-source": "Two source documents state incompatible requirements and the reconciling edit has not been made. The control records both positions and does not pick a winner."
+  },
+  "coverage_note": "26 controls across L1-L5 and both accountability domains, 15 accountable to the Shared Commons and 11 to Participant Sovereign Assets. This is a proposed accountability structure for review by the Tapestry Governance & Participation work group, not a ratified catalog. 12 of the 26 carry implementation_status open or conflicted-in-source, which is the finding rather than a defect: the unresolved items cluster in contribution evaluation without raw-data access and in the governance bodies that TAP-010 has not yet seated.",
   "controls": [
     {
-      "id": "TAP-SRF-L2-DEV-001",
-      "layer": "L2",
-      "component": "AI Training Data",
-      "title": "Weight-Only Contribution Data Rights Declaration",
-      "description": "Before a sovereign participant node submits a model-weight update derived from local training, it must declare that it holds sufficient rights and authorization to perform the training and to permit the intended use and distribution of the resulting contribution. The declaration does not disclose the underlying data itself.",
-      "accountable_persona": "sovereign-participant-node",
+      "id": "TAP-SRF-L1-CON-001",
+      "layer": "L1",
+      "component": "Capabilities & Business Strategy",
+      "title": "No Contribution-Back Condition on Shared Base Access",
+      "description": "Access to the Shared Base, participation in the consortium, and contribution of one artifact must not be conditioned on contributing related sovereign assets. The published participation terms must state this, and no operational gate may reintroduce the condition that the terms disclaim.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
       "operating_models": ["Federated-Consortium"],
       "lifecycle_stage": "contribution",
+      "property_class": "process-observable",
       "mappings": {
-        "tap_adr": "TAP-010 §Weight contribution does not transfer data rights"
+        "tap_adr": "TAP-010 §Participant Sovereign Assets; §Two governing domains; §Anti-capture in both directions",
+        "anti_capture_principle": "docs/governance/anti-capture-principle.md, direction 2"
       },
       "threshold": {
-        "metric": "data_rights_declaration_present",
-        "description": "Binary: a signed rights-and-authorization declaration accompanies every submitted weight contribution.",
-        "disclosure_tier": "contractual-representation",
+        "metric": "no_contribution_back_condition",
+        "description": "Binary: published participation terms disclaim any contribution-back requirement on private CPT, fine-tuning, post-training, and downstream sovereign models, and no access gate imposes one.",
+        "disclosure_tier": "public",
         "operator": "==",
         "param": "true",
-        "breach_action": "reject-contribution-pending-declaration"
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "suspend-gate-and-escalate-to-governance-committee"
       },
       "implementation_status": "resolved-in-source"
     },
     {
-      "id": "TAP-SRF-L5-DEV-001",
-      "layer": "L5",
-      "component": "Model Governance",
-      "title": "Contribution Evaluation Without Raw-Data Access",
-      "description": "The consortium core coordinator must evaluate a submitted weight update for memorization, poisoning, safety, and legal risk before integrating it into the Shared Base, without requiring access to the participant's raw training data.",
-      "accountable_persona": "consortium-core-coordinator",
-      "operating_models": ["Federated-Consortium"],
-      "lifecycle_stage": "evaluation",
-      "mappings": {
-        "tap_adr": "TAP-010 §Shared contribution and certification boundaries; §Follow-on decisions"
-      },
-      "threshold": {
-        "metric": "weight_contribution_evaluated",
-        "description": "Binary: submitted weight update passes memorization, poisoning, safety, and legal-risk evaluation before integration.",
-        "disclosure_tier": "technical-evaluation",
-        "operator": "==",
-        "param": "true",
-        "breach_action": "quarantine-contribution-pending-review"
-      },
-      "implementation_status": "open",
-      "implementation_status_note": "TAP-010's own Follow-on decisions list 'Define how memorization, poisoning, safety, and legal-risk tests operate without access to raw data' as unresolved. This control documents the requirement; it does not assert a working method exists yet."
-    },
-    {
-      "id": "TAP-SRF-L1-GOV-001",
+      "id": "TAP-SRF-L1-EVL-001",
       "layer": "L1",
       "component": "Processes & Governance",
       "title": "Anti-Capture Review Before Certification or Standards Change",
-      "description": "Before adopting a new certification standard, architecture decision, or operations policy, the consortium core coordinator must check the proposal against an anti-capture review checklist covering both directions defined in the anti-capture principle: capture of the commons and capture of participants.",
+      "description": "Before adopting a new certification standard, architecture decision, or operations policy, the consortium core coordinator must check the proposal against an anti-capture review checklist covering both directions of the anti-capture principle: capture of the commons, and capture of participants.",
       "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
       "operating_models": ["Federated-Consortium"],
       "lifecycle_stage": "evaluation",
+      "property_class": "process-observable",
       "mappings": {
         "tap_adr": "TAP-010 §Anti-capture in both directions",
         "anti_capture_principle": "docs/governance/anti-capture-principle.md",
@@ -81,60 +181,714 @@
       },
       "threshold": {
         "metric": "anti_capture_review_completed",
-        "description": "Binary: proposal checked against the anti-capture review checklist before adoption.",
-        "disclosure_tier": "consortium-confidential",
+        "description": "Binary: proposal checked against the anti-capture review checklist, and the completed review signed off by a party other than the proposal's author, before adoption.",
+        "disclosure_tier": "independent-attestation",
         "operator": "==",
         "param": "true",
+        "param_type": "verification",
+        "window": "per-decision",
         "breach_action": "block-adoption-pending-review"
       },
       "implementation_status": "open",
-      "implementation_status_note": "The checklist itself does not exist yet. docs/work-groups/governance-participation lists an 'anti-capture review checklist for architecture and operations decisions' as an early deliverable, not yet published as of this control's drafting."
+      "implementation_status_note": "The checklist does not exist yet. The Governance & Participation work group lists an 'anti-capture review checklist for architecture and operations decisions' as an early deliverable. The disclosure tier here is derived rather than quoted: TAP-010 does not say who reviews an anti-capture check, and a coordinator that self-certifies its own anti-capture review provides no assurance against capture of the commons, which is the failure the check exists to catch."
     },
     {
-      "id": "TAP-SRF-L4-DEV-001",
+      "id": "TAP-SRF-L1-INT-001",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "title": "Public Governance Rule and Contribution Requirement Publication",
+      "description": "Public governance rules, contribution requirements, public evaluation methods, and certification criteria must be published as Shared Commons artifacts, open and independently usable, before they are enforced against any participant.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "integration",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Shared Commons commitments; §Openness is purpose-driven"
+      },
+      "threshold": {
+        "metric": "enforced_rules_published",
+        "description": "Binary: every governance rule, contribution requirement, and certification criterion currently enforced has a published, openly licensed counterpart.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-release",
+        "breach_action": "suspend-enforcement-of-unpublished-rule"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L1-MON-001",
+      "layer": "L1",
+      "component": "Business Units & Accountability",
+      "title": "Independent Auditor Approval Registry",
+      "description": "A designated body must approve the independent auditors who may perform contribution evaluations at the independent-attestation tier when a participant cannot disclose evidence to the consortium, and must decide when contractual assurance alone is insufficient. The body and its current auditor registry must be named publicly.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Follow-on decisions item 3; §Proportionate disclosure and verification"
+      },
+      "threshold": {
+        "metric": "auditor_approval_body_designated",
+        "description": "Binary: a named body with authority to approve independent auditors exists and maintains a current public registry.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "escalate-to-governance-committee"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-010 §Follow-on decisions item 3 leaves this unresolved, and no such body is designated while TAP-010 remains Proposed. Every control in this set that relies on the independent-attestation tier depends on this one, which makes it the structural blocker: 5 of the 26 controls below cannot be satisfied at their required tier until the body exists."
+    },
+    {
+      "id": "TAP-SRF-L1-MON-002",
+      "layer": "L1",
+      "component": "Business Units & Accountability",
+      "title": "Decision-Rights Concentration Limit",
+      "description": "Contribution size must not convert into unilateral control. The consortium must publish how decision rights are allocated across data, compute, engineering, evaluation, and governance work, and must measure whether any single participant, vendor, or operator has accumulated enough decision rights to decide a matter alone.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Anti-capture in both directions",
+        "anti_capture_principle": "docs/governance/anti-capture-principle.md, direction 1",
+        "work_group_charter": "docs/work-groups/governance-participation §Initial questions; §Early deliverables"
+      },
+      "threshold": {
+        "metric": "unilateral_decision_capability_absent",
+        "description": "Binary: no single participant, vendor, or operator holds sufficient decision rights to adopt a standard, architecture decision, or operations policy without agreement from another party.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "rebalance-decision-rights-and-publish-record"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "The Governance & Participation work group asks 'How does Tapestry reward major contributors without letting contribution size become unilateral control?' and lists contribution categories with credit and accounting requirements as an early deliverable. No allocation model is published, so the threshold states the requirement without a method for measuring it."
+    },
+    {
+      "id": "TAP-SRF-L1-MON-003",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "title": "Node Acceptable-Use and Local Legal Compliance",
+      "description": "Each participant node governs its own acceptable-use policy and its own compliance with the law that applies to it. The node represents that its participation, local training, and local deployment comply with its own applicable law, without disclosing the underlying legal analysis to the consortium.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": false,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "legal-conclusion",
+      "mappings": {
+        "tap_adr": "TAP-010 §Two governing domains; §Non-goals (does not override applicable law)",
+        "layers_split": "data/layers.json L1 federated_consortium_split.sovereign_assets"
+      },
+      "jurisdiction_binding": {
+        "requirement_class": "local-ai-governance-and-acceptable-use",
+        "resolves_per": "node",
+        "example_instruments": ["eu-ai-act", "korea-ai-basic-act", "china-genai-interim-measures", "canada-directive-adm", "india-meity-ai-advisory", "brazil-pl-2338"],
+        "note": "The content of this control differs per node because the governing instrument differs per node. Resolve through data/jurisdictions.json and data/regulations.json for the node's jurisdiction rather than assuming one consortium-wide rule."
+      },
+      "threshold": {
+        "metric": "local_compliance_representation_current",
+        "description": "Binary: a current representation of compliance with the node's own applicable AI and data law is on file with the consortium agreement.",
+        "disclosure_tier": "contractual-representation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "suspend-contribution-eligibility-pending-representation"
+      },
+      "implementation_status": "resolved-in-source",
+      "tier_ceiling_note": "The tier_selection_rule caps this control at contractual-representation, and the floor for a legal-conclusion claim is the same tier, so the cap changes nothing here. It is recorded because the reason matters: how a node complies with its own law is its own business, and the consortium has no standing to audit it."
+    },
+    {
+      "id": "TAP-SRF-L1-CRT-001",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "title": "Certification Scope Separation",
+      "description": "Conditions on Tapestry certification marks, compatibility claims, and governance recognition govern entry into the Shared Commons and claims of Tapestry conformance only. They must not be drafted or applied so as to create ownership of, or a contribution-back claim over, private participant assets.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "certification",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Shared contribution and certification boundaries; §Non-goals (does not require Tapestry certification for private downstream models)",
+        "work_group_charter": "docs/work-groups/governance-participation §Scope (certification process governance)"
+      },
+      "threshold": {
+        "metric": "certification_terms_scope_limited",
+        "description": "Binary: published certification terms claim no ownership of and no contribution-back right over participant assets, and grant no rights beyond the conformance claim itself.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-release",
+        "breach_action": "withdraw-terms-pending-anti-capture-review"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L1-EXT-001",
+      "layer": "L1",
+      "component": "Capabilities & Business Strategy",
+      "title": "Exit and Migration Documentation Currency",
+      "description": "The documentation a participant needs for independent operation, migration, and exit must be published and kept current with the release it describes. A participant must be able to leave, keep operating on the artifacts it holds, and take its sovereign assets with it.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "exit",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Shared Commons commitments; §Anti-capture in both directions; §Rationale (recourse, portability, scrutiny, exit)",
+        "anti_capture_principle": "docs/governance/anti-capture-principle.md"
+      },
+      "threshold": {
+        "metric": "exit_documentation_current",
+        "description": "Binary: published independent-operation, migration, and exit documentation matches the current Shared Base release and shared infrastructure version.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-release",
+        "breach_action": "block-release-promotion-pending-documentation"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L2-CON-001",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "title": "Weight-Only Contribution Data Rights Declaration",
+      "description": "Before submitting a model-weight update derived from local training, a participant node must declare that it holds sufficient rights and authorization to perform the training and to permit the intended use and distribution of the resulting contribution, and that the contribution introduces no legal terms that encumber the Shared Base or reduce other participants' rights. The declaration does not disclose the underlying data.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "contribution",
+      "property_class": "legal-conclusion",
+      "mappings": {
+        "tap_adr": "TAP-010 §Weight contribution does not transfer data rights"
+      },
+      "jurisdiction_binding": {
+        "requirement_class": "lawful-basis-for-training-on-protected-data",
+        "resolves_per": "node",
+        "example_instruments": ["gdpr", "eu-ai-act", "korea-ai-basic-act", "china-genai-interim-measures", "hipaa-security-rule"],
+        "note": "Whether the node holds sufficient rights is decided by the node's own law and by the terms of its data holdings, so the same declaration rests on different instruments per node."
+      },
+      "threshold": {
+        "metric": "data_rights_declaration_present",
+        "description": "Binary: a signed rights-and-authorization declaration, including the no-encumbrance representation, accompanies every submitted weight contribution.",
+        "disclosure_tier": "contractual-representation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-contribution",
+        "breach_action": "reject-contribution-pending-declaration"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L2-CON-002",
+      "layer": "L2",
+      "component": "Master Data Management",
+      "title": "Dataset Descriptor Disclosure",
+      "description": "Every dataset used in training must have a descriptor covering provenance, license, consent basis, composition, and quality, disclosed at a tier sufficient for its governance purpose. The descriptor exists for every dataset; the audience for it varies with the sensitivity of the source.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "contribution",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-008 §What Do We Describe about the Data Sets Used?; TAP-010 §Proportionate disclosure and verification; §Reconciliation with earlier documents (TAP-008 row)"
+      },
+      "threshold": {
+        "metric": "dataset_descriptor_present",
+        "description": "Binary: every dataset contributing to a submitted weight update has a descriptor disclosed at or above the tier its property class requires.",
+        "disclosure_tier": "independent-attestation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-contribution",
+        "breach_action": "reject-contribution-pending-descriptor"
+      },
+      "implementation_status": "conflicted-in-source",
+      "implementation_status_note": "TAP-008 states that Tapestry 'will need to publicly document the metadata for all data sets used'. TAP-010's reconciliation table then says that public metadata for every dataset 'may expose confidential, culturally protected, security-sensitive, or commercially valuable provenance' and proposes replacing the universal public-disclosure rule with its tiered model. That edit has not been made to TAP-008, so the two documents currently state incompatible requirements. This control follows the tiered reading, and the disclosure tier shown is the floor derived from the tier_selection_rule rather than a value either document states."
+    },
+    {
+      "id": "TAP-SRF-L2-CON-003",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "title": "Sovereign Data Boundary Enforcement",
+      "description": "Data subject to an access boundary, such as a legal requirement that citizen data not leave national territory, must be used only by a participant node inside that boundary. Local training on such data is permitted; movement of the data across the boundary is not.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "contribution",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-008 §Sovereign Data; §Data Exchange in Consortium vs. Local Training?; TAP-010 §Participant Sovereign Assets"
+      },
+      "jurisdiction_binding": {
+        "requirement_class": "data-localization-and-cross-border-transfer",
+        "resolves_per": "node",
+        "example_instruments": ["gdpr", "china-genai-interim-measures", "india-meity-ai-advisory", "korea-ai-basic-act"],
+        "note": "The boundary itself is defined by the node's own law, so the control's parameter is set per node rather than consortium-wide."
+      },
+      "threshold": {
+        "metric": "sovereign_boundary_crossings",
+        "description": "Count of datasets classified as sovereign or controlled that moved outside their access boundary during the reporting window.",
+        "disclosure_tier": "independent-attestation",
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-contribution",
+        "breach_action": "halt-local-training-and-notify-data-authority"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L2-CON-004",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "title": "Minimum Non-Public Evidence Set for Withheld Source Identities",
+      "description": "When a participant withholds dataset source identities, a defined minimum set of non-public evidence must still accompany the weight contribution, so that the consortium can act on something more than a bare assertion without learning the sources.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "contribution",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Follow-on decisions item 2; §Proportionate disclosure and verification"
+      },
+      "threshold": {
+        "metric": "minimum_evidence_set_complete",
+        "description": "Binary: the defined minimum non-public evidence set accompanies every contribution that withholds source identities.",
+        "disclosure_tier": "independent-attestation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-contribution",
+        "breach_action": "quarantine-contribution-pending-evidence"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-010 §Follow-on decisions item 2 asks Tapestry to 'establish the minimum non-public evidence that must accompany a weight contribution when source identities are withheld' and leaves the set undefined. The tier shown is the floor derived from the tier_selection_rule: the claim is process-observable and bears on the Shared Commons, so an approved auditor is the weakest sufficient reviewer."
+    },
+    {
+      "id": "TAP-SRF-L2-MON-001",
+      "layer": "L2",
+      "component": "Master Data Management",
+      "title": "Dataset Categorization and Governance Enforcement",
+      "description": "Every dataset a node manages must be classified into a data sovereignty category (private, sovereign, unique open, controlled, fully open) and carry the controls that category requires. Fully open data is categorized too, so that no dataset sits outside governance by default.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-008 §Data Governance; §Support Categories of Data Sovereignty; §Consequences"
+      },
+      "threshold": {
+        "metric": "uncategorized_datasets",
+        "description": "Count of datasets in the node's training corpus with no sovereignty category assigned.",
+        "disclosure_tier": "independent-attestation",
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "quarterly",
+        "breach_action": "exclude-uncategorized-data-from-training"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L2-MON-002",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "title": "Node Enforcement Audit Available to Oversight",
+      "description": "Each node must audit its own enforcement of the requirements attached to the data it manages, and must make the audit result available to Tapestry oversight in a form that supports trust without disclosing the data itself.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-008 §Who Enforces the Requirements?"
+      },
+      "threshold": {
+        "metric": "enforcement_audit_current",
+        "description": "Binary: a current enforcement audit covering the node's data requirements is available to the designated oversight function.",
+        "disclosure_tier": "independent-attestation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "suspend-contribution-eligibility-pending-audit"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-008 states that each node 'must audit enforcement so the Tapestry oversight teams can trust that enforcement was properly performed'. It names no oversight team, defines no audit format, and sets no passing condition. The duty is assigned; the mechanism that would make it checkable is missing. This is the clearest case in the source set of an accountability assignment without an accountability structure."
+    },
+    {
+      "id": "TAP-SRF-L2-MON-003",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "title": "Consent and Data Revocation Effect on Integrated Releases",
+      "description": "A published policy must state how consent withdrawal or data revocation at a participant affects Shared Base releases that already integrated a contribution derived from that data, including which effects are technically irreversible and what remedy applies when they are.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Follow-on decisions item 6"
+      },
+      "jurisdiction_binding": {
+        "requirement_class": "consent-withdrawal-and-erasure",
+        "resolves_per": "node",
+        "example_instruments": ["gdpr", "hipaa-security-rule", "korea-ai-basic-act"],
+        "note": "The revocation right that triggers this control arises under the node's own law, so the consortium policy has to accommodate the strictest applicable instrument among its participants rather than a single standard."
+      },
+      "threshold": {
+        "metric": "revocation_policy_published",
+        "description": "Binary: a published policy states the effect of consent withdrawal and data revocation on already-integrated releases, including irreversible effects and their remedy.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "escalate-to-governance-committee"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-010 §Follow-on decisions item 6 asks Tapestry to 'establish how data or consent revocation affects already integrated Shared Base releases while respecting confidentiality, applicable law, and technically irreversible effects' and leaves it unresolved. This control has the widest external exposure of any open item, because a revocation right under a participant's own law does not wait for the consortium to decide its policy."
+    },
+    {
+      "id": "TAP-SRF-L3-MON-001",
+      "layer": "L3",
+      "component": "APIs & Fine-tuned Models",
+      "title": "Sovereign Derivative Lineage and License Record",
+      "description": "A participant that builds a sovereign derivative must record which base checkpoint it derives from and which license and third-party terms bind that derivative. The record stays with the participant; it establishes that the participant's commercial freedom is exercised within the terms that actually apply.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": false,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Participant Sovereign Assets; §Non-goals (does not override applicable law, third-party rights, data commitments, or the governing license of an adopted base model)",
+        "layers_split": "data/layers.json L3 federated_consortium_split.sovereign_assets"
+      },
+      "threshold": {
+        "metric": "derivative_lineage_recorded",
+        "description": "Binary: each sovereign derivative has a record naming its base checkpoint and the license and third-party terms that bind it.",
+        "disclosure_tier": "contractual-representation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-release",
+        "breach_action": "hold-derivative-release-pending-lineage-record"
+      },
+      "implementation_status": "resolved-in-source",
+      "tier_ceiling_note": "The tier_selection_rule caps this control at contractual-representation. The record is process-observable, so an auditor could read it, but the derivative is a purely sovereign asset with no Shared Commons effect. Requiring the participant to open it would be capture of participants under TAP-010 §Anti-capture in both directions."
+    },
+    {
+      "id": "TAP-SRF-L3-MON-002",
+      "layer": "L3",
+      "component": "APIs & Fine-tuned Models",
+      "title": "Local Alignment Configuration Governance",
+      "description": "A participant's constitution, protected-knowledge rules, and local alignment configuration are sovereign assets under its own governance. The participant must have an internal approval path for changes to them, so that cultural alignment reflects a governed decision by the community it represents.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": false,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Participant Sovereign Assets (participant constitutions, protected-knowledge rules, local governance configurations); TAP-003 §Cultural alignment as primary differentiator"
+      },
+      "threshold": {
+        "metric": "alignment_config_change_approved",
+        "description": "Binary: changes to the node's constitution, protected-knowledge rules, or alignment configuration pass a named internal approval path before taking effect.",
+        "disclosure_tier": "contractual-representation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-change",
+        "breach_action": "revert-configuration-pending-approval"
+      },
+      "implementation_status": "resolved-in-source",
+      "tier_ceiling_note": "Capped at contractual-representation by the tier_selection_rule. A community's protected-knowledge rules are the asset TAP-010 most clearly places beyond consortium inspection."
+    },
+    {
+      "id": "TAP-SRF-L4-CON-001",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "title": "Local Training Compute Under Node Control",
+      "description": "The compute a participant uses for local training, continued pretraining, and alignment stays under that participant's control. Participation must not require moving local training onto infrastructure the coordinator or another participant operates.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": false,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "contribution",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-008 §Data Exchange in Consortium vs. Local Training?; TAP-010 §Participant Sovereign Assets",
+        "layers_split": "data/layers.json L4 federated_consortium_split.sovereign_assets"
+      },
+      "threshold": {
+        "metric": "local_compute_under_node_control",
+        "description": "Binary: the node's local training compute is operated by the node or by a provider the node selected, with no consortium requirement to use coordinator-operated infrastructure.",
+        "disclosure_tier": "contractual-representation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "raise-anti-capture-finding-with-governance-committee"
+      },
+      "implementation_status": "resolved-in-source",
+      "tier_ceiling_note": "Capped at contractual-representation by the tier_selection_rule, and pointed the other way from most controls here: the party at risk is the participant, and the finding it raises is against the consortium."
+    },
+    {
+      "id": "TAP-SRF-L4-INT-001",
       "layer": "L4",
       "component": "Compute Infrastructure",
       "title": "Core Aggregation Boundary Verification",
       "description": "The core aggregation pipeline must be verified, at each aggregation cycle, to receive only governed weight updates from participant nodes and never raw participant data.",
       "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
       "operating_models": ["Federated-Consortium"],
       "lifecycle_stage": "integration",
+      "property_class": "artifact-observable",
       "mappings": {
-        "tap_adr": "TAP-010 §Weight contribution does not transfer data rights (references TAP-004: The Consortium Training Loop for aggregation mechanics)"
+        "tap_adr": "TAP-010 §Weight contribution does not transfer data rights; TAP-008 §Data Exchange in Consortium vs. Local Training?; TAP-004 §Consortium training loop (aggregation mechanics)"
       },
       "threshold": {
         "metric": "aggregation_boundary_verified",
-        "description": "Binary: aggregation pipeline confirmed to process weight updates only, per cycle.",
+        "description": "Binary: the aggregation pipeline is confirmed, per cycle, to process weight updates only.",
         "disclosure_tier": "technical-evaluation",
         "operator": "==",
         "param": "true",
+        "param_type": "verification",
+        "window": "per-aggregation-cycle",
         "breach_action": "halt-aggregation-pending-boundary-fix"
       },
       "implementation_status": "open",
-      "implementation_status_note": "Depends on TAP-004's aggregation mechanics, which this control set has not yet reviewed in full. Verify against TAP-004 directly before treating this control as ready to implement."
+      "implementation_status_note": "Depends on TAP-004's aggregation mechanics, which this control set has not reviewed in full. Verify against TAP-004 directly before treating this control as ready to implement."
     },
     {
-      "id": "TAP-SRF-L2-MON-001",
-      "layer": "L2",
-      "component": "Privacy Controls & Policies",
-      "title": "Independent Auditor Approval Registry",
-      "description": "A designated body must approve independent auditors who may perform contribution evaluations at the independent-attestation disclosure tier when a participant cannot disclose evidence directly to the consortium, and must determine when contractual assurance alone is insufficient and stronger technical verification is required.",
+      "id": "TAP-SRF-L4-INT-002",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "title": "Shared Commons Dependency Register",
+      "description": "Every dependency the Shared Commons carries must be listed publicly and marked as either avoidable, in which case it must be removed, or pragmatic, in which case it must be visible, bounded, replaceable, and must grant no party unilateral control. No exclusive service, proprietary runtime, or contributor-specific license may sit on the Shared Commons.",
       "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
       "operating_models": ["Federated-Consortium"],
-      "lifecycle_stage": "monitoring",
+      "lifecycle_stage": "integration",
+      "property_class": "process-observable",
       "mappings": {
-        "tap_adr": "TAP-010 §Follow-on decisions"
+        "tap_adr": "TAP-010 §Shared Commons commitments; §Anti-capture in both directions",
+        "anti_capture_principle": "docs/governance/anti-capture-principle.md, direction 1"
       },
       "threshold": {
-        "metric": "auditor_approval_body_designated",
-        "description": "Binary: a named body with authority to approve independent auditors exists and maintains a current registry.",
+        "metric": "unilateral_control_dependencies",
+        "description": "Count of Shared Commons dependencies that are not replaceable or that grant one party unilateral control.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-release",
+        "breach_action": "block-release-pending-dependency-replacement"
+      },
+      "implementation_status": "resolved-in-source",
+      "cross_layer_note": "TAP-001 records that adopting an external base model creates a temporary dependency in tension with the anti-capture design goal. That dependency belongs on this register, and TAP-SRF-L5-CRT-001 covers the license side of it."
+    },
+    {
+      "id": "TAP-SRF-L5-CON-001",
+      "layer": "L5",
+      "component": "Foundation Models",
+      "title": "Memorization Risk Control Before Contribution",
+      "description": "Before submitting a weight update derived from sovereign or controlled data, a participant must apply and record a memorization risk control appropriate to the data, the training method, and the intended release, so that details protected by a boundary are not carried across it inside the weights.",
+      "accountable_persona": "sovereign-participant-node",
+      "accountability_domain": "sovereign-assets",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "contribution",
+      "property_class": "artifact-observable",
+      "mappings": {
+        "tap_adr": "TAP-008 §Sovereign Data; §Controlled Data; TAP-010 §Weight contribution does not transfer data rights"
+      },
+      "threshold": {
+        "metric": "memorization_control_applied",
+        "description": "Binary: a memorization risk control matched to the data category is applied and recorded for every contribution derived from sovereign or controlled data.",
+        "disclosure_tier": "technical-evaluation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-contribution",
+        "breach_action": "reject-contribution-pending-memorization-control"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-008 says 'care may be required to prevent memorization of details, which would effectively exfiltrate at least some of the details'. It names no method and sets no passing condition. TAP-010 §Follow-on decisions item 4 leaves the same question open on the evaluation side. Until that is resolved, this control names a duty whose satisfaction cannot be judged."
+    },
+    {
+      "id": "TAP-SRF-L5-EVL-001",
+      "layer": "L5",
+      "component": "Model Governance",
+      "title": "Contribution Evaluation Without Raw-Data Access",
+      "description": "The consortium core coordinator must evaluate a submitted weight update for memorization, poisoning, safety, and legal risk before integrating it into the Shared Base, without requiring access to the participant's raw training data.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "evaluation",
+      "property_class": "artifact-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Shared contribution and certification boundaries; §Follow-on decisions item 4"
+      },
+      "threshold": {
+        "metric": "weight_contribution_evaluated",
+        "description": "Binary: a submitted weight update passes memorization, poisoning, safety, and legal-risk evaluation before integration.",
+        "disclosure_tier": "technical-evaluation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-contribution",
+        "breach_action": "quarantine-contribution-pending-review"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-010 §Follow-on decisions item 4 lists 'define how memorization, poisoning, safety, and legal-risk tests operate without access to raw data' as unresolved. This control documents the requirement; it does not assert that a working method exists. The tier_frontier_note explains why this is the highest-leverage open item in the set: technical evaluation is the only tier that combines strong verification with narrow disclosure, and every participant that cannot disclose depends on it."
+    },
+    {
+      "id": "TAP-SRF-L5-EVL-002",
+      "layer": "L5",
+      "component": "Model Governance",
+      "title": "Contribution Rejection and Quarantine Authority",
+      "description": "The coordinator must be able to reject or quarantine a contribution that fails applicable legality, consent, provenance, quality, safety, security, memorization, poisoning, compatibility, or evaluation requirements, and must record the ground for the decision so that the participant can contest it.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "evaluation",
+      "property_class": "artifact-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Shared contribution and certification boundaries; §Non-goals (does not guarantee acceptance of opaque or unverifiable weight contributions)",
+        "work_group_charter": "docs/work-groups/governance-participation §Scope (who evaluates, who certifies, how disputes are handled)"
+      },
+      "threshold": {
+        "metric": "rejection_ground_recorded",
+        "description": "Binary: every rejected or quarantined contribution has a recorded ground naming the requirement it failed, available to the submitting participant.",
+        "disclosure_tier": "technical-evaluation",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-contribution",
+        "breach_action": "reinstate-contribution-pending-recorded-ground"
+      },
+      "implementation_status": "resolved-in-source",
+      "cross_layer_note": "The dispute path this control assumes is listed as in scope for the Governance & Participation work group and is not yet published. The recording duty stands regardless, because a rejection with no recorded ground cannot be contested at all."
+    },
+    {
+      "id": "TAP-SRF-L5-INT-001",
+      "layer": "L5",
+      "component": "Model Distribution",
+      "title": "Shared Base Release Documentation Sufficiency",
+      "description": "Each Shared Base release must ship the information needed to use, modify, and redistribute it independently, together with a model card recording provenance, evaluation results, and intended use.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "integration",
+      "property_class": "process-observable",
+      "mappings": {
+        "tap_adr": "TAP-010 §Shared Commons commitments; §Openness is purpose-driven"
+      },
+      "threshold": {
+        "metric": "release_documentation_sufficient",
+        "description": "Binary: the release ships use, modification, and redistribution information plus a model card covering provenance, evaluation, and intended use.",
         "disclosure_tier": "public",
         "operator": "==",
         "param": "true",
-        "breach_action": "escalate-to-governance-committee"
+        "param_type": "verification",
+        "window": "per-release",
+        "breach_action": "block-release-publication-pending-documentation"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L5-MON-001",
+      "layer": "L5",
+      "component": "Foundation Models",
+      "title": "Safety Alignment Preservation Through Continued Pretraining",
+      "description": "The baseline safety properties of the shared base must survive the continued pretraining and post-training that participants layer on top of it. The consortium must measure whether integrated contributions have degraded shared safety alignment.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "property_class": "artifact-observable",
+      "mappings": {
+        "tap_adr": "TAP-001 §Decision (safety alignment, mechanism for preservation through continued pretraining is an open question, DG6); TAP-010 §Reconciliation with earlier documents (DG6 row)"
+      },
+      "threshold": {
+        "metric": "safety_alignment_regression",
+        "description": "Regression in the shared safety evaluation suite between consecutive Shared Base releases.",
+        "disclosure_tier": "technical-evaluation",
+        "operator": "==",
+        "param": "0",
+        "param_type": "zero-tolerance",
+        "window": "per-release",
+        "breach_action": "hold-release-and-isolate-contributing-update"
       },
       "implementation_status": "open",
-      "implementation_status_note": "TAP-010 Follow-on decisions lists 'Designate the body that approves independent auditors and determines when contractual assurance is insufficient' as unresolved. No such body is designated as of TAP-010's Proposed status."
+      "implementation_status_note": "TAP-001 records the mechanism for preserving safety alignment through continued pretraining as an open question under design goal DG6, and TAP-010 clarifies only the scope of shared governance over it, not the mechanism. The threshold names zero regression as the target because that is what the design goal implies, but no shared safety evaluation suite is defined, so nothing measures it yet."
+    },
+    {
+      "id": "TAP-SRF-L5-CRT-001",
+      "layer": "L5",
+      "component": "Model Distribution",
+      "title": "Adopted Base License Compatibility Assessment",
+      "description": "Before adopting an external base model, the consortium must assess whether that model's license is compatible with the Shared Commons commitments, and must publish which Tapestry-created artifacts carry which license. Compatibility is assessed on its terms rather than by presuming the outside base uses the same license Tapestry does.",
+      "accountable_persona": "consortium-core-coordinator",
+      "accountability_domain": "shared-commons",
+      "bears_on_commons": true,
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "certification",
+      "property_class": "legal-conclusion",
+      "mappings": {
+        "tap_adr": "TAP-010 §Follow-on decisions item 1; §Shared Commons commitments; TAP-001 §Consequences (temporary dependency on an external base model provider)"
+      },
+      "threshold": {
+        "metric": "base_license_compatibility_published",
+        "description": "Binary: a published assessment states the license of each adopted base and each Tapestry-created Shared Base artifact, and whether the combination preserves the Shared Commons commitments.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "per-base-adoption",
+        "breach_action": "block-base-adoption-pending-assessment"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-010 §Follow-on decisions item 1 leaves the licensing documentation and the compatibility assessment method undefined, and refers the assessment to TAP-009, which this control set has not reviewed in full."
     }
   ]
 }
