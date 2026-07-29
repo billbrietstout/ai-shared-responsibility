@@ -1,0 +1,140 @@
+{
+  "schema_version": "0.1",
+  "srf_version": "1.0",
+  "description": "Starter control set mapping Project Tapestry's governance ADRs onto the SRF accountability pattern, using the Federated-Consortium operating model and its two proposed-extension personas (sovereign-participant-node, consortium-core-coordinator).",
+  "regulatory_context": "TAP-010 (Open Commons and Sovereign Assets, Proposed, Tapestry Governance Committee to ratify) is the operative instrument. It is a project ADR, not an external regulation, so mappings below cite ADR sections directly rather than an external mapping_key.",
+  "provenance": "proposed-extension",
+  "status_note": "This is a first-cut, illustrative set (5 controls), not a complete catalog on the scale of the finance/healthcare/etc. vertical schemas (40 controls each). Several controls below cite TAP-010 Follow-on decisions that are explicitly unresolved in the source ADR; those controls carry implementation_status: open rather than a working threshold, consistent with this site's rule that a TBD or unresolved source citation is not a completed control.",
+  "evidence_model": "Tapestry has no telemetry/OCSF evidence layer yet, unlike the finance vertical. Evidence uses TAP-010's own five-tier disclosure model directly: public, consortium-confidential, independent-attestation, technical-evaluation, contractual-representation.",
+  "disclosure_tiers": [
+    "public",
+    "consortium-confidential",
+    "independent-attestation",
+    "technical-evaluation",
+    "contractual-representation"
+  ],
+  "lifecycle_stages": [
+    "contribution",
+    "evaluation",
+    "integration",
+    "monitoring"
+  ],
+  "controls": [
+    {
+      "id": "TAP-SRF-L2-DEV-001",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "title": "Weight-Only Contribution Data Rights Declaration",
+      "description": "Before a sovereign participant node submits a model-weight update derived from local training, it must declare that it holds sufficient rights and authorization to perform the training and to permit the intended use and distribution of the resulting contribution. The declaration does not disclose the underlying data itself.",
+      "accountable_persona": "sovereign-participant-node",
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "contribution",
+      "mappings": {
+        "tap_adr": "TAP-010 §Weight contribution does not transfer data rights"
+      },
+      "threshold": {
+        "metric": "data_rights_declaration_present",
+        "description": "Binary: a signed rights-and-authorization declaration accompanies every submitted weight contribution.",
+        "disclosure_tier": "contractual-representation",
+        "operator": "==",
+        "param": "true",
+        "breach_action": "reject-contribution-pending-declaration"
+      },
+      "implementation_status": "resolved-in-source"
+    },
+    {
+      "id": "TAP-SRF-L5-DEV-001",
+      "layer": "L5",
+      "component": "Model Governance",
+      "title": "Contribution Evaluation Without Raw-Data Access",
+      "description": "The consortium core coordinator must evaluate a submitted weight update for memorization, poisoning, safety, and legal risk before integrating it into the Shared Base, without requiring access to the participant's raw training data.",
+      "accountable_persona": "consortium-core-coordinator",
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "evaluation",
+      "mappings": {
+        "tap_adr": "TAP-010 §Shared contribution and certification boundaries; §Follow-on decisions"
+      },
+      "threshold": {
+        "metric": "weight_contribution_evaluated",
+        "description": "Binary: submitted weight update passes memorization, poisoning, safety, and legal-risk evaluation before integration.",
+        "disclosure_tier": "technical-evaluation",
+        "operator": "==",
+        "param": "true",
+        "breach_action": "quarantine-contribution-pending-review"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-010's own Follow-on decisions list 'Define how memorization, poisoning, safety, and legal-risk tests operate without access to raw data' as unresolved. This control documents the requirement; it does not assert a working method exists yet."
+    },
+    {
+      "id": "TAP-SRF-L1-GOV-001",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "title": "Anti-Capture Review Before Certification or Standards Change",
+      "description": "Before adopting a new certification standard, architecture decision, or operations policy, the consortium core coordinator must check the proposal against an anti-capture review checklist covering both directions defined in the anti-capture principle: capture of the commons and capture of participants.",
+      "accountable_persona": "consortium-core-coordinator",
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "evaluation",
+      "mappings": {
+        "tap_adr": "TAP-010 §Anti-capture in both directions",
+        "anti_capture_principle": "docs/governance/anti-capture-principle.md",
+        "work_group_charter": "docs/work-groups/governance-participation §Early deliverables"
+      },
+      "threshold": {
+        "metric": "anti_capture_review_completed",
+        "description": "Binary: proposal checked against the anti-capture review checklist before adoption.",
+        "disclosure_tier": "consortium-confidential",
+        "operator": "==",
+        "param": "true",
+        "breach_action": "block-adoption-pending-review"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "The checklist itself does not exist yet. docs/work-groups/governance-participation lists an 'anti-capture review checklist for architecture and operations decisions' as an early deliverable, not yet published as of this control's drafting."
+    },
+    {
+      "id": "TAP-SRF-L4-DEV-001",
+      "layer": "L4",
+      "component": "Compute Infrastructure",
+      "title": "Core Aggregation Boundary Verification",
+      "description": "The core aggregation pipeline must be verified, at each aggregation cycle, to receive only governed weight updates from participant nodes and never raw participant data.",
+      "accountable_persona": "consortium-core-coordinator",
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "integration",
+      "mappings": {
+        "tap_adr": "TAP-010 §Weight contribution does not transfer data rights (references TAP-004: The Consortium Training Loop for aggregation mechanics)"
+      },
+      "threshold": {
+        "metric": "aggregation_boundary_verified",
+        "description": "Binary: aggregation pipeline confirmed to process weight updates only, per cycle.",
+        "disclosure_tier": "technical-evaluation",
+        "operator": "==",
+        "param": "true",
+        "breach_action": "halt-aggregation-pending-boundary-fix"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "Depends on TAP-004's aggregation mechanics, which this control set has not yet reviewed in full. Verify against TAP-004 directly before treating this control as ready to implement."
+    },
+    {
+      "id": "TAP-SRF-L2-MON-001",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "title": "Independent Auditor Approval Registry",
+      "description": "A designated body must approve independent auditors who may perform contribution evaluations at the independent-attestation disclosure tier when a participant cannot disclose evidence directly to the consortium, and must determine when contractual assurance alone is insufficient and stronger technical verification is required.",
+      "accountable_persona": "consortium-core-coordinator",
+      "operating_models": ["Federated-Consortium"],
+      "lifecycle_stage": "monitoring",
+      "mappings": {
+        "tap_adr": "TAP-010 §Follow-on decisions"
+      },
+      "threshold": {
+        "metric": "auditor_approval_body_designated",
+        "description": "Binary: a named body with authority to approve independent auditors exists and maintains a current registry.",
+        "disclosure_tier": "public",
+        "operator": "==",
+        "param": "true",
+        "breach_action": "escalate-to-governance-committee"
+      },
+      "implementation_status": "open",
+      "implementation_status_note": "TAP-010 Follow-on decisions lists 'Designate the body that approves independent auditors and determines when contractual assurance is insufficient' as unresolved. No such body is designated as of TAP-010's Proposed status."
+    }
+  ]
+}
