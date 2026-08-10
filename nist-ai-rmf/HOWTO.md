@@ -13,7 +13,7 @@ The demo is a working package for NIST collaboration discussions: how AI RMF / G
 - **Static hybrid retrieval.** Chunks, BM25 stats, and dense vectors ship as files under `data/`. The browser loads them and ranks with BM25 + dense fusion (reciprocal rank fusion). No server-side ranker and no API keys.
 - **Citation-first answers.** Hits expose `doc_id`, `section_path`, and a link into the source Markdown. Open the cited section and check it; fused scores are ranking hints only.
 - **Two consumer paths.** Humans use the page form. Agents that only HTTP-fetch use `llms.txt` for discovery, `retrieve/*.json` for fixed demo scenarios, or `data/chunks.json` to rank locally. Ranking and discovery stay separate artifacts.
-- **Corpus isolation.** IDs and files here do not merge into the CoSAI SRF graph on the rest of the site. Related SP 800-53 values are curated control IDs only.
+- **Corpus isolation.** IDs and files for the AI RMF demo do not merge into the CoSAI SRF graph. SP 800-53 Rev 5 lives under `sp800-53/` as a separate opt-in corpus and is not blended into default AI RMF ranking.
 
 It does not demonstrate official NIST packaging, a complete NIST corpus (full PDFs, sector profiles, or COSAiS overlays), production retrieval quality for every question, or safe use of assistant output on operational or OT systems. Before any operational use, verify citations and read [Assistant and OT risks](https://aisharedresponsibility.com/nist-ai-rmf/#assistant-ot-risks).
 
@@ -37,6 +37,7 @@ Page section: https://aisharedresponsibility.com/nist-ai-rmf/#what-this-demonstr
 2. Offline chunking + BM25 + dense vectors into `data/`.  
 3. Browser loads `data/` and ranks (BM25 + dense, RRF).  
 4. `export_scenarios.py` writes the same ranked-result JSON fields as the browser UI to `retrieve/<slug>.json` for agents.
+5. Opt-in SP 800-53 corpus: `ingest_sp80053.py` + `build_index.py --data-dir nist-ai-rmf/sp800-53/data` (loaded only when Document = SP 800-53).
 
 ## Example prompts
 
@@ -123,8 +124,8 @@ These paths do not require tool calling into the control network. They require o
 - **Confabulation after retrieval.** An assistant can fetch correct chunks and still invent parameters, control IDs, or “recommended” setpoints not in the source.
 - **Conversion of guidance into config or code.** Nothing here blocks export of assistant output into PLC logic, MES workflows, SIEM rules, or AI gateway policies.
 - **Second-order OT decisions.** Vendor selection, diagnostic steps, and summarized procedures remain human/process risks. This site does not enforce TEVV, change control, or two-person review.
-- **Incomplete corpus.** Demo extracts omit full NIST PDFs, sector profiles, and COSAiS overlays. Silence in the corpus is not “no risk.”
-- **Curated SP 800-53 IDs.** Related-control chips are hints only. They are not a validated overlay baseline for any facility.
+- **Incomplete corpus.** AI RMF demo extracts omit full NIST PDFs, sector profiles, and COSAiS overlays. The SP 800-53 sibling omits 800-53A assessment procedures, 800-53B baselines, and resolved ODPs. Silence in either corpus is not “no risk.”
+- **Curated AI RMF ↔ 800-53 edges.** Related-control chips on AI RMF hits are theme hints that may link into the sibling catalog. They are not a validated overlay baseline for any facility.
 
 ### Practical boundary for operators
 

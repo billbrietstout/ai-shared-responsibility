@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Build BM25 stats + dense embeddings for the NIST AI RMF RAG demo."""
+"""Build BM25 stats + dense embeddings for NIST RAG corpora."""
 from __future__ import annotations
 
+import argparse
 import json
 import math
 import re
@@ -10,8 +11,7 @@ from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-DATA = ROOT / "nist-ai-rmf" / "data"
-MANIFEST = DATA / "corpus-manifest.json"
+DEFAULT_DATA = ROOT / "nist-ai-rmf" / "data"
 
 STOP = set(
     "a an and are as at be by for from has in is it its of on or that the to with who whose how what which".split()
@@ -46,7 +46,6 @@ def build_bm25(chunks: list[dict]) -> dict:
 
 
 def embed_minilm(texts: list[str]):
-    import numpy as np
     from sentence_transformers import SentenceTransformer
 
     model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -153,17 +152,24 @@ def embed_tfidf_svd(texts: list[str], dims: int = 256):
 
 
 def main() -> None:
-    chunks = json.loads((DATA / "chunks.json").read_text(encoding="utf-8"))
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument(
+        "--data-dir",
+        type=Path,
+        default=DEFAULT_DATA,
+        help="Directory containing chunks.json and corpus-manifest.json",
+    )
+    args = ap.parse_args()
+    data: Path = args.data_dir
+    manifest_path = data / "corpus-manifest.json"
+
+    chunks = json.loads((data / "chunks.json").read_text(encoding="utf-8"))
     bm25 = build_bm25(chunks)
-    # Strip private token fields before saving chunks again? keep chunks clean —
-    # store tokens only inside bm25 sidecar
     token_lists = [ch.pop("_tokens", []) for ch in chunks]
-    bm25["tokens"] = token_lists  # parallel to chunks order
-    (DATA / "bm25.json").write_text(json.dumps(bm25), encoding="utf-8")
+    bm25["tokens"] = token_lists
+    (data / "bm25.json").write_text(json.dumps(bm25), encoding="utf-8")
 
     texts = [f"{c.get('title','')}. {c.get('text','')}" for c in chunks]
-    vectors = None
-    meta = None
     try:
         vectors, meta = embed_minilm(texts)
         print("embedded with MiniLM", len(vectors), "x", meta["dims"])
@@ -177,7 +183,7 @@ def main() -> None:
             print("embedded with hash-tfidf", len(vectors), "x", meta["dims"])
 
     flat = [v for row in vectors for v in row]
-    (DATA / "embeddings.bin").write_bytes(struct.pack(f"<{len(flat)}f", *flat))
+    (data / "embeddings.bin").write_bytes(struct.pack(f"<{len(flat)}f", *flat))
 
     emb_json = {
         "dims": meta["dims"],
@@ -188,22 +194,22 @@ def main() -> None:
     }
     if "projection" in meta:
         emb_json["projection"] = meta["projection"]
-    (DATA / "embeddings.json").write_text(json.dumps(emb_json), encoding="utf-8")
+    (data / "embeddings.json").write_text(json.dumps(emb_json), encoding="utf-8")
 
-    man = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    man = json.loads(manifest_path.read_text(encoding="utf-8"))
     man["embedding"] = {
         "model": meta["model"],
         "dims": meta["dims"],
         "method": meta["method"],
         "n_vectors": len(vectors),
-        "files": ["data/embeddings.bin", "data/embeddings.json"],
+        "files": ["embeddings.bin", "embeddings.json"],
     }
     man["chunk_count"] = len(chunks)
-    MANIFEST.write_text(json.dumps(man, indent=2), encoding="utf-8")
+    man["bm25"] = {"k1": 1.5, "b": 0.75}
+    manifest_path.write_text(json.dumps(man, indent=2), encoding="utf-8")
 
-    # rewrite chunks without private fields
-    (DATA / "chunks.json").write_text(json.dumps(chunks, indent=2), encoding="utf-8")
-    print("wrote bm25.json, embeddings.*, updated corpus-manifest.json")
+    (data / "chunks.json").write_text(json.dumps(chunks, indent=2), encoding="utf-8")
+    print(f"wrote {data}/bm25.json, embeddings.*, updated corpus-manifest.json")
 
 
 if __name__ == "__main__":

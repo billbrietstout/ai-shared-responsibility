@@ -1,0 +1,162 @@
+{
+  "demo_id": "nist-sp800-53-rag",
+  "title": "NIST SP 800-53 Rev 5 catalog (separate corpus)",
+  "version": "0.1.0",
+  "catalog_version": "5.2.0",
+  "disclaimer": "Not official NIST output. Derived from public OSCAL SP 800-53 catalog for demonstration.",
+  "official_doi": "https://doi.org/10.6028/NIST.SP.800-53r5",
+  "official_pdf": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf",
+  "oscal_source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
+  "scope": {
+    "includes": [
+      "control statement",
+      "control guidance/discussion",
+      "enhancements"
+    ],
+    "excludes": [
+      "800-53A assessment procedures",
+      "800-53B baselines",
+      "resolved ODPs"
+    ]
+  },
+  "isolation": {
+    "default_ai_rmf_corpus": "nist-ai-rmf/data",
+    "this_corpus": "nist-ai-rmf/sp800-53/data",
+    "blend_with_ai_rmf": false,
+    "ui_opt_in_doc_id": "sp800-53-rev5"
+  },
+  "documents": [
+    {
+      "doc_id": "sp800-53-rev5",
+      "title": "NIST SP 800-53 Revision 5 (catalog extract)",
+      "nist_id": "NIST.SP.800-53",
+      "version": "5.2.0",
+      "doi": "https://doi.org/10.6028/NIST.SP.800-53r5",
+      "pdf": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-53r5.pdf",
+      "source_md": "sp800-53/sources/"
+    }
+  ],
+  "families": [
+    {
+      "id": "ac",
+      "title": "Access Control",
+      "n": 147
+    },
+    {
+      "id": "at",
+      "title": "Awareness and Training",
+      "n": 17
+    },
+    {
+      "id": "au",
+      "title": "Audit and Accountability",
+      "n": 69
+    },
+    {
+      "id": "ca",
+      "title": "Assessment, Authorization, and Monitoring",
+      "n": 32
+    },
+    {
+      "id": "cm",
+      "title": "Configuration Management",
+      "n": 66
+    },
+    {
+      "id": "cp",
+      "title": "Contingency Planning",
+      "n": 56
+    },
+    {
+      "id": "ia",
+      "title": "Identification and Authentication",
+      "n": 74
+    },
+    {
+      "id": "ir",
+      "title": "Incident Response",
+      "n": 42
+    },
+    {
+      "id": "ma",
+      "title": "Maintenance",
+      "n": 30
+    },
+    {
+      "id": "mp",
+      "title": "Media Protection",
+      "n": 30
+    },
+    {
+      "id": "pe",
+      "title": "Physical and Environmental Protection",
+      "n": 59
+    },
+    {
+      "id": "pl",
+      "title": "Planning",
+      "n": 17
+    },
+    {
+      "id": "pm",
+      "title": "Program Management",
+      "n": 37
+    },
+    {
+      "id": "ps",
+      "title": "Personnel Security",
+      "n": 18
+    },
+    {
+      "id": "pt",
+      "title": "Personally Identifiable Information Processing and Transparency",
+      "n": 21
+    },
+    {
+      "id": "ra",
+      "title": "Risk Assessment",
+      "n": 26
+    },
+    {
+      "id": "sa",
+      "title": "System and Services Acquisition",
+      "n": 147
+    },
+    {
+      "id": "sc",
+      "title": "System and Communications Protection",
+      "n": 162
+    },
+    {
+      "id": "si",
+      "title": "System and Information Integrity",
+      "n": 119
+    },
+    {
+      "id": "sr",
+      "title": "Supply Chain Risk Management",
+      "n": 27
+    }
+  ],
+  "chunk_count": 1196,
+  "join_hints": {
+    "scope": "standalone-sibling",
+    "entry_point": "nist-ai-rmf/llms.txt",
+    "chunk_key": "chunk_id",
+    "anchor_scheme": "control id lowercased"
+  },
+  "embedding": {
+    "model": "sentence-transformers/all-MiniLM-L6-v2",
+    "dims": 384,
+    "method": "minilm",
+    "n_vectors": 1196,
+    "files": [
+      "embeddings.bin",
+      "embeddings.json"
+    ]
+  },
+  "bm25": {
+    "k1": 1.5,
+    "b": 0.75
+  }
+}

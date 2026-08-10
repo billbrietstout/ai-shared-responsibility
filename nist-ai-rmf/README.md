@@ -17,14 +17,16 @@ Working package for NIST collaboration discussions: publish AI RMF / GenAI Profi
 - Static hybrid retrieval (BM25 + dense, RRF) from committed `data/` artifacts in the browser.
 - Citation-first answers: open the cited `doc_id` / `section_path` and check it in Markdown or the official PDF; fused scores are ranking hints only.
 - Agent path via `llms.txt`, `retrieve/*.json`, or local ranking over `data/chunks.json`.
-- Corpus kept separate from the CoSAI SRF graph; SP 800-53 links are curated IDs only.
+- Corpus kept separate from the CoSAI SRF graph.
+- **SP 800-53 Rev 5** is a sibling opt-in corpus under `sp800-53/` (statement + guidance). Default UI ranking does not blend it into AI RMF hits.
 
-Does not demonstrate official NIST packaging, a full NIST corpus, production retrieval for every query, or safe OT/ops use of assistant output. Before any operational use, verify citations and read [assistant and OT risks](HOWTO.md#risks-general-purpose-assistants-and-operational-impact). Demo scope: [HOWTO.md](HOWTO.md#what-this-demonstrates) and the page section `#what-this-demonstrates`.
+Does not demonstrate official NIST packaging, production retrieval for every query, 800-53A/B, resolved ODPs, COSAiS overlays, or safe OT/ops use of assistant output. Before any operational use, verify citations and read [assistant and OT risks](HOWTO.md#risks-general-purpose-assistants-and-operational-impact). Demo scope: [HOWTO.md](HOWTO.md#what-this-demonstrates) and the page section `#what-this-demonstrates`.
 
 ## Isolation
 
 - Separate corpus and IDs from the CoSAI SRF knowledge graph.
 - Separate from the TACIP orphan at `/nist/` (that directory stays unlinked).
+- AI RMF `data/` and SP 800-53 `sp800-53/data/` are separate indexes (Approach B).
 - COSAiS (NISTIR 8605*) body text is out of v1; still pre-draft. See future work below.
 
 ## Contents
@@ -32,19 +34,21 @@ Does not demonstrate official NIST packaging, a full NIST corpus, production ret
 | Path | Role |
 |------|------|
 | `index.html` | Landing page + browser RAG UI |
-| `llms.txt` | Agent discovery: sources, `/retrieve/*.json`, `data/chunks.json` |
+| `llms.txt` | Agent discovery: sources, `/retrieve/*.json`, both corpora |
 | `HOWTO.md` | Architecture, llms.txt vs RAG, example LLM prompts, assistant/OT risk boundary |
-| `llms-full.txt` | Concatenated clean Markdown sources |
-| `sources/` | Dual-readable Markdown + attribution |
-| `data/` | Manifest, chunks, BM25, embeddings, graph edges, golden set |
-| `retrieve/` | Precomputed scenario JSON (plain HTTP, pure JSON) |
+| `llms-full.txt` | Concatenated clean AI RMF Markdown sources |
+| `sources/` | Dual-readable AI RMF Markdown + attribution |
+| `data/` | AI RMF manifest, chunks, BM25, embeddings, graph edges, golden set |
+| `sp800-53/` | Opt-in SP 800-53 Rev 5 sources + indexes |
+| `retrieve/` | Precomputed AI RMF scenario JSON (plain HTTP, pure JSON) |
 | `rag/` | Client retrieval modules (browser only) |
 
 ## Agent retrieval (plain HTTP)
 
-1. **Authoritative:** `sources/*.md` or official NIST PDF.
-2. **Ranked scenarios:** `GET /nist-ai-rmf/retrieve/<slug>.json` (see `retrieve/index.json`).
-3. **Arbitrary queries:** fetch `data/chunks.json` (+ optional `bm25.json` / `embeddings.json`) and rank locally.
+1. **AI RMF authoritative:** `sources/*.md` or official NIST PDF.
+2. **AI RMF ranked scenarios:** `GET /nist-ai-rmf/retrieve/<slug>.json` (see `retrieve/index.json`).
+3. **AI RMF arbitrary queries:** fetch `data/chunks.json` (+ optional `bm25.json` / `embeddings.json`) and rank locally.
+4. **SP 800-53 (opt-in):** fetch `sp800-53/sources/` or `sp800-53/data/chunks.json`; do not blend into AI RMF results unless requested.
 
 `?format=json` is browser-JS debug only. A plain HTTP GET of `/?q=...&format=json` returns HTML.
 
@@ -57,6 +61,10 @@ python3 build/nist_ai_rmf/chunk_sources.py
 python3 build/nist_ai_rmf/build_index.py
 python3 build/nist_ai_rmf/export_scenarios.py
 python3 build/nist_ai_rmf/validate_golden.py
+
+# SP 800-53 sibling corpus (downloads OSCAL JSON into build cache)
+python3 build/nist_ai_rmf/ingest_sp80053.py
+python3 build/nist_ai_rmf/build_index.py --data-dir nist-ai-rmf/sp800-53/data
 ```
 
 `build_index.py` prefers `sentence-transformers` (`all-MiniLM-L6-v2`) when installed,
