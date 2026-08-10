@@ -20,21 +20,20 @@ Cite the official NIST PDFs/DOIs for normative use.
 | Path | Role |
 |------|------|
 | `index.html` | Landing page + browser RAG UI |
-| `llms.txt` | Agent discovery: sources + static data path (not `?format=json`) |
+| `llms.txt` | Agent discovery: sources, `/retrieve/*.json`, `data/chunks.json` |
 | `llms-full.txt` | Concatenated clean Markdown sources |
 | `sources/` | Dual-readable Markdown + attribution |
-| `data/` | Manifest, chunks, BM25, embeddings, graph edges, golden set (HTTP-fetchable) |
+| `data/` | Manifest, chunks, BM25, embeddings, graph edges, golden set |
+| `retrieve/` | Precomputed scenario JSON (plain HTTP, pure JSON) |
 | `rag/` | Client retrieval modules (browser only) |
 
 ## Agent retrieval (plain HTTP)
 
-GitHub Pages cannot run query-time ranking without client JS. Agents that only GET a URL should:
+1. **Authoritative:** `sources/*.md` or official NIST PDF.
+2. **Ranked scenarios:** `GET /nist-ai-rmf/retrieve/<slug>.json` (see `retrieve/index.json`).
+3. **Arbitrary queries:** fetch `data/chunks.json` (+ optional `bm25.json` / `embeddings.json`) and rank locally.
 
-1. Fetch `llms.txt`, then `data/chunks.json` (optionally `bm25.json` / `embeddings.json`).
-2. Rank or filter locally; cite `section_path` / `anchor`.
-3. Verify against `sources/*.md` or the official NIST PDF.
-
-Do not treat `/nist-ai-rmf/?q=...&format=json` as an agent API: a plain fetch returns HTML until JS runs.
+`?format=json` is browser-JS debug only. A plain HTTP GET of `/?q=...&format=json` returns HTML.
 
 ## Rebuild indexes
 
@@ -43,13 +42,15 @@ From the repo root (Python 3.12+):
 ```bash
 python3 build/nist_ai_rmf/chunk_sources.py
 python3 build/nist_ai_rmf/build_index.py
+python3 build/nist_ai_rmf/export_scenarios.py
 python3 build/nist_ai_rmf/validate_golden.py
 ```
 
 `build_index.py` prefers `sentence-transformers` (`all-MiniLM-L6-v2`) when installed,
 then scikit-learn TF-IDF+SVD, then a stdlib **hash-TF-IDF** dense layer so indexes
 always build without extra packages. The committed `data/` artifacts use the method
-recorded in `corpus-manifest.json`.
+recorded in `corpus-manifest.json`. `export_scenarios.py` writes agent-facing
+`/retrieve/*.json` files.
 
 ## Future corpus
 

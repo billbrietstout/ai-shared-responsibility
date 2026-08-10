@@ -148,12 +148,13 @@
         <div id="rag-out" aria-live="polite"></div>
 
         <details class="rag-json">
-          <summary>Raw JSON response (browser JS)</summary>
-          <pre id="rag-json">Run a query to see JSON. In-browser only: append &amp;format=json after JS runs. Agents should fetch <a href="data/chunks.json">data/chunks.json</a> instead (see <a href="llms.txt">llms.txt</a>).</pre>
+          <summary>Raw JSON response (browser JS debug)</summary>
+          <pre id="rag-json">Run a query to see JSON. Browser-only: ?format=json requires JS and is not an agent API. Agents: use <a href="retrieve/index.json">retrieve/*.json</a> or <a href="data/chunks.json">data/chunks.json</a> (see <a href="llms.txt">llms.txt</a>).</pre>
         </details>
 
         <p class="rag-links">
           <a href="llms.txt">llms.txt</a>
+          <a href="retrieve/index.json">retrieve scenarios</a>
           <a href="sources/nist-ai-100-1.md">AI RMF Markdown</a>
           <a href="sources/nist-ai-600-1.md">GenAI Profile Markdown</a>
           <a href="data/chunks.json">chunks.json</a>
@@ -161,8 +162,9 @@
           <a href="README.md">README</a>
         </p>
         <p class="rag-note">
-          Hybrid retrieval in this page: BM25 + dense hash-TF-IDF vectors fused with reciprocal rank fusion (browser JS).
-          Agents that only HTTP-fetch should use <a href="data/chunks.json">chunks.json</a> and rank locally; see <a href="llms.txt">llms.txt</a>.
+          This page ranks in the browser (BM25 + dense hash-TF-IDF, RRF).
+          Agents that only HTTP-fetch should use <a href="retrieve/index.json">/retrieve/*.json</a>
+          for demo scenarios or <a href="data/chunks.json">chunks.json</a> for local ranking; see <a href="llms.txt">llms.txt</a>.
           Related SP 800-53 entries are curated control IDs only (no catalog prose).
           COSAiS overlays are out of scope until public draft IDs exist.
         </p>

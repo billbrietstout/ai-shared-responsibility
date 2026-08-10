@@ -7,35 +7,45 @@
 
 ## How agents should use this corpus
 
-- **Authoritative quote / cite:** fetch the clean Markdown sources below, then quote by section path / heading anchor. Prefer the official NIST PDF/DOI when the answer is normative.
-- **Scenario routing (HTTP-fetchable):** fetch `data/chunks.json` (and optionally `bm25.json` / `embeddings.json` / `graph-edges.json`), rank or filter locally by query terms, `section_path`, `topics`, or `related_controls`, then **verify** against the cited source Markdown (or official PDF).
-- **Do not** treat retrieval snippets or fused scores as official NIST guidance.
-- **Do not** rely on `?format=json` for pure HTTP clients. That mode only runs after browser JavaScript executes; a plain GET returns the HTML shell.
-- **Applicability:** NIST.AI.600-1 supplements and does not replace NIST.AI.100-1. When both appear, state that distinction.
+1. **Authoritative quote / cite:** fetch the clean Markdown sources below; quote by `section_path` / heading anchor. Prefer the official NIST PDF/DOI when the answer is normative.
+2. **Programmatic scenario retrieval (plain HTTP, pure JSON):** fetch a precomputed file under `/nist-ai-rmf/retrieve/` (see index below), or fetch `data/chunks.json` (+ manifest) and rank locally.
+3. **Always verify** citations against the source Markdown (or official PDF).
+4. **Do not** treat fused scores as official NIST guidance.
+5. **Do not** use `?format=json` as a general agent endpoint. A plain GET returns the HTML page shell; ranking only runs if client JavaScript executes. Prefer `/retrieve/*.json` or `data/chunks.json`.
+6. **Applicability:** NIST.AI.600-1 supplements and does not replace NIST.AI.100-1.
 
-## Clean Markdown sources
+## Clean Markdown sources (authoritative)
 
-- [AI RMF 1.0 (NIST.AI.100-1)](https://aisharedresponsibility.com/nist-ai-rmf/sources/nist-ai-100-1.md): Structured extract of the Framework Core (GOVERN, MAP, MEASURE, MANAGE), trustworthiness characteristics, and framing risk.
-- [Generative AI Profile (NIST.AI.600-1)](https://aisharedresponsibility.com/nist-ai-rmf/sources/nist-ai-600-1.md): Twelve GAI risk categories and suggested actions mapped to AI RMF subcategories.
-- [Attribution](https://aisharedresponsibility.com/nist-ai-rmf/sources/ATTRIBUTION.md): Official URLs, versions, public-domain notice, conversion notes.
-- [Full concatenated sources](https://aisharedresponsibility.com/nist-ai-rmf/llms-full.txt): Both Markdown sources in one file.
+- [AI RMF 1.0 (NIST.AI.100-1)](https://aisharedresponsibility.com/nist-ai-rmf/sources/nist-ai-100-1.md)
+- [Generative AI Profile (NIST.AI.600-1)](https://aisharedresponsibility.com/nist-ai-rmf/sources/nist-ai-600-1.md)
+- [Attribution](https://aisharedresponsibility.com/nist-ai-rmf/sources/ATTRIBUTION.md)
+- [Full concatenated sources](https://aisharedresponsibility.com/nist-ai-rmf/llms-full.txt)
 
-## Structured retrieval data (agent-usable over plain HTTP)
+## Programmatic retrieval (static JSON over HTTP)
 
-- [Corpus manifest](https://aisharedresponsibility.com/nist-ai-rmf/data/corpus-manifest.json): Document IDs, versions, embedding method, chunk count.
-- [Chunks](https://aisharedresponsibility.com/nist-ai-rmf/data/chunks.json): Structure-aware chunks with `chunk_id`, `section_path`, `anchor`, `topics`, `related_controls`, `text`, and `source_md`. Primary agent retrieval corpus.
-- [BM25 index](https://aisharedresponsibility.com/nist-ai-rmf/data/bm25.json): Token DF, doc lengths, and per-chunk tokens for local keyword ranking (same stats the browser demo uses).
-- [Embeddings](https://aisharedresponsibility.com/nist-ai-rmf/data/embeddings.json): Dense vectors plus projection metadata for local hybrid ranking when an agent can run cosine similarity.
-- [Graph edges](https://aisharedresponsibility.com/nist-ai-rmf/data/graph-edges.json): Lightweight relatedness (functions, profile→base, curated SP 800-53 IDs). COSAiS overlay IDs are intentionally absent (pending public drafts).
+### Precomputed scenario results (recommended for agents)
 
-## RAG demo / retrieval for agents
+- [Scenario index](https://aisharedresponsibility.com/nist-ai-rmf/retrieve/index.json)
+- [human-oversight](https://aisharedresponsibility.com/nist-ai-rmf/retrieve/human-oversight.json)
+- [confabulation](https://aisharedresponsibility.com/nist-ai-rmf/retrieve/confabulation.json)
+- [govern-inventory](https://aisharedresponsibility.com/nist-ai-rmf/retrieve/govern-inventory.json)
+- [supply-chain](https://aisharedresponsibility.com/nist-ai-rmf/retrieve/supply-chain.json)
+- [prompt-injection](https://aisharedresponsibility.com/nist-ai-rmf/retrieve/prompt-injection.json)
 
-- Interactive UI (browser only): https://aisharedresponsibility.com/nist-ai-rmf/?q=...
-- Programmatic retrieval (static, agent-usable):
-  - Fetch https://aisharedresponsibility.com/nist-ai-rmf/data/chunks.json
-  - Rank locally (keyword / BM25 via `bm25.json`, or hybrid with `embeddings.json`) or select by `section_path` / `topics` / `related_controls`
-  - Always verify against the cited source Markdown (or official NIST PDF)
-- Do not rely on `?format=json` for pure HTTP clients; that mode is UI-oriented until a server-side JSON path exists. In a browser with JS, `?q=...&format=json` still renders ranked JSON for human debugging.
+Each file is ranked hybrid retrieval output (`matched_chunks`, scores, citations). Content-Type is `application/json` on GitHub Pages.
+
+### Full corpus (rank locally for arbitrary queries)
+
+- [Corpus manifest](https://aisharedresponsibility.com/nist-ai-rmf/data/corpus-manifest.json)
+- [Chunks](https://aisharedresponsibility.com/nist-ai-rmf/data/chunks.json): primary corpus (`chunk_id`, `section_path`, `anchor`, `topics`, `related_controls`, `text`, `source_md`)
+- [BM25 index](https://aisharedresponsibility.com/nist-ai-rmf/data/bm25.json)
+- [Embeddings](https://aisharedresponsibility.com/nist-ai-rmf/data/embeddings.json)
+- [Graph edges](https://aisharedresponsibility.com/nist-ai-rmf/data/graph-edges.json)
+
+## Browser UI only
+
+- Interactive UI: https://aisharedresponsibility.com/nist-ai-rmf/?q=...
+- `?format=json` is a **browser debug mode** (requires JS). It is not a server-side JSON API. Agents should use `/retrieve/*.json` or `data/chunks.json` instead.
 
 ## Official NIST publications
 
