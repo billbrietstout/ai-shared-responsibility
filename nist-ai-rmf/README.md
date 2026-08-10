@@ -19,12 +19,22 @@ Cite the official NIST PDFs/DOIs for normative use.
 
 | Path | Role |
 |------|------|
-| `index.html` | Landing page + RAG demo UI |
-| `llms.txt` | Agent discovery for this corpus |
+| `index.html` | Landing page + browser RAG UI |
+| `llms.txt` | Agent discovery: sources + static data path (not `?format=json`) |
 | `llms-full.txt` | Concatenated clean Markdown sources |
 | `sources/` | Dual-readable Markdown + attribution |
-| `data/` | Manifest, chunks, BM25, embeddings, graph edges, golden set |
-| `rag/` | Client retrieval modules |
+| `data/` | Manifest, chunks, BM25, embeddings, graph edges, golden set (HTTP-fetchable) |
+| `rag/` | Client retrieval modules (browser only) |
+
+## Agent retrieval (plain HTTP)
+
+GitHub Pages cannot run query-time ranking without client JS. Agents that only GET a URL should:
+
+1. Fetch `llms.txt`, then `data/chunks.json` (optionally `bm25.json` / `embeddings.json`).
+2. Rank or filter locally; cite `section_path` / `anchor`.
+3. Verify against `sources/*.md` or the official NIST PDF.
+
+Do not treat `/nist-ai-rmf/?q=...&format=json` as an agent API: a plain fetch returns HTML until JS runs.
 
 ## Rebuild indexes
 

@@ -148,19 +148,21 @@
         <div id="rag-out" aria-live="polite"></div>
 
         <details class="rag-json">
-          <summary>Raw JSON response</summary>
-          <pre id="rag-json">Run a query to see JSON. Append &amp;format=json to the URL for JSON-only mode.</pre>
+          <summary>Raw JSON response (browser JS)</summary>
+          <pre id="rag-json">Run a query to see JSON. In-browser only: append &amp;format=json after JS runs. Agents should fetch <a href="data/chunks.json">data/chunks.json</a> instead (see <a href="llms.txt">llms.txt</a>).</pre>
         </details>
 
         <p class="rag-links">
           <a href="llms.txt">llms.txt</a>
           <a href="sources/nist-ai-100-1.md">AI RMF Markdown</a>
           <a href="sources/nist-ai-600-1.md">GenAI Profile Markdown</a>
+          <a href="data/chunks.json">chunks.json</a>
           <a href="data/corpus-manifest.json">Corpus manifest</a>
           <a href="README.md">README</a>
         </p>
         <p class="rag-note">
-          Hybrid retrieval: BM25 + dense hash-TF-IDF vectors fused with reciprocal rank fusion.
+          Hybrid retrieval in this page: BM25 + dense hash-TF-IDF vectors fused with reciprocal rank fusion (browser JS).
+          Agents that only HTTP-fetch should use <a href="data/chunks.json">chunks.json</a> and rank locally; see <a href="llms.txt">llms.txt</a>.
           Related SP 800-53 entries are curated control IDs only (no catalog prose).
           COSAiS overlays are out of scope until public draft IDs exist.
         </p>

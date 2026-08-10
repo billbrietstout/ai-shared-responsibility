@@ -8,8 +8,9 @@
 ## How agents should use this corpus
 
 - **Authoritative quote / cite:** fetch the clean Markdown sources below, then quote by section path / heading anchor. Prefer the official NIST PDF/DOI when the answer is normative.
-- **Scenario routing:** use the RAG demo (`?q=` or `&format=json`) to find candidate sections, then **verify** against the cited Markdown (or official PDF) before answering.
+- **Scenario routing (HTTP-fetchable):** fetch `data/chunks.json` (and optionally `bm25.json` / `embeddings.json` / `graph-edges.json`), rank or filter locally by query terms, `section_path`, `topics`, or `related_controls`, then **verify** against the cited source Markdown (or official PDF).
 - **Do not** treat retrieval snippets or fused scores as official NIST guidance.
+- **Do not** rely on `?format=json` for pure HTTP clients. That mode only runs after browser JavaScript executes; a plain GET returns the HTML shell.
 - **Applicability:** NIST.AI.600-1 supplements and does not replace NIST.AI.100-1. When both appear, state that distinction.
 
 ## Clean Markdown sources
@@ -19,17 +20,22 @@
 - [Attribution](https://aisharedresponsibility.com/nist-ai-rmf/sources/ATTRIBUTION.md): Official URLs, versions, public-domain notice, conversion notes.
 - [Full concatenated sources](https://aisharedresponsibility.com/nist-ai-rmf/llms-full.txt): Both Markdown sources in one file.
 
-## Structured retrieval data
+## Structured retrieval data (agent-usable over plain HTTP)
 
 - [Corpus manifest](https://aisharedresponsibility.com/nist-ai-rmf/data/corpus-manifest.json): Document IDs, versions, embedding method, chunk count.
-- [Chunks](https://aisharedresponsibility.com/nist-ai-rmf/data/chunks.json): Structure-aware chunks with section_path, anchor, topics, related SP 800-53 IDs.
-- [Graph edges](https://aisharedresponsibility.com/nist-ai-rmf/data/graph-edges.json): Lightweight relatedness (functions, profile→base, curated 800-53 IDs). COSAiS overlay IDs are intentionally absent (pending public drafts).
+- [Chunks](https://aisharedresponsibility.com/nist-ai-rmf/data/chunks.json): Structure-aware chunks with `chunk_id`, `section_path`, `anchor`, `topics`, `related_controls`, `text`, and `source_md`. Primary agent retrieval corpus.
+- [BM25 index](https://aisharedresponsibility.com/nist-ai-rmf/data/bm25.json): Token DF, doc lengths, and per-chunk tokens for local keyword ranking (same stats the browser demo uses).
+- [Embeddings](https://aisharedresponsibility.com/nist-ai-rmf/data/embeddings.json): Dense vectors plus projection metadata for local hybrid ranking when an agent can run cosine similarity.
+- [Graph edges](https://aisharedresponsibility.com/nist-ai-rmf/data/graph-edges.json): Lightweight relatedness (functions, profile→base, curated SP 800-53 IDs). COSAiS overlay IDs are intentionally absent (pending public drafts).
 
-## RAG demo / retrieval endpoint
+## RAG demo / retrieval for agents
 
-- [RAG demo UI](https://aisharedresponsibility.com/nist-ai-rmf/): Browser hybrid retrieval (BM25 + dense vectors, RRF fusion, citations).
-- JSON mode: `https://aisharedresponsibility.com/nist-ai-rmf/?q=YOUR+QUERY&format=json`
-- Optional filters: `doc=nist-ai-100-1|nist-ai-600-1`, `fn=govern|map|measure|manage`, `genai=1`
+- Interactive UI (browser only): https://aisharedresponsibility.com/nist-ai-rmf/?q=...
+- Programmatic retrieval (static, agent-usable):
+  - Fetch https://aisharedresponsibility.com/nist-ai-rmf/data/chunks.json
+  - Rank locally (keyword / BM25 via `bm25.json`, or hybrid with `embeddings.json`) or select by `section_path` / `topics` / `related_controls`
+  - Always verify against the cited source Markdown (or official NIST PDF)
+- Do not rely on `?format=json` for pure HTTP clients; that mode is UI-oriented until a server-side JSON path exists. In a browser with JS, `?q=...&format=json` still renders ranked JSON for human debugging.
 
 ## Official NIST publications
 
