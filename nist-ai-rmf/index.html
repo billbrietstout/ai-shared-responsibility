@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NIST AI RMF Static RAG Demo</title>
+    <meta
+      name="description"
+      content="Static hybrid retrieval over NIST AI RMF 1.0 and the Generative AI Profile. Dual-readable Markdown sources with BM25 + dense fusion and section citations. Not official NIST output."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/nist-ai-rmf/" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .rag-wrap { max-width: 920px; margin: 0 auto; padding: var(--sp-8) var(--sp-6); }
+      .rag-disclaimer {
+        font-size: var(--text-sm); line-height: 1.6; color: var(--slate-600);
+        border-left: 3px solid var(--cosai-blue); padding: var(--sp-3) var(--sp-4);
+        background: var(--slate-50); margin: var(--sp-4) 0 var(--sp-6);
+      }
+      .rag-form { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin: var(--sp-4) 0; }
+      .rag-form input[type="search"] {
+        flex: 1 1 280px; font-size: var(--text-base); padding: var(--sp-3) var(--sp-4);
+        border: 1px solid var(--slate-300); border-radius: var(--radius-md); font-family: inherit;
+      }
+      .rag-form button {
+        font-size: var(--text-sm); font-weight: 600; padding: 0 var(--sp-5);
+        border: none; border-radius: var(--radius-md); background: var(--cosai-blue);
+        color: #fff; cursor: pointer; min-height: 44px;
+      }
+      .rag-filters { display: flex; flex-wrap: wrap; gap: var(--sp-4); font-size: var(--text-sm); margin-bottom: var(--sp-4); }
+      .rag-filters label { display: flex; align-items: center; gap: 6px; color: var(--slate-600); }
+      .rag-filters select { font: inherit; padding: 4px 8px; border: 1px solid var(--slate-300); border-radius: var(--radius-md); }
+      .rag-examples { font-size: var(--text-sm); color: var(--slate-500); margin-bottom: var(--sp-6); line-height: 1.8; }
+      .rag-examples a { color: var(--cosai-blue); text-decoration: none; margin-right: var(--sp-3); }
+      .rag-meta {
+        display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: center;
+        padding: var(--sp-4); background: var(--slate-50); border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md); margin-bottom: var(--sp-4); font-size: var(--text-sm);
+      }
+      .rag-conf { font-weight: 700; }
+      .rag-bar { flex: 1; height: 8px; background: var(--slate-200); border-radius: 999px; overflow: hidden; min-width: 120px; }
+      .rag-bar span { display: block; height: 100%; background: var(--cosai-blue); }
+      .rag-conflict {
+        font-size: var(--text-sm); color: var(--slate-700); background: #fff8e7;
+        border: 1px solid #f0e0b0; padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-md);
+        margin-bottom: var(--sp-4);
+      }
+      .rag-card {
+        border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+        padding: var(--sp-4) var(--sp-5); margin-bottom: var(--sp-3);
+      }
+      .rag-card__head { display: flex; justify-content: space-between; gap: var(--sp-3); align-items: baseline; }
+      .rag-card__title { font-size: var(--text-base); margin: 0; color: var(--slate-900); }
+      .rag-card__score { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--slate-500); }
+      .rag-card__meta { font-size: var(--text-xs); color: var(--slate-500); margin: var(--sp-2) 0; }
+      .rag-badge {
+        display: inline-block; font-family: var(--font-mono); font-size: var(--text-xs);
+        padding: 2px 8px; margin-right: 6px; background: var(--slate-100); border-radius: 4px;
+      }
+      .rag-badge--app { background: #e8f1fb; color: #1e4a7a; }
+      .rag-path { display: inline; }
+      .rag-card__snippet { font-size: var(--text-sm); color: var(--slate-600); line-height: 1.6; margin: var(--sp-2) 0; }
+      .rag-card__snippet mark { background: #fef9c3; padding: 0 2px; }
+      .rag-card__scores, .rag-card__ctrls { font-size: var(--text-xs); color: var(--slate-500); }
+      .rag-chip {
+        display: inline-block; font-family: var(--font-mono); font-size: var(--text-xs);
+        padding: 1px 6px; margin: 2px 4px 2px 0; background: var(--slate-100); border-radius: 4px;
+      }
+      .rag-card__cite { font-size: var(--text-xs); }
+      .rag-note { font-size: var(--text-sm); color: var(--slate-500); line-height: 1.7; }
+      .rag-links { font-size: var(--text-sm); margin-top: var(--sp-8); }
+      .rag-links a { margin-right: var(--sp-4); }
+      details.rag-json { margin-top: var(--sp-8); }
+      details.rag-json pre {
+        background: var(--slate-900); color: #e2e8f0; padding: var(--sp-4);
+        border-radius: var(--radius-md); overflow: auto; font-size: var(--text-xs); line-height: 1.5;
+      }
+    </style>
+    <!-- Satisfies build/verify_pages.py: llm:type + data-llm. Intentionally omits
+         llm:meta markers and llm:concepts so inject_page_metadata.py leaves this
+         standalone NIST corpus alone (same contract as /nist/ TACIP). -->
+    <meta name="llm:type" content="tool" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">NIST standards demo</span>
+        <h1 class="page-hero__title">NIST AI RMF Static RAG</h1>
+        <p class="page-hero__lede">
+          Scenario retrieval over clean Markdown extracts of NIST AI RMF 1.0 and the Generative AI Profile,
+          with section citations. Runs entirely in the browser.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" data-llm="nist-ai-rmf-rag">
+      <div class="rag-wrap">
+        <p class="rag-disclaimer">
+          <strong>Not official NIST output.</strong>
+          Derived from public NIST publications
+          (<a href="https://doi.org/10.6028/NIST.AI.100-1">NIST.AI.100-1</a>,
+          <a href="https://doi.org/10.6028/NIST.AI.600-1">NIST.AI.600-1</a>)
+          for demonstration. Cite the official DOIs for normative use.
+          See <a href="sources/ATTRIBUTION.md">attribution</a>.
+        </p>
+
+        <form class="rag-form" id="rag-form" role="search">
+          <input
+            type="search"
+            id="rag-q"
+            name="q"
+            placeholder="e.g. human oversight for generative AI chatbots"
+            aria-label="Retrieval query"
+            autocomplete="off"
+          />
+          <button type="submit">Retrieve</button>
+        </form>
+
+        <div class="rag-filters">
+          <label>
+            Document
+            <select id="f-doc" aria-label="Filter by document">
+              <option value="">All</option>
+              <option value="nist-ai-100-1">AI RMF 1.0</option>
+              <option value="nist-ai-600-1">GenAI Profile</option>
+            </select>
+          </label>
+          <label>
+            Function
+            <select id="f-fn" aria-label="Filter by AI RMF function">
+              <option value="">Any</option>
+              <option value="govern">GOVERN</option>
+              <option value="map">MAP</option>
+              <option value="measure">MEASURE</option>
+              <option value="manage">MANAGE</option>
+            </select>
+          </label>
+          <label>
+            <input type="checkbox" id="f-genai" />
+            GenAI Profile only
+          </label>
+        </div>
+
+        <p class="rag-examples" id="rag-examples"></p>
+        <div id="rag-out" aria-live="polite"></div>
+
+        <details class="rag-json">
+          <summary>Raw JSON response</summary>
+          <pre id="rag-json">Run a query to see JSON. Append &amp;format=json to the URL for JSON-only mode.</pre>
+        </details>
+
+        <p class="rag-links">
+          <a href="llms.txt">llms.txt</a>
+          <a href="sources/nist-ai-100-1.md">AI RMF Markdown</a>
+          <a href="sources/nist-ai-600-1.md">GenAI Profile Markdown</a>
+          <a href="data/corpus-manifest.json">Corpus manifest</a>
+          <a href="README.md">README</a>
+        </p>
+        <p class="rag-note">
+          Hybrid retrieval: BM25 + dense hash-TF-IDF vectors fused with reciprocal rank fusion.
+          Related SP 800-53 entries are curated control IDs only (no catalog prose).
+          COSAiS overlays are out of scope until public draft IDs exist.
+        </p>
+      </div>
+    </main>
+
+    <script type="module">
+      import { boot } from "./rag/ui.js";
+      boot();
+    </script>
+  </body>
+</html>
