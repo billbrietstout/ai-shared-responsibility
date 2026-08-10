@@ -1,0 +1,54 @@
+{
+  "demo_id": "nist-ai-rmf-rag",
+  "title": "NIST AI RMF Static RAG Demo",
+  "version": "0.1.0",
+  "generated": "2026-08-09",
+  "disclaimer": "Not official NIST output. Derived from public NIST publications for demonstration.",
+  "official_home": "https://www.nist.gov/itl/ai-risk-management-framework",
+  "documents": [
+    {
+      "doc_id": "nist-ai-100-1",
+      "title": "Artificial Intelligence Risk Management Framework (AI RMF 1.0)",
+      "nist_id": "NIST.AI.100-1",
+      "version": "1.0",
+      "published": "2023-01-26",
+      "doi": "https://doi.org/10.6028/NIST.AI.100-1",
+      "pdf": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+      "source_md": "sources/nist-ai-100-1.md",
+      "license": "US government work (public domain in the United States)"
+    },
+    {
+      "doc_id": "nist-ai-600-1",
+      "title": "Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile",
+      "nist_id": "NIST.AI.600-1",
+      "version": "1.0",
+      "published": "2024-07-26",
+      "doi": "https://doi.org/10.6028/NIST.AI.600-1",
+      "pdf": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf",
+      "source_md": "sources/nist-ai-600-1.md",
+      "license": "US government work (public domain in the United States)",
+      "applicability": "Companion profile; supplements and does not replace NIST.AI.100-1"
+    }
+  ],
+  "embedding": {
+    "model": "hash-tfidf",
+    "dims": 256,
+    "method": "hash-tfidf",
+    "n_vectors": 307,
+    "files": [
+      "data/embeddings.bin",
+      "data/embeddings.json"
+    ]
+  },
+  "bm25": {
+    "k1": 1.5,
+    "b": 0.75
+  },
+  "join_hints": {
+    "scope": "standalone",
+    "entry_point": "llms.txt",
+    "chunk_key": "chunk_id",
+    "anchor_scheme": "heading id in source Markdown"
+  },
+  "chunk_count": 307
+}
