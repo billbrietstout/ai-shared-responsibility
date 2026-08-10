@@ -115,6 +115,12 @@ function rrfFuse(lists, k = 60) {
 function passesFilters(ch, filters) {
   if (!filters) return true;
   if (filters.doc_id && ch.doc_id !== filters.doc_id) return false;
+  if (filters.family) {
+    const fam = filters.family.toLowerCase();
+    if ((ch.family || "").toLowerCase() !== fam && !(ch.anchor || "").toLowerCase().startsWith(fam + "-")) {
+      return false;
+    }
+  }
   if (filters.function) {
     const fn = filters.function.toLowerCase();
     const path = (ch.section_path || "").toLowerCase();
@@ -132,15 +138,22 @@ function graphBoost(chunkId, graph) {
     .map((e) => (e.from === chunkId ? e.to : e.from));
 }
 
-export async function loadCorpus(base = "/nist-ai-rmf/data") {
+export async function loadCorpus(base = "./data") {
   const [chunks, bm25, emb, graph, manifest] = await Promise.all([
     fetch(`${base}/chunks.json`).then((r) => r.json()),
     fetch(`${base}/bm25.json`).then((r) => r.json()),
     fetch(`${base}/embeddings.json`).then((r) => r.json()),
-    fetch(`${base}/graph-edges.json`).then((r) => r.json()),
+    fetch(`${base}/graph-edges.json`).then((r) => r.json()).catch(() => ({ nodes: [], edges: [] })),
     fetch(`${base}/corpus-manifest.json`).then((r) => r.json()),
   ]);
-  return { chunks, bm25, emb, graph, manifest };
+  return { chunks, bm25, emb, graph, manifest, base };
+}
+
+export function citeUrl(ch) {
+  const md = ch.source_md || "";
+  // Paths are relative to /nist-ai-rmf/ (page root).
+  if (md.startsWith("sp800-53/")) return `./${md}#${ch.anchor}`;
+  return `./${md}#${ch.anchor}`;
 }
 
 export function search(corpus, query, opts = {}) {
@@ -204,6 +217,11 @@ export function search(corpus, query, opts = {}) {
     if ((ch.level || 1) >= 3) boost += 0.02;
     if ((ch.anchor || "").startsWith("risk-")) boost += 0.03;
     if (/^(gov|map|measure|manage)-\d/.test(ch.anchor || "")) boost += 0.02;
+    // Exact SP 800-53 control id in the query (prefer base control over long enhancements).
+    const anchor = (ch.anchor || "").toLowerCase();
+    if (anchor && qset.has(anchor)) {
+      boost += anchor.includes(".") ? 0.12 : 0.22;
+    }
     if (ch.applicability && filters.genai_only) boost += 0.01;
     const hops = graphBoost(ch.chunk_id, graph);
     if (hops.length) boost += Math.min(0.03, hops.length * 0.005);
@@ -224,7 +242,7 @@ export function search(corpus, query, opts = {}) {
       title: ch.title,
       section_path: ch.section_path,
       anchor: ch.anchor,
-      source_url: `../${ch.source_md}#${ch.anchor}`,
+      source_url: citeUrl(ch),
       applicability: ch.applicability || null,
       related_controls: ch.related_controls || [],
       topics: ch.topics || [],

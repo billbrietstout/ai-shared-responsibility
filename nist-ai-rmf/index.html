@@ -162,12 +162,13 @@
           <label>
             Document
             <select id="f-doc" aria-label="Filter by document">
-              <option value="">All</option>
+              <option value="">AI RMF corpus (default)</option>
               <option value="nist-ai-100-1">AI RMF 1.0</option>
               <option value="nist-ai-600-1">GenAI Profile</option>
+              <option value="sp800-53-rev5">SP 800-53 Rev 5 (opt-in)</option>
             </select>
           </label>
-          <label>
+          <label id="f-fn-wrap">
             Function
             <select id="f-fn" aria-label="Filter by AI RMF function">
               <option value="">Any</option>
@@ -177,7 +178,33 @@
               <option value="manage">MANAGE</option>
             </select>
           </label>
-          <label>
+          <label id="f-fam-wrap" hidden>
+            Family
+            <select id="f-fam" aria-label="Filter by SP 800-53 family">
+              <option value="">Any</option>
+              <option value="ac">AC</option>
+              <option value="at">AT</option>
+              <option value="au">AU</option>
+              <option value="ca">CA</option>
+              <option value="cm">CM</option>
+              <option value="cp">CP</option>
+              <option value="ia">IA</option>
+              <option value="ir">IR</option>
+              <option value="ma">MA</option>
+              <option value="mp">MP</option>
+              <option value="pe">PE</option>
+              <option value="pl">PL</option>
+              <option value="pm">PM</option>
+              <option value="ps">PS</option>
+              <option value="pt">PT</option>
+              <option value="ra">RA</option>
+              <option value="sa">SA</option>
+              <option value="sc">SC</option>
+              <option value="si">SI</option>
+              <option value="sr">SR</option>
+            </select>
+          </label>
+          <label id="f-genai-wrap">
             <input type="checkbox" id="f-genai" />
             GenAI Profile only
           </label>
@@ -197,15 +224,19 @@
           <a href="retrieve/index.json">retrieve scenarios</a>
           <a href="sources/nist-ai-100-1.md">AI RMF Markdown</a>
           <a href="sources/nist-ai-600-1.md">GenAI Profile Markdown</a>
-          <a href="data/chunks.json">chunks.json</a>
+          <a href="sp800-53/sources/index.md">SP 800-53 families</a>
+          <a href="data/chunks.json">AI RMF chunks.json</a>
+          <a href="sp800-53/data/chunks.json">SP 800-53 chunks.json</a>
           <a href="data/corpus-manifest.json">Corpus manifest</a>
           <a href="README.md">README</a>
         </p>
         <p class="rag-note">
-          This page ranks in the browser (BM25 + dense hash-TF-IDF, RRF).
+          Default ranking uses the AI RMF corpus only (BM25 + dense hash-TF-IDF, RRF).
+          SP 800-53 Rev 5 is a separate opt-in corpus (statement + guidance); select it in Document to load
+          <a href="sp800-53/data/chunks.json">sp800-53/data</a>. The two corpora are not blended.
           Agents that only HTTP-fetch should use <a href="retrieve/index.json">/retrieve/*.json</a>
-          for demo scenarios or <a href="data/chunks.json">chunks.json</a> for local ranking; see <a href="llms.txt">llms.txt</a>.
-          Related SP 800-53 entries are curated control IDs only (no catalog prose).
+          for AI RMF demo scenarios or the matching <code>chunks.json</code>; see <a href="llms.txt">llms.txt</a>.
+          Related SP 800-53 chips on AI RMF hits link into the sibling catalog when present.
           COSAiS overlays are out of scope until public draft IDs exist.
         </p>
 
@@ -265,15 +296,16 @@
               separate artifacts.
             </li>
             <li>
-              <strong>Corpus isolation.</strong> IDs and files here do not merge into the CoSAI SRF
-              graph on the rest of the site. Related SP 800-53 values are curated control IDs only.
+              <strong>Corpus isolation.</strong> IDs and files for the AI RMF demo do not merge into the CoSAI SRF
+              graph. SP 800-53 Rev 5 lives in a <strong>separate opt-in corpus</strong> under
+              <code>sp800-53/</code> and is not blended into default AI RMF ranking.
             </li>
           </ul>
           <p>
-            It does not demonstrate official NIST packaging, a complete NIST corpus (full PDFs,
-            sector profiles, or COSAiS overlays), production retrieval quality for every question,
-            or safe use of assistant output on operational or OT systems. Before any operational use,
-            verify citations and read
+            It does not demonstrate official NIST packaging, production retrieval quality for every question,
+            resolved organization-defined parameters, SP 800-53B baselines, 800-53A assessment procedures,
+            COSAiS overlays, or safe use of assistant output on operational or OT systems. Before any
+            operational use, verify citations and read
             <a href="#assistant-ot-risks">assistant and OT risks</a>.
           </p>
 
@@ -284,7 +316,8 @@
             <li><strong>Offline prep</strong> (<code>build/nist_ai_rmf/</code>): structure-aware chunking, BM25 stats, dense vectors, optional scenario export.</li>
             <li><strong>Published data</strong> under <code>data/</code>: <code>chunks.json</code>, <code>bm25.json</code>, <code>embeddings.json</code>, <code>graph-edges.json</code>.</li>
             <li><strong>Browser RAG</strong> on this page: load those files, run BM25 + dense fusion (reciprocal rank fusion), show citations.</li>
-            <li><strong>Precomputed scenarios</strong> under <code>retrieve/*.json</code>: the same ranked-result JSON fields as the browser UI, for agents that only HTTP-fetch.</li>
+            <li><strong>Precomputed scenarios</strong> under <code>retrieve/*.json</code>: the same ranked-result JSON fields as the browser UI, for agents that only HTTP-fetch (AI RMF scenarios).</li>
+            <li><strong>Opt-in SP 800-53 corpus</strong> under <code>sp800-53/</code>: statement + guidance Markdown and its own <code>data/</code> indexes; loaded only when Document = SP 800-53 Rev 5.</li>
           </ol>
           <p>
             Ranking signal: keyword BM25 plus a dense hash-TF-IDF layer, fused and lightly boosted by
@@ -428,8 +461,8 @@ Do not invent control IDs. If the section is missing, say so.</pre>
             <li><strong>Confabulation after retrieval.</strong> An assistant can fetch correct chunks and still invent parameters, control IDs, or “recommended” setpoints not in the source.</li>
             <li><strong>Conversion of guidance into config or code.</strong> Nothing here blocks export of assistant output into PLC logic, MES workflows, SIEM rules, or AI gateway policies.</li>
             <li><strong>Second-order OT decisions.</strong> Vendor selection, diagnostic steps, and summarized procedures remain human/process risks. This site does not enforce TEVV, change control, or two-person review.</li>
-            <li><strong>Incomplete corpus.</strong> Demo extracts omit full NIST PDFs, sector profiles, and COSAiS overlays. Silence in the corpus is not “no risk.”</li>
-            <li><strong>Curated SP 800-53 IDs.</strong> Related-control chips are hints only. They are not a validated overlay baseline for any facility.</li>
+            <li><strong>Incomplete corpus.</strong> AI RMF demo extracts omit full NIST PDFs, sector profiles, and COSAiS overlays. The SP 800-53 sibling omits 800-53A assessment procedures, 800-53B baselines, and resolved ODPs. Silence in either corpus is not “no risk.”</li>
+            <li><strong>Curated AI RMF ↔ 800-53 edges.</strong> Related-control chips on AI RMF hits are theme hints that may link into the sibling catalog. They are not a validated overlay baseline for any facility.</li>
           </ul>
 
           <h3>Practical boundary for operators</h3>
