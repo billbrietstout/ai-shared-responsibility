@@ -255,8 +255,8 @@
             </li>
             <li>
               <strong>Citation-first answers.</strong> Hits expose <code>doc_id</code>,
-              <code>section_path</code>, and a link into the source Markdown. The intended workflow is
-              retrieve → open the section → verify; not “trust the fused score.”
+              <code>section_path</code>, and a link into the source Markdown. Open the cited section
+              and check it; fused scores are ranking hints only.
             </li>
             <li>
               <strong>Two consumer paths.</strong> Humans use this form. Agents that only HTTP-fetch
@@ -272,8 +272,9 @@
           <p>
             It does not demonstrate official NIST packaging, a complete NIST corpus (full PDFs,
             sector profiles, or COSAiS overlays), production retrieval quality for every question,
-            or safe use of assistant output on operational or OT systems. Those limits are why
-            citations and the <a href="#assistant-ot-risks">assistant and OT risks</a> section exist.
+            or safe use of assistant output on operational or OT systems. Before any operational use,
+            verify citations and read
+            <a href="#assistant-ot-risks">assistant and OT risks</a>.
           </p>
 
           <h2 id="architecture">Architecture</h2>
@@ -283,7 +284,7 @@
             <li><strong>Offline prep</strong> (<code>build/nist_ai_rmf/</code>): structure-aware chunking, BM25 stats, dense vectors, optional scenario export.</li>
             <li><strong>Published data</strong> under <code>data/</code>: <code>chunks.json</code>, <code>bm25.json</code>, <code>embeddings.json</code>, <code>graph-edges.json</code>.</li>
             <li><strong>Browser RAG</strong> on this page: load those files, run BM25 + dense fusion (reciprocal rank fusion), show citations.</li>
-            <li><strong>Precomputed scenarios</strong> under <code>retrieve/*.json</code>: the same ranking shape as pure JSON for agents that only HTTP-fetch.</li>
+            <li><strong>Precomputed scenarios</strong> under <code>retrieve/*.json</code>: the same ranked-result JSON fields as the browser UI, for agents that only HTTP-fetch.</li>
           </ol>
           <p>
             Ranking signal: keyword BM25 plus a dense hash-TF-IDF layer, fused and lightly boosted by
@@ -383,13 +384,14 @@ Do not invent control IDs. If the section is missing, say so.</pre>
           <p>
             People often treat a chat assistant that only “reads documentation” as low risk compared with
             wiring a model into an OT controller, PLC, SCADA setpoints, or plant safety system.
-            That split is false when the assistant’s output drives what a human (or another automation
+            The low-risk label fails when the assistant’s output drives what a human (or another automation
             path) actually deploys.
           </p>
           <p>
             An error in assistant output can have the same operational impact as connecting an assistant
             to OT control if that output becomes configuration, code, a procedure, or a diagnosis that
-            changes how a system runs. The channel was prose; the effect was actuation by proxy.
+            changes how a system runs. The assistant answered in text; a person or pipeline still applied
+            the change.
           </p>
 
           <h3>Direct paths into operations</h3>
@@ -414,9 +416,9 @@ Do not invent control IDs. If the section is missing, say so.</pre>
           <h3>What this demo mitigates</h3>
           <ul>
             <li><strong>No actuation surface here.</strong> The demo does not write configs, open OT sessions, or call plant APIs. It serves static text and ranked citations.</li>
-            <li><strong>Provenance pressure.</strong> Results carry <code>doc_id</code>, <code>section_path</code>, and source links so a reviewer can check the claim against Markdown or the official NIST PDF.</li>
-            <li><strong>Discovery honesty.</strong> <code>llms.txt</code> and this guide tell agents not to treat fused scores or <code>?format=json</code> as normative, and to prefer cited sections over free invention.</li>
-            <li><strong>Scope labels.</strong> Clear separation of base AI RMF vs GenAI Profile, and a stated “not official NIST output” banner, reduce (but do not eliminate) false authority.</li>
+            <li><strong>Checkable citations.</strong> Results carry <code>doc_id</code>, <code>section_path</code>, and source links so a reviewer can check the claim against Markdown or the official NIST PDF.</li>
+            <li><strong>Explicit agent rules.</strong> <code>llms.txt</code> and this guide tell agents not to treat fused scores or <code>?format=json</code> as normative, and to prefer cited sections over free invention.</li>
+            <li><strong>Document and disclaimer labels.</strong> Clear separation of base AI RMF vs GenAI Profile, and a stated “not official NIST output” banner, reduce mistaken authority. They do not remove it.</li>
             <li><strong>No hidden live ranking API.</strong> Agents that only HTTP-fetch get explicit static files; there is no silent server-side model rewriting answers for OT use.</li>
           </ul>
 
