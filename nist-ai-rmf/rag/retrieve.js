@@ -9,11 +9,66 @@ const STOP = new Set(
   )
 );
 
+/** Weak query verbs/fillers that match too broadly in NIST prose. */
+const QUERY_WEAK = new Set(
+  (
+    "cover covers covering address addresses addressing include includes including " +
+    "using based related relate regarding about provide provides ensure ensures " +
+    "support supports should does did can could would may might must " +
+    "before after during within without required requiring create creates creating " +
+    "make makes making get gets getting take takes taking " +
+    "users user mislead misleading"
+  ).split(/\s+/)
+);
+
+/** Ultra-common corpus tokens; keep for matching but downweight in BM25. */
+const QUERY_COMMON = new Set(
+  "ai system systems risk risks management framework model models data organization organizations organizational".split(
+    " "
+  )
+);
+
 export function tokenize(s) {
   return (s || "")
     .toLowerCase()
     .match(/[a-z0-9][a-z0-9-]*/g)
     ?.filter((t) => !STOP.has(t) && t.length > 1) || [];
+}
+
+export function queryTerms(s) {
+  return tokenize(s).filter((t) => !QUERY_WEAK.has(t));
+}
+
+function strongTerms(tokens) {
+  return tokens.filter((t) => !QUERY_COMMON.has(t));
+}
+
+function termWeight(t) {
+  if (QUERY_COMMON.has(t)) return 0.35;
+  return 1;
+}
+
+function minHitsRequired(tokens, df, nDocs) {
+  const strong = strongTerms(tokens);
+  const basis = strong.length ? strong : tokens;
+  const n = basis.length;
+  if (n <= 1) return 1;
+  if (df) {
+    const rareCap = Math.max(12, Math.floor(0.05 * (nDocs || 300)));
+    if (strong.some((t) => (df[t] || 0) <= rareCap)) return 1;
+  }
+  if (n === 2) return 2;
+  return Math.max(2, Math.min(n, Math.ceil(n * 0.4)));
+}
+
+function countHits(queryTokens, docTokSet, strongOnly) {
+  const strong = strongTerms(queryTokens);
+  const terms = strongOnly && strong.length ? strong : queryTokens;
+  let hit = 0;
+  terms.forEach((t) => {
+    if (docTokSet.has(t)) hit += 1;
+  });
+  return hit;
 }
 
 /* FNV-1a 32-bit — must match build/nist_ai_rmf/build_index.py */
@@ -43,7 +98,7 @@ function projectQuery(tokens, projection) {
   const row = new Float32Array(dims);
   Object.entries(tf).forEach(([term, f]) => {
     if (!(term in idf)) return;
-    const weight = (1 + Math.log(f)) * idf[term];
+    const weight = termWeight(term) * (1 + Math.log(f)) * idf[term];
     const [h, sign] = stableBucket(term, dims);
     row[h] += sign * weight;
   });
@@ -68,26 +123,31 @@ function bm25Search(queryTokens, chunks, bm25, k = 20) {
   const avgdl = bm25.avgdl || 1;
   const df = bm25.df || {};
   const idf = (t) => Math.log(1 + (N - (df[t] || 0) + 0.5) / ((df[t] || 0) + 0.5));
+  const need = minHitsRequired(queryTokens, df, N);
   const scored = chunks.map((ch, i) => {
     const toks = bm25.tokens?.[i] || tokenize(`${ch.title}. ${ch.text}`);
     const tf = {};
     toks.forEach((t) => {
       tf[t] = (tf[t] || 0) + 1;
     });
+    const tokSet = new Set(toks);
     const len = bm25.doc_lens?.[i] ?? toks.length;
     let s = 0;
-    let hit = 0;
     queryTokens.forEach((t) => {
       const f = tf[t] || 0;
-      if (f > 0) hit++;
       const denom = f + k1 * (1 - b + (b * len) / avgdl);
-      s += (idf(t) * (f * (k1 + 1))) / (denom || 1);
+      s += (termWeight(t) * idf(t) * (f * (k1 + 1))) / (denom || 1);
     });
-    return { i, score: s, hit };
+    const strongHit = countHits(queryTokens, tokSet, true);
+    const allHit = countHits(queryTokens, tokSet, false);
+    const basis = strongTerms(queryTokens).length || queryTokens.length || 1;
+    const coord = strongHit / basis;
+    s *= 0.35 + 0.65 * coord;
+    return { i, score: s, hit: strongHit, allHit };
   });
   return scored
-    .filter((r) => r.score > 0)
-    .sort((a, b) => b.score - a.score)
+    .filter((r) => r.score > 0 && r.hit >= need)
+    .sort((a, b) => b.score - a.score || b.hit - a.hit || b.allHit - a.allHit)
     .slice(0, k);
 }
 
@@ -160,12 +220,12 @@ export function search(corpus, query, opts = {}) {
   const { chunks, bm25, emb, graph } = corpus;
   const topK = opts.topK ?? 8;
   const filters = opts.filters || {};
-  const q = tokenize(query);
+  const q = queryTerms(query);
   if (!q.length) {
     return { query, matched_chunks: [], confidence: 0, embedding_method: emb.method };
   }
 
-  const bm = bm25Search(q, chunks, bm25, 40);
+  const bm = bm25Search(q, chunks, bm25, 60);
   const qVec = projectQuery(q, emb.projection || { dims: emb.dims, idf: {} });
 
   // Hybrid: BM25 proposes candidates; dense reranks within that set (plus weak RRF).
@@ -175,59 +235,79 @@ export function search(corpus, query, opts = {}) {
   densAll.slice(0, 10).forEach((r) => candidateIdx.add(r.i));
 
   const dens = densAll.filter((r) => candidateIdx.has(r.i));
-  const bmList = bm.map((r) => ({ i: r.i, bm25: r.score, parts: { bm25: true } }));
+  const bmList = bm.map((r) => ({ i: r.i, bm25: r.score, hit: r.hit, parts: { bm25: true } }));
   const densList = dens.map((r) => ({ i: r.i, dense: r.score, parts: { dense: true } }));
 
   // Weight BM25 higher for hash-tfidf embeddings
-  const bmWeight = emb.method === "hash-tfidf" ? 2 : 1;
-  const densWeight = 1;
+  const bmWeight = emb.method === "hash-tfidf" ? 2.5 : 1;
+  const densWeight = emb.method === "hash-tfidf" ? 0.5 : 1;
   const scores = new Map();
-  const addList = (list, weight, key) => {
+  const addList = (list, weight) => {
     list.forEach((item, rank) => {
       const prev = scores.get(item.i) || { i: item.i, rrf: 0 };
       prev.rrf += (weight * 1) / (60 + rank + 1);
       if (item.bm25 != null) prev.bm25 = item.bm25;
       if (item.dense != null) prev.dense = item.dense;
+      if (item.hit != null) prev.hit = item.hit;
       scores.set(item.i, prev);
     });
   };
-  addList(bmList, bmWeight, "bm25");
-  addList(densList, densWeight, "dense");
+  addList(bmList, bmWeight);
+  addList(densList, densWeight);
   let fused = [...scores.values()].sort((a, b) => b.rrf - a.rrf);
 
   const bmMap = new Map(bmList.map((r) => [r.i, r.bm25]));
   const dMap = new Map(densList.map((r) => [r.i, r.dense]));
+  const hitMap = new Map(bmList.map((r) => [r.i, r.hit]));
   fused = fused.map((r) => ({
     ...r,
     bm25: bmMap.get(r.i) ?? 0,
     dense: dMap.get(r.i) ?? 0,
+    hit: hitMap.get(r.i) ?? 0,
   }));
 
   // Deterministic boosts: title coverage, depth, risk/subcategory anchors
   const qset = new Set(q);
+  const need = minHitsRequired(q, bm25.df || {}, bm25.n_docs || chunks.length);
+  const basis = strongTerms(q).length || q.length || 1;
   fused = fused.map((r) => {
     const ch = chunks[r.i];
+    const docToks = new Set(tokenize(`${ch.title || ""}. ${ch.text || ""}`));
+    const strongHit = countHits(q, docToks, true);
     const titleToks = tokenize(ch.title || "");
+    const titleStrong = strongTerms(q).filter((t) => titleToks.includes(t)).length;
     let cover = 0;
     titleToks.forEach((t) => {
       if (qset.has(t)) cover += 1;
     });
     cover = cover / (qset.size || 1);
-    let boost = 0.12 * cover;
+    const termCover = strongHit / basis;
+    let boost = 0.2 * cover + 0.25 * termCover;
     if ((ch.level || 1) >= 3) boost += 0.02;
-    if ((ch.anchor || "").startsWith("risk-")) boost += 0.03;
-    if (/^(gov|map|measure|manage)-\d/.test(ch.anchor || "")) boost += 0.02;
-    // Exact SP 800-53 control id in the query (prefer base control over long enhancements).
+    if ((ch.anchor || "").startsWith("risk-")) boost += 0.05;
+    if (/^(gov|map|measure|manage)-\d/.test(ch.anchor || "")) boost += 0.03;
+    if (titleStrong >= 2) boost += 0.1;
     const anchor = (ch.anchor || "").toLowerCase();
     if (anchor && qset.has(anchor)) {
       boost += anchor.includes(".") ? 0.12 : 0.22;
     }
     if (ch.applicability && filters.genai_only) boost += 0.01;
+    const title = (ch.title || "").toLowerCase();
+    if ((ch.level || 1) <= 1 || title.startsWith("artificial intelligence risk management framework")) {
+      boost -= 0.08;
+    }
     const hops = graphBoost(ch.chunk_id, graph);
     if (hops.length) boost += Math.min(0.03, hops.length * 0.005);
-    return { ...r, rrf: r.rrf + boost, graph_neighbors: hops };
+    const coord = 0.4 + 0.6 * termCover;
+    return {
+      ...r,
+      hit: strongHit,
+      rrf: (r.rrf + boost) * coord,
+      graph_neighbors: hops,
+      drop: strongHit < need && !(anchor && qset.has(anchor)),
+    };
   });
-  fused.sort((a, b) => b.rrf - a.rrf);
+  fused = fused.filter((r) => !r.drop).sort((a, b) => b.rrf - a.rrf || b.hit - a.hit);
 
   const filtered = fused.filter((r) => passesFilters(chunks[r.i], filters)).slice(0, topK);
 
@@ -250,6 +330,8 @@ export function search(corpus, query, opts = {}) {
         bm25: Math.round((r.bm25 || 0) * 1000) / 1000,
         dense: Math.round((r.dense || 0) * 1000) / 1000,
         fused: Math.round((r.rrf || 0) * 1000) / 1000,
+        term_hits: r.hit,
+        term_cover: Math.round(((r.hit || 0) / basis) * 100) / 100,
       },
       snippet: (ch.text || ch.title || "").replace(/\s+/g, " ").slice(0, 320),
       parent: parent
@@ -258,7 +340,6 @@ export function search(corpus, query, opts = {}) {
       graph_neighbors: r.graph_neighbors || [],
     };
   });
-
   const top = matched[0];
   const cover =
     top && q.length
@@ -278,6 +359,7 @@ export function search(corpus, query, opts = {}) {
 
   return {
     query,
+    query_terms: q,
     matched_chunks: matched,
     confidence: conf,
     embedding_method: emb.method,

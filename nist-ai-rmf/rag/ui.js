@@ -82,8 +82,8 @@ function render(result) {
           ${app}
           <span class="rag-path">${m.section_path}</span>
         </p>
-        <p class="rag-card__snippet">${highlight(m.snippet, result.query.toLowerCase().match(/[a-z0-9][a-z0-9-]*/g) || [])}</p>
-        <p class="rag-card__scores">BM25 ${m.scores.bm25} · dense ${m.scores.dense}</p>
+        <p class="rag-card__snippet">${highlight(m.snippet, result.query_terms || result.query.toLowerCase().match(/[a-z0-9][a-z0-9-]*/g) || [])}</p>
+        <p class="rag-card__scores">BM25 ${m.scores.bm25} · dense ${m.scores.dense}${m.scores.term_cover != null ? ` · terms ${m.scores.term_hits}/${(result.query_terms || []).length || "?"}` : ""}</p>
         ${ctrls ? `<p class="rag-card__ctrls">Related SP 800-53: ${ctrls}</p>` : ""}
         <a class="rag-card__cite" href="${m.source_url}">Cite: ${m.chunk_id}</a>
       </article>`;
