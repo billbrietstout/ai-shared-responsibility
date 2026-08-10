@@ -15,11 +15,11 @@ Working package for NIST collaboration discussions: publish AI RMF / GenAI Profi
 
 - Dual-readable Markdown sources with stable anchors (`sources/`).
 - Static hybrid retrieval (BM25 + dense, RRF) from committed `data/` artifacts in the browser.
-- Citation-first workflow: `doc_id` / `section_path` → verify in Markdown or official PDF.
+- Citation-first answers: open the cited `doc_id` / `section_path` and check it in Markdown or the official PDF; fused scores are ranking hints only.
 - Agent path via `llms.txt`, `retrieve/*.json`, or local ranking over `data/chunks.json`.
 - Corpus kept separate from the CoSAI SRF graph; SP 800-53 links are curated IDs only.
 
-Does not demonstrate official NIST packaging, a full NIST corpus, production retrieval for every query, or safe OT/ops use of assistant output. Details: [HOWTO.md](HOWTO.md#what-this-demonstrates) and the page section `#what-this-demonstrates`.
+Does not demonstrate official NIST packaging, a full NIST corpus, production retrieval for every query, or safe OT/ops use of assistant output. Before any operational use, verify citations and read [assistant and OT risks](HOWTO.md#risks-general-purpose-assistants-and-operational-impact). Demo scope: [HOWTO.md](HOWTO.md#what-this-demonstrates) and the page section `#what-this-demonstrates`.
 
 ## Isolation
 

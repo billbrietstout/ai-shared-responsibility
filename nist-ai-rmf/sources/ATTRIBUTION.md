@@ -1,4 +1,4 @@
-# Attribution — NIST AI RMF RAG Demo
+# Attribution: NIST AI RMF RAG Demo
 
 This directory is a **demonstration** maintained for NIST collaboration discussions around
 AI RMF / critical-infrastructure risk management tooling. It shows dual-readable Markdown

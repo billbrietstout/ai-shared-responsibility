@@ -11,11 +11,11 @@ The demo is a working package for NIST collaboration discussions: how AI RMF / G
 
 - **Dual-readable sources.** Clean Markdown under `sources/` keeps heading hierarchy and stable anchors so a human or model can quote a subcategory by path, then confirm against the official DOI/PDF.
 - **Static hybrid retrieval.** Chunks, BM25 stats, and dense vectors ship as files under `data/`. The browser loads them and ranks with BM25 + dense fusion (reciprocal rank fusion). No server-side ranker and no API keys.
-- **Citation-first answers.** Hits expose `doc_id`, `section_path`, and a link into the source Markdown. The intended workflow is retrieve → open the section → verify; not “trust the fused score.”
+- **Citation-first answers.** Hits expose `doc_id`, `section_path`, and a link into the source Markdown. Open the cited section and check it; fused scores are ranking hints only.
 - **Two consumer paths.** Humans use the page form. Agents that only HTTP-fetch use `llms.txt` for discovery, `retrieve/*.json` for fixed demo scenarios, or `data/chunks.json` to rank locally. Ranking and discovery stay separate artifacts.
 - **Corpus isolation.** IDs and files here do not merge into the CoSAI SRF graph on the rest of the site. Related SP 800-53 values are curated control IDs only.
 
-It does not demonstrate official NIST packaging, a complete NIST corpus (full PDFs, sector profiles, or COSAiS overlays), production retrieval quality for every question, or safe use of assistant output on operational or OT systems. See [Assistant and OT risks](https://aisharedresponsibility.com/nist-ai-rmf/#assistant-ot-risks).
+It does not demonstrate official NIST packaging, a complete NIST corpus (full PDFs, sector profiles, or COSAiS overlays), production retrieval quality for every question, or safe use of assistant output on operational or OT systems. Before any operational use, verify citations and read [Assistant and OT risks](https://aisharedresponsibility.com/nist-ai-rmf/#assistant-ot-risks).
 
 Page section: https://aisharedresponsibility.com/nist-ai-rmf/#what-this-demonstrates
 
@@ -36,7 +36,7 @@ Page section: https://aisharedresponsibility.com/nist-ai-rmf/#what-this-demonstr
 1. Markdown sources with stable section anchors.  
 2. Offline chunking + BM25 + dense vectors into `data/`.  
 3. Browser loads `data/` and ranks (BM25 + dense, RRF).  
-4. `export_scenarios.py` writes the same result shape to `retrieve/<slug>.json` for agents.
+4. `export_scenarios.py` writes the same ranked-result JSON fields as the browser UI to `retrieve/<slug>.json` for agents.
 
 ## Example prompts
 
@@ -90,9 +90,9 @@ Do not invent control IDs. If the section is missing, say so.
 
 ## Risks: general-purpose assistants and operational impact
 
-A chat assistant that “only reads documentation” is often treated as lower risk than a model wired into an OT controller, PLC, SCADA setpoints, or plant safety system. That split fails when assistant output drives what a human or another automation path actually deploys.
+A chat assistant that “only reads documentation” is often treated as lower risk than a model wired into an OT controller, PLC, SCADA setpoints, or plant safety system. The low-risk label fails when assistant output drives what a human or another automation path actually deploys.
 
-An error in assistant output can have the same operational impact as connecting an assistant to OT control if that output becomes configuration, code, a procedure, or a diagnosis that changes how a system runs. The channel was prose; the effect was actuation by proxy.
+An error in assistant output can have the same operational impact as connecting an assistant to OT control if that output becomes configuration, code, a procedure, or a diagnosis that changes how a system runs. The assistant answered in text; a person or pipeline still applied the change.
 
 ### Direct paths into operations
 
@@ -112,9 +112,9 @@ These paths do not require tool calling into the control network. They require o
 ### What this demo mitigates
 
 - **No actuation surface here.** The demo does not write configs, open OT sessions, or call plant APIs. It serves static text and ranked citations.
-- **Provenance pressure.** Results carry `doc_id`, `section_path`, and source links so a reviewer can check the claim against Markdown or the official NIST PDF.
-- **Discovery honesty.** `llms.txt` and the page guide tell agents not to treat fused scores or `?format=json` as normative, and to prefer cited sections over free invention.
-- **Scope labels.** Clear separation of base AI RMF vs GenAI Profile, and a stated “not official NIST output” banner, reduce (but do not eliminate) false authority.
+- **Checkable citations.** Results carry `doc_id`, `section_path`, and source links so a reviewer can check the claim against Markdown or the official NIST PDF.
+- **Explicit agent rules.** `llms.txt` and the page guide tell agents not to treat fused scores or `?format=json` as normative, and to prefer cited sections over free invention.
+- **Document and disclaimer labels.** Clear separation of base AI RMF vs GenAI Profile, and a stated “not official NIST output” banner, reduce mistaken authority. They do not remove it.
 - **No hidden live ranking API.** Agents that only HTTP-fetch get explicit static files; there is no silent server-side model rewriting answers for OT use.
 
 ### What this demo does not mitigate
