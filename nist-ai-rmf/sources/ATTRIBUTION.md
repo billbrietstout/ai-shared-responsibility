@@ -1,8 +1,11 @@
 # Attribution — NIST AI RMF RAG Demo
 
 This directory is a **demonstration** maintained for NIST collaboration discussions around
-AI RMF / critical-infrastructure risk management tooling. It is **not** an official NIST
-publication, profile, or endorsement.
+AI RMF / critical-infrastructure risk management tooling. It shows dual-readable Markdown
+extracts of NIST.AI.100-1 and NIST.AI.600-1, static hybrid retrieval with section citations,
+and separate human vs HTTP-agent access paths, without a ranking API. It is **not** an official NIST
+publication, profile, or endorsement. See the demo page section
+https://aisharedresponsibility.com/nist-ai-rmf/#what-this-demonstrates
 
 ## Source publications
 
