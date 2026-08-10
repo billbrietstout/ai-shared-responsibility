@@ -9,6 +9,18 @@ no server, no API keys.
 **Not official NIST output.** Derived from public NIST publications for demonstration.
 Cite the official NIST PDFs/DOIs for normative use.
 
+## What this demonstrates
+
+Working package for NIST collaboration discussions: publish AI RMF / GenAI Profile text for humans and HTTP-only agents, with section citations, without a ranking API.
+
+- Dual-readable Markdown sources with stable anchors (`sources/`).
+- Static hybrid retrieval (BM25 + dense, RRF) from committed `data/` artifacts in the browser.
+- Citation-first workflow: `doc_id` / `section_path` → verify in Markdown or official PDF.
+- Agent path via `llms.txt`, `retrieve/*.json`, or local ranking over `data/chunks.json`.
+- Corpus kept separate from the CoSAI SRF graph; SP 800-53 links are curated IDs only.
+
+Does not demonstrate official NIST packaging, a full NIST corpus, production retrieval for every query, or safe OT/ops use of assistant output. Details: [HOWTO.md](HOWTO.md#what-this-demonstrates) and the page section `#what-this-demonstrates`.
+
 ## Isolation
 
 - Separate corpus and IDs from the CoSAI SRF knowledge graph.
@@ -21,6 +33,7 @@ Cite the official NIST PDFs/DOIs for normative use.
 |------|------|
 | `index.html` | Landing page + browser RAG UI |
 | `llms.txt` | Agent discovery: sources, `/retrieve/*.json`, `data/chunks.json` |
+| `HOWTO.md` | Architecture, llms.txt vs RAG, example LLM prompts, assistant/OT risk boundary |
 | `llms-full.txt` | Concatenated clean Markdown sources |
 | `sources/` | Dual-readable Markdown + attribution |
 | `data/` | Manifest, chunks, BM25, embeddings, graph edges, golden set |

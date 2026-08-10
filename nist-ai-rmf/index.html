@@ -76,6 +76,45 @@
         background: var(--slate-900); color: #e2e8f0; padding: var(--sp-4);
         border-radius: var(--radius-md); overflow: auto; font-size: var(--text-xs); line-height: 1.5;
       }
+      .rag-guide {
+        margin-top: var(--sp-10); padding-top: var(--sp-8);
+        border-top: 1px solid var(--slate-200);
+      }
+      .rag-guide h2 {
+        font-size: var(--text-xl); margin: var(--sp-8) 0 var(--sp-3); color: var(--slate-900);
+      }
+      .rag-guide h2:first-child { margin-top: 0; }
+      .rag-guide h3 {
+        font-size: var(--text-base); margin: var(--sp-5) 0 var(--sp-2); color: var(--slate-800);
+      }
+      .rag-guide p, .rag-guide li {
+        font-size: var(--text-sm); line-height: 1.7; color: var(--slate-600);
+      }
+      .rag-guide ul, .rag-guide ol { padding-left: 1.25rem; margin: 0 0 var(--sp-4); }
+      .rag-guide li { margin-bottom: var(--sp-2); }
+      .rag-guide code {
+        font-family: var(--font-mono); font-size: 0.9em;
+        background: var(--slate-100); padding: 0.1em 0.35em; border-radius: 3px;
+      }
+      .rag-guide pre.rag-prompt {
+        background: var(--slate-50); border: 1px solid var(--slate-200);
+        border-radius: var(--radius-md); padding: var(--sp-4); overflow: auto;
+        font-family: var(--font-mono); font-size: var(--text-xs); line-height: 1.55;
+        color: var(--slate-800); white-space: pre-wrap; margin: 0 0 var(--sp-4);
+      }
+      .rag-guide table {
+        width: 100%; border-collapse: collapse; font-size: var(--text-sm);
+        margin: 0 0 var(--sp-4);
+      }
+      .rag-guide th, .rag-guide td {
+        text-align: left; vertical-align: top;
+        border: 1px solid var(--slate-200); padding: var(--sp-3) var(--sp-4);
+      }
+      .rag-guide th { background: var(--slate-50); color: var(--slate-700); font-weight: 600; }
+      .rag-guide .rag-toc {
+        font-size: var(--text-sm); margin: 0 0 var(--sp-6); line-height: 1.8;
+      }
+      .rag-guide .rag-toc a { color: var(--cosai-blue); text-decoration: none; margin-right: var(--sp-3); }
     </style>
     <!-- Satisfies build/verify_pages.py: llm:type + data-llm. Intentionally omits
          llm:meta markers and llm:concepts so inject_page_metadata.py leaves this
@@ -154,6 +193,7 @@
 
         <p class="rag-links">
           <a href="llms.txt">llms.txt</a>
+          <a href="HOWTO.md">HOWTO</a>
           <a href="retrieve/index.json">retrieve scenarios</a>
           <a href="sources/nist-ai-100-1.md">AI RMF Markdown</a>
           <a href="sources/nist-ai-600-1.md">GenAI Profile Markdown</a>
@@ -168,6 +208,237 @@
           Related SP 800-53 entries are curated control IDs only (no catalog prose).
           COSAiS overlays are out of scope until public draft IDs exist.
         </p>
+
+        <section class="rag-guide" data-llm="guide" aria-labelledby="guide-heading">
+          <h2 id="guide-heading">Guide: page, architecture, and LLM use</h2>
+          <p class="rag-toc">
+            <a href="#what-this-is">What this is</a>
+            <a href="#what-this-demonstrates">What this demonstrates</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#llms-vs-rag">llms.txt vs RAG</a>
+            <a href="#how-to-query">How to query with an LLM</a>
+            <a href="#example-prompts">Example prompts</a>
+            <a href="#assistant-ot-risks">Assistant and OT risks</a>
+            <a href="./HOWTO.md">HOWTO.md</a>
+          </p>
+
+          <h2 id="what-this-is">What this page is</h2>
+          <p>
+            A public demo that makes two NIST publications easier to retrieve by section:
+            AI RMF 1.0 (<a href="https://doi.org/10.6028/NIST.AI.100-1">NIST.AI.100-1</a>) and the
+            Generative AI Profile (<a href="https://doi.org/10.6028/NIST.AI.600-1">NIST.AI.600-1</a>).
+            You type a scenario question; the browser ranks structure-aware chunks and returns
+            citations back to the Markdown sources (and, for normative use, the official PDFs).
+          </p>
+          <p>
+            This directory is separate from the CoSAI Shared Responsibility Framework on the rest of
+            the site. It is not official NIST output. The GenAI Profile supplements the base AI RMF;
+            it does not replace it.
+          </p>
+
+          <h2 id="what-this-demonstrates">What this demonstrates</h2>
+          <p>
+            The demo is a working package for NIST collaboration discussions: how AI RMF / GenAI
+            Profile text can be published for both people and HTTP-only agents, with section-level
+            citations, without standing up a ranking API.
+          </p>
+          <ul>
+            <li>
+              <strong>Dual-readable sources.</strong> Clean Markdown under <code>sources/</code> keeps
+              heading hierarchy and stable anchors so a human or model can quote a subcategory by path,
+              then confirm against the official DOI/PDF.
+            </li>
+            <li>
+              <strong>Static hybrid retrieval.</strong> Chunks, BM25 stats, and dense vectors ship as
+              files under <code>data/</code>. The browser loads them and ranks with BM25 + dense fusion
+              (reciprocal rank fusion). No server-side ranker and no API keys.
+            </li>
+            <li>
+              <strong>Citation-first answers.</strong> Hits expose <code>doc_id</code>,
+              <code>section_path</code>, and a link into the source Markdown. The intended workflow is
+              retrieve → open the section → verify; not “trust the fused score.”
+            </li>
+            <li>
+              <strong>Two consumer paths.</strong> Humans use this form. Agents that only HTTP-fetch
+              use <code>llms.txt</code> for discovery, <code>retrieve/*.json</code> for fixed demo
+              scenarios, or <code>data/chunks.json</code> to rank locally. Ranking and discovery stay
+              separate artifacts.
+            </li>
+            <li>
+              <strong>Corpus isolation.</strong> IDs and files here do not merge into the CoSAI SRF
+              graph on the rest of the site. Related SP 800-53 values are curated control IDs only.
+            </li>
+          </ul>
+          <p>
+            It does not demonstrate official NIST packaging, a complete NIST corpus (full PDFs,
+            sector profiles, or COSAiS overlays), production retrieval quality for every question,
+            or safe use of assistant output on operational or OT systems. Those limits are why
+            citations and the <a href="#assistant-ot-risks">assistant and OT risks</a> section exist.
+          </p>
+
+          <h2 id="architecture">Architecture</h2>
+          <p>Everything ships as static files on GitHub Pages. There is no ranking API and no API keys.</p>
+          <ol>
+            <li><strong>Clean sources</strong> in <code>sources/*.md</code>: dual-readable hierarchy with stable anchors.</li>
+            <li><strong>Offline prep</strong> (<code>build/nist_ai_rmf/</code>): structure-aware chunking, BM25 stats, dense vectors, optional scenario export.</li>
+            <li><strong>Published data</strong> under <code>data/</code>: <code>chunks.json</code>, <code>bm25.json</code>, <code>embeddings.json</code>, <code>graph-edges.json</code>.</li>
+            <li><strong>Browser RAG</strong> on this page: load those files, run BM25 + dense fusion (reciprocal rank fusion), show citations.</li>
+            <li><strong>Precomputed scenarios</strong> under <code>retrieve/*.json</code>: the same ranking shape as pure JSON for agents that only HTTP-fetch.</li>
+          </ol>
+          <p>
+            Ranking signal: keyword BM25 plus a dense hash-TF-IDF layer, fused and lightly boosted by
+            title match and section depth. Related SP 800-53 values are curated control IDs only
+            (no full catalog text).
+          </p>
+
+          <h2 id="llms-vs-rag">llms.txt vs RAG</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Path</th>
+                <th>What it is</th>
+                <th>When to use it</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="llms.txt"><code>llms.txt</code></a></td>
+                <td>Discovery index: links to sources, chunks, retrieve JSON, and usage rules.</td>
+                <td>First fetch for an agent. Tells the model which URLs exist and which path is authoritative.</td>
+              </tr>
+              <tr>
+                <td><a href="llms-full.txt"><code>llms-full.txt</code></a> / <a href="sources/nist-ai-100-1.md">sources</a></td>
+                <td>Full dual-readable Markdown of the two NIST extracts.</td>
+                <td>Quoting, close reading, or answering when the exact section text is the evidence.</td>
+              </tr>
+              <tr>
+                <td>Browser RAG (this form)</td>
+                <td>Query-time hybrid ranking in the browser over <code>data/</code>.</td>
+                <td>Human exploration; optional <code>?format=json</code> debug (requires JS; not an agent API).</td>
+              </tr>
+              <tr>
+                <td><a href="retrieve/index.json"><code>retrieve/*.json</code></a></td>
+                <td>Precomputed ranked results for fixed demo scenarios.</td>
+                <td>Agents that need ranked JSON over plain HTTP without running page JS.</td>
+              </tr>
+              <tr>
+                <td><a href="data/chunks.json"><code>data/chunks.json</code></a></td>
+                <td>Full chunk corpus with metadata.</td>
+                <td>Agents ranking arbitrary queries locally (optionally with <code>bm25.json</code> / <code>embeddings.json</code>).</td>
+              </tr>
+            </tbody>
+          </table>
+          <p>
+            Short rule: <strong>llms.txt finds the files</strong>; <strong>sources / llms-full are the text of record</strong>;
+            <strong>RAG (browser or retrieve JSON) routes you to candidate sections</strong>. Always verify the citation
+            against the Markdown or the official NIST PDF before treating an answer as normative.
+          </p>
+
+          <h2 id="how-to-query">How to query with an LLM</h2>
+          <h3>Humans (this page)</h3>
+          <ol>
+            <li>Enter a scenario question (who must do what, which risk, which function).</li>
+            <li>Optionally filter by document (AI RMF vs GenAI Profile) or function (GOVERN / MAP / MEASURE / MANAGE).</li>
+            <li>Open the citation link; read the section; if the answer is for policy or compliance work, confirm against the official DOI/PDF.</li>
+          </ol>
+          <h3>Agents (HTTP only)</h3>
+          <ol>
+            <li>GET <a href="llms.txt">llms.txt</a>.</li>
+            <li>For a known demo scenario, GET the matching <a href="retrieve/index.json">retrieve/*.json</a> file.</li>
+            <li>For a new question, GET <a href="data/chunks.json">data/chunks.json</a>, rank or filter locally, then open the cited <code>source_md#anchor</code>.</li>
+            <li>Do not rely on <code>?q=...&amp;format=json</code>: a plain fetch returns HTML until browser JS runs.</li>
+          </ol>
+
+          <h2 id="example-prompts">Example prompts</h2>
+          <p>Copy into a chat agent that can fetch URLs. Replace the scenario line as needed.</p>
+<pre class="rag-prompt">You are answering from the NIST AI RMF static demo at https://aisharedresponsibility.com/nist-ai-rmf/.
+Not official NIST output. Cite section_path and official DOIs for normative claims.
+NIST.AI.600-1 supplements NIST.AI.100-1; it does not replace it.
+
+1. Fetch https://aisharedresponsibility.com/nist-ai-rmf/llms.txt
+2. For this scenario, fetch the matching retrieve JSON if listed; otherwise fetch data/chunks.json and select the best sections.
+3. Answer only from cited sections. Quote sparingly. Name doc_id, section_path, and anchor.
+4. If base RMF and GenAI Profile both apply, say so.
+
+Scenario: What policies cover human-AI configurations and oversight of AI systems?</pre>
+<pre class="rag-prompt">Fetch https://aisharedresponsibility.com/nist-ai-rmf/retrieve/confabulation.json
+Summarize the top three matched_chunks with their section_path and scores.
+Then open the top citation's source Markdown and confirm the definition of confabulation in your own words.</pre>
+<pre class="rag-prompt">Fetch https://aisharedresponsibility.com/nist-ai-rmf/llms.txt and https://aisharedresponsibility.com/nist-ai-rmf/data/chunks.json
+Find chunks about third-party / supply-chain AI risk (GOVERN 6 or related GenAI actions).
+Return a short checklist of obligations with citations. Prefer base RMF for general third-party policy; add GenAI Profile actions only when they add GAI-specific steps.</pre>
+<pre class="rag-prompt">Using only https://aisharedresponsibility.com/nist-ai-rmf/sources/nist-ai-100-1.md
+(and llms.txt if you need navigation), explain MEASURE 2.7 (security and resilience).
+Do not invent control IDs. If the section is missing, say so.</pre>
+          <p>
+            Precomputed scenario files for quick agent tests:
+            <a href="retrieve/human-oversight.json">human-oversight</a>,
+            <a href="retrieve/confabulation.json">confabulation</a>,
+            <a href="retrieve/govern-inventory.json">govern-inventory</a>,
+            <a href="retrieve/supply-chain.json">supply-chain</a>,
+            <a href="retrieve/prompt-injection.json">prompt-injection</a>.
+          </p>
+
+          <h2 id="assistant-ot-risks">Risks: general-purpose assistants and operational impact</h2>
+          <p>
+            People often treat a chat assistant that only “reads documentation” as low risk compared with
+            wiring a model into an OT controller, PLC, SCADA setpoints, or plant safety system.
+            That split is false when the assistant’s output drives what a human (or another automation
+            path) actually deploys.
+          </p>
+          <p>
+            An error in assistant output can have the same operational impact as connecting an assistant
+            to OT control if that output becomes configuration, code, a procedure, or a diagnosis that
+            changes how a system runs. The channel was prose; the effect was actuation by proxy.
+          </p>
+
+          <h3>Direct paths into operations</h3>
+          <ul>
+            <li>Generating configuration files, firewall rules, historian queries, or deployment manifests “from” AI RMF or GenAI Profile language.</li>
+            <li>Generating automation scripts, runbooks, or infrastructure-as-code that someone applies to AI platforms that touch plant or field systems.</li>
+            <li>Drafting allow-lists, kill-switch logic, or human-override policies that get pasted into production without independent review.</li>
+          </ul>
+
+          <h3>Second-order paths (still operational)</h3>
+          <ul>
+            <li>Helping someone select, size, or configure an OT-adjacent AI product (vendor choice, autonomy tier, data paths, network placement).</li>
+            <li>Diagnosing an incident or performance issue and recommending parameter changes, model swaps, or sensor overrides.</li>
+            <li>Summarizing “OT-actionable” documentation into steps a technician executes under time pressure.</li>
+            <li>Producing evidence or attestation language that makes a risky deployment look reviewed when the citation was wrong or incomplete.</li>
+          </ul>
+          <p>
+            These paths do not require tool calling into the control network. They require only that a
+            trusted person or pipeline treats the assistant as authoritative enough to act.
+          </p>
+
+          <h3>What this demo mitigates</h3>
+          <ul>
+            <li><strong>No actuation surface here.</strong> The demo does not write configs, open OT sessions, or call plant APIs. It serves static text and ranked citations.</li>
+            <li><strong>Provenance pressure.</strong> Results carry <code>doc_id</code>, <code>section_path</code>, and source links so a reviewer can check the claim against Markdown or the official NIST PDF.</li>
+            <li><strong>Discovery honesty.</strong> <code>llms.txt</code> and this guide tell agents not to treat fused scores or <code>?format=json</code> as normative, and to prefer cited sections over free invention.</li>
+            <li><strong>Scope labels.</strong> Clear separation of base AI RMF vs GenAI Profile, and a stated “not official NIST output” banner, reduce (but do not eliminate) false authority.</li>
+            <li><strong>No hidden live ranking API.</strong> Agents that only HTTP-fetch get explicit static files; there is no silent server-side model rewriting answers for OT use.</li>
+          </ul>
+
+          <h3>What this demo does not mitigate</h3>
+          <ul>
+            <li><strong>Wrong section, right-looking citation.</strong> Retrieval can surface a plausible GOVERN/MAP/MEASURE/MANAGE chunk that does not fit the plant context. A citation is not a fit check.</li>
+            <li><strong>Confabulation after retrieval.</strong> An assistant can fetch correct chunks and still invent parameters, control IDs, or “recommended” setpoints not in the source.</li>
+            <li><strong>Conversion of guidance into config or code.</strong> Nothing here blocks export of assistant output into PLC logic, MES workflows, SIEM rules, or AI gateway policies.</li>
+            <li><strong>Second-order OT decisions.</strong> Vendor selection, diagnostic steps, and summarized procedures remain human/process risks. This site does not enforce TEVV, change control, or two-person review.</li>
+            <li><strong>Incomplete corpus.</strong> Demo extracts omit full NIST PDFs, sector profiles, and COSAiS overlays. Silence in the corpus is not “no risk.”</li>
+            <li><strong>Curated SP 800-53 IDs.</strong> Related-control chips are hints only. They are not a validated overlay baseline for any facility.</li>
+          </ul>
+
+          <h3>Practical boundary for operators</h3>
+          <p>
+            Use this demo to find and check NIST sections. Do not use assistant output from this corpus
+            as the sole basis for OT configuration, automation code, commissioning, or incident response
+            without the same change-control and independent review you would require if a model were
+            attached to the control path. If the downstream action can change process state, treat the
+            assistant as safety-relevant regardless of whether it had a network route to the PLC.
+          </p>
+        </section>
       </div>
     </main>
 
