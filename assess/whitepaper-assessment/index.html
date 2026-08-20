@@ -17,6 +17,8 @@
         border-radius: var(--radius-lg);
         overflow: hidden;
         margin-bottom: var(--sp-10);
+        display: flex;
+        flex-direction: column;
       }
       .prompt-block__header {
         display: flex;
@@ -24,6 +26,11 @@
         justify-content: space-between;
         padding: var(--sp-3) var(--sp-5);
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        flex-shrink: 0;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background: var(--cosai-navy);
       }
       .prompt-block__label {
         font-size: var(--text-xs);
@@ -68,14 +75,12 @@
         word-break: break-word;
         font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo,
           Consolas, monospace;
-        max-height: 4000px;
-        transition: max-height 0.25s ease, padding 0.25s ease, opacity 0.2s ease;
+        overflow-y: auto;
+        max-height: min(70vh, 36rem);
+        overscroll-behavior: contain;
       }
       .prompt-block.is-collapsed pre {
-        max-height: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-        opacity: 0;
+        display: none;
       }
 
       /* ── Catalog cards ────────────────────────────────────────────── */
@@ -385,7 +390,7 @@
 
       <p class="section-label">The prompt</p>
 
-      <div class="prompt-block" id="assess-block">
+      <div class="prompt-block is-collapsed" id="assess-block">
         <div class="prompt-block__header">
           <span class="prompt-block__label"
             >Whitepaper assessment &middot; v2.1 &middot; August 2026</span
@@ -394,9 +399,9 @@
             <button
               class="prompt-block__toggle"
               onclick="togglePrompt('assess-block', this)"
-              aria-expanded="true"
+              aria-expanded="false"
             >
-              Hide
+              Show
             </button>
             <button
               class="prompt-block__copy"
