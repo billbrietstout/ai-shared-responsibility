@@ -71,7 +71,7 @@ def operator_banner(p: dict, pack: dict) -> str:
     return f"[chain] This prompt is {pid} ({title}). {follow} {echo}\n\n"
 
 
-def prompt_block(p: dict, pack: dict) -> str:
+def prompt_block(p: dict, pack: dict, *, collapsed: bool = True) -> str:
     tmpl = operator_banner(p, pack) + p["template"].replace(
         "{{shared_rules}}", pack["shared_rules"]
     )
@@ -88,11 +88,14 @@ def prompt_block(p: dict, pack: dict) -> str:
         label = f"{pid} · {p['title']} · {track_label} · optional next {nxt_opt}"
     else:
         label = f"{pid} · {p['title']} · {track_label}"
-    return f"""      <div class="prompt-block is-collapsed" id="{esc(pid)}-block" data-prompt-id="{esc(pid)}">
+    collapsed_cls = " is-collapsed" if collapsed else ""
+    toggle = "Show" if collapsed else "Hide"
+    expanded = "false" if collapsed else "true"
+    return f"""      <div class="prompt-block{collapsed_cls}" id="{esc(pid)}-block" data-prompt-id="{esc(pid)}">
         <div class="prompt-block__header">
           <span class="prompt-block__label">{esc(label)}</span>
           <div class="prompt-block__actions">
-            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('{esc(pid)}-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('{esc(pid)}-block', this)" aria-expanded="{expanded}">{toggle}</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('{esc(pid)}-block', this)">Copy</button>
           </div>
         </div>
@@ -129,7 +132,9 @@ def main():
     q3 = stage_section("q3", "Map CIA, STRIDE, and PHANTOM-B letters. Then choose mitigate, eliminate, transfer, or accept in P-act, with a validation on mitigate and eliminate.", pack)
     q4 = stage_section("q4", "Mechanical self-check, then write the readable report. Leave the reviewer line empty.", pack)
     track_b_html = "\n".join(prompt_block(p, pack) for p in track_b)
-    export_html = "\n".join(prompt_block(p, pack) for p in export_prompts)
+    export_html = "\n".join(
+        prompt_block(p, pack, collapsed=False) for p in export_prompts
+    )
     baseline_html = "\n".join(prompt_block(dict(p, track="eval"), pack) for p in baselines)
     role_ids = ", ".join(r["id"] for r in pack["roles"])
     steps = []
@@ -389,7 +394,7 @@ def main():
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
         <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
-        <li>After P-report, run P-export-md then P-export-json. Paste each assistant reply into the download box and save the <code>.md</code> and <code>.json</code> files.</li>
+        <li>After P-report, run <a href="#export-report">P-export-md</a> then P-export-json. Paste each assistant reply into the download box and save the <code>.md</code> and <code>.json</code> files.</li>
         <li>Optionally run Track B (P-srf-join, P-srf-layer, P-srf-owner) with an operating model. Then run the two export prompts again on the Track B JSON so the report includes layer, persona, and party.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
@@ -470,8 +475,34 @@ def main():
         </ul>
         <p>
           Track B is optional and reads the same JSON. Either way, save files from
-          the download box after the export pair.
+          the download box in the export section next.
         </p>
+      </div>
+
+      <p class="section-label" id="export-report">Export the report and JSON</p>
+      <p class="section-note">
+        These two prompts run after Track A, and again after Track B if you used it.
+        P-export-md writes the readable report. P-export-json writes the completed
+        record. Paste each assistant reply into the box below and download both
+        files. Leave the reviewer line empty.
+      </p>
+{export_html}
+
+      <div class="deliverable export-dock" id="export-dock">
+        <p class="deliverable__title">Download the files</p>
+        <p>
+          Paste the P-export-md reply and click Download markdown. Paste the
+          P-export-json reply and click both buttons: markdown comes from
+          <code>report.markdown</code>, and JSON is pretty-printed. Filenames use
+          <code>system_name</code> when the paste is JSON.
+        </p>
+        <label for="export-paste">Assistant output</label>
+        <textarea id="export-paste" spellcheck="false" placeholder="Paste the markdown report or the completed JSON here."></textarea>
+        <div class="export-dock__actions">
+          <button type="button" id="export-md">Download markdown</button>
+          <button type="button" id="export-json">Download JSON</button>
+        </div>
+        <p class="export-dock__status" id="export-status" aria-live="polite"></p>
       </div>
 
       <p class="section-label">Track B (optional): SRF accountability</p>
@@ -497,34 +528,10 @@ def main():
         </ul>
         <p>
           Track B does not add threats. A threat with no matching slug still needs
-          layer, persona, and party from P-srf-layer and P-srf-owner.
+          layer, persona, and party from P-srf-layer and P-srf-owner. Then return to
+          <a href="#export-report">Export the report and JSON</a> and run those two
+          prompts on this JSON.
         </p>
-      </div>
-
-      <p class="section-label">Export the report and JSON</p>
-      <p class="section-note">
-        After Track A, or again after Track B, run these two prompts on the latest
-        matrix. P-export-md writes the readable report. P-export-json writes the
-        completed record. Paste each assistant reply into the box below and download
-        both files. Leave the reviewer line empty.
-      </p>
-{export_html}
-
-      <div class="deliverable export-dock" id="export-dock">
-        <p class="deliverable__title">Download the files</p>
-        <p>
-          Paste the P-export-md reply and click Download markdown. Paste the
-          P-export-json reply and click both buttons: markdown comes from
-          <code>report.markdown</code>, and JSON is pretty-printed. Filenames use
-          <code>system_name</code> when the paste is JSON.
-        </p>
-        <label for="export-paste">Assistant output</label>
-        <textarea id="export-paste" spellcheck="false" placeholder="Paste the markdown report or the completed JSON here."></textarea>
-        <div class="export-dock__actions">
-          <button type="button" id="export-md">Download markdown</button>
-          <button type="button" id="export-json">Download JSON</button>
-        </div>
-        <p class="export-dock__status" id="export-status" aria-live="polite"></p>
       </div>
 
       <p class="section-label">Evaluation baselines</p>
