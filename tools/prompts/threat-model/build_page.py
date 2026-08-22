@@ -47,10 +47,9 @@ def operator_banner(p: dict, pack: dict) -> str:
         nxt_title = nxt_p["title"] if nxt_p else optional_next
         if pid == "P-export-json":
             follow = (
-                f"Export ends here. Paste the assistant output into the download box "
-                f"and save the markdown and JSON files. If Track B is not yet applied, "
-                f"optional next: {optional_next} ({nxt_title}). If Track B is already "
-                f"applied, stop."
+                f"Export ends here. Save the P-export-md reply as a .md file and this "
+                f"reply as a .json file. If Track B is not yet applied, optional next: "
+                f"{optional_next} ({nxt_title}). If Track B is already applied, stop."
             )
         else:
             follow = (
@@ -299,50 +298,6 @@ def main():
         font-size: var(--text-sm);
         line-height: var(--leading-normal);
       }}
-      .export-dock label {{
-        display: block;
-        font-size: var(--text-xs);
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        color: var(--slate-400);
-        margin: var(--sp-4) 0 var(--sp-2);
-      }}
-      .export-dock textarea {{
-        display: block;
-        width: 100%;
-        min-height: 14rem;
-        box-sizing: border-box;
-        padding: var(--sp-3);
-        border: 1px solid var(--slate-200);
-        border-radius: var(--radius);
-        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
-        font-size: 0.8rem;
-        line-height: 1.5;
-        color: var(--slate-800);
-        resize: vertical;
-      }}
-      .export-dock__actions {{
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--sp-3);
-        margin-top: var(--sp-4);
-      }}
-      .export-dock__actions button {{
-        font-size: var(--text-xs);
-        font-weight: 600;
-        color: #fff;
-        background: var(--cosai-navy);
-        border: 0;
-        border-radius: var(--radius);
-        padding: 8px 14px;
-        cursor: pointer;
-      }}
-      .export-dock__status {{
-        margin: var(--sp-3) 0 0;
-        font-size: var(--text-sm);
-        color: var(--slate-600);
-      }}
     </style>
     <script type="application/ld+json">
 {{
@@ -375,8 +330,8 @@ def main():
           threat matrix plus a downloadable markdown report and completed JSON.
           Track A walks Shostack's Four Questions; each step is filled with the previous
           step's JSON (the Auspex chain shape). Track B writes layer, persona, and party
-          onto each threat. After either track, run the export pair and save both files
-          from the download box. Templates:
+          onto each threat. After either track, run the export pair and save the
+          markdown reply and the JSON reply as files. Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/eval/threat-model/">How this pack scores against three published threat models</a>.
         </p>
@@ -393,7 +348,7 @@ def main():
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
         <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
         <li>Optionally run <a href="#track-b">Track B</a> (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
-        <li>After the track you used, run <a href="#export-report">P-export-md</a> then P-export-json. Paste each assistant reply into the download box and save the <code>.md</code> and <code>.json</code> files.</li>
+        <li>After the track you used, run <a href="#export-report">P-export-md</a> then P-export-json. Save the first reply as a <code>.md</code> file and the second as a <code>.json</code> file.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
 
@@ -467,7 +422,7 @@ def main():
         <p>
           The assistant JSON after P-report is the Track A matrix. Optional
           <a href="#track-b">Track B</a> is next. Then run the
-          <a href="#export-report">export pair</a> to produce the downloadable files.
+          <a href="#export-report">export pair</a> and save those two replies as files.
           Schema:
           <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
           Eval path: <code>&lt;system-id&gt;/image.json</code> (or
@@ -483,7 +438,7 @@ def main():
         </ul>
         <p>
           Track B is optional and reads the same JSON. After the track you used,
-          save files from the <a href="#export-report">export section</a>.
+          run the <a href="#export-report">export pair</a> and save the two replies.
         </p>
       </div>
 
@@ -518,28 +473,11 @@ def main():
       <p class="section-label" id="export-report">Export the report and JSON</p>
       <p class="section-note">
         These two prompts run after Track A, and again after Track B if you used it.
-        P-export-md writes the readable report. P-export-json writes the completed
-        record. Paste each assistant reply into the box below and download both
-        files. Leave the reviewer line empty.
+        P-export-md writes the readable report; save that reply as a
+        <code>.md</code> file. P-export-json writes the completed record; save that
+        reply as a <code>.json</code> file. Leave the reviewer line empty.
       </p>
 {export_html}
-
-      <div class="deliverable export-dock" id="export-dock">
-        <p class="deliverable__title">Download the files</p>
-        <p>
-          Paste the P-export-md reply and click Download markdown. Paste the
-          P-export-json reply and click both buttons: markdown comes from
-          <code>report.markdown</code>, and JSON is pretty-printed. Filenames use
-          <code>system_name</code> when the paste is JSON.
-        </p>
-        <label for="export-paste">Assistant output</label>
-        <textarea id="export-paste" spellcheck="false" placeholder="Paste the markdown report or the completed JSON here."></textarea>
-        <div class="export-dock__actions">
-          <button type="button" id="export-md">Download markdown</button>
-          <button type="button" id="export-json">Download JSON</button>
-        </div>
-        <p class="export-dock__status" id="export-status" aria-live="polite"></p>
-      </div>
 
       <p class="section-label" id="baselines">Evaluation baselines</p>
       <p class="section-note">
@@ -644,94 +582,9 @@ def main():
         copyPrompt(nxt + '-block', btn);
         block.scrollIntoView({{ block: 'center' }});
       }}
-      function slugifyName(name) {{
-        const slug = String(name || 'threat-model')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '');
-        return slug || 'threat-model';
-      }}
-      function stripFences(text) {{
-        const trimmed = String(text || '').trim();
-        const m = trimmed.match(/^```(?:json|markdown|md)?\\s*\\n([\\s\\S]*?)\\n```\\s*$/i);
-        return m ? m[1] : trimmed;
-      }}
-      function firstHeading(md) {{
-        const m = String(md || '').match(/^#\\s+(?:Threat model:\\s*)?(.+)$/m);
-        return m ? m[1].trim() : '';
-      }}
-      function parseExportPaste(raw) {{
-        const text = stripFences(raw);
-        if (!text) return {{ kind: 'empty' }};
-        if (text.charAt(0) === '{{' || text.charAt(0) === '[') {{
-          try {{
-            return {{ kind: 'json', obj: JSON.parse(text) }};
-          }} catch (err) {{
-            return {{ kind: 'text', text: text, error: 'JSON parse failed' }};
-          }}
-        }}
-        return {{ kind: 'markdown', text: text }};
-      }}
-      function downloadBlob(filename, content, mime) {{
-        const blob = new Blob([content], {{ type: mime }});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      }}
-      function setExportStatus(msg) {{
-        const el = document.getElementById('export-status');
-        if (el) el.textContent = msg;
-      }}
-      function downloadMarkdown() {{
-        const parsed = parseExportPaste((document.getElementById('export-paste') || {{}}).value);
-        if (parsed.kind === 'empty') {{
-          setExportStatus('Paste the markdown report or the completed JSON first.');
-          return;
-        }}
-        let md = '';
-        let slug = 'threat-model';
-        if (parsed.kind === 'json') {{
-          md = parsed.obj && parsed.obj.report && parsed.obj.report.markdown;
-          if (!md) {{
-            setExportStatus('That JSON has no report.markdown. Paste the P-export-md reply, or run P-export-json.');
-            return;
-          }}
-          slug = slugifyName(parsed.obj.system_name);
-        }} else {{
-          md = parsed.text;
-          slug = slugifyName(firstHeading(md) || 'threat-model');
-        }}
-        const name = slug + '-threat-model.md';
-        downloadBlob(name, md, 'text/markdown;charset=utf-8');
-        setExportStatus('Saved ' + name + '.');
-      }}
-      function downloadJsonFile() {{
-        const parsed = parseExportPaste((document.getElementById('export-paste') || {{}}).value);
-        if (parsed.kind === 'empty') {{
-          setExportStatus('Paste the completed JSON first.');
-          return;
-        }}
-        if (parsed.kind !== 'json') {{
-          setExportStatus('That paste is markdown. Paste the P-export-json reply to save the JSON file.');
-          return;
-        }}
-        const slug = slugifyName(parsed.obj.system_name);
-        const name = slug + '-threat-model.json';
-        downloadBlob(name, JSON.stringify(parsed.obj, null, 2) + '\\n', 'application/json;charset=utf-8');
-        setExportStatus('Saved ' + name + '.');
-      }}
       document.addEventListener('DOMContentLoaded', () => {{
         const copyNextBtn = document.getElementById('chain-copy-next');
         if (copyNextBtn) copyNextBtn.addEventListener('click', copyNext);
-        const mdBtn = document.getElementById('export-md');
-        const jsonBtn = document.getElementById('export-json');
-        if (mdBtn) mdBtn.addEventListener('click', downloadMarkdown);
-        if (jsonBtn) jsonBtn.addEventListener('click', downloadJsonFile);
         let last = null;
         try {{ last = localStorage.getItem(TM_STORAGE); }} catch (err) {{}}
         markChain(last);
