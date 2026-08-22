@@ -44,6 +44,68 @@
       }
       .prompt-block__actions { display: flex; gap: var(--sp-2); }
       .prompt-block__copy--copied { color: #6ee7b7 !important; border-color: rgba(110,231,183,0.3) !important; }
+      .prompt-block.is-last-copied { box-shadow: 0 0 0 2px #6ee7b7; }
+      .prompt-block.is-next { box-shadow: 0 0 0 2px var(--cosai-blue); }
+      .chain-status {
+        position: sticky;
+        top: 56px;
+        z-index: 4;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        max-width: 720px;
+        margin: 0 0 var(--sp-8);
+        padding: var(--sp-3) var(--sp-4);
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+      }
+      .chain-status__text {
+        margin: 0;
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+      }
+      .chain-status__btn {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: #fff;
+        background: var(--cosai-navy);
+        border: 0;
+        border-radius: var(--radius);
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      .deliverable {
+        max-width: 720px;
+        margin: 0 0 var(--sp-10);
+        padding: var(--sp-5);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+      .deliverable__title {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin: 0 0 var(--sp-3);
+      }
+      .deliverable p, .deliverable ul {
+        margin: 0 0 var(--sp-3);
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+      }
+      .deliverable ul {
+        padding-left: 1.2rem;
+      }
+      .deliverable :last-child {
+        margin-bottom: 0;
+      }
       .prompt-block pre {
         margin: 0;
         padding: var(--sp-6);
@@ -133,10 +195,19 @@
         <li>Paste the shared rules once, or use each step as a standalone copy block (rules are inlined).</li>
         <li>Attach or paste the diagram. Set <code>{{representation_kind}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: experienced-threat-modeler, application-security, llm-caller. Default is experienced-threat-modeler.</li>
-        <li>Run Track A in order from P-norm through P-qa. Each step consumes the prior JSON.</li>
-        <li>Optionally run Track B (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
+        <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
+        <li>Run Track A in order from P-norm through P-qa. Each step consumes the prior JSON. After P-qa, save the assistant JSON; that file is the Track A threat model.</li>
+        <li>Optionally run Track B (P-srf-join, P-srf-layer, P-srf-owner) with an operating model. After P-srf-owner, save the assistant JSON again.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
+
+      <div class="chain-status" id="chain-status">
+        <p class="chain-status__text" aria-live="polite">
+          Last copied: <strong id="chain-last">none</strong>.
+          Next: <strong id="chain-next">P-norm (Normalize representation)</strong>.
+        </p>
+        <button type="button" class="chain-status__btn" id="chain-copy-next">Copy next</button>
+      </div>
 
       <p class="section-label">Shostack's Four Questions</p>
       <ol class="q-list">
@@ -191,15 +262,17 @@
 
       <p class="section-label">Q1. What are we working on?</p>
       <p class="section-note">Read the diagram into a solution description. Each step is filled with the prior JSON.</p>
-      <div class="prompt-block is-collapsed" id="P-norm-block">
+      <div class="prompt-block is-collapsed" id="P-norm-block" data-prompt-id="P-norm">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-norm · Normalize representation · Track A</span>
+          <span class="prompt-block__label">P-norm · Normalize representation · Track A · next P-diag</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-norm-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-norm-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-norm (Normalize representation). Next prompt: P-diag (Decompose diagram). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -240,15 +313,17 @@ Return a JSON object with this shape:
 
 Id rules: lowercase kebab-case, derived from the label on the diagram. Reuse the same id if the label is the same. Do not merge distinct boxes. llm_components may be empty at this step.</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-diag-block">
+      <div class="prompt-block is-collapsed" id="P-diag-block" data-prompt-id="P-diag">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-diag · Decompose diagram · Track A</span>
+          <span class="prompt-block__label">P-diag · Decompose diagram · Track A · next P-app</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-diag-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-diag-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-diag (Decompose diagram). Next prompt: P-app (Application details). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -288,15 +363,17 @@ Return JSON:
   "inventory": &lt;echo the inventory; correct ids only if the diagram contradicts P-norm, and list corrections in a "corrections" array&gt;
 }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-app-block">
+      <div class="prompt-block is-collapsed" id="P-app-block" data-prompt-id="P-app">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-app · Application details · Track A</span>
+          <span class="prompt-block__label">P-app · Application details · Track A · next P-feat</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-app-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-app-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-app (Application details). Next prompt: P-feat (Key features). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -322,15 +399,17 @@ Return JSON:
   "application_details": "short prose: function, actors, data the system handles, and the team perspective"
 }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-feat-block">
+      <div class="prompt-block is-collapsed" id="P-feat-block" data-prompt-id="P-feat">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-feat · Key features · Track A</span>
+          <span class="prompt-block__label">P-feat · Key features · Track A · next P-scope</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-feat-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-feat-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-feat (Key features). Next prompt: P-scope (In-scope components). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -359,15 +438,17 @@ Return JSON:
   "key_features": ["each item names a diagram element and why it changes the threat surface"]
 }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-scope-block">
+      <div class="prompt-block is-collapsed" id="P-scope-block" data-prompt-id="P-scope">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-scope · In-scope components · Track A</span>
+          <span class="prompt-block__label">P-scope · In-scope components · Track A · next P-sol</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-scope-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-scope-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-scope (In-scope components). Next prompt: P-sol (Solution description). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -402,15 +483,17 @@ Return JSON:
   "out_of_scope": [{"id": "inventory-id", "rationale": "why this stays out for this perspective"}]
 }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-sol-block">
+      <div class="prompt-block is-collapsed" id="P-sol-block" data-prompt-id="P-sol">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-sol · Solution description · Track A</span>
+          <span class="prompt-block__label">P-sol · Solution description · Track A · next P-llm-cut</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-sol-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-sol-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-sol (Solution description). Next prompt: P-llm-cut (Mark the LLM subset). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -449,15 +532,17 @@ Return JSON:
   "out_of_scope": [...]
 }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-llm-cut-block">
+      <div class="prompt-block is-collapsed" id="P-llm-cut-block" data-prompt-id="P-llm-cut">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-llm-cut · Mark the LLM subset · Track A</span>
+          <span class="prompt-block__label">P-llm-cut · Mark the LLM subset · Track A · next P-stride</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-llm-cut-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-llm-cut-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-llm-cut (Mark the LLM subset). Next prompt: P-stride (STRIDE elicitation). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -492,15 +577,17 @@ Return JSON:
 
       <p class="section-label">Q2. What can go wrong?</p>
       <p class="section-note">STRIDE on in-scope elements and crossing flows. PHANTOM-B on the LLM subset. Then merge.</p>
-      <div class="prompt-block is-collapsed" id="P-stride-block">
+      <div class="prompt-block is-collapsed" id="P-stride-block" data-prompt-id="P-stride">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-stride · STRIDE elicitation · Track A</span>
+          <span class="prompt-block__label">P-stride · STRIDE elicitation · Track A · next P-phantom</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-stride-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-stride-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-stride (STRIDE elicitation). Next prompt: P-phantom (PHANTOM-B elicitation). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -548,15 +635,17 @@ Return JSON:
   ]
 }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-phantom-block">
+      <div class="prompt-block is-collapsed" id="P-phantom-block" data-prompt-id="P-phantom">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-phantom · PHANTOM-B elicitation · Track A</span>
+          <span class="prompt-block__label">P-phantom · PHANTOM-B elicitation · Track A · next P-dedup</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-phantom-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-phantom-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-phantom (PHANTOM-B elicitation). Next prompt: P-dedup (Dedup and compose threat list). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -610,15 +699,17 @@ Return JSON:
   ]
 }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-dedup-block">
+      <div class="prompt-block is-collapsed" id="P-dedup-block" data-prompt-id="P-dedup">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-dedup · Dedup and compose threat list · Track A</span>
+          <span class="prompt-block__label">P-dedup · Dedup and compose threat list · Track A · next P-cia</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-dedup-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-dedup-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-dedup (Dedup and compose threat list). Next prompt: P-cia (CIA mapping). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -673,15 +764,17 @@ Return JSON:
 
       <p class="section-label">Q3. What are we going to do about it?</p>
       <p class="section-note">Map CIA, STRIDE, and PHANTOM-B letters. Then choose mitigate, eliminate, transfer, or accept in P-act.</p>
-      <div class="prompt-block is-collapsed" id="P-cia-block">
+      <div class="prompt-block is-collapsed" id="P-cia-block" data-prompt-id="P-cia">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-cia · CIA mapping · Track A</span>
+          <span class="prompt-block__label">P-cia · CIA mapping · Track A · next P-stride-map</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-cia-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-cia-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-cia (CIA mapping). Next prompt: P-stride-map (STRIDE mapping). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -711,15 +804,17 @@ Return the same threats array with cia filled. Do not add or drop threats. Do no
 Return JSON:
 { "threats": [ ... ] }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-stride-map-block">
+      <div class="prompt-block is-collapsed" id="P-stride-map-block" data-prompt-id="P-stride-map">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-stride-map · STRIDE mapping · Track A</span>
+          <span class="prompt-block__label">P-stride-map · STRIDE mapping · Track A · next P-phantom-map</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-stride-map-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-stride-map-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-stride-map (STRIDE mapping). Next prompt: P-phantom-map (PHANTOM-B mapping). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -747,15 +842,17 @@ Return the same threats array with stride filled. Do not add or drop threats.
 Return JSON:
 { "threats": [ ... ] }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-phantom-map-block">
+      <div class="prompt-block is-collapsed" id="P-phantom-map-block" data-prompt-id="P-phantom-map">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-phantom-map · PHANTOM-B mapping · Track A</span>
+          <span class="prompt-block__label">P-phantom-map · PHANTOM-B mapping · Track A · next P-act</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-phantom-map-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-phantom-map-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-phantom-map (PHANTOM-B mapping). Next prompt: P-act (Choose an action). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -785,15 +882,17 @@ Return the same threats array with phantom_b filled per the rule above.
 Return JSON:
 { "threats": [ ... ] }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-act-block">
+      <div class="prompt-block is-collapsed" id="P-act-block" data-prompt-id="P-act">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-act · Choose an action · Track A</span>
+          <span class="prompt-block__label">P-act · Choose an action · Track A · next P-qa</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-act-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-act-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-act (Choose an action). Next prompt: P-qa (Self-check). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -835,15 +934,17 @@ Return JSON:
 
       <p class="section-label">Q4. Did we do a good job?</p>
       <p class="section-note">Mechanical self-check before SME review.</p>
-      <div class="prompt-block is-collapsed" id="P-qa-block">
+      <div class="prompt-block is-collapsed" id="P-qa-block" data-prompt-id="P-qa">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-qa · Self-check · Track A</span>
+          <span class="prompt-block__label">P-qa · Self-check · Track A · next P-srf-join</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-qa-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-qa-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-qa (Self-check). Track A ends here. Save the assistant JSON; that file is the Track A threat model. Optional next: P-srf-join (Join AI Exchange slugs). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -897,20 +998,43 @@ Return the full matrix JSON with qa filled:
       </div>
 
 
+      <div class="deliverable" id="track-a-output">
+        <p class="deliverable__title">What to save after P-qa</p>
+        <p>
+          Save the assistant's last JSON to a <code>.json</code> file. That file is
+          the Track A threat model. Schema:
+          <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
+          Eval path: <code>&lt;system-id&gt;/image.json</code> (or
+          <code>mermaid.json</code> / <code>svg.json</code>).
+        </p>
+        <ul>
+          <li><code>inventory</code>: components, actors, stores, flows, drawn trust boundaries.</li>
+          <li><code>solution_description</code> and <code>llm_subset</code>.</li>
+          <li><code>threats</code>: ids T1, T2, and so on. Each row has <code>scenario</code>, <code>diagram_referent</code>, STRIDE letters, PHANTOM-B letters when the referent is an LLM node, CIA, and one <code>action</code> (mitigate, eliminate, transfer, or accept).</li>
+          <li><code>qa</code>: self-check booleans, <code>open_assumptions</code>, <code>gaps</code>.</li>
+        </ul>
+        <p>
+          If you need a table, flatten <code>threats[]</code> into rows. Keep the JSON
+          as the record. Track B is optional and reads this same file.
+        </p>
+      </div>
+
       <p class="section-label">Track B (optional): SRF accountability</p>
       <p class="section-note">
-        Off by default. Consumes the Track A matrix plus an operating model.
+        Off by default. Consumes the Track A JSON plus an operating model.
         Join published AI Exchange slugs from threats.json instead of re-deriving them.
       </p>
-      <div class="prompt-block is-collapsed" id="P-srf-join-block">
+      <div class="prompt-block is-collapsed" id="P-srf-join-block" data-prompt-id="P-srf-join">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-srf-join · Join AI Exchange slugs · Track B</span>
+          <span class="prompt-block__label">P-srf-join · Join AI Exchange slugs · Track B · next P-srf-layer</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-srf-join-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-srf-join-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-srf-join (Join AI Exchange slugs). Next prompt: P-srf-layer (Assign SRF layer). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -946,15 +1070,17 @@ Do not invent slugs. Do not use "shared" as srf.party.
 Return JSON:
 { "threats": [ ... with srf objects ... ], "operating_model": "{{operating_model}}" }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-srf-layer-block">
+      <div class="prompt-block is-collapsed" id="P-srf-layer-block" data-prompt-id="P-srf-layer">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-srf-layer · Assign SRF layer · Track B</span>
+          <span class="prompt-block__label">P-srf-layer · Assign SRF layer · Track B · next P-srf-owner</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-srf-layer-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-srf-layer-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-srf-layer (Assign SRF layer). Next prompt: P-srf-owner (Assign one accountable persona). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -982,7 +1108,7 @@ Threats:
 Return JSON:
 { "threats": [ ... ] }</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-srf-owner-block">
+      <div class="prompt-block is-collapsed" id="P-srf-owner-block" data-prompt-id="P-srf-owner">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-srf-owner · Assign one accountable persona · Track B</span>
           <div class="prompt-block__actions">
@@ -990,7 +1116,9 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-srf-owner-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+        <pre>[chain] This prompt is P-srf-owner (Assign one accountable persona). The chain ends here. Save the assistant JSON; that file is the Track B threat model (Track A matrix plus srf on each threat). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1037,13 +1165,32 @@ Return the full matrix JSON with srf filled on every threat:
 }</pre>
       </div>
 
+      <div class="deliverable" id="track-b-output">
+        <p class="deliverable__title">What to save after P-srf-owner</p>
+        <p>
+          Save the assistant's last JSON. That file is the Track B threat model:
+          the Track A matrix with <code>srf</code> filled on every threat. Same schema;
+          <code>chain_meta.track_b_applied</code> is true.
+        </p>
+        <ul>
+          <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
+          <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
+          <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
+          <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
+        </ul>
+        <p>
+          Track B does not add threats. A threat with no matching slug still needs
+          layer, persona, and party from P-srf-layer and P-srf-owner.
+        </p>
+      </div>
+
       <p class="section-label">Evaluation baselines</p>
       <p class="section-note">
         P-zeroshot and P-identity are the two short baselines scored in
         <code>eval/threat-model/</code>. Machine scores stay open until the SME sheets
         in that directory are filled.
       </p>
-      <div class="prompt-block is-collapsed" id="P-zeroshot-block">
+      <div class="prompt-block is-collapsed" id="P-zeroshot-block" data-prompt-id="P-zeroshot">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-zeroshot · Zero-shot threat model · Track eval</span>
           <div class="prompt-block__actions">
@@ -1051,13 +1198,15 @@ Return the full matrix JSON with srf filled on every threat:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-zeroshot-block', this)">Copy</button>
           </div>
         </div>
-        <pre>Threat model this AI system diagram. Representation kind: {{representation_kind}}.
+        <pre>[chain] This prompt is P-zeroshot (Zero-shot threat model). This prompt is not in the default chain. Do not echo this line in the JSON.
+
+Threat model this AI system diagram. Representation kind: {{representation_kind}}.
 
 {{representation}}
 
 Return JSON with system_name, perspective, inventory (components, external_actors, data_stores, data_flows, trust_boundaries, llm_components), solution_description, llm_subset, and threats. Each threat needs id, scenario, diagram_referent, stride, phantom_b, cia, and action (type mitigate|eliminate|transfer|accept, plus detail).</pre>
       </div>
-      <div class="prompt-block is-collapsed" id="P-identity-block">
+      <div class="prompt-block is-collapsed" id="P-identity-block" data-prompt-id="P-identity">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-identity · Short expert identity · Track eval</span>
           <div class="prompt-block__actions">
@@ -1065,7 +1214,9 @@ Return JSON with system_name, perspective, inventory (components, external_actor
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-identity-block', this)">Copy</button>
           </div>
         </div>
-        <pre>You are an expert threat modeler. Using STRIDE, threat model the following AI system diagram (kind={{representation_kind}}).
+        <pre>[chain] This prompt is P-identity (Short expert identity). This prompt is not in the default chain. Do not echo this line in the JSON.
+
+You are an expert threat modeler. Using STRIDE, threat model the following AI system diagram (kind={{representation_kind}}).
 
 {{representation}}
 
@@ -1081,6 +1232,55 @@ List threats with STRIDE type, impact, and a mitigation.</pre>
     </main>
     <site-footer></site-footer>
     <script>
+      const TM_STORAGE = 'srf.tm.lastPrompt';
+      const TM_STEPS = [{"id": "P-norm", "title": "Normalize representation", "next": "P-diag", "optional_next": null, "track": "A"}, {"id": "P-diag", "title": "Decompose diagram", "next": "P-app", "optional_next": null, "track": "A"}, {"id": "P-app", "title": "Application details", "next": "P-feat", "optional_next": null, "track": "A"}, {"id": "P-feat", "title": "Key features", "next": "P-scope", "optional_next": null, "track": "A"}, {"id": "P-scope", "title": "In-scope components", "next": "P-sol", "optional_next": null, "track": "A"}, {"id": "P-sol", "title": "Solution description", "next": "P-llm-cut", "optional_next": null, "track": "A"}, {"id": "P-llm-cut", "title": "Mark the LLM subset", "next": "P-stride", "optional_next": null, "track": "A"}, {"id": "P-stride", "title": "STRIDE elicitation", "next": "P-phantom", "optional_next": null, "track": "A"}, {"id": "P-phantom", "title": "PHANTOM-B elicitation", "next": "P-dedup", "optional_next": null, "track": "A"}, {"id": "P-dedup", "title": "Dedup and compose threat list", "next": "P-cia", "optional_next": null, "track": "A"}, {"id": "P-cia", "title": "CIA mapping", "next": "P-stride-map", "optional_next": null, "track": "A"}, {"id": "P-stride-map", "title": "STRIDE mapping", "next": "P-phantom-map", "optional_next": null, "track": "A"}, {"id": "P-phantom-map", "title": "PHANTOM-B mapping", "next": "P-act", "optional_next": null, "track": "A"}, {"id": "P-act", "title": "Choose an action", "next": "P-qa", "optional_next": null, "track": "A"}, {"id": "P-qa", "title": "Self-check", "next": null, "optional_next": "P-srf-join", "track": "A"}, {"id": "P-srf-join", "title": "Join AI Exchange slugs", "next": "P-srf-layer", "optional_next": null, "track": "B"}, {"id": "P-srf-layer", "title": "Assign SRF layer", "next": "P-srf-owner", "optional_next": null, "track": "B"}, {"id": "P-srf-owner", "title": "Assign one accountable persona", "next": null, "optional_next": null, "track": "B"}];
+      const TM_TITLES = {"P-norm": "Normalize representation", "P-diag": "Decompose diagram", "P-app": "Application details", "P-feat": "Key features", "P-scope": "In-scope components", "P-sol": "Solution description", "P-llm-cut": "Mark the LLM subset", "P-stride": "STRIDE elicitation", "P-phantom": "PHANTOM-B elicitation", "P-dedup": "Dedup and compose threat list", "P-cia": "CIA mapping", "P-stride-map": "STRIDE mapping", "P-phantom-map": "PHANTOM-B mapping", "P-act": "Choose an action", "P-qa": "Self-check", "P-srf-join": "Join AI Exchange slugs", "P-srf-layer": "Assign SRF layer", "P-srf-owner": "Assign one accountable persona", "P-zeroshot": "Zero-shot threat model", "P-identity": "Short expert identity"};
+
+      function stepById(id) {
+        return TM_STEPS.find((s) => s.id === id) || null;
+      }
+      function titleOf(id) {
+        const s = stepById(id);
+        if (s) return s.title;
+        return TM_TITLES[id] || id;
+      }
+      function nextId(id) {
+        if (!id) return 'P-norm';
+        const s = stepById(id);
+        if (!s) return null;
+        return s.next || s.optional_next || null;
+      }
+      function nextIsOptional(id) {
+        const s = stepById(id);
+        return Boolean(s && !s.next && s.optional_next);
+      }
+      function markChain(lastId) {
+        document.querySelectorAll('.prompt-block').forEach((el) => {
+          el.classList.remove('is-last-copied', 'is-next');
+        });
+        const lastLabel = document.getElementById('chain-last');
+        const nextLabel = document.getElementById('chain-next');
+        const copyNextBtn = document.getElementById('chain-copy-next');
+        if (!lastLabel || !nextLabel || !copyNextBtn) return;
+        const nxt = nextId(lastId);
+        if (lastId) {
+          const lastEl = document.getElementById(lastId + '-block');
+          if (lastEl) lastEl.classList.add('is-last-copied');
+          lastLabel.textContent = lastId + ' (' + titleOf(lastId) + ')';
+        } else {
+          lastLabel.textContent = 'none';
+        }
+        if (nxt) {
+          const nextEl = document.getElementById(nxt + '-block');
+          if (nextEl) nextEl.classList.add('is-next');
+          const optional = lastId && nextIsOptional(lastId);
+          nextLabel.textContent = nxt + ' (' + titleOf(nxt) + ')' + (optional ? ', optional Track B' : '');
+          copyNextBtn.hidden = false;
+        } else {
+          nextLabel.textContent = 'none; the chain ends here';
+          copyNextBtn.hidden = true;
+        }
+      }
       function togglePrompt(blockId, btn) {
         const block = document.getElementById(blockId);
         if (!block) return;
@@ -1091,8 +1291,11 @@ List threats with STRIDE type, impact, and a mitigation.</pre>
       function copyPrompt(blockId, btn) {
         const pre = document.querySelector('#' + blockId + ' pre');
         if (!pre) return;
+        const id = blockId.replace(/-block$/, '');
         navigator.clipboard.writeText(pre.textContent).then(() => {
-          btn.textContent = 'Copied!';
+          try { localStorage.setItem(TM_STORAGE, id); } catch (err) {}
+          markChain(id);
+          btn.textContent = 'Copied';
           btn.classList.add('prompt-block__copy--copied');
           setTimeout(() => {
             btn.textContent = 'Copy';
@@ -1100,6 +1303,28 @@ List threats with STRIDE type, impact, and a mitigation.</pre>
           }, 2000);
         });
       }
+      function copyNext() {
+        let last = null;
+        try { last = localStorage.getItem(TM_STORAGE); } catch (err) {}
+        const nxt = nextId(last);
+        if (!nxt) return;
+        const block = document.getElementById(nxt + '-block');
+        const btn = block && block.querySelector('.prompt-block__copy');
+        if (!block || !btn) return;
+        if (block.classList.contains('is-collapsed')) {
+          const tog = block.querySelector('.prompt-block__toggle');
+          if (tog) togglePrompt(nxt + '-block', tog);
+        }
+        copyPrompt(nxt + '-block', btn);
+        block.scrollIntoView({ block: 'center' });
+      }
+      document.addEventListener('DOMContentLoaded', () => {
+        const copyNextBtn = document.getElementById('chain-copy-next');
+        if (copyNextBtn) copyNextBtn.addEventListener('click', copyNext);
+        let last = null;
+        try { last = localStorage.getItem(TM_STORAGE); } catch (err) {}
+        markChain(last);
+      });
     </script>
   </body>
 </html>
