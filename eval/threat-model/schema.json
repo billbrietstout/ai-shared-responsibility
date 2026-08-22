@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aisharedresponsibility.com/eval/threat-model/schema.json",
   "title": "AI system diagram threat matrix",
-  "description": "JSON shape written by the diagram threat-modeling prompts. Track A fills inventory, solution_description, llm_subset, threats, and qa. Track B may fill threats[].srf.",
+  "description": "JSON shape written by the diagram threat-modeling prompts. Track A fills inventory, adversary, existing_controls, claim_boundary, solution_description, llm_subset, threats, qa, and report. Track B may fill threats[].srf.",
   "type": "object",
   "required": [
     "system_name",
@@ -24,7 +24,9 @@
       "properties": {
         "kind": { "type": "string", "enum": ["image", "mermaid", "svg"] },
         "sha256": { "type": "string" },
-        "source_id": { "type": "string" }
+        "source_id": { "type": "string" },
+        "version": { "type": "string" },
+        "commit": { "type": "string" }
       }
     },
     "inventory": { "$ref": "#/$defs/inventory" },
@@ -42,7 +44,14 @@
       "type": "array",
       "items": { "$ref": "#/$defs/scope_item" }
     },
+    "adversary": { "$ref": "#/$defs/adversary" },
+    "existing_controls": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/existing_control" }
+    },
+    "claim_boundary": { "$ref": "#/$defs/claim_boundary" },
     "solution_description": { "type": "string" },
+    "report": { "$ref": "#/$defs/report" },
     "llm_subset": {
       "type": "array",
       "items": { "type": "string" },
@@ -58,11 +67,90 @@
       "properties": {
         "prompt_pack_version": { "type": "string" },
         "role": { "type": "string" },
+        "method": { "type": "string" },
+        "date": { "type": "string" },
+        "reviewer": { "type": ["string", "null"] },
         "track_b_applied": { "type": "boolean" }
       }
     }
   },
   "$defs": {
+    "adversary": {
+      "type": "object",
+      "properties": {
+        "assumptions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "positions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/attacker_position" }
+        }
+      }
+    },
+    "attacker_position": {
+      "type": "object",
+      "required": ["id", "zone", "actor", "already_can"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "zone": { "type": "string", "minLength": 1 },
+        "actor": { "type": "string", "minLength": 1 },
+        "already_can": { "type": "string", "minLength": 1 }
+      }
+    },
+    "existing_control": {
+      "type": "object",
+      "required": ["id", "name", "diagram_referent", "kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "diagram_referent": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "authn",
+            "tls",
+            "filter",
+            "isolation",
+            "logging",
+            "approval",
+            "network",
+            "identity",
+            "other"
+          ]
+        }
+      }
+    },
+    "claim_boundary": {
+      "type": "object",
+      "properties": {
+        "does_not_claim": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "box": { "type": "string" }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "required": ["kind", "detail"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["test", "log", "fail_condition"]
+        },
+        "detail": { "type": "string", "minLength": 1 }
+      }
+    },
+    "report": {
+      "type": "object",
+      "required": ["markdown"],
+      "properties": {
+        "title": { "type": "string" },
+        "markdown": { "type": "string", "minLength": 1 },
+        "reviewer": { "type": ["string", "null"] }
+      }
+    },
     "inventory": {
       "type": "object",
       "required": [
@@ -161,6 +249,7 @@
         "scenario": { "type": "string", "minLength": 20 },
         "diagram_referent": { "type": "string", "minLength": 1 },
         "preconditions": { "type": "string" },
+        "attacker_position": { "type": "string" },
         "asset": { "type": "string" },
         "source": {
           "type": "string",
@@ -196,7 +285,8 @@
               "enum": ["mitigate", "eliminate", "transfer", "accept"]
             },
             "detail": { "type": "string" },
-            "control_point": { "type": "string" }
+            "control_point": { "type": "string" },
+            "validation": { "$ref": "#/$defs/validation" }
           }
         },
         "citations": {
@@ -246,6 +336,11 @@
         "phantom_b_complete": { "type": "boolean" },
         "stride_considered": { "type": "boolean" },
         "actions_complete": { "type": "boolean" },
+        "adversary_stated": { "type": "boolean" },
+        "existing_controls_listed": { "type": "boolean" },
+        "claim_boundary_stated": { "type": "boolean" },
+        "actions_have_validation": { "type": "boolean" },
+        "report_present": { "type": "boolean" },
         "open_assumptions": {
           "type": "array",
           "items": { "type": "string" }

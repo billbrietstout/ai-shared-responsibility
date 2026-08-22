@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Diagram threat-model eval report · AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="How the AI system diagram threat-modeling prompts score against three published professional threat models: Trail of Bits Kubernetes 2019, IETF RFC 6819, and the CNCF Financial User Group Kubernetes threat model. Pack v1.1, 22 August 2026."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin: var(--sp-10) 0 var(--sp-3);
+      }
+      .section-note {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        max-width: 720px;
+        margin: 0 0 var(--sp-5);
+        line-height: var(--leading-normal);
+      }
+      .cite-list {
+        max-width: 720px;
+        margin: 0 0 var(--sp-8);
+        padding-left: 1.2rem;
+        color: var(--slate-700);
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
+      }
+      .table-scroll { overflow-x: auto; margin-bottom: var(--sp-8); max-width: 960px; }
+      .tier-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+      .tier-table th {
+        text-align: left;
+        font-size: var(--text-xs);
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        font-weight: 700;
+        padding: var(--sp-2) var(--sp-3);
+        border-bottom: 2px solid var(--slate-200);
+      }
+      .tier-table td {
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        color: var(--slate-700);
+        vertical-align: top;
+        line-height: var(--leading-snug);
+      }
+      .tier-table tr:last-child td { border-bottom: none; }
+      .tier-table .tier { font-weight: 700; color: var(--slate-800); white-space: nowrap; }
+      .tier-table .num { text-align: center; font-variant-numeric: tabular-nums; }
+    </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "Diagram threat-model eval report",
+  "url": "https://aisharedresponsibility.com/eval/threat-model/",
+  "datePublished": "2026-08-22",
+  "description": "How the AI system diagram threat-modeling prompts score against three published professional threat models.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="page" />
+    <meta name="llm:canonical-id" content="srf.page.eval-threat-model" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / <a href="/tools/prompts/threat-model/">Threat modeling</a> / Eval</span>
+        <h1 class="page-hero__title">Diagram threat-model eval report</h1>
+        <p class="page-hero__lede">
+          Twelve checks taken from the
+          <a href="https://github.com/kubernetes/sig-security/tree/main/sig-security-external-audit/security-audit-2019/findings">Trail of Bits Kubernetes assessment (2019)</a>,
+          <a href="https://datatracker.ietf.org/doc/html/rfc6819">IETF RFC 6819</a>,
+          and the
+          <a href="https://github.com/cncf/financial-user-group/tree/main/projects/k8s-threat-model">CNCF Financial User Group Kubernetes threat model</a>.
+          Documents read 22 August 2026. Prompt pack
+          <a href="/tools/prompts/threat-model/prompts.json">v1.1</a>.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="threat-model-eval">
+
+      <p class="section-note">
+        No model has produced a P-report JSON for the five gold diagrams.
+        The prompt-series score is what Track A asks for. The schema score is
+        what a complete fill can hold. The last two rows are files already in
+        the repository.
+      </p>
+
+      <p class="section-label">Scores</p>
+      <p class="section-note">
+        Each check is 0 to 4. Twelve checks, 48 points. 4 matches the gold
+        report. 3 is present and usable. 2 is thin. 1 is hinted. 0 is absent.
+        Letter cut: A from 42, A- from 36, B from 29, C from 18, D from 8.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr>
+              <th>Artifact</th>
+              <th>Points</th>
+              <th>Grade</th>
+              <th>What was scored</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">Prompt series v1.1</td>
+              <td>47 / 48</td>
+              <td>A</td>
+              <td>What <a href="/tools/prompts/threat-model/">Track A</a> asks the model to write.</td>
+            </tr>
+            <tr>
+              <td class="tier">Specified JSON</td>
+              <td>44 / 48</td>
+              <td>A</td>
+              <td>What <a href="/eval/threat-model/schema.json">schema.json</a> can hold. Reviewer is a human field, so this column cannot reach 48.</td>
+            </tr>
+            <tr>
+              <td class="tier">Gold rag-app inventory</td>
+              <td>8 / 48</td>
+              <td>D</td>
+              <td>Q1 inventory only. Auspex would not use a manual threat list as gold; these files follow that limit.</td>
+            </tr>
+            <tr>
+              <td class="tier">Zeroshot stub (rag-app)</td>
+              <td>9 / 48</td>
+              <td>D</td>
+              <td>Intentional miss for the scoring scripts. T1 is a catalog line, referent <code>missing</code>, no control point.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">The three gold reports</p>
+      <ul class="cite-list">
+        <li>
+          <strong>Trail of Bits Kubernetes assessment (2019).</strong>
+          Commissioned by the Kubernetes Security Working Group. Twelve
+          person-weeks on v1.13.4. A threat model and data-flow analysis of
+          prioritized components, then findings that test namespace and Pod
+          isolation claims.
+          <a href="https://github.com/kubernetes/sig-security/tree/main/sig-security-external-audit/security-audit-2019/findings">sig-security 2019 findings</a>.
+        </li>
+        <li>
+          <strong>RFC 6819, OAuth 2.0 Threat Model.</strong>
+          IETF consensus. Scope and attack assumptions first. Section 3 lists
+          features that already exist. Section 4 groups threats by client,
+          authorization endpoint, token endpoint, and resource access. Each
+          threat has a mechanism and countermeasures.
+          <a href="https://datatracker.ietf.org/doc/html/rfc6819">RFC 6819</a>.
+        </li>
+        <li>
+          <strong>CNCF Financial User Group Kubernetes threat model.</strong>
+          STRIDE on trust boundaries, then attack trees to DoS, malicious code,
+          and persistence, plus two scenarios (compromised application, attacker
+          on the network). SDLC and monitoring apps are out of scope. Each leaf
+          names a mitigation and a validation snippet.
+          <a href="https://github.com/cncf/financial-user-group/tree/main/projects/k8s-threat-model">k8s-threat-model</a>.
+        </li>
+      </ul>
+      <p class="section-note">
+        RFC 6819 states attack assumptions and existing features before any
+        threat. Trail of Bits pins a version and tests trust-boundary claims.
+        CNCF writes a mitigation and a validation snippet on each leaf. All
+        three are documents a reviewer can read without a parser.
+      </p>
+
+      <p class="section-label">Per-check scores</p>
+      <p class="section-note">
+        Columns: prompts (what the chain asks), schema (what the JSON can hold),
+        gold inventory, zeroshot stub.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr>
+              <th>Check</th>
+              <th class="num">Prompts</th>
+              <th class="num">Schema</th>
+              <th class="num">Gold inv.</th>
+              <th class="num">Stub</th>
+              <th>How this pack treats it</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">Named system, version, and scope</td>
+              <td class="num">4</td><td class="num">3</td><td class="num">2</td><td class="num">2</td>
+              <td>P-norm asks for source_id, version, and commit, or unknown. Gold inventory has no version pin.</td>
+            </tr>
+            <tr>
+              <td class="tier">Attacker capabilities stated</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">1</td><td class="num">1</td>
+              <td>P-adv writes assumptions and positions per zone. Threats must cite attacker_position.</td>
+            </tr>
+            <tr>
+              <td class="tier">Architecture and trust boundaries</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">4</td><td class="num">3</td>
+              <td>P-norm, P-diag, and P-sol. Gold rag-app has four zones. Stub drops model-api and llm_subset.</td>
+            </tr>
+            <tr>
+              <td class="tier">In-scope and out-of-scope named</td>
+              <td class="num">4</td><td class="num">3</td><td class="num">1</td><td class="num">0</td>
+              <td>P-scope. Schema stores the arrays. Gold inventory has no scope lists.</td>
+            </tr>
+            <tr>
+              <td class="tier">Existing security features listed first</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">0</td>
+              <td>P-controls lists only features shown on the diagram. Empty is allowed only when none_drawn is true.</td>
+            </tr>
+            <tr>
+              <td class="tier">Each threat names a component or flow</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">0</td>
+              <td>diagram_referent must exist in inventory. Stub T1 uses referent missing.</td>
+            </tr>
+            <tr>
+              <td class="tier">Preconditions or attacker position</td>
+              <td class="num">4</td><td class="num">3</td><td class="num">0</td><td class="num">0</td>
+              <td>P-stride, P-phantom, and P-dedup require attacker_position from P-adv. Schema field is optional so old fixtures still validate.</td>
+            </tr>
+            <tr>
+              <td class="tier">Action at a named control point</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">1</td>
+              <td>P-act requires a control_point. Mitigate and eliminate also require validation (test, log, or fail_condition).</td>
+            </tr>
+            <tr>
+              <td class="tier">What the design does not claim to stop</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">1</td>
+              <td>P-adv writes claim_boundary.does_not_claim and box. P-report repeats that list.</td>
+            </tr>
+            <tr>
+              <td class="tier">Authors, method, and review</td>
+              <td class="num">3</td><td class="num">3</td><td class="num">0</td><td class="num">1</td>
+              <td>P-report sets method and date. Reviewer stays empty for a human. Filling it in the prompt would be a fake sign-off.</td>
+            </tr>
+            <tr>
+              <td class="tier">A reviewer can read it without a parser</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">0</td>
+              <td>P-report writes report.markdown. Pack v1.2 adds P-export-md and P-export-json plus a download box on the prompt page.</td>
+            </tr>
+            <tr>
+              <td class="tier">A way to check a mitigation landed</td>
+              <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">0</td>
+              <td>Mitigate and eliminate require action.validation. P-qa checks actions_have_validation.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Verdict on the prompt series</p>
+      <p class="section-note">
+        Track A v1.1 adds P-adv (attacker capabilities and claim boundary),
+        P-controls (features already on the diagram), action.validation on
+        mitigate and eliminate, and P-report (readable markdown). Inventory,
+        STRIDE, PHANTOM-B, and control_point actions were already at 4 of 4.
+        A complete P-report fill meets this rubric at A. Attack trees stay
+        optional. DREAD is out. There is still no gold threat list.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr><th>Step</th><th>Taken from</th><th>What it writes</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">P-adv</td>
+              <td>RFC 6819 section 2.2; CNCF scenarios</td>
+              <td>Assumptions, positions per zone, and claim_boundary.</td>
+            </tr>
+            <tr>
+              <td class="tier">P-controls</td>
+              <td>RFC 6819 section 3; Trail of Bits isolation discussion</td>
+              <td>Authn, TLS, filters, or isolation already drawn, or none_drawn.</td>
+            </tr>
+            <tr>
+              <td class="tier">P-act validation</td>
+              <td>CNCF leaf tests; Trail of Bits retestable findings</td>
+              <td>test, log, or fail_condition on the named control_point.</td>
+            </tr>
+            <tr>
+              <td class="tier">P-report</td>
+              <td>All three gold reports</td>
+              <td>report.markdown plus method and date. Reviewer left empty. v1.2: P-export-md / P-export-json write the downloadable files.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">Machine scores in the repository</p>
+      <p class="section-note">
+        Inventory precision and recall, format Jaccard, PHANTOM-B and STRIDE
+        coverage, and schema checks run from
+        <code>eval/threat-model/</code> without calling a model. Those scripts
+        do not award the letter grades on this page. SME sheets in
+        <code>sme/</code> are still empty, so <code>closure</code> stays false.
+        Schema:
+        <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
+        Prompts:
+        <a href="/tools/prompts/threat-model/">/tools/prompts/threat-model/</a>.
+      </p>
+      <p class="section-note">
+        Vendor demo PDFs, fictional STRIDE samples, and Shostack's 2020 PCI
+        reverse-engineering draft were not used. The PCI draft analyzes a
+        standard, not a deployed system.
+      </p>
+    </main>
+    <site-footer></site-footer>
+  </body>
+</html>

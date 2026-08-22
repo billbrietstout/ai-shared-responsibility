@@ -6,7 +6,7 @@
     <title>AI System Diagram Threat Modeling · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Gold diagrams and scores live in eval/threat-model/."
+      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a downloadable markdown report and completed JSON. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -147,6 +147,50 @@
         font-size: var(--text-sm);
         line-height: var(--leading-normal);
       }
+      .export-dock label {
+        display: block;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin: var(--sp-4) 0 var(--sp-2);
+      }
+      .export-dock textarea {
+        display: block;
+        width: 100%;
+        min-height: 14rem;
+        box-sizing: border-box;
+        padding: var(--sp-3);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        color: var(--slate-800);
+        resize: vertical;
+      }
+      .export-dock__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        margin-top: var(--sp-4);
+      }
+      .export-dock__actions button {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: #fff;
+        background: var(--cosai-navy);
+        border: 0;
+        border-radius: var(--radius);
+        padding: 8px 14px;
+        cursor: pointer;
+      }
+      .export-dock__status {
+        margin: var(--sp-3) 0 0;
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+      }
     </style>
     <script type="application/ld+json">
 {
@@ -154,7 +198,7 @@
   "@type": "TechArticle",
   "name": "AI System Diagram Threat Modeling Prompts",
   "url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
-  "description": "Prompts that read an AI system diagram and write a threat matrix. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
+  "description": "Prompts that read an AI system diagram and write a threat matrix plus a downloadable markdown report and completed JSON. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
   "publisher": {
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -179,11 +223,13 @@
         <h1 class="page-hero__title">AI system diagram threat modeling</h1>
         <p class="page-hero__lede">
           Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a
-          threat matrix. Track A walks Shostack's Four Questions; each step is filled
-          with the previous step's JSON (the Auspex chain shape). Track B writes layer,
-          persona, and party onto each threat. Templates:
+          threat matrix plus a downloadable markdown report and completed JSON.
+          Track A walks Shostack's Four Questions; each step is filled with the previous
+          step's JSON (the Auspex chain shape). Track B writes layer, persona, and party
+          onto each threat. After either track, run the export pair and save both files
+          from the download box. Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
-          Scores and gold diagrams: <code>eval/threat-model/</code>.
+          <a href="/eval/threat-model/">How this pack scores against three published threat models</a>.
         </p>
       </div>
     </header>
@@ -196,8 +242,9 @@
         <li>Attach or paste the diagram. Set <code>{{representation_kind}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: experienced-threat-modeler, application-security, llm-caller. Default is experienced-threat-modeler.</li>
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
-        <li>Run Track A in order from P-norm through P-qa. Each step consumes the prior JSON. After P-qa, save the assistant JSON; that file is the Track A threat model.</li>
-        <li>Optionally run Track B (P-srf-join, P-srf-layer, P-srf-owner) with an operating model. After P-srf-owner, save the assistant JSON again.</li>
+        <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
+        <li>After P-report, run P-export-md then P-export-json. Paste each assistant reply into the download box and save the <code>.md</code> and <code>.json</code> files.</li>
+        <li>Optionally run Track B (P-srf-join, P-srf-layer, P-srf-owner) with an operating model. Then run the two export prompts again on the Track B JSON so the report includes layer, persona, and party.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
 
@@ -249,6 +296,7 @@
         <li>Adam Shostack, <a href="https://shostack.org/files/papers/The_Four_Question_Framework.pdf">The Four Question Framework for Threat Modeling</a> (CC-BY).</li>
         <li>Adam Shostack, <a href="https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf">PHANTOM-B: A STRIDE Analog for LLMs</a> (CC-BY).</li>
         <li>Crossman et al., <a href="https://arxiv.org/abs/2503.09586">Auspex</a> (arXiv:2503.09586). Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack.</li>
+        <li>IETF <a href="https://datatracker.ietf.org/doc/html/rfc6819">RFC 6819</a>. Attack assumptions and existing features are stated before new threats. Do not copy its OAuth threat list onto an unrelated diagram.</li>
         <li>CoSAI SRF accountability data: <a href="/data/threats.json">threats.json</a>, <a href="/data/personas.json">personas.json</a>, <a href="/data/matrix.json">matrix.json</a>.</li>
       </ul>
 
@@ -257,11 +305,12 @@
         Track A elicits threats from the diagram and classifies them. Track B writes one
         SRF persona and one party onto each threat. If matrix.json says shared, still
         name one lead. Cite an OWASP, ATLAS, or AI Exchange id only when it exists in
-        that source.
+        that source. After either track, the export pair writes the files a reviewer
+        can keep: a markdown report and the completed JSON.
       </p>
 
       <p class="section-label">Q1. What are we working on?</p>
-      <p class="section-note">Read the diagram into a solution description. Each step is filled with the prior JSON.</p>
+      <p class="section-note">Read the diagram into a solution description. Then state attackers and existing controls. Each step is filled with the prior JSON.</p>
       <div class="prompt-block is-collapsed" id="P-norm-block" data-prompt-id="P-norm">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-norm · Normalize representation · Track A · next P-diag</span>
@@ -286,6 +335,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we working on?
 Step: P-norm. Normalize the system representation into a canonical inventory.
@@ -299,7 +352,7 @@ Return a JSON object with this shape:
 {
   "system_name": "string",
   "perspective": "string naming team view and what we are working on right now",
-  "representation": { "kind": "image|mermaid|svg" },
+  "representation": { "kind": "image|mermaid|svg", "source_id": "filename or unknown", "version": "drawn or labeled version, or unknown", "commit": "commit if labeled, or unknown" },
   "inventory": {
     "components": [{"id": "kebab-id", "name": "", "type": "process"}],
     "external_actors": [{"id": "", "name": "", "type": "actor"}],
@@ -337,6 +390,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we working on?
 Step: P-diag. Write a long-form architecture description of the system in the diagram.
@@ -387,6 +444,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we working on?
 Step: P-app. Condense the architecture description into application details.
@@ -423,6 +484,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we working on?
 Step: P-feat. List key features that matter more for threat modeling than the rest of the architecture.
@@ -462,6 +527,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we working on?
 Step: P-scope. Mark which architectural components must be included in threat modeling.
@@ -485,13 +554,13 @@ Return JSON:
       </div>
       <div class="prompt-block is-collapsed" id="P-sol-block" data-prompt-id="P-sol">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-sol · Solution description · Track A · next P-llm-cut</span>
+          <span class="prompt-block__label">P-sol · Solution description · Track A · next P-adv</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-sol-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-sol-block', this)">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is P-sol (Solution description). Next prompt: P-llm-cut (Mark the LLM subset). Do not echo this line in the JSON.
+        <pre>[chain] This prompt is P-sol (Solution description). Next prompt: P-adv (Attacker capabilities and claim boundary). Do not echo this line in the JSON.
 
 You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
@@ -507,6 +576,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we working on?
 Step: P-sol. Combine prior Q1 outputs into a solution description (solS) plus a structured DFD.
@@ -530,6 +603,114 @@ Return JSON:
   "inventory": &lt;canonical inventory for all later steps&gt;,
   "in_scope": [...],
   "out_of_scope": [...]
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-adv-block" data-prompt-id="P-adv">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-adv · Attacker capabilities and claim boundary · Track A · next P-controls</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-adv-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-adv-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>[chain] This prompt is P-adv (Attacker capabilities and claim boundary). Next prompt: P-controls (Existing security features). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
+
+Shostack question: What are we working on?
+Step: P-adv. State attacker capabilities and the claim boundary before eliciting threats. This is the RFC 6819 §2.2 shape: assumptions first, then positions. Do not copy OAuth threats.
+
+Inventory:
+{{inventory}}
+In scope:
+{{in_scope}}
+Out of scope:
+{{out_of_scope}}
+Solution description:
+{{solution_description}}
+
+Write adversary.assumptions as capabilities someone already has (network position, credentials, ability to send prompts, physical access). Do not invent an attacker who can already do everything.
+
+Write adversary.positions: one row per drawn trust boundary or in-scope zone. Each row needs id, zone (boundary or component id), actor (who is there), and already_can (what they can do from that zone without a new exploit).
+
+Write claim_boundary.does_not_claim: attacks this review will not treat as in play. Tie each item to a reason from the diagram or the named perspective (for example a global passive observer if the diagram is one application, or physical theft of a provider datacenter that is not drawn).
+
+Write claim_boundary.box: the time, access, or component limit of this review (what we are working on right now).
+
+Return JSON:
+{
+  "adversary": {
+    "assumptions": ["..."],
+    "positions": [{"id": "pos-internet", "zone": "internet", "actor": "unauthenticated user", "already_can": "send HTTP to the drawn entry point"}]
+  },
+  "claim_boundary": {
+    "does_not_claim": ["..."],
+    "box": "..."
+  }
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-controls-block" data-prompt-id="P-controls">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-controls · Existing security features · Track A · next P-llm-cut</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-controls-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-controls-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>[chain] This prompt is P-controls (Existing security features). Next prompt: P-llm-cut (Mark the LLM subset). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
+
+Shostack question: What are we working on?
+Step: P-controls. List security features already visible on the diagram, before writing new threats. This is the RFC 6819 §3 shape: existing features first. Do not invent a control that is not drawn or named.
+
+Solution description:
+{{solution_description}}
+Inventory:
+{{inventory}}
+Adversary:
+{{adversary}}
+
+Include authn, TLS, filters, isolation, logging, human approval, network policy, or identity providers only if a label, component, or flow shows them. If none are drawn, return an empty array and set none_drawn true.
+
+Return JSON:
+{
+  "existing_controls": [{"id": "ctl-...", "name": "", "diagram_referent": "inventory id", "kind": "authn|tls|filter|isolation|logging|approval|network|identity|other"}],
+  "none_drawn": false
 }</pre>
       </div>
       <div class="prompt-block is-collapsed" id="P-llm-cut-block" data-prompt-id="P-llm-cut">
@@ -556,6 +737,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we working on?
 Step: P-llm-cut. Mark which nodes receive PHANTOM-B. Per Shostack, PHANTOM-B applies to the front end and model runtime, not every box.
@@ -601,6 +786,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 {{role_tradecraft}}
 Cyber role: {{cyber_role}}
@@ -612,12 +801,20 @@ STRIDE letters: S spoofing, T tampering, R repudiation, I information disclosure
 
 For each applicable letter, write one concrete scenario that can happen in this system. If a letter does not apply, record not_applicable with a reason. Do not skip a letter in silence.
 
+Each scenario row must set attacker_position to an id from adversary.positions. That position is who already sits in which zone and what they can already do. Do not invent a new position here.
+
 Solution description:
 {{solution_description}}
 Inventory:
 {{inventory}}
 In scope:
 {{in_scope}}
+Adversary:
+{{adversary}}
+Existing controls:
+{{existing_controls}}
+Claim boundary:
+{{claim_boundary}}
 
 Return JSON:
 {
@@ -630,6 +827,7 @@ Return JSON:
       "reason": "required when not_applicable",
       "diagram_referent": "element_id",
       "preconditions": "visible in the diagram",
+      "attacker_position": "pos-id from adversary.positions",
       "asset": "what is harmed"
     }
   ]
@@ -659,6 +857,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 {{role_tradecraft}}
 Cyber role: {{cyber_role}}
@@ -676,12 +878,18 @@ Ask, for each id in llm_subset:
 7. M Missing security engineering: Did we skip the rest of the SDL around this component?
 8. B Biases: What biases does the model have, and are they acceptable in this use case?
 
+Each scenario row must set attacker_position to an id from adversary.positions.
+
 Solution description:
 {{solution_description}}
 Inventory:
 {{inventory}}
 LLM subset:
 {{llm_subset}}
+Adversary:
+{{adversary}}
+Existing controls:
+{{existing_controls}}
 
 Return JSON:
 {
@@ -694,6 +902,7 @@ Return JSON:
       "reason": "required when not_applicable",
       "diagram_referent": "element_id",
       "preconditions": "",
+      "attacker_position": "pos-id from adversary.positions",
       "asset": ""
     }
   ]
@@ -723,6 +932,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What can go wrong?
 Step: P-dedup. Merge STRIDE and PHANTOM-B scenarios into threat list TSS.
@@ -731,6 +944,8 @@ Perspective:
 {{perspective}}
 Inventory:
 {{inventory}}
+Adversary:
+{{adversary}}
 STRIDE considerations:
 {{stride_scenarios}}
 PHANTOM-B considerations:
@@ -741,6 +956,7 @@ Rules:
 - Merge two scenarios that name the same failure on the same referent into one threat. Record source as "both" when both methods found it.
 - Keep a compositional threat only if the named perspective can change a control point on this diagram.
 - Assign ids T1, T2, ... in diagram order (entry points first).
+- Copy attacker_position from the source row. It must be an adversary.positions id.
 - stride, phantom_b, cia, and action may be empty arrays / stub objects; later steps fill them. Include a stub action of type accept and detail "pending P-act" if required by schema.
 
 Return JSON:
@@ -751,6 +967,7 @@ Return JSON:
       "scenario": "actor or failure, referent, preconditions, asset, why it can happen here",
       "diagram_referent": "inventory id",
       "preconditions": "",
+      "attacker_position": "pos-id",
       "asset": "",
       "source": "stride|phantom-b|both",
       "stride": [],
@@ -763,7 +980,7 @@ Return JSON:
       </div>
 
       <p class="section-label">Q3. What are we going to do about it?</p>
-      <p class="section-note">Map CIA, STRIDE, and PHANTOM-B letters. Then choose mitigate, eliminate, transfer, or accept in P-act.</p>
+      <p class="section-note">Map CIA, STRIDE, and PHANTOM-B letters. Then choose mitigate, eliminate, transfer, or accept in P-act, with a validation on mitigate and eliminate.</p>
       <div class="prompt-block is-collapsed" id="P-cia-block" data-prompt-id="P-cia">
         <div class="prompt-block__header">
           <span class="prompt-block__label">P-cia · CIA mapping · Track A · next P-stride-map</span>
@@ -788,6 +1005,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we going to do about it?
 Step: P-cia. Map each threat scenario to CIA. Multi-label is allowed.
@@ -828,6 +1049,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we going to do about it?
 Step: P-stride-map. Map each threat scenario to STRIDE letters. Multi-label is allowed.
@@ -866,6 +1091,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we going to do about it?
 Step: P-phantom-map. Attach PHANTOM-B letters only when the scenario was elicited from the LLM subset. Do not force every STRIDE threat into PHANTOM-B.
@@ -906,6 +1135,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: What are we going to do about it?
 Step: P-act. Choose one action per threat: mitigate, eliminate, transfer, or accept.
@@ -917,32 +1150,36 @@ Write the mitigate, eliminate, transfer, or accept choice here. Leave P-phantom 
 - transfer: another party is better placed to handle it; name that party as shown on the diagram (customer, provider, or an external actor id).
 - accept: keep the threat; say why the cost of the other options undermines the work.
 
-Mitigation detail must name a control_point whose id exists in the inventory. Optional citations may include owasp_llm_top10 (form LLMnn:2025), ai_exchange_slug (one of the published slugs), or atlas (AML.T*). Omit any citation you cannot pin. Do not invent ids.
+Mitigation detail must name a control_point whose id exists in the inventory.
+
+For mitigate or eliminate, set action.validation: kind is test, log, or fail_condition, and detail is something a reviewer could run or watch (a test name, a log line, or a fail condition on that control_point). Transfer and accept may set validation to null. Optional citations may include owasp_llm_top10 (form LLMnn:2025), ai_exchange_slug (one of the published slugs), or atlas (AML.T*). Omit any citation you cannot pin. Do not invent ids.
 
 Solution description:
 {{solution_description}}
 Inventory:
 {{inventory}}
+Existing controls:
+{{existing_controls}}
 Threats:
 {{threats}}
 
-Return the same threats array with action (and optional citations) filled.
+Return the same threats array with action, validation, and optional citations filled.
 
 Return JSON:
 { "threats": [ ... ] }</pre>
       </div>
 
       <p class="section-label">Q4. Did we do a good job?</p>
-      <p class="section-note">Mechanical self-check before SME review.</p>
+      <p class="section-note">Mechanical self-check, then write the readable report. Leave the reviewer line empty.</p>
       <div class="prompt-block is-collapsed" id="P-qa-block" data-prompt-id="P-qa">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-qa · Self-check · Track A · next P-srf-join</span>
+          <span class="prompt-block__label">P-qa · Self-check · Track A · next P-report</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-qa-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-qa-block', this)">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is P-qa (Self-check). Track A ends here. Save the assistant JSON; that file is the Track A threat model. Optional next: P-srf-join (Join AI Exchange slugs). Do not echo this line in the JSON.
+        <pre>[chain] This prompt is P-qa (Self-check). Next prompt: P-report (Write the readable report). Do not echo this line in the JSON.
 
 You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
@@ -958,6 +1195,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Shostack question: Did we do a good job?
 Step: P-qa. Check the work before any human review.
@@ -973,6 +1214,11 @@ Check, and set each boolean false if the check fails:
 5. actions_complete: every threat has action.type in mitigate, eliminate, transfer, accept, and detail is not "pending P-act".
 6. open_assumptions: list assumptions that are not on the diagram.
 7. gaps: list failed checks in plain language.
+8. adversary_stated: adversary.assumptions is non-empty and every in-scope trust boundary has a positions row, or a gap says which zone was skipped.
+9. existing_controls_listed: existing_controls is present. Empty is allowed only when none_drawn is true.
+10. claim_boundary_stated: claim_boundary.does_not_claim and claim_boundary.box are non-empty.
+11. actions_have_validation: every mitigate or eliminate action has validation.kind in test, log, fail_condition and non-empty detail.
+12. attacker_positions_bound: every threat.attacker_position is an id in adversary.positions.
 
 Also confirm every threats[].diagram_referent exists in inventory (components, external_actors, data_stores, or data_flows). List misses in gaps.
 
@@ -991,31 +1237,107 @@ Return the full matrix JSON with qa filled:
     "phantom_b_complete": true,
     "stride_considered": true,
     "actions_complete": true,
+    "adversary_stated": true,
+    "existing_controls_listed": true,
+    "claim_boundary_stated": true,
+    "actions_have_validation": true,
+    "report_present": false,
     "open_assumptions": [],
     "gaps": []
-  }
+  },
+  "adversary": {},
+  "existing_controls": [],
+  "claim_boundary": {}
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-report-block" data-prompt-id="P-report">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-report · Write the readable report · Track A · next P-export-md</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-report-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-report-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>[chain] This prompt is P-report (Write the readable report). Next prompt: P-export-md (Write the downloadable markdown report). Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
+
+Shostack question: Did we do a good job?
+Step: P-report. Write the readable threat model from the JSON. A reviewer must be able to read report.markdown without opening the rest of the object.
+
+Full matrix:
+{{full_matrix}}
+
+report.markdown sections, in this order, as headings:
+1. Title, date (today if unknown), method (Shostack Four Questions; STRIDE on in-scope elements; PHANTOM-B on llm_subset), role. Reviewer: leave blank.
+2. System, representation.version / source_id, perspective, claim_boundary.box.
+3. Attacker assumptions and positions.
+4. Architecture (short), trust boundaries, in_scope and out_of_scope.
+5. Existing controls. If none_drawn, say so.
+6. Threats grouped by diagram_referent. Each: id, scenario, attacker_position, STRIDE / PHANTOM-B / CIA, action, validation.
+7. What this model does not claim (claim_boundary.does_not_claim).
+8. qa.gaps and open_assumptions.
+9. Reviewer line with empty name and date fields.
+
+Do not add threats. Do not drop threats. Set qa.report_present true.
+Set chain_meta.method to the method sentence above, chain_meta.date to an ISO date, chain_meta.prompt_pack_version to 1.2, chain_meta.reviewer to null.
+
+Return the full matrix JSON with report and chain_meta filled:
+{
+  "system_name": "",
+  "perspective": "",
+  "representation": {},
+  "inventory": {},
+  "adversary": {},
+  "existing_controls": [],
+  "claim_boundary": {},
+  "solution_description": "",
+  "llm_subset": [],
+  "threats": [],
+  "qa": {},
+  "report": { "title": "", "markdown": "full document", "reviewer": null },
+  "chain_meta": { "prompt_pack_version": "1.2", "role": "{{cyber_role}}", "method": "", "date": "", "reviewer": null, "track_b_applied": false }
 }</pre>
       </div>
 
 
       <div class="deliverable" id="track-a-output">
-        <p class="deliverable__title">What to save after P-qa</p>
+        <p class="deliverable__title">What Track A has filled</p>
         <p>
-          Save the assistant's last JSON to a <code>.json</code> file. That file is
-          the Track A threat model. Schema:
+          The assistant JSON after P-report is the Track A matrix. Run the export
+          pair next to produce the downloadable files. Schema:
           <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
           Eval path: <code>&lt;system-id&gt;/image.json</code> (or
           <code>mermaid.json</code> / <code>svg.json</code>).
         </p>
         <ul>
-          <li><code>inventory</code>: components, actors, stores, flows, drawn trust boundaries.</li>
-          <li><code>solution_description</code> and <code>llm_subset</code>.</li>
-          <li><code>threats</code>: ids T1, T2, and so on. Each row has <code>scenario</code>, <code>diagram_referent</code>, STRIDE letters, PHANTOM-B letters when the referent is an LLM node, CIA, and one <code>action</code> (mitigate, eliminate, transfer, or accept).</li>
-          <li><code>qa</code>: self-check booleans, <code>open_assumptions</code>, <code>gaps</code>.</li>
+          <li><code>inventory</code>, <code>solution_description</code>, <code>llm_subset</code>.</li>
+          <li><code>adversary</code>: assumptions and positions (who already sits in which zone).</li>
+          <li><code>existing_controls</code>: only features drawn on the diagram.</li>
+          <li><code>claim_boundary</code>: what this review does not claim, plus the time or component box.</li>
+          <li><code>threats</code>: ids T1, T2, and so on. Each row has <code>scenario</code>, <code>diagram_referent</code>, <code>attacker_position</code>, STRIDE letters, PHANTOM-B letters when the referent is an LLM node, CIA, one <code>action</code>, and <code>validation</code> on mitigate or eliminate.</li>
+          <li><code>qa</code> and <code>report.markdown</code>. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
-          If you need a table, flatten <code>threats[]</code> into rows. Keep the JSON
-          as the record. Track B is optional and reads this same file.
+          Track B is optional and reads the same JSON. Either way, save files from
+          the download box after the export pair.
         </p>
       </div>
 
@@ -1048,6 +1370,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Track B is optional. Off by default. This step assigns SRF accountability. It does not invent threats.
 
@@ -1094,6 +1420,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Track B. Step: P-srf-layer. Assign the primary SRF layer where the control point lives, not where the harm appears.
 
@@ -1110,13 +1440,13 @@ Return JSON:
       </div>
       <div class="prompt-block is-collapsed" id="P-srf-owner-block" data-prompt-id="P-srf-owner">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-srf-owner · Assign one accountable persona · Track B</span>
+          <span class="prompt-block__label">P-srf-owner · Assign one accountable persona · Track B · next P-export-md</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-srf-owner-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-srf-owner-block', this)">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is P-srf-owner (Assign one accountable persona). The chain ends here. Save the assistant JSON; that file is the Track B threat model (Track A matrix plus srf on each threat). Do not echo this line in the JSON.
+        <pre>[chain] This prompt is P-srf-owner (Assign one accountable persona). Next prompt: P-export-md (Write the downloadable markdown report). Do not echo this line in the JSON.
 
 You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
@@ -1132,6 +1462,10 @@ Rules:
 - Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
 - Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
 - Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
 
 Track B. Step: P-srf-owner. Name one accountable persona and one party per threat.
 
@@ -1157,20 +1491,25 @@ Return the full matrix JSON with srf filled on every threat:
   "perspective": "",
   "representation": {},
   "inventory": {},
+  "adversary": {},
+  "existing_controls": [],
+  "claim_boundary": {},
   "solution_description": "",
   "llm_subset": [],
   "threats": [ ... ],
   "qa": {},
-  "chain_meta": { "track_b_applied": true, "role": "{{cyber_role}}" }
+  "report": {},
+  "chain_meta": { "track_b_applied": true, "role": "{{cyber_role}}", "reviewer": null }
 }</pre>
       </div>
 
       <div class="deliverable" id="track-b-output">
-        <p class="deliverable__title">What to save after P-srf-owner</p>
+        <p class="deliverable__title">What Track B has filled</p>
         <p>
-          Save the assistant's last JSON. That file is the Track B threat model:
-          the Track A matrix with <code>srf</code> filled on every threat. Same schema;
-          <code>chain_meta.track_b_applied</code> is true.
+          The assistant JSON after P-srf-owner is the Track A matrix with
+          <code>srf</code> on every threat. Same schema;
+          <code>chain_meta.track_b_applied</code> is true. Re-run the export pair
+          on this JSON so the markdown report includes layer, persona, and party.
         </p>
         <ul>
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
@@ -1182,6 +1521,177 @@ Return the full matrix JSON with srf filled on every threat:
           Track B does not add threats. A threat with no matching slug still needs
           layer, persona, and party from P-srf-layer and P-srf-owner.
         </p>
+      </div>
+
+      <p class="section-label">Export the report and JSON</p>
+      <p class="section-note">
+        After Track A, or again after Track B, run these two prompts on the latest
+        matrix. P-export-md writes the readable report. P-export-json writes the
+        completed record. Paste each assistant reply into the box below and download
+        both files. Leave the reviewer line empty.
+      </p>
+      <div class="prompt-block is-collapsed" id="P-export-md-block" data-prompt-id="P-export-md">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-export-md · Write the downloadable markdown report · Export · next P-export-json</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-export-md-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-export-md-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>[chain] This prompt is P-export-md (Write the downloadable markdown report). Next prompt: P-export-json (Write the completed JSON file). Do not echo this line in the markdown.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
+
+This step writes the downloadable report. Output the markdown document only, starting at the title heading. Do not wrap it in a JSON object or in fences.
+
+Step: P-export-md. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Write a report a reviewer can read without opening the JSON.
+
+Full matrix:
+{{full_matrix}}
+
+Required document shape, in this order:
+
+# Threat model: {system_name}
+
+A metadata table with rows Date (ISO, today if unknown), Method (Shostack Four Questions; STRIDE on in-scope elements; PHANTOM-B on llm_subset), Role (from chain_meta.role), Representation (kind, source_id, version, commit; write unknown when the matrix says unknown), Perspective, Reviewer (empty cell).
+
+## Claim boundary
+One short paragraph from claim_boundary.box. Then a bullet list of claim_boundary.does_not_claim.
+
+## Attacker
+Assumptions as bullets from adversary.assumptions. Then a table of adversary.positions with columns Id, Zone or trust boundary, Capability.
+
+## Architecture
+A short paragraph from solution_description. Then ### Trust boundaries, ### In scope, and ### Out of scope. Use the inventory and scope arrays. If missing_trust_boundaries is true, say so under Trust boundaries.
+
+## Existing controls
+A table with columns Id, Feature, Diagram referent. If none_drawn is true and the list is empty, write one sentence that no security feature was drawn.
+
+## Threats
+One ### heading per diagram_referent, using that id as the heading text. Under each heading, a table with columns ID, Scenario, Attacker position, STRIDE, PHANTOM-B, CIA, Action, Validation. The Scenario cell is the full scenario sentence. Action is type plus detail. Validation is kind plus detail, or empty for transfer and accept. PHANTOM-B is empty when the referent is not in llm_subset.
+If any threat has srf.persona or srf.layer, add columns Layer, Persona, Party after Validation.
+
+## What this model does not claim
+The claim_boundary.does_not_claim list again, as bullets.
+
+## Open assumptions and gaps
+Two short lists from qa.open_assumptions and qa.gaps. If a list is empty, write None recorded.
+
+## Reviewer
+Name:
+Date:
+Leave both blank.
+
+Rules:
+- Include every threat. Do not add threats.
+- Do not invent components, vendors, networks, or trust boundaries.
+- Do not fill the reviewer name or date.
+- When srf is present, use the persona, layer, and party values from the matrix.
+- Pipe tables must be valid GitHub-flavored markdown.
+</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-export-json-block" data-prompt-id="P-export-json">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-export-json · Write the completed JSON file · Export · optional next P-srf-join</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-export-json-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-export-json-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>[chain] This prompt is P-export-json (Write the completed JSON file). Export ends here. Paste the assistant output into the download box and save the markdown and JSON files. If Track B is not yet applied, optional next: P-srf-join (Join AI Exchange slugs). If Track B is already applied, stop. Do not echo this line in the JSON.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
+
+Step: P-export-json. Write the completed threat-model JSON file. Output JSON only. Pretty-print with two-space indent. No fences and no commentary outside the object.
+
+Full matrix:
+{{full_matrix}}
+
+Keep every field already present. Do not add threats. Do not drop threats.
+
+Required on the returned object:
+- Matches the schema at the pack schema_url.
+- inventory, adversary, existing_controls, claim_boundary, solution_description, llm_subset, threats, and qa stay complete.
+- report.markdown is the full readable document with the same sections as P-export-md. If report.markdown is already complete, echo it. If a required section is missing, rewrite only that section from the matrix fields.
+- report.title is Threat model: {system_name}.
+- report.reviewer is null.
+- qa.report_present is true.
+- chain_meta.prompt_pack_version is 1.2.
+- chain_meta.method names Shostack Four Questions, STRIDE on in-scope elements, and PHANTOM-B on llm_subset.
+- chain_meta.date is an ISO date (today if unknown).
+- chain_meta.reviewer is null.
+- chain_meta.track_b_applied is true only when every threat has srf.persona and srf.party of customer or provider. Otherwise false.
+- Every threat.attacker_position is an id in adversary.positions.
+- Every mitigate or eliminate action has validation.kind in test, log, fail_condition.
+- srf.party is never shared.
+
+Return the full matrix JSON:
+{
+  "system_name": "",
+  "perspective": "",
+  "representation": {},
+  "inventory": {},
+  "adversary": {},
+  "existing_controls": [],
+  "claim_boundary": {},
+  "solution_description": "",
+  "llm_subset": [],
+  "threats": [],
+  "qa": {},
+  "report": { "title": "", "markdown": "full document", "reviewer": null },
+  "chain_meta": { "prompt_pack_version": "1.2", "role": "{{cyber_role}}", "method": "", "date": "", "reviewer": null, "track_b_applied": false }
+}</pre>
+      </div>
+
+      <div class="deliverable export-dock" id="export-dock">
+        <p class="deliverable__title">Download the files</p>
+        <p>
+          Paste the P-export-md reply and click Download markdown. Paste the
+          P-export-json reply and click both buttons: markdown comes from
+          <code>report.markdown</code>, and JSON is pretty-printed. Filenames use
+          <code>system_name</code> when the paste is JSON.
+        </p>
+        <label for="export-paste">Assistant output</label>
+        <textarea id="export-paste" spellcheck="false" placeholder="Paste the markdown report or the completed JSON here."></textarea>
+        <div class="export-dock__actions">
+          <button type="button" id="export-md">Download markdown</button>
+          <button type="button" id="export-json">Download JSON</button>
+        </div>
+        <p class="export-dock__status" id="export-status" aria-live="polite"></p>
       </div>
 
       <p class="section-label">Evaluation baselines</p>
@@ -1233,8 +1743,8 @@ List threats with STRIDE type, impact, and a mitigation.</pre>
     <site-footer></site-footer>
     <script>
       const TM_STORAGE = 'srf.tm.lastPrompt';
-      const TM_STEPS = [{"id": "P-norm", "title": "Normalize representation", "next": "P-diag", "optional_next": null, "track": "A"}, {"id": "P-diag", "title": "Decompose diagram", "next": "P-app", "optional_next": null, "track": "A"}, {"id": "P-app", "title": "Application details", "next": "P-feat", "optional_next": null, "track": "A"}, {"id": "P-feat", "title": "Key features", "next": "P-scope", "optional_next": null, "track": "A"}, {"id": "P-scope", "title": "In-scope components", "next": "P-sol", "optional_next": null, "track": "A"}, {"id": "P-sol", "title": "Solution description", "next": "P-llm-cut", "optional_next": null, "track": "A"}, {"id": "P-llm-cut", "title": "Mark the LLM subset", "next": "P-stride", "optional_next": null, "track": "A"}, {"id": "P-stride", "title": "STRIDE elicitation", "next": "P-phantom", "optional_next": null, "track": "A"}, {"id": "P-phantom", "title": "PHANTOM-B elicitation", "next": "P-dedup", "optional_next": null, "track": "A"}, {"id": "P-dedup", "title": "Dedup and compose threat list", "next": "P-cia", "optional_next": null, "track": "A"}, {"id": "P-cia", "title": "CIA mapping", "next": "P-stride-map", "optional_next": null, "track": "A"}, {"id": "P-stride-map", "title": "STRIDE mapping", "next": "P-phantom-map", "optional_next": null, "track": "A"}, {"id": "P-phantom-map", "title": "PHANTOM-B mapping", "next": "P-act", "optional_next": null, "track": "A"}, {"id": "P-act", "title": "Choose an action", "next": "P-qa", "optional_next": null, "track": "A"}, {"id": "P-qa", "title": "Self-check", "next": null, "optional_next": "P-srf-join", "track": "A"}, {"id": "P-srf-join", "title": "Join AI Exchange slugs", "next": "P-srf-layer", "optional_next": null, "track": "B"}, {"id": "P-srf-layer", "title": "Assign SRF layer", "next": "P-srf-owner", "optional_next": null, "track": "B"}, {"id": "P-srf-owner", "title": "Assign one accountable persona", "next": null, "optional_next": null, "track": "B"}];
-      const TM_TITLES = {"P-norm": "Normalize representation", "P-diag": "Decompose diagram", "P-app": "Application details", "P-feat": "Key features", "P-scope": "In-scope components", "P-sol": "Solution description", "P-llm-cut": "Mark the LLM subset", "P-stride": "STRIDE elicitation", "P-phantom": "PHANTOM-B elicitation", "P-dedup": "Dedup and compose threat list", "P-cia": "CIA mapping", "P-stride-map": "STRIDE mapping", "P-phantom-map": "PHANTOM-B mapping", "P-act": "Choose an action", "P-qa": "Self-check", "P-srf-join": "Join AI Exchange slugs", "P-srf-layer": "Assign SRF layer", "P-srf-owner": "Assign one accountable persona", "P-zeroshot": "Zero-shot threat model", "P-identity": "Short expert identity"};
+      const TM_STEPS = [{"id": "P-norm", "title": "Normalize representation", "next": "P-diag", "optional_next": null, "track": "A"}, {"id": "P-diag", "title": "Decompose diagram", "next": "P-app", "optional_next": null, "track": "A"}, {"id": "P-app", "title": "Application details", "next": "P-feat", "optional_next": null, "track": "A"}, {"id": "P-feat", "title": "Key features", "next": "P-scope", "optional_next": null, "track": "A"}, {"id": "P-scope", "title": "In-scope components", "next": "P-sol", "optional_next": null, "track": "A"}, {"id": "P-sol", "title": "Solution description", "next": "P-adv", "optional_next": null, "track": "A"}, {"id": "P-adv", "title": "Attacker capabilities and claim boundary", "next": "P-controls", "optional_next": null, "track": "A"}, {"id": "P-controls", "title": "Existing security features", "next": "P-llm-cut", "optional_next": null, "track": "A"}, {"id": "P-llm-cut", "title": "Mark the LLM subset", "next": "P-stride", "optional_next": null, "track": "A"}, {"id": "P-stride", "title": "STRIDE elicitation", "next": "P-phantom", "optional_next": null, "track": "A"}, {"id": "P-phantom", "title": "PHANTOM-B elicitation", "next": "P-dedup", "optional_next": null, "track": "A"}, {"id": "P-dedup", "title": "Dedup and compose threat list", "next": "P-cia", "optional_next": null, "track": "A"}, {"id": "P-cia", "title": "CIA mapping", "next": "P-stride-map", "optional_next": null, "track": "A"}, {"id": "P-stride-map", "title": "STRIDE mapping", "next": "P-phantom-map", "optional_next": null, "track": "A"}, {"id": "P-phantom-map", "title": "PHANTOM-B mapping", "next": "P-act", "optional_next": null, "track": "A"}, {"id": "P-act", "title": "Choose an action", "next": "P-qa", "optional_next": null, "track": "A"}, {"id": "P-qa", "title": "Self-check", "next": "P-report", "optional_next": null, "track": "A"}, {"id": "P-report", "title": "Write the readable report", "next": "P-export-md", "optional_next": null, "track": "A"}, {"id": "P-srf-join", "title": "Join AI Exchange slugs", "next": "P-srf-layer", "optional_next": null, "track": "B"}, {"id": "P-srf-layer", "title": "Assign SRF layer", "next": "P-srf-owner", "optional_next": null, "track": "B"}, {"id": "P-srf-owner", "title": "Assign one accountable persona", "next": "P-export-md", "optional_next": null, "track": "B"}, {"id": "P-export-md", "title": "Write the downloadable markdown report", "next": "P-export-json", "optional_next": null, "track": "export"}, {"id": "P-export-json", "title": "Write the completed JSON file", "next": null, "optional_next": "P-srf-join", "track": "export"}];
+      const TM_TITLES = {"P-norm": "Normalize representation", "P-diag": "Decompose diagram", "P-app": "Application details", "P-feat": "Key features", "P-scope": "In-scope components", "P-sol": "Solution description", "P-adv": "Attacker capabilities and claim boundary", "P-controls": "Existing security features", "P-llm-cut": "Mark the LLM subset", "P-stride": "STRIDE elicitation", "P-phantom": "PHANTOM-B elicitation", "P-dedup": "Dedup and compose threat list", "P-cia": "CIA mapping", "P-stride-map": "STRIDE mapping", "P-phantom-map": "PHANTOM-B mapping", "P-act": "Choose an action", "P-qa": "Self-check", "P-report": "Write the readable report", "P-srf-join": "Join AI Exchange slugs", "P-srf-layer": "Assign SRF layer", "P-srf-owner": "Assign one accountable persona", "P-export-md": "Write the downloadable markdown report", "P-export-json": "Write the completed JSON file", "P-zeroshot": "Zero-shot threat model", "P-identity": "Short expert identity"};
 
       function stepById(id) {
         return TM_STEPS.find((s) => s.id === id) || null;
@@ -1318,9 +1828,94 @@ List threats with STRIDE type, impact, and a mitigation.</pre>
         copyPrompt(nxt + '-block', btn);
         block.scrollIntoView({ block: 'center' });
       }
+      function slugifyName(name) {
+        const slug = String(name || 'threat-model')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        return slug || 'threat-model';
+      }
+      function stripFences(text) {
+        const trimmed = String(text || '').trim();
+        const m = trimmed.match(/^```(?:json|markdown|md)?\s*\n([\s\S]*?)\n```\s*$/i);
+        return m ? m[1] : trimmed;
+      }
+      function firstHeading(md) {
+        const m = String(md || '').match(/^#\s+(?:Threat model:\s*)?(.+)$/m);
+        return m ? m[1].trim() : '';
+      }
+      function parseExportPaste(raw) {
+        const text = stripFences(raw);
+        if (!text) return { kind: 'empty' };
+        if (text.charAt(0) === '{' || text.charAt(0) === '[') {
+          try {
+            return { kind: 'json', obj: JSON.parse(text) };
+          } catch (err) {
+            return { kind: 'text', text: text, error: 'JSON parse failed' };
+          }
+        }
+        return { kind: 'markdown', text: text };
+      }
+      function downloadBlob(filename, content, mime) {
+        const blob = new Blob([content], { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+      function setExportStatus(msg) {
+        const el = document.getElementById('export-status');
+        if (el) el.textContent = msg;
+      }
+      function downloadMarkdown() {
+        const parsed = parseExportPaste((document.getElementById('export-paste') || {}).value);
+        if (parsed.kind === 'empty') {
+          setExportStatus('Paste the markdown report or the completed JSON first.');
+          return;
+        }
+        let md = '';
+        let slug = 'threat-model';
+        if (parsed.kind === 'json') {
+          md = parsed.obj && parsed.obj.report && parsed.obj.report.markdown;
+          if (!md) {
+            setExportStatus('That JSON has no report.markdown. Paste the P-export-md reply, or run P-export-json.');
+            return;
+          }
+          slug = slugifyName(parsed.obj.system_name);
+        } else {
+          md = parsed.text;
+          slug = slugifyName(firstHeading(md) || 'threat-model');
+        }
+        const name = slug + '-threat-model.md';
+        downloadBlob(name, md, 'text/markdown;charset=utf-8');
+        setExportStatus('Saved ' + name + '.');
+      }
+      function downloadJsonFile() {
+        const parsed = parseExportPaste((document.getElementById('export-paste') || {}).value);
+        if (parsed.kind === 'empty') {
+          setExportStatus('Paste the completed JSON first.');
+          return;
+        }
+        if (parsed.kind !== 'json') {
+          setExportStatus('That paste is markdown. Paste the P-export-json reply to save the JSON file.');
+          return;
+        }
+        const slug = slugifyName(parsed.obj.system_name);
+        const name = slug + '-threat-model.json';
+        downloadBlob(name, JSON.stringify(parsed.obj, null, 2) + '\n', 'application/json;charset=utf-8');
+        setExportStatus('Saved ' + name + '.');
+      }
       document.addEventListener('DOMContentLoaded', () => {
         const copyNextBtn = document.getElementById('chain-copy-next');
         if (copyNextBtn) copyNextBtn.addEventListener('click', copyNext);
+        const mdBtn = document.getElementById('export-md');
+        const jsonBtn = document.getElementById('export-json');
+        if (mdBtn) mdBtn.addEventListener('click', downloadMarkdown);
+        if (jsonBtn) jsonBtn.addEventListener('click', downloadJsonFile);
         let last = null;
         try { last = localStorage.getItem(TM_STORAGE); } catch (err) {}
         markChain(last);

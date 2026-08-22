@@ -42,6 +42,21 @@ the three pairs (image-mermaid, image-svg, mermaid-svg).
 - Crossing fraction: gold flows with `crosses_boundary` set that are named as
   a `diagram_referent` or whose endpoints are.
 
+## Report completeness (Track A, after P-report)
+
+These fields are required by the prompts. The harness does not fail a run
+that omits them, because gold-echo fixtures have no elicited threats.
+
+- `representation.version` or `source_id` set, or explicitly `unknown`
+- `adversary.assumptions` non-empty; `adversary.positions` covers drawn zones
+- `existing_controls` present; empty only with `none_drawn`
+- `claim_boundary.does_not_claim` and `claim_boundary.box` non-empty
+- every threat has `attacker_position` matching a positions id
+- mitigate and eliminate have `action.validation` (`test`, `log`, or `fail_condition`)
+- `report.markdown` is present; `report.reviewer` is null until a human signs
+- after either track, `P-export-md` writes the downloadable markdown report
+  and `P-export-json` writes the completed JSON file
+
 ## Schema
 
 `eval/threat-model/schema.json`. Extra failures the harness flags even if JSON

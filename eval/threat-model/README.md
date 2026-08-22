@@ -1,9 +1,11 @@
 # AI system diagram threat-model evaluation
 
 Gold diagrams and scoring scripts for the prompt pack at
-`/tools/prompts/threat-model/`. A prediction is an image, Mermaid source, or SVG
-run through Track A (Shostack's Four Questions, STRIDE on every box, PHANTOM-B
-on the LLM subset) or through a short baseline prompt.
+`/tools/prompts/threat-model/`. The human-readable eval against three published
+threat models is `/eval/threat-model/`. A prediction is an image, Mermaid source, or SVG
+run through Track A (Shostack's Four Questions, attacker positions, existing
+controls, STRIDE on every box, PHANTOM-B on the LLM subset, then a readable
+report) or through a short baseline prompt.
 
 Automated scores run without calling a model. A claim that Track A beats
 P-zeroshot still needs the SME sheets in `sme/`.
@@ -46,7 +48,9 @@ Prediction layout:
 <pred>/<system_id>/svg.json
 ```
 
-Each file must match `eval/threat-model/schema.json`.
+Each file must match `eval/threat-model/schema.json`. After Track A or Track B,
+run `P-export-md` then `P-export-json`. The markdown reply is the readable
+report. The JSON reply is the completed record and includes `report.markdown`.
 
 Scores:
 
@@ -68,8 +72,9 @@ python3 eval/threat-model/run_generate.py --mode identity
 ```
 
 Writes filled prompt text under `eval/threat-model/runs/<mode>/prompts/`. Run
-the chain in numeric order. Save each model's JSON as
-`<run>/<system_id>/<format>.json`. Optional `--call-api` needs `OPENAI_API_KEY`
+the chain in numeric order. After Track A, run `E01-P-export-md` and
+`E02-P-export-json`. Save the JSON as `<run>/<system_id>/<format>.json`.
+Optional `--call-api` needs `OPENAI_API_KEY`
 or `TM_API_KEY` and only fires the first prompt per format; later steps still
 need prior JSON pasted in.
 

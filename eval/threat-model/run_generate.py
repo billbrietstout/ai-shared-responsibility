@@ -73,6 +73,9 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         "stride_scenarios": "(fill from P-stride output)",
         "phantom_scenarios": "(fill from P-phantom output)",
         "threats": "(fill from prior step)",
+        "adversary": "(fill from P-adv output)",
+        "existing_controls": "(fill from P-controls output)",
+        "claim_boundary": "(fill from P-adv output)",
         "full_matrix": "(fill with the accumulated matrix)",
     }
     chain = [c["id"] for c in pack["chain"] if c["track"] == "A"]
@@ -92,11 +95,17 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         for j, pid in enumerate(b_ids, start=1):
             text = saturate(prompts[pid]["template"], mapping)
             (out_dir / f"B{j:02d}-{pid}.txt").write_text(text + "\n", encoding="utf-8")
+        export_ids = [c["id"] for c in pack["chain"] if c["track"] == "export"]
+        for k, pid in enumerate(export_ids, start=1):
+            text = saturate(prompts[pid]["template"], mapping)
+            (out_dir / f"E{k:02d}-{pid}.txt").write_text(text + "\n", encoding="utf-8")
         readme = out_dir / "README.txt"
         readme.write_text(
             "Run Track A prompts in numeric order. Paste each JSON output into the "
-            "next prompt's prior-output slot. Track B files (B01+) are optional and "
-            "require an operating_model. Do not call an API from this README.\n",
+            "next prompt's prior-output slot. After P-report, run E01-P-export-md "
+            "(markdown only) then E02-P-export-json (completed JSON). Track B files "
+            "(B01+) are optional and require an operating_model; if you run them, "
+            "re-run E01 and E02 on the Track B JSON. Do not call an API from this README.\n",
             encoding="utf-8",
         )
 

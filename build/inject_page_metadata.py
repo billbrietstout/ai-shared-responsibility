@@ -150,6 +150,8 @@ def classify(rel):
             return "tool", concepts
         if rel == "tools/prompts/threat-model":
             return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + ["srf.data.threats"]
+        if rel == "eval/threat-model":
+            return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + ["srf.data.threats"]
         if "prompts" in rel:             return "tool", ["srf.framework.cosai-srf"] + ACCT
         if "schema" in rel:              return "tool", ["srf.framework.cosai-srf", "srf.concept.control"]
         if "security" in rel or "controls-assessment" in rel or "assessment" in rel:
