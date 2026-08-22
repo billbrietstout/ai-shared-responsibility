@@ -132,9 +132,7 @@ def main():
     q3 = stage_section("q3", "Map CIA, STRIDE, and PHANTOM-B letters. Then choose mitigate, eliminate, transfer, or accept in P-act, with a validation on mitigate and eliminate.", pack)
     q4 = stage_section("q4", "Mechanical self-check, then write the readable report. Leave the reviewer line empty.", pack)
     track_b_html = "\n".join(prompt_block(p, pack) for p in track_b)
-    export_html = "\n".join(
-        prompt_block(p, pack, collapsed=False) for p in export_prompts
-    )
+    export_html = "\n".join(prompt_block(p, pack) for p in export_prompts)
     baseline_html = "\n".join(prompt_block(dict(p, track="eval"), pack) for p in baselines)
     role_ids = ", ".join(r["id"] for r in pack["roles"])
     steps = []
