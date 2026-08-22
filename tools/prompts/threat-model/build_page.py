@@ -108,7 +108,7 @@ def stage_section(qid: str, title: str, pack: dict) -> str:
     ids = q["prompts"]
     by = {p["id"]: p for p in pack["prompts"]}
     blocks = "\n".join(prompt_block(by[i], pack) for i in ids)
-    return f"""      <p class="section-label">{esc(qid.upper())}. {esc(q['question'])}</p>
+    return f"""      <p class="section-label" id="{esc(qid)}">{esc(qid.upper())}. {esc(q['question'])}</p>
       <p class="section-note">{esc(title)}</p>
 {blocks}
 """
@@ -394,10 +394,18 @@ def main():
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
         <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
-        <li>After P-report, run <a href="#export-report">P-export-md</a> then P-export-json. Paste each assistant reply into the download box and save the <code>.md</code> and <code>.json</code> files.</li>
-        <li>Optionally run Track B (P-srf-join, P-srf-layer, P-srf-owner) with an operating model. Then run the two export prompts again on the Track B JSON so the report includes layer, persona, and party.</li>
+        <li>Optionally run <a href="#track-b">Track B</a> (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
+        <li>After the track you used, run <a href="#export-report">P-export-md</a> then P-export-json. Paste each assistant reply into the download box and save the <code>.md</code> and <code>.json</code> files.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
+
+      <p class="section-label">On this page</p>
+      <ul class="q-list">
+        <li><a href="#q1">Track A: Four Questions</a></li>
+        <li><a href="#track-b">Track B (optional)</a></li>
+        <li><a href="#export-report">Export the report and JSON</a></li>
+        <li><a href="#baselines">Evaluation baselines</a></li>
+      </ul>
 
       <div class="chain-status" id="chain-status">
         <p class="chain-status__text" aria-live="polite">
@@ -459,8 +467,10 @@ def main():
       <div class="deliverable" id="track-a-output">
         <p class="deliverable__title">What Track A has filled</p>
         <p>
-          The assistant JSON after P-report is the Track A matrix. Run the export
-          pair next to produce the downloadable files. Schema:
+          The assistant JSON after P-report is the Track A matrix. Optional
+          <a href="#track-b">Track B</a> is next. Then run the
+          <a href="#export-report">export pair</a> to produce the downloadable files.
+          Schema:
           <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
           Eval path: <code>&lt;system-id&gt;/image.json</code> (or
           <code>mermaid.json</code> / <code>svg.json</code>).
@@ -474,8 +484,36 @@ def main():
           <li><code>qa</code> and <code>report.markdown</code>. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
-          Track B is optional and reads the same JSON. Either way, save files from
-          the download box in the export section next.
+          Track B is optional and reads the same JSON. After the track you used,
+          save files from the <a href="#export-report">export section</a>.
+        </p>
+      </div>
+
+      <p class="section-label" id="track-b">Track B (optional): SRF accountability</p>
+      <p class="section-note">
+        Off by default. Consumes the Track A JSON plus an operating model.
+        Join published AI Exchange slugs from threats.json instead of re-deriving them.
+      </p>
+{track_b_html}
+
+      <div class="deliverable" id="track-b-output">
+        <p class="deliverable__title">What Track B has filled</p>
+        <p>
+          The assistant JSON after P-srf-owner is the Track A matrix with
+          <code>srf</code> on every threat. Same schema;
+          <code>chain_meta.track_b_applied</code> is true. Re-run the export pair
+          on this JSON so the markdown report includes layer, persona, and party.
+        </p>
+        <ul>
+          <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
+          <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
+          <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
+          <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
+        </ul>
+        <p>
+          Track B does not add threats. A threat with no matching slug still needs
+          layer, persona, and party from P-srf-layer and P-srf-owner. Next, run
+          <a href="#export-report">Export the report and JSON</a> on this JSON.
         </p>
       </div>
 
@@ -505,36 +543,7 @@ def main():
         <p class="export-dock__status" id="export-status" aria-live="polite"></p>
       </div>
 
-      <p class="section-label">Track B (optional): SRF accountability</p>
-      <p class="section-note">
-        Off by default. Consumes the Track A JSON plus an operating model.
-        Join published AI Exchange slugs from threats.json instead of re-deriving them.
-      </p>
-{track_b_html}
-
-      <div class="deliverable" id="track-b-output">
-        <p class="deliverable__title">What Track B has filled</p>
-        <p>
-          The assistant JSON after P-srf-owner is the Track A matrix with
-          <code>srf</code> on every threat. Same schema;
-          <code>chain_meta.track_b_applied</code> is true. Re-run the export pair
-          on this JSON so the markdown report includes layer, persona, and party.
-        </p>
-        <ul>
-          <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
-          <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
-          <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
-          <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
-        </ul>
-        <p>
-          Track B does not add threats. A threat with no matching slug still needs
-          layer, persona, and party from P-srf-layer and P-srf-owner. Then return to
-          <a href="#export-report">Export the report and JSON</a> and run those two
-          prompts on this JSON.
-        </p>
-      </div>
-
-      <p class="section-label">Evaluation baselines</p>
+      <p class="section-label" id="baselines">Evaluation baselines</p>
       <p class="section-note">
         P-zeroshot and P-identity are the two short baselines scored in
         <code>eval/threat-model/</code>. Machine scores stay open until the SME sheets
