@@ -54,8 +54,9 @@ that omits them, because gold-echo fixtures have no elicited threats.
 - every threat has `attacker_position` matching a positions id
 - mitigate and eliminate have `action.validation` (`test`, `log`, or `fail_condition`)
 - `report.markdown` is present; `report.reviewer` is null until a human signs
-- after either track, `P-export-md` writes the downloadable markdown report
-  and `P-export-json` writes the completed JSON file
+- after either track, `P-export-md` writes the markdown report,
+  `P-export-json` writes the completed JSON file, and `P-export-csv` writes
+  one row per threat
 
 ## Schema
 

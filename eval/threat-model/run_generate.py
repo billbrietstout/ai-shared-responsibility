@@ -103,9 +103,10 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         readme.write_text(
             "Run Track A prompts in numeric order. Paste each JSON output into the "
             "next prompt's prior-output slot. After P-report, run E01-P-export-md "
-            "(markdown only) then E02-P-export-json (completed JSON). Track B files "
-            "(B01+) are optional and require an operating_model; if you run them, "
-            "re-run E01 and E02 on the Track B JSON. Do not call an API from this README.\n",
+            "(markdown), E02-P-export-json (completed JSON), then E03-P-export-csv "
+            "(threat database). Track B files (B01+) are optional and require an "
+            "operating_model; if you run them, re-run E01 through E03 on the Track B "
+            "JSON. Do not call an API from this README.\n",
             encoding="utf-8",
         )
 

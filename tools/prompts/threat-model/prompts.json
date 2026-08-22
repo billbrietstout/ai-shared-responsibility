@@ -1,10 +1,10 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "updated": "2026-08-21",
   "canonical_url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
   "schema_url": "/eval/threat-model/schema.json",
-  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a readable report. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. Track B writes layer, persona, and party onto each threat. After either track, P-export-md and P-export-json write a downloadable markdown report and the completed JSON file.",
-  "lane": "Track A elicits threats from the diagram and classifies them. Track B writes one SRF persona and one party onto each threat. STRIDE and PHANTOM-B stay cited as Shostack and Microsoft methods. After either track, run the export pair to produce the markdown report and the completed JSON file.",
+  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a readable report. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. Track B writes layer, persona, and party onto each threat. After either track, P-export-md, P-export-json, and P-export-csv write a markdown report, the completed JSON file, and a threat-database CSV.",
+  "lane": "Track A elicits threats from the diagram and classifies them. Track B writes one SRF persona and one party onto each threat. STRIDE and PHANTOM-B stay cited as Shostack and Microsoft methods. After either track, run the export steps to produce the markdown report, the completed JSON file, and the threat-database CSV.",
   "citations": [
     {
       "id": "shostack-four-questions",
@@ -360,6 +360,12 @@
       "id": "P-export-json",
       "track": "export",
       "stage": "export",
+      "next": "P-export-csv"
+    },
+    {
+      "id": "P-export-csv",
+      "track": "export",
+      "stage": "export",
       "next": null,
       "optional_next": "P-srf-join"
     }
@@ -684,6 +690,18 @@
       "output_key": "full_matrix",
       "stop_condition": "The assistant reply is schema-valid pretty-printed JSON with report.markdown filled and report.reviewer null.",
       "template": "{{shared_rules}}\n\nStep: P-export-json. Write the completed threat-model JSON file. Output JSON only. Pretty-print with two-space indent. No fences and no commentary outside the object.\n\nFull matrix:\n{{full_matrix}}\n\nKeep every field already present. Do not add threats. Do not drop threats.\n\nRequired on the returned object:\n- Matches the schema at the pack schema_url.\n- inventory, adversary, existing_controls, claim_boundary, solution_description, llm_subset, threats, and qa stay complete.\n- report.markdown is the full readable document with the same sections as P-export-md. If report.markdown is already complete, echo it. If a required section is missing, rewrite only that section from the matrix fields.\n- report.title is Threat model: {system_name}.\n- report.reviewer is null.\n- qa.report_present is true.\n- chain_meta.prompt_pack_version is 1.2.\n- chain_meta.method names Shostack Four Questions, STRIDE on in-scope elements, and PHANTOM-B on llm_subset.\n- chain_meta.date is an ISO date (today if unknown).\n- chain_meta.reviewer is null.\n- chain_meta.track_b_applied is true only when every threat has srf.persona and srf.party of customer or provider. Otherwise false.\n- Every threat.attacker_position is an id in adversary.positions.\n- Every mitigate or eliminate action has validation.kind in test, log, fail_condition.\n- srf.party is never shared.\n\nReturn the full matrix JSON:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"claim_boundary\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"threats\": [],\n  \"qa\": {},\n  \"report\": { \"title\": \"\", \"markdown\": \"full document\", \"reviewer\": null },\n  \"chain_meta\": { \"prompt_pack_version\": \"1.2\", \"role\": \"{{cyber_role}}\", \"method\": \"\", \"date\": \"\", \"reviewer\": null, \"track_b_applied\": false }\n}"
+    },
+    {
+      "id": "P-export-csv",
+      "title": "Write the threat-database CSV",
+      "track": "export",
+      "stage": "export",
+      "inputs": [
+        "full_matrix"
+      ],
+      "output_key": "threats_csv",
+      "stop_condition": "The assistant reply is RFC 4180 CSV with a header and one row per threat. No fences.",
+      "template": "{{shared_rules}}\n\nThis step writes the threat database. Output CSV only, starting at the header row. Do not wrap it in a JSON object or in fences.\n\nStep: P-export-csv. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Flatten threats[] into a spreadsheet a tracker or GRC tool can import.\n\nFull matrix:\n{{full_matrix}}\n\nHeader, exactly these columns in this order:\nsystem_name,threat_id,scenario,diagram_referent,attacker_position,preconditions,asset,source,stride,phantom_b,cia,action_type,action_detail,control_point,validation_kind,validation_detail,owasp_llm_top10,ai_exchange_slug,atlas,srf_layer,srf_persona,srf_party,srf_note\n\nRow rules:\n- One row per threat. Include every threat. Do not add threats.\n- threat_id is threats[].id (T1, T2, ...).\n- system_name is the matrix system_name on every row.\n- stride, phantom_b, and cia are the letters joined with a pipe, no spaces (example S|T). Empty array is an empty cell.\n- action_type, action_detail, and control_point come from action.\n- validation_kind and validation_detail come from action.validation. Empty when validation is null (transfer and accept).\n- owasp_llm_top10, ai_exchange_slug, and atlas come from citations, or from srf.join.ai_exchange_slug when citations.ai_exchange_slug is empty.\n- srf_layer, srf_persona, srf_party, and srf_note come from srf when present. Empty when Track B was not run. srf.party is never the word shared.\n- Use RFC 4180: UTF-8, comma separators, wrap a field in double quotes when it contains a comma, quote, or newline, and escape a quote as two quotes.\n- Write an empty cell for a missing value. Do not write the word null.\n- Do not invent ids, slugs, or personas.\n"
     }
   ],
   "baseline_prompts": [

@@ -45,11 +45,12 @@ def operator_banner(p: dict, pack: dict) -> str:
     elif optional_next:
         nxt_p = prompt_by_id(pack, optional_next)
         nxt_title = nxt_p["title"] if nxt_p else optional_next
-        if pid == "P-export-json":
+        if pid == "P-export-csv":
             follow = (
-                f"Export ends here. Save the P-export-md reply as a .md file and this "
-                f"reply as a .json file. If Track B is not yet applied, optional next: "
-                f"{optional_next} ({nxt_title}). If Track B is already applied, stop."
+                f"Export ends here. Save the P-export-md reply as a .md file, the "
+                f"P-export-json reply as a .json file, and this reply as a .csv file. "
+                f"If Track B is not yet applied, optional next: {optional_next} "
+                f"({nxt_title}). If Track B is already applied, stop."
             )
         else:
             follow = (
@@ -62,11 +63,12 @@ def operator_banner(p: dict, pack: dict) -> str:
         )
     else:
         follow = "This prompt is not in the default chain."
-    echo = (
-        "Do not echo this line in the markdown."
-        if pid == "P-export-md"
-        else "Do not echo this line in the JSON."
-    )
+    if pid == "P-export-md":
+        echo = "Do not echo this line in the markdown."
+    elif pid == "P-export-csv":
+        echo = "Do not echo this line in the CSV."
+    else:
+        echo = "Do not echo this line in the JSON."
     return f"[chain] This prompt is {pid} ({title}). {follow} {echo}\n\n"
 
 
@@ -157,7 +159,7 @@ def main():
     <title>AI System Diagram Threat Modeling · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a downloadable markdown report and completed JSON. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
+      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix, a markdown report, completed JSON, and a threat-database CSV. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -245,17 +247,52 @@ def main():
         color: var(--slate-400);
         margin: 0 0 var(--sp-3);
       }}
-      .deliverable p, .deliverable ul {{
+      .deliverable p, .deliverable ul, .deliverable ol {{
         margin: 0 0 var(--sp-3);
         font-size: var(--text-sm);
         color: var(--slate-700);
         line-height: var(--leading-normal);
       }}
-      .deliverable ul {{
+      .deliverable ul, .deliverable ol {{
         padding-left: 1.2rem;
       }}
       .deliverable :last-child {{
         margin-bottom: 0;
+      }}
+      .shortcut-paste {{
+        position: relative;
+        margin: 0;
+      }}
+      .shortcut-paste pre {{
+        margin: 0;
+        padding: var(--sp-4);
+        padding-top: 2.4rem;
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        font-size: 0.8rem;
+        line-height: 1.55;
+        color: var(--slate-800);
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+      }}
+      .shortcut-paste button {{
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: var(--slate-600);
+        background: #fff;
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        padding: 4px 10px;
+        cursor: pointer;
+      }}
+      .shortcut-paste button.is-copied {{
+        color: #047857;
+        border-color: #6ee7b7;
       }}
       .prompt-block pre {{
         margin: 0;
@@ -305,7 +342,7 @@ def main():
   "@type": "TechArticle",
   "name": "AI System Diagram Threat Modeling Prompts",
   "url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
-  "description": "Prompts that read an AI system diagram and write a threat matrix plus a downloadable markdown report and completed JSON. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
+  "description": "Prompts that read an AI system diagram and write a threat matrix, a markdown report, completed JSON, and a threat-database CSV. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
   "publisher": {{
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -327,11 +364,12 @@ def main():
         <h1 class="page-hero__title">AI system diagram threat modeling</h1>
         <p class="page-hero__lede">
           Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a
-          threat matrix plus a downloadable markdown report and completed JSON.
+          threat matrix, a markdown report, completed JSON, and a threat-database CSV.
           Track A walks Shostack's Four Questions; each step is filled with the previous
           step's JSON (the Auspex chain shape). Track B writes layer, persona, and party
-          onto each threat. After either track, run the export pair and save the
-          markdown reply and the JSON reply as files. Templates:
+          onto each threat. After either track, run the export steps and save the
+          markdown reply, the JSON reply, and the CSV threat database as files.
+          Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/eval/threat-model/">How this pack scores against three published threat models</a>.
         </p>
@@ -339,6 +377,40 @@ def main():
     </header>
 
     <main id="main" class="page-body" data-llm="threat-model-prompts">
+
+      <div class="deliverable" id="shortcut">
+        <p class="deliverable__title">Shortcut: one chat</p>
+        <p>
+          Attach the diagram (image, Mermaid, or SVG) to a chat that can fetch URLs.
+          Copy the block below. The model runs Track A from
+          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
+          You do not copy the 18 Track A steps.
+        </p>
+        <ol>
+          <li>Fetch the pack. Run every <code>chain</code> id whose <code>track</code> is <code>A</code>, in listed order (P-norm through P-report).</li>
+          <li>Fill each template from the prior JSON (<code>inventory</code>, <code>threats</code>, <code>full_matrix</code>, and the other <code>{{{{ }}}}</code> slots).</li>
+          <li>Keep the diagram attached on every step that names <code>{{{{representation}}}}</code>. Set <code>representation_kind</code> to match the attachment.</li>
+          <li>If a <code>stop_condition</code> fails, stop and show the gap.</li>
+          <li>After P-report, run P-export-md, P-export-json, then P-export-csv. Save those replies as <code>.md</code>, <code>.json</code>, and <code>.csv</code>.</li>
+          <li>Optional: after Track A, run Track B, then run the three export steps again.</li>
+        </ol>
+        <p>
+          If the chat cannot fetch that file, use the copy-one-block steps under
+          How to run the chain.
+        </p>
+        <div class="shortcut-paste">
+          <button type="button" id="shortcut-copy">Copy</button>
+          <pre id="shortcut-text">Attach this diagram. Fetch https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json now.
+
+Run Track A: every object in chain where track is "A", in listed order (P-norm through P-report). For each step, fill the template slots from the prior JSON (inventory, threats, full_matrix, and the other {{{{ }}}} names). Keep this diagram attached on every step whose template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg to match the attachment. Role: experienced-threat-modeler unless I name another role from the pack.
+
+Do not skip a step. If a stop_condition fails, stop and show the gap.
+
+After P-report, run P-export-md, then P-export-json, then P-export-csv. I will save those three replies as .md, .json, and .csv. Leave report.reviewer empty.
+
+Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</pre>
+        </div>
+      </div>
 
       <p class="section-label">How to run the chain</p>
       <ol class="q-list">
@@ -348,15 +420,16 @@ def main():
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
         <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
         <li>Optionally run <a href="#track-b">Track B</a> (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
-        <li>After the track you used, run <a href="#export-report">P-export-md</a> then P-export-json. Save the first reply as a <code>.md</code> file and the second as a <code>.json</code> file.</li>
+        <li>After the track you used, run <a href="#export-report">P-export-md</a>, P-export-json, then P-export-csv. Save those replies as a <code>.md</code> file, a <code>.json</code> file, and a <code>.csv</code> threat database.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
 
       <p class="section-label">On this page</p>
       <ul class="q-list">
+        <li><a href="#shortcut">Shortcut: one chat</a></li>
         <li><a href="#q1">Track A: Four Questions</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
-        <li><a href="#export-report">Export the report and JSON</a></li>
+        <li><a href="#export-report">Export the report, JSON, and CSV</a></li>
         <li><a href="#baselines">Evaluation baselines</a></li>
       </ul>
 
@@ -408,8 +481,8 @@ def main():
         Track A elicits threats from the diagram and classifies them. Track B writes one
         SRF persona and one party onto each threat. If matrix.json says shared, still
         name one lead. Cite an OWASP, ATLAS, or AI Exchange id only when it exists in
-        that source. After either track, the export pair writes the files a reviewer
-        can keep: a markdown report and the completed JSON.
+        that source. After either track, the export steps write the files a reviewer
+        can keep: a markdown report, the completed JSON, and a threat-database CSV.
       </p>
 
 {q1}
@@ -422,7 +495,7 @@ def main():
         <p>
           The assistant JSON after P-report is the Track A matrix. Optional
           <a href="#track-b">Track B</a> is next. Then run the
-          <a href="#export-report">export pair</a> and save those two replies as files.
+          <a href="#export-report">export steps</a> and save the markdown, JSON, and CSV replies.
           Schema:
           <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
           Eval path: <code>&lt;system-id&gt;/image.json</code> (or
@@ -438,7 +511,7 @@ def main():
         </ul>
         <p>
           Track B is optional and reads the same JSON. After the track you used,
-          run the <a href="#export-report">export pair</a> and save the two replies.
+          run the <a href="#export-report">export steps</a> and save the three replies.
         </p>
       </div>
 
@@ -454,8 +527,8 @@ def main():
         <p>
           The assistant JSON after P-srf-owner is the Track A matrix with
           <code>srf</code> on every threat. Same schema;
-          <code>chain_meta.track_b_applied</code> is true. Re-run the export pair
-          on this JSON so the markdown report includes layer, persona, and party.
+          <code>chain_meta.track_b_applied</code> is true. Re-run the export steps
+          on this JSON so the report and CSV include layer, persona, and party.
         </p>
         <ul>
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
@@ -472,10 +545,11 @@ def main():
 
       <p class="section-label" id="export-report">Export the report and JSON</p>
       <p class="section-note">
-        These two prompts run after Track A, and again after Track B if you used it.
+        These three prompts run after Track A, and again after Track B if you used it.
         P-export-md writes the readable report; save that reply as a
         <code>.md</code> file. P-export-json writes the completed record; save that
-        reply as a <code>.json</code> file. Leave the reviewer line empty.
+        reply as a <code>.json</code> file. P-export-csv writes one row per threat;
+        save that reply as a <code>.csv</code> file. Leave the reviewer line empty.
       </p>
 {export_html}
 
@@ -582,9 +656,24 @@ def main():
         copyPrompt(nxt + '-block', btn);
         block.scrollIntoView({{ block: 'center' }});
       }}
+      function copyShortcut() {{
+        const pre = document.getElementById('shortcut-text');
+        const btn = document.getElementById('shortcut-copy');
+        if (!pre || !btn) return;
+        navigator.clipboard.writeText(pre.textContent).then(() => {{
+          btn.textContent = 'Copied';
+          btn.classList.add('is-copied');
+          setTimeout(() => {{
+            btn.textContent = 'Copy';
+            btn.classList.remove('is-copied');
+          }}, 2000);
+        }});
+      }}
       document.addEventListener('DOMContentLoaded', () => {{
         const copyNextBtn = document.getElementById('chain-copy-next');
         if (copyNextBtn) copyNextBtn.addEventListener('click', copyNext);
+        const shortcutBtn = document.getElementById('shortcut-copy');
+        if (shortcutBtn) shortcutBtn.addEventListener('click', copyShortcut);
         let last = null;
         try {{ last = localStorage.getItem(TM_STORAGE); }} catch (err) {{}}
         markChain(last);
