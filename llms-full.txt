@@ -6200,6 +6200,11 @@ Reference: https://aisharedresponsibility.com/tools/
 
 Interactive tools for applying the SRF to real deployments.
 
+### Accountability Decision Record
+URL: https://aisharedresponsibility.com/tools/decision-record/
+
+Generates a signable one-page decision record for one AI deployment. Pick an operating model to prefill the per-layer accountability split, then name exactly one accountable party per SRF layer (resolving every "shared"), record residual gaps, autonomy and override tier, and a sign-off. Browser-based, localStorage only, PDF and JSON export. A downloadable offline DOCX template (srf-decision-record-template.docx) mirrors the form for air-gapped or browser-restricted environments.
+
 ### Regulation Discovery Wizard
 URL: https://aisharedresponsibility.com/tools/regulation-discovery/
 
@@ -6250,12 +6255,32 @@ URL: https://aisharedresponsibility.com/tools/redteam-scope/
 
 Scopes an AI red team engagement with the SRF accountability overlay. Pick an operating model (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS), autonomy tier, and optional industry vertical; the tool resolves each layer to one of three tiers: testable directly (the target org owns the layer), authorization required (the layer is shared or provider-evaluated; record what was granted before testing), or out of scope (the provider owns the layer outright). Pre-assigns one named finding owner per layer, flags layers with no authorization reference on file, surfaces related threats from the crosswalk per layer, and lists standard evidence-handling obligations. Produces a signable scoping record exportable to PDF and JSON, reusing the Accountability Decision Record's sign-off pattern. Supplies only the accountability overlay; methodology is the OWASP GenAI Red Teaming Guide, attack taxonomy is NIST AI 100-2.
 
-Machine-readable matrix exports for GRC ingestion: /export/matrix.csv (flat CSV of the accountability matrix) and /export/srf-oscal-catalog.json (OSCAL 1.1.2 catalog; groups are SRF layers, controls are layer-by-operating-model accountability cells).
+Machine-readable matrix exports for GRC ingestion: /export/matrix.csv (flat CSV of the accountability matrix) and /export/srf-oscal-catalog.json (OSCAL 1.1.2 catalog; groups are SRF layers, controls are layer-by-operating-model accountability cells). Industry vertical controls as /export/srf-oscal-verticals-catalog.json, with one OSCAL profile per vertical under /export/srf-*.profile.json.
 
 ### System Instructions
 URL: https://aisharedresponsibility.com/tools/prompts/
 
 Copy-ready prompts for grounding AI assistants in the SRF. Core instruction enforcing one accountable party per activity. Role variants: executive, auditor, developer, legal/procurement. Sector context parameters for all six verticals.
+
+### Lifecycle Prompt Builder
+URL: https://aisharedresponsibility.com/tools/prompts/lifecycle/
+
+Builds one grounded prompt from a persona, an industry vertical, one of the six AI security lifecycle stages, and an operating model. Names the single accountable party, resolves a shared matrix cell to one owner, cites canonical IDs, and points the agent at the data file and on-site tool for that stage.
+
+### AI System Diagram Threat Modeling
+URL: https://aisharedresponsibility.com/tools/prompts/threat-model/
+
+Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix, a markdown report, completed JSON, a threat-database CSV, and a Mermaid threat-model diagram. Track A walks Shostack's Four Questions, attacker positions, existing controls, STRIDE, and PHANTOM-B. Track B writes one SRF persona onto each threat. Templates at /tools/prompts/threat-model/prompts.json. Eval report at /eval/threat-model/. Pack v1.4.
+
+### Diagram threat-model eval report
+URL: https://aisharedresponsibility.com/eval/threat-model/
+
+How the threat-modeling prompt pack scores against the Trail of Bits Kubernetes assessment (2019), IETF RFC 6819, and the CNCF Financial User Group Kubernetes threat model. Track A v1.1 scored 47/48 (A). Schema JSON 44/48 (A). Pack v1.4 adds the four export files. No model-written P-report exists yet for the gold diagrams.
+
+### Whitepaper Assessment
+URL: https://aisharedresponsibility.com/assess/whitepaper-assessment/
+
+Copy-ready prompt for reviewing an AI security whitepaper against both published principle catalogs plus live SRF accountability and regulatory data. The assistant fetches /data/security-principles.json and /data/ai-agentic-principles.json. Confirms the paper was read in full before assessing it; screens citation integrity, unpinned dependency recommendations, text aimed at the reviewing model, unsupported claims, stale references, and leftover production artifacts; maps every claim to a catalog id; checks threat attribution against the layer that owns the control point; and ranks every finding on one P1 to P4 scale with severity capped by evidence quality.
 
 ### AI Security Lifecycle
 URL: https://aisharedresponsibility.com/framework/security-lifecycle/
@@ -6304,4 +6329,4 @@ Dated record of site changes grouped by release. Tracks CoSAI SRF v1.0 (released
   - Link index: https://aisharedresponsibility.com/llms.txt
   - Data index: https://aisharedresponsibility.com/data/index.json
   - Sitemap: https://aisharedresponsibility.com/sitemap.xml
-  - Generated: 2026-06-13
+  - Generated: 2026-08-21
