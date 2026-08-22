@@ -1,0 +1,27 @@
+flowchart LR
+  subgraph customer_internet["Customer internet"]
+    customer_user["Customer user"]
+    customer_developer["Customer developer"]
+  end
+  subgraph customer_app_zone["Customer application"]
+    customer_app["Customer application"]
+    prompt_gateway["Prompt gateway"]
+  end
+  subgraph customer_data["Customer data"]
+    customer_db[("Customer database")]
+    prompt_log[("Prompt log")]
+  end
+  subgraph provider_platform["Provider platform"]
+    provider_guardrails["Provider guardrails"]
+    provider_model["Provider model endpoint"]
+  end
+  customer_user -->|"business request"| customer_app
+  customer_developer -->|"app deploy plus system prompt"| customer_app
+  customer_app -->|"read or write records"| customer_db
+  customer_app -->|"prompt plus metadata"| prompt_gateway
+  prompt_gateway -->|"store prompt"| prompt_log
+  prompt_gateway -->|"prompt for screening"| provider_guardrails
+  provider_guardrails -->|"allowed prompt"| provider_model
+  provider_model -->|"raw completion"| provider_guardrails
+  provider_guardrails -->|"filtered completion"| prompt_gateway
+  customer_app -->|"response"| customer_user

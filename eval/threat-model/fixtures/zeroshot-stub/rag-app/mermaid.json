@@ -1,0 +1,135 @@
+{
+  "system_name": "Retrieval-augmented generation application",
+  "perspective": "Application team that owns the web app, retriever, and document corpus. The model API is a provider endpoint.",
+  "representation": {
+    "kind": "mermaid",
+    "source_id": "rag-app"
+  },
+  "inventory": {
+    "components": [
+      {
+        "id": "web-app",
+        "name": "Web application",
+        "type": "process"
+      },
+      {
+        "id": "retriever",
+        "name": "Retriever",
+        "type": "process"
+      },
+      {
+        "id": "prompt-assembler",
+        "name": "Prompt assembler",
+        "type": "process"
+      }
+    ],
+    "external_actors": [
+      {
+        "id": "end-user",
+        "name": "End user",
+        "type": "actor"
+      }
+    ],
+    "data_stores": [
+      {
+        "id": "document-store",
+        "name": "Document store",
+        "type": "store"
+      },
+      {
+        "id": "vector-store",
+        "name": "Vector store",
+        "type": "store"
+      }
+    ],
+    "data_flows": [
+      {
+        "id": "f-query",
+        "from": "end-user",
+        "to": "web-app",
+        "label": "user query",
+        "crosses_boundary": "internet"
+      },
+      {
+        "id": "f-retrieve",
+        "from": "web-app",
+        "to": "retriever",
+        "label": "retrieve request",
+        "crosses_boundary": null
+      }
+    ],
+    "trust_boundaries": [
+      {
+        "id": "internet",
+        "name": "Internet",
+        "contains": [
+          "end-user"
+        ]
+      },
+      {
+        "id": "application",
+        "name": "Application zone",
+        "contains": [
+          "web-app",
+          "retriever",
+          "prompt-assembler"
+        ]
+      },
+      {
+        "id": "data",
+        "name": "Data zone",
+        "contains": [
+          "document-store",
+          "vector-store"
+        ]
+      },
+      {
+        "id": "provider",
+        "name": "Model provider",
+        "contains": [
+          "model-api"
+        ]
+      }
+    ],
+    "llm_components": [],
+    "missing_trust_boundaries": false
+  },
+  "solution_description": "Short identity-style sketch of the diagram.",
+  "llm_subset": [],
+  "threats": [
+    {
+      "id": "T1",
+      "scenario": "An attacker might prompt inject the model.",
+      "diagram_referent": "missing",
+      "stride": [
+        "T"
+      ],
+      "phantom_b": [],
+      "cia": [
+        "I"
+      ],
+      "action": {
+        "type": "mitigate",
+        "detail": "add filtering"
+      }
+    }
+  ],
+  "qa": {
+    "inventory_components_in_solS": true,
+    "boundary_crossings_covered": false,
+    "phantom_b_complete": false,
+    "stride_considered": false,
+    "actions_complete": true,
+    "open_assumptions": [
+      "gold-echo fixture has no elicited threats"
+    ],
+    "gaps": [
+      "threat elicitation not present in this fixture"
+    ]
+  },
+  "chain_meta": {
+    "prompt_pack_version": "1.0",
+    "role": "zeroshot-stub",
+    "track_b_applied": false
+  }
+}

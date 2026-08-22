@@ -1,0 +1,260 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aisharedresponsibility.com/eval/threat-model/schema.json",
+  "title": "AI system diagram threat matrix",
+  "description": "JSON shape written by the diagram threat-modeling prompts. Track A fills inventory, solution_description, llm_subset, threats, and qa. Track B may fill threats[].srf.",
+  "type": "object",
+  "required": [
+    "system_name",
+    "perspective",
+    "representation",
+    "inventory",
+    "solution_description",
+    "llm_subset",
+    "threats",
+    "qa"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "system_name": { "type": "string", "minLength": 1 },
+    "perspective": { "type": "string", "minLength": 1 },
+    "representation": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "string", "enum": ["image", "mermaid", "svg"] },
+        "sha256": { "type": "string" },
+        "source_id": { "type": "string" }
+      }
+    },
+    "inventory": { "$ref": "#/$defs/inventory" },
+    "architecture_description": { "type": "string" },
+    "application_details": { "type": "string" },
+    "key_features": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "in_scope": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/scope_item" }
+    },
+    "out_of_scope": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/scope_item" }
+    },
+    "solution_description": { "type": "string" },
+    "llm_subset": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Component ids that receive PHANTOM-B elicitation."
+    },
+    "threats": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/threat" }
+    },
+    "qa": { "$ref": "#/$defs/qa" },
+    "chain_meta": {
+      "type": "object",
+      "properties": {
+        "prompt_pack_version": { "type": "string" },
+        "role": { "type": "string" },
+        "track_b_applied": { "type": "boolean" }
+      }
+    }
+  },
+  "$defs": {
+    "inventory": {
+      "type": "object",
+      "required": [
+        "components",
+        "external_actors",
+        "data_stores",
+        "data_flows",
+        "trust_boundaries",
+        "llm_components"
+      ],
+      "properties": {
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/named" }
+        },
+        "external_actors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/named" }
+        },
+        "data_stores": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/named" }
+        },
+        "data_flows": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/flow" }
+        },
+        "trust_boundaries": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/boundary" }
+        },
+        "llm_components": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "missing_trust_boundaries": { "type": "boolean" }
+      }
+    },
+    "named": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "type": {
+          "type": "string",
+          "enum": ["process", "store", "external", "actor"]
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "flow": {
+      "type": "object",
+      "required": ["id", "from", "to"],
+      "properties": {
+        "id": { "type": "string" },
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "label": { "type": "string" },
+        "crosses_boundary": { "type": ["string", "null"] }
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "contains": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "scope_item": {
+      "type": "object",
+      "required": ["id", "rationale"],
+      "properties": {
+        "id": { "type": "string" },
+        "rationale": { "type": "string" }
+      }
+    },
+    "threat": {
+      "type": "object",
+      "required": [
+        "id",
+        "scenario",
+        "diagram_referent",
+        "stride",
+        "phantom_b",
+        "cia",
+        "action"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^T[0-9]+$" },
+        "scenario": { "type": "string", "minLength": 20 },
+        "diagram_referent": { "type": "string", "minLength": 1 },
+        "preconditions": { "type": "string" },
+        "asset": { "type": "string" },
+        "source": {
+          "type": "string",
+          "enum": ["stride", "phantom-b", "both", "kill-chain"]
+        },
+        "stride": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["S", "T", "R", "I", "D", "E"]
+          }
+        },
+        "phantom_b": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["P", "H", "A", "N", "T", "O", "M", "B"]
+          }
+        },
+        "cia": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["C", "I", "A"]
+          }
+        },
+        "action": {
+          "type": "object",
+          "required": ["type", "detail"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["mitigate", "eliminate", "transfer", "accept"]
+            },
+            "detail": { "type": "string" },
+            "control_point": { "type": "string" }
+          }
+        },
+        "citations": {
+          "type": "object",
+          "properties": {
+            "owasp_llm_top10": { "type": ["string", "null"] },
+            "ai_exchange_slug": { "type": ["string", "null"] },
+            "atlas": { "type": ["string", "null"] }
+          }
+        },
+        "srf": {
+          "type": ["object", "null"],
+          "properties": {
+            "layer": {
+              "type": ["string", "null"],
+              "enum": ["L1", "L2", "L3", "L4", "L5", null]
+            },
+            "affected_layers": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["L1", "L2", "L3", "L4", "L5"]
+              }
+            },
+            "persona": { "type": ["string", "null"] },
+            "party": {
+              "type": ["string", "null"],
+              "enum": ["customer", "provider", null]
+            },
+            "join": {
+              "type": "object",
+              "properties": {
+                "ai_exchange_slug": { "type": ["string", "null"] },
+                "copied_from_threats_json": { "type": "boolean" }
+              }
+            },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "properties": {
+        "inventory_components_in_solS": { "type": "boolean" },
+        "boundary_crossings_covered": { "type": "boolean" },
+        "phantom_b_complete": { "type": "boolean" },
+        "stride_considered": { "type": "boolean" },
+        "actions_complete": { "type": "boolean" },
+        "open_assumptions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "gaps": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

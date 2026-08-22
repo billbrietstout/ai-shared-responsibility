@@ -1,0 +1,39 @@
+{
+  "system_id": "rag-app",
+  "system_name": "Retrieval-augmented generation application",
+  "perspective": "Application team that owns the web app, retriever, and document corpus. The model API is a provider endpoint.",
+  "operating_model_hint": "AI-PaaS",
+  "components": [
+    { "id": "web-app", "name": "Web application", "type": "process" },
+    { "id": "retriever", "name": "Retriever", "type": "process" },
+    { "id": "prompt-assembler", "name": "Prompt assembler", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "end-user", "name": "End user", "type": "actor" },
+    { "id": "model-api", "name": "Provider model API", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "document-store", "name": "Document store", "type": "store" },
+    { "id": "vector-store", "name": "Vector store", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-query", "from": "end-user", "to": "web-app", "label": "user query", "crosses_boundary": "internet" },
+    { "id": "f-retrieve", "from": "web-app", "to": "retriever", "label": "retrieve request", "crosses_boundary": null },
+    { "id": "f-embed-q", "from": "retriever", "to": "vector-store", "label": "similarity search", "crosses_boundary": "app-to-data" },
+    { "id": "f-chunks", "from": "vector-store", "to": "retriever", "label": "chunk ids", "crosses_boundary": "app-to-data" },
+    { "id": "f-docs", "from": "document-store", "to": "retriever", "label": "source text", "crosses_boundary": "app-to-data" },
+    { "id": "f-context", "from": "retriever", "to": "prompt-assembler", "label": "retrieved context", "crosses_boundary": null },
+    { "id": "f-usertext", "from": "web-app", "to": "prompt-assembler", "label": "user text", "crosses_boundary": null },
+    { "id": "f-prompt", "from": "prompt-assembler", "to": "model-api", "label": "composed prompt", "crosses_boundary": "app-to-provider" },
+    { "id": "f-completion", "from": "model-api", "to": "web-app", "label": "completion", "crosses_boundary": "app-to-provider" },
+    { "id": "f-answer", "from": "web-app", "to": "end-user", "label": "answer plus citations", "crosses_boundary": "internet" }
+  ],
+  "trust_boundaries": [
+    { "id": "internet", "name": "Internet", "contains": ["end-user"] },
+    { "id": "application", "name": "Application zone", "contains": ["web-app", "retriever", "prompt-assembler"] },
+    { "id": "data", "name": "Data zone", "contains": ["document-store", "vector-store"] },
+    { "id": "provider", "name": "Model provider", "contains": ["model-api"] }
+  ],
+  "llm_components": ["prompt-assembler", "web-app"],
+  "missing_trust_boundaries": false
+}

@@ -1,0 +1,20 @@
+flowchart LR
+  subgraph internet["Internet"]
+    end_user["End user"]
+  end
+  subgraph application["Application zone"]
+    chatbot_frontend["Chatbot front end"]
+  end
+  subgraph model_host["Model host"]
+    llama_runtime["Llama runtime"]
+    model_weights[("Model weights")]
+  end
+  subgraph third_party["Third-party hub"]
+    huggingface_hub["Hugging Face Hub"]
+  end
+  end_user -->|"prompts"| chatbot_frontend
+  chatbot_frontend -->|"inference request"| llama_runtime
+  llama_runtime -->|"tokens"| chatbot_frontend
+  chatbot_frontend -->|"replies"| end_user
+  model_weights -->|"load weights"| llama_runtime
+  huggingface_hub -->|"download weights"| model_weights

@@ -1,0 +1,131 @@
+{
+  "system_name": "Customer application on a provider model endpoint",
+  "perspective": "Customer application team on AI-PaaS. They own the app, database, and prompt log. They call a provider model with optional provider guardrails.",
+  "representation": {
+    "kind": "svg",
+    "source_id": "ai-paas-app"
+  },
+  "inventory": {
+    "components": [
+      {
+        "id": "customer-app",
+        "name": "Customer application",
+        "type": "process"
+      },
+      {
+        "id": "prompt-gateway",
+        "name": "Prompt gateway",
+        "type": "process"
+      }
+    ],
+    "external_actors": [
+      {
+        "id": "customer-user",
+        "name": "Customer user",
+        "type": "actor"
+      }
+    ],
+    "data_stores": [
+      {
+        "id": "customer-db",
+        "name": "Customer database",
+        "type": "store"
+      },
+      {
+        "id": "prompt-log",
+        "name": "Prompt log",
+        "type": "store"
+      }
+    ],
+    "data_flows": [
+      {
+        "id": "f-use",
+        "from": "customer-user",
+        "to": "customer-app",
+        "label": "business request",
+        "crosses_boundary": "customer-internet"
+      },
+      {
+        "id": "f-deploy",
+        "from": "customer-developer",
+        "to": "customer-app",
+        "label": "app deploy plus system prompt",
+        "crosses_boundary": "customer-internet"
+      }
+    ],
+    "trust_boundaries": [
+      {
+        "id": "customer-internet",
+        "name": "Customer internet",
+        "contains": [
+          "customer-user",
+          "customer-developer"
+        ]
+      },
+      {
+        "id": "customer-app-zone",
+        "name": "Customer application",
+        "contains": [
+          "customer-app",
+          "prompt-gateway"
+        ]
+      },
+      {
+        "id": "customer-data",
+        "name": "Customer data",
+        "contains": [
+          "customer-db",
+          "prompt-log"
+        ]
+      },
+      {
+        "id": "provider-platform",
+        "name": "Provider platform",
+        "contains": [
+          "provider-guardrails",
+          "provider-model"
+        ]
+      }
+    ],
+    "llm_components": [],
+    "missing_trust_boundaries": false
+  },
+  "solution_description": "Short identity-style sketch of the diagram.",
+  "llm_subset": [],
+  "threats": [
+    {
+      "id": "T1",
+      "scenario": "An attacker might prompt inject the model.",
+      "diagram_referent": "missing",
+      "stride": [
+        "T"
+      ],
+      "phantom_b": [],
+      "cia": [
+        "I"
+      ],
+      "action": {
+        "type": "mitigate",
+        "detail": "add filtering"
+      }
+    }
+  ],
+  "qa": {
+    "inventory_components_in_solS": true,
+    "boundary_crossings_covered": false,
+    "phantom_b_complete": false,
+    "stride_considered": false,
+    "actions_complete": true,
+    "open_assumptions": [
+      "gold-echo fixture has no elicited threats"
+    ],
+    "gaps": [
+      "threat elicitation not present in this fixture"
+    ]
+  },
+  "chain_meta": {
+    "prompt_pack_version": "1.0",
+    "role": "zeroshot-stub",
+    "track_b_applied": false
+  }
+}

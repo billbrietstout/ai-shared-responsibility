@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI System Diagram Threat Modeling · AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Gold diagrams and scores live in eval/threat-model/."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .prompt-block {
+        background: var(--cosai-navy);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: var(--sp-6);
+      }
+      .prompt-block__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--sp-3) var(--sp-5);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        gap: var(--sp-3);
+      }
+      .prompt-block__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+      }
+      .prompt-block__copy, .prompt-block__toggle {
+        font-size: var(--text-xs);
+        font-weight: 600;
+        color: rgba(255,255,255,0.55);
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: var(--radius);
+        padding: 4px 10px;
+        cursor: pointer;
+      }
+      .prompt-block__actions { display: flex; gap: var(--sp-2); }
+      .prompt-block__copy--copied { color: #6ee7b7 !important; border-color: rgba(110,231,183,0.3) !important; }
+      .prompt-block pre {
+        margin: 0;
+        padding: var(--sp-6);
+        font-size: 0.8rem;
+        line-height: 1.65;
+        color: #e2e8f0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+        max-height: 2400px;
+      }
+      .prompt-block.is-collapsed pre {
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        opacity: 0;
+        overflow: hidden;
+      }
+      .section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin: var(--sp-10) 0 var(--sp-3);
+      }
+      .section-note {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        max-width: 720px;
+        margin: 0 0 var(--sp-5);
+        line-height: var(--leading-normal);
+      }
+      .cite-list, .q-list, .pb-list {
+        max-width: 720px;
+        margin: 0 0 var(--sp-8);
+        padding-left: 1.2rem;
+        color: var(--slate-700);
+        font-size: var(--text-sm);
+        line-height: var(--leading-normal);
+      }
+    </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "AI System Diagram Threat Modeling Prompts",
+  "url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
+  "description": "Prompts that read an AI system diagram and write a threat matrix. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-prompts-threat-model" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.data.threats" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / <a href="/tools/prompts/">System Instructions</a> / Threat modeling</span>
+        <h1 class="page-hero__title">AI system diagram threat modeling</h1>
+        <p class="page-hero__lede">
+          Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a
+          threat matrix. Track A walks Shostack's Four Questions; each step is filled
+          with the previous step's JSON (the Auspex chain shape). Track B writes layer,
+          persona, and party onto each threat. Templates:
+          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
+          Scores and gold diagrams: <code>eval/threat-model/</code>.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="threat-model-prompts">
+
+      <p class="section-label">How to run the chain</p>
+      <ol class="q-list">
+        <li>Paste the shared rules once, or use each step as a standalone copy block (rules are inlined).</li>
+        <li>Attach or paste the diagram. Set <code>{{representation_kind}}</code> to image, mermaid, or svg.</li>
+        <li>Pick a role: experienced-threat-modeler, application-security, llm-caller. Default is experienced-threat-modeler.</li>
+        <li>Run Track A in order from P-norm through P-qa. Each step consumes the prior JSON.</li>
+        <li>Optionally run Track B (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
+        <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
+      </ol>
+
+      <p class="section-label">Shostack's Four Questions</p>
+      <ol class="q-list">
+        <li>What are we working on?</li>
+        <li>What can go wrong?</li>
+        <li>What are we going to do about it?</li>
+        <li>Did we do a good job?</li>
+      </ol>
+      <p class="section-note">
+        Wording is from the Four Question Framework (CC-BY). Use those four sentences as written.
+        State the team view and what we are working on right now.
+      </p>
+
+      <p class="section-label">PHANTOM-B questions (LLM subset)</p>
+      <ul class="pb-list">
+        <li><strong>P</strong> Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?</li>
+<li><strong>H</strong> Hallucination: What if hallucinations exceed our hopes in this use of the component?</li>
+<li><strong>A</strong> Anthropomorphization: Are we anthropomorphizing this component (treating a token generator as if it had intent, guilt, or a model of user versus attacker)?</li>
+<li><strong>N</strong> Non-explainability: When must we explain or justify this component's output, and to whom? The model's own story is not an explanation.</li>
+<li><strong>T</strong> Training issues: What if training data is bad by accident or on purpose, and how does that show up at this call site?</li>
+<li><strong>O</strong> Over-reliance: What decisions does this LLM make, what control does it have, and does that expand the attack surface?</li>
+<li><strong>M</strong> Missing security engineering: Did we skip the rest of security engineering and the SDL around this LLM (authn, authz, logging, isolation, least privilege)?</li>
+<li><strong>B</strong> Biases: What biases does this model carry into this use case, and are they acceptable here?</li>
+      </ul>
+      <p class="section-note">
+        Ask these eight questions for each chatbot or model-runtime node. STRIDE still
+        applies to every component. Write mitigations in P-act.
+      </p>
+
+      <p class="section-label">Roles</p>
+      <ul class="cite-list">
+        <li><strong>Experienced threat modeler</strong> (experienced-threat-modeler). Enumerate concrete scenarios a builder could act on this sprint. Prefer data-flow and trust-boundary analysis over catalogs. When a STRIDE letter does not apply to an element, say so and give a reason.</li>
+<li><strong>Application security</strong> (application-security). Focus on entry points, authn/authz, input mediation, session handling, and control points the application team can change. Keep a provider-owned infrastructure threat in scope only when the diagram shows it and the application team must demand evidence.</li>
+<li><strong>LLM caller</strong> (llm-caller). Focus on prompt construction, tool and retrieval inputs, over-reliance, and what the model is allowed to decide. Do not assume you can retrain the base model.</li>
+      </ul>
+
+      <p class="section-label">Sources</p>
+      <ul class="cite-list">
+        <li>Adam Shostack, <a href="https://shostack.org/files/papers/The_Four_Question_Framework.pdf">The Four Question Framework for Threat Modeling</a> (CC-BY).</li>
+        <li>Adam Shostack, <a href="https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf">PHANTOM-B: A STRIDE Analog for LLMs</a> (CC-BY).</li>
+        <li>Crossman et al., <a href="https://arxiv.org/abs/2503.09586">Auspex</a> (arXiv:2503.09586). Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack.</li>
+        <li>CoSAI SRF accountability data: <a href="/data/threats.json">threats.json</a>, <a href="/data/personas.json">personas.json</a>, <a href="/data/matrix.json">matrix.json</a>.</li>
+      </ul>
+
+      <p class="section-label">Lane</p>
+      <p class="section-note">
+        Track A elicits threats from the diagram and classifies them. Track B writes one
+        SRF persona and one party onto each threat. If matrix.json says shared, still
+        name one lead. Cite an OWASP, ATLAS, or AI Exchange id only when it exists in
+        that source.
+      </p>
+
+      <p class="section-label">Q1. What are we working on?</p>
+      <p class="section-note">Read the diagram into a solution description. Each step is filled with the prior JSON.</p>
+      <div class="prompt-block is-collapsed" id="P-norm-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-norm · Normalize representation · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-norm-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-norm-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we working on?
+Step: P-norm. Normalize the system representation into a canonical inventory.
+
+Representation kind: {{representation_kind}}
+Representation follows this line. If kind is mermaid, parse the source text first (nodes, edges, subgraphs as candidate trust zones). If kind is svg, parse groups, labels, and connectors; do not rely on vision alone. If kind is image, read the image only.
+
+{{representation}}
+
+Return a JSON object with this shape:
+{
+  "system_name": "string",
+  "perspective": "string naming team view and what we are working on right now",
+  "representation": { "kind": "image|mermaid|svg" },
+  "inventory": {
+    "components": [{"id": "kebab-id", "name": "", "type": "process"}],
+    "external_actors": [{"id": "", "name": "", "type": "actor"}],
+    "data_stores": [{"id": "", "name": "", "type": "store"}],
+    "data_flows": [{"id": "", "from": "id", "to": "id", "label": "", "crosses_boundary": "boundary-id or null"}],
+    "trust_boundaries": [{"id": "", "name": "", "contains": ["id"]}],
+    "llm_components": [],
+    "missing_trust_boundaries": false
+  }
+}
+
+Id rules: lowercase kebab-case, derived from the label on the diagram. Reuse the same id if the label is the same. Do not merge distinct boxes. llm_components may be empty at this step.</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-diag-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-diag · Decompose diagram · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-diag-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-diag-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we working on?
+Step: P-diag. Write a long-form architecture description of the system in the diagram.
+
+Inventory from P-norm:
+{{inventory}}
+
+Original representation (kind={{representation_kind}}):
+{{representation}}
+
+Write architecture_description that covers:
+- every component and how it relates to the others
+- system entry points
+- data flow
+- security boundaries (drawn ones only)
+- public vs private resources
+- system availability or fault-tolerance properties only if the diagram shows them
+- external dependencies
+- storage and data security properties only if the diagram shows them
+
+Return JSON:
+{
+  "architecture_description": "prose",
+  "inventory": &lt;echo the inventory; correct ids only if the diagram contradicts P-norm, and list corrections in a "corrections" array&gt;
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-app-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-app · Application details · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-app-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-app-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we working on?
+Step: P-app. Condense the architecture description into application details.
+
+Architecture description:
+{{architecture_description}}
+
+Return JSON:
+{
+  "application_details": "short prose: function, actors, data the system handles, and the team perspective"
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-feat-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-feat · Key features · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-feat-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-feat-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we working on?
+Step: P-feat. List key features that matter more for threat modeling than the rest of the architecture.
+
+Architecture description:
+{{architecture_description}}
+
+Application details:
+{{application_details}}
+
+Return JSON:
+{
+  "key_features": ["each item names a diagram element and why it changes the threat surface"]
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-scope-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-scope · In-scope components · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-scope-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-scope-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we working on?
+Step: P-scope. Mark which architectural components must be included in threat modeling.
+
+Perspective remains what we are working on right now. Do not pull in an unshown enterprise.
+
+Architecture description:
+{{architecture_description}}
+Application details:
+{{application_details}}
+Key features:
+{{key_features}}
+Inventory:
+{{inventory}}
+
+Return JSON:
+{
+  "in_scope": [{"id": "inventory-id", "rationale": "why this must be modeled"}],
+  "out_of_scope": [{"id": "inventory-id", "rationale": "why this stays out for this perspective"}]
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-sol-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-sol · Solution description · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-sol-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-sol-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we working on?
+Step: P-sol. Combine prior Q1 outputs into a solution description (solS) plus a structured DFD.
+
+Architecture description:
+{{architecture_description}}
+Application details:
+{{application_details}}
+Key features:
+{{key_features}}
+In scope:
+{{in_scope}}
+Out of scope:
+{{out_of_scope}}
+Inventory:
+{{inventory}}
+
+Return JSON:
+{
+  "solution_description": "prose of how the architecture functions as a whole",
+  "inventory": &lt;canonical inventory for all later steps&gt;,
+  "in_scope": [...],
+  "out_of_scope": [...]
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-llm-cut-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-llm-cut · Mark the LLM subset · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-llm-cut-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-llm-cut-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we working on?
+Step: P-llm-cut. Mark which nodes receive PHANTOM-B. Per Shostack, PHANTOM-B applies to the front end and model runtime, not every box.
+
+Solution description:
+{{solution_description}}
+Inventory:
+{{inventory}}
+
+Include a node if it: assembles or receives prompts, hosts a chatbot, or runs or calls an LLM.
+Exclude a node if it only stores weights, serves as a generic database, or is a third-party hub that is not executing inference in this diagram.
+
+Return JSON:
+{
+  "llm_subset": ["component-id", "..."],
+  "llm_subset_rationale": [{"id": "", "include": true, "reason": ""}]
+}</pre>
+      </div>
+
+      <p class="section-label">Q2. What can go wrong?</p>
+      <p class="section-note">STRIDE on in-scope elements and crossing flows. PHANTOM-B on the LLM subset. Then merge.</p>
+      <div class="prompt-block is-collapsed" id="P-stride-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-stride · STRIDE elicitation · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-stride-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-stride-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+{{role_tradecraft}}
+Cyber role: {{cyber_role}}
+
+Shostack question: What can go wrong?
+Step: P-stride. Apply STRIDE to every in-scope element and every data flow that crosses a trust boundary.
+
+STRIDE letters: S spoofing, T tampering, R repudiation, I information disclosure, D denial of service, E elevation of privilege.
+
+For each applicable letter, write one concrete scenario that can happen in this system. If a letter does not apply, record not_applicable with a reason. Do not skip a letter in silence.
+
+Solution description:
+{{solution_description}}
+Inventory:
+{{inventory}}
+In scope:
+{{in_scope}}
+
+Return JSON:
+{
+  "stride_considerations": [
+    {
+      "element_id": "component or flow id",
+      "letter": "S",
+      "status": "scenario|not_applicable",
+      "scenario": "concrete text or empty if not_applicable",
+      "reason": "required when not_applicable",
+      "diagram_referent": "element_id",
+      "preconditions": "visible in the diagram",
+      "asset": "what is harmed"
+    }
+  ]
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-phantom-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-phantom · PHANTOM-B elicitation · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-phantom-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-phantom-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+{{role_tradecraft}}
+Cyber role: {{cyber_role}}
+
+Shostack question: What can go wrong?
+Step: P-phantom. For each LLM or chatbot component, ask the PHANTOM-B questions about that node. Leave defenses, controls, and mitigations for P-act.
+
+Ask, for each id in llm_subset:
+1. P Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?
+2. H Hallucination: What if hallucinations exceed our hopes?
+3. A Anthropomorphization: Are we anthropomorphizing?
+4. N Non-explainability: When must we explain or justify the output, and to whom?
+5. T Training issues: What if training data is bad by accident or on purpose?
+6. O Over-reliance: What decisions is the LLM making, and does that expand the attack surface?
+7. M Missing security engineering: Did we skip the rest of the SDL around this component?
+8. B Biases: What biases does the model have, and are they acceptable in this use case?
+
+Solution description:
+{{solution_description}}
+Inventory:
+{{inventory}}
+LLM subset:
+{{llm_subset}}
+
+Return JSON:
+{
+  "phantom_considerations": [
+    {
+      "element_id": "llm component id",
+      "letter": "P",
+      "status": "scenario|not_applicable",
+      "scenario": "concrete instance in this system, or empty",
+      "reason": "required when not_applicable",
+      "diagram_referent": "element_id",
+      "preconditions": "",
+      "asset": ""
+    }
+  ]
+}</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-dedup-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-dedup · Dedup and compose threat list · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-dedup-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-dedup-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What can go wrong?
+Step: P-dedup. Merge STRIDE and PHANTOM-B scenarios into threat list TSS.
+
+Perspective:
+{{perspective}}
+Inventory:
+{{inventory}}
+STRIDE considerations:
+{{stride_scenarios}}
+PHANTOM-B considerations:
+{{phantom_scenarios}}
+
+Rules:
+- Drop not_applicable rows.
+- Merge two scenarios that name the same failure on the same referent into one threat. Record source as "both" when both methods found it.
+- Keep a compositional threat only if the named perspective can change a control point on this diagram.
+- Assign ids T1, T2, ... in diagram order (entry points first).
+- stride, phantom_b, cia, and action may be empty arrays / stub objects; later steps fill them. Include a stub action of type accept and detail "pending P-act" if required by schema.
+
+Return JSON:
+{
+  "threats": [
+    {
+      "id": "T1",
+      "scenario": "actor or failure, referent, preconditions, asset, why it can happen here",
+      "diagram_referent": "inventory id",
+      "preconditions": "",
+      "asset": "",
+      "source": "stride|phantom-b|both",
+      "stride": [],
+      "phantom_b": [],
+      "cia": [],
+      "action": { "type": "accept", "detail": "pending P-act" }
+    }
+  ]
+}</pre>
+      </div>
+
+      <p class="section-label">Q3. What are we going to do about it?</p>
+      <p class="section-note">Map CIA, STRIDE, and PHANTOM-B letters. Then choose mitigate, eliminate, transfer, or accept in P-act.</p>
+      <div class="prompt-block is-collapsed" id="P-cia-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-cia · CIA mapping · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-cia-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-cia-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we going to do about it?
+Step: P-cia. Map each threat scenario to CIA. Multi-label is allowed.
+
+C Confidentiality, I Integrity, A Availability.
+
+Solution description:
+{{solution_description}}
+Threats:
+{{threats}}
+
+Return the same threats array with cia filled. Do not add or drop threats. Do not fill action.
+
+Return JSON:
+{ "threats": [ ... ] }</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-stride-map-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-stride-map · STRIDE mapping · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-stride-map-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-stride-map-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we going to do about it?
+Step: P-stride-map. Map each threat scenario to STRIDE letters. Multi-label is allowed.
+
+Solution description:
+{{solution_description}}
+Threats:
+{{threats}}
+
+Return the same threats array with stride filled. Do not add or drop threats.
+
+Return JSON:
+{ "threats": [ ... ] }</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-phantom-map-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-phantom-map · PHANTOM-B mapping · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-phantom-map-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-phantom-map-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we going to do about it?
+Step: P-phantom-map. Attach PHANTOM-B letters only when the scenario was elicited from the LLM subset. Do not force every STRIDE threat into PHANTOM-B.
+
+Letters: P prompt injection, H hallucination, A anthropomorphization, N non-explainability, T training issues, O over-reliance, M missing security engineering, B biases.
+
+LLM subset:
+{{llm_subset}}
+Threats:
+{{threats}}
+
+Return the same threats array with phantom_b filled per the rule above.
+
+Return JSON:
+{ "threats": [ ... ] }</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-act-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-act · Choose an action · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-act-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-act-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: What are we going to do about it?
+Step: P-act. Choose one action per threat: mitigate, eliminate, transfer, or accept.
+
+Write the mitigate, eliminate, transfer, or accept choice here. Leave P-phantom without defenses.
+
+- mitigate: make the attack harder at a named control point on the diagram.
+- eliminate: remove the feature or interface that creates the threat.
+- transfer: another party is better placed to handle it; name that party as shown on the diagram (customer, provider, or an external actor id).
+- accept: keep the threat; say why the cost of the other options undermines the work.
+
+Mitigation detail must name a control_point whose id exists in the inventory. Optional citations may include owasp_llm_top10 (form LLMnn:2025), ai_exchange_slug (one of the published slugs), or atlas (AML.T*). Omit any citation you cannot pin. Do not invent ids.
+
+Solution description:
+{{solution_description}}
+Inventory:
+{{inventory}}
+Threats:
+{{threats}}
+
+Return the same threats array with action (and optional citations) filled.
+
+Return JSON:
+{ "threats": [ ... ] }</pre>
+      </div>
+
+      <p class="section-label">Q4. Did we do a good job?</p>
+      <p class="section-note">Mechanical self-check before SME review.</p>
+      <div class="prompt-block is-collapsed" id="P-qa-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-qa · Self-check · Track A</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-qa-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-qa-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Shostack question: Did we do a good job?
+Step: P-qa. Check the work before any human review.
+
+Full threat matrix so far:
+{{full_matrix}}
+
+Check, and set each boolean false if the check fails:
+1. inventory_components_in_solS: every inventory component id appears in solution_description.
+2. boundary_crossings_covered: every trust boundary has at least one crossing-flow threat, or a gap explaining why not.
+3. phantom_b_complete: every llm_subset id has all eight PHANTOM-B letters represented in phantom_considerations or in threats sourced from phantom-b. If you lack the consideration list, infer from threats and list remaining letters in gaps.
+4. stride_considered: every in-scope process was considered for all six STRIDE letters (scenario or not_applicable). If unknown, set false and explain.
+5. actions_complete: every threat has action.type in mitigate, eliminate, transfer, accept, and detail is not "pending P-act".
+6. open_assumptions: list assumptions that are not on the diagram.
+7. gaps: list failed checks in plain language.
+
+Also confirm every threats[].diagram_referent exists in inventory (components, external_actors, data_stores, or data_flows). List misses in gaps.
+
+Return the full matrix JSON with qa filled:
+{
+  "system_name": "",
+  "perspective": "",
+  "representation": {},
+  "inventory": {},
+  "solution_description": "",
+  "llm_subset": [],
+  "threats": [],
+  "qa": {
+    "inventory_components_in_solS": true,
+    "boundary_crossings_covered": true,
+    "phantom_b_complete": true,
+    "stride_considered": true,
+    "actions_complete": true,
+    "open_assumptions": [],
+    "gaps": []
+  }
+}</pre>
+      </div>
+
+
+      <p class="section-label">Track B (optional): SRF accountability</p>
+      <p class="section-note">
+        Off by default. Consumes the Track A matrix plus an operating model.
+        Join published AI Exchange slugs from threats.json instead of re-deriving them.
+      </p>
+      <div class="prompt-block is-collapsed" id="P-srf-join-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-srf-join · Join AI Exchange slugs · Track B</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-srf-join-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-srf-join-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Track B is optional. Off by default. This step assigns SRF accountability. It does not invent threats.
+
+Step: P-srf-join. Fetch https://aisharedresponsibility.com/data/threats.json now. Use only ids that exist in that file.
+
+Published slugs: directpromptinjection, indirectpromptinjection, evasion, runtimemodelpoison, devmodelpoison, datapoison, supplymodelpoison, disclosureinoutput, modelinversionandmembership, devdataleak, modelexfiltration, runtimemodelleak, devmodelleak, airesourceexhaustion, inputdataleak, outputcontainsconventionalinjection.
+
+Operating model: {{operating_model}}
+Full Track A matrix:
+{{full_matrix}}
+
+For each threat, if the scenario is the same failure as a slug, set:
+  srf.join.ai_exchange_slug = that slug
+  srf.join.copied_from_threats_json = true
+  srf.layer, srf.affected_layers, srf.persona, srf.party copied from threats.json accountability[{{operating_model}}]
+If no slug matches, set srf.join.ai_exchange_slug to null and copied_from_threats_json to false. Leave layer/persona/party for P-srf-layer and P-srf-owner.
+
+Do not invent slugs. Do not use "shared" as srf.party.
+
+Return JSON:
+{ "threats": [ ... with srf objects ... ], "operating_model": "{{operating_model}}" }</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-srf-layer-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-srf-layer · Assign SRF layer · Track B</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-srf-layer-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-srf-layer-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Track B. Step: P-srf-layer. Assign the primary SRF layer where the control point lives, not where the harm appears.
+
+Layers: L1 AI Business and Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider.
+
+If srf.join.copied_from_threats_json is true, do not change srf.layer or srf.affected_layers.
+
+Operating model: {{operating_model}}
+Threats:
+{{threats}}
+
+Return JSON:
+{ "threats": [ ... ] }</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-srf-owner-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-srf-owner · Assign one accountable persona · Track B</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-srf-owner-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-srf-owner-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+
+Track B. Step: P-srf-owner. Name one accountable persona and one party per threat.
+
+Fetch now:
+- https://aisharedresponsibility.com/data/personas.json
+- https://aisharedresponsibility.com/data/matrix.json
+
+Persona ids (cosai-core only unless the diagram is a federated consortium): agentic-platform-provider, application-developer, data-provider, ai-system-users, ai-system-governance, model-provider, ai-model-serving, ai-platform-provider.
+
+Operating model: {{operating_model}}
+Threats:
+{{threats}}
+
+Rules:
+- Exactly one accountable persona per threat.
+- srf.party is customer or provider. Never "shared". If matrix.json says shared at that layer, still name one lead and put the counterparty duty in srf.note.
+- If srf.join.copied_from_threats_json is true, keep the copied persona and party.
+- Persona must exist in personas.json.
+
+Return the full matrix JSON with srf filled on every threat:
+{
+  "system_name": "",
+  "perspective": "",
+  "representation": {},
+  "inventory": {},
+  "solution_description": "",
+  "llm_subset": [],
+  "threats": [ ... ],
+  "qa": {},
+  "chain_meta": { "track_b_applied": true, "role": "{{cyber_role}}" }
+}</pre>
+      </div>
+
+      <p class="section-label">Evaluation baselines</p>
+      <p class="section-note">
+        P-zeroshot and P-identity are the two short baselines scored in
+        <code>eval/threat-model/</code>. Machine scores stay open until the SME sheets
+        in that directory are filled.
+      </p>
+      <div class="prompt-block is-collapsed" id="P-zeroshot-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-zeroshot · Zero-shot threat model · Track eval</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-zeroshot-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-zeroshot-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>Threat model this AI system diagram. Representation kind: {{representation_kind}}.
+
+{{representation}}
+
+Return JSON with system_name, perspective, inventory (components, external_actors, data_stores, data_flows, trust_boundaries, llm_components), solution_description, llm_subset, and threats. Each threat needs id, scenario, diagram_referent, stride, phantom_b, cia, and action (type mitigate|eliminate|transfer|accept, plus detail).</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-identity-block">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-identity · Short expert identity · Track eval</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-identity-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-identity-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>You are an expert threat modeler. Using STRIDE, threat model the following AI system diagram (kind={{representation_kind}}).
+
+{{representation}}
+
+List threats with STRIDE type, impact, and a mitigation.</pre>
+      </div>
+
+      <p class="section-label">Output schema</p>
+      <p class="section-note">
+        Full JSON Schema: <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
+        Gold diagrams (five systems, three formats) and the scoring scripts are in
+        <code>eval/threat-model/</code> of the site repository.
+      </p>
+    </main>
+    <site-footer></site-footer>
+    <script>
+      function togglePrompt(blockId, btn) {
+        const block = document.getElementById(blockId);
+        if (!block) return;
+        const collapsed = block.classList.toggle('is-collapsed');
+        btn.textContent = collapsed ? 'Show' : 'Hide';
+        btn.setAttribute('aria-expanded', String(!collapsed));
+      }
+      function copyPrompt(blockId, btn) {
+        const pre = document.querySelector('#' + blockId + ' pre');
+        if (!pre) return;
+        navigator.clipboard.writeText(pre.textContent).then(() => {
+          btn.textContent = 'Copied!';
+          btn.classList.add('prompt-block__copy--copied');
+          setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('prompt-block__copy--copied');
+          }, 2000);
+        });
+      }
+    </script>
+  </body>
+</html>

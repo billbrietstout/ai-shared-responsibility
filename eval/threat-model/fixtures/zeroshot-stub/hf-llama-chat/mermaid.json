@@ -1,0 +1,123 @@
+{
+  "system_name": "Local Llama chatbot with Hugging Face weights",
+  "perspective": "Application team calling a local Llama runtime. Model training is out of scope.",
+  "representation": {
+    "kind": "mermaid",
+    "source_id": "hf-llama-chat"
+  },
+  "inventory": {
+    "components": [
+      {
+        "id": "chatbot-frontend",
+        "name": "Chatbot front end",
+        "type": "process"
+      },
+      {
+        "id": "llama-runtime",
+        "name": "Llama runtime",
+        "type": "process"
+      }
+    ],
+    "external_actors": [
+      {
+        "id": "end-user",
+        "name": "End user",
+        "type": "actor"
+      }
+    ],
+    "data_stores": [
+      {
+        "id": "model-weights",
+        "name": "Model weights",
+        "type": "store"
+      }
+    ],
+    "data_flows": [
+      {
+        "id": "f-prompt",
+        "from": "end-user",
+        "to": "chatbot-frontend",
+        "label": "prompts",
+        "crosses_boundary": "internet"
+      },
+      {
+        "id": "f-infer",
+        "from": "chatbot-frontend",
+        "to": "llama-runtime",
+        "label": "inference request",
+        "crosses_boundary": "app-to-model"
+      }
+    ],
+    "trust_boundaries": [
+      {
+        "id": "internet",
+        "name": "Internet",
+        "contains": [
+          "end-user"
+        ]
+      },
+      {
+        "id": "application",
+        "name": "Application zone",
+        "contains": [
+          "chatbot-frontend"
+        ]
+      },
+      {
+        "id": "model-host",
+        "name": "Model host",
+        "contains": [
+          "llama-runtime",
+          "model-weights"
+        ]
+      },
+      {
+        "id": "third-party",
+        "name": "Third-party hub",
+        "contains": [
+          "huggingface-hub"
+        ]
+      }
+    ],
+    "llm_components": [],
+    "missing_trust_boundaries": false
+  },
+  "solution_description": "Short identity-style sketch of the diagram.",
+  "llm_subset": [],
+  "threats": [
+    {
+      "id": "T1",
+      "scenario": "An attacker might prompt inject the model.",
+      "diagram_referent": "missing",
+      "stride": [
+        "T"
+      ],
+      "phantom_b": [],
+      "cia": [
+        "I"
+      ],
+      "action": {
+        "type": "mitigate",
+        "detail": "add filtering"
+      }
+    }
+  ],
+  "qa": {
+    "inventory_components_in_solS": true,
+    "boundary_crossings_covered": false,
+    "phantom_b_complete": false,
+    "stride_considered": false,
+    "actions_complete": true,
+    "open_assumptions": [
+      "gold-echo fixture has no elicited threats"
+    ],
+    "gaps": [
+      "threat elicitation not present in this fixture"
+    ]
+  },
+  "chain_meta": {
+    "prompt_pack_version": "1.0",
+    "role": "zeroshot-stub",
+    "track_b_applied": false
+  }
+}

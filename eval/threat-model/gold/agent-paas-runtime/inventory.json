@@ -1,0 +1,43 @@
+{
+  "system_id": "agent-paas-runtime",
+  "system_name": "Agent-PaaS orchestration runtime",
+  "perspective": "Provider of the orchestration runtime. Tenant developers supply agent definitions. The runtime executes LLM calls and brokers tools.",
+  "operating_model_hint": "Agent-PaaS",
+  "components": [
+    { "id": "orchestration-runtime", "name": "Orchestration runtime", "type": "process" },
+    { "id": "tool-broker", "name": "Tool broker", "type": "process" },
+    { "id": "policy-engine", "name": "Policy engine", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "tenant-user", "name": "Tenant user", "type": "actor" },
+    { "id": "tenant-developer", "name": "Tenant developer", "type": "actor" },
+    { "id": "tenant-llm", "name": "Tenant-chosen LLM", "type": "external" },
+    { "id": "external-tools", "name": "External tools", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "agent-definition-store", "name": "Agent definition store", "type": "store" },
+    { "id": "trace-store", "name": "Trace store", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-publish", "from": "tenant-developer", "to": "agent-definition-store", "label": "publish agent definition", "crosses_boundary": "tenant-to-runtime" },
+    { "id": "f-task", "from": "tenant-user", "to": "orchestration-runtime", "label": "task", "crosses_boundary": "tenant-to-runtime" },
+    { "id": "f-load", "from": "agent-definition-store", "to": "orchestration-runtime", "label": "load definition", "crosses_boundary": null },
+    { "id": "f-policy", "from": "orchestration-runtime", "to": "policy-engine", "label": "proposed action", "crosses_boundary": null },
+    { "id": "f-allow", "from": "policy-engine", "to": "orchestration-runtime", "label": "allow or deny", "crosses_boundary": null },
+    { "id": "f-llm", "from": "orchestration-runtime", "to": "tenant-llm", "label": "prompt plus tools", "crosses_boundary": "runtime-to-model" },
+    { "id": "f-llmout", "from": "tenant-llm", "to": "orchestration-runtime", "label": "completion or tool call", "crosses_boundary": "runtime-to-model" },
+    { "id": "f-broker", "from": "orchestration-runtime", "to": "tool-broker", "label": "authorized tool call", "crosses_boundary": null },
+    { "id": "f-ext", "from": "tool-broker", "to": "external-tools", "label": "invoke tool", "crosses_boundary": "runtime-to-tools" },
+    { "id": "f-extback", "from": "external-tools", "to": "tool-broker", "label": "tool result", "crosses_boundary": "runtime-to-tools" },
+    { "id": "f-trace", "from": "orchestration-runtime", "to": "trace-store", "label": "write trace", "crosses_boundary": null },
+    { "id": "f-result", "from": "orchestration-runtime", "to": "tenant-user", "label": "task result", "crosses_boundary": "tenant-to-runtime" }
+  ],
+  "trust_boundaries": [
+    { "id": "tenant", "name": "Tenant", "contains": ["tenant-user", "tenant-developer"] },
+    { "id": "provider-runtime", "name": "Provider runtime", "contains": ["orchestration-runtime", "tool-broker", "policy-engine", "agent-definition-store", "trace-store"] },
+    { "id": "model", "name": "Tenant model", "contains": ["tenant-llm"] },
+    { "id": "tools", "name": "External tools", "contains": ["external-tools"] }
+  ],
+  "llm_components": ["orchestration-runtime"],
+  "missing_trust_boundaries": false
+}

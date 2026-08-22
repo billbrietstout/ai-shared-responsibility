@@ -1,0 +1,380 @@
+{
+  "version": "1.0",
+  "updated": "2026-08-21",
+  "canonical_url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
+  "schema_url": "/eval/threat-model/schema.json",
+  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. Track B writes layer, persona, and party onto each threat.",
+  "lane": "Track A elicits threats from the diagram and classifies them. Track B writes one SRF persona and one party onto each threat. STRIDE and PHANTOM-B stay cited as Shostack and Microsoft methods.",
+  "citations": [
+    {
+      "id": "shostack-four-questions",
+      "title": "The Four Question Framework for Threat Modeling",
+      "url": "https://shostack.org/files/papers/The_Four_Question_Framework.pdf",
+      "license": "CC-BY",
+      "note": "Do not rephrase the four questions."
+    },
+    {
+      "id": "phantom-b",
+      "title": "PHANTOM-B: A STRIDE Analog for LLMs",
+      "url": "https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf",
+      "license": "CC-BY",
+      "note": "Ask as questions on the LLM subset. The whitepaper excludes defenses; mitigations live in P-act."
+    },
+    {
+      "id": "stride",
+      "title": "STRIDE",
+      "url": "https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats#stride-model",
+      "note": "Apply to the whole diagram, including non-LLM parts."
+    },
+    {
+      "id": "auspex",
+      "title": "Auspex: Building Threat Modeling Tradecraft into an Artificial Intelligence-based Copilot",
+      "url": "https://arxiv.org/abs/2503.09586",
+      "note": "Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack."
+    }
+  ],
+  "shared_rules": "You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).\n\nRules:\n- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?\n- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).\n- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.\n- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.\n- Every threat scenario must name a diagram_referent whose id exists in the inventory.\n- Do not recite a generic catalog line (for example \"LLMs can be prompt-injected\") with no referent in this diagram.\n- Do not use DREAD, OCTAVE, or attack trees as the primary method.\n- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.\n- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.\n- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.\n- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.",
+  "roles": [
+    {
+      "id": "experienced-threat-modeler",
+      "label": "Experienced threat modeler",
+      "default": true,
+      "tradecraft": "Role: experienced threat modeler. Enumerate concrete scenarios a builder could act on this sprint. Prefer data-flow and trust-boundary analysis over catalogs. When a STRIDE letter does not apply to an element, say so and give a reason."
+    },
+    {
+      "id": "application-security",
+      "label": "Application security",
+      "tradecraft": "Role: application security engineer. Focus on entry points, authn/authz, input mediation, session handling, and control points the application team can change. Keep a provider-owned infrastructure threat in scope only when the diagram shows it and the application team must demand evidence."
+    },
+    {
+      "id": "llm-caller",
+      "label": "LLM caller",
+      "tradecraft": "Role: team that calls an LLM (hosted or local). Focus on prompt construction, tool and retrieval inputs, over-reliance, and what the model is allowed to decide. Do not assume you can retrain the base model."
+    }
+  ],
+  "four_questions": [
+    {
+      "id": "q1",
+      "question": "What are we working on?",
+      "prompts": ["P-norm", "P-diag", "P-app", "P-feat", "P-scope", "P-sol", "P-llm-cut"]
+    },
+    {
+      "id": "q2",
+      "question": "What can go wrong?",
+      "prompts": ["P-stride", "P-phantom", "P-dedup"]
+    },
+    {
+      "id": "q3",
+      "question": "What are we going to do about it?",
+      "prompts": ["P-cia", "P-stride-map", "P-phantom-map", "P-act"]
+    },
+    {
+      "id": "q4",
+      "question": "Did we do a good job?",
+      "prompts": ["P-qa"]
+    }
+  ],
+  "phantom_b_questions": [
+    {
+      "letter": "P",
+      "name": "Prompt injection",
+      "ask": "How could someone prompt inject (direct, indirect, multi-stage) through this component?"
+    },
+    {
+      "letter": "H",
+      "name": "Hallucination",
+      "ask": "What if hallucinations exceed our hopes in this use of the component?"
+    },
+    {
+      "letter": "A",
+      "name": "Anthropomorphization",
+      "ask": "Are we anthropomorphizing this component (treating a token generator as if it had intent, guilt, or a model of user versus attacker)?"
+    },
+    {
+      "letter": "N",
+      "name": "Non-explainability",
+      "ask": "When must we explain or justify this component's output, and to whom? The model's own story is not an explanation."
+    },
+    {
+      "letter": "T",
+      "name": "Training issues",
+      "ask": "What if training data is bad by accident or on purpose, and how does that show up at this call site?"
+    },
+    {
+      "letter": "O",
+      "name": "Over-reliance",
+      "ask": "What decisions does this LLM make, what control does it have, and does that expand the attack surface?"
+    },
+    {
+      "letter": "M",
+      "name": "Missing security engineering",
+      "ask": "Did we skip the rest of security engineering and the SDL around this LLM (authn, authz, logging, isolation, least privilege)?"
+    },
+    {
+      "letter": "B",
+      "name": "Biases",
+      "ask": "What biases does this model carry into this use case, and are they acceptable here?"
+    }
+  ],
+  "stride_letters": [
+    { "letter": "S", "name": "Spoofing" },
+    { "letter": "T", "name": "Tampering" },
+    { "letter": "R", "name": "Repudiation" },
+    { "letter": "I", "name": "Information disclosure" },
+    { "letter": "D", "name": "Denial of service" },
+    { "letter": "E", "name": "Elevation of privilege" }
+  ],
+  "cia_letters": [
+    { "letter": "C", "name": "Confidentiality" },
+    { "letter": "I", "name": "Integrity" },
+    { "letter": "A", "name": "Availability" }
+  ],
+  "actions": ["mitigate", "eliminate", "transfer", "accept"],
+  "operating_models": ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"],
+  "grounding_urls": {
+    "threats": "https://aisharedresponsibility.com/data/threats.json",
+    "personas": "https://aisharedresponsibility.com/data/personas.json",
+    "matrix": "https://aisharedresponsibility.com/data/matrix.json",
+    "schema": "https://aisharedresponsibility.com/eval/threat-model/schema.json"
+  },
+  "ai_exchange_slugs": [
+    "directpromptinjection",
+    "indirectpromptinjection",
+    "evasion",
+    "runtimemodelpoison",
+    "devmodelpoison",
+    "datapoison",
+    "supplymodelpoison",
+    "disclosureinoutput",
+    "modelinversionandmembership",
+    "devdataleak",
+    "modelexfiltration",
+    "runtimemodelleak",
+    "devmodelleak",
+    "airesourceexhaustion",
+    "inputdataleak",
+    "outputcontainsconventionalinjection"
+  ],
+  "chain": [
+    { "id": "P-norm", "track": "A", "stage": "q1", "next": "P-diag" },
+    { "id": "P-diag", "track": "A", "stage": "q1", "next": "P-app" },
+    { "id": "P-app", "track": "A", "stage": "q1", "next": "P-feat" },
+    { "id": "P-feat", "track": "A", "stage": "q1", "next": "P-scope" },
+    { "id": "P-scope", "track": "A", "stage": "q1", "next": "P-sol" },
+    { "id": "P-sol", "track": "A", "stage": "q1", "next": "P-llm-cut" },
+    { "id": "P-llm-cut", "track": "A", "stage": "q1", "next": "P-stride" },
+    { "id": "P-stride", "track": "A", "stage": "q2", "next": "P-phantom" },
+    { "id": "P-phantom", "track": "A", "stage": "q2", "next": "P-dedup" },
+    { "id": "P-dedup", "track": "A", "stage": "q2", "next": "P-cia" },
+    { "id": "P-cia", "track": "A", "stage": "q3", "next": "P-stride-map" },
+    { "id": "P-stride-map", "track": "A", "stage": "q3", "next": "P-phantom-map" },
+    { "id": "P-phantom-map", "track": "A", "stage": "q3", "next": "P-act" },
+    { "id": "P-act", "track": "A", "stage": "q3", "next": "P-qa" },
+    { "id": "P-qa", "track": "A", "stage": "q4", "next": null },
+    { "id": "P-srf-join", "track": "B", "stage": "srf", "next": "P-srf-layer", "optional": true },
+    { "id": "P-srf-layer", "track": "B", "stage": "srf", "next": "P-srf-owner", "optional": true },
+    { "id": "P-srf-owner", "track": "B", "stage": "srf", "next": null, "optional": true }
+  ],
+  "prompts": [
+    {
+      "id": "P-norm",
+      "title": "Normalize representation",
+      "track": "A",
+      "stage": "q1",
+      "inputs": ["representation_kind", "representation"],
+      "output_key": "inventory",
+      "stop_condition": "Inventory lists every visible component, actor, store, flow, and drawn trust boundary, with stable ids. missing_trust_boundaries is true only when none are drawn.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-norm. Normalize the system representation into a canonical inventory.\n\nRepresentation kind: {{representation_kind}}\nRepresentation follows this line. If kind is mermaid, parse the source text first (nodes, edges, subgraphs as candidate trust zones). If kind is svg, parse groups, labels, and connectors; do not rely on vision alone. If kind is image, read the image only.\n\n{{representation}}\n\nReturn a JSON object with this shape:\n{\n  \"system_name\": \"string\",\n  \"perspective\": \"string naming team view and what we are working on right now\",\n  \"representation\": { \"kind\": \"image|mermaid|svg\" },\n  \"inventory\": {\n    \"components\": [{\"id\": \"kebab-id\", \"name\": \"\", \"type\": \"process\"}],\n    \"external_actors\": [{\"id\": \"\", \"name\": \"\", \"type\": \"actor\"}],\n    \"data_stores\": [{\"id\": \"\", \"name\": \"\", \"type\": \"store\"}],\n    \"data_flows\": [{\"id\": \"\", \"from\": \"id\", \"to\": \"id\", \"label\": \"\", \"crosses_boundary\": \"boundary-id or null\"}],\n    \"trust_boundaries\": [{\"id\": \"\", \"name\": \"\", \"contains\": [\"id\"]}],\n    \"llm_components\": [],\n    \"missing_trust_boundaries\": false\n  }\n}\n\nId rules: lowercase kebab-case, derived from the label on the diagram. Reuse the same id if the label is the same. Do not merge distinct boxes. llm_components may be empty at this step."
+    },
+    {
+      "id": "P-diag",
+      "title": "Decompose diagram",
+      "track": "A",
+      "stage": "q1",
+      "inputs": ["inventory", "representation_kind", "representation"],
+      "output_key": "architecture_description",
+      "stop_condition": "Architecture description covers components, entry points, data flow, security boundaries, public vs private resources, external dependencies, and storage.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-diag. Write a long-form architecture description of the system in the diagram.\n\nInventory from P-norm:\n{{inventory}}\n\nOriginal representation (kind={{representation_kind}}):\n{{representation}}\n\nWrite architecture_description that covers:\n- every component and how it relates to the others\n- system entry points\n- data flow\n- security boundaries (drawn ones only)\n- public vs private resources\n- system availability or fault-tolerance properties only if the diagram shows them\n- external dependencies\n- storage and data security properties only if the diagram shows them\n\nReturn JSON:\n{\n  \"architecture_description\": \"prose\",\n  \"inventory\": <echo the inventory; correct ids only if the diagram contradicts P-norm, and list corrections in a \"corrections\" array>\n}"
+    },
+    {
+      "id": "P-app",
+      "title": "Application details",
+      "track": "A",
+      "stage": "q1",
+      "inputs": ["architecture_description"],
+      "output_key": "application_details",
+      "stop_condition": "A concise statement of what the system does, who uses it, and what it must not do that is visible from the diagram.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-app. Condense the architecture description into application details.\n\nArchitecture description:\n{{architecture_description}}\n\nReturn JSON:\n{\n  \"application_details\": \"short prose: function, actors, data the system handles, and the team perspective\"\n}"
+    },
+    {
+      "id": "P-feat",
+      "title": "Key features",
+      "track": "A",
+      "stage": "q1",
+      "inputs": ["architecture_description", "application_details"],
+      "output_key": "key_features",
+      "stop_condition": "Each key feature names something on the diagram that changes the threat surface (LLM call, retrieval, tools, identity, storage of prompts or documents).",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-feat. List key features that matter more for threat modeling than the rest of the architecture.\n\nArchitecture description:\n{{architecture_description}}\n\nApplication details:\n{{application_details}}\n\nReturn JSON:\n{\n  \"key_features\": [\"each item names a diagram element and why it changes the threat surface\"]\n}"
+    },
+    {
+      "id": "P-scope",
+      "title": "In-scope components",
+      "track": "A",
+      "stage": "q1",
+      "inputs": ["architecture_description", "application_details", "key_features", "inventory"],
+      "output_key": "in_scope",
+      "stop_condition": "Every inventory component is either in_scope or out_of_scope with a rationale tied to the named perspective.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-scope. Mark which architectural components must be included in threat modeling.\n\nPerspective remains what we are working on right now. Do not pull in an unshown enterprise.\n\nArchitecture description:\n{{architecture_description}}\nApplication details:\n{{application_details}}\nKey features:\n{{key_features}}\nInventory:\n{{inventory}}\n\nReturn JSON:\n{\n  \"in_scope\": [{\"id\": \"inventory-id\", \"rationale\": \"why this must be modeled\"}],\n  \"out_of_scope\": [{\"id\": \"inventory-id\", \"rationale\": \"why this stays out for this perspective\"}]\n}"
+    },
+    {
+      "id": "P-sol",
+      "title": "Solution description",
+      "track": "A",
+      "stage": "q1",
+      "inputs": ["architecture_description", "application_details", "key_features", "in_scope", "out_of_scope", "inventory"],
+      "output_key": "solution_description",
+      "stop_condition": "solS explains how the architecture functions as one system and restates the structured DFD.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-sol. Combine prior Q1 outputs into a solution description (solS) plus a structured DFD.\n\nArchitecture description:\n{{architecture_description}}\nApplication details:\n{{application_details}}\nKey features:\n{{key_features}}\nIn scope:\n{{in_scope}}\nOut of scope:\n{{out_of_scope}}\nInventory:\n{{inventory}}\n\nReturn JSON:\n{\n  \"solution_description\": \"prose of how the architecture functions as a whole\",\n  \"inventory\": <canonical inventory for all later steps>,\n  \"in_scope\": [...],\n  \"out_of_scope\": [...]\n}"
+    },
+    {
+      "id": "P-llm-cut",
+      "title": "Mark the LLM subset",
+      "track": "A",
+      "stage": "q1",
+      "inputs": ["solution_description", "inventory"],
+      "output_key": "llm_subset",
+      "stop_condition": "llm_subset lists only chatbot, prompt-assembly, or model-runtime nodes. HuggingFace hubs, generic databases, and identity providers are not in the LLM subset unless they emit prompts or run a model.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-llm-cut. Mark which nodes receive PHANTOM-B. Per Shostack, PHANTOM-B applies to the front end and model runtime, not every box.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\n\nInclude a node if it: assembles or receives prompts, hosts a chatbot, or runs or calls an LLM.\nExclude a node if it only stores weights, serves as a generic database, or is a third-party hub that is not executing inference in this diagram.\n\nReturn JSON:\n{\n  \"llm_subset\": [\"component-id\", \"...\"],\n  \"llm_subset_rationale\": [{\"id\": \"\", \"include\": true, \"reason\": \"\"}]\n}"
+    },
+    {
+      "id": "P-stride",
+      "title": "STRIDE elicitation",
+      "track": "A",
+      "stage": "q2",
+      "inputs": ["solution_description", "inventory", "in_scope", "cyber_role", "role_tradecraft"],
+      "output_key": "stride_scenarios",
+      "stop_condition": "Each in-scope process and each flow that crosses a trust boundary has six STRIDE letters: a concrete scenario or not_applicable with a reason.",
+      "template": "{{shared_rules}}\n\n{{role_tradecraft}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-stride. Apply STRIDE to every in-scope element and every data flow that crosses a trust boundary.\n\nSTRIDE letters: S spoofing, T tampering, R repudiation, I information disclosure, D denial of service, E elevation of privilege.\n\nFor each applicable letter, write one concrete scenario that can happen in this system. If a letter does not apply, record not_applicable with a reason. Do not skip a letter in silence.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nIn scope:\n{{in_scope}}\n\nReturn JSON:\n{\n  \"stride_considerations\": [\n    {\n      \"element_id\": \"component or flow id\",\n      \"letter\": \"S\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete text or empty if not_applicable\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"visible in the diagram\",\n      \"asset\": \"what is harmed\"\n    }\n  ]\n}"
+    },
+    {
+      "id": "P-phantom",
+      "title": "PHANTOM-B elicitation",
+      "track": "A",
+      "stage": "q2",
+      "inputs": ["solution_description", "inventory", "llm_subset", "cyber_role", "role_tradecraft"],
+      "output_key": "phantom_scenarios",
+      "stop_condition": "Each llm_subset id has an answer to all eight PHANTOM-B questions. Answers may be a scenario or not_applicable with a reason. No mitigations.",
+      "template": "{{shared_rules}}\n\n{{role_tradecraft}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-phantom. For each LLM or chatbot component, ask the PHANTOM-B questions about that node. Leave defenses, controls, and mitigations for P-act.\n\nAsk, for each id in llm_subset:\n1. P Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?\n2. H Hallucination: What if hallucinations exceed our hopes?\n3. A Anthropomorphization: Are we anthropomorphizing?\n4. N Non-explainability: When must we explain or justify the output, and to whom?\n5. T Training issues: What if training data is bad by accident or on purpose?\n6. O Over-reliance: What decisions is the LLM making, and does that expand the attack surface?\n7. M Missing security engineering: Did we skip the rest of the SDL around this component?\n8. B Biases: What biases does the model have, and are they acceptable in this use case?\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nLLM subset:\n{{llm_subset}}\n\nReturn JSON:\n{\n  \"phantom_considerations\": [\n    {\n      \"element_id\": \"llm component id\",\n      \"letter\": \"P\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete instance in this system, or empty\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"\",\n      \"asset\": \"\"\n    }\n  ]\n}"
+    },
+    {
+      "id": "P-dedup",
+      "title": "Dedup and compose threat list",
+      "track": "A",
+      "stage": "q2",
+      "inputs": ["stride_scenarios", "phantom_scenarios", "inventory", "perspective"],
+      "output_key": "threats",
+      "stop_condition": "TSS is a numbered list. Duplicates merged. Each remaining scenario has a diagram_referent in the inventory. Compositional threats kept only if the named perspective can act on them.",
+      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-dedup. Merge STRIDE and PHANTOM-B scenarios into threat list TSS.\n\nPerspective:\n{{perspective}}\nInventory:\n{{inventory}}\nSTRIDE considerations:\n{{stride_scenarios}}\nPHANTOM-B considerations:\n{{phantom_scenarios}}\n\nRules:\n- Drop not_applicable rows.\n- Merge two scenarios that name the same failure on the same referent into one threat. Record source as \"both\" when both methods found it.\n- Keep a compositional threat only if the named perspective can change a control point on this diagram.\n- Assign ids T1, T2, ... in diagram order (entry points first).\n- stride, phantom_b, cia, and action may be empty arrays / stub objects; later steps fill them. Include a stub action of type accept and detail \"pending P-act\" if required by schema.\n\nReturn JSON:\n{\n  \"threats\": [\n    {\n      \"id\": \"T1\",\n      \"scenario\": \"actor or failure, referent, preconditions, asset, why it can happen here\",\n      \"diagram_referent\": \"inventory id\",\n      \"preconditions\": \"\",\n      \"asset\": \"\",\n      \"source\": \"stride|phantom-b|both\",\n      \"stride\": [],\n      \"phantom_b\": [],\n      \"cia\": [],\n      \"action\": { \"type\": \"accept\", \"detail\": \"pending P-act\" }\n    }\n  ]\n}"
+    },
+    {
+      "id": "P-cia",
+      "title": "CIA mapping",
+      "track": "A",
+      "stage": "q3",
+      "inputs": ["solution_description", "threats"],
+      "output_key": "threats",
+      "stop_condition": "Every threat has a non-empty cia array of C, I, and/or A.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-cia. Map each threat scenario to CIA. Multi-label is allowed.\n\nC Confidentiality, I Integrity, A Availability.\n\nSolution description:\n{{solution_description}}\nThreats:\n{{threats}}\n\nReturn the same threats array with cia filled. Do not add or drop threats. Do not fill action.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+    },
+    {
+      "id": "P-stride-map",
+      "title": "STRIDE mapping",
+      "track": "A",
+      "stage": "q3",
+      "inputs": ["solution_description", "threats"],
+      "output_key": "threats",
+      "stop_condition": "Every threat has a non-empty stride array of S, T, R, I, D, and/or E.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-stride-map. Map each threat scenario to STRIDE letters. Multi-label is allowed.\n\nSolution description:\n{{solution_description}}\nThreats:\n{{threats}}\n\nReturn the same threats array with stride filled. Do not add or drop threats.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+    },
+    {
+      "id": "P-phantom-map",
+      "title": "PHANTOM-B mapping",
+      "track": "A",
+      "stage": "q3",
+      "inputs": ["threats", "llm_subset"],
+      "output_key": "threats",
+      "stop_condition": "PHANTOM-B letters appear only on threats whose diagram_referent is in llm_subset or whose source includes phantom-b. Other threats keep phantom_b as [].",
+      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-phantom-map. Attach PHANTOM-B letters only when the scenario was elicited from the LLM subset. Do not force every STRIDE threat into PHANTOM-B.\n\nLetters: P prompt injection, H hallucination, A anthropomorphization, N non-explainability, T training issues, O over-reliance, M missing security engineering, B biases.\n\nLLM subset:\n{{llm_subset}}\nThreats:\n{{threats}}\n\nReturn the same threats array with phantom_b filled per the rule above.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+    },
+    {
+      "id": "P-act",
+      "title": "Choose an action",
+      "track": "A",
+      "stage": "q3",
+      "inputs": ["solution_description", "inventory", "threats"],
+      "output_key": "threats",
+      "stop_condition": "Every threat has action.type in mitigate, eliminate, transfer, accept. Mitigate and eliminate name a control_point that exists in the inventory.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-act. Choose one action per threat: mitigate, eliminate, transfer, or accept.\n\nWrite the mitigate, eliminate, transfer, or accept choice here. Leave P-phantom without defenses.\n\n- mitigate: make the attack harder at a named control point on the diagram.\n- eliminate: remove the feature or interface that creates the threat.\n- transfer: another party is better placed to handle it; name that party as shown on the diagram (customer, provider, or an external actor id).\n- accept: keep the threat; say why the cost of the other options undermines the work.\n\nMitigation detail must name a control_point whose id exists in the inventory. Optional citations may include owasp_llm_top10 (form LLMnn:2025), ai_exchange_slug (one of the published slugs), or atlas (AML.T*). Omit any citation you cannot pin. Do not invent ids.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nThreats:\n{{threats}}\n\nReturn the same threats array with action (and optional citations) filled.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+    },
+    {
+      "id": "P-qa",
+      "title": "Self-check",
+      "track": "A",
+      "stage": "q4",
+      "inputs": ["full_matrix"],
+      "output_key": "qa",
+      "stop_condition": "qa flags every failed check in gaps. Open assumptions are listed. The full matrix is echoed with qa filled.",
+      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-qa. Check the work before any human review.\n\nFull threat matrix so far:\n{{full_matrix}}\n\nCheck, and set each boolean false if the check fails:\n1. inventory_components_in_solS: every inventory component id appears in solution_description.\n2. boundary_crossings_covered: every trust boundary has at least one crossing-flow threat, or a gap explaining why not.\n3. phantom_b_complete: every llm_subset id has all eight PHANTOM-B letters represented in phantom_considerations or in threats sourced from phantom-b. If you lack the consideration list, infer from threats and list remaining letters in gaps.\n4. stride_considered: every in-scope process was considered for all six STRIDE letters (scenario or not_applicable). If unknown, set false and explain.\n5. actions_complete: every threat has action.type in mitigate, eliminate, transfer, accept, and detail is not \"pending P-act\".\n6. open_assumptions: list assumptions that are not on the diagram.\n7. gaps: list failed checks in plain language.\n\nAlso confirm every threats[].diagram_referent exists in inventory (components, external_actors, data_stores, or data_flows). List misses in gaps.\n\nReturn the full matrix JSON with qa filled:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"threats\": [],\n  \"qa\": {\n    \"inventory_components_in_solS\": true,\n    \"boundary_crossings_covered\": true,\n    \"phantom_b_complete\": true,\n    \"stride_considered\": true,\n    \"actions_complete\": true,\n    \"open_assumptions\": [],\n    \"gaps\": []\n  }\n}"
+    },
+    {
+      "id": "P-srf-join",
+      "title": "Join AI Exchange slugs",
+      "track": "B",
+      "stage": "srf",
+      "inputs": ["full_matrix", "operating_model"],
+      "output_key": "threats",
+      "stop_condition": "When a threat matches a published AI Exchange slug in threats.json, copy layer, affected_layers, persona, and party for the named operating model. Do not re-derive those rows.",
+      "template": "{{shared_rules}}\n\nTrack B is optional. Off by default. This step assigns SRF accountability. It does not invent threats.\n\nStep: P-srf-join. Fetch https://aisharedresponsibility.com/data/threats.json now. Use only ids that exist in that file.\n\nPublished slugs: directpromptinjection, indirectpromptinjection, evasion, runtimemodelpoison, devmodelpoison, datapoison, supplymodelpoison, disclosureinoutput, modelinversionandmembership, devdataleak, modelexfiltration, runtimemodelleak, devmodelleak, airesourceexhaustion, inputdataleak, outputcontainsconventionalinjection.\n\nOperating model: {{operating_model}}\nFull Track A matrix:\n{{full_matrix}}\n\nFor each threat, if the scenario is the same failure as a slug, set:\n  srf.join.ai_exchange_slug = that slug\n  srf.join.copied_from_threats_json = true\n  srf.layer, srf.affected_layers, srf.persona, srf.party copied from threats.json accountability[{{operating_model}}]\nIf no slug matches, set srf.join.ai_exchange_slug to null and copied_from_threats_json to false. Leave layer/persona/party for P-srf-layer and P-srf-owner.\n\nDo not invent slugs. Do not use \"shared\" as srf.party.\n\nReturn JSON:\n{ \"threats\": [ ... with srf objects ... ], \"operating_model\": \"{{operating_model}}\" }"
+    },
+    {
+      "id": "P-srf-layer",
+      "title": "Assign SRF layer",
+      "track": "B",
+      "stage": "srf",
+      "inputs": ["threats", "operating_model"],
+      "output_key": "threats",
+      "stop_condition": "Every threat has srf.layer in L1-L5. Joined rows keep the copied layer.",
+      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-layer. Assign the primary SRF layer where the control point lives, not where the harm appears.\n\nLayers: L1 AI Business and Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider.\n\nIf srf.join.copied_from_threats_json is true, do not change srf.layer or srf.affected_layers.\n\nOperating model: {{operating_model}}\nThreats:\n{{threats}}\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+    },
+    {
+      "id": "P-srf-owner",
+      "title": "Assign one accountable persona",
+      "track": "B",
+      "stage": "srf",
+      "inputs": ["threats", "operating_model"],
+      "output_key": "threats",
+      "stop_condition": "Every threat has exactly one srf.persona from personas.json and one srf.party of customer or provider. Shared is not a final answer.",
+      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-owner. Name one accountable persona and one party per threat.\n\nFetch now:\n- https://aisharedresponsibility.com/data/personas.json\n- https://aisharedresponsibility.com/data/matrix.json\n\nPersona ids (cosai-core only unless the diagram is a federated consortium): agentic-platform-provider, application-developer, data-provider, ai-system-users, ai-system-governance, model-provider, ai-model-serving, ai-platform-provider.\n\nOperating model: {{operating_model}}\nThreats:\n{{threats}}\n\nRules:\n- Exactly one accountable persona per threat.\n- srf.party is customer or provider. Never \"shared\". If matrix.json says shared at that layer, still name one lead and put the counterparty duty in srf.note.\n- If srf.join.copied_from_threats_json is true, keep the copied persona and party.\n- Persona must exist in personas.json.\n\nReturn the full matrix JSON with srf filled on every threat:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"threats\": [ ... ],\n  \"qa\": {},\n  \"chain_meta\": { \"track_b_applied\": true, \"role\": \"{{cyber_role}}\" }\n}"
+    }
+  ],
+  "baseline_prompts": [
+    {
+      "id": "P-zeroshot",
+      "title": "Zero-shot threat model",
+      "note": "Single-prompt baseline scored against Track A in eval/threat-model/.",
+      "template": "Threat model this AI system diagram. Representation kind: {{representation_kind}}.\n\n{{representation}}\n\nReturn JSON with system_name, perspective, inventory (components, external_actors, data_stores, data_flows, trust_boundaries, llm_components), solution_description, llm_subset, and threats. Each threat needs id, scenario, diagram_referent, stride, phantom_b, cia, and action (type mitigate|eliminate|transfer|accept, plus detail)."
+    },
+    {
+      "id": "P-identity",
+      "title": "Short expert identity",
+      "note": "Optional STRIDE-GPT-style identity prompt. Not the default baseline.",
+      "template": "You are an expert threat modeler. Using STRIDE, threat model the following AI system diagram (kind={{representation_kind}}).\n\n{{representation}}\n\nList threats with STRIDE type, impact, and a mitigation."
+    }
+  ],
+  "kill_chain_optional": {
+    "id": "P-kill-chain",
+    "optional": true,
+    "note": "Not in the default chain. Shostack lists kill chains as a recommended extra way to answer what can go wrong.",
+    "template": "{{shared_rules}}\n\nOptional step. Walk the diagram with a software kill chain: deliver an exploit, exploit a target, persist or install, command and control, act on objectives.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\n\nReturn extra scenarios with source \"kill-chain\". Do not replace TSS."
+  }
+}

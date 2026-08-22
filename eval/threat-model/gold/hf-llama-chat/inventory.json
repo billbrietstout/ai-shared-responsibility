@@ -1,0 +1,33 @@
+{
+  "system_id": "hf-llama-chat",
+  "system_name": "Local Llama chatbot with Hugging Face weights",
+  "perspective": "Application team calling a local Llama runtime. Model training is out of scope.",
+  "operating_model_hint": "IaaS",
+  "components": [
+    { "id": "chatbot-frontend", "name": "Chatbot front end", "type": "process" },
+    { "id": "llama-runtime", "name": "Llama runtime", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "end-user", "name": "End user", "type": "actor" },
+    { "id": "huggingface-hub", "name": "Hugging Face Hub", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "model-weights", "name": "Model weights", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-prompt", "from": "end-user", "to": "chatbot-frontend", "label": "prompts", "crosses_boundary": "internet" },
+    { "id": "f-infer", "from": "chatbot-frontend", "to": "llama-runtime", "label": "inference request", "crosses_boundary": "app-to-model" },
+    { "id": "f-tokens", "from": "llama-runtime", "to": "chatbot-frontend", "label": "tokens", "crosses_boundary": "app-to-model" },
+    { "id": "f-reply", "from": "chatbot-frontend", "to": "end-user", "label": "replies", "crosses_boundary": "internet" },
+    { "id": "f-load", "from": "model-weights", "to": "llama-runtime", "label": "load weights", "crosses_boundary": null },
+    { "id": "f-download", "from": "huggingface-hub", "to": "model-weights", "label": "download weights", "crosses_boundary": "third-party" }
+  ],
+  "trust_boundaries": [
+    { "id": "internet", "name": "Internet", "contains": ["end-user"] },
+    { "id": "application", "name": "Application zone", "contains": ["chatbot-frontend"] },
+    { "id": "model-host", "name": "Model host", "contains": ["llama-runtime", "model-weights"] },
+    { "id": "third-party", "name": "Third-party hub", "contains": ["huggingface-hub"] }
+  ],
+  "llm_components": ["chatbot-frontend", "llama-runtime"],
+  "missing_trust_boundaries": false
+}

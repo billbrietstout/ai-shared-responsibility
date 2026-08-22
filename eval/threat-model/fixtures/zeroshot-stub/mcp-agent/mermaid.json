@@ -1,0 +1,138 @@
+{
+  "system_name": "Tool-calling agent with MCP servers",
+  "perspective": "Application team that owns the agent runtime and which MCP servers are attached. The model endpoint is a provider.",
+  "representation": {
+    "kind": "mermaid",
+    "source_id": "mcp-agent"
+  },
+  "inventory": {
+    "components": [
+      {
+        "id": "agent-runtime",
+        "name": "Agent runtime",
+        "type": "process"
+      },
+      {
+        "id": "mcp-host",
+        "name": "MCP host",
+        "type": "process"
+      },
+      {
+        "id": "policy-gate",
+        "name": "Tool policy gate",
+        "type": "process"
+      }
+    ],
+    "external_actors": [
+      {
+        "id": "end-user",
+        "name": "End user",
+        "type": "actor"
+      }
+    ],
+    "data_stores": [
+      {
+        "id": "session-store",
+        "name": "Session store",
+        "type": "store"
+      },
+      {
+        "id": "tool-catalog",
+        "name": "Tool catalog",
+        "type": "store"
+      }
+    ],
+    "data_flows": [
+      {
+        "id": "f-goal",
+        "from": "end-user",
+        "to": "agent-runtime",
+        "label": "goal plus files",
+        "crosses_boundary": "internet"
+      },
+      {
+        "id": "f-session",
+        "from": "agent-runtime",
+        "to": "session-store",
+        "label": "write transcript",
+        "crosses_boundary": null
+      }
+    ],
+    "trust_boundaries": [
+      {
+        "id": "internet",
+        "name": "Internet",
+        "contains": [
+          "end-user"
+        ]
+      },
+      {
+        "id": "agent",
+        "name": "Agent zone",
+        "contains": [
+          "agent-runtime",
+          "mcp-host",
+          "policy-gate",
+          "session-store",
+          "tool-catalog"
+        ]
+      },
+      {
+        "id": "model",
+        "name": "Model provider",
+        "contains": [
+          "model-endpoint"
+        ]
+      },
+      {
+        "id": "tools",
+        "name": "Tool servers",
+        "contains": [
+          "mcp-filesystem",
+          "mcp-database",
+          "mcp-web"
+        ]
+      }
+    ],
+    "llm_components": [],
+    "missing_trust_boundaries": false
+  },
+  "solution_description": "Short identity-style sketch of the diagram.",
+  "llm_subset": [],
+  "threats": [
+    {
+      "id": "T1",
+      "scenario": "An attacker might prompt inject the model.",
+      "diagram_referent": "missing",
+      "stride": [
+        "T"
+      ],
+      "phantom_b": [],
+      "cia": [
+        "I"
+      ],
+      "action": {
+        "type": "mitigate",
+        "detail": "add filtering"
+      }
+    }
+  ],
+  "qa": {
+    "inventory_components_in_solS": true,
+    "boundary_crossings_covered": false,
+    "phantom_b_complete": false,
+    "stride_considered": false,
+    "actions_complete": true,
+    "open_assumptions": [
+      "gold-echo fixture has no elicited threats"
+    ],
+    "gaps": [
+      "threat elicitation not present in this fixture"
+    ]
+  },
+  "chain_meta": {
+    "prompt_pack_version": "1.0",
+    "role": "zeroshot-stub",
+    "track_b_applied": false
+  }
+}

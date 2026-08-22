@@ -1,0 +1,26 @@
+flowchart LR
+  subgraph internet["Internet"]
+    end_user["End user"]
+  end
+  subgraph application["Application zone"]
+    web_app["Web application"]
+    retriever["Retriever"]
+    prompt_assembler["Prompt assembler"]
+  end
+  subgraph data["Data zone"]
+    document_store[("Document store")]
+    vector_store[("Vector store")]
+  end
+  subgraph provider["Model provider"]
+    model_api["Provider model API"]
+  end
+  end_user -->|"user query"| web_app
+  web_app -->|"retrieve request"| retriever
+  retriever -->|"similarity search"| vector_store
+  vector_store -->|"chunk ids"| retriever
+  document_store -->|"source text"| retriever
+  retriever -->|"retrieved context"| prompt_assembler
+  web_app -->|"user text"| prompt_assembler
+  prompt_assembler -->|"composed prompt"| model_api
+  model_api -->|"completion"| web_app
+  web_app -->|"answer plus citations"| end_user

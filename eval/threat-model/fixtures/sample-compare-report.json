@@ -1,0 +1,28 @@
+{
+  "demo": true,
+  "demo_note": "Script check only. The left side is a gold-inventory echo with no elicited threats. The right side is an intentionally degraded stub. Neither side is a model run.",
+  "tradecraft": "eval/threat-model/fixtures/gold-echo-eval-report.json",
+  "baseline": "eval/threat-model/fixtures/zeroshot-stub/eval-report.json",
+  "deltas_tradecraft_minus_baseline": {
+    "inventory_macro_f1_mean": 0.3598,
+    "format_inventory_jaccard_mean": 0.0,
+    "schema_failures": -15,
+    "mean_threat_count": -1.0
+  },
+  "tradecraft_summary": {
+    "systems": 5,
+    "inventory_macro_f1_mean": 1.0,
+    "format_inventory_jaccard_mean": 1.0,
+    "schema_failures": 0,
+    "mean_threat_count": 0.0
+  },
+  "baseline_summary": {
+    "systems": 5,
+    "inventory_macro_f1_mean": 0.6402,
+    "format_inventory_jaccard_mean": 1.0,
+    "schema_failures": 15,
+    "mean_threat_count": 1.0
+  },
+  "closure": false,
+  "closure_note": "Deltas omit SME Likert, false-positive labels, and Hamming loss on expert-corrected STRIDE and CIA tags. A higher inventory F1 is not a Track A win."
+}

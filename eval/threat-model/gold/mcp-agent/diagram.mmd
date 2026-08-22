@@ -1,0 +1,31 @@
+flowchart TB
+  subgraph internet["Internet"]
+    end_user["End user"]
+  end
+  subgraph agent["Agent zone"]
+    agent_runtime["Agent runtime"]
+    mcp_host["MCP host"]
+    policy_gate["Tool policy gate"]
+    session_store[("Session store")]
+    tool_catalog[("Tool catalog")]
+  end
+  subgraph model["Model provider"]
+    model_endpoint["Model endpoint"]
+  end
+  subgraph tools["Tool servers"]
+    mcp_filesystem["MCP filesystem server"]
+    mcp_database["MCP database server"]
+    mcp_web["MCP web fetch server"]
+  end
+  end_user -->|"goal plus files"| agent_runtime
+  agent_runtime -->|"write transcript"| session_store
+  agent_runtime -->|"messages plus tool schemas"| model_endpoint
+  model_endpoint -->|"tool call"| agent_runtime
+  tool_catalog -->|"allowed tools"| mcp_host
+  agent_runtime -->|"proposed tool call"| policy_gate
+  policy_gate -->|"authorized call"| mcp_host
+  mcp_host -->|"read or write file"| mcp_filesystem
+  mcp_host -->|"query"| mcp_database
+  mcp_host -->|"fetch URL"| mcp_web
+  mcp_host -->|"tool result"| agent_runtime
+  agent_runtime -->|"result"| end_user

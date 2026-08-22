@@ -1,0 +1,44 @@
+{
+  "system_id": "mcp-agent",
+  "system_name": "Tool-calling agent with MCP servers",
+  "perspective": "Application team that owns the agent runtime and chooses which MCP servers attach. The model endpoint is a provider.",
+  "operating_model_hint": "AI-PaaS",
+  "components": [
+    { "id": "agent-runtime", "name": "Agent runtime", "type": "process" },
+    { "id": "mcp-host", "name": "MCP host", "type": "process" },
+    { "id": "policy-gate", "name": "Tool policy gate", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "end-user", "name": "End user", "type": "actor" },
+    { "id": "model-endpoint", "name": "Model endpoint", "type": "external" },
+    { "id": "mcp-filesystem", "name": "MCP filesystem server", "type": "external" },
+    { "id": "mcp-database", "name": "MCP database server", "type": "external" },
+    { "id": "mcp-web", "name": "MCP web fetch server", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "session-store", "name": "Session store", "type": "store" },
+    { "id": "tool-catalog", "name": "Tool catalog", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-goal", "from": "end-user", "to": "agent-runtime", "label": "goal plus files", "crosses_boundary": "internet" },
+    { "id": "f-session", "from": "agent-runtime", "to": "session-store", "label": "write transcript", "crosses_boundary": null },
+    { "id": "f-llm", "from": "agent-runtime", "to": "model-endpoint", "label": "messages plus tool schemas", "crosses_boundary": "app-to-model" },
+    { "id": "f-toolcall", "from": "model-endpoint", "to": "agent-runtime", "label": "tool call", "crosses_boundary": "app-to-model" },
+    { "id": "f-catalog", "from": "tool-catalog", "to": "mcp-host", "label": "allowed tools", "crosses_boundary": null },
+    { "id": "f-gate", "from": "agent-runtime", "to": "policy-gate", "label": "proposed tool call", "crosses_boundary": null },
+    { "id": "f-dispatch", "from": "policy-gate", "to": "mcp-host", "label": "authorized call", "crosses_boundary": null },
+    { "id": "f-fs", "from": "mcp-host", "to": "mcp-filesystem", "label": "read or write file", "crosses_boundary": "agent-to-tools" },
+    { "id": "f-db", "from": "mcp-host", "to": "mcp-database", "label": "query", "crosses_boundary": "agent-to-tools" },
+    { "id": "f-web", "from": "mcp-host", "to": "mcp-web", "label": "fetch URL", "crosses_boundary": "agent-to-tools" },
+    { "id": "f-toolresult", "from": "mcp-host", "to": "agent-runtime", "label": "tool result", "crosses_boundary": null },
+    { "id": "f-reply", "from": "agent-runtime", "to": "end-user", "label": "result", "crosses_boundary": "internet" }
+  ],
+  "trust_boundaries": [
+    { "id": "internet", "name": "Internet", "contains": ["end-user"] },
+    { "id": "agent", "name": "Agent zone", "contains": ["agent-runtime", "mcp-host", "policy-gate", "session-store", "tool-catalog"] },
+    { "id": "model", "name": "Model provider", "contains": ["model-endpoint"] },
+    { "id": "tools", "name": "Tool servers", "contains": ["mcp-filesystem", "mcp-database", "mcp-web"] }
+  ],
+  "llm_components": ["agent-runtime"],
+  "missing_trust_boundaries": false
+}

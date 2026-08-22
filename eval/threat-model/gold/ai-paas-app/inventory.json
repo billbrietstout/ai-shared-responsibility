@@ -1,0 +1,40 @@
+{
+  "system_id": "ai-paas-app",
+  "system_name": "Customer application on a provider model endpoint",
+  "perspective": "Customer application team on AI-PaaS. They own the app, database, and prompt log. They call a provider model with optional provider guardrails.",
+  "operating_model_hint": "AI-PaaS",
+  "components": [
+    { "id": "customer-app", "name": "Customer application", "type": "process" },
+    { "id": "prompt-gateway", "name": "Prompt gateway", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "customer-user", "name": "Customer user", "type": "actor" },
+    { "id": "customer-developer", "name": "Customer developer", "type": "actor" },
+    { "id": "provider-model", "name": "Provider model endpoint", "type": "external" },
+    { "id": "provider-guardrails", "name": "Provider guardrails", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "customer-db", "name": "Customer database", "type": "store" },
+    { "id": "prompt-log", "name": "Prompt log", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-use", "from": "customer-user", "to": "customer-app", "label": "business request", "crosses_boundary": "customer-internet" },
+    { "id": "f-deploy", "from": "customer-developer", "to": "customer-app", "label": "app deploy plus system prompt", "crosses_boundary": "customer-internet" },
+    { "id": "f-record", "from": "customer-app", "to": "customer-db", "label": "read or write records", "crosses_boundary": "app-to-data" },
+    { "id": "f-compose", "from": "customer-app", "to": "prompt-gateway", "label": "prompt plus metadata", "crosses_boundary": null },
+    { "id": "f-log", "from": "prompt-gateway", "to": "prompt-log", "label": "store prompt", "crosses_boundary": "app-to-data" },
+    { "id": "f-filter", "from": "prompt-gateway", "to": "provider-guardrails", "label": "prompt for screening", "crosses_boundary": "customer-to-provider" },
+    { "id": "f-infer", "from": "provider-guardrails", "to": "provider-model", "label": "allowed prompt", "crosses_boundary": null },
+    { "id": "f-out", "from": "provider-model", "to": "provider-guardrails", "label": "raw completion", "crosses_boundary": null },
+    { "id": "f-back", "from": "provider-guardrails", "to": "prompt-gateway", "label": "filtered completion", "crosses_boundary": "customer-to-provider" },
+    { "id": "f-reply", "from": "customer-app", "to": "customer-user", "label": "response", "crosses_boundary": "customer-internet" }
+  ],
+  "trust_boundaries": [
+    { "id": "customer-internet", "name": "Customer internet", "contains": ["customer-user", "customer-developer"] },
+    { "id": "customer-app-zone", "name": "Customer application", "contains": ["customer-app", "prompt-gateway"] },
+    { "id": "customer-data", "name": "Customer data", "contains": ["customer-db", "prompt-log"] },
+    { "id": "provider-platform", "name": "Provider platform", "contains": ["provider-guardrails", "provider-model"] }
+  ],
+  "llm_components": ["customer-app", "prompt-gateway"],
+  "missing_trust_boundaries": false
+}

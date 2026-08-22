@@ -1,0 +1,30 @@
+flowchart TB
+  subgraph tenant["Tenant"]
+    tenant_user["Tenant user"]
+    tenant_developer["Tenant developer"]
+  end
+  subgraph provider_runtime["Provider runtime"]
+    orchestration_runtime["Orchestration runtime"]
+    tool_broker["Tool broker"]
+    policy_engine["Policy engine"]
+    agent_definition_store[("Agent definition store")]
+    trace_store[("Trace store")]
+  end
+  subgraph model["Tenant model"]
+    tenant_llm["Tenant-chosen LLM"]
+  end
+  subgraph tools["External tools"]
+    external_tools["External tools"]
+  end
+  tenant_developer -->|"publish agent definition"| agent_definition_store
+  tenant_user -->|"task"| orchestration_runtime
+  agent_definition_store -->|"load definition"| orchestration_runtime
+  orchestration_runtime -->|"proposed action"| policy_engine
+  policy_engine -->|"allow or deny"| orchestration_runtime
+  orchestration_runtime -->|"prompt plus tools"| tenant_llm
+  tenant_llm -->|"completion or tool call"| orchestration_runtime
+  orchestration_runtime -->|"authorized tool call"| tool_broker
+  tool_broker -->|"invoke tool"| external_tools
+  external_tools -->|"tool result"| tool_broker
+  orchestration_runtime -->|"write trace"| trace_store
+  orchestration_runtime -->|"task result"| tenant_user
