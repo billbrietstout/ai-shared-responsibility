@@ -39,6 +39,11 @@
         text-transform: uppercase;
         color: rgba(255, 255, 255, 0.45);
       }
+      .prompt-block__label a {
+        color: inherit;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
       .prompt-block__actions {
         display: flex;
         gap: var(--sp-2);
@@ -276,55 +281,49 @@
         </div>
       </div>
 
-      <div class="roadmap-block" style="max-width: 720px; margin-bottom: var(--sp-10);">
-        <p class="roadmap-block__title">Four checks that are not principle matching</p>
-        <p>
-          Step 0 confirms the paper was read. A truncated PDF, a two-column
-          extraction that interleaved its columns, or a JavaScript-rendered page
-          that returned a shell all produce the same failure: a confident list of
-          topics the paper "does not address" when the reviewer never saw those
-          sections. The step asks for the extraction method, the section and page
-          count, and a plain list of what could not be read. A broken heading
-          tree stops the review rather than degrading it silently.
-        </p>
-        <p>
-          Step 1 screens the submission itself: citation integrity resolved
-          against registries, unpinned dependency recommendations that can be
-          poisoned after publication, text written to manipulate the AI
-          performing the review, and whether the paper's own claims can be
-          checked at all. A paper can align perfectly with both catalogs and
-          still fail that screen. The claim support, currency, and production
-          artifact checks count unsourced figures, recommendations naming no
-          version or setting a reader could act on, experience claims with no
-          named environment, the age of the newest dated reference, and what was
-          left in the delivered file. Each of those is a defect an author can
-          fix, and each is reported as itself rather than as evidence about who
-          or what wrote the text.
-        </p>
-        <p>
-          Disclosure findings stay observations, meaning which conclusions favor
-          a named vendor and whether a funding statement appears, because
-          asserting an undisclosed relationship means asserting something that by
-          construction is not in evidence. Prose rhythm, vocabulary, and
-          punctuation habits carry no integrity verdict at any volume, since
-          house style guides, standards-body templates, single authors, and
-          non-native English writers produce the same patterns.
-        </p>
-        <p>
-          Step 7 grounds accountability and regulatory claims in live data rather
-          than the reviewing model's recollection, and reports the
-          <code>last_verified</code> date behind every regulatory finding.
-        </p>
-        <p style="margin-bottom: 0;">
-          Step 8 runs on working drafts and covers what review usually misses:
-          typos and inconsistent defined terms, topics scattered across
-          non-adjacent sections, near-duplicate statements, and links that
-          resolve but point at the wrong document. It also checks whether the
-          draft is machine readable, meaning stable heading anchors, a heading
-          tree a parser can walk, and sections that still make sense once a
-          retrieval system has chunked them.
-        </p>
+      <p class="section-label">Four checks that are not principle matching</p>
+      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-5);">
+        Principle matching can pass while the read, the citations, the
+        threat-to-layer mapping, or the draft mechanics are still wrong.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr><th>Step</th><th>What it asks</th><th>What a miss produces</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">0 Intake</td>
+              <td>Extraction method, section and page count, and a list of what could not be read, including images, tables that lost structure, and appendices. A broken heading tree, or a section count that disagrees with the paper's own table of contents, stops the review.</td>
+              <td>A confident list of topics the paper "does not address" after a truncated PDF, a two-column extract that interleaved its columns, or a JavaScript page that returned a shell.</td>
+            </tr>
+            <tr>
+              <td class="tier">1 Submission screen</td>
+              <td>Citation identifiers resolved against registries; unpinned package or repo recommendations; text aimed at the reviewing system; unsourced figures; recommendations naming no version or setting; experience claims with no environment; the newest dated reference next to the publication date; leftover production artifacts. Each is reported as itself, not as evidence of who wrote the text. A paper can match both catalogs and still fail this screen.</td>
+              <td>A fake DOI, an unpinned install that can be poisoned after publication, or a statistic nobody can re-count, sitting next to a clean principle-mapping table.</td>
+            </tr>
+            <tr>
+              <td class="tier">7 Live grounding</td>
+              <td>When the paper names a threat, a regulation, or who owns a control, fetch the matching SRF data instead of answering from memory. Report the <code>last_verified</code> date on every regulatory finding. Skip papers that stay at general engineering principle, and say so.</td>
+              <td>A threat assigned to a layer that cannot reach the control point, or a regulation cited from recollection rather than from <code>regulations.json</code>.</td>
+            </tr>
+            <tr>
+              <td class="tier">8 Draft mechanics</td>
+              <td>On a working draft: typos, inconsistent defined terms, topics scattered across non-adjacent sections, near-duplicate statements, links that resolve to the wrong document, stable heading anchors, a heading tree a parser can walk, and sections that still make sense once chunked. Skip a published paper, and say so.</td>
+              <td>Defects that cost an afternoon to fix before publication and a lot afterward, because ordinary review reads past them.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+        Disclosure under step 1 stays an observation: which conclusions favor a
+        named vendor, and whether a funding or employment statement appears.
+        Asserting an undisclosed relationship means asserting something that is
+        not in evidence. Prose rhythm, vocabulary, and punctuation habits carry
+        no integrity verdict at any volume. House style guides, standards-body
+        templates, single authors, and non-native English writers produce those
+        patterns at least as often as a model does.
+      </p>
 
       <p class="section-label">How findings are ranked</p>
       <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-5);">
@@ -393,7 +392,9 @@
       <div class="prompt-block is-collapsed" id="assess-block">
         <div class="prompt-block__header">
           <span class="prompt-block__label"
-            >Whitepaper assessment &middot; v2.1 &middot; August 2026</span
+            >Whitepaper assessment &middot;
+            <a href="/assess/whitepaper-assessment/changes/">v2.1</a>
+            &middot; August 2026</span
           >
           <div class="prompt-block__actions">
             <button
@@ -505,111 +506,12 @@ Before reporting any P1 or P2, check it twice and check these known false positi
 Write in prose and tables, no nested bullet trees. Keep the verdict direct: state what the paper does and does not cover, skip hedging, and do not pad a clean result with caveats.</pre>
       </div>
 
-      <p class="section-label">What changed in 2.1</p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-5);">
-        Step 1 grew three checks. All of them replace judging prose by eye with
-        counting something a reader can re-count. An assessment produced under
-        2.0 stays valid; it simply screened less of the submission.
+      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+        Prompt v2.1, August 2026.
+        <a href="/assess/whitepaper-assessment/changes/">What changed in 2.1 and 2.0</a>.
+        A 2.0 report stays valid; it screened less of the submission. A 1.0
+        report stays valid on principle mapping; re-read its integrity findings.
       </p>
-      <div class="table-scroll">
-        <table class="tier-table">
-          <thead>
-            <tr><th>Change</th><th>Reason</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="tier">Claim support check added to step 1</td>
-              <td>Counts unsourced statistics, recommendations naming no version or setting a reader could act on, and experience claims with no environment or timeframe. A claim nobody can check is unusable whoever wrote it.</td>
-            </tr>
-            <tr>
-              <td class="tier">Currency check added to step 1</td>
-              <td>Names the newest dated item in the paper next to its publication date. A gap over a year is a fact about the paper rather than an inference about its author.</td>
-            </tr>
-            <tr>
-              <td class="tier">Production artifact check added to step 1</td>
-              <td>Markup surviving into a PDF, placeholder text, scaffolding addressed to a requester, and a figure carrying two values in two sections are all defects with a location and a fix.</td>
-            </tr>
-            <tr>
-              <td class="tier">Citation check now reads the shape of the bibliography</td>
-              <td>A list where every entry is canonical and heavily cited, with nothing recent or specific to the subject, is worth reporting next to the resolver output.</td>
-            </tr>
-            <tr>
-              <td class="tier">Disclosure bullet narrowed further</td>
-              <td>2.0 barred inferring generation from prose rhythm. 2.1 extends that to vocabulary, punctuation habits, and sentence uniformity, and says plainly that no volume of stylistic signal reaches an integrity verdict.</td>
-            </tr>
-            <tr>
-              <td class="tier">Two false positives added to step 9</td>
-              <td>A standards document written at principle level on purpose reads as unactionable. A survey cites old work because that is its subject.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p class="section-label">What changed in 2.0</p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-5);">
-        The eight steps of v1.0 became eleven. Three are new. The rest are edits
-        in place, and most of them are demotions. An assessment produced under
-        v1.0 stays valid on its principle mapping; its step 0 findings are the
-        ones to re-read, since v1.0 permitted intent-based conclusions that v2.0
-        caps at an observation.
-      </p>
-      <div class="table-scroll">
-        <table class="tier-table">
-          <thead>
-            <tr><th>Change</th><th>Reason</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="tier">Governing rule added above step 0</td>
-              <td>Every severity ceiling below follows from it, so it has to be stated before the steps rather than implied by them.</td>
-            </tr>
-            <tr>
-              <td class="tier">New step 0, intake</td>
-              <td>A partial read produces a confident and wrong coverage-gap list. Bad extraction manufactures findings rather than hiding them.</td>
-            </tr>
-            <tr>
-              <td class="tier">Disclosure bullet rewritten to observable facts</td>
-              <td>v1.0 asked the reviewer to identify undisclosed sponsorship and undisclosed bot generation. Both require asserting something that by construction is not in evidence.</td>
-            </tr>
-            <tr>
-              <td class="tier">Prose-rhythm signal demoted to P4</td>
-              <td>House style guides, standards templates, single authors, and non-native English writers all produce uniform rhythm.</td>
-            </tr>
-            <tr>
-              <td class="tier">Citation check now resolves identifiers against registries</td>
-              <td>Crossref, arXiv, DataCite, and Semantic Scholar answer the question that reading a reference list cannot.</td>
-            </tr>
-            <tr>
-              <td class="tier">Extraction chunked at roughly 20 statements per section</td>
-              <td>A single pass over a long paper drops material without saying so.</td>
-            </tr>
-            <tr>
-              <td class="tier">Unverified status added</td>
-              <td>A failed catalog fetch previously turned unchecked statements into Novel findings.</td>
-            </tr>
-            <tr>
-              <td class="tier">New step 9, one priority scale plus evidence ceilings</td>
-              <td>v1.0 separated blocking from advisory inside draft mechanics only, so an integrity finding and a typo shared a report with no severity spine.</td>
-            </tr>
-            <tr>
-              <td class="tier">Recurrence escalation added</td>
-              <td>One occurrence is a slip. A repeated defect is a process problem and reads differently.</td>
-            </tr>
-            <tr>
-              <td class="tier">Known false positive list added</td>
-              <td>Without one, the same misclassifications recur on every run with nothing to catch them.</td>
-            </tr>
-            <tr>
-              <td class="tier">Tier column added to the findings table</td>
-              <td>Lets a reader sort by severity instead of reading every row.</td>
-            </tr>
-            <tr>
-              <td class="tier">Candidate queue check removed from the report step</td>
-              <td>The queue has not moved since it was created: four entries from one review date, none incorporated into a catalog, every source unverified. Sending a reviewer there as a deduplication check does nothing until it moves again. Novel candidates are still reported, now carrying the near-matches that were rejected and why.</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
 
       <p class="section-label">What happens to a Novel finding</p>
       <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-6);">

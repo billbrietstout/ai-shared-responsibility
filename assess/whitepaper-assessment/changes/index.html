@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Whitepaper Assessment Prompt Changelog: CoSAI SRF</title>
+    <meta
+      name="description"
+      content="What changed in whitepaper assessment prompt v2.1 and v2.0, and which older assessment reports stay valid."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .table-scroll { overflow-x: auto; margin-bottom: var(--sp-6); }
+      .tier-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+      .tier-table th { text-align: left; font-size: var(--text-xs); letter-spacing: 0.04em; text-transform: uppercase; color: var(--slate-500); font-weight: 700; padding: var(--sp-2) var(--sp-3); border-bottom: 2px solid var(--slate-200); }
+      .tier-table td { padding: var(--sp-3); border-bottom: 1px solid var(--slate-100); color: var(--slate-700); vertical-align: top; line-height: var(--leading-snug); }
+      .tier-table tr:last-child td { border-bottom: none; }
+      .tier-table .tier { font-weight: 700; color: var(--slate-800); }
+      .lede-p {
+        max-width: 720px;
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-5);
+      }
+    </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "Whitepaper Assessment Prompt Changelog",
+  "url": "https://aisharedresponsibility.com/assess/whitepaper-assessment/changes/",
+  "description": "What changed in whitepaper assessment prompt v2.1 and v2.0, and which older assessment reports stay valid.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  },
+  "isAccessibleForFree": true
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="reference" />
+    <meta name="llm:canonical-id" content="srf.page.assess-whitepaper-assessment-changes" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.data.security-principles, srf.data.ai-agentic-principles, srf.data.threats, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5" />
+    <!-- /llm:meta -->
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="assess"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <p class="page-hero__eyebrow">Assess</p>
+      <h1>Whitepaper assessment changelog</h1>
+      <p class="page-hero__lede">
+        Prompt versions 2.1 and 2.0. What each version added or demoted, and
+        which older reports stay valid. The live prompt is
+        <a href="/assess/whitepaper-assessment/">v2.1</a>.
+      </p>
+    </header>
+
+    <main id="main" class="page-body">
+      <p class="section-label">What changed in 2.1</p>
+      <p class="lede-p">
+        Step 1 grew three checks. All of them replace judging prose by eye with
+        counting something a reader can re-count. An assessment produced under
+        2.0 stays valid; it simply screened less of the submission.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr><th>Change</th><th>Reason</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">Claim support check added to step 1</td>
+              <td>Counts unsourced statistics, recommendations naming no version or setting a reader could act on, and experience claims with no environment or timeframe. A claim nobody can check is unusable whoever wrote it.</td>
+            </tr>
+            <tr>
+              <td class="tier">Currency check added to step 1</td>
+              <td>Names the newest dated item in the paper next to its publication date. A gap over a year is a fact about the paper rather than an inference about its author.</td>
+            </tr>
+            <tr>
+              <td class="tier">Production artifact check added to step 1</td>
+              <td>Markup surviving into a PDF, placeholder text, scaffolding addressed to a requester, and a figure carrying two values in two sections are all defects with a location and a fix.</td>
+            </tr>
+            <tr>
+              <td class="tier">Citation check now reads the shape of the bibliography</td>
+              <td>A list where every entry is canonical and heavily cited, with nothing recent or specific to the subject, is worth reporting next to the resolver output.</td>
+            </tr>
+            <tr>
+              <td class="tier">Disclosure bullet narrowed further</td>
+              <td>2.0 barred inferring generation from prose rhythm. 2.1 extends that to vocabulary, punctuation habits, and sentence uniformity, and says plainly that no volume of stylistic signal reaches an integrity verdict.</td>
+            </tr>
+            <tr>
+              <td class="tier">Two false positives added to step 9</td>
+              <td>A standards document written at principle level on purpose reads as unactionable. A survey cites old work because that is its subject.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="section-label">What changed in 2.0</p>
+      <p class="lede-p">
+        The eight steps of v1.0 became eleven. Three are new. The rest are edits
+        in place, and most of them are demotions. An assessment produced under
+        v1.0 stays valid on its principle mapping; its step 0 findings are the
+        ones to re-read, since v1.0 permitted intent-based conclusions that v2.0
+        caps at an observation.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr><th>Change</th><th>Reason</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">Governing rule added above step 0</td>
+              <td>Every severity ceiling below follows from it, so it has to be stated before the steps rather than implied by them.</td>
+            </tr>
+            <tr>
+              <td class="tier">New step 0, intake</td>
+              <td>A partial read produces a confident and wrong coverage-gap list. Bad extraction manufactures findings rather than hiding them.</td>
+            </tr>
+            <tr>
+              <td class="tier">Disclosure bullet rewritten to observable facts</td>
+              <td>v1.0 asked the reviewer to identify undisclosed sponsorship and undisclosed bot generation. Both require asserting something that by construction is not in evidence.</td>
+            </tr>
+            <tr>
+              <td class="tier">Prose-rhythm signal demoted to P4</td>
+              <td>House style guides, standards templates, single authors, and non-native English writers all produce uniform rhythm.</td>
+            </tr>
+            <tr>
+              <td class="tier">Citation check now resolves identifiers against registries</td>
+              <td>Crossref, arXiv, DataCite, and Semantic Scholar answer the question that reading a reference list cannot.</td>
+            </tr>
+            <tr>
+              <td class="tier">Extraction chunked at roughly 20 statements per section</td>
+              <td>A single pass over a long paper drops material without saying so.</td>
+            </tr>
+            <tr>
+              <td class="tier">Unverified status added</td>
+              <td>A failed catalog fetch previously turned unchecked statements into Novel findings.</td>
+            </tr>
+            <tr>
+              <td class="tier">New step 9, one priority scale plus evidence ceilings</td>
+              <td>v1.0 separated blocking from advisory inside draft mechanics only, so an integrity finding and a typo shared a report with no severity spine.</td>
+            </tr>
+            <tr>
+              <td class="tier">Recurrence escalation added</td>
+              <td>One occurrence is a slip. A repeated defect is a process problem and reads differently.</td>
+            </tr>
+            <tr>
+              <td class="tier">Known false positive list added</td>
+              <td>Without one, the same misclassifications recur on every run with nothing to catch them.</td>
+            </tr>
+            <tr>
+              <td class="tier">Tier column added to the findings table</td>
+              <td>Lets a reader sort by severity instead of reading every row.</td>
+            </tr>
+            <tr>
+              <td class="tier">Candidate queue check removed from the report step</td>
+              <td>The queue has not moved since it was created: four entries from one review date, none incorporated into a catalog, every source unverified. Sending a reviewer there as a deduplication check does nothing until it moves again. Novel candidates are still reported, now carrying the near-matches that were rejected and why.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="max-width: 720px; font-size: var(--text-sm);">
+        <a href="/assess/whitepaper-assessment/">Back to the prompt</a>
+      </p>
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>
