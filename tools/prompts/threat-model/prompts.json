@@ -1,10 +1,10 @@
 {
-  "version": "1.3",
+  "version": "1.4",
   "updated": "2026-08-21",
   "canonical_url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
   "schema_url": "/eval/threat-model/schema.json",
-  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a readable report. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. Track B writes layer, persona, and party onto each threat. After either track, P-export-md, P-export-json, and P-export-csv write a markdown report, the completed JSON file, and a threat-database CSV.",
-  "lane": "Track A elicits threats from the diagram and classifies them. Track B writes one SRF persona and one party onto each threat. STRIDE and PHANTOM-B stay cited as Shostack and Microsoft methods. After either track, run the export steps to produce the markdown report, the completed JSON file, and the threat-database CSV.",
+  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a readable report. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. Track B writes layer, persona, and party onto each threat. After either track, P-export-md, P-export-json, P-export-csv, and P-export-diagram write a markdown report, the completed JSON file, a threat-database CSV, and a Mermaid threat-model diagram.",
+  "lane": "Track A elicits threats from the diagram and classifies them. Track B writes one SRF persona and one party onto each threat. STRIDE and PHANTOM-B stay cited as Shostack and Microsoft methods. After either track, run the export steps to produce the markdown report, the completed JSON file, the threat-database CSV, and the Mermaid threat-model diagram.",
   "citations": [
     {
       "id": "shostack-four-questions",
@@ -366,6 +366,12 @@
       "id": "P-export-csv",
       "track": "export",
       "stage": "export",
+      "next": "P-export-diagram"
+    },
+    {
+      "id": "P-export-diagram",
+      "track": "export",
+      "stage": "export",
       "next": null,
       "optional_next": "P-srf-join"
     }
@@ -702,6 +708,18 @@
       "output_key": "threats_csv",
       "stop_condition": "The assistant reply is RFC 4180 CSV with a header and one row per threat. No fences.",
       "template": "{{shared_rules}}\n\nThis step writes the threat database. Output CSV only, starting at the header row. Do not wrap it in a JSON object or in fences.\n\nStep: P-export-csv. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Flatten threats[] into a spreadsheet a tracker or GRC tool can import.\n\nFull matrix:\n{{full_matrix}}\n\nHeader, exactly these columns in this order:\nsystem_name,threat_id,scenario,diagram_referent,attacker_position,preconditions,asset,source,stride,phantom_b,cia,action_type,action_detail,control_point,validation_kind,validation_detail,owasp_llm_top10,ai_exchange_slug,atlas,srf_layer,srf_persona,srf_party,srf_note\n\nRow rules:\n- One row per threat. Include every threat. Do not add threats.\n- threat_id is threats[].id (T1, T2, ...).\n- system_name is the matrix system_name on every row.\n- stride, phantom_b, and cia are the letters joined with a pipe, no spaces (example S|T). Empty array is an empty cell.\n- action_type, action_detail, and control_point come from action.\n- validation_kind and validation_detail come from action.validation. Empty when validation is null (transfer and accept).\n- owasp_llm_top10, ai_exchange_slug, and atlas come from citations, or from srf.join.ai_exchange_slug when citations.ai_exchange_slug is empty.\n- srf_layer, srf_persona, srf_party, and srf_note come from srf when present. Empty when Track B was not run. srf.party is never the word shared.\n- Use RFC 4180: UTF-8, comma separators, wrap a field in double quotes when it contains a comma, quote, or newline, and escape a quote as two quotes.\n- Write an empty cell for a missing value. Do not write the word null.\n- Do not invent ids, slugs, or personas.\n"
+    },
+    {
+      "id": "P-export-diagram",
+      "title": "Write the Mermaid threat-model diagram",
+      "track": "export",
+      "stage": "export",
+      "inputs": [
+        "full_matrix"
+      ],
+      "output_key": "diagram.mermaid",
+      "stop_condition": "The assistant reply is Mermaid flowchart source that uses only inventory ids. Every threat id appears on its diagram_referent. No invented nodes. No fences.",
+      "template": "{{shared_rules}}\n\nThis step writes the Mermaid threat-model diagram. Output Mermaid flowchart source only, starting at the first %% line or the flowchart keyword. Do not wrap it in a JSON object or in markdown fences.\n\nStep: P-export-diagram. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Draw the inventory as a data-flow diagram and hang each threat id on the referent it already names. This diagram does not replace the uploaded source representation.\n\nFull matrix:\n{{full_matrix}}\n\nRequired shape:\n1. First line: %% Threat model: {system_name}\n2. Second line: flowchart LR  (use TB only if LR will not fit).\n3. One subgraph per inventory.trust_boundaries row. The subgraph id is that boundary id. Its contains[] members are the only nodes inside it.\n4. One node per inventory component, external_actor, and data_store. Mermaid node id is the inventory id with hyphens changed to underscores. The visible label is inventory.name, then a line break, then every threat id whose diagram_referent equals that inventory id, joined by spaces.\n5. Data stores use the cylinder shape: id[(\"name\")].\n6. One edge per inventory.data_flows row: from -->|label| to. If a threat names that flow id as diagram_referent, append those threat ids to the edge label.\n7. classDef llm for llm_subset nodes. classDef drawnControl for each existing_controls[].diagram_referent. Apply those classes. Do not add control nodes.\n8. If inventory.missing_trust_boundaries is true, write %% missing_trust_boundaries: true and draw no subgraphs.\n9. After the flowchart, a %% legend listing each threat id, its diagram_referent, stride letters, and action.type. One threat per line.\n\nRules:\n- Use only ids that exist in the inventory. Do not invent components, actors, stores, flows, vendors, or trust boundaries.\n- Include every inventory node and every data_flow.\n- Include every threat id exactly once on its referent (node or edge).\n- Do not add nodes for attackers, threats, or actions.\n- Do not draw an attack tree.\n- Do not put mitigations on the graph except the drawnControl class.\n- If a referent is missing from the inventory, omit that annotation and add %% gap: threat {id} referent {referent} not in inventory.\n"
     }
   ],
   "baseline_prompts": [

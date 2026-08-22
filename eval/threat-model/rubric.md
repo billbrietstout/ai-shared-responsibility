@@ -57,6 +57,8 @@ that omits them, because gold-echo fixtures have no elicited threats.
 - after either track, `P-export-md` writes the markdown report,
   `P-export-json` writes the completed JSON file, and `P-export-csv` writes
   one row per threat
+- `P-export-diagram` writes a Mermaid threat-model diagram of the inventory
+  with threat ids on their referents
 
 ## Schema
 

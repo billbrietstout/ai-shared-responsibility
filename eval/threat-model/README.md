@@ -49,9 +49,10 @@ Prediction layout:
 ```
 
 Each file must match `eval/threat-model/schema.json`. After Track A or Track B,
-run `P-export-md`, `P-export-json`, then `P-export-csv`. The markdown reply is
-the readable report. The JSON reply is the completed record. The CSV reply is
-one row per threat.
+run `P-export-md`, `P-export-json`, `P-export-csv`, then `P-export-diagram`.
+The markdown reply is the readable report. The JSON reply is the completed
+record. The CSV reply is one row per threat. The Mermaid reply is the
+threat-model diagram.
 
 Scores:
 
@@ -74,8 +75,8 @@ python3 eval/threat-model/run_generate.py --mode identity
 
 Writes filled prompt text under `eval/threat-model/runs/<mode>/prompts/`. Run
 the chain in numeric order. After Track A, run `E01-P-export-md`,
-`E02-P-export-json`, and `E03-P-export-csv`. Save the JSON as
-`<run>/<system_id>/<format>.json`.
+`E02-P-export-json`, `E03-P-export-csv`, and `E04-P-export-diagram`.
+Save the JSON as `<run>/<system_id>/<format>.json`.
 Optional `--call-api` needs `OPENAI_API_KEY`
 or `TM_API_KEY` and only fires the first prompt per format; later steps still
 need prior JSON pasted in.

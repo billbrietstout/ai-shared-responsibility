@@ -45,12 +45,12 @@ def operator_banner(p: dict, pack: dict) -> str:
     elif optional_next:
         nxt_p = prompt_by_id(pack, optional_next)
         nxt_title = nxt_p["title"] if nxt_p else optional_next
-        if pid == "P-export-csv":
+        if pid == "P-export-diagram":
             follow = (
-                f"Export ends here. Save the P-export-md reply as a .md file, the "
-                f"P-export-json reply as a .json file, and this reply as a .csv file. "
-                f"If Track B is not yet applied, optional next: {optional_next} "
-                f"({nxt_title}). If Track B is already applied, stop."
+                f"Export ends here. Save the markdown, JSON, and CSV replies, and "
+                f"save this Mermaid reply as a .mmd file. If Track B is not yet "
+                f"applied, optional next: {optional_next} ({nxt_title}). If Track B "
+                f"is already applied, stop."
             )
         else:
             follow = (
@@ -67,6 +67,8 @@ def operator_banner(p: dict, pack: dict) -> str:
         echo = "Do not echo this line in the markdown."
     elif pid == "P-export-csv":
         echo = "Do not echo this line in the CSV."
+    elif pid == "P-export-diagram":
+        echo = "Do not echo this line in the Mermaid."
     else:
         echo = "Do not echo this line in the JSON."
     return f"[chain] This prompt is {pid} ({title}). {follow} {echo}\n\n"
@@ -159,7 +161,7 @@ def main():
     <title>AI System Diagram Threat Modeling · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix, a markdown report, completed JSON, and a threat-database CSV. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
+      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix, a markdown report, completed JSON, a threat-database CSV, and a Mermaid threat-model diagram. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -342,7 +344,7 @@ def main():
   "@type": "TechArticle",
   "name": "AI System Diagram Threat Modeling Prompts",
   "url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
-  "description": "Prompts that read an AI system diagram and write a threat matrix, a markdown report, completed JSON, and a threat-database CSV. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
+  "description": "Prompts that read an AI system diagram and write a threat matrix, a markdown report, completed JSON, a threat-database CSV, and a Mermaid threat-model diagram. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
   "publisher": {{
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -364,11 +366,12 @@ def main():
         <h1 class="page-hero__title">AI system diagram threat modeling</h1>
         <p class="page-hero__lede">
           Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a
-          threat matrix, a markdown report, completed JSON, and a threat-database CSV.
+          threat matrix, a markdown report, completed JSON, a threat-database CSV,
+          and a Mermaid threat-model diagram.
           Track A walks Shostack's Four Questions; each step is filled with the previous
           step's JSON (the Auspex chain shape). Track B writes layer, persona, and party
           onto each threat. After either track, run the export steps and save the
-          markdown reply, the JSON reply, and the CSV threat database as files.
+          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/eval/threat-model/">How this pack scores against three published threat models</a>.
@@ -391,8 +394,8 @@ def main():
           <li>Fill each template from the prior JSON (<code>inventory</code>, <code>threats</code>, <code>full_matrix</code>, and the other <code>{{{{ }}}}</code> slots).</li>
           <li>Keep the diagram attached on every step that names <code>{{{{representation}}}}</code>. Set <code>representation_kind</code> to match the attachment.</li>
           <li>If a <code>stop_condition</code> fails, stop and show the gap.</li>
-          <li>After P-report, run P-export-md, P-export-json, then P-export-csv. Save those replies as <code>.md</code>, <code>.json</code>, and <code>.csv</code>.</li>
-          <li>Optional: after Track A, run Track B, then run the three export steps again.</li>
+          <li>After P-report, run P-export-md, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
+          <li>Optional: after Track A, run Track B, then run the export steps again.</li>
         </ol>
         <p>
           If the chat cannot fetch that file, use the copy-one-block steps under
@@ -406,7 +409,7 @@ Run Track A: every object in chain where track is "A", in listed order (P-norm t
 
 Do not skip a step. If a stop_condition fails, stop and show the gap.
 
-After P-report, run P-export-md, then P-export-json, then P-export-csv. I will save those three replies as .md, .json, and .csv. Leave report.reviewer empty.
+After P-report, run P-export-md, then P-export-json, then P-export-csv, then P-export-diagram. I will save those replies as .md, .json, .csv, and .mmd. Leave report.reviewer empty.
 
 Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</pre>
         </div>
@@ -420,7 +423,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
         <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
         <li>Optionally run <a href="#track-b">Track B</a> (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
-        <li>After the track you used, run <a href="#export-report">P-export-md</a>, P-export-json, then P-export-csv. Save those replies as a <code>.md</code> file, a <code>.json</code> file, and a <code>.csv</code> threat database.</li>
+        <li>After the track you used, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
 
@@ -429,7 +432,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li><a href="#shortcut">Shortcut: one chat</a></li>
         <li><a href="#q1">Track A: Four Questions</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
-        <li><a href="#export-report">Export the report, JSON, and CSV</a></li>
+        <li><a href="#export-report">Export the report, JSON, CSV, and diagram</a></li>
         <li><a href="#baselines">Evaluation baselines</a></li>
       </ul>
 
@@ -482,7 +485,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         SRF persona and one party onto each threat. If matrix.json says shared, still
         name one lead. Cite an OWASP, ATLAS, or AI Exchange id only when it exists in
         that source. After either track, the export steps write the files a reviewer
-        can keep: a markdown report, the completed JSON, and a threat-database CSV.
+        can keep: a markdown report, the completed JSON, a threat-database CSV,
+        and a Mermaid threat-model diagram.
       </p>
 
 {q1}
@@ -495,7 +499,9 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <p>
           The assistant JSON after P-report is the Track A matrix. Optional
           <a href="#track-b">Track B</a> is next. Then run the
-          <a href="#export-report">export steps</a> and save the markdown, JSON, and CSV replies.
+          <a href="#export-report">export steps</a> and save the
+          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
+          <code>.mmd</code> replies.
           Schema:
           <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
           Eval path: <code>&lt;system-id&gt;/image.json</code> (or
@@ -511,7 +517,9 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         </ul>
         <p>
           Track B is optional and reads the same JSON. After the track you used,
-          run the <a href="#export-report">export steps</a> and save the three replies.
+          run the <a href="#export-report">export steps</a> and save the
+          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
+          <code>.mmd</code> replies.
         </p>
       </div>
 
@@ -528,7 +536,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
           The assistant JSON after P-srf-owner is the Track A matrix with
           <code>srf</code> on every threat. Same schema;
           <code>chain_meta.track_b_applied</code> is true. Re-run the export steps
-          on this JSON so the report and CSV include layer, persona, and party.
+          on this JSON so the report, CSV, and diagram use the Track B matrix.
         </p>
         <ul>
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
@@ -539,17 +547,20 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <p>
           Track B does not add threats. A threat with no matching slug still needs
           layer, persona, and party from P-srf-layer and P-srf-owner. Next, run
-          <a href="#export-report">Export the report and JSON</a> on this JSON.
+          <a href="#export-report">Export the report, JSON, CSV, and diagram</a>
+          on this JSON.
         </p>
       </div>
 
-      <p class="section-label" id="export-report">Export the report and JSON</p>
+      <p class="section-label" id="export-report">Export the report, JSON, CSV, and diagram</p>
       <p class="section-note">
-        These three prompts run after Track A, and again after Track B if you used it.
-        P-export-md writes the readable report; save that reply as a
-        <code>.md</code> file. P-export-json writes the completed record; save that
-        reply as a <code>.json</code> file. P-export-csv writes one row per threat;
-        save that reply as a <code>.csv</code> file. Leave the reviewer line empty.
+        These four prompts run after Track A, and again after Track B if you used it.
+        P-export-md writes the readable report (<code>.md</code>).
+        P-export-json writes the completed record (<code>.json</code>).
+        P-export-csv writes one row per threat (<code>.csv</code>).
+        P-export-diagram writes a Mermaid data-flow of the inventory with threat
+        ids on their referents (<code>.mmd</code>). It uses only inventory ids.
+        Leave the reviewer line empty.
       </p>
 {export_html}
 

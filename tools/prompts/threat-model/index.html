@@ -6,7 +6,7 @@
     <title>AI System Diagram Threat Modeling · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix, a markdown report, completed JSON, and a threat-database CSV. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
+      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix, a markdown report, completed JSON, a threat-database CSV, and a Mermaid threat-model diagram. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -189,7 +189,7 @@
   "@type": "TechArticle",
   "name": "AI System Diagram Threat Modeling Prompts",
   "url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
-  "description": "Prompts that read an AI system diagram and write a threat matrix, a markdown report, completed JSON, and a threat-database CSV. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
+  "description": "Prompts that read an AI system diagram and write a threat matrix, a markdown report, completed JSON, a threat-database CSV, and a Mermaid threat-model diagram. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
   "publisher": {
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -214,11 +214,12 @@
         <h1 class="page-hero__title">AI system diagram threat modeling</h1>
         <p class="page-hero__lede">
           Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a
-          threat matrix, a markdown report, completed JSON, and a threat-database CSV.
+          threat matrix, a markdown report, completed JSON, a threat-database CSV,
+          and a Mermaid threat-model diagram.
           Track A walks Shostack's Four Questions; each step is filled with the previous
           step's JSON (the Auspex chain shape). Track B writes layer, persona, and party
           onto each threat. After either track, run the export steps and save the
-          markdown reply, the JSON reply, and the CSV threat database as files.
+          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/eval/threat-model/">How this pack scores against three published threat models</a>.
@@ -241,8 +242,8 @@
           <li>Fill each template from the prior JSON (<code>inventory</code>, <code>threats</code>, <code>full_matrix</code>, and the other <code>{{ }}</code> slots).</li>
           <li>Keep the diagram attached on every step that names <code>{{representation}}</code>. Set <code>representation_kind</code> to match the attachment.</li>
           <li>If a <code>stop_condition</code> fails, stop and show the gap.</li>
-          <li>After P-report, run P-export-md, P-export-json, then P-export-csv. Save those replies as <code>.md</code>, <code>.json</code>, and <code>.csv</code>.</li>
-          <li>Optional: after Track A, run Track B, then run the three export steps again.</li>
+          <li>After P-report, run P-export-md, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
+          <li>Optional: after Track A, run Track B, then run the export steps again.</li>
         </ol>
         <p>
           If the chat cannot fetch that file, use the copy-one-block steps under
@@ -256,7 +257,7 @@ Run Track A: every object in chain where track is "A", in listed order (P-norm t
 
 Do not skip a step. If a stop_condition fails, stop and show the gap.
 
-After P-report, run P-export-md, then P-export-json, then P-export-csv. I will save those three replies as .md, .json, and .csv. Leave report.reviewer empty.
+After P-report, run P-export-md, then P-export-json, then P-export-csv, then P-export-diagram. I will save those replies as .md, .json, .csv, and .mmd. Leave report.reviewer empty.
 
 Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</pre>
         </div>
@@ -270,7 +271,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
         <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
         <li>Optionally run <a href="#track-b">Track B</a> (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
-        <li>After the track you used, run <a href="#export-report">P-export-md</a>, P-export-json, then P-export-csv. Save those replies as a <code>.md</code> file, a <code>.json</code> file, and a <code>.csv</code> threat database.</li>
+        <li>After the track you used, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
 
@@ -279,7 +280,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li><a href="#shortcut">Shortcut: one chat</a></li>
         <li><a href="#q1">Track A: Four Questions</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
-        <li><a href="#export-report">Export the report, JSON, and CSV</a></li>
+        <li><a href="#export-report">Export the report, JSON, CSV, and diagram</a></li>
         <li><a href="#baselines">Evaluation baselines</a></li>
       </ul>
 
@@ -341,7 +342,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         SRF persona and one party onto each threat. If matrix.json says shared, still
         name one lead. Cite an OWASP, ATLAS, or AI Exchange id only when it exists in
         that source. After either track, the export steps write the files a reviewer
-        can keep: a markdown report, the completed JSON, and a threat-database CSV.
+        can keep: a markdown report, the completed JSON, a threat-database CSV,
+        and a Mermaid threat-model diagram.
       </p>
 
       <p class="section-label" id="q1">Q1. What are we working on?</p>
@@ -1358,7 +1360,9 @@ Return the full matrix JSON with report and chain_meta filled:
         <p>
           The assistant JSON after P-report is the Track A matrix. Optional
           <a href="#track-b">Track B</a> is next. Then run the
-          <a href="#export-report">export steps</a> and save the markdown, JSON, and CSV replies.
+          <a href="#export-report">export steps</a> and save the
+          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
+          <code>.mmd</code> replies.
           Schema:
           <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
           Eval path: <code>&lt;system-id&gt;/image.json</code> (or
@@ -1374,7 +1378,9 @@ Return the full matrix JSON with report and chain_meta filled:
         </ul>
         <p>
           Track B is optional and reads the same JSON. After the track you used,
-          run the <a href="#export-report">export steps</a> and save the three replies.
+          run the <a href="#export-report">export steps</a> and save the
+          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
+          <code>.mmd</code> replies.
         </p>
       </div>
 
@@ -1546,7 +1552,7 @@ Return the full matrix JSON with srf filled on every threat:
           The assistant JSON after P-srf-owner is the Track A matrix with
           <code>srf</code> on every threat. Same schema;
           <code>chain_meta.track_b_applied</code> is true. Re-run the export steps
-          on this JSON so the report and CSV include layer, persona, and party.
+          on this JSON so the report, CSV, and diagram use the Track B matrix.
         </p>
         <ul>
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
@@ -1557,17 +1563,20 @@ Return the full matrix JSON with srf filled on every threat:
         <p>
           Track B does not add threats. A threat with no matching slug still needs
           layer, persona, and party from P-srf-layer and P-srf-owner. Next, run
-          <a href="#export-report">Export the report and JSON</a> on this JSON.
+          <a href="#export-report">Export the report, JSON, CSV, and diagram</a>
+          on this JSON.
         </p>
       </div>
 
-      <p class="section-label" id="export-report">Export the report and JSON</p>
+      <p class="section-label" id="export-report">Export the report, JSON, CSV, and diagram</p>
       <p class="section-note">
-        These three prompts run after Track A, and again after Track B if you used it.
-        P-export-md writes the readable report; save that reply as a
-        <code>.md</code> file. P-export-json writes the completed record; save that
-        reply as a <code>.json</code> file. P-export-csv writes one row per threat;
-        save that reply as a <code>.csv</code> file. Leave the reviewer line empty.
+        These four prompts run after Track A, and again after Track B if you used it.
+        P-export-md writes the readable report (<code>.md</code>).
+        P-export-json writes the completed record (<code>.json</code>).
+        P-export-csv writes one row per threat (<code>.csv</code>).
+        P-export-diagram writes a Mermaid data-flow of the inventory with threat
+        ids on their referents (<code>.mmd</code>). It uses only inventory ids.
+        Leave the reviewer line empty.
       </p>
       <div class="prompt-block is-collapsed" id="P-export-md-block" data-prompt-id="P-export-md">
         <div class="prompt-block__header">
@@ -1717,13 +1726,13 @@ Return the full matrix JSON:
       </div>
       <div class="prompt-block is-collapsed" id="P-export-csv-block" data-prompt-id="P-export-csv">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">P-export-csv · Write the threat-database CSV · Export · optional next P-srf-join</span>
+          <span class="prompt-block__label">P-export-csv · Write the threat-database CSV · Export · next P-export-diagram</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-export-csv-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-export-csv-block', this)">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is P-export-csv (Write the threat-database CSV). Export ends here. Save the P-export-md reply as a .md file, the P-export-json reply as a .json file, and this reply as a .csv file. If Track B is not yet applied, optional next: P-srf-join (Join AI Exchange slugs). If Track B is already applied, stop. Do not echo this line in the CSV.
+        <pre>[chain] This prompt is P-export-csv (Write the threat-database CSV). Next prompt: P-export-diagram (Write the Mermaid threat-model diagram). Do not echo this line in the CSV.
 
 You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
 
@@ -1766,6 +1775,63 @@ Row rules:
 - Use RFC 4180: UTF-8, comma separators, wrap a field in double quotes when it contains a comma, quote, or newline, and escape a quote as two quotes.
 - Write an empty cell for a missing value. Do not write the word null.
 - Do not invent ids, slugs, or personas.
+</pre>
+      </div>
+      <div class="prompt-block is-collapsed" id="P-export-diagram-block" data-prompt-id="P-export-diagram">
+        <div class="prompt-block__header">
+          <span class="prompt-block__label">P-export-diagram · Write the Mermaid threat-model diagram · Export · optional next P-srf-join</span>
+          <div class="prompt-block__actions">
+            <button class="prompt-block__toggle" type="button" onclick="togglePrompt('P-export-diagram-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-export-diagram-block', this)">Copy</button>
+          </div>
+        </div>
+        <pre>[chain] This prompt is P-export-diagram (Write the Mermaid threat-model diagram). Export ends here. Save the markdown, JSON, and CSV replies, and save this Mermaid reply as a .mmd file. If Track B is not yet applied, optional next: P-srf-join (Join AI Exchange slugs). If Track B is already applied, stop. Do not echo this line in the Mermaid.
+
+You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).
+
+Rules:
+- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
+- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).
+- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.
+- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.
+- Every threat scenario must name a diagram_referent whose id exists in the inventory.
+- Do not recite a generic catalog line (for example "LLMs can be prompt-injected") with no referent in this diagram.
+- Do not use DREAD, OCTAVE, or attack trees as the primary method.
+- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.
+- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.
+- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.
+- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.
+- Once adversary.positions exists, every threat must set attacker_position to one of those ids.
+- List an existing control only when a label, component, or flow on the diagram shows it.
+- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.
+- Leave report.reviewer empty. A human fills it.
+
+This step writes the Mermaid threat-model diagram. Output Mermaid flowchart source only, starting at the first %% line or the flowchart keyword. Do not wrap it in a JSON object or in markdown fences.
+
+Step: P-export-diagram. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Draw the inventory as a data-flow diagram and hang each threat id on the referent it already names. This diagram does not replace the uploaded source representation.
+
+Full matrix:
+{{full_matrix}}
+
+Required shape:
+1. First line: %% Threat model: {system_name}
+2. Second line: flowchart LR  (use TB only if LR will not fit).
+3. One subgraph per inventory.trust_boundaries row. The subgraph id is that boundary id. Its contains[] members are the only nodes inside it.
+4. One node per inventory component, external_actor, and data_store. Mermaid node id is the inventory id with hyphens changed to underscores. The visible label is inventory.name, then a line break, then every threat id whose diagram_referent equals that inventory id, joined by spaces.
+5. Data stores use the cylinder shape: id[("name")].
+6. One edge per inventory.data_flows row: from --&gt;|label| to. If a threat names that flow id as diagram_referent, append those threat ids to the edge label.
+7. classDef llm for llm_subset nodes. classDef drawnControl for each existing_controls[].diagram_referent. Apply those classes. Do not add control nodes.
+8. If inventory.missing_trust_boundaries is true, write %% missing_trust_boundaries: true and draw no subgraphs.
+9. After the flowchart, a %% legend listing each threat id, its diagram_referent, stride letters, and action.type. One threat per line.
+
+Rules:
+- Use only ids that exist in the inventory. Do not invent components, actors, stores, flows, vendors, or trust boundaries.
+- Include every inventory node and every data_flow.
+- Include every threat id exactly once on its referent (node or edge).
+- Do not add nodes for attackers, threats, or actions.
+- Do not draw an attack tree.
+- Do not put mitigations on the graph except the drawnControl class.
+- If a referent is missing from the inventory, omit that annotation and add %% gap: threat {id} referent {referent} not in inventory.
 </pre>
       </div>
 
@@ -1818,8 +1884,8 @@ List threats with STRIDE type, impact, and a mitigation.</pre>
     <site-footer></site-footer>
     <script>
       const TM_STORAGE = 'srf.tm.lastPrompt';
-      const TM_STEPS = [{"id": "P-norm", "title": "Normalize representation", "next": "P-diag", "optional_next": null, "track": "A"}, {"id": "P-diag", "title": "Decompose diagram", "next": "P-app", "optional_next": null, "track": "A"}, {"id": "P-app", "title": "Application details", "next": "P-feat", "optional_next": null, "track": "A"}, {"id": "P-feat", "title": "Key features", "next": "P-scope", "optional_next": null, "track": "A"}, {"id": "P-scope", "title": "In-scope components", "next": "P-sol", "optional_next": null, "track": "A"}, {"id": "P-sol", "title": "Solution description", "next": "P-adv", "optional_next": null, "track": "A"}, {"id": "P-adv", "title": "Attacker capabilities and claim boundary", "next": "P-controls", "optional_next": null, "track": "A"}, {"id": "P-controls", "title": "Existing security features", "next": "P-llm-cut", "optional_next": null, "track": "A"}, {"id": "P-llm-cut", "title": "Mark the LLM subset", "next": "P-stride", "optional_next": null, "track": "A"}, {"id": "P-stride", "title": "STRIDE elicitation", "next": "P-phantom", "optional_next": null, "track": "A"}, {"id": "P-phantom", "title": "PHANTOM-B elicitation", "next": "P-dedup", "optional_next": null, "track": "A"}, {"id": "P-dedup", "title": "Dedup and compose threat list", "next": "P-cia", "optional_next": null, "track": "A"}, {"id": "P-cia", "title": "CIA mapping", "next": "P-stride-map", "optional_next": null, "track": "A"}, {"id": "P-stride-map", "title": "STRIDE mapping", "next": "P-phantom-map", "optional_next": null, "track": "A"}, {"id": "P-phantom-map", "title": "PHANTOM-B mapping", "next": "P-act", "optional_next": null, "track": "A"}, {"id": "P-act", "title": "Choose an action", "next": "P-qa", "optional_next": null, "track": "A"}, {"id": "P-qa", "title": "Self-check", "next": "P-report", "optional_next": null, "track": "A"}, {"id": "P-report", "title": "Write the readable report", "next": "P-export-md", "optional_next": null, "track": "A"}, {"id": "P-srf-join", "title": "Join AI Exchange slugs", "next": "P-srf-layer", "optional_next": null, "track": "B"}, {"id": "P-srf-layer", "title": "Assign SRF layer", "next": "P-srf-owner", "optional_next": null, "track": "B"}, {"id": "P-srf-owner", "title": "Assign one accountable persona", "next": "P-export-md", "optional_next": null, "track": "B"}, {"id": "P-export-md", "title": "Write the downloadable markdown report", "next": "P-export-json", "optional_next": null, "track": "export"}, {"id": "P-export-json", "title": "Write the completed JSON file", "next": "P-export-csv", "optional_next": null, "track": "export"}, {"id": "P-export-csv", "title": "Write the threat-database CSV", "next": null, "optional_next": "P-srf-join", "track": "export"}];
-      const TM_TITLES = {"P-norm": "Normalize representation", "P-diag": "Decompose diagram", "P-app": "Application details", "P-feat": "Key features", "P-scope": "In-scope components", "P-sol": "Solution description", "P-adv": "Attacker capabilities and claim boundary", "P-controls": "Existing security features", "P-llm-cut": "Mark the LLM subset", "P-stride": "STRIDE elicitation", "P-phantom": "PHANTOM-B elicitation", "P-dedup": "Dedup and compose threat list", "P-cia": "CIA mapping", "P-stride-map": "STRIDE mapping", "P-phantom-map": "PHANTOM-B mapping", "P-act": "Choose an action", "P-qa": "Self-check", "P-report": "Write the readable report", "P-srf-join": "Join AI Exchange slugs", "P-srf-layer": "Assign SRF layer", "P-srf-owner": "Assign one accountable persona", "P-export-md": "Write the downloadable markdown report", "P-export-json": "Write the completed JSON file", "P-export-csv": "Write the threat-database CSV", "P-zeroshot": "Zero-shot threat model", "P-identity": "Short expert identity"};
+      const TM_STEPS = [{"id": "P-norm", "title": "Normalize representation", "next": "P-diag", "optional_next": null, "track": "A"}, {"id": "P-diag", "title": "Decompose diagram", "next": "P-app", "optional_next": null, "track": "A"}, {"id": "P-app", "title": "Application details", "next": "P-feat", "optional_next": null, "track": "A"}, {"id": "P-feat", "title": "Key features", "next": "P-scope", "optional_next": null, "track": "A"}, {"id": "P-scope", "title": "In-scope components", "next": "P-sol", "optional_next": null, "track": "A"}, {"id": "P-sol", "title": "Solution description", "next": "P-adv", "optional_next": null, "track": "A"}, {"id": "P-adv", "title": "Attacker capabilities and claim boundary", "next": "P-controls", "optional_next": null, "track": "A"}, {"id": "P-controls", "title": "Existing security features", "next": "P-llm-cut", "optional_next": null, "track": "A"}, {"id": "P-llm-cut", "title": "Mark the LLM subset", "next": "P-stride", "optional_next": null, "track": "A"}, {"id": "P-stride", "title": "STRIDE elicitation", "next": "P-phantom", "optional_next": null, "track": "A"}, {"id": "P-phantom", "title": "PHANTOM-B elicitation", "next": "P-dedup", "optional_next": null, "track": "A"}, {"id": "P-dedup", "title": "Dedup and compose threat list", "next": "P-cia", "optional_next": null, "track": "A"}, {"id": "P-cia", "title": "CIA mapping", "next": "P-stride-map", "optional_next": null, "track": "A"}, {"id": "P-stride-map", "title": "STRIDE mapping", "next": "P-phantom-map", "optional_next": null, "track": "A"}, {"id": "P-phantom-map", "title": "PHANTOM-B mapping", "next": "P-act", "optional_next": null, "track": "A"}, {"id": "P-act", "title": "Choose an action", "next": "P-qa", "optional_next": null, "track": "A"}, {"id": "P-qa", "title": "Self-check", "next": "P-report", "optional_next": null, "track": "A"}, {"id": "P-report", "title": "Write the readable report", "next": "P-export-md", "optional_next": null, "track": "A"}, {"id": "P-srf-join", "title": "Join AI Exchange slugs", "next": "P-srf-layer", "optional_next": null, "track": "B"}, {"id": "P-srf-layer", "title": "Assign SRF layer", "next": "P-srf-owner", "optional_next": null, "track": "B"}, {"id": "P-srf-owner", "title": "Assign one accountable persona", "next": "P-export-md", "optional_next": null, "track": "B"}, {"id": "P-export-md", "title": "Write the downloadable markdown report", "next": "P-export-json", "optional_next": null, "track": "export"}, {"id": "P-export-json", "title": "Write the completed JSON file", "next": "P-export-csv", "optional_next": null, "track": "export"}, {"id": "P-export-csv", "title": "Write the threat-database CSV", "next": "P-export-diagram", "optional_next": null, "track": "export"}, {"id": "P-export-diagram", "title": "Write the Mermaid threat-model diagram", "next": null, "optional_next": "P-srf-join", "track": "export"}];
+      const TM_TITLES = {"P-norm": "Normalize representation", "P-diag": "Decompose diagram", "P-app": "Application details", "P-feat": "Key features", "P-scope": "In-scope components", "P-sol": "Solution description", "P-adv": "Attacker capabilities and claim boundary", "P-controls": "Existing security features", "P-llm-cut": "Mark the LLM subset", "P-stride": "STRIDE elicitation", "P-phantom": "PHANTOM-B elicitation", "P-dedup": "Dedup and compose threat list", "P-cia": "CIA mapping", "P-stride-map": "STRIDE mapping", "P-phantom-map": "PHANTOM-B mapping", "P-act": "Choose an action", "P-qa": "Self-check", "P-report": "Write the readable report", "P-srf-join": "Join AI Exchange slugs", "P-srf-layer": "Assign SRF layer", "P-srf-owner": "Assign one accountable persona", "P-export-md": "Write the downloadable markdown report", "P-export-json": "Write the completed JSON file", "P-export-csv": "Write the threat-database CSV", "P-export-diagram": "Write the Mermaid threat-model diagram", "P-zeroshot": "Zero-shot threat model", "P-identity": "Short expert identity"};
 
       function stepById(id) {
         return TM_STEPS.find((s) => s.id === id) || null;
