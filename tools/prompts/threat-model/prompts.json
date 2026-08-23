@@ -1,10 +1,37 @@
 {
-  "version": "1.4",
-  "updated": "2026-08-21",
+  "version": "2.0",
+  "updated": "2026-08-22",
   "canonical_url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
   "schema_url": "/eval/threat-model/schema.json",
-  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a readable report. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. Track B writes layer, persona, and party onto each threat. After either track, P-export-md, P-export-json, P-export-csv, and P-export-diagram write a markdown report, the completed JSON file, a threat-database CSV, and a Mermaid threat-model diagram.",
-  "lane": "Track A elicits threats from the diagram and classifies them. Track B writes one SRF persona and one party onto each threat. STRIDE and PHANTOM-B stay cited as Shostack and Microsoft methods. After either track, run the export steps to produce the markdown report, the completed JSON file, the threat-database CSV, and the Mermaid threat-model diagram.",
+  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a readable report. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. STRIDE runs in auditable batches when a diagram exceeds one response. Track B, when selected after P-qa, writes layer, persona, and party before P-report finalizes the matrix. The export steps project that final matrix into markdown, JSON, CSV, and Mermaid.",
+  "lane": "Track A inventories the diagram, records drawn controls and diagram-visible control gaps, elicits threats, classifies them, and chooses actions. P-stride repeats until its coverage object is complete. Optional Track B runs after P-qa and before P-report. P-report is the only author of report.markdown; the export steps emit projections of the final matrix.",
+  "runtime_defaults": {
+    "stride_budget": 72
+  },
+  "scoring": {
+    "rubric_url": "/eval/threat-model/rubric.md",
+    "automated_dimensions": [
+      "inventory_fidelity",
+      "format_invariance",
+      "phantom_b_coverage",
+      "stride_coverage",
+      "crossing_flow_coverage",
+      "schema_validity"
+    ],
+    "optional_dimensions": [
+      "hamming_loss",
+      "srf_join_accuracy"
+    ],
+    "human_dimensions": [
+      "scenario_clarity",
+      "copilot_value",
+      "scenario_realism",
+      "false_positive",
+      "would_use_again"
+    ],
+    "aggregation_rule": "Do not average automated and human scores into one number.",
+    "closure_rule": "closure remains false until two reviewers per system complete the SME instruments and expert-corrected labels are scored."
+  },
   "citations": [
     {
       "id": "shostack-four-questions",
@@ -39,23 +66,47 @@
       "note": "Shape only: state attack assumptions and existing features before eliciting threats. Do not copy OAuth threats into an unrelated diagram."
     }
   ],
-  "shared_rules": "You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).\n\nRules:\n- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?\n- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).\n- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.\n- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.\n- Every threat scenario must name a diagram_referent whose id exists in the inventory.\n- Do not recite a generic catalog line (for example \"LLMs can be prompt-injected\") with no referent in this diagram.\n- Do not use DREAD, OCTAVE, or attack trees as the primary method.\n- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.\n- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.\n- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.\n- Output JSON only, matching the schema named in this prompt. No markdown fences, no commentary outside JSON.\n- Once adversary.positions exists, every threat must set attacker_position to one of those ids.\n- List an existing control only when a label, component, or flow on the diagram shows it.\n- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.\n- Leave report.reviewer empty. A human fills it.",
+  "shared_rules": "You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).\n\nRules:\n- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?\n- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).\n- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.\n- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.\n- Every threat scenario must name a diagram_referent whose id exists in the inventory.\n- Do not recite a generic catalog line (for example \"LLMs can be prompt-injected\") with no referent in this diagram.\n- Do not use DREAD, OCTAVE, or attack trees as the primary method.\n- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.\n- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.\n- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.\n- Use the output form named by the step. JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.\n- Once adversary.positions exists, every threat must set attacker_position to one of those ids.\n- List an existing control only when a label, component, or flow on the diagram shows it.\n- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.\n- Leave report.reviewer empty. A human fills it.",
   "roles": [
     {
       "id": "experienced-threat-modeler",
       "label": "Experienced threat modeler",
       "default": true,
-      "tradecraft": "Role: experienced threat modeler. Enumerate concrete scenarios a builder could act on this sprint. Prefer data-flow and trust-boundary analysis over catalogs. When a STRIDE letter does not apply to an element, say so and give a reason."
+      "tradecraft": "Role: experienced threat modeler. Enumerate concrete scenarios a builder could act on this sprint. Prefer data-flow and trust-boundary analysis over catalogs. When a STRIDE letter does not apply to an element, say so and give a reason.",
+      "notices_first": [
+        "entry points, trust-boundary crossings, high-value stores, and controls whose shown coverage is uncertain",
+        "low-prerequisite attack paths available from an adversary position already recorded in the matrix"
+      ],
+      "declines_to_opine": [
+        "provider capacity, undocumented controls, or business impact that the diagram and prior matrix do not show",
+        "likelihood or residual-risk scores when the input supplies no evidence for them"
+      ]
     },
     {
       "id": "application-security",
       "label": "Application security",
-      "tradecraft": "Role: application security engineer. Focus on entry points, authn/authz, input mediation, session handling, and control points the application team can change. Keep a provider-owned infrastructure threat in scope only when the diagram shows it and the application team must demand evidence."
+      "tradecraft": "Role: application security engineer. Focus on entry points, authn/authz, input mediation, session handling, and control points the application team can change. Keep a provider-owned infrastructure threat in scope only when the diagram shows it and the application team must demand evidence.",
+      "notices_first": [
+        "public inputs that can bypass, disable, or choose whether a drawn filter runs",
+        "authorization decisions, session boundaries, parser transitions, and application-owned control points"
+      ],
+      "declines_to_opine": [
+        "provider DDoS capacity, datacenter controls, or model-training controls that are not shown",
+        "a provider-owned remediation when the application team can only require an attestation"
+      ]
     },
     {
       "id": "llm-caller",
       "label": "LLM caller",
-      "tradecraft": "Role: team that calls an LLM (hosted or local). Focus on prompt construction, tool and retrieval inputs, over-reliance, and what the model is allowed to decide. Do not assume you can retrain the base model."
+      "tradecraft": "Role: team that calls an LLM (hosted or local). Focus on prompt construction, tool and retrieval inputs, over-reliance, and what the model is allowed to decide. Do not assume you can retrain the base model.",
+      "notices_first": [
+        "where untrusted content enters prompt assembly, retrieval, tools, memory, or model output handling",
+        "decisions or actions delegated to model output without a drawn approval or policy control"
+      ],
+      "declines_to_opine": [
+        "base-model retraining, provider internals, or training-data facts that are not shown",
+        "model intent, consciousness, guilt, or a provider guarantee not present in the diagram"
+      ]
     }
   ],
   "four_questions": [
@@ -90,7 +141,8 @@
         "P-cia",
         "P-stride-map",
         "P-phantom-map",
-        "P-act"
+        "P-act",
+        "P-rank"
       ]
     },
     {
@@ -273,13 +325,15 @@
       "id": "P-llm-cut",
       "track": "A",
       "stage": "q1",
-      "next": "P-stride"
+      "next": "P-stride",
+      "repeat_until": "llm_subset_decision.status is ready or continue_without_llm"
     },
     {
       "id": "P-stride",
       "track": "A",
       "stage": "q2",
-      "next": "P-phantom"
+      "next": "P-phantom",
+      "repeat_until": "stride_coverage.complete is true"
     },
     {
       "id": "P-phantom",
@@ -315,13 +369,22 @@
       "id": "P-act",
       "track": "A",
       "stage": "q3",
-      "next": "P-qa"
+      "next": "P-qa",
+      "optional_next": "P-rank"
+    },
+    {
+      "id": "P-rank",
+      "track": "optional",
+      "stage": "q3",
+      "next": "P-qa",
+      "optional": true
     },
     {
       "id": "P-qa",
       "track": "A",
       "stage": "q4",
-      "next": "P-report"
+      "next": "P-report",
+      "optional_next": "P-srf-join"
     },
     {
       "id": "P-report",
@@ -347,7 +410,7 @@
       "id": "P-srf-owner",
       "track": "B",
       "stage": "srf",
-      "next": "P-export-md",
+      "next": "P-report",
       "optional": true
     },
     {
@@ -372,8 +435,7 @@
       "id": "P-export-diagram",
       "track": "export",
       "stage": "export",
-      "next": null,
-      "optional_next": "P-srf-join"
+      "next": null
     }
   ],
   "prompts": [
@@ -387,8 +449,8 @@
         "representation"
       ],
       "output_key": "inventory",
-      "stop_condition": "Inventory lists every visible component, actor, store, flow, and drawn trust boundary, with stable ids. representation.version and source_id are set or explicitly unknown. missing_trust_boundaries is true only when none are drawn.",
-      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-norm. Normalize the system representation into a canonical inventory.\n\nRepresentation kind: {{representation_kind}}\nRepresentation follows this line. If kind is mermaid, parse the source text first (nodes, edges, subgraphs as candidate trust zones). If kind is svg, parse groups, labels, and connectors; do not rely on vision alone. If kind is image, read the image only.\n\n{{representation}}\n\nReturn a JSON object with this shape:\n{\n  \"system_name\": \"string\",\n  \"perspective\": \"string naming team view and what we are working on right now\",\n  \"representation\": { \"kind\": \"image|mermaid|svg\", \"source_id\": \"filename or unknown\", \"version\": \"drawn or labeled version, or unknown\", \"commit\": \"commit if labeled, or unknown\" },\n  \"inventory\": {\n    \"components\": [{\"id\": \"kebab-id\", \"name\": \"\", \"type\": \"process\"}],\n    \"external_actors\": [{\"id\": \"\", \"name\": \"\", \"type\": \"actor\"}],\n    \"data_stores\": [{\"id\": \"\", \"name\": \"\", \"type\": \"store\"}],\n    \"data_flows\": [{\"id\": \"\", \"from\": \"id\", \"to\": \"id\", \"label\": \"\", \"crosses_boundary\": \"boundary-id or null\"}],\n    \"trust_boundaries\": [{\"id\": \"\", \"name\": \"\", \"contains\": [\"id\"]}],\n    \"llm_components\": [],\n    \"missing_trust_boundaries\": false\n  }\n}\n\nId rules: lowercase kebab-case, derived from the label on the diagram. Reuse the same id if the label is the same. Do not merge distinct boxes. llm_components may be empty at this step."
+      "stop_condition": "Inventory lists every visible component, actor, store, flow, and drawn trust boundary, with stable ids. representation.version and source_id are set or explicitly unknown. Distinct boxes remain distinct ids. replica_of is used only when the diagram explicitly shows one scaling group or managed pair. missing_trust_boundaries is true only when none are drawn.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-norm. Normalize the system representation into a canonical inventory.\n\nRepresentation kind: {{representation_kind}}\nRepresentation follows this line. If kind is mermaid, parse the source text first (nodes, edges, subgraphs as candidate trust zones). If kind is svg, parse groups, labels, and connectors; do not rely on vision alone. If kind is image, read the image only.\n\n{{representation}}\n\nReturn a JSON object with this shape:\n{\n  \"system_name\": \"string\",\n  \"perspective\": \"string naming team view and what we are working on right now\",\n  \"representation\": { \"kind\": \"image|mermaid|svg\", \"source_id\": \"filename or unknown\", \"version\": \"drawn or labeled version, or unknown\", \"commit\": \"commit if labeled, or unknown\" },\n  \"inventory\": {\n    \"components\": [{\"id\": \"kebab-id\", \"name\": \"\", \"type\": \"process\", \"replica_of\": \"canonical component id or null\", \"replica_evidence\": \"drawn scaling-group or managed-pair evidence, or empty\"}],\n    \"external_actors\": [{\"id\": \"\", \"name\": \"\", \"type\": \"actor\"}],\n    \"data_stores\": [{\"id\": \"\", \"name\": \"\", \"type\": \"store\"}],\n    \"data_flows\": [{\"id\": \"\", \"from\": \"id\", \"to\": \"id\", \"label\": \"\", \"crosses_boundary\": \"boundary-id or null\"}],\n    \"trust_boundaries\": [{\"id\": \"\", \"name\": \"\", \"contains\": [\"id\"]}],\n    \"llm_components\": [],\n    \"missing_trust_boundaries\": false\n  }\n}\n\nId rules: lowercase kebab-case, derived from the label on the diagram. Reuse the same id if the label is the same. Do not merge distinct boxes. Set replica_of only when the representation explicitly groups the boxes as configuration copies in one scaling group or managed pair; otherwise use null. A repeated icon or similar name alone is not enough. llm_components may be empty at this step."
     },
     {
       "id": "P-diag",
@@ -441,8 +503,8 @@
         "inventory"
       ],
       "output_key": "in_scope",
-      "stop_condition": "Every inventory component is either in_scope or out_of_scope with a rationale tied to the named perspective.",
-      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-scope. Mark which architectural components must be included in threat modeling.\n\nPerspective remains what we are working on right now. Do not pull in an unshown enterprise.\n\nArchitecture description:\n{{architecture_description}}\nApplication details:\n{{application_details}}\nKey features:\n{{key_features}}\nInventory:\n{{inventory}}\n\nReturn JSON:\n{\n  \"in_scope\": [{\"id\": \"inventory-id\", \"rationale\": \"why this must be modeled\"}],\n  \"out_of_scope\": [{\"id\": \"inventory-id\", \"rationale\": \"why this stays out for this perspective\"}]\n}"
+      "stop_condition": "Every inventory component is either in_scope or out_of_scope with a rationale tied to the named perspective. Each replica inheritance names a representative, replica, drawn evidence, paired component/flow/boundary ids, and a required divergence-gap scenario.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-scope. Mark which architectural components must be included in threat modeling.\n\nPerspective remains what we are working on right now. Do not pull in an unshown enterprise.\n\nArchitecture description:\n{{architecture_description}}\nApplication details:\n{{application_details}}\nKey features:\n{{key_features}}\nInventory:\n{{inventory}}\n\nReplica rule:\n- Keep every distinct box in inventory.\n- Inherit threat coverage only when P-norm set replica_of from explicit scaling-group or managed-pair evidence.\n- Map each inherited component, flow, or trust-boundary id to the representative id whose considerations it inherits.\n- Require one configuration-divergence scenario for every representative/replica pair. P-dedup later records its threat id.\n\nReturn JSON:\n{\n  \"in_scope\": [{\"id\": \"inventory-id\", \"rationale\": \"why this must be modeled\"}],\n  \"out_of_scope\": [{\"id\": \"inventory-id\", \"rationale\": \"why this stays out for this perspective\"}],\n  \"replica_coverage\": [{\n    \"representative_id\": \"canonical component id\",\n    \"replica_id\": \"replica component id\",\n    \"evidence\": \"what the diagram shows\",\n    \"inherited_element_pairs\": [{\"representative_id\": \"component, flow, or boundary id\", \"replica_id\": \"matching id\"}],\n    \"divergence_gap\": \"configuration or policy drift scenario that P-stride must consider\",\n    \"divergence_threat_id\": null\n  }]\n}"
     },
     {
       "id": "P-sol",
@@ -455,11 +517,12 @@
         "key_features",
         "in_scope",
         "out_of_scope",
+        "replica_coverage",
         "inventory"
       ],
       "output_key": "solution_description",
       "stop_condition": "solS explains how the architecture functions as one system and restates the structured DFD.",
-      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-sol. Combine prior Q1 outputs into a solution description (solS) plus a structured DFD.\n\nArchitecture description:\n{{architecture_description}}\nApplication details:\n{{application_details}}\nKey features:\n{{key_features}}\nIn scope:\n{{in_scope}}\nOut of scope:\n{{out_of_scope}}\nInventory:\n{{inventory}}\n\nReturn JSON:\n{\n  \"solution_description\": \"prose of how the architecture functions as a whole\",\n  \"inventory\": <canonical inventory for all later steps>,\n  \"in_scope\": [...],\n  \"out_of_scope\": [...]\n}"
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-sol. Combine prior Q1 outputs into a solution description (solS) plus a structured DFD.\n\nArchitecture description:\n{{architecture_description}}\nApplication details:\n{{application_details}}\nKey features:\n{{key_features}}\nIn scope:\n{{in_scope}}\nOut of scope:\n{{out_of_scope}}\nReplica coverage:\n{{replica_coverage}}\nInventory:\n{{inventory}}\n\nReturn JSON:\n{\n  \"solution_description\": \"prose of how the architecture functions as a whole\",\n  \"inventory\": <canonical inventory for all later steps>,\n  \"in_scope\": [...],\n  \"out_of_scope\": [...],\n  \"replica_coverage\": [...]\n}"
     },
     {
       "id": "P-adv",
@@ -487,8 +550,8 @@
         "adversary"
       ],
       "output_key": "existing_controls",
-      "stop_condition": "existing_controls lists only features shown on the diagram. Empty is allowed only when none_drawn is true.",
-      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-controls. List security features already visible on the diagram, before writing new threats. This is the RFC 6819 §3 shape: existing features first. Do not invent a control that is not drawn or named.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nAdversary:\n{{adversary}}\n\nInclude authn, TLS, filters, isolation, logging, human approval, network policy, or identity providers only if a label, component, or flow shows them. If none are drawn, return an empty array and set none_drawn true.\n\nReturn JSON:\n{\n  \"existing_controls\": [{\"id\": \"ctl-...\", \"name\": \"\", \"diagram_referent\": \"inventory id\", \"kind\": \"authn|tls|filter|isolation|logging|approval|network|identity|other\"}],\n  \"none_drawn\": false\n}"
+      "stop_condition": "existing_controls lists only features shown on the diagram and records shown coverage without inference. control_absences records only that an expected control is not shown at a named inventory referent. Empty existing_controls is allowed only when none_drawn is true.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-controls. Record security features already visible on the diagram and diagram-visible control gaps before writing threats. This is the RFC 6819 §3 shape: existing features first. Do not invent a control that is not drawn or named.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nAdversary:\n{{adversary}}\n\nExisting-control rules:\n- Include authn, TLS, filters, isolation, logging, human approval, network policy, or identity providers only if a label, component, boundary, badge, or flow shows them.\n- coverage_referents contains only inventory ids the diagram visibly connects, contains, or labels as protected.\n- coverage_basis is connected, contained, label_only, badge_only, or unknown. A badge with no connecting line is badge_only and does not justify broader coverage.\n- If no controls are drawn, return an empty existing_controls array and set none_drawn true.\n\nControl-absence rules:\n- A control_absence says only that the representation does not show the control at expected_referent. It does not claim the deployed system lacks it.\n- expected_referent must be a component, store, flow, or trust-boundary id.\n- Use a stable gap-ctl-* id so threat evidence_refs can cite the observation.\n\nReturn JSON:\n{\n  \"existing_controls\": [{\n    \"id\": \"ctl-...\",\n    \"name\": \"\",\n    \"diagram_referent\": \"inventory id where the control is drawn\",\n    \"kind\": \"authn|tls|filter|isolation|logging|approval|network|identity|other\",\n    \"coverage_referents\": [\"inventory ids visibly protected\"],\n    \"coverage_basis\": \"connected|contained|label_only|badge_only|unknown\"\n  }],\n  \"control_absences\": [{\n    \"id\": \"gap-ctl-...\",\n    \"kind\": \"authn|tls|filter|isolation|logging|approval|network|identity|other\",\n    \"expected_referent\": \"component, store, flow, or trust-boundary id\",\n    \"observation\": \"what the diagram does not show and where\"\n  }],\n  \"none_drawn\": false\n}"
     },
     {
       "id": "P-llm-cut",
@@ -500,8 +563,8 @@
         "inventory"
       ],
       "output_key": "llm_subset",
-      "stop_condition": "llm_subset lists only chatbot, prompt-assembly, or model-runtime nodes. HuggingFace hubs, generic databases, and identity providers are not in the LLM subset unless they emit prompts or run a model.",
-      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-llm-cut. Mark which nodes receive PHANTOM-B. Per Shostack, PHANTOM-B applies to the front end and model runtime, not every box.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\n\nInclude a node if it: assembles or receives prompts, hosts a chatbot, or runs or calls an LLM.\nExclude a node if it only stores weights, serves as a generic database, or is a third-party hub that is not executing inference in this diagram.\n\nReturn JSON:\n{\n  \"llm_subset\": [\"component-id\", \"...\"],\n  \"llm_subset_rationale\": [{\"id\": \"\", \"include\": true, \"reason\": \"\"}]\n}"
+      "stop_condition": "llm_subset lists only chatbot, prompt-assembly, model-caller, or model-runtime nodes. llm_subset_empty equals whether the array is empty. An empty subset must carry a decision status and reason; do not report PHANTOM-B complete.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-llm-cut. Mark which nodes receive PHANTOM-B. Per Shostack, PHANTOM-B applies to the front end and model runtime, not every box.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\n\nInclude a node if it: assembles or receives prompts, hosts a chatbot, runs an LLM, or calls an LLM endpoint.\nExclude a node if it only stores weights, serves as a generic database, or is a third-party hub that is not executing inference in this diagram.\n\nEmpty-subset rule:\n- Set llm_subset_empty to true when llm_subset is empty.\n- If inventory.llm_components or the diagram shows a prompt, chatbot, model caller, or model runtime, set status possible_miss and correct the subset before continuing.\n- If no AI node is drawn, set status needs_operator_confirmation and stop. Ask whether to continue as a STRIDE-only model.\n- After the operator confirms, rerun this step and set status continue_without_llm with the confirmation reason.\n- A non-empty valid subset has status ready.\n\nReturn JSON:\n{\n  \"llm_subset\": [\"component-id\", \"...\"],\n  \"llm_subset_empty\": false,\n  \"llm_subset_rationale\": [{\"id\": \"\", \"include\": true, \"reason\": \"\"}],\n  \"llm_subset_decision\": {\n    \"status\": \"ready|possible_miss|needs_operator_confirmation|continue_without_llm\",\n    \"reason\": \"\"\n  }\n}"
     },
     {
       "id": "P-stride",
@@ -514,13 +577,17 @@
         "in_scope",
         "adversary",
         "existing_controls",
+        "control_absences",
+        "replica_coverage",
         "claim_boundary",
+        "stride_budget",
+        "prior_stride_considerations",
         "cyber_role",
-        "role_tradecraft"
+        "role_guidance"
       ],
       "output_key": "stride_scenarios",
-      "stop_condition": "Each in-scope process and each flow that crosses a trust boundary has six STRIDE letters: a concrete scenario or not_applicable with a reason.",
-      "template": "{{shared_rules}}\n\n{{role_tradecraft}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-stride. Apply STRIDE to every in-scope element and every data flow that crosses a trust boundary.\n\nSTRIDE letters: S spoofing, T tampering, R repudiation, I information disclosure, D denial of service, E elevation of privilege.\n\nFor each applicable letter, write one concrete scenario that can happen in this system. If a letter does not apply, record not_applicable with a reason. Do not skip a letter in silence.\n\nEach scenario row must set attacker_position to an id from adversary.positions. That position is who already sits in which zone and what they can already do. Do not invent a new position here.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nIn scope:\n{{in_scope}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nClaim boundary:\n{{claim_boundary}}\n\nReturn JSON:\n{\n  \"stride_considerations\": [\n    {\n      \"element_id\": \"component or flow id\",\n      \"letter\": \"S\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete text or empty if not_applicable\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"visible in the diagram\",\n      \"attacker_position\": \"pos-id from adversary.positions\",\n      \"asset\": \"what is harmed\"\n    }\n  ]\n}"
+      "stop_condition": "Each required process and each crossing flow has six STRIDE consideration rows, directly or through documented replica inheritance. stride_coverage reports expected, considered, and remaining ids. Do not advance until stride_coverage.complete is true.",
+      "template": "{{shared_rules}}\n\n{{role_guidance}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-stride. Apply STRIDE to every in-scope process and every data flow that crosses a trust boundary. Run in auditable batches when the full set does not fit one response.\n\nSTRIDE letters: S spoofing, T tampering, R repudiation, I information disclosure, D denial of service, E elevation of privilege.\n\nBatch rule:\n- Maximum consideration rows in this reply: {{stride_budget}}. Process whole elements only, six rows per element.\n- Determine expected_elements before writing rows: every in-scope process plus every crossing flow, minus replica ids whose coverage is explicitly inherited in replica_coverage.\n- Count each required replica divergence row against the budget. rows_expected is six times the number of expected_elements plus one row per replica_coverage entry.\n- Continue in inventory order after ids already present in prior_stride_considerations.\n- Return stride_considerations as one cumulative array: prior rows followed by new rows, with no duplicate element_id and letter pair.\n- If rows remain, set complete false and list remaining_elements. The operator reruns P-stride with this cumulative output as prior_stride_considerations.\n- Never use the budget to reduce scope or silently omit an element.\n\nReplica rule:\n- Do not duplicate six rows for an inherited replica pair.\n- Write one concrete configuration-divergence scenario for each replica_coverage row, normally under T tampering, using the replica id as diagram_referent.\n\nScenario rule:\n- For each applicable letter, write one concrete scenario that can happen in this system.\n- If a letter does not apply, record not_applicable with a reason. Do not skip a letter in silence.\n- attacker_position must be an id from adversary.positions.\n- evidence_refs may cite control_absences ids. A cited absence means the diagram does not show that control, not that the deployed system lacks it.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nIn scope:\n{{in_scope}}\nReplica coverage:\n{{replica_coverage}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\nClaim boundary:\n{{claim_boundary}}\nPrior STRIDE considerations (empty on the first pass):\n{{prior_stride_considerations}}\n\nReturn JSON:\n{\n  \"stride_considerations\": [\n    {\n      \"element_id\": \"component or flow id\",\n      \"letter\": \"S\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete text or empty if not_applicable\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"visible in the diagram\",\n      \"evidence_refs\": [\"gap-ctl-id when applicable\"],\n      \"attacker_position\": \"pos-id from adversary.positions\",\n      \"asset\": \"what is harmed\"\n    }\n  ],\n  \"stride_coverage\": {\n    \"budget_rows\": {{stride_budget}},\n    \"letters_per_element\": 6,\n    \"expected_elements\": [\"ids\"],\n    \"considered_elements\": [\"ids complete across all batches\"],\n    \"remaining_elements\": [\"ids\"],\n    \"rows_expected\": 0,\n    \"rows_written_total\": 0,\n    \"complete\": false\n  }\n}"
     },
     {
       "id": "P-phantom",
@@ -531,14 +598,17 @@
         "solution_description",
         "inventory",
         "llm_subset",
+        "llm_subset_empty",
+        "llm_subset_decision",
         "adversary",
         "existing_controls",
+        "control_absences",
         "cyber_role",
-        "role_tradecraft"
+        "role_guidance"
       ],
       "output_key": "phantom_scenarios",
-      "stop_condition": "Each llm_subset id has an answer to all eight PHANTOM-B questions. Answers may be a scenario or not_applicable with a reason. No mitigations.",
-      "template": "{{shared_rules}}\n\n{{role_tradecraft}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-phantom. For each LLM or chatbot component, ask the PHANTOM-B questions about that node. Leave defenses, controls, and mitigations for P-act.\n\nAsk, for each id in llm_subset:\n1. P Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?\n2. H Hallucination: What if hallucinations exceed our hopes?\n3. A Anthropomorphization: Are we anthropomorphizing?\n4. N Non-explainability: When must we explain or justify the output, and to whom?\n5. T Training issues: What if training data is bad by accident or on purpose?\n6. O Over-reliance: What decisions is the LLM making, and does that expand the attack surface?\n7. M Missing security engineering: Did we skip the rest of the SDL around this component?\n8. B Biases: What biases does the model have, and are they acceptable in this use case?\n\nEach scenario row must set attacker_position to an id from adversary.positions.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nLLM subset:\n{{llm_subset}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\n\nReturn JSON:\n{\n  \"phantom_considerations\": [\n    {\n      \"element_id\": \"llm component id\",\n      \"letter\": \"P\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete instance in this system, or empty\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"\",\n      \"attacker_position\": \"pos-id from adversary.positions\",\n      \"asset\": \"\"\n    }\n  ]\n}"
+      "stop_condition": "Each non-empty llm_subset id has an answer to all eight PHANTOM-B questions. When llm_subset_empty is true after operator confirmation, phantom_considerations is empty and phantom_coverage.status is not_applicable. No mitigations.",
+      "template": "{{shared_rules}}\n\n{{role_guidance}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-phantom. For each LLM or chatbot component, ask the PHANTOM-B questions about that node. Leave defenses, controls, and mitigations for P-act.\n\nIf llm_subset_empty is true and llm_subset_decision.status is continue_without_llm, return an empty phantom_considerations array and phantom_coverage.status not_applicable. Do not call this complete. If the empty subset was not confirmed, stop and return the P-llm-cut gap.\n\nAsk, for each id in llm_subset:\n1. P Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?\n2. H Hallucination: What if hallucinations exceed our hopes?\n3. A Anthropomorphization: Are we anthropomorphizing?\n4. N Non-explainability: When must we explain or justify the output, and to whom?\n5. T Training issues: What if training data is bad by accident or on purpose?\n6. O Over-reliance: What decisions is the LLM making, and does that expand the attack surface?\n7. M Missing security engineering: Did we skip the rest of the SDL around this component?\n8. B Biases: What biases does the model have, and are they acceptable in this use case?\n\nEach scenario row must set attacker_position to an id from adversary.positions. evidence_refs may cite a control_absences id with the same diagram-observation meaning used in P-stride.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nLLM subset:\n{{llm_subset}}\nLLM subset empty:\n{{llm_subset_empty}}\nLLM subset decision:\n{{llm_subset_decision}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\n\nReturn JSON:\n{\n  \"phantom_considerations\": [\n    {\n      \"element_id\": \"llm component id\",\n      \"letter\": \"P\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete instance in this system, or empty\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"\",\n      \"evidence_refs\": [\"gap-ctl-id when applicable\"],\n      \"attacker_position\": \"pos-id from adversary.positions\",\n      \"asset\": \"\"\n    }\n  ],\n  \"phantom_coverage\": {\n    \"status\": \"complete|incomplete|not_applicable\",\n    \"expected_elements\": [\"llm_subset ids\"],\n    \"complete_elements\": [\"ids with all eight letters\"],\n    \"missing\": [{\"element_id\": \"\", \"letters\": [\"P\"]}]\n  }\n}"
     },
     {
       "id": "P-dedup",
@@ -547,14 +617,16 @@
       "stage": "q2",
       "inputs": [
         "stride_scenarios",
+        "stride_coverage",
         "phantom_scenarios",
         "inventory",
+        "replica_coverage",
         "perspective",
         "adversary"
       ],
       "output_key": "threats",
-      "stop_condition": "TSS is a numbered list. Duplicates merged. Each remaining scenario has a diagram_referent in the inventory. Compositional threats kept only if the named perspective can act on them.",
-      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-dedup. Merge STRIDE and PHANTOM-B scenarios into threat list TSS.\n\nPerspective:\n{{perspective}}\nInventory:\n{{inventory}}\nAdversary:\n{{adversary}}\nSTRIDE considerations:\n{{stride_scenarios}}\nPHANTOM-B considerations:\n{{phantom_scenarios}}\n\nRules:\n- Drop not_applicable rows.\n- Merge two scenarios that name the same failure on the same referent into one threat. Record source as \"both\" when both methods found it.\n- Keep a compositional threat only if the named perspective can change a control point on this diagram.\n- Assign ids T1, T2, ... in diagram order (entry points first).\n- Copy attacker_position from the source row. It must be an adversary.positions id.\n- stride, phantom_b, cia, and action may be empty arrays / stub objects; later steps fill them. Include a stub action of type accept and detail \"pending P-act\" if required by schema.\n\nReturn JSON:\n{\n  \"threats\": [\n    {\n      \"id\": \"T1\",\n      \"scenario\": \"actor or failure, referent, preconditions, asset, why it can happen here\",\n      \"diagram_referent\": \"inventory id\",\n      \"preconditions\": \"\",\n      \"attacker_position\": \"pos-id\",\n      \"asset\": \"\",\n      \"source\": \"stride|phantom-b|both\",\n      \"stride\": [],\n      \"phantom_b\": [],\n      \"cia\": [],\n      \"action\": { \"type\": \"accept\", \"detail\": \"pending P-act\" }\n    }\n  ]\n}"
+      "stop_condition": "stride_coverage.complete is true before composition. TSS is numbered, duplicates are merged, each scenario has an inventory referent, evidence_refs are preserved, and each replica_coverage row names its divergence threat id.",
+      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-dedup. Merge STRIDE and PHANTOM-B scenarios into threat list TSS.\n\nDo not continue if stride_coverage.complete is false. Return the remaining ids and rerun P-stride first.\n\nPerspective:\n{{perspective}}\nInventory:\n{{inventory}}\nReplica coverage:\n{{replica_coverage}}\nAdversary:\n{{adversary}}\nSTRIDE considerations:\n{{stride_scenarios}}\nSTRIDE coverage:\n{{stride_coverage}}\nPHANTOM-B considerations:\n{{phantom_scenarios}}\n\nRules:\n- Drop not_applicable rows.\n- Merge two scenarios that name the same failure on the same referent into one threat. Record source as \"both\" when both methods found it.\n- Keep a compositional threat only if the named perspective can change a control point on this diagram.\n- Assign ids T1, T2, ... in diagram order (entry points first).\n- Copy attacker_position and evidence_refs from source rows.\n- Preserve one configuration-divergence threat for each replica_coverage row and set replica_coverage[].divergence_threat_id to its T id.\n- stride, phantom_b, cia, and action may be empty arrays or stub objects; later steps fill them. Include a stub action of type accept and detail \"pending P-act\" if required by schema.\n\nReturn JSON:\n{\n  \"threats\": [\n    {\n      \"id\": \"T1\",\n      \"scenario\": \"actor or failure, referent, preconditions, asset, why it can happen here\",\n      \"diagram_referent\": \"inventory id\",\n      \"preconditions\": \"\",\n      \"evidence_refs\": [\"control absence ids when applicable\"],\n      \"attacker_position\": \"pos-id\",\n      \"asset\": \"\",\n      \"source\": \"stride|phantom-b|both\",\n      \"stride\": [],\n      \"phantom_b\": [],\n      \"cia\": [],\n      \"action\": { \"type\": \"accept\", \"detail\": \"pending P-act\" }\n    }\n  ],\n  \"replica_coverage\": [\"same rows with divergence_threat_id filled\"]\n}"
     },
     {
       "id": "P-cia",
@@ -604,11 +676,26 @@
         "solution_description",
         "inventory",
         "existing_controls",
+        "control_absences",
         "threats"
       ],
       "output_key": "threats",
-      "stop_condition": "Every threat has action.type in mitigate, eliminate, transfer, accept. Mitigate and eliminate name a control_point that exists in the inventory and a validation (test, log, or fail_condition).",
-      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-act. Choose one action per threat: mitigate, eliminate, transfer, or accept.\n\nWrite the mitigate, eliminate, transfer, or accept choice here. Leave P-phantom without defenses.\n\n- mitigate: make the attack harder at a named control point on the diagram.\n- eliminate: remove the feature or interface that creates the threat.\n- transfer: another party is better placed to handle it; name that party as shown on the diagram (customer, provider, or an external actor id).\n- accept: keep the threat; say why the cost of the other options undermines the work.\n\nMitigation detail must name a control_point whose id exists in the inventory.\n\nFor mitigate or eliminate, set action.validation: kind is test, log, or fail_condition, and detail is something a reviewer could run or watch (a test name, a log line, or a fail condition on that control_point). Transfer and accept may set validation to null. Optional citations may include owasp_llm_top10 (form LLMnn:2025), ai_exchange_slug (one of the published slugs), or atlas (AML.T*). Omit any citation you cannot pin. Do not invent ids.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nExisting controls:\n{{existing_controls}}\nThreats:\n{{threats}}\n\nReturn the same threats array with action, validation, and optional citations filled.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+      "stop_condition": "Every threat has action.type in mitigate, eliminate, transfer, accept. Mitigate and eliminate name a control_point that is a component, store, flow, or trust-boundary id and a validation (test, log, or fail_condition).",
+      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-act. Choose one action per threat: mitigate, eliminate, transfer, or accept.\n\nWrite the mitigate, eliminate, transfer, or accept choice here. Leave P-phantom without defenses.\n\n- mitigate: make the attack harder at a named control point on the diagram.\n- eliminate: remove the feature or interface that creates the threat.\n- transfer: another party is better placed to handle it; name that party as shown on the diagram (customer, provider, or an external actor id).\n- accept: keep the threat; say why the cost of the other options undermines the work.\n\nA control_point must be an inventory component, data store, data flow, or trust-boundary id. Use the flow id for an interface to an external actor. Do not use a control_absence id as the control point; it is evidence for the threat, not a place to act.\n\nFor mitigate or eliminate, set action.validation: kind is test, log, or fail_condition, and detail is something a reviewer could run or watch (a test name, a log line, or a fail condition on that control_point). Transfer and accept may set validation to null. Optional citations may include owasp_llm_top10 (form LLMnn:2025), ai_exchange_slug (one of the published slugs), or atlas (AML.T*). Omit any citation you cannot pin. Do not invent ids.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\nThreats:\n{{threats}}\n\nReturn the same threats array with action, validation, and optional citations filled.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+    },
+    {
+      "id": "P-rank",
+      "title": "Order threats for builder review",
+      "track": "A",
+      "stage": "q3",
+      "optional": true,
+      "inputs": [
+        "adversary",
+        "threats"
+      ],
+      "output_key": "review_order",
+      "stop_condition": "Every threat id appears exactly once in review_order. Ordering is explained from attacker_position and explicit preconditions. Threat ids and threats array order do not change. No likelihood, impact, or residual-risk claim is made.",
+      "template": "{{shared_rules}}\n\nOptional step: P-rank. Give a builder a review order without inventing a risk score.\n\nAdversary positions:\n{{adversary}}\nThreats:\n{{threats}}\n\nRules:\n- Put threats requiring the least additional access or precondition first.\n- Use only attacker_position.already_can and the threat's explicit preconditions as evidence.\n- Do not infer provider capacity, business impact, likelihood, exploitability, or residual risk.\n- Keep threat ids and the threats array in their existing diagram order. review_order is a separate projection.\n- Include every threat id exactly once. Ties may keep diagram order.\n\nReturn JSON:\n{\n  \"review_order\": [{\n    \"position\": 1,\n    \"threat_id\": \"T1\",\n    \"attacker_position\": \"pos-id\",\n    \"prerequisite_summary\": \"what access is already present and what additional condition remains\",\n    \"reason\": \"why this threat appears here\"\n  }]\n}"
     },
     {
       "id": "P-qa",
@@ -619,8 +706,8 @@
         "full_matrix"
       ],
       "output_key": "qa",
-      "stop_condition": "qa flags every failed check in gaps. Open assumptions are listed. Adversary, existing controls, claim boundary, and action validation are checked. The full matrix is echoed with qa filled. report_present stays false until P-report.",
-      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-qa. Check the work before any human review.\n\nFull threat matrix so far:\n{{full_matrix}}\n\nCheck, and set each boolean false if the check fails:\n1. inventory_components_in_solS: every inventory component id appears in solution_description.\n2. boundary_crossings_covered: every trust boundary has at least one crossing-flow threat, or a gap explaining why not.\n3. phantom_b_complete: every llm_subset id has all eight PHANTOM-B letters represented in phantom_considerations or in threats sourced from phantom-b. If you lack the consideration list, infer from threats and list remaining letters in gaps.\n4. stride_considered: every in-scope process was considered for all six STRIDE letters (scenario or not_applicable). If unknown, set false and explain.\n5. actions_complete: every threat has action.type in mitigate, eliminate, transfer, accept, and detail is not \"pending P-act\".\n6. open_assumptions: list assumptions that are not on the diagram.\n7. gaps: list failed checks in plain language.\n8. adversary_stated: adversary.assumptions is non-empty and every in-scope trust boundary has a positions row, or a gap says which zone was skipped.\n9. existing_controls_listed: existing_controls is present. Empty is allowed only when none_drawn is true.\n10. claim_boundary_stated: claim_boundary.does_not_claim and claim_boundary.box are non-empty.\n11. actions_have_validation: every mitigate or eliminate action has validation.kind in test, log, fail_condition and non-empty detail.\n12. attacker_positions_bound: every threat.attacker_position is an id in adversary.positions.\n\nAlso confirm every threats[].diagram_referent exists in inventory (components, external_actors, data_stores, or data_flows). List misses in gaps.\n\nReturn the full matrix JSON with qa filled:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"threats\": [],\n  \"qa\": {\n    \"inventory_components_in_solS\": true,\n    \"boundary_crossings_covered\": true,\n    \"phantom_b_complete\": true,\n    \"stride_considered\": true,\n    \"actions_complete\": true,\n    \"adversary_stated\": true,\n    \"existing_controls_listed\": true,\n    \"claim_boundary_stated\": true,\n    \"actions_have_validation\": true,\n    \"report_present\": false,\n    \"open_assumptions\": [],\n    \"gaps\": []\n  },\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"claim_boundary\": {}\n}"
+      "stop_condition": "qa flags every failed check in gaps. Structured STRIDE and PHANTOM-B applicability, replica inheritance, control evidence, control-point ids, and action validation are checked. The full matrix is echoed. report_present stays false until P-report.",
+      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-qa. Check the work before any human review.\n\nFull threat matrix so far:\n{{full_matrix}}\n\nChecks:\n1. inventory_components_in_solS: every inventory component id appears in solution_description.\n2. boundary_crossings_covered: every crossing flow has a threat or an explicit replica_coverage inherited_element_pair whose representative is covered. A replica relation does not excuse an unmapped crossing.\n3. llm_subset_empty: equals whether llm_subset is empty.\n4. phantom_b_complete: null when llm_subset_empty is true after continue_without_llm; otherwise true only when every llm_subset id has all eight PHANTOM-B letters. Never use true for an empty subset.\n5. stride_considered: stride_coverage.complete is true, remaining_elements is empty, and every expected element has six scenario or not_applicable rows, directly or by documented replica inheritance.\n6. actions_complete: every threat has action.type in mitigate, eliminate, transfer, accept, and detail is not \"pending P-act\".\n7. open_assumptions: list assumptions that are not on the diagram.\n8. gaps: list failed checks in plain language.\n9. adversary_stated: adversary.assumptions is non-empty and every in-scope trust boundary has a positions row, or a gap says which zone was skipped.\n10. existing_controls_listed: existing_controls is present. Empty is allowed only when none_drawn is true. coverage_referents and coverage_basis do not claim more than the diagram shows.\n11. control_absences_grounded: every control_absence says not shown, names an existing component, store, flow, or trust-boundary expected_referent, and avoids claiming deployed absence.\n12. claim_boundary_stated: claim_boundary.does_not_claim and claim_boundary.box are non-empty.\n13. actions_have_validation: every mitigate or eliminate action has validation.kind in test, log, fail_condition and non-empty detail.\n14. control_points_bound: every mitigate or eliminate action.control_point is a component, data-store, data-flow, or trust-boundary id.\n15. attacker_positions_bound: every threat.attacker_position is an id in adversary.positions.\n16. evidence_refs_bound: every threat.evidence_refs value is a control_absences id.\n17. replica_coverage_complete: every replica_coverage row has drawn evidence, valid inherited id pairs, and divergence_threat_id naming a threat on the replica.\n18. review_order_complete: when review_order is present, every threat id appears exactly once and threat ids or array order did not change.\n\nAlso confirm every threats[].diagram_referent exists in inventory: component, external actor, data store, data flow, or trust boundary. List misses in gaps.\n\nReturn the full matrix JSON with qa filled:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"solution_description\": \"\",\n  \"in_scope\": [],\n  \"out_of_scope\": [],\n  \"replica_coverage\": [],\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"control_absences\": [],\n  \"none_drawn\": false,\n  \"llm_subset\": [],\n  \"llm_subset_empty\": false,\n  \"llm_subset_decision\": {},\n  \"stride_considerations\": [],\n  \"stride_coverage\": {},\n  \"phantom_considerations\": [],\n  \"phantom_coverage\": {},\n  \"threats\": [],\n  \"review_order\": [],\n  \"qa\": {\n    \"inventory_components_in_solS\": true,\n    \"boundary_crossings_covered\": true,\n    \"llm_subset_empty\": false,\n    \"phantom_b_complete\": true,\n    \"stride_considered\": true,\n    \"actions_complete\": true,\n    \"adversary_stated\": true,\n    \"existing_controls_listed\": true,\n    \"control_absences_grounded\": true,\n    \"claim_boundary_stated\": true,\n    \"actions_have_validation\": true,\n    \"control_points_bound\": true,\n    \"attacker_positions_bound\": true,\n    \"evidence_refs_bound\": true,\n    \"replica_coverage_complete\": true,\n    \"review_order_complete\": true,\n    \"report_present\": false,\n    \"open_assumptions\": [],\n    \"gaps\": []\n  },\n  \"claim_boundary\": {}\n}"
     },
     {
       "id": "P-report",
@@ -631,8 +718,8 @@
         "full_matrix"
       ],
       "output_key": "report",
-      "stop_condition": "report.markdown is a complete document a reviewer can read without the rest of the JSON. reviewer is null. chain_meta.method and date are set.",
-      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-report. Write the readable threat model from the JSON. A reviewer must be able to read report.markdown without opening the rest of the object.\n\nFull matrix:\n{{full_matrix}}\n\nreport.markdown sections, in this order, as headings:\n1. Title, date (today if unknown), method (Shostack Four Questions; STRIDE on in-scope elements; PHANTOM-B on llm_subset), role. Reviewer: leave blank.\n2. System, representation.version / source_id, perspective, claim_boundary.box.\n3. Attacker assumptions and positions.\n4. Architecture (short), trust boundaries, in_scope and out_of_scope.\n5. Existing controls. If none_drawn, say so.\n6. Threats grouped by diagram_referent. Each: id, scenario, attacker_position, STRIDE / PHANTOM-B / CIA, action, validation.\n7. What this model does not claim (claim_boundary.does_not_claim).\n8. qa.gaps and open_assumptions.\n9. Reviewer line with empty name and date fields.\n\nDo not add threats. Do not drop threats. Set qa.report_present true.\nSet chain_meta.method to the method sentence above, chain_meta.date to an ISO date, chain_meta.prompt_pack_version to 1.2, chain_meta.reviewer to null.\n\nReturn the full matrix JSON with report and chain_meta filled:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"claim_boundary\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"threats\": [],\n  \"qa\": {},\n  \"report\": { \"title\": \"\", \"markdown\": \"full document\", \"reviewer\": null },\n  \"chain_meta\": { \"prompt_pack_version\": \"1.2\", \"role\": \"{{cyber_role}}\", \"method\": \"\", \"date\": \"\", \"reviewer\": null, \"track_b_applied\": false }\n}"
+      "stop_condition": "P-report is the sole author of report.markdown. The document is complete and reflects the final matrix, including SRF columns only when Track B ran. reviewer is null. chain_meta uses the pack root version.",
+      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-report. Finalize the readable threat model after P-qa, or after P-srf-owner when Track B was selected. This is the only step that authors report.markdown. A reviewer must be able to read it without opening the rest of the object.\n\nFull final matrix:\n{{full_matrix}}\n\nreport.markdown sections, in this order:\n1. Title and a metadata table: date, method (Shostack Four Questions; STRIDE on in-scope elements and crossing flows; PHANTOM-B on llm_subset), role, representation, perspective, pack version, and empty reviewer.\n2. Claim boundary.\n3. Attacker assumptions and positions.\n4. Architecture, trust boundaries, in_scope, out_of_scope, and documented replica inheritance.\n5. Existing controls with diagram referent, shown coverage, and coverage basis.\n6. Control gaps observed in the diagram. Phrase each as not shown, with expected_referent. Do not claim deployed absence.\n7. Immediate review order when review_order is present. Call it review order, not risk rank.\n8. Threats grouped by diagram_referent. Each: id, scenario, attacker_position, evidence_refs, STRIDE / PHANTOM-B / CIA, action, validation. Add Layer, Persona, and Party only when Track B fields are present.\n9. Method coverage: STRIDE coverage counts; PHANTOM-B complete, incomplete, or not applicable. When llm_subset_empty is true, say PHANTOM-B was not applicable, never complete.\n10. What this model does not claim.\n11. qa.gaps and open_assumptions.\n12. Reviewer line with empty name and date fields.\n\nDo not add or drop threats. Set qa.report_present true.\nSet chain_meta.method to the method sentence above, chain_meta.date to an ISO date, chain_meta.prompt_pack_version to {{pack_version}}, chain_meta.reviewer to null, and chain_meta.track_b_applied true only when every threat has srf.persona and srf.party.\n\nReturn the full matrix JSON with report and chain_meta filled:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"control_absences\": [],\n  \"claim_boundary\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"llm_subset_empty\": false,\n  \"stride_coverage\": {},\n  \"phantom_coverage\": {},\n  \"threats\": [],\n  \"review_order\": [],\n  \"qa\": {},\n  \"report\": { \"title\": \"\", \"markdown\": \"full document\", \"reviewer\": null },\n  \"chain_meta\": { \"prompt_pack_version\": \"{{pack_version}}\", \"role\": \"{{cyber_role}}\", \"method\": \"\", \"date\": \"\", \"reviewer\": null, \"track_b_applied\": false }\n}"
     },
     {
       "id": "P-srf-join",
@@ -643,9 +730,9 @@
         "full_matrix",
         "operating_model"
       ],
-      "output_key": "threats",
+      "output_key": "full_matrix",
       "stop_condition": "When a threat matches a published AI Exchange slug in threats.json, copy layer, affected_layers, persona, and party for the named operating model. Do not re-derive those rows.",
-      "template": "{{shared_rules}}\n\nTrack B is optional. Off by default. This step assigns SRF accountability. It does not invent threats.\n\nStep: P-srf-join. Fetch https://aisharedresponsibility.com/data/threats.json now. Use only ids that exist in that file.\n\nPublished slugs: directpromptinjection, indirectpromptinjection, evasion, runtimemodelpoison, devmodelpoison, datapoison, supplymodelpoison, disclosureinoutput, modelinversionandmembership, devdataleak, modelexfiltration, runtimemodelleak, devmodelleak, airesourceexhaustion, inputdataleak, outputcontainsconventionalinjection.\n\nOperating model: {{operating_model}}\nFull Track A matrix:\n{{full_matrix}}\n\nFor each threat, if the scenario is the same failure as a slug, set:\n  srf.join.ai_exchange_slug = that slug\n  srf.join.copied_from_threats_json = true\n  srf.layer, srf.affected_layers, srf.persona, srf.party copied from threats.json accountability[{{operating_model}}]\nIf no slug matches, set srf.join.ai_exchange_slug to null and copied_from_threats_json to false. Leave layer/persona/party for P-srf-layer and P-srf-owner.\n\nDo not invent slugs. Do not use \"shared\" as srf.party.\n\nReturn JSON:\n{ \"threats\": [ ... with srf objects ... ], \"operating_model\": \"{{operating_model}}\" }"
+      "template": "{{shared_rules}}\n\nTrack B is optional. Off by default. This step assigns SRF accountability. It does not invent threats.\n\nStep: P-srf-join. Fetch https://aisharedresponsibility.com/data/threats.json now. Use only ids that exist in that file.\n\nPublished slugs: directpromptinjection, indirectpromptinjection, evasion, runtimemodelpoison, devmodelpoison, datapoison, supplymodelpoison, disclosureinoutput, modelinversionandmembership, devdataleak, modelexfiltration, runtimemodelleak, devmodelleak, airesourceexhaustion, inputdataleak, outputcontainsconventionalinjection.\n\nOperating model: {{operating_model}}\nFull Track A matrix:\n{{full_matrix}}\n\nFor each threat, if the scenario is the same failure as a slug, set:\n  srf.join.ai_exchange_slug = that slug\n  srf.join.copied_from_threats_json = true\n  srf.layer, srf.affected_layers, srf.persona, srf.party copied from threats.json accountability[{{operating_model}}]\nIf no slug matches, set srf.join.ai_exchange_slug to null and copied_from_threats_json to false. Leave layer/persona/party for P-srf-layer and P-srf-owner.\n\nDo not invent slugs. Do not use \"shared\" as srf.party. Keep every non-SRF field unchanged.\n\nReturn the full matrix with the joined srf objects and operating_model filled."
     },
     {
       "id": "P-srf-layer",
@@ -653,12 +740,12 @@
       "track": "B",
       "stage": "srf",
       "inputs": [
-        "threats",
+        "full_matrix",
         "operating_model"
       ],
-      "output_key": "threats",
+      "output_key": "full_matrix",
       "stop_condition": "Every threat has srf.layer in L1-L5. Joined rows keep the copied layer.",
-      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-layer. Assign the primary SRF layer where the control point lives, not where the harm appears.\n\nLayers: L1 AI Business and Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider.\n\nIf srf.join.copied_from_threats_json is true, do not change srf.layer or srf.affected_layers.\n\nOperating model: {{operating_model}}\nThreats:\n{{threats}}\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
+      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-layer. Assign the primary SRF layer where the control point lives, not where the harm appears.\n\nLayers: L1 AI Business and Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider.\n\nIf srf.join.copied_from_threats_json is true, do not change srf.layer or srf.affected_layers.\n\nOperating model: {{operating_model}}\nFull matrix:\n{{full_matrix}}\n\nKeep every non-SRF field unchanged. Return the full matrix with srf.layer filled on every threat."
     },
     {
       "id": "P-srf-owner",
@@ -666,12 +753,12 @@
       "track": "B",
       "stage": "srf",
       "inputs": [
-        "threats",
+        "full_matrix",
         "operating_model"
       ],
-      "output_key": "threats",
+      "output_key": "full_matrix",
       "stop_condition": "Every threat has exactly one srf.persona from personas.json and one srf.party of customer or provider. Shared is not a final answer.",
-      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-owner. Name one accountable persona and one party per threat.\n\nFetch now:\n- https://aisharedresponsibility.com/data/personas.json\n- https://aisharedresponsibility.com/data/matrix.json\n\nPersona ids (cosai-core only unless the diagram is a federated consortium): agentic-platform-provider, application-developer, data-provider, ai-system-users, ai-system-governance, model-provider, ai-model-serving, ai-platform-provider.\n\nOperating model: {{operating_model}}\nThreats:\n{{threats}}\n\nRules:\n- Exactly one accountable persona per threat.\n- srf.party is customer or provider. Never \"shared\". If matrix.json says shared at that layer, still name one lead and put the counterparty duty in srf.note.\n- If srf.join.copied_from_threats_json is true, keep the copied persona and party.\n- Persona must exist in personas.json.\n\nReturn the full matrix JSON with srf filled on every threat:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"claim_boundary\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"threats\": [ ... ],\n  \"qa\": {},\n  \"report\": {},\n  \"chain_meta\": { \"track_b_applied\": true, \"role\": \"{{cyber_role}}\", \"reviewer\": null }\n}"
+      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-owner. Name one accountable persona and one party per threat, then return the entire matrix for P-report.\n\nFetch now:\n- https://aisharedresponsibility.com/data/personas.json\n- https://aisharedresponsibility.com/data/matrix.json\n\nPersona ids (cosai-core only unless the diagram is a federated consortium): agentic-platform-provider, application-developer, data-provider, ai-system-users, ai-system-governance, model-provider, ai-model-serving, ai-platform-provider.\n\nOperating model: {{operating_model}}\nFull matrix with joined/layered threats:\n{{full_matrix}}\n\nRules:\n- Exactly one accountable persona per threat.\n- srf.party is customer or provider. Never \"shared\". If matrix.json says shared at that layer, still name one lead and put the counterparty duty in srf.note.\n- If srf.join.copied_from_threats_json is true, keep the copied persona and party.\n- Persona must exist in personas.json.\n- Keep every non-SRF field unchanged, including controls, absences, coverage, QA, and review_order.\n- Set chain_meta.track_b_applied true. Do not write or update report.markdown; P-report is next.\n\nReturn the full matrix JSON with srf filled on every threat."
     },
     {
       "id": "P-export-md",
@@ -682,8 +769,8 @@
         "full_matrix"
       ],
       "output_key": "report.markdown",
-      "stop_condition": "The assistant reply is a complete markdown document a reviewer can read without the JSON. Reviewer name and date stay empty.",
-      "template": "{{shared_rules}}\n\nThis step writes the downloadable report. Output the markdown document only, starting at the title heading. Do not wrap it in a JSON object or in fences.\n\nStep: P-export-md. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Write a report a reviewer can read without opening the JSON.\n\nFull matrix:\n{{full_matrix}}\n\nRequired document shape, in this order:\n\n# Threat model: {system_name}\n\nA metadata table with rows Date (ISO, today if unknown), Method (Shostack Four Questions; STRIDE on in-scope elements; PHANTOM-B on llm_subset), Role (from chain_meta.role), Representation (kind, source_id, version, commit; write unknown when the matrix says unknown), Perspective, Reviewer (empty cell).\n\n## Claim boundary\nOne short paragraph from claim_boundary.box. Then a bullet list of claim_boundary.does_not_claim.\n\n## Attacker\nAssumptions as bullets from adversary.assumptions. Then a table of adversary.positions with columns Id, Zone or trust boundary, Capability.\n\n## Architecture\nA short paragraph from solution_description. Then ### Trust boundaries, ### In scope, and ### Out of scope. Use the inventory and scope arrays. If missing_trust_boundaries is true, say so under Trust boundaries.\n\n## Existing controls\nA table with columns Id, Feature, Diagram referent. If none_drawn is true and the list is empty, write one sentence that no security feature was drawn.\n\n## Threats\nOne ### heading per diagram_referent, using that id as the heading text. Under each heading, a table with columns ID, Scenario, Attacker position, STRIDE, PHANTOM-B, CIA, Action, Validation. The Scenario cell is the full scenario sentence. Action is type plus detail. Validation is kind plus detail, or empty for transfer and accept. PHANTOM-B is empty when the referent is not in llm_subset.\nIf any threat has srf.persona or srf.layer, add columns Layer, Persona, Party after Validation.\n\n## What this model does not claim\nThe claim_boundary.does_not_claim list again, as bullets.\n\n## Open assumptions and gaps\nTwo short lists from qa.open_assumptions and qa.gaps. If a list is empty, write None recorded.\n\n## Reviewer\nName:\nDate:\nLeave both blank.\n\nRules:\n- Include every threat. Do not add threats.\n- Do not invent components, vendors, networks, or trust boundaries.\n- Do not fill the reviewer name or date.\n- When srf is present, use the persona, layer, and party values from the matrix.\n- Pipe tables must be valid GitHub-flavored markdown.\n"
+      "stop_condition": "The assistant reply equals report.markdown from the completed matrix, with no regeneration, JSON wrapper, fence, or commentary.",
+      "template": "{{shared_rules}}\n\nThis step writes the downloadable report. P-report already authored the document.\n\nStep: P-export-md. Output full_matrix.report.markdown exactly as stored, starting at its title heading. Do not revise, regenerate, summarize, or add sections. Do not wrap it in a JSON object or markdown fences. Do not echo the chain banner.\n\nCompleted matrix:\n{{full_matrix}}\n\nIf report.markdown is missing or empty, stop and say P-report must run first. Do not reconstruct it in this export step."
     },
     {
       "id": "P-export-json",
@@ -694,8 +781,8 @@
         "full_matrix"
       ],
       "output_key": "full_matrix",
-      "stop_condition": "The assistant reply is schema-valid pretty-printed JSON with report.markdown filled and report.reviewer null.",
-      "template": "{{shared_rules}}\n\nStep: P-export-json. Write the completed threat-model JSON file. Output JSON only. Pretty-print with two-space indent. No fences and no commentary outside the object.\n\nFull matrix:\n{{full_matrix}}\n\nKeep every field already present. Do not add threats. Do not drop threats.\n\nRequired on the returned object:\n- Matches the schema at the pack schema_url.\n- inventory, adversary, existing_controls, claim_boundary, solution_description, llm_subset, threats, and qa stay complete.\n- report.markdown is the full readable document with the same sections as P-export-md. If report.markdown is already complete, echo it. If a required section is missing, rewrite only that section from the matrix fields.\n- report.title is Threat model: {system_name}.\n- report.reviewer is null.\n- qa.report_present is true.\n- chain_meta.prompt_pack_version is 1.2.\n- chain_meta.method names Shostack Four Questions, STRIDE on in-scope elements, and PHANTOM-B on llm_subset.\n- chain_meta.date is an ISO date (today if unknown).\n- chain_meta.reviewer is null.\n- chain_meta.track_b_applied is true only when every threat has srf.persona and srf.party of customer or provider. Otherwise false.\n- Every threat.attacker_position is an id in adversary.positions.\n- Every mitigate or eliminate action has validation.kind in test, log, fail_condition.\n- srf.party is never shared.\n\nReturn the full matrix JSON:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"claim_boundary\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"threats\": [],\n  \"qa\": {},\n  \"report\": { \"title\": \"\", \"markdown\": \"full document\", \"reviewer\": null },\n  \"chain_meta\": { \"prompt_pack_version\": \"1.2\", \"role\": \"{{cyber_role}}\", \"method\": \"\", \"date\": \"\", \"reviewer\": null, \"track_b_applied\": false }\n}"
+      "stop_condition": "The assistant reply is the complete schema-valid matrix as pretty-printed JSON. report.markdown is preserved byte for byte, report.reviewer is null, and chain_meta.prompt_pack_version equals the pack root version.",
+      "template": "{{shared_rules}}\n\nStep: P-export-json. Write the completed threat-model JSON file. Output JSON only. Pretty-print with two-space indent. No fences and no commentary outside the object.\n\nCompleted matrix:\n{{full_matrix}}\n\nThis is a serialization step, not an authoring step:\n- Keep every field and value already present. Do not add, drop, or rewrite threats.\n- Preserve report.markdown byte for byte. If it is missing, stop and run P-report.\n- Require qa.report_present true, report.reviewer null, and chain_meta.reviewer null.\n- Require chain_meta.prompt_pack_version to equal {{pack_version}}.\n- Require llm_subset_empty and nullable qa.phantom_b_complete to agree with the matrix.\n- Require stride_coverage.complete true.\n- Every mitigate or eliminate action.control_point must be a component, store, flow, or trust-boundary id and must have validation.\n- srf.party is never shared.\n\nReturn the complete matrix, pretty-printed with two-space indentation."
     },
     {
       "id": "P-export-csv",
@@ -707,7 +794,7 @@
       ],
       "output_key": "threats_csv",
       "stop_condition": "The assistant reply is RFC 4180 CSV with a header and one row per threat. No fences.",
-      "template": "{{shared_rules}}\n\nThis step writes the threat database. Output CSV only, starting at the header row. Do not wrap it in a JSON object or in fences.\n\nStep: P-export-csv. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Flatten threats[] into a spreadsheet a tracker or GRC tool can import.\n\nFull matrix:\n{{full_matrix}}\n\nHeader, exactly these columns in this order:\nsystem_name,threat_id,scenario,diagram_referent,attacker_position,preconditions,asset,source,stride,phantom_b,cia,action_type,action_detail,control_point,validation_kind,validation_detail,owasp_llm_top10,ai_exchange_slug,atlas,srf_layer,srf_persona,srf_party,srf_note\n\nRow rules:\n- One row per threat. Include every threat. Do not add threats.\n- threat_id is threats[].id (T1, T2, ...).\n- system_name is the matrix system_name on every row.\n- stride, phantom_b, and cia are the letters joined with a pipe, no spaces (example S|T). Empty array is an empty cell.\n- action_type, action_detail, and control_point come from action.\n- validation_kind and validation_detail come from action.validation. Empty when validation is null (transfer and accept).\n- owasp_llm_top10, ai_exchange_slug, and atlas come from citations, or from srf.join.ai_exchange_slug when citations.ai_exchange_slug is empty.\n- srf_layer, srf_persona, srf_party, and srf_note come from srf when present. Empty when Track B was not run. srf.party is never the word shared.\n- Use RFC 4180: UTF-8, comma separators, wrap a field in double quotes when it contains a comma, quote, or newline, and escape a quote as two quotes.\n- Write an empty cell for a missing value. Do not write the word null.\n- Do not invent ids, slugs, or personas.\n"
+      "template": "{{shared_rules}}\n\nThis step writes the threat database. Output CSV only, starting at the header row. Do not wrap it in a JSON object or in fences.\n\nStep: P-export-csv. Consume the completed matrix after P-report. Flatten threats[] into a spreadsheet a tracker or GRC tool can import.\n\nFull matrix:\n{{full_matrix}}\n\nThe header is intentionally stable across Track A and Track B so one GRC import mapping works for both. Track A leaves SRF cells empty rather than removing the columns.\n\nHeader, exactly these columns in this order:\nsystem_name,threat_id,review_position,scenario,diagram_referent,attacker_position,preconditions,evidence_refs,asset,source,stride,phantom_b,cia,action_type,action_detail,control_point,validation_kind,validation_detail,owasp_llm_top10,ai_exchange_slug,atlas,srf_layer,srf_persona,srf_party,srf_note\n\nRow rules:\n- One row per threat. Include every threat. Do not add threats.\n- threat_id is threats[].id. review_position comes from review_order when present and is empty otherwise.\n- evidence_refs is the ids joined with a pipe, no spaces.\n- system_name is the matrix system_name on every row.\n- stride, phantom_b, and cia are the letters joined with a pipe, no spaces. Empty array is an empty cell.\n- action_type, action_detail, and control_point come from action.\n- validation_kind and validation_detail come from action.validation. Empty when validation is null.\n- owasp_llm_top10, ai_exchange_slug, and atlas come from citations, or from srf.join.ai_exchange_slug when citations.ai_exchange_slug is empty.\n- srf_layer, srf_persona, srf_party, and srf_note come from srf when present. Leave all four cells empty when Track B was not run. srf.party is never shared.\n- Use RFC 4180: UTF-8, comma separators, wrap a field in double quotes when it contains a comma, quote, or newline, and escape a quote as two quotes.\n- Write an empty cell for a missing value. Do not write null.\n- Do not invent ids, slugs, or personas.\n"
     },
     {
       "id": "P-export-diagram",
@@ -719,7 +806,7 @@
       ],
       "output_key": "diagram.mermaid",
       "stop_condition": "The assistant reply is Mermaid flowchart source that uses only inventory ids. Every threat id appears on its diagram_referent. No invented nodes. No fences.",
-      "template": "{{shared_rules}}\n\nThis step writes the Mermaid threat-model diagram. Output Mermaid flowchart source only, starting at the first %% line or the flowchart keyword. Do not wrap it in a JSON object or in markdown fences.\n\nStep: P-export-diagram. Consume the completed matrix from Track A (after P-report) or Track B (after P-srf-owner). Draw the inventory as a data-flow diagram and hang each threat id on the referent it already names. This diagram does not replace the uploaded source representation.\n\nFull matrix:\n{{full_matrix}}\n\nRequired shape:\n1. First line: %% Threat model: {system_name}\n2. Second line: flowchart LR  (use TB only if LR will not fit).\n3. One subgraph per inventory.trust_boundaries row. The subgraph id is that boundary id. Its contains[] members are the only nodes inside it.\n4. One node per inventory component, external_actor, and data_store. Mermaid node id is the inventory id with hyphens changed to underscores. The visible label is inventory.name, then a line break, then every threat id whose diagram_referent equals that inventory id, joined by spaces.\n5. Data stores use the cylinder shape: id[(\"name\")].\n6. One edge per inventory.data_flows row: from -->|label| to. If a threat names that flow id as diagram_referent, append those threat ids to the edge label.\n7. classDef llm for llm_subset nodes. classDef drawnControl for each existing_controls[].diagram_referent. Apply those classes. Do not add control nodes.\n8. If inventory.missing_trust_boundaries is true, write %% missing_trust_boundaries: true and draw no subgraphs.\n9. After the flowchart, a %% legend listing each threat id, its diagram_referent, stride letters, and action.type. One threat per line.\n\nRules:\n- Use only ids that exist in the inventory. Do not invent components, actors, stores, flows, vendors, or trust boundaries.\n- Include every inventory node and every data_flow.\n- Include every threat id exactly once on its referent (node or edge).\n- Do not add nodes for attackers, threats, or actions.\n- Do not draw an attack tree.\n- Do not put mitigations on the graph except the drawnControl class.\n- If a referent is missing from the inventory, omit that annotation and add %% gap: threat {id} referent {referent} not in inventory.\n"
+      "template": "{{shared_rules}}\n\nThis step writes the Mermaid threat-model diagram. Output Mermaid flowchart source only, starting at the first %% line or the flowchart keyword. Do not wrap it in a JSON object or in markdown fences.\n\nStep: P-export-diagram. Consume the completed matrix after P-report. Draw the inventory as a data-flow diagram and hang each threat id on the referent it already names. This diagram does not replace the uploaded source representation.\n\nFull matrix:\n{{full_matrix}}\n\nRequired shape:\n1. First line: %% Threat model: {system_name}\n2. Second line: flowchart LR (use TB only if LR will not fit).\n3. One subgraph per inventory.trust_boundaries row. The subgraph id is that boundary id. Its contains[] members are the only nodes inside it.\n4. One node per inventory component, external_actor, and data_store. Mermaid node id is the inventory id with hyphens changed to underscores. The visible label is inventory.name, then a line break, then every threat id whose diagram_referent equals that inventory id, joined by spaces.\n5. Data stores use the cylinder shape: id[(\"name\")].\n6. One edge per inventory.data_flows row: from -->|label| to. If a threat names that flow id as diagram_referent, append those threat ids to the edge label.\n7. classDef llm for llm_subset nodes. classDef drawnControl for every existing_controls[].coverage_referents id. Use diagram_referent only when coverage_referents is empty. Do not add control nodes.\n8. If inventory.missing_trust_boundaries is true, write %% missing_trust_boundaries: true and draw no subgraphs.\n9. Add %% replica_coverage lines for inherited pairs. Do not merge or omit replica nodes.\n10. After the flowchart, a %% legend listing each threat id, its diagram_referent, stride letters, action.type, and review position when present. One threat per line.\n\nRules:\n- Use only ids that exist in the inventory. Do not invent components, actors, stores, flows, vendors, or trust boundaries.\n- Include every inventory node and every data_flow.\n- Include every threat id exactly once on its referent (node, edge, or boundary annotation).\n- Do not add nodes for attackers, threats, actions, or control absences.\n- Do not draw an attack tree.\n- Do not put proposed mitigations on the graph. drawnControl marks only controls already shown in the source diagram.\n- If a referent is missing from inventory, omit that annotation and add %% gap: threat {id} referent {referent} not in inventory.\n"
     }
   ],
   "baseline_prompts": [

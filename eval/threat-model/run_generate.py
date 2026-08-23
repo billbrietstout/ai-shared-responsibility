@@ -56,10 +56,21 @@ def by_id(pack: dict) -> dict:
 def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: str) -> None:
     roles = {r["id"]: r for r in pack["roles"]}
     role_row = roles[role]
+    role_guidance = "\n".join(
+        [
+            role_row["tradecraft"],
+            "Notice first:",
+            *[f"- {item}" for item in role_row.get("notices_first", [])],
+            "Decline to infer:",
+            *[f"- {item}" for item in role_row.get("declines_to_opine", [])],
+        ]
+    )
     mapping_base = {
         "shared_rules": pack["shared_rules"],
+        "pack_version": pack["version"],
+        "stride_budget": pack["runtime_defaults"]["stride_budget"],
         "cyber_role": role,
-        "role_tradecraft": role_row["tradecraft"],
+        "role_guidance": role_guidance,
         "perspective": gold["perspective"],
         "operating_model": gold.get("operating_model_hint", "AI-PaaS"),
         "inventory": gold,
@@ -68,13 +79,19 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         "key_features": "(fill from P-feat output)",
         "in_scope": "(fill from P-scope output)",
         "out_of_scope": "(fill from P-scope output)",
+        "replica_coverage": "(fill from P-scope output)",
         "solution_description": "(fill from P-sol output)",
         "llm_subset": gold.get("llm_components", []),
+        "llm_subset_empty": not gold.get("llm_components", []),
+        "llm_subset_decision": "(fill from P-llm-cut output)",
+        "prior_stride_considerations": [],
         "stride_scenarios": "(fill from P-stride output)",
+        "stride_coverage": "(fill from P-stride output)",
         "phantom_scenarios": "(fill from P-phantom output)",
         "threats": "(fill from prior step)",
         "adversary": "(fill from P-adv output)",
         "existing_controls": "(fill from P-controls output)",
+        "control_absences": "(fill from P-controls output)",
         "claim_boundary": "(fill from P-adv output)",
         "full_matrix": "(fill with the accumulated matrix)",
     }
@@ -90,6 +107,12 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
             tmpl = prompts[pid]["template"]
             text = saturate(tmpl, mapping)
             (out_dir / f"{i:02d}-{pid}.txt").write_text(text + "\n", encoding="utf-8")
+        optional_ids = [c["id"] for c in pack["chain"] if c["track"] == "optional"]
+        for j, pid in enumerate(optional_ids, start=1):
+            text = saturate(prompts[pid]["template"], mapping)
+            (out_dir / f"O{j:02d}-{pid}.txt").write_text(
+                text + "\n", encoding="utf-8"
+            )
         # Track B optional
         b_ids = [c["id"] for c in pack["chain"] if c["track"] == "B"]
         for j, pid in enumerate(b_ids, start=1):
@@ -101,13 +124,16 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
             (out_dir / f"E{k:02d}-{pid}.txt").write_text(text + "\n", encoding="utf-8")
         readme = out_dir / "README.txt"
         readme.write_text(
-            "Run Track A prompts in numeric order. Paste each JSON output into the "
-            "next prompt's prior-output slot. After P-report, run E01-P-export-md "
+            "Run Track A prompts in numeric order. Repeat P-llm-cut or P-stride "
+            "when its repeat_until condition is false. O01-P-rank is optional before "
+            "P-qa. If you use Track B, stop after P-qa, run B01 through B03, then "
+            "run P-report. Otherwise run P-report directly after P-qa. Paste each "
+            "JSON output into the next prompt's prior-output slot. After P-report, "
+            "run E01-P-export-md "
             "(markdown), E02-P-export-json (completed JSON), E03-P-export-csv "
             "(threat database), then E04-P-export-diagram (Mermaid threat-model diagram). "
-            "Track B files (B01+) are optional and require an operating_model; if you "
-            "run them, re-run E01 through E04 on the Track B JSON. Do not call an API "
-            "from this README.\n",
+            "Track B files require an operating_model. Run the exports once, after the "
+            "final P-report. Do not call an API from this README.\n",
             encoding="utf-8",
         )
 

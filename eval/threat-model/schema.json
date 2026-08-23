@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aisharedresponsibility.com/eval/threat-model/schema.json",
-  "title": "AI system diagram threat matrix",
-  "description": "JSON shape written by the diagram threat-modeling prompts. Track A fills inventory, adversary, existing_controls, claim_boundary, solution_description, llm_subset, threats, qa, and report. Track B may fill threats[].srf.",
+  "title": "AI system diagram threat matrix v2",
+  "description": "JSON shape written by prompt pack v2. Track A fills inventory, adversary, diagram-visible controls and control absences, method coverage, threats, QA, and report. Track B may fill threats[].srf before P-report.",
   "type": "object",
   "required": [
     "system_name",
@@ -11,6 +11,9 @@
     "inventory",
     "solution_description",
     "llm_subset",
+    "llm_subset_empty",
+    "stride_coverage",
+    "phantom_coverage",
     "threats",
     "qa"
   ],
@@ -44,11 +47,20 @@
       "type": "array",
       "items": { "$ref": "#/$defs/scope_item" }
     },
+    "replica_coverage": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/replica_coverage" }
+    },
     "adversary": { "$ref": "#/$defs/adversary" },
     "existing_controls": {
       "type": "array",
       "items": { "$ref": "#/$defs/existing_control" }
     },
+    "control_absences": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/control_absence" }
+    },
+    "none_drawn": { "type": "boolean" },
     "claim_boundary": { "$ref": "#/$defs/claim_boundary" },
     "solution_description": { "type": "string" },
     "report": { "$ref": "#/$defs/report" },
@@ -57,15 +69,38 @@
       "items": { "type": "string" },
       "description": "Component ids that receive PHANTOM-B elicitation."
     },
+    "llm_subset_empty": {
+      "type": "boolean",
+      "description": "True exactly when llm_subset is empty. An empty subset makes PHANTOM-B not applicable, not complete."
+    },
+    "llm_subset_decision": { "$ref": "#/$defs/llm_subset_decision" },
+    "stride_considerations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/consideration" }
+    },
+    "stride_coverage": { "$ref": "#/$defs/stride_coverage" },
+    "phantom_considerations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/consideration" }
+    },
+    "phantom_coverage": { "$ref": "#/$defs/phantom_coverage" },
     "threats": {
       "type": "array",
       "items": { "$ref": "#/$defs/threat" }
+    },
+    "review_order": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/review_order_item" }
     },
     "qa": { "$ref": "#/$defs/qa" },
     "chain_meta": {
       "type": "object",
       "properties": {
-        "prompt_pack_version": { "type": "string" },
+        "prompt_pack_version": {
+          "type": "string",
+          "const": "2.0",
+          "description": "Must equal the root version in prompts.json."
+        },
         "role": { "type": "string" },
         "method": { "type": "string" },
         "date": { "type": "string" },
@@ -74,6 +109,62 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {
+        "required": ["llm_subset_empty"],
+        "properties": {
+          "llm_subset_empty": { "const": true }
+        }
+      },
+      "then": {
+        "properties": {
+          "llm_subset": { "type": "array", "maxItems": 0 },
+          "phantom_coverage": {
+            "type": "object",
+            "properties": {
+              "status": { "const": "not_applicable" }
+            }
+          },
+          "qa": {
+            "type": "object",
+            "properties": {
+              "llm_subset_empty": { "const": true },
+              "phantom_b_complete": { "type": "null" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": ["llm_subset_empty"],
+        "properties": {
+          "llm_subset_empty": { "const": false }
+        }
+      },
+      "then": {
+        "properties": {
+          "llm_subset": { "type": "array", "minItems": 1 },
+          "phantom_coverage": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "enum": ["complete", "incomplete"]
+              }
+            }
+          },
+          "qa": {
+            "type": "object",
+            "properties": {
+              "llm_subset_empty": { "const": false },
+              "phantom_b_complete": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "adversary": {
       "type": "object",
@@ -100,7 +191,14 @@
     },
     "existing_control": {
       "type": "object",
-      "required": ["id", "name", "diagram_referent", "kind"],
+      "required": [
+        "id",
+        "name",
+        "diagram_referent",
+        "kind",
+        "coverage_referents",
+        "coverage_basis"
+      ],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
         "name": { "type": "string", "minLength": 1 },
@@ -118,6 +216,51 @@
             "identity",
             "other"
           ]
+        },
+        "coverage_referents": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "Inventory ids visibly protected by a connection, containment relation, label, or badge."
+        },
+        "coverage_basis": {
+          "type": "string",
+          "enum": [
+            "connected",
+            "contained",
+            "label_only",
+            "badge_only",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "control_absence": {
+      "type": "object",
+      "required": ["id", "kind", "expected_referent", "observation"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^gap-ctl-[a-z0-9-]+$"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "authn",
+            "tls",
+            "filter",
+            "isolation",
+            "logging",
+            "approval",
+            "network",
+            "identity",
+            "other"
+          ]
+        },
+        "expected_referent": { "type": "string", "minLength": 1 },
+        "observation": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Diagram-grounded statement that the representation does not show the control."
         }
       }
     },
@@ -199,6 +342,8 @@
           "type": "string",
           "enum": ["process", "store", "external", "actor"]
         },
+        "replica_of": { "type": ["string", "null"] },
+        "replica_evidence": { "type": "string" },
         "notes": { "type": "string" }
       }
     },
@@ -233,6 +378,217 @@
         "rationale": { "type": "string" }
       }
     },
+    "replica_element_pair": {
+      "type": "object",
+      "required": ["representative_id", "replica_id"],
+      "properties": {
+        "representative_id": { "type": "string", "minLength": 1 },
+        "replica_id": { "type": "string", "minLength": 1 }
+      }
+    },
+    "replica_coverage": {
+      "type": "object",
+      "required": [
+        "representative_id",
+        "replica_id",
+        "evidence",
+        "inherited_element_pairs",
+        "divergence_gap",
+        "divergence_threat_id"
+      ],
+      "properties": {
+        "representative_id": { "type": "string", "minLength": 1 },
+        "replica_id": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "string", "minLength": 1 },
+        "inherited_element_pairs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/replica_element_pair" }
+        },
+        "divergence_gap": { "type": "string", "minLength": 1 },
+        "divergence_threat_id": {
+          "type": ["string", "null"],
+          "pattern": "^T[0-9]+$"
+        }
+      }
+    },
+    "llm_subset_decision": {
+      "type": "object",
+      "required": ["status", "reason"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "ready",
+            "possible_miss",
+            "needs_operator_confirmation",
+            "continue_without_llm"
+          ]
+        },
+        "reason": { "type": "string" }
+      }
+    },
+    "consideration": {
+      "type": "object",
+      "required": [
+        "element_id",
+        "letter",
+        "status",
+        "diagram_referent",
+        "evidence_refs"
+      ],
+      "properties": {
+        "element_id": { "type": "string", "minLength": 1 },
+        "letter": {
+          "type": "string",
+          "enum": [
+            "S",
+            "T",
+            "R",
+            "I",
+            "D",
+            "E",
+            "P",
+            "H",
+            "A",
+            "N",
+            "O",
+            "M",
+            "B"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["scenario", "not_applicable"]
+        },
+        "scenario": { "type": "string" },
+        "reason": { "type": "string" },
+        "diagram_referent": { "type": "string", "minLength": 1 },
+        "preconditions": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "attacker_position": { "type": "string" },
+        "asset": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "scenario" } }
+          },
+          "then": {
+            "required": ["scenario", "attacker_position", "asset"],
+            "properties": {
+              "scenario": { "type": "string", "minLength": 1 },
+              "attacker_position": { "type": "string", "minLength": 1 },
+              "asset": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "not_applicable" } }
+          },
+          "then": {
+            "required": ["reason"],
+            "properties": {
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "stride_coverage": {
+      "type": "object",
+      "required": [
+        "budget_rows",
+        "letters_per_element",
+        "expected_elements",
+        "considered_elements",
+        "remaining_elements",
+        "rows_expected",
+        "rows_written_total",
+        "complete"
+      ],
+      "properties": {
+        "budget_rows": { "type": "integer", "minimum": 6 },
+        "letters_per_element": { "type": "integer", "const": 6 },
+        "expected_elements": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "considered_elements": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "remaining_elements": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "rows_expected": { "type": "integer", "minimum": 0 },
+        "rows_written_total": { "type": "integer", "minimum": 0 },
+        "complete": { "type": "boolean" }
+      }
+    },
+    "phantom_missing": {
+      "type": "object",
+      "required": ["element_id", "letters"],
+      "properties": {
+        "element_id": { "type": "string", "minLength": 1 },
+        "letters": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["P", "H", "A", "N", "T", "O", "M", "B"]
+          }
+        }
+      }
+    },
+    "phantom_coverage": {
+      "type": "object",
+      "required": [
+        "status",
+        "expected_elements",
+        "complete_elements",
+        "missing"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["complete", "incomplete", "not_applicable"]
+        },
+        "expected_elements": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "complete_elements": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "missing": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/phantom_missing" }
+        }
+      }
+    },
+    "review_order_item": {
+      "type": "object",
+      "required": [
+        "position",
+        "threat_id",
+        "attacker_position",
+        "prerequisite_summary",
+        "reason"
+      ],
+      "properties": {
+        "position": { "type": "integer", "minimum": 1 },
+        "threat_id": { "type": "string", "pattern": "^T[0-9]+$" },
+        "attacker_position": { "type": "string", "minLength": 1 },
+        "prerequisite_summary": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 }
+      }
+    },
     "threat": {
       "type": "object",
       "required": [
@@ -249,6 +605,11 @@
         "scenario": { "type": "string", "minLength": 20 },
         "diagram_referent": { "type": "string", "minLength": 1 },
         "preconditions": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "description": "control_absences ids used as diagram evidence for the scenario."
+        },
         "attacker_position": { "type": "string" },
         "asset": { "type": "string" },
         "source": {
@@ -285,9 +646,33 @@
               "enum": ["mitigate", "eliminate", "transfer", "accept"]
             },
             "detail": { "type": "string" },
-            "control_point": { "type": "string" },
-            "validation": { "$ref": "#/$defs/validation" }
-          }
+            "control_point": {
+              "type": "string",
+              "description": "Inventory component, data-store, data-flow, or trust-boundary id where the action is applied."
+            },
+            "validation": {
+              "oneOf": [
+                { "$ref": "#/$defs/validation" },
+                { "type": "null" }
+              ]
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": { "enum": ["mitigate", "eliminate"] }
+                }
+              },
+              "then": {
+                "required": ["control_point", "validation"],
+                "properties": {
+                  "control_point": { "type": "string", "minLength": 1 },
+                  "validation": { "$ref": "#/$defs/validation" }
+                }
+              }
+            }
+          ]
         },
         "citations": {
           "type": "object",
@@ -330,16 +715,35 @@
     },
     "qa": {
       "type": "object",
+      "required": [
+        "llm_subset_empty",
+        "phantom_b_complete",
+        "stride_considered",
+        "control_points_bound",
+        "report_present",
+        "open_assumptions",
+        "gaps"
+      ],
       "properties": {
         "inventory_components_in_solS": { "type": "boolean" },
         "boundary_crossings_covered": { "type": "boolean" },
-        "phantom_b_complete": { "type": "boolean" },
+        "llm_subset_empty": { "type": "boolean" },
+        "phantom_b_complete": {
+          "type": ["boolean", "null"],
+          "description": "Null when llm_subset_empty is true and PHANTOM-B is not applicable."
+        },
         "stride_considered": { "type": "boolean" },
         "actions_complete": { "type": "boolean" },
         "adversary_stated": { "type": "boolean" },
         "existing_controls_listed": { "type": "boolean" },
+        "control_absences_grounded": { "type": "boolean" },
         "claim_boundary_stated": { "type": "boolean" },
         "actions_have_validation": { "type": "boolean" },
+        "control_points_bound": { "type": "boolean" },
+        "attacker_positions_bound": { "type": "boolean" },
+        "evidence_refs_bound": { "type": "boolean" },
+        "replica_coverage_complete": { "type": "boolean" },
+        "review_order_complete": { "type": "boolean" },
         "report_present": { "type": "boolean" },
         "open_assumptions": {
           "type": "array",

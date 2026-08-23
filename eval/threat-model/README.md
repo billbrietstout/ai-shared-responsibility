@@ -2,10 +2,11 @@
 
 Gold diagrams and scoring scripts for the prompt pack at
 `/tools/prompts/threat-model/`. The human-readable eval against three published
-threat models is `/eval/threat-model/`. A prediction is an image, Mermaid source, or SVG
-run through Track A (Shostack's Four Questions, attacker positions, existing
-controls, STRIDE on every box, PHANTOM-B on the LLM subset, then a readable
-report) or through a short baseline prompt.
+threat models is `/eval/threat-model/`. A prediction is an image, Mermaid
+source, or SVG run through Track A (Shostack's Four Questions, attacker
+positions, diagram-visible controls and control gaps, batched STRIDE,
+PHANTOM-B on the LLM subset, actions, QA, then a readable report) or through a
+short baseline prompt.
 
 Automated scores run without calling a model. A claim that Track A beats
 P-zeroshot still needs the SME sheets in `sme/`.
@@ -48,8 +49,9 @@ Prediction layout:
 <pred>/<system_id>/svg.json
 ```
 
-Each file must match `eval/threat-model/schema.json`. After Track A or Track B,
-run `P-export-md`, `P-export-json`, `P-export-csv`, then `P-export-diagram`.
+Each file must match `eval/threat-model/schema.json`. If Track B is selected,
+run it after `P-qa` and return to `P-report`. After the final `P-report`, run
+`P-export-md`, `P-export-json`, `P-export-csv`, then `P-export-diagram`.
 The markdown reply is the readable report. The JSON reply is the completed
 record. The CSV reply is one row per threat. The Mermaid reply is the
 threat-model diagram.
@@ -61,7 +63,8 @@ Scores:
 - PHANTOM-B coverage on gold LLM components
 - STRIDE coverage on gold processes
 - Crossing-flow coverage
-- Schema validity, including `diagram_referent` in inventory
+- Schema validity, including method applicability, coverage completion,
+  diagram-bound controls, evidence references, and `diagram_referent`
 - Optional Hamming loss if `eval/threat-model/labels/expert-corrections.json` is present
 - SRF checks when `threats[].srf` is filled (persona in `personas.json`, no `shared` party, slug join against `threats.json`)
 
@@ -74,7 +77,10 @@ python3 eval/threat-model/run_generate.py --mode identity
 ```
 
 Writes filled prompt text under `eval/threat-model/runs/<mode>/prompts/`. Run
-the chain in numeric order. After Track A, run `E01-P-export-md`,
+the required chain in numeric order. Repeat P-llm-cut or P-stride when its
+`repeat_until` condition is false. `O01-P-rank` is optional. If Track B is
+used, stop after P-qa, run B01 through B03, then run P-report. After the final
+P-report, run `E01-P-export-md`,
 `E02-P-export-json`, `E03-P-export-csv`, and `E04-P-export-diagram`.
 Save the JSON as `<run>/<system_id>/<format>.json`.
 Optional `--call-api` needs `OPENAI_API_KEY`

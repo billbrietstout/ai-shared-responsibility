@@ -38,31 +38,33 @@ def operator_banner(p: dict, pack: dict) -> str:
     entry = chain_entry(pack, pid)
     nxt = entry.get("next") if entry else None
     optional_next = entry.get("optional_next") if entry else None
+    repeat_until = entry.get("repeat_until") if entry else None
     if nxt:
         nxt_p = prompt_by_id(pack, nxt)
         nxt_title = nxt_p["title"] if nxt_p else nxt
         follow = f"Next prompt: {nxt} ({nxt_title})."
+        if optional_next:
+            opt_p = prompt_by_id(pack, optional_next)
+            opt_title = opt_p["title"] if opt_p else optional_next
+            follow += (
+                f" Optional route before that step: {optional_next} ({opt_title})."
+            )
     elif optional_next:
         nxt_p = prompt_by_id(pack, optional_next)
         nxt_title = nxt_p["title"] if nxt_p else optional_next
-        if pid == "P-export-diagram":
-            follow = (
-                f"Export ends here. Save the markdown, JSON, and CSV replies, and "
-                f"save this Mermaid reply as a .mmd file. If Track B is not yet "
-                f"applied, optional next: {optional_next} ({nxt_title}). If Track B "
-                f"is already applied, stop."
-            )
-        else:
-            follow = (
-                f"This step ends here. Optional next: {optional_next} ({nxt_title})."
-            )
-    elif pid == "P-srf-owner":
+        follow = f"This step ends here. Optional next: {optional_next} ({nxt_title})."
+    elif pid == "P-export-diagram":
         follow = (
-            "Track B is filled. Next, re-run P-export-md on this JSON so the "
-            "downloadable report includes layer, persona, and party."
+            "Export ends here. Save the markdown, JSON, CSV, and this Mermaid "
+            "reply as a .mmd file."
         )
     else:
         follow = "This prompt is not in the default chain."
+    if repeat_until:
+        follow = (
+            f"Repeat this prompt until {repeat_until}. "
+            f"Only then continue. {follow}"
+        )
     if pid == "P-export-md":
         echo = "Do not echo this line in the markdown."
     elif pid == "P-export-csv":
@@ -75,17 +77,27 @@ def operator_banner(p: dict, pack: dict) -> str:
 
 
 def prompt_block(p: dict, pack: dict, *, collapsed: bool = True) -> str:
-    tmpl = operator_banner(p, pack) + p["template"].replace(
-        "{{shared_rules}}", pack["shared_rules"]
+    tmpl = p["template"].replace("{{shared_rules}}", pack["shared_rules"])
+    tmpl = tmpl.replace("{{pack_version}}", pack["version"])
+    tmpl = tmpl.replace(
+        "{{stride_budget}}", str(pack["runtime_defaults"]["stride_budget"])
     )
+    tmpl = operator_banner(p, pack) + tmpl
     pid = p["id"]
     entry = chain_entry(pack, pid)
     nxt_req = (entry or {}).get("next")
     nxt_opt = (entry or {}).get("optional_next")
-    nxt = nxt_req or nxt_opt
     track = p.get("track", "A")
     track_label = "Export" if track == "export" else f"Track {track}"
-    if nxt_req:
+    repeat_until = (entry or {}).get("repeat_until")
+    if repeat_until:
+        label = f"{pid} · {p['title']} · {track_label} · repeat until complete"
+    elif nxt_req and nxt_opt:
+        label = (
+            f"{pid} · {p['title']} · {track_label} · next {nxt_req} "
+            f"or optional {nxt_opt}"
+        )
+    elif nxt_req:
         label = f"{pid} · {p['title']} · {track_label} · next {nxt_req}"
     elif nxt_opt:
         label = f"{pid} · {p['title']} · {track_label} · optional next {nxt_opt}"
@@ -127,13 +139,19 @@ def main():
         rest = r["tradecraft"]
         if ". " in rest:
             rest = rest.split(". ", 1)[1]
-        return f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). {esc(rest)}</li>"
+        notices = "; ".join(r.get("notices_first", []))
+        declines = "; ".join(r.get("declines_to_opine", []))
+        return (
+            f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). "
+            f"{esc(rest)} Notices first: {esc(notices)}. "
+            f"Declines to infer: {esc(declines)}.</li>"
+        )
 
     roles = "\n".join(role_li(r) for r in pack["roles"])
     q1 = stage_section("q1", "Read the diagram into a solution description. Then state attackers and existing controls. Each step is filled with the prior JSON.", pack)
-    q2 = stage_section("q2", "STRIDE on in-scope elements and crossing flows. PHANTOM-B on the LLM subset. Then merge.", pack)
-    q3 = stage_section("q3", "Map CIA, STRIDE, and PHANTOM-B letters. Then choose mitigate, eliminate, transfer, or accept in P-act, with a validation on mitigate and eliminate.", pack)
-    q4 = stage_section("q4", "Mechanical self-check, then write the readable report. Leave the reviewer line empty.", pack)
+    q2 = stage_section("q2", "Run STRIDE in complete batches on in-scope elements and crossing flows. Run PHANTOM-B on the LLM subset, then merge.", pack)
+    q3 = stage_section("q3", "Map CIA, STRIDE, and PHANTOM-B letters. Choose one action in P-act. P-rank is an optional review order based on attacker position and explicit preconditions.", pack)
+    q4 = stage_section("q4", "Run the mechanical self-check. Choose optional Track B here, before P-report writes the final readable document.", pack)
     track_b_html = "\n".join(prompt_block(p, pack) for p in track_b)
     export_html = "\n".join(prompt_block(p, pack) for p in export_prompts)
     baseline_html = "\n".join(prompt_block(dict(p, track="eval"), pack) for p in baselines)
@@ -146,6 +164,7 @@ def main():
             "title": p["title"] if p else c["id"],
             "next": c.get("next"),
             "optional_next": c.get("optional_next"),
+            "repeat_until": c.get("repeat_until"),
             "track": c.get("track", "A"),
         })
     titles = {p["id"]: p["title"] for p in pack["prompts"]}
@@ -362,15 +381,16 @@ def main():
 
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
-        <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / <a href="/tools/prompts/">System Instructions</a> / Threat modeling</span>
+        <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / <a href="/tools/prompts/">System Instructions</a> / Threat modeling / Pack v{esc(pack['version'])}</span>
         <h1 class="page-hero__title">AI system diagram threat modeling</h1>
         <p class="page-hero__lede">
           Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a
           threat matrix, a markdown report, completed JSON, a threat-database CSV,
           and a Mermaid threat-model diagram.
           Track A walks Shostack's Four Questions; each step is filled with the previous
-          step's JSON (the Auspex chain shape). Track B writes layer, persona, and party
-          onto each threat. After either track, run the export steps and save the
+          step's JSON (the Auspex chain shape). STRIDE repeats in bounded batches until
+          coverage is complete. Optional Track B runs after QA and before the report.
+          Then run the export steps once and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
@@ -387,15 +407,15 @@ def main():
           Attach the diagram (image, Mermaid, or SVG) to a chat that can fetch URLs.
           Copy the block below. The model runs Track A from
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
-          You do not copy the 18 Track A steps.
+          You do not copy the Track A steps.
         </p>
         <ol>
-          <li>Fetch the pack. Run every <code>chain</code> id whose <code>track</code> is <code>A</code>, in listed order (P-norm through P-report).</li>
+          <li>Fetch the pack. Use its root version, runtime defaults, selected role guidance, and chain routes.</li>
           <li>Fill each template from the prior JSON (<code>inventory</code>, <code>threats</code>, <code>full_matrix</code>, and the other <code>{{{{ }}}}</code> slots).</li>
           <li>Keep the diagram attached on every step that names <code>{{{{representation}}}}</code>. Set <code>representation_kind</code> to match the attachment.</li>
-          <li>If a <code>stop_condition</code> fails, stop and show the gap.</li>
+          <li>If a <code>stop_condition</code> fails, stop and show the gap. Repeat a step when its <code>repeat_until</code> field is not satisfied.</li>
           <li>After P-report, run P-export-md, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
-          <li>Optional: after Track A, run Track B, then run the export steps again.</li>
+          <li>If Track B is requested, branch from P-qa to P-srf-join, run all three Track B steps, then return to P-report. Otherwise P-qa goes directly to P-report.</li>
         </ol>
         <p>
           If the chat cannot fetch that file, use the copy-one-block steps under
@@ -405,9 +425,11 @@ def main():
           <button type="button" id="shortcut-copy">Copy</button>
           <pre id="shortcut-text">Attach this diagram. Fetch https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json now.
 
-Run Track A: every object in chain where track is "A", in listed order (P-norm through P-report). For each step, fill the template slots from the prior JSON (inventory, threats, full_matrix, and the other {{{{ }}}} names). Keep this diagram attached on every step whose template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg to match the attachment. Role: experienced-threat-modeler unless I name another role from the pack.
+Use the pack root version and runtime_defaults. Run the required Track A route from P-norm through P-report. For each step, fill the template slots from the accumulated JSON. Keep this diagram attached on every step whose template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg to match the attachment. Role: experienced-threat-modeler unless I name another role. Insert that role's tradecraft, notices_first, and declines_to_opine as role_guidance.
 
-Do not skip a step. If a stop_condition fails, stop and show the gap.
+Do not skip a step. If a stop_condition fails, stop and show the gap. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true.
+
+P-rank is optional. Run it only if I ask for review ordering. Track B is optional. If I supply an operating model and request SRF assignments, branch from P-qa to P-srf-join, P-srf-layer, and P-srf-owner, then return to P-report. Otherwise P-qa goes directly to P-report.
 
 After P-report, run P-export-md, then P-export-json, then P-export-csv, then P-export-diagram. I will save those replies as .md, .json, .csv, and .mmd. Leave report.reviewer empty.
 
@@ -421,9 +443,9 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li>Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
-        <li>Run Track A in order from P-norm through P-report. After P-sol, run P-adv and P-controls before STRIDE. After P-qa, run P-report.</li>
-        <li>Optionally run <a href="#track-b">Track B</a> (P-srf-join, P-srf-layer, P-srf-owner) with an operating model.</li>
-        <li>After the track you used, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
+        <li>Run Track A in order. Repeat P-stride until <code>stride_coverage.complete</code> is true. P-rank is optional before P-qa.</li>
+        <li>At P-qa, either continue to P-report or run <a href="#track-b">Track B</a> with an operating model, then return to P-report.</li>
+        <li>After P-report, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
 
@@ -481,12 +503,11 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
 
       <p class="section-label">Lane</p>
       <p class="section-note">
-        Track A elicits threats from the diagram and classifies them. Track B writes one
-        SRF persona and one party onto each threat. If matrix.json says shared, still
-        name one lead. Cite an OWASP, ATLAS, or AI Exchange id only when it exists in
-        that source. After either track, the export steps write the files a reviewer
-        can keep: a markdown report, the completed JSON, a threat-database CSV,
-        and a Mermaid threat-model diagram.
+        Track A records the diagram, drawn controls, control gaps visible in the
+        diagram, threats, actions, and method coverage. Optional Track B writes one
+        SRF persona and one party onto each threat after QA. P-report then writes the
+        final report once. Cite an OWASP, ATLAS, or AI Exchange id only when it exists
+        in that source.
       </p>
 
 {q1}
@@ -497,9 +518,9 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
       <div class="deliverable" id="track-a-output">
         <p class="deliverable__title">What Track A has filled</p>
         <p>
-          The assistant JSON after P-report is the Track A matrix. Optional
-          <a href="#track-b">Track B</a> is next. Then run the
-          <a href="#export-report">export steps</a> and save the
+          P-qa produces the checked Track A matrix. Run optional
+          <a href="#track-b">Track B</a> before P-report, or run P-report
+          immediately. Then run the <a href="#export-report">export steps</a> and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
           <code>.mmd</code> replies.
           Schema:
@@ -508,16 +529,18 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
           <code>mermaid.json</code> / <code>svg.json</code>).
         </p>
         <ul>
-          <li><code>inventory</code>, <code>solution_description</code>, <code>llm_subset</code>.</li>
+          <li><code>inventory</code>, <code>solution_description</code>, <code>replica_coverage</code>, and <code>llm_subset_empty</code>.</li>
           <li><code>adversary</code>: assumptions and positions (who already sits in which zone).</li>
-          <li><code>existing_controls</code>: only features drawn on the diagram.</li>
+          <li><code>existing_controls</code> with shown coverage, plus <code>control_absences</code> for expected controls not shown at a named referent.</li>
           <li><code>claim_boundary</code>: what this review does not claim, plus the time or component box.</li>
-          <li><code>threats</code>: ids T1, T2, and so on. Each row has <code>scenario</code>, <code>diagram_referent</code>, <code>attacker_position</code>, STRIDE letters, PHANTOM-B letters when the referent is an LLM node, CIA, one <code>action</code>, and <code>validation</code> on mitigate or eliminate.</li>
-          <li><code>qa</code> and <code>report.markdown</code>. Leave <code>report.reviewer</code> empty.</li>
+          <li><code>stride_coverage</code> and <code>phantom_coverage</code> state what was considered and what remains.</li>
+          <li><code>threats</code>: ids T1, T2, and so on. Each row has a scenario, diagram referent, attacker position, method letters, one action, and validation on mitigate or eliminate.</li>
+          <li>Optional <code>review_order</code> records the builder review sequence without changing threat ids or claiming a risk score.</li>
+          <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code>. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
-          Track B is optional and reads the same JSON. After the track you used,
-          run the <a href="#export-report">export steps</a> and save the
+          Track B is optional and reads the P-qa JSON. After Track B, return to
+          P-report. Then run the <a href="#export-report">export steps</a> and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
           <code>.mmd</code> replies.
         </p>
@@ -525,7 +548,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
 
       <p class="section-label" id="track-b">Track B (optional): SRF accountability</p>
       <p class="section-note">
-        Off by default. Consumes the Track A JSON plus an operating model.
+        Off by default. Branch here after P-qa. Track B consumes the checked Track A
+        JSON plus an operating model, then returns the full matrix to P-report.
         Join published AI Exchange slugs from threats.json instead of re-deriving them.
       </p>
 {track_b_html}
@@ -535,8 +559,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <p>
           The assistant JSON after P-srf-owner is the Track A matrix with
           <code>srf</code> on every threat. Same schema;
-          <code>chain_meta.track_b_applied</code> is true. Re-run the export steps
-          on this JSON so the report, CSV, and diagram use the Track B matrix.
+          <code>chain_meta.track_b_applied</code> is true. Run P-report next so the
+          report includes layer, persona, and party.
         </p>
         <ul>
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
@@ -547,17 +571,17 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <p>
           Track B does not add threats. A threat with no matching slug still needs
           layer, persona, and party from P-srf-layer and P-srf-owner. Next, run
-          <a href="#export-report">Export the report, JSON, CSV, and diagram</a>
-          on this JSON.
+          P-report, then <a href="#export-report">Export the report, JSON, CSV, and diagram</a>.
         </p>
       </div>
 
       <p class="section-label" id="export-report">Export the report, JSON, CSV, and diagram</p>
       <p class="section-note">
-        These four prompts run after Track A, and again after Track B if you used it.
-        P-export-md writes the readable report (<code>.md</code>).
+        These four prompts run once after P-report.
+        P-export-md emits the stored report without rewriting it (<code>.md</code>).
         P-export-json writes the completed record (<code>.json</code>).
-        P-export-csv writes one row per threat (<code>.csv</code>).
+        P-export-csv writes one row per threat with stable SRF columns. Track A leaves
+        those cells empty (<code>.csv</code>).
         P-export-diagram writes a Mermaid data-flow of the inventory with threat
         ids on their referents (<code>.mmd</code>). It uses only inventory ids.
         Leave the reviewer line empty.
@@ -597,11 +621,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         if (!id) return 'P-norm';
         const s = stepById(id);
         if (!s) return null;
+        if (s.repeat_until) return id;
         return s.next || s.optional_next || null;
-      }}
-      function nextIsOptional(id) {{
-        const s = stepById(id);
-        return Boolean(s && !s.next && s.optional_next);
       }}
       function markChain(lastId) {{
         document.querySelectorAll('.prompt-block').forEach((el) => {{
@@ -622,8 +643,14 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         if (nxt) {{
           const nextEl = document.getElementById(nxt + '-block');
           if (nextEl) nextEl.classList.add('is-next');
-          const optional = lastId && nextIsOptional(lastId);
-          nextLabel.textContent = nxt + ' (' + titleOf(nxt) + ')' + (optional ? ', optional Track B' : '');
+          const step = lastId && stepById(lastId);
+          const repeat = step && step.repeat_until;
+          const optional = step && step.optional_next;
+          let suffix = repeat ? ', repeat until ' + repeat : '';
+          if (optional) {{
+            suffix += ', optional route ' + optional + ' (' + titleOf(optional) + ')';
+          }}
+          nextLabel.textContent = nxt + ' (' + titleOf(nxt) + ')' + suffix;
           copyNextBtn.hidden = false;
         }} else {{
           nextLabel.textContent = 'none; the chain ends here';

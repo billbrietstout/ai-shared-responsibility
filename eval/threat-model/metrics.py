@@ -141,6 +141,9 @@ def schema_issues(matrix: dict, schema_required=True) -> list[str]:
         "inventory",
         "solution_description",
         "llm_subset",
+        "llm_subset_empty",
+        "stride_coverage",
+        "phantom_coverage",
         "threats",
         "qa",
     ):
@@ -149,6 +152,66 @@ def schema_issues(matrix: dict, schema_required=True) -> list[str]:
     inv = matrix.get("inventory") or {}
     universe = inventory_id_universe(inv)
     index = inventory_index(inv)
+    action_point_ids = set()
+    for key in ("components", "data_stores", "data_flows", "trust_boundaries"):
+        action_point_ids |= id_set(inv, key)
+
+    llm_subset = matrix.get("llm_subset") or []
+    llm_subset_empty = matrix.get("llm_subset_empty")
+    if not isinstance(llm_subset_empty, bool):
+        issues.append("llm_subset_empty missing or not boolean")
+    elif llm_subset_empty != (len(llm_subset) == 0):
+        issues.append("llm_subset_empty does not match llm_subset")
+
+    qa = matrix.get("qa") or {}
+    if qa.get("llm_subset_empty") != llm_subset_empty:
+        issues.append("qa.llm_subset_empty does not match root")
+    phantom_complete = qa.get("phantom_b_complete")
+    if llm_subset_empty is True and phantom_complete is not None:
+        issues.append("qa.phantom_b_complete must be null for empty llm_subset")
+    if llm_subset_empty is False and not isinstance(phantom_complete, bool):
+        issues.append("qa.phantom_b_complete must be boolean for non-empty llm_subset")
+
+    absences = matrix.get("control_absences") or []
+    absence_ids = {row.get("id") for row in absences if row.get("id")}
+    for row in absences:
+        aid = row.get("id", "control-absence")
+        ref = row.get("expected_referent")
+        if norm(ref) not in action_point_ids:
+            issues.append(f"{aid}: expected_referent {ref!r} not in inventory")
+        observation = str(row.get("observation") or "").lower()
+        if not any(
+            phrase in observation
+            for phrase in ("not shown", "does not show", "not drawn", "does not draw")
+        ):
+            issues.append(f"{aid}: observation does not state diagram limitation")
+
+    for row in matrix.get("existing_controls") or []:
+        cid = row.get("id", "existing-control")
+        ref = row.get("diagram_referent")
+        if not resolve(ref, index) and norm(ref) not in universe:
+            issues.append(f"{cid}: diagram_referent {ref!r} not in inventory")
+        coverage_refs = row.get("coverage_referents")
+        if not isinstance(coverage_refs, list):
+            issues.append(f"{cid}: missing coverage_referents")
+        else:
+            for coverage_ref in coverage_refs:
+                if (
+                    not resolve(coverage_ref, index)
+                    and norm(coverage_ref) not in universe
+                ):
+                    issues.append(
+                        f"{cid}: coverage referent {coverage_ref!r} not in inventory"
+                    )
+        if row.get("coverage_basis") not in {
+            "connected",
+            "contained",
+            "label_only",
+            "badge_only",
+            "unknown",
+        }:
+            issues.append(f"{cid}: bad coverage_basis")
+
     for i, threat in enumerate(matrix.get("threats", [])):
         tid = threat.get("id", f"index-{i}")
         if not re.fullmatch(r"T[0-9]+", str(tid or "")):
@@ -163,6 +226,18 @@ def schema_issues(matrix: dict, schema_required=True) -> list[str]:
         action = threat.get("action") or {}
         if action.get("type") not in ACTIONS:
             issues.append(f"{tid}: action.type {action.get('type')!r} not allowed")
+        if action.get("type") in {"mitigate", "eliminate"}:
+            control_point = action.get("control_point")
+            if norm(control_point) not in action_point_ids:
+                issues.append(
+                    f"{tid}: control_point {control_point!r} not actionable inventory id"
+                )
+            validation = action.get("validation") or {}
+            if validation.get("kind") not in {"test", "log", "fail_condition"}:
+                issues.append(f"{tid}: missing action validation")
+        for evidence_ref in threat.get("evidence_refs") or []:
+            if evidence_ref not in absence_ids:
+                issues.append(f"{tid}: evidence_ref {evidence_ref!r} not found")
         for letter in threat.get("stride") or []:
             if letter not in STRIDE:
                 issues.append(f"{tid}: bad STRIDE letter {letter}")
@@ -183,6 +258,87 @@ def schema_issues(matrix: dict, schema_required=True) -> list[str]:
             slug = (srf.get("join") or {}).get("ai_exchange_slug")
             if slug and slug not in SLUGS:
                 issues.append(f"{tid}: invented ai_exchange_slug {slug}")
+
+    stride_coverage = matrix.get("stride_coverage")
+    if not isinstance(stride_coverage, dict):
+        issues.append("stride_coverage missing")
+    else:
+        expected = {norm(x) for x in stride_coverage.get("expected_elements", [])}
+        considered = {
+            norm(x) for x in stride_coverage.get("considered_elements", [])
+        }
+        remaining = {
+            norm(x) for x in stride_coverage.get("remaining_elements", [])
+        }
+        if stride_coverage.get("complete") is not True:
+            issues.append("stride_coverage incomplete")
+        if remaining:
+            issues.append("stride_coverage has remaining elements")
+        if not expected.issubset(considered):
+            issues.append("stride_coverage expected elements not all considered")
+        by_element: dict[str, set[str]] = {}
+        consideration_keys = []
+        for row in matrix.get("stride_considerations") or []:
+            element_id = norm(row.get("element_id"))
+            letter = row.get("letter")
+            consideration_keys.append((element_id, letter))
+            by_element.setdefault(element_id, set()).add(letter)
+        if len(consideration_keys) != len(set(consideration_keys)):
+            issues.append("stride_considerations contains duplicate element/letter rows")
+        for element_id in expected:
+            if by_element.get(element_id, set()) != set(STRIDE):
+                issues.append(f"stride letters incomplete: {element_id}")
+        expected_rows = (len(expected) * len(STRIDE)) + len(
+            matrix.get("replica_coverage") or []
+        )
+        if stride_coverage.get("rows_expected") != expected_rows:
+            issues.append("stride_coverage rows_expected is inconsistent")
+        if stride_coverage.get("rows_written_total") != len(consideration_keys):
+            issues.append("stride_coverage rows_written_total is inconsistent")
+
+    phantom_coverage = matrix.get("phantom_coverage")
+    if not isinstance(phantom_coverage, dict):
+        issues.append("phantom_coverage missing")
+    elif llm_subset_empty is True:
+        if phantom_coverage.get("status") != "not_applicable":
+            issues.append("phantom_coverage must be not_applicable for empty subset")
+    elif phantom_coverage.get("status") not in {"complete", "incomplete"}:
+        issues.append("phantom_coverage status invalid")
+
+    threats_by_id = {
+        row.get("id"): row for row in matrix.get("threats") or [] if row.get("id")
+    }
+    for row in matrix.get("replica_coverage") or []:
+        representative_id = row.get("representative_id")
+        replica_id = row.get("replica_id")
+        if norm(representative_id) not in universe or norm(replica_id) not in universe:
+            issues.append(
+                f"replica component missing: {representative_id} -> {replica_id}"
+            )
+        for pair in row.get("inherited_element_pairs") or []:
+            if (
+                norm(pair.get("representative_id")) not in universe
+                or norm(pair.get("replica_id")) not in universe
+            ):
+                issues.append("replica inherited element missing")
+        divergence_id = row.get("divergence_threat_id")
+        divergence = threats_by_id.get(divergence_id)
+        if not divergence or norm(divergence.get("diagram_referent")) != norm(
+            replica_id
+        ):
+            issues.append(f"replica divergence threat missing: {replica_id}")
+
+    review_order = matrix.get("review_order")
+    if review_order:
+        review_ids = [row.get("threat_id") for row in review_order]
+        if len(review_ids) != len(set(review_ids)):
+            issues.append("review_order contains duplicate threat ids")
+        if set(review_ids) != set(threats_by_id):
+            issues.append("review_order does not contain every threat id")
+
+    chain_meta = matrix.get("chain_meta") or {}
+    if chain_meta and chain_meta.get("prompt_pack_version") != "2.0":
+        issues.append("chain_meta.prompt_pack_version is not 2.0")
     return issues
 
 
@@ -280,6 +436,8 @@ def srf_checks(matrix: dict, personas: set[str], threats_json: dict | None, oper
 
 def matrix_from_gold_inventory(gold: dict, kind: str) -> dict:
     """Echo gold inventory into the output schema so the harness can smoke-test."""
+    llm_subset = list(gold["llm_components"])
+    llm_subset_empty = not llm_subset
     return {
         "system_name": gold["system_name"],
         "perspective": gold["perspective"],
@@ -293,17 +451,64 @@ def matrix_from_gold_inventory(gold: dict, kind: str) -> dict:
             "llm_components": gold["llm_components"],
             "missing_trust_boundaries": gold.get("missing_trust_boundaries", False),
         },
+        "replica_coverage": [],
+        "existing_controls": [],
+        "control_absences": [],
+        "none_drawn": True,
         "solution_description": gold["system_name"] + ". " + gold["perspective"],
-        "llm_subset": list(gold["llm_components"]),
+        "llm_subset": llm_subset,
+        "llm_subset_empty": llm_subset_empty,
+        "llm_subset_decision": {
+            "status": "continue_without_llm" if llm_subset_empty else "ready",
+            "reason": "gold-echo fixture records the inventory without elicitation",
+        },
+        "stride_considerations": [],
+        "stride_coverage": {
+            "budget_rows": 72,
+            "letters_per_element": 6,
+            "expected_elements": [],
+            "considered_elements": [],
+            "remaining_elements": [],
+            "rows_expected": 0,
+            "rows_written_total": 0,
+            "complete": True,
+        },
+        "phantom_considerations": [],
+        "phantom_coverage": {
+            "status": "not_applicable" if llm_subset_empty else "incomplete",
+            "expected_elements": llm_subset,
+            "complete_elements": [],
+            "missing": (
+                []
+                if llm_subset_empty
+                else [{"element_id": item, "letters": PHANTOM} for item in llm_subset]
+            ),
+        },
         "threats": [],
         "qa": {
             "inventory_components_in_solS": True,
             "boundary_crossings_covered": False,
-            "phantom_b_complete": False,
-            "stride_considered": False,
+            "llm_subset_empty": llm_subset_empty,
+            "phantom_b_complete": None if llm_subset_empty else False,
+            "stride_considered": True,
             "actions_complete": True,
+            "adversary_stated": False,
+            "existing_controls_listed": True,
+            "control_absences_grounded": True,
+            "claim_boundary_stated": False,
+            "actions_have_validation": True,
+            "control_points_bound": True,
+            "attacker_positions_bound": True,
+            "evidence_refs_bound": True,
+            "replica_coverage_complete": True,
+            "review_order_complete": True,
+            "report_present": False,
             "open_assumptions": ["gold-echo fixture has no elicited threats"],
             "gaps": ["threat elicitation not present in this fixture"],
         },
-        "chain_meta": {"prompt_pack_version": "1.0", "role": "fixture", "track_b_applied": False},
+        "chain_meta": {
+            "prompt_pack_version": "2.0",
+            "role": "fixture",
+            "track_b_applied": False,
+        },
     }
