@@ -372,6 +372,9 @@ def main():
 }}
     </script>
     <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-prompts-threat-model" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -395,6 +398,7 @@ def main():
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/eval/threat-model/">How this pack scores against three published threat models</a>.
+          <a href="{esc(pack['release_notes_url'])}">Release notes and compatibility changes</a>.
         </p>
       </div>
     </header>
