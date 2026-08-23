@@ -374,7 +374,7 @@ def main():
     <!-- llm:meta -->
     <meta name="llm:type" content="tool" />
     <meta name="llm:canonical-id" content="srf.page.tools-prompts-threat-model" />
-    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.data.threats" />
     <!-- /llm:meta -->
   </head>
   <body>
