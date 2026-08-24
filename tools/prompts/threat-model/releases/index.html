@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Threat-model prompt pack releases · AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Release notes and compatibility changes for the AI-enabled system threat-model prompt pack."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .release {
+        max-width: 800px;
+        margin-bottom: var(--sp-10);
+        padding-bottom: var(--sp-8);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .release h2 {
+        margin-bottom: var(--sp-2);
+      }
+      .release-meta {
+        color: var(--slate-500);
+        font-size: var(--text-sm);
+        margin: 0 0 var(--sp-4);
+      }
+      .release ul {
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+      }
+      .compatibility {
+        max-width: 800px;
+        padding: var(--sp-5);
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius);
+        background: var(--slate-50);
+        margin-bottom: var(--sp-8);
+      }
+    </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "Threat-model prompt pack releases",
+  "url": "https://aisharedresponsibility.com/tools/prompts/threat-model/releases/",
+  "dateModified": "2026-08-24",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-prompts-threat-model-releases" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.data.threats, srf.data.threat-sources" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / <a href="/tools/prompts/threat-model/">Threat modeling</a> / Releases</span>
+        <h1 class="page-hero__title">Threat-model prompt pack releases</h1>
+        <p class="page-hero__lede">
+          Version history, output-contract changes, and migration notes for
+          <a href="/tools/prompts/threat-model/">the prompt pack</a>.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="threat-model-releases">
+      <div class="compatibility">
+        <strong>Compatibility rule.</strong>
+        The major version identifies the JSON and workflow contract.
+        A v2 matrix does not validate as v3 without new context, phase coverage,
+        source, importance, and QA fields. Keep the pack version with each export.
+      </div>
+
+      <article class="release" id="v3-0" data-llm="release-v3">
+        <h2>3.0</h2>
+        <p class="release-meta">24 August 2026 · breaking schema and workflow release</p>
+        <ul>
+          <li>Adds <code>full-system</code>, <code>bounded-subsystem</code>, and <code>artifact-only</code> review profiles with claim evidence.</li>
+          <li>Requires a traditional-security applicability result. Only a confirmed artifact-only review may mark the whole traditional phase not applicable.</li>
+          <li>Replaces six-letter coverage for every element with typed STRIDE: process, actor, store, and flow denominators.</li>
+          <li>Adds bounded abuse-case and operational-event passes before PHANTOM-B.</li>
+          <li>Adds a composition denominator for retrieval, identity delegation, tool actuation, output consumption, feedback loops, and shared stores.</li>
+          <li>Adds <code>source_manifest</code>, <a href="/data/threat-sources.json">the source registry</a>, and evidence-bound external references. Affected CVE and NVD mappings require supplier, product, version, and component evidence.</li>
+          <li>Moves review importance onto each threat. The allowed factors cite evidence and do not infer likelihood, impact, severity, or residual risk.</li>
+          <li>Adds an SRF L1 to L5 coverage audit and optional vertical obligation, control candidate, and acceptance-authority joins.</li>
+          <li>Expands the gold corpus from five to ten architectures, including traditional-only, mixed, agent-actuation, artifact-only, and clinical safety cases.</li>
+          <li>Extends markdown, JSON, CSV, and Mermaid exports while preserving one threat id across projections.</li>
+        </ul>
+        <p>
+          Schema: <a href="/eval/threat-model/schema.json">v3 JSON Schema</a>.
+          Evaluation contract: <a href="/eval/threat-model/rubric.md">rubric.md</a>.
+        </p>
+      </article>
+
+      <article class="release" id="v2-0" data-llm="release-v2">
+        <h2>2.0</h2>
+        <p class="release-meta">22 August 2026 · prior major release</p>
+        <ul>
+          <li>Added attacker positions, claim boundaries, diagram-visible controls and control gaps, replica inheritance, batched STRIDE coverage, and action validation.</li>
+          <li>Made PHANTOM-B applicability explicit for an empty AI subset.</li>
+          <li>Added optional review ordering and SRF accountability after QA.</li>
+          <li>Added markdown, completed JSON, CSV, and Mermaid exports.</li>
+        </ul>
+      </article>
+
+      <article class="release" id="earlier" data-llm="release-earlier">
+        <h2>Earlier pack history</h2>
+        <p class="release-meta">Repository history before the 2.0 contract</p>
+        <p>
+          Earlier revisions established the chained Shostack questions, diagram
+          inventory, STRIDE, PHANTOM-B, SRF joins, and evaluation harness. They did
+          not publish the phase, evidence, and export contracts introduced in 2.0
+          and 3.0.
+        </p>
+      </article>
+    </main>
+    <site-footer></site-footer>
+  </body>
+</html>

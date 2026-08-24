@@ -1,0 +1,29 @@
+flowchart LR
+  subgraph operator_boundary["Operator boundary"]
+    operator["Platform operator"]
+  end
+  subgraph agent["Agent zone"]
+    agent_gateway["Agent gateway"]
+    agent_runtime["Agent runtime"]
+  end
+  subgraph provider["Model provider"]
+    model_endpoint["Model endpoint"]
+  end
+  subgraph control["Change control zone"]
+    approval_service["Approval service"]
+    deployment_adapter["Deployment adapter"]
+    change_store[("Change request store")]
+    credential_vault[("Credential vault")]
+  end
+  subgraph production["Production boundary"]
+    deployment_api["Deployment API"]
+  end
+  operator -->|"change goal"| agent_gateway
+  agent_gateway -->|"bounded goal"| agent_runtime
+  agent_runtime -->|"plan prompt"| model_endpoint
+  model_endpoint -->|"proposed tool call"| agent_runtime
+  agent_runtime -->|"change proposal"| change_store
+  operator -->|"approval decision"| approval_service
+  approval_service -->|"approved action"| deployment_adapter
+  credential_vault -->|"scoped credential"| deployment_adapter
+  deployment_adapter -->|"deployment command"| deployment_api

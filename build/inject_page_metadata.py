@@ -148,10 +148,16 @@ def classify(rel):
             if rel.rstrip("/").endswith("changes"):
                 return "reference", concepts
             return "tool", concepts
-        if rel == "tools/prompts/threat-model":
-            return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + ["srf.data.threats"]
+        if rel.startswith("tools/prompts/threat-model"):
+            return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + [
+                "srf.data.threats",
+                "srf.data.threat-sources",
+            ]
         if rel == "eval/threat-model":
-            return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + ["srf.data.threats"]
+            return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + [
+                "srf.data.threats",
+                "srf.data.threat-sources",
+            ]
         if "prompts" in rel:             return "tool", ["srf.framework.cosai-srf"] + ACCT
         if "schema" in rel:              return "tool", ["srf.framework.cosai-srf", "srf.concept.control"]
         if "security" in rel or "controls-assessment" in rel or "assessment" in rel:

@@ -1,0 +1,64 @@
+{
+  "system_id": "clinical-triage-assistant",
+  "system_name": "Clinical triage assistant",
+  "perspective": "Healthcare application team that owns intake, triage workflow, model integration, and clinician review.",
+  "review_profile_hint": "full-system",
+  "operating_model_hint": "AI-PaaS",
+  "vertical_ids": ["healthcare"],
+  "jurisdictions": ["us-federal"],
+  "critical_assets": ["patient record", "triage priority", "clinician alert"],
+  "prohibited_outcomes": [
+    "model output suppresses an urgent case without clinician review",
+    "triage output is written to the patient record without attribution"
+  ],
+  "continuity_safety_constraints": [
+    "urgent intake must route to a clinician when the model path is unavailable",
+    "the triage queue must preserve arrival order and urgency evidence"
+  ],
+  "workflow_expectations": {
+    "traditional_status": "complete",
+    "ai_status": "complete",
+    "composition_status": "complete",
+    "operational_status": "complete",
+    "vertical_join": "required",
+    "reason": "The model affects clinical triage, continuity, and patient-record flows."
+  },
+  "components": [
+    { "id": "intake-api", "name": "Intake API", "type": "process" },
+    { "id": "triage-orchestrator", "name": "Triage orchestrator", "type": "process" },
+    { "id": "prompt-builder", "name": "Prompt builder", "type": "process" },
+    { "id": "clinician-console", "name": "Clinician console", "type": "process" },
+    { "id": "alert-router", "name": "Alert router", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "patient", "name": "Patient", "type": "actor" },
+    { "id": "clinician", "name": "Clinician", "type": "actor" },
+    { "id": "model-api", "name": "Model API", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "patient-record", "name": "Patient record", "type": "store" },
+    { "id": "triage-queue", "name": "Triage queue", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-symptoms", "from": "patient", "to": "intake-api", "label": "symptoms and contact data", "crosses_boundary": "public" },
+    { "id": "f-intake", "from": "intake-api", "to": "triage-orchestrator", "label": "validated intake", "crosses_boundary": null },
+    { "id": "f-record-read", "from": "patient-record", "to": "triage-orchestrator", "label": "patient history", "crosses_boundary": "clinical-data" },
+    { "id": "f-prompt-input", "from": "triage-orchestrator", "to": "prompt-builder", "label": "bounded triage context", "crosses_boundary": null },
+    { "id": "f-prompt", "from": "prompt-builder", "to": "model-api", "label": "triage prompt", "crosses_boundary": "app-to-provider" },
+    { "id": "f-model-output", "from": "model-api", "to": "triage-orchestrator", "label": "triage draft", "crosses_boundary": "app-to-provider" },
+    { "id": "f-queue", "from": "triage-orchestrator", "to": "triage-queue", "label": "queued draft with evidence", "crosses_boundary": "clinical-data" },
+    { "id": "f-review", "from": "triage-queue", "to": "clinician-console", "label": "case for review", "crosses_boundary": "clinical-data" },
+    { "id": "f-clinician", "from": "clinician", "to": "clinician-console", "label": "triage decision", "crosses_boundary": "workforce" },
+    { "id": "f-record-write", "from": "clinician-console", "to": "patient-record", "label": "attributed triage decision", "crosses_boundary": "clinical-data" },
+    { "id": "f-alert", "from": "clinician-console", "to": "alert-router", "label": "urgent alert", "crosses_boundary": null }
+  ],
+  "trust_boundaries": [
+    { "id": "public", "name": "Public intake", "contains": ["patient"] },
+    { "id": "application", "name": "Clinical application", "contains": ["intake-api", "triage-orchestrator", "prompt-builder", "clinician-console", "alert-router"] },
+    { "id": "clinical-data", "name": "Clinical data zone", "contains": ["patient-record", "triage-queue"] },
+    { "id": "workforce", "name": "Clinical workforce", "contains": ["clinician"] },
+    { "id": "provider", "name": "Model provider", "contains": ["model-api"] }
+  ],
+  "llm_components": ["prompt-builder", "model-api"],
+  "missing_trust_boundaries": false
+}

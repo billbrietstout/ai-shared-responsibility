@@ -1,0 +1,51 @@
+{
+  "system_id": "traditional-web-service",
+  "system_name": "Traditional account service",
+  "perspective": "Application team that owns the API gateway, account service, and customer database.",
+  "review_profile_hint": "full-system",
+  "vertical_ids": [],
+  "jurisdictions": [],
+  "workflow_expectations": {
+    "traditional_status": "complete",
+    "ai_status": "not_applicable",
+    "composition_status": "not_applicable",
+    "reason": "No AI component or AI-to-traditional path is represented."
+  },
+  "component_versions": [
+    {
+      "component_id": "account-service",
+      "supplier": "unknown",
+      "product": "unknown",
+      "version": "unknown",
+      "affected_cve_allowed": false
+    }
+  ],
+  "components": [
+    { "id": "api-gateway", "name": "API gateway", "type": "process" },
+    { "id": "account-service", "name": "Account service", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "customer", "name": "Customer", "type": "actor" },
+    { "id": "email-provider", "name": "Email provider", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "customer-db", "name": "Customer database", "type": "store" },
+    { "id": "audit-log", "name": "Audit log", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-request", "from": "customer", "to": "api-gateway", "label": "account request", "crosses_boundary": "internet" },
+    { "id": "f-command", "from": "api-gateway", "to": "account-service", "label": "authorized command", "crosses_boundary": null },
+    { "id": "f-account-data", "from": "account-service", "to": "customer-db", "label": "account read or write", "crosses_boundary": "app-to-data" },
+    { "id": "f-audit", "from": "account-service", "to": "audit-log", "label": "security event", "crosses_boundary": "app-to-data" },
+    { "id": "f-email", "from": "account-service", "to": "email-provider", "label": "notification", "crosses_boundary": "app-to-provider" },
+    { "id": "f-response", "from": "api-gateway", "to": "customer", "label": "account response", "crosses_boundary": "internet" }
+  ],
+  "trust_boundaries": [
+    { "id": "internet", "name": "Internet", "contains": ["customer"] },
+    { "id": "application", "name": "Application zone", "contains": ["api-gateway", "account-service"] },
+    { "id": "data", "name": "Data zone", "contains": ["customer-db", "audit-log"] },
+    { "id": "provider", "name": "External provider", "contains": ["email-provider"] }
+  ],
+  "llm_components": [],
+  "missing_trust_boundaries": false
+}

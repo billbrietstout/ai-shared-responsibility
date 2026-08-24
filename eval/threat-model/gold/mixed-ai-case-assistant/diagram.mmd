@@ -1,0 +1,26 @@
+flowchart LR
+  subgraph workforce["Workforce boundary"]
+    case_worker["Case worker"]
+  end
+  subgraph application["Application zone"]
+    case_portal["Case portal"]
+    retrieval_service["Retrieval service"]
+    prompt_builder["Prompt builder"]
+    case_workflow["Case workflow"]
+  end
+  subgraph data["Data zone"]
+    case_store[("Case store")]
+    document_index[("Document index")]
+  end
+  subgraph provider["Model provider"]
+    model_api["Model API"]
+  end
+  case_worker -->|"case question"| case_portal
+  case_portal -->|"retrieval request"| retrieval_service
+  retrieval_service -->|"document search"| document_index
+  case_store -->|"case facts"| retrieval_service
+  retrieval_service -->|"retrieved context"| prompt_builder
+  prompt_builder -->|"case prompt"| model_api
+  model_api -->|"draft recommendation"| case_portal
+  case_worker -->|"approved disposition"| case_workflow
+  case_workflow -->|"case disposition"| case_store

@@ -1,0 +1,21 @@
+flowchart LR
+  subgraph internet["Internet"]
+    customer["Customer"]
+  end
+  subgraph application["Application zone"]
+    api_gateway["API gateway"]
+    account_service["Account service"]
+  end
+  subgraph data["Data zone"]
+    customer_db[("Customer database")]
+    audit_log[("Audit log")]
+  end
+  subgraph provider["External provider"]
+    email_provider["Email provider"]
+  end
+  customer -->|"account request"| api_gateway
+  api_gateway -->|"authorized command"| account_service
+  account_service -->|"account read or write"| customer_db
+  account_service -->|"security event"| audit_log
+  account_service -->|"notification"| email_provider
+  api_gateway -->|"account response"| customer

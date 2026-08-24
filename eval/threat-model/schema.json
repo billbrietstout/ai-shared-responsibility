@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aisharedresponsibility.com/eval/threat-model/schema.json",
-  "title": "AI system diagram threat matrix v2",
-  "description": "JSON shape written by prompt pack v2. Track A fills inventory, adversary, diagram-visible controls and control absences, method coverage, threats, QA, and report. Track B may fill threats[].srf before P-report.",
+  "title": "AI-enabled system threat matrix v3",
+  "description": "JSON shape written by prompt pack v3. It records review context, traditional and AI-specific method coverage, composition paths, source provenance, importance, optional SRF accountability, and optional vertical obligations.",
   "type": "object",
   "required": [
     "system_name",
@@ -12,8 +12,12 @@
     "solution_description",
     "llm_subset",
     "llm_subset_empty",
+    "review_context",
+    "traditional_coverage",
     "stride_coverage",
     "phantom_coverage",
+    "composition_coverage",
+    "source_manifest",
     "threats",
     "qa"
   ],
@@ -74,9 +78,11 @@
       "description": "True exactly when llm_subset is empty. An empty subset makes PHANTOM-B not applicable, not complete."
     },
     "llm_subset_decision": { "$ref": "#/$defs/llm_subset_decision" },
+    "review_context": { "$ref": "#/$defs/review_context" },
+    "traditional_coverage": { "$ref": "#/$defs/phase_coverage" },
     "stride_considerations": {
       "type": "array",
-      "items": { "$ref": "#/$defs/consideration" }
+      "items": { "$ref": "#/$defs/stride_consideration" }
     },
     "stride_coverage": { "$ref": "#/$defs/stride_coverage" },
     "phantom_considerations": {
@@ -84,6 +90,34 @@
       "items": { "$ref": "#/$defs/consideration" }
     },
     "phantom_coverage": { "$ref": "#/$defs/phantom_coverage" },
+    "abuse_considerations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/scenario_consideration" }
+    },
+    "abuse_coverage": { "$ref": "#/$defs/phase_coverage" },
+    "operational_considerations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/scenario_consideration" }
+    },
+    "operational_coverage": { "$ref": "#/$defs/phase_coverage" },
+    "composition_considerations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/composition_consideration" }
+    },
+    "composition_coverage": { "$ref": "#/$defs/composition_coverage" },
+    "source_manifest": { "$ref": "#/$defs/source_manifest" },
+    "vertical_context": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "srf_scope": {
+      "oneOf": [
+        { "type": "object", "additionalProperties": true },
+        { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        { "type": "string", "minLength": 1 }
+      ]
+    },
+    "layer_coverage": { "$ref": "#/$defs/layer_coverage" },
     "threats": {
       "type": "array",
       "items": { "$ref": "#/$defs/threat" }
@@ -95,23 +129,26 @@
     "qa": { "$ref": "#/$defs/qa" },
     "chain_meta": {
       "type": "object",
+      "required": ["prompt_pack_version", "track_b_applied", "track_c_applied"],
       "properties": {
         "prompt_pack_version": {
           "type": "string",
-          "const": "2.0",
+          "const": "3.0",
           "description": "Must equal the root version in prompts.json."
         },
         "role": { "type": "string" },
         "method": { "type": "string" },
         "date": { "type": "string" },
         "reviewer": { "type": ["string", "null"] },
-        "track_b_applied": { "type": "boolean" }
+        "track_b_applied": { "type": "boolean" },
+        "track_c_applied": { "type": "boolean" }
       }
     }
   },
   "allOf": [
     {
       "if": {
+        "type": "object",
         "required": ["llm_subset_empty"],
         "properties": {
           "llm_subset_empty": { "const": true }
@@ -122,12 +159,14 @@
           "llm_subset": { "type": "array", "maxItems": 0 },
           "phantom_coverage": {
             "type": "object",
+            "required": ["status"],
             "properties": {
               "status": { "const": "not_applicable" }
             }
           },
           "qa": {
             "type": "object",
+            "required": ["llm_subset_empty", "phantom_b_complete"],
             "properties": {
               "llm_subset_empty": { "const": true },
               "phantom_b_complete": { "type": "null" }
@@ -138,6 +177,7 @@
     },
     {
       "if": {
+        "type": "object",
         "required": ["llm_subset_empty"],
         "properties": {
           "llm_subset_empty": { "const": false }
@@ -148,6 +188,7 @@
           "llm_subset": { "type": "array", "minItems": 1 },
           "phantom_coverage": {
             "type": "object",
+            "required": ["status"],
             "properties": {
               "status": {
                 "enum": ["complete", "incomplete"]
@@ -156,6 +197,7 @@
           },
           "qa": {
             "type": "object",
+            "required": ["llm_subset_empty", "phantom_b_complete"],
             "properties": {
               "llm_subset_empty": { "const": false },
               "phantom_b_complete": { "type": "boolean" }
@@ -163,9 +205,617 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "type": "object",
+        "required": ["review_context"],
+        "properties": {
+          "review_context": {
+            "type": "object",
+            "required": ["profile"],
+            "properties": {
+              "profile": { "type": "string", "enum": ["full-system", "bounded-subsystem"] }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "traditional_coverage": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "enum": ["complete", "incomplete"] }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "required": ["review_context"],
+        "properties": {
+          "review_context": {
+            "type": "object",
+            "required": ["profile"],
+            "properties": {
+              "profile": { "type": "string", "const": "artifact-only" }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "review_context": {
+            "type": "object",
+            "required": ["profile_confirmation"],
+            "properties": {
+              "profile_confirmation": {
+                "type": "object",
+                "required": ["operator_confirmed"],
+                "properties": {
+                  "operator_confirmed": {
+                    "type": "boolean",
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "required": ["traditional_coverage"],
+        "properties": {
+          "traditional_coverage": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "const": "not_applicable" }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "review_context": {
+            "type": "object",
+            "required": ["profile"],
+            "properties": {
+              "profile": { "type": "string", "const": "artifact-only" }
+            }
+          },
+          "traditional_coverage": {
+            "type": "object",
+            "required": ["operator_confirmation"],
+            "properties": {
+              "operator_confirmation": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "required": ["chain_meta"],
+        "properties": {
+          "chain_meta": {
+            "type": "object",
+            "required": ["track_b_applied"],
+            "properties": {
+              "track_b_applied": { "type": "boolean", "const": true }
+            }
+          }
+        }
+      },
+      "then": {
+        "required": ["layer_coverage"],
+        "properties": {
+          "layer_coverage": { "$ref": "#/$defs/layer_coverage" },
+          "review_context": {
+            "type": "object",
+            "required": ["operating_model"],
+            "properties": {
+              "operating_model": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "type": "object",
+        "required": ["chain_meta"],
+        "properties": {
+          "chain_meta": {
+            "type": "object",
+            "required": ["track_c_applied"],
+            "properties": {
+              "track_c_applied": { "type": "boolean", "const": true }
+            }
+          }
+        }
+      },
+      "then": {
+        "required": ["vertical_context"],
+        "properties": {
+          "vertical_context": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "chain_meta": {
+            "type": "object",
+            "required": ["track_b_applied"],
+            "properties": {
+              "track_b_applied": { "type": "boolean", "const": true }
+            }
+          }
+        }
+      }
     }
   ],
   "$defs": {
+    "review_context": {
+      "type": "object",
+      "required": [
+        "profile",
+        "profile_confirmation",
+        "perspective",
+        "vertical_ids",
+        "jurisdictions",
+        "operating_model",
+        "critical_assets",
+        "prohibited_outcomes",
+        "continuity_safety_constraints",
+        "supplied_severity",
+        "scope",
+        "claim_evidence"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": ["full-system", "bounded-subsystem", "artifact-only"]
+        },
+        "profile_confirmation": {
+          "type": "object",
+          "required": ["operator_confirmed", "evidence_ref"],
+          "properties": {
+            "operator_confirmed": { "type": "boolean" },
+            "evidence_ref": {
+              "type": ["string", "null"],
+              "minLength": 1
+            }
+          }
+        },
+        "perspective": { "type": "string", "minLength": 1 },
+        "vertical_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "jurisdictions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "operating_model": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "critical_assets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/critical_asset" }
+        },
+        "prohibited_outcomes": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/prohibited_outcome" }
+        },
+        "continuity_safety_constraints": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/continuity_safety_constraint" }
+        },
+        "supplied_severity": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": ["value", "scale", "source"],
+              "properties": {
+                "value": { "type": "string", "minLength": 1 },
+                "scale": { "type": "string", "minLength": 1 },
+                "source": { "type": "string", "minLength": 1 }
+              }
+            },
+            { "type": "null" }
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "required": [
+            "included_labels",
+            "excluded_labels",
+            "boundary_statement"
+          ],
+          "properties": {
+            "included_labels": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "excluded_labels": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": { "type": "string", "minLength": 1 }
+            },
+            "boundary_statement": { "type": "string" }
+          }
+        },
+        "claim_evidence": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/claim_evidence" }
+        }
+      }
+    },
+    "claim_evidence": {
+      "type": "object",
+      "required": ["id", "kind", "reference", "supports"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^claim-"
+        },
+        "kind": {
+          "type": "string",
+          "enum": ["diagram", "operator"]
+        },
+        "reference": { "type": "string", "minLength": 1 },
+        "supports": { "type": "string", "minLength": 1 }
+      }
+    },
+    "critical_asset": {
+      "type": "object",
+      "required": ["id", "name", "diagram_referents", "evidence_refs"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "diagram_referents": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "prohibited_outcome": {
+      "type": "object",
+      "required": ["id", "statement", "evidence_refs"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "statement": { "type": "string", "minLength": 1 },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "continuity_safety_constraint": {
+      "type": "object",
+      "required": ["id", "statement", "evidence_refs"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "statement": { "type": "string", "minLength": 1 },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "phase_coverage": {
+      "type": "object",
+      "required": [
+        "status",
+        "expected_referents",
+        "considered_referents",
+        "exclusions",
+        "operator_confirmation",
+        "gaps"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["complete", "incomplete", "not_applicable"]
+        },
+        "expected_referents": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "considered_referents": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "exclusions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              {
+                "type": "object",
+                "required": ["referent", "reason"],
+                "properties": {
+                  "referent": { "type": "string", "minLength": 1 },
+                  "reason": { "type": "string", "minLength": 1 }
+                }
+              }
+            ]
+          }
+        },
+        "operator_confirmation": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "gaps": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "scenario_consideration": {
+      "type": "object",
+      "required": ["status", "diagram_referent", "evidence_refs"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "element_id": { "type": "string", "minLength": 1 },
+        "status": {
+          "type": "string",
+          "enum": ["scenario", "not_applicable"]
+        },
+        "scenario": { "type": "string" },
+        "reason": { "type": "string" },
+        "diagram_referent": { "type": "string", "minLength": 1 },
+        "referents": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "preconditions": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "attacker_position": { "type": "string" },
+        "asset": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "const": "scenario" }
+            }
+          },
+          "then": {
+            "required": ["scenario"],
+            "properties": {
+              "scenario": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "const": "not_applicable" }
+            }
+          },
+          "then": {
+            "required": ["reason"],
+            "properties": {
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "composition_path": {
+      "type": "object",
+      "required": ["id", "kind", "referents"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "minLength": 1 },
+        "referents": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "composition_coverage": {
+      "type": "object",
+      "required": [
+        "expected_paths",
+        "considered_paths",
+        "remaining_paths",
+        "status"
+      ],
+      "properties": {
+        "expected_paths": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/composition_path" }
+        },
+        "considered_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "remaining_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "status": {
+          "type": "string",
+          "enum": ["complete", "incomplete", "not_applicable"]
+        }
+      }
+    },
+    "composition_consideration": {
+      "type": "object",
+      "required": [
+        "path_id",
+        "status",
+        "diagram_referent",
+        "referents",
+        "evidence_refs"
+      ],
+      "properties": {
+        "path_id": { "type": "string", "minLength": 1 },
+        "status": {
+          "type": "string",
+          "enum": ["scenario", "not_applicable"]
+        },
+        "diagram_referent": { "type": "string", "minLength": 1 },
+        "referents": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "reason": { "type": "string" },
+        "scenario": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "const": "scenario" }
+            }
+          },
+          "then": {
+            "required": ["scenario"],
+            "properties": {
+              "scenario": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "const": "not_applicable" }
+            }
+          },
+          "then": {
+            "required": ["reason"],
+            "properties": {
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "source_manifest": {
+      "type": "object",
+      "required": ["source_set_id", "entries"],
+      "properties": {
+        "source_set_id": { "type": "string", "minLength": 1 },
+        "entries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "source_id",
+              "source_kind",
+              "canonical_url",
+              "license_id",
+              "integration_mode",
+              "catalog_version",
+              "retrieved_at",
+              "content_sha256"
+            ],
+            "properties": {
+              "source_id": { "type": "string", "minLength": 1 },
+              "source_kind": { "type": "string", "minLength": 1 },
+              "canonical_url": { "type": "string", "minLength": 1 },
+              "license_id": { "type": "string", "minLength": 1 },
+              "integration_mode": { "type": "string", "minLength": 1 },
+              "catalog_version": { "type": "string", "minLength": 1 },
+              "retrieved_at": { "type": "string", "minLength": 1 },
+              "content_sha256": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      }
+    },
+    "layer_coverage": {
+      "type": "object",
+      "required": [
+        "status",
+        "expected_layers",
+        "considered_layers",
+        "remaining_layers"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["complete", "incomplete", "not_applicable"]
+        },
+        "expected_layers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["L1", "L2", "L3", "L4", "L5"]
+          }
+        },
+        "considered_layers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["L1", "L2", "L3", "L4", "L5"]
+          }
+        },
+        "remaining_layers": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["L1", "L2", "L3", "L4", "L5"]
+          }
+        },
+        "gaps": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
     "adversary": {
       "type": "object",
       "properties": {
@@ -499,11 +1149,96 @@
         }
       ]
     },
+    "stride_consideration": {
+      "type": "object",
+      "required": [
+        "element_id",
+        "letter",
+        "status",
+        "diagram_referent",
+        "evidence_refs"
+      ],
+      "properties": {
+        "element_id": { "type": "string", "minLength": 1 },
+        "letter": {
+          "type": "string",
+          "enum": ["S", "T", "R", "I", "D", "E"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["scenario", "not_applicable"]
+        },
+        "scenario": { "type": "string" },
+        "reason": { "type": "string" },
+        "diagram_referent": { "type": "string", "minLength": 1 },
+        "preconditions": { "type": "string" },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "attacker_position": { "type": "string" },
+        "asset": { "type": "string" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "const": "scenario" }
+            }
+          },
+          "then": {
+            "required": ["scenario", "attacker_position", "asset"],
+            "properties": {
+              "scenario": { "type": "string", "minLength": 1 },
+              "attacker_position": { "type": "string", "minLength": 1 },
+              "asset": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        {
+          "if": {
+            "type": "object",
+            "required": ["status"],
+            "properties": {
+              "status": { "type": "string", "const": "not_applicable" }
+            }
+          },
+          "then": {
+            "required": ["reason"],
+            "properties": {
+              "reason": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "stride_expected_consideration": {
+      "type": "object",
+      "required": ["element_id", "element_type", "letters"],
+      "properties": {
+        "element_id": { "type": "string", "minLength": 1 },
+        "element_type": {
+          "type": "string",
+          "enum": ["process", "actor", "store", "flow"]
+        },
+        "letters": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["S", "T", "R", "I", "D", "E"]
+          }
+        }
+      }
+    },
     "stride_coverage": {
       "type": "object",
       "required": [
         "budget_rows",
-        "letters_per_element",
+        "expected_considerations",
         "expected_elements",
         "considered_elements",
         "remaining_elements",
@@ -512,18 +1247,24 @@
         "complete"
       ],
       "properties": {
-        "budget_rows": { "type": "integer", "minimum": 6 },
-        "letters_per_element": { "type": "integer", "const": 6 },
+        "budget_rows": { "type": "integer", "minimum": 1 },
+        "expected_considerations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/stride_expected_consideration" }
+        },
         "expected_elements": {
           "type": "array",
+          "uniqueItems": true,
           "items": { "type": "string", "minLength": 1 }
         },
         "considered_elements": {
           "type": "array",
+          "uniqueItems": true,
           "items": { "type": "string", "minLength": 1 }
         },
         "remaining_elements": {
           "type": "array",
+          "uniqueItems": true,
           "items": { "type": "string", "minLength": 1 }
         },
         "rows_expected": { "type": "integer", "minimum": 0 },
@@ -589,6 +1330,162 @@
         "reason": { "type": "string", "minLength": 1 }
       }
     },
+    "threat_source": {
+      "type": "string",
+      "enum": [
+        "stride",
+        "abuse-case",
+        "operational",
+        "phantom-b",
+        "composition",
+        "external-source"
+      ]
+    },
+    "importance_factor": {
+      "type": "object",
+      "required": ["kind", "evidence", "source"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "attacker_access",
+            "critical_asset",
+            "prohibited_outcome",
+            "control_gap",
+            "cross_layer_propagation",
+            "mandatory_obligation",
+            "active_exploitation",
+            "uncertainty"
+          ]
+        },
+        "evidence": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 }
+      }
+    },
+    "importance": {
+      "type": "object",
+      "required": ["factors", "needs_input", "review_position"],
+      "properties": {
+        "factors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/importance_factor" }
+        },
+        "needs_input": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "review_position": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "external_ref": {
+      "type": "object",
+      "required": [
+        "source_id",
+        "external_id",
+        "catalog_version",
+        "relation",
+        "affected_referents",
+        "evidence_refs",
+        "confidence",
+        "status"
+      ],
+      "properties": {
+        "source_id": { "type": "string", "minLength": 1 },
+        "external_id": { "type": "string", "minLength": 1 },
+        "catalog_version": { "type": "string", "minLength": 1 },
+        "relation": {
+          "type": "string",
+          "enum": ["exact", "narrower", "broader", "related", "supporting"]
+        },
+        "affected_referents": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "confidence": {
+          "oneOf": [
+            { "type": "number", "minimum": 0, "maximum": 1 },
+            { "type": "string", "minLength": 1 }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["candidate", "mapped", "affected", "not_affected", "unknown"]
+        },
+        "applicability_evidence": {
+          "type": "object",
+          "required": [
+            "supplier",
+            "product",
+            "version",
+            "component_referent",
+            "evidence_refs"
+          ],
+          "properties": {
+            "supplier": { "type": "string", "minLength": 1 },
+            "product": { "type": "string", "minLength": 1 },
+            "version": { "type": "string", "minLength": 1 },
+            "component_referent": { "type": "string", "minLength": 1 },
+            "evidence_refs": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "type": "object",
+            "required": ["source_id", "status"],
+            "properties": {
+              "source_id": { "type": "string", "enum": ["cve", "nvd"] },
+              "status": { "type": "string", "const": "affected" }
+            }
+          },
+          "then": {
+            "required": ["applicability_evidence"]
+          }
+        }
+      ]
+    },
+    "vertical_threat_context": {
+      "type": "object",
+      "required": [
+        "obligations",
+        "control_candidates",
+        "acceptance_authority"
+      ],
+      "properties": {
+        "obligations": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              { "type": "object", "additionalProperties": true }
+            ]
+          }
+        },
+        "control_candidates": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string", "minLength": 1 },
+              { "type": "object", "additionalProperties": true }
+            ]
+          }
+        },
+        "acceptance_authority": {
+          "type": ["string", "null"],
+          "minLength": 1
+        }
+      }
+    },
     "threat": {
       "type": "object",
       "required": [
@@ -598,7 +1495,11 @@
         "stride",
         "phantom_b",
         "cia",
-        "action"
+        "action",
+        "source",
+        "method_sources",
+        "importance",
+        "external_refs"
       ],
       "properties": {
         "id": { "type": "string", "pattern": "^T[0-9]+$" },
@@ -613,8 +1514,19 @@
         "attacker_position": { "type": "string" },
         "asset": { "type": "string" },
         "source": {
-          "type": "string",
-          "enum": ["stride", "phantom-b", "both", "kill-chain"]
+          "$ref": "#/$defs/threat_source"
+        },
+        "method_sources": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/threat_source" }
+        },
+        "importance": {
+          "$ref": "#/$defs/importance"
+        },
+        "external_refs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/external_ref" }
         },
         "stride": {
           "type": "array",
@@ -710,6 +1622,9 @@
             },
             "note": { "type": "string" }
           }
+        },
+        "vertical": {
+          "$ref": "#/$defs/vertical_threat_context"
         }
       }
     },
@@ -719,6 +1634,14 @@
         "llm_subset_empty",
         "phantom_b_complete",
         "stride_considered",
+        "traditional_phase_complete",
+        "abuse_cases_complete",
+        "operational_events_complete",
+        "composition_complete",
+        "source_refs_bound",
+        "importance_complete",
+        "srf_layer_coverage_complete",
+        "vertical_join_valid",
         "control_points_bound",
         "report_present",
         "open_assumptions",
@@ -733,6 +1656,14 @@
           "description": "Null when llm_subset_empty is true and PHANTOM-B is not applicable."
         },
         "stride_considered": { "type": "boolean" },
+        "traditional_phase_complete": { "type": ["boolean", "null"] },
+        "abuse_cases_complete": { "type": ["boolean", "null"] },
+        "operational_events_complete": { "type": ["boolean", "null"] },
+        "composition_complete": { "type": ["boolean", "null"] },
+        "source_refs_bound": { "type": "boolean" },
+        "importance_complete": { "type": "boolean" },
+        "srf_layer_coverage_complete": { "type": ["boolean", "null"] },
+        "vertical_join_valid": { "type": ["boolean", "null"] },
         "actions_complete": { "type": "boolean" },
         "adversary_stated": { "type": "boolean" },
         "existing_controls_listed": { "type": "boolean" },

@@ -28,6 +28,7 @@ sys.path.insert(0, str(HERE))
 from metrics import (  # noqa: E402
     FORMATS,
     coverage,
+    gold_workflow_issues,
     gold_systems,
     hamming_multilabel,
     inventory_fidelity,
@@ -80,6 +81,7 @@ def score_run(gold_dir: Path, pred_dir: Path, labels_path: Path | None, personas
 
     systems = []
     for system_id, gold in golds.items():
+        workflow_issues = gold_workflow_issues(gold)
         per_format = preds.get(system_id, {})
         format_scores = {}
         inv_sets = {}
@@ -123,6 +125,8 @@ def score_run(gold_dir: Path, pred_dir: Path, labels_path: Path | None, personas
                 ref_j.append(jaccard(ref_sets[a], ref_sets[b]))
         systems.append({
             "system_id": system_id,
+            "workflow_fixture_ok": not workflow_issues,
+            "workflow_fixture_issues": workflow_issues,
             "formats_present": sorted(per_format),
             "per_format": format_scores,
             "format_invariance": {
@@ -143,8 +147,10 @@ def score_run(gold_dir: Path, pred_dir: Path, labels_path: Path | None, personas
 
 
 def summarize(systems: list) -> dict:
-    f1s, inv_j, schema_fail, threat_n = [], [], 0, []
+    f1s, inv_j, schema_fail, threat_n, fixture_fail = [], [], 0, [], 0
     for sys in systems:
+        if not sys.get("workflow_fixture_ok", True):
+            fixture_fail += 1
         for fmt, row in sys["per_format"].items():
             f1s.append(row["inventory"]["macro_f1"])
             threat_n.append(row["threat_count"])
@@ -157,6 +163,7 @@ def summarize(systems: list) -> dict:
         "inventory_macro_f1_mean": round(sum(f1s) / len(f1s), 4) if f1s else None,
         "format_inventory_jaccard_mean": round(sum(inv_j) / len(inv_j), 4) if inv_j else None,
         "schema_failures": schema_fail,
+        "workflow_fixture_failures": fixture_fail,
         "mean_threat_count": round(sum(threat_n) / len(threat_n), 2) if threat_n else 0,
     }
 

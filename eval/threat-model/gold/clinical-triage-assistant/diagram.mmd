@@ -1,0 +1,32 @@
+flowchart LR
+  subgraph public["Public intake"]
+    patient["Patient"]
+  end
+  subgraph application["Clinical application"]
+    intake_api["Intake API"]
+    triage_orchestrator["Triage orchestrator"]
+    prompt_builder["Prompt builder"]
+    clinician_console["Clinician console"]
+    alert_router["Alert router"]
+  end
+  subgraph clinical_data["Clinical data zone"]
+    patient_record[("Patient record")]
+    triage_queue[("Triage queue")]
+  end
+  subgraph workforce["Clinical workforce"]
+    clinician["Clinician"]
+  end
+  subgraph provider["Model provider"]
+    model_api["Model API"]
+  end
+  patient -->|"symptoms and contact data"| intake_api
+  intake_api -->|"validated intake"| triage_orchestrator
+  patient_record -->|"patient history"| triage_orchestrator
+  triage_orchestrator -->|"bounded triage context"| prompt_builder
+  prompt_builder -->|"triage prompt"| model_api
+  model_api -->|"triage draft"| triage_orchestrator
+  triage_orchestrator -->|"queued draft with evidence"| triage_queue
+  triage_queue -->|"case for review"| clinician_console
+  clinician -->|"triage decision"| clinician_console
+  clinician_console -->|"attributed triage decision"| patient_record
+  clinician_console -->|"urgent alert"| alert_router
