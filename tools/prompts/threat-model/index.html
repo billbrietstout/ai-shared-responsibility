@@ -2014,25 +2014,35 @@ Rules:
 - Leave report.reviewer empty. A human fills it.
 
 Shostack question: Did we do a good job?
-Step: P-report. Finalize after P-qa, P-srf-coverage when Track B ran, or P-vertical-route when Track C ran. Only this step authors report.markdown.
+Step: P-report. Finalize after P-qa, P-srf-coverage when Track B ran, or P-vertical-route when Track C ran. Only this step authors report.markdown. P-export-md later copies this string; do not leave a digest for the export to expand.
 
 Full final matrix:
 {{full_matrix}}
 
-Write sections in this order:
-1. Metadata, review context with claim evidence, claim boundary, scope, attackers, architecture, controls, and visible gaps.
-2. review_order and each threats[].importance factors, needs_input, and review_position; never call it a risk score.
-3. Threats with method_sources, evidence, classifications, actions, optional SRF/vertical context, and every external_ref field.
-4. External-reference applicability table: source_id, external_id, relation, status candidate|mapped|affected|not_affected|unknown, affected_referents, confidence, evidence_refs, and applicability_evidence when present. Call a CVE/NVD affected only when supplier, product, version, component_referent, and evidence_refs are non-unknown and resolve to this system. Clearly label product-name-only, unknown-version, and KEV-only matches as mapped or unknown, never affected.
-5. For each active_exploitation factor based on CISA KEV, show both the KEV ref and the valid affected CVE/NVD ref for the same component. If that pair is absent, report the QA gap rather than active exploitation.
-6. Traditional, STRIDE, abuse, operational, PHANTOM-B, composition, source, optional layer, and optional vertical coverage.
-7. source_manifest metadata and the statement that injected-source coverage is not a completeness claim.
-8. Non-claims, QA gaps, assumptions, and empty reviewer line.
+report.markdown is a readable projection of this matrix, not a summary. A reviewer who never opens the JSON must still see every threat, position, control, and coverage count that the matrix stores.
 
-Do not change threats or external applicability status. Set qa.report_present true. Preserve source_manifest. Set chain_meta version and null reviewer. Track B requires complete layer_coverage; Track C requires Track B and vertical_context. Omit skipped optional objects.
+Echo the incoming matrix. Fill report, chain_meta, and qa.report_present. Do not drop threats, stride_findings, adversary, existing_controls, coverage objects, source_manifest, review_order, or other filled fields. Do not change threat text, classifications, actions, or external applicability status.
 
-Return the full matrix with:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "chain_meta": {"prompt_pack_version": "3.0", "role": "{{cyber_role}}", "method": "", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false}}</pre>
+Write report.markdown in this order:
+1. Title heading. Metadata table: date, method, role, pack version, representation (kind, source_id, version), perspective, empty reviewer.
+2. Claim boundary: the box sentence, then a list from claim_boundary.does_not_claim.
+3. Attacker: adversary.assumptions as prose, then a table with one row per adversary.positions[] (id, zone or trust boundary, capability).
+4. Architecture: the full architecture_description if present, otherwise the full solution_description. Do not compress this to a one-line pipeline. Then trust boundaries, in_scope, and out_of_scope.
+5. Existing controls table: one row per existing_controls[] (id, feature, diagram_referent). Then list control_absences[] as diagram limitations, not as proof that a deployed control is missing.
+6. Review order table from review_order. This is an evidence index, not a risk score. Include threat id, attacker_position, prerequisite summary, and reason. Do not assign likelihood, impact, severity, or residual risk.
+7. Threats grouped by diagram_referent. One heading and one markdown table per referent. One row per threats[] item. Every later row keeps the same columns as the first row. Required columns: ID, Scenario (full stored text), Attacker position, Preconditions, STRIDE, PHANTOM-B, CIA, Method sources, Action (type plus control_point), Validation (kind plus detail), Review position. Add SRF, vertical, and external_ref columns only when those fields are populated on at least one threat. Do not switch later threats to bullet lists. Do not omit STRIDE, CIA, position, or validation on later rows. The number of threat table rows must equal len(threats).
+8. External-reference applicability table when any threats[].external_refs exist: source_id, external_id, relation, status, affected_referents, confidence, evidence_refs, applicability_evidence. If none exist, write that catalog mapping is not_applicable and name source_manifest.source_set_id. Call a CVE/NVD affected only when supplier, product, version, component_referent, and evidence_refs are non-unknown and resolve to this system. Product-name-only, unknown-version, and KEV-only matches stay mapped or unknown, never affected.
+9. For each active_exploitation factor based on CISA KEV, show both the KEV ref and the valid affected CVE/NVD ref for the same component. If that pair is absent, report the QA gap rather than active exploitation.
+10. Coverage using matrix counts, not a checklist of method names: traditional status, STRIDE rows_expected and rows_written_total, abuse and operational status, PHANTOM-B status with complete versus expected AI elements, composition considered_paths versus remaining_paths, optional layer_coverage, optional vertical_context.
+11. source_manifest as a table (source_id, source_kind, canonical_url, license_id, integration_mode, catalog_version, retrieved_at, content_sha256). Do not dump the JSON object in a fence. State that injected-source coverage is not a completeness claim.
+12. Non-claims from claim_boundary, qa.gaps, qa.open_assumptions, and an empty reviewer line.
+
+Do not shorten later threats to keep the JSON reply short. This step is allowed to be long. Truncating report.markdown so later threat ids disappear fails the stop_condition.
+
+Set qa.report_present true. Preserve source_manifest. Set chain_meta version and null reviewer. Track B requires complete layer_coverage; Track C requires Track B and vertical_context. Omit skipped optional objects.
+
+Return the full incoming matrix plus:
+{"report": {"title": "", "markdown": "full document with every threat id", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "3.0", "role": "{{cyber_role}}", "method": "", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false}}</pre>
       </div>
 
 
@@ -2059,7 +2069,7 @@ Return the full matrix with:
           <li><code>source_manifest</code> pins every external source used by a mapping.</li>
           <li><code>threats</code>: stable ids with referents, method sources, evidence, external references, importance factors, one action, and validation on mitigate or eliminate.</li>
           <li><code>review_order</code> records the review sequence without claiming likelihood, impact, or residual risk.</li>
-          <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code>. Leave <code>report.reviewer</code> empty.</li>
+          <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code> as a full projection of the matrix: grouped threat tables, every threat/position/control id, architecture prose, and coverage counts. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
           Track B and Track C are optional. After the selected tracks, return to
@@ -2446,6 +2456,8 @@ Return the full matrix with vertical routing, vertical_context coverage, and cha
       <p class="section-note">
         These four prompts run once after P-report.
         P-export-md emits the stored report without rewriting it (<code>.md</code>).
+        That stored report projects the matrix: every threat id appears as a
+        table row grouped by diagram referent.
         P-export-json writes the completed record (<code>.json</code>).
         P-export-csv writes one row per threat with stable SRF columns. Track A leaves
         those cells empty (<code>.csv</code>).
@@ -2499,7 +2511,7 @@ Step: P-export-md. Output full_matrix.report.markdown exactly as stored, startin
 Completed matrix:
 {{full_matrix}}
 
-If report.markdown is missing or empty, stop and say P-report must run first. Do not reconstruct it in this export step.</pre>
+If report.markdown is missing or empty, stop and say P-report must run first. If any threats[].id, adversary.positions[].id, or existing_controls[].id is absent from report.markdown, stop and say P-report must rewrite the projection. Do not reconstruct the document in this export step.</pre>
       </div>
       <div class="prompt-block is-collapsed" id="P-export-json-block" data-prompt-id="P-export-json">
         <div class="prompt-block__header">

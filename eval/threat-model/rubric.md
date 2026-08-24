@@ -90,7 +90,11 @@ These fields are required by prompt pack v3:
   evidence, confidence, and status
 - CVE and NVD references may claim `affected` only with known supplier,
   product, version, component referent, and applicability evidence
-- `report.markdown` is present; `report.reviewer` is null until a human signs
+- `report.markdown` projects every `threats[].id`, every
+  `adversary.positions[].id`, and every `existing_controls[].id`; threats are
+  grouped by `diagram_referent` in tables that keep the same columns on later
+  rows
+- `report.reviewer` is null until a human signs
 - `P-report` is the only step that authors `report.markdown`
 - `P-export-md` emits that stored string, `P-export-json` serializes the final
   matrix, and `P-export-csv` writes one row per threat with a stable header
@@ -121,6 +125,8 @@ Schema is skipped:
 - composition considerations bind to declared paths and inventory referents
 - source ids resolve to the run manifest; catalog versions match
 - affected CVE or NVD mappings include product and version evidence
+- when `qa.report_present` is true, `report.markdown` contains every threat,
+  attacker-position, and existing-control id
 - importance positions are unique and every factor has evidence
 - STRIDE / PHANTOM-B / CIA letters in the published alphabets
 - `srf.party` must not be `shared`
