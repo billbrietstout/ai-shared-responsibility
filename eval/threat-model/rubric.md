@@ -35,9 +35,10 @@ the three pairs (image-mermaid, image-svg, mermaid-svg).
 - PHANTOM-B fraction: gold LLM components whose predicted threats include all
   eight letters P, H, A, N, T, O, M, B. Letters may be spread across several
   threats for that referent.
-- An empty `llm_subset` requires `llm_subset_empty: true`,
-  `phantom_coverage.status: not_applicable`, and
-  `qa.phantom_b_complete: null`. An empty subset never counts as complete.
+- An empty `llm_subset` requires `llm_subset_empty: true` and
+  `qa.phantom_b_complete: null`. Default first-message `if_no_ai_nodes` is
+  `continue_without_llm`, which sets `phantom_coverage.status: not_applicable`.
+  An empty subset never counts as complete.
 - Traditional applicability: every run records `traditional_coverage.status`
   as `complete`, `incomplete`, or `not_applicable`. Only a confirmed
   `artifact-only` review may use `not_applicable`. Missing runtime or

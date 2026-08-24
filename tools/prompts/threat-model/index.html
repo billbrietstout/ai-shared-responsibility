@@ -222,6 +222,7 @@
           accountability. Optional Track C joins vertical obligations and controls.
           Then run the export steps once and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
+          The one-chat shortcut lists optional first-message fields on the page, not in the copied text.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/tools/prompts/threat-model/releases/">Release notes</a>.
@@ -235,49 +236,52 @@
       <div class="deliverable" id="shortcut">
         <p class="deliverable__title">Shortcut: one chat</p>
         <p>
-          Attach the representation and supply the review profile, scope, and any
-          vertical or jurisdiction facts. Supply pinned source inputs when external
-          mappings are required.
-          Copy the block below. The model runs Track A from
-          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
-          You do not copy the Track A steps.
+          Copy the block below and send it once with the representation.
+          Optional fields you may add in that same message are listed here;
+          they are not in the copied text. The model loads
+          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
+          and runs Track A through the four exports without asking for more
+          input and without waiting for continue. Omitted fields stay empty.
+          Catalog, SRF, and vertical mapping without injected data are not
+          applicable.
         </p>
         <ol>
-          <li>Load the pack. Use its root version, runtime defaults, selected role guidance, and chain routes.</li>
-          <li>Fill each template from the prior JSON (<code>inventory</code>, <code>threats</code>, <code>full_matrix</code>, and the other <code>{{ }}</code> slots).</li>
-          <li>Keep the diagram attached on every step that names <code>{{representation}}</code>. Set <code>representation_kind</code> to match the attachment.</li>
-          <li>If a <code>stop_condition</code> fails, stop and show the gap. Repeat a step when its <code>repeat_until</code> field is not satisfied.</li>
-          <li>After P-report, run P-export-md, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
-          <li>If Track B is requested, branch from P-qa and run its four steps. Track C may follow when vertical ids and source inputs are supplied. Return to P-report after the selected optional tracks.</li>
+          <li>Required in the first message: the representation and <code>representation_kind</code> (<code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
+          <li>Optional in that same message: role, <code>review_context_input</code> (profile, confirmation for artifact-only, perspective, verticals, jurisdictions, operating model, assets, prohibited outcomes, continuity or safety constraints, supplied severity, scope), <code>if_no_ai_nodes</code>, <code>source_manifest</code> and pinned source records, SRF rows for Track B, vertical source rows for Track C.</li>
+          <li>Default role is experienced-threat-modeler. Default <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.</li>
+          <li>The model fills later templates from accumulated JSON. Repeat_until steps rerun in the same reply. A failed stop_condition is recorded as a JSON gap, not a question.</li>
+          <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         </ol>
         <p>
           If the chat cannot load that file, use the copy-one-block steps under
-          How to run the chain.
+          How to run the chain. Those blocks still do not ask for fields that
+          belong in the first message.
         </p>
         <div class="shortcut-paste">
           <button type="button" id="shortcut-copy">Copy</button>
           <pre id="shortcut-text">Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
 
-Use pack version 3.0 and runtime_defaults. Run required Track A from P-context through P-report. Ask me for review_context_input before P-context. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{representation}}. Set representation_kind to image, mermaid, or svg. Role: experienced-threat-modeler unless I name another role.
+Use pack version 3.0, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from P-context through P-report, then P-export-md, P-export-json, P-export-csv, and P-export-diagram. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{representation}}. Set representation_kind to image, mermaid, or svg. Role: experienced-threat-modeler unless this message names another role.
 
-Do not skip a step. If a stop_condition fails, stop and show the gap. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true.
+Treat omitted operator fields as empty and continue. Do not ask for review context, source records, SRF data, or continue. If this message already contains review_context_input, source_manifest, source_records, srf_inputs, or vertical_source_rows, use those values.
 
-Do not fetch catalog or SRF data during the chain. Ask me to supply source_manifest and any pinned source records. Use data/threat-sources.json as the source registry. Track B is optional and requires an operating model plus injected SRF data. Track C requires completed Track B, vertical_ids, and injected vertical source rows.
+Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true, in this same reply.
 
-After P-report, run P-export-md, then P-export-json, then P-export-csv, then P-export-diagram. I will save those replies as .md, .json, .csv, and .mmd. Leave report.reviewer empty.
+Do not fetch catalog or SRF data. Use data/threat-sources.json as the named source registry only. An omitted or empty source_manifest makes catalog coverage not_applicable. Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_ids and vertical_source_rows.
 
+Leave report.reviewer empty.
 Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</pre>
         </div>
       </div>
 
       <p class="section-label">How to run the chain</p>
       <ol class="q-list">
-        <li>Paste the shared rules once, or use each step as a standalone copy block (rules are inlined).</li>
-        <li>Attach or paste the diagram. Set <code>{{representation_kind}}</code> to image, mermaid, or svg.</li>
+        <li>Prefer the one-chat shortcut. Optional fields stay on this page; add any you have in the same first message. The model runs the required chain without a later prompt from you.</li>
+        <li>If you copy one block at a time, paste the shared rules once or use a standalone copy block (rules are inlined). Attach or paste the diagram. Set <code>{{representation_kind}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: experienced-threat-modeler, application-security, llm-caller. Default is experienced-threat-modeler.</li>
-        <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
-        <li>Run Track A in order. Repeat P-stride until its typed denominator closes. P-importance is required before P-act.</li>
-        <li>At P-qa, continue to P-report or run <a href="#track-b">Track B</a>. Run <a href="#track-c">Track C</a> only after Track B closes and vertical source rows are supplied.</li>
+        <li>Copy-one-block text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click. Still do not send a later message to supply optional fields; add those in the first message if you have them.</li>
+        <li>Run Track A in order. A chain run repeats P-stride in the same reply until its typed denominator closes. P-importance is required before P-act.</li>
+        <li>Track B runs only when the first message includes B and SRF inputs. Track C runs only after Track B when that message also includes vertical ids and vertical source rows. Otherwise skip those tracks and go to P-report.</li>
         <li>After P-report, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
@@ -366,7 +370,15 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         </div>
         <pre>[chain] This prompt is P-context (Establish review context). Next prompt: P-norm (Normalize representation). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -381,8 +393,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -395,7 +406,7 @@ Representation kind: {{representation_kind}}
 Representation:
 {{representation}}
 
-Operator-supplied review context (may be empty):
+Operator-supplied review context from the first message (empty object if omitted; do not ask):
 {{review_context_input}}
 
 Use the representation and explicit operator statements only. Do not derive jurisdictions, operating model, severity, business criticality, or obligations from a product name. For every claim, record evidence with kind diagram or operator, a concrete reference, and the supported claim. A diagram reference should use its visible label until P-norm supplies stable ids; an operator reference should quote or identify the supplied field. Set unknown nullable values to null and unknown arrays to [].
@@ -435,7 +446,15 @@ Set operating_model and supplied_severity to null when absent. Do not infer seve
         </div>
         <pre>[chain] This prompt is P-norm (Normalize representation). Next prompt: P-diag (Decompose diagram). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -450,8 +469,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -497,7 +515,15 @@ Id rules: lowercase kebab-case, derived from the diagram label. Reuse the same i
         </div>
         <pre>[chain] This prompt is P-diag (Decompose diagram). Next prompt: P-app (Application details). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -512,8 +538,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -554,7 +579,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-app (Application details). Next prompt: P-feat (Key features). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -569,8 +602,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -597,7 +629,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-feat (Key features). Next prompt: P-scope (In-scope components). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -612,8 +652,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -643,7 +682,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-scope (In-scope components). Next prompt: P-sol (Solution description). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -658,8 +705,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -709,7 +755,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-sol (Solution description). Next prompt: P-adv (Attacker capabilities and claim boundary). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -724,8 +778,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -768,7 +821,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-adv (Attacker capabilities and claim boundary). Next prompt: P-controls (Existing security features). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -783,8 +844,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -832,7 +892,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-controls (Existing security features). Next prompt: P-llm-cut (Mark the LLM subset). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -847,8 +915,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -902,9 +969,17 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('P-llm-cut-block', this)">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is P-llm-cut (Mark the LLM subset). Repeat this prompt until llm_subset_decision.status is ready or continue_without_llm. Only then continue. Next prompt: P-stride (STRIDE elicitation). Do not echo this line in the JSON.
+        <pre>[chain] This prompt is P-llm-cut (Mark the LLM subset). Repeat this prompt until llm_subset_decision.status is ready, continue_without_llm, or needs_operator_confirmation. Only then continue. Next prompt: P-stride (STRIDE elicitation). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -919,8 +994,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -933,15 +1007,18 @@ Solution description:
 {{solution_description}}
 Inventory:
 {{inventory}}
+First-message if_no_ai_nodes (default continue_without_llm):
+{{if_no_ai_nodes}}
 
 Include a node if it: assembles or receives prompts, hosts a chatbot, runs an LLM, or calls an LLM endpoint.
 Exclude a node if it only stores weights, serves as a generic database, or is a third-party hub that is not executing inference in this diagram.
 
 Empty-subset rule:
 - Set llm_subset_empty to true when llm_subset is empty.
-- If inventory.llm_components or the diagram shows a prompt, chatbot, model caller, or model runtime, set status possible_miss and correct the subset before continuing.
-- If no AI node is drawn, set status needs_operator_confirmation and stop. Ask whether to continue as a STRIDE-only model.
-- After the operator confirms, rerun this step and set status continue_without_llm with the confirmation reason.
+- If inventory.llm_components or the diagram shows a prompt, chatbot, model caller, or model runtime, set status possible_miss and correct the subset in this same reply.
+- If no AI node is drawn, read if_no_ai_nodes from the first message. Default is continue_without_llm. Do not ask. Do not stop the chain.
+- continue_without_llm: status continue_without_llm. PHANTOM-B is not_applicable.
+- incomplete: status needs_operator_confirmation with reason citing if_no_ai_nodes from the first message. Continue the chain. PHANTOM-B stays incomplete.
 - A non-empty valid subset has status ready.
 
 Return JSON:
@@ -968,7 +1045,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-stride (STRIDE elicitation). Repeat this prompt until stride_coverage.complete is true or traditional_coverage.status is not_applicable. Only then continue. Next prompt: P-abuse (Abuse-case analysis). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -983,8 +1068,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1008,7 +1092,7 @@ Root traditional_coverage is the reusable traditional-phase gate. It always has 
 Expected scope includes every in-scope applicable process, actor, store, and flow, not only crossings. Exclude an inherited replica only with valid drawn replica evidence and id pairs. traditional_coverage.expected_referents contains the full traditional-analysis denominator; considered_referents records only referents completed so far; exclusions records referent and reason.
 
 Cumulative budget:
-- Add at most 72 new rows in this reply; continue after prior_stride_considerations in inventory order.
+- Add at most 72 new rows per P-stride pass. On a chain run, immediately rerun this step in the same reply with the cumulative prior output until stride_coverage.complete is true or traditional_coverage.status is not_applicable. Do not wait for another operator message. Copy-one-block runs one pass per pasted prompt.
 - stride_coverage.expected_considerations is an array of {element_id, element_type, letters}; rows_expected is the sum of its letters plus required divergence rows.
 - expected_elements, considered_elements, and remaining_elements are id arrays. rows_written_total counts cumulative unique element_id/letter pairs plus divergence rows. Never reduce scope for budget.
 
@@ -1063,7 +1147,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-abuse (Abuse-case analysis). Next prompt: P-operational (Operational and continuity analysis). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1078,8 +1170,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1129,7 +1220,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-operational (Operational and continuity analysis). Next prompt: P-phantom (PHANTOM-B elicitation). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1144,8 +1243,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1199,7 +1297,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-phantom (PHANTOM-B elicitation). Next prompt: P-compose (Analyze AI and traditional composition). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1214,8 +1320,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1227,7 +1332,7 @@ Cyber role: {{cyber_role}}
 Shostack question: What can go wrong?
 Step: P-phantom. Run PHANTOM-B only after root traditional_coverage.status is complete or not_applicable. If it is incomplete, return phantom_coverage.status incomplete with a gate gap and do not elicit AI scenarios. traditional_analysis is detail only and never controls this gate.
 
-For each LLM or chatbot component, ask all eight questions and leave defenses for P-act. If llm_subset_empty is true after continue_without_llm confirmation, return no considerations and status not_applicable. An unconfirmed empty subset is incomplete.
+For each LLM or chatbot component, ask all eight questions and leave defenses for P-act. If llm_subset_empty is true and llm_subset_decision.status is continue_without_llm, return no considerations and status not_applicable. If the empty subset was recorded as a first-message incomplete gap, return no considerations and status incomplete. Do not ask for confirmation.
 
 Ask, for each id in llm_subset:
 1. P Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?
@@ -1279,7 +1384,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-compose (Analyze AI and traditional composition). Next prompt: P-catalog (Map evidence-bound external sources). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1294,8 +1407,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1342,7 +1454,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-catalog (Map evidence-bound external sources). Next prompt: P-dedup (Deduplicate and compose threat list). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1357,8 +1477,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1400,7 +1519,7 @@ Return JSON:
   "catalog_coverage": {"status": "complete|incomplete|not_applicable", "examined_source_ids": [], "reason": "coverage of injected inputs only; never a completeness claim"}
 }
 
-When a supplied CVE or NVD record meets the affected contract, include applicability_evidence as {"supplier": "non-unknown supplier", "product": "non-unknown product", "version": "non-unknown exact applicable version", "component_referent": "inventory id", "evidence_refs": ["resolving evidence id"]} and set status affected. Otherwise do not claim affected.</pre>
+When source_manifest is omitted or entries is empty, set catalog_coverage.status to not_applicable, examined_source_ids to [], reason to no injected sources in the first message, and source_manifest.source_set_id to the supplied id or none-injected. Do not ask for a manifest. When a supplied CVE or NVD record meets the affected contract, include applicability_evidence as {"supplier": "non-unknown supplier", "product": "non-unknown product", "version": "non-unknown exact applicable version", "component_referent": "inventory id", "evidence_refs": ["resolving evidence id"]} and set status affected. Otherwise do not claim affected.</pre>
       </div>
       <div class="prompt-block is-collapsed" id="P-dedup-block" data-prompt-id="P-dedup">
         <div class="prompt-block__header">
@@ -1412,7 +1531,15 @@ When a supplied CVE or NVD record meets the affected contract, include applicabi
         </div>
         <pre>[chain] This prompt is P-dedup (Deduplicate and compose threat list). Next prompt: P-cia (CIA mapping). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1427,8 +1554,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1437,7 +1563,7 @@ Rules:
 Shostack question: What can go wrong?
 Step: P-dedup. Consume every scenario set and form one threat list TSS.
 
-Do not continue when root traditional_coverage, phantom_coverage, composition_coverage, or injected-source coverage is incomplete. traditional_analysis is detail only.
+If root traditional_coverage, phantom_coverage, composition_coverage, or injected-source coverage is incomplete, omit unbound rows from those sets, keep the gaps for QA, and still form TSS from completed scenario sets. Do not ask for more input. traditional_analysis is detail only.
 
 Inputs:
 Perspective: {{perspective}}
@@ -1489,7 +1615,15 @@ A valid affected CVE or NVD external_ref keeps applicability_evidence {"supplier
         </div>
         <pre>[chain] This prompt is P-cia (CIA mapping). Next prompt: P-stride-map (STRIDE mapping). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1504,8 +1638,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1536,7 +1669,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-stride-map (STRIDE mapping). Next prompt: P-phantom-map (PHANTOM-B mapping). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1551,8 +1692,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1581,7 +1721,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-phantom-map (PHANTOM-B mapping). Next prompt: P-importance (Order threats by evidence-backed importance). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1596,8 +1744,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1628,7 +1775,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-importance (Order threats by evidence-backed importance). Next prompt: P-act (Choose an action). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1643,8 +1798,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1690,7 +1844,15 @@ Return JSON:
         </div>
         <pre>[chain] This prompt is P-act (Choose an action). Next prompt: P-qa (Self-check). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1705,8 +1867,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1750,7 +1911,15 @@ Return the same threats and review_order. Preserve each threats[].importance exa
         </div>
         <pre>[chain] This prompt is P-qa (Self-check). Next prompt: P-report (Write the readable report). Optional route before that step: P-srf-join (Join AI Exchange slugs). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1765,8 +1934,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1816,7 +1984,15 @@ Preserve optional layer_coverage and vertical_context only when present.</pre>
         </div>
         <pre>[chain] This prompt is P-report (Write the readable report). Next prompt: P-export-md (Write the downloadable markdown report). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1831,8 +2007,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1911,7 +2086,15 @@ Return the full matrix with:
         </div>
         <pre>[chain] This prompt is P-srf-join (Join AI Exchange slugs). Next prompt: P-srf-layer (Assign SRF layer). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1926,8 +2109,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -1959,7 +2141,15 @@ Return the full matrix with review_context.operating_model preserved and threats
         </div>
         <pre>[chain] This prompt is P-srf-layer (Assign SRF layer). Next prompt: P-srf-owner (Assign one accountable persona). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -1974,8 +2164,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2002,7 +2191,15 @@ Use only layer ids and operating-model mappings present in the injected inputs. 
         </div>
         <pre>[chain] This prompt is P-srf-owner (Assign one accountable persona). Next prompt: P-srf-coverage (Check SRF layer and owner coverage). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2017,8 +2214,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2053,7 +2249,15 @@ Return the full matrix with srf.persona, srf.party, srf.note, and assignment_evi
         </div>
         <pre>[chain] This prompt is P-srf-coverage (Check SRF layer and owner coverage). Next prompt: P-report (Write the readable report). Optional route before that step: P-vertical-join (Join vertical obligations). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2068,8 +2272,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2131,7 +2334,15 @@ Return the full matrix with:
         </div>
         <pre>[chain] This prompt is P-vertical-join (Join vertical obligations). Next prompt: P-vertical-route (Route vertical acceptance authority). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2146,8 +2357,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2177,7 +2387,15 @@ Return the full matrix with threats[].vertical and vertical_context {"vertical_i
         </div>
         <pre>[chain] This prompt is P-vertical-route (Route vertical acceptance authority). Next prompt: P-report (Write the readable report). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2192,8 +2410,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2246,7 +2463,15 @@ Return the full matrix with vertical routing, vertical_context coverage, and cha
         </div>
         <pre>[chain] This prompt is P-export-md (Write the downloadable markdown report). Next prompt: P-export-json (Write the completed JSON file). Do not echo this line in the markdown.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2261,8 +2486,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2287,7 +2511,15 @@ If report.markdown is missing or empty, stop and say P-report must run first. Do
         </div>
         <pre>[chain] This prompt is P-export-json (Write the completed JSON file). Next prompt: P-export-csv (Write the threat-database CSV). Do not echo this line in the JSON.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2302,8 +2534,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2328,7 +2559,15 @@ When Track B is applied require layer_coverage.status complete. When Track C is 
         </div>
         <pre>[chain] This prompt is P-export-csv (Write the threat-database CSV). Next prompt: P-export-diagram (Write the Mermaid threat-model diagram). Do not echo this line in the CSV.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2343,8 +2582,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2380,7 +2618,15 @@ Row rules:
         </div>
         <pre>[chain] This prompt is P-export-diagram (Write the Mermaid threat-model diagram). Export ends here. Save the markdown, JSON, CSV, and this Mermaid reply as a .mmd file. Do not echo this line in the Mermaid.
 
-You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.
+You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.
+
+Run mode:
+- If the operator asked to run Track A through P-report, or named this pack chain, this is a chain run. Execute every required step in order in this conversation. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If this message contains a single [chain] banner, produce only that named step.
+
+Missing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.
+
+For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.
 
 Rules:
 - Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?
@@ -2395,8 +2641,7 @@ Rules:
 - Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.
 - A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.
 - CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.
-- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.
-- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.
+- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.
 - Once adversary.positions exists, every scenario must use one of those position ids.
 - Record an existing control only when a label, component, or flow on the diagram shows it.
 - For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.
@@ -2479,7 +2724,7 @@ Return review_context with claim evidence, root traditional_coverage, typed phas
     <site-footer></site-footer>
     <script>
       const TM_STORAGE = 'srf.tm.lastPrompt';
-      const TM_STEPS = [{"id": "P-context", "title": "Establish review context", "next": "P-norm", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-norm", "title": "Normalize representation", "next": "P-diag", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-diag", "title": "Decompose diagram", "next": "P-app", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-app", "title": "Application details", "next": "P-feat", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-feat", "title": "Key features", "next": "P-scope", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-scope", "title": "In-scope components", "next": "P-sol", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-sol", "title": "Solution description", "next": "P-adv", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-adv", "title": "Attacker capabilities and claim boundary", "next": "P-controls", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-controls", "title": "Existing security features", "next": "P-llm-cut", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-llm-cut", "title": "Mark the LLM subset", "next": "P-stride", "optional_next": null, "repeat_until": "llm_subset_decision.status is ready or continue_without_llm", "track": "A"}, {"id": "P-stride", "title": "STRIDE elicitation", "next": "P-abuse", "optional_next": null, "repeat_until": "stride_coverage.complete is true or traditional_coverage.status is not_applicable", "track": "A"}, {"id": "P-abuse", "title": "Abuse-case analysis", "next": "P-operational", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-operational", "title": "Operational and continuity analysis", "next": "P-phantom", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-phantom", "title": "PHANTOM-B elicitation", "next": "P-compose", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-compose", "title": "Analyze AI and traditional composition", "next": "P-catalog", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-catalog", "title": "Map evidence-bound external sources", "next": "P-dedup", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-dedup", "title": "Deduplicate and compose threat list", "next": "P-cia", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-cia", "title": "CIA mapping", "next": "P-stride-map", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-stride-map", "title": "STRIDE mapping", "next": "P-phantom-map", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-phantom-map", "title": "PHANTOM-B mapping", "next": "P-importance", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-importance", "title": "Order threats by evidence-backed importance", "next": "P-act", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-act", "title": "Choose an action", "next": "P-qa", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-qa", "title": "Self-check", "next": "P-report", "optional_next": "P-srf-join", "repeat_until": null, "track": "A"}, {"id": "P-report", "title": "Write the readable report", "next": "P-export-md", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-srf-join", "title": "Join AI Exchange slugs", "next": "P-srf-layer", "optional_next": null, "repeat_until": null, "track": "B"}, {"id": "P-srf-layer", "title": "Assign SRF layer", "next": "P-srf-owner", "optional_next": null, "repeat_until": null, "track": "B"}, {"id": "P-srf-owner", "title": "Assign one accountable persona", "next": "P-srf-coverage", "optional_next": null, "repeat_until": null, "track": "B"}, {"id": "P-srf-coverage", "title": "Check SRF layer and owner coverage", "next": "P-report", "optional_next": "P-vertical-join", "repeat_until": null, "track": "B"}, {"id": "P-vertical-join", "title": "Join vertical obligations", "next": "P-vertical-route", "optional_next": null, "repeat_until": null, "track": "C"}, {"id": "P-vertical-route", "title": "Route vertical acceptance authority", "next": "P-report", "optional_next": null, "repeat_until": null, "track": "C"}, {"id": "P-export-md", "title": "Write the downloadable markdown report", "next": "P-export-json", "optional_next": null, "repeat_until": null, "track": "export"}, {"id": "P-export-json", "title": "Write the completed JSON file", "next": "P-export-csv", "optional_next": null, "repeat_until": null, "track": "export"}, {"id": "P-export-csv", "title": "Write the threat-database CSV", "next": "P-export-diagram", "optional_next": null, "repeat_until": null, "track": "export"}, {"id": "P-export-diagram", "title": "Write the Mermaid threat-model diagram", "next": null, "optional_next": null, "repeat_until": null, "track": "export"}];
+      const TM_STEPS = [{"id": "P-context", "title": "Establish review context", "next": "P-norm", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-norm", "title": "Normalize representation", "next": "P-diag", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-diag", "title": "Decompose diagram", "next": "P-app", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-app", "title": "Application details", "next": "P-feat", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-feat", "title": "Key features", "next": "P-scope", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-scope", "title": "In-scope components", "next": "P-sol", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-sol", "title": "Solution description", "next": "P-adv", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-adv", "title": "Attacker capabilities and claim boundary", "next": "P-controls", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-controls", "title": "Existing security features", "next": "P-llm-cut", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-llm-cut", "title": "Mark the LLM subset", "next": "P-stride", "optional_next": null, "repeat_until": "llm_subset_decision.status is ready, continue_without_llm, or needs_operator_confirmation", "track": "A"}, {"id": "P-stride", "title": "STRIDE elicitation", "next": "P-abuse", "optional_next": null, "repeat_until": "stride_coverage.complete is true or traditional_coverage.status is not_applicable", "track": "A"}, {"id": "P-abuse", "title": "Abuse-case analysis", "next": "P-operational", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-operational", "title": "Operational and continuity analysis", "next": "P-phantom", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-phantom", "title": "PHANTOM-B elicitation", "next": "P-compose", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-compose", "title": "Analyze AI and traditional composition", "next": "P-catalog", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-catalog", "title": "Map evidence-bound external sources", "next": "P-dedup", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-dedup", "title": "Deduplicate and compose threat list", "next": "P-cia", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-cia", "title": "CIA mapping", "next": "P-stride-map", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-stride-map", "title": "STRIDE mapping", "next": "P-phantom-map", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-phantom-map", "title": "PHANTOM-B mapping", "next": "P-importance", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-importance", "title": "Order threats by evidence-backed importance", "next": "P-act", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-act", "title": "Choose an action", "next": "P-qa", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-qa", "title": "Self-check", "next": "P-report", "optional_next": "P-srf-join", "repeat_until": null, "track": "A"}, {"id": "P-report", "title": "Write the readable report", "next": "P-export-md", "optional_next": null, "repeat_until": null, "track": "A"}, {"id": "P-srf-join", "title": "Join AI Exchange slugs", "next": "P-srf-layer", "optional_next": null, "repeat_until": null, "track": "B"}, {"id": "P-srf-layer", "title": "Assign SRF layer", "next": "P-srf-owner", "optional_next": null, "repeat_until": null, "track": "B"}, {"id": "P-srf-owner", "title": "Assign one accountable persona", "next": "P-srf-coverage", "optional_next": null, "repeat_until": null, "track": "B"}, {"id": "P-srf-coverage", "title": "Check SRF layer and owner coverage", "next": "P-report", "optional_next": "P-vertical-join", "repeat_until": null, "track": "B"}, {"id": "P-vertical-join", "title": "Join vertical obligations", "next": "P-vertical-route", "optional_next": null, "repeat_until": null, "track": "C"}, {"id": "P-vertical-route", "title": "Route vertical acceptance authority", "next": "P-report", "optional_next": null, "repeat_until": null, "track": "C"}, {"id": "P-export-md", "title": "Write the downloadable markdown report", "next": "P-export-json", "optional_next": null, "repeat_until": null, "track": "export"}, {"id": "P-export-json", "title": "Write the completed JSON file", "next": "P-export-csv", "optional_next": null, "repeat_until": null, "track": "export"}, {"id": "P-export-csv", "title": "Write the threat-database CSV", "next": "P-export-diagram", "optional_next": null, "repeat_until": null, "track": "export"}, {"id": "P-export-diagram", "title": "Write the Mermaid threat-model diagram", "next": null, "optional_next": null, "repeat_until": null, "track": "export"}];
       const TM_TITLES = {"P-context": "Establish review context", "P-norm": "Normalize representation", "P-diag": "Decompose diagram", "P-app": "Application details", "P-feat": "Key features", "P-scope": "In-scope components", "P-sol": "Solution description", "P-adv": "Attacker capabilities and claim boundary", "P-controls": "Existing security features", "P-llm-cut": "Mark the LLM subset", "P-stride": "STRIDE elicitation", "P-abuse": "Abuse-case analysis", "P-operational": "Operational and continuity analysis", "P-phantom": "PHANTOM-B elicitation", "P-compose": "Analyze AI and traditional composition", "P-catalog": "Map evidence-bound external sources", "P-dedup": "Deduplicate and compose threat list", "P-cia": "CIA mapping", "P-stride-map": "STRIDE mapping", "P-phantom-map": "PHANTOM-B mapping", "P-importance": "Order threats by evidence-backed importance", "P-act": "Choose an action", "P-qa": "Self-check", "P-report": "Write the readable report", "P-srf-join": "Join AI Exchange slugs", "P-srf-layer": "Assign SRF layer", "P-srf-owner": "Assign one accountable persona", "P-srf-coverage": "Check SRF layer and owner coverage", "P-vertical-join": "Join vertical obligations", "P-vertical-route": "Route vertical acceptance authority", "P-export-md": "Write the downloadable markdown report", "P-export-json": "Write the completed JSON file", "P-export-csv": "Write the threat-database CSV", "P-export-diagram": "Write the Mermaid threat-model diagram", "P-zeroshot": "Zero-shot threat model", "P-identity": "Short expert identity"};
 
       function stepById(id) {

@@ -95,19 +95,22 @@ python3 eval/threat-model/run_generate.py --mode zeroshot
 python3 eval/threat-model/run_generate.py --mode identity
 ```
 
-Writes filled prompt text under `eval/threat-model/runs/<mode>/prompts/`. Run
-the required chain in numeric order. Repeat P-llm-cut or P-stride when its
-`repeat_until` condition is false. P-importance is required. If Track B is
-used, stop after P-qa and run B01 through B04. Track C uses C01 and C02 after
-Track B. Run P-report after the selected optional tracks. After the final
-P-report, run `E01-P-export-md`,
+Writes filled prompt text under `eval/threat-model/runs/<mode>/prompts/`. Put
+review context, `if_no_ai_nodes`, and any pinned sources in the first prompt
+payload. A chain run does not ask for those fields later. Repeat P-llm-cut or
+P-stride when its `repeat_until` condition is false; on a chain run those
+repeats happen in the same reply. P-importance is required. If Track B is
+used, include SRF inputs in that first payload and run B01 through B04 after
+P-qa. Track C uses C01 and C02 after Track B when vertical source rows were
+also in the first payload. Run P-report after the selected optional tracks.
+After the final P-report, run `E01-P-export-md`,
 `E02-P-export-json`, `E03-P-export-csv`, and `E04-P-export-diagram`.
 Save the JSON as `<run>/<system_id>/<format>.json`.
 The generator injects the local threat-source registry and SRF files. Its
-fixture source manifest is empty, so a run cannot claim external catalog
-coverage until pinned records are supplied. Optional `--call-api` needs `OPENAI_API_KEY`
-or `TM_API_KEY` and only fires the first prompt per format; later steps still
-need prior JSON pasted in.
+fixture source manifest is empty, so catalog coverage is not_applicable until
+pinned records are supplied in the first payload. Optional `--call-api` needs
+`OPENAI_API_KEY` or `TM_API_KEY` and only fires the first prompt per format;
+later steps still need prior JSON pasted in.
 
 ## Compare tradecraft vs zero-shot
 
