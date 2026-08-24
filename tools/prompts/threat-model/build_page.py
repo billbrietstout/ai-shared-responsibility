@@ -19,38 +19,13 @@ def shortcut_text(pack: dict) -> str:
     version = pack["version"]
     return f"""Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from P-context through P-report, then P-export-md, P-export-json, P-export-csv, and P-export-diagram. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from P-context through P-report, then P-export-md, P-export-json, P-export-csv, and P-export-diagram. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg. Role: experienced-threat-modeler unless this message names another role.
 
-Include every operator field you have in this first message. If a field below is omitted, treat it as empty and continue. Do not ask for it. Do not ask the operator to continue. Do not write that you will proceed to a step without producing that step.
-
-Operator packet (paste values you have; omit a key to leave it empty):
-{{
-  "representation_kind": "image|mermaid|svg",
-  "role": "experienced-threat-modeler",
-  "review_context_input": {{
-    "profile": "full-system|bounded-subsystem|artifact-only",
-    "profile_confirmation": false,
-    "perspective": "",
-    "vertical_ids": [],
-    "jurisdictions": [],
-    "operating_model": null,
-    "critical_assets": [],
-    "prohibited_outcomes": [],
-    "continuity_safety_constraints": [],
-    "supplied_severity": null,
-    "scope": {{ "included_labels": [], "excluded_labels": [], "boundary_statement": "" }}
-  }},
-  "if_no_ai_nodes": "continue_without_llm",
-  "source_manifest": {{ "source_set_id": "none-injected", "entries": [] }},
-  "source_records": [],
-  "srf_inputs": null,
-  "vertical_source_rows": [],
-  "tracks": ["A"]
-}}
+Treat omitted operator fields as empty and continue. Do not ask for review context, source records, SRF data, or continue. If this message already contains review_context_input, source_manifest, source_records, srf_inputs, or vertical_source_rows, use those values.
 
 Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true, in this same reply.
 
-Do not fetch catalog or SRF data. Use data/threat-sources.json as the named source registry only. An omitted or empty source_manifest makes catalog coverage not_applicable. Track B runs only when tracks includes B and srf_inputs are in this message. Track C runs only after Track B when vertical_ids and vertical_source_rows are in this message.
+Do not fetch catalog or SRF data. Use data/threat-sources.json as the named source registry only. An omitted or empty source_manifest makes catalog coverage not_applicable. Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_ids and vertical_source_rows.
 
 Leave report.reviewer empty.
 Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom."""
@@ -437,7 +412,7 @@ def main():
           accountability. Optional Track C joins vertical obligations and controls.
           Then run the export steps once and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
-          Put every operator field you have in the first message with the representation.
+          The one-chat shortcut lists optional first-message fields on the page, not in the copied text.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/tools/prompts/threat-model/releases/">Release notes</a>.
@@ -451,14 +426,14 @@ def main():
       <div class="deliverable" id="shortcut">
         <p class="deliverable__title">Shortcut: one chat</p>
         <p>
-          Put every operator field you have in the first message with the
-          representation. Copy the block below, fill the operator packet, and
-          send it once. The model loads
+          Copy the block below and send it once with the representation.
+          Optional fields you may add in that same message are listed here;
+          they are not in the copied text. The model loads
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
           and runs Track A through the four exports without asking for more
-          input and without waiting for continue. Omitted packet fields stay
-          empty. Catalog, SRF, and vertical mapping without injected data are
-          not applicable.
+          input and without waiting for continue. Omitted fields stay empty.
+          Catalog, SRF, and vertical mapping without injected data are not
+          applicable.
         </p>
         <ol>
           <li>Required in the first message: the representation and <code>representation_kind</code> (<code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
@@ -480,10 +455,10 @@ def main():
 
       <p class="section-label">How to run the chain</p>
       <ol class="q-list">
-        <li>Prefer the one-chat shortcut. Supply the operator packet in the first message. The model runs the required chain without a later prompt from you.</li>
+        <li>Prefer the one-chat shortcut. Optional fields stay on this page; add any you have in the same first message. The model runs the required chain without a later prompt from you.</li>
         <li>If you copy one block at a time, paste the shared rules once or use a standalone copy block (rules are inlined). Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
-        <li>Copy-one-block text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click. Still do not send a later message to supply packet fields; those belong in the first message.</li>
+        <li>Copy-one-block text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click. Still do not send a later message to supply optional fields; add those in the first message if you have them.</li>
         <li>Run Track A in order. A chain run repeats P-stride in the same reply until its typed denominator closes. P-importance is required before P-act.</li>
         <li>Track B runs only when the first message includes B and SRF inputs. Track C runs only after Track B when that message also includes vertical ids and vertical source rows. Otherwise skip those tracks and go to P-report.</li>
         <li>After P-report, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
