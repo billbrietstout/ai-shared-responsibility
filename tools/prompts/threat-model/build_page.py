@@ -15,6 +15,47 @@ def esc(s: str) -> str:
     return html.escape(s, quote=False)
 
 
+def shortcut_text(pack: dict) -> str:
+    version = pack["version"]
+    return f"""Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
+
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from P-context through P-report, then P-export-md, P-export-json, P-export-csv, and P-export-diagram. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg.
+
+Include every operator field you have in this first message. If a field below is omitted, treat it as empty and continue. Do not ask for it. Do not ask the operator to continue. Do not write that you will proceed to a step without producing that step.
+
+Operator packet (paste values you have; omit a key to leave it empty):
+{{
+  "representation_kind": "image|mermaid|svg",
+  "role": "experienced-threat-modeler",
+  "review_context_input": {{
+    "profile": "full-system|bounded-subsystem|artifact-only",
+    "profile_confirmation": false,
+    "perspective": "",
+    "vertical_ids": [],
+    "jurisdictions": [],
+    "operating_model": null,
+    "critical_assets": [],
+    "prohibited_outcomes": [],
+    "continuity_safety_constraints": [],
+    "supplied_severity": null,
+    "scope": {{ "included_labels": [], "excluded_labels": [], "boundary_statement": "" }}
+  }},
+  "if_no_ai_nodes": "continue_without_llm",
+  "source_manifest": {{ "source_set_id": "none-injected", "entries": [] }},
+  "source_records": [],
+  "srf_inputs": null,
+  "vertical_source_rows": [],
+  "tracks": ["A"]
+}}
+
+Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true, in this same reply.
+
+Do not fetch catalog or SRF data. Use data/threat-sources.json as the named source registry only. An omitted or empty source_manifest makes catalog coverage not_applicable. Track B runs only when tracks includes B and srf_inputs are in this message. Track C runs only after Track B when vertical_ids and vertical_source_rows are in this message.
+
+Leave report.reviewer empty.
+Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom."""
+
+
 def prompt_by_id(pack: dict, pid: str) -> dict | None:
     for p in pack["prompts"]:
         if p["id"] == pid:
@@ -158,6 +199,7 @@ def main():
     export_html = "\n".join(prompt_block(p, pack) for p in export_prompts)
     baseline_html = "\n".join(prompt_block(dict(p, track="eval"), pack) for p in baselines)
     role_ids = ", ".join(r["id"] for r in pack["roles"])
+    shortcut = shortcut_text(pack)
     steps = []
     for c in pack["chain"]:
         p = prompt_by_id(pack, c["id"])
@@ -395,6 +437,7 @@ def main():
           accountability. Optional Track C joins vertical obligations and controls.
           Then run the export steps once and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
+          Put every operator field you have in the first message with the representation.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/tools/prompts/threat-model/releases/">Release notes</a>.
@@ -408,49 +451,41 @@ def main():
       <div class="deliverable" id="shortcut">
         <p class="deliverable__title">Shortcut: one chat</p>
         <p>
-          Attach the representation and supply the review profile, scope, and any
-          vertical or jurisdiction facts. Supply pinned source inputs when external
-          mappings are required.
-          Copy the block below. The model runs Track A from
-          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
-          You do not copy the Track A steps.
+          Put every operator field you have in the first message with the
+          representation. Copy the block below, fill the operator packet, and
+          send it once. The model loads
+          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
+          and runs Track A through the four exports without asking for more
+          input and without waiting for continue. Omitted packet fields stay
+          empty. Catalog, SRF, and vertical mapping without injected data are
+          not applicable.
         </p>
         <ol>
-          <li>Load the pack. Use its root version, runtime defaults, selected role guidance, and chain routes.</li>
-          <li>Fill each template from the prior JSON (<code>inventory</code>, <code>threats</code>, <code>full_matrix</code>, and the other <code>{{{{ }}}}</code> slots).</li>
-          <li>Keep the diagram attached on every step that names <code>{{{{representation}}}}</code>. Set <code>representation_kind</code> to match the attachment.</li>
-          <li>If a <code>stop_condition</code> fails, stop and show the gap. Repeat a step when its <code>repeat_until</code> field is not satisfied.</li>
-          <li>After P-report, run P-export-md, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
-          <li>If Track B is requested, branch from P-qa and run its four steps. Track C may follow when vertical ids and source inputs are supplied. Return to P-report after the selected optional tracks.</li>
+          <li>Required in the first message: the representation and <code>representation_kind</code> (<code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
+          <li>Optional in that same message: role, <code>review_context_input</code> (profile, confirmation for artifact-only, perspective, verticals, jurisdictions, operating model, assets, prohibited outcomes, continuity or safety constraints, supplied severity, scope), <code>if_no_ai_nodes</code>, <code>source_manifest</code> and pinned source records, SRF rows for Track B, vertical source rows for Track C.</li>
+          <li>Default role is experienced-threat-modeler. Default <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.</li>
+          <li>The model fills later templates from accumulated JSON. Repeat_until steps rerun in the same reply. A failed stop_condition is recorded as a JSON gap, not a question.</li>
+          <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         </ol>
         <p>
           If the chat cannot load that file, use the copy-one-block steps under
-          How to run the chain.
+          How to run the chain. Those blocks still do not ask for fields that
+          belong in the first message.
         </p>
         <div class="shortcut-paste">
           <button type="button" id="shortcut-copy">Copy</button>
-          <pre id="shortcut-text">Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
-
-Use pack version 3.0 and runtime_defaults. Run required Track A from P-context through P-report. Ask me for review_context_input before P-context. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg. Role: experienced-threat-modeler unless I name another role.
-
-Do not skip a step. If a stop_condition fails, stop and show the gap. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true.
-
-Do not fetch catalog or SRF data during the chain. Ask me to supply source_manifest and any pinned source records. Use data/threat-sources.json as the source registry. Track B is optional and requires an operating model plus injected SRF data. Track C requires completed Track B, vertical_ids, and injected vertical source rows.
-
-After P-report, run P-export-md, then P-export-json, then P-export-csv, then P-export-diagram. I will save those replies as .md, .json, .csv, and .mmd. Leave report.reviewer empty.
-
-Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</pre>
+          <pre id="shortcut-text">{esc(shortcut)}</pre>
         </div>
       </div>
 
       <p class="section-label">How to run the chain</p>
       <ol class="q-list">
-        <li>Paste the shared rules once, or use each step as a standalone copy block (rules are inlined).</li>
-        <li>Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
+        <li>Prefer the one-chat shortcut. Supply the operator packet in the first message. The model runs the required chain without a later prompt from you.</li>
+        <li>If you copy one block at a time, paste the shared rules once or use a standalone copy block (rules are inlined). Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
-        <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
-        <li>Run Track A in order. Repeat P-stride until its typed denominator closes. P-importance is required before P-act.</li>
-        <li>At P-qa, continue to P-report or run <a href="#track-b">Track B</a>. Run <a href="#track-c">Track C</a> only after Track B closes and vertical source rows are supplied.</li>
+        <li>Copy-one-block text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click. Still do not send a later message to supply packet fields; those belong in the first message.</li>
+        <li>Run Track A in order. A chain run repeats P-stride in the same reply until its typed denominator closes. P-importance is required before P-act.</li>
+        <li>Track B runs only when the first message includes B and SRF inputs. Track C runs only after Track B when that message also includes vertical ids and vertical source rows. Otherwise skip those tracks and go to P-report.</li>
         <li>After P-report, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>

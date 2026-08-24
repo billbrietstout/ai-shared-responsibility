@@ -109,6 +109,7 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         "perspective": gold["perspective"],
         "operating_model": gold.get("operating_model_hint", "AI-PaaS"),
         "review_context_input": review_context_input,
+        "if_no_ai_nodes": gold.get("if_no_ai_nodes", "continue_without_llm"),
         "review_context": "(fill from P-context output)",
         "inventory": gold,
         "architecture_description": "(fill from P-diag output)",
@@ -183,17 +184,17 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
             (out_dir / f"E{k:02d}-{pid}.txt").write_text(text + "\n", encoding="utf-8")
         readme = out_dir / "README.txt"
         readme.write_text(
-            "Run Track A prompts in numeric order. Repeat P-llm-cut or P-stride "
-            "when its repeat_until condition is false. If you use Track B, stop "
-            "after P-qa, run B01 through B04, then run P-report. Track C requires "
-            "complete Track B coverage and runs C01 through C02 before P-report. "
-            "Otherwise run P-report directly after P-qa. Paste each JSON output "
-            "into the next prompt's prior-output slot. After P-report, run E01-P-export-md "
+            "Operator packet fields belong in the first prompt payload. "
+            "A chain run does not ask for later input and does not wait for continue. "
+            "Run Track A prompts in numeric order, or as successive JSON blocks in one reply. "
+            "Repeat P-llm-cut or P-stride when its repeat_until condition is false. "
+            "If Track B inputs were in the first payload, run B01 through B04 after P-qa, then P-report. "
+            "Track C requires complete Track B coverage and first-message vertical source rows; run C01 through C02 before P-report. "
+            "Otherwise run P-report directly after P-qa. After P-report, run E01-P-export-md "
             "(markdown), E02-P-export-json (completed JSON), E03-P-export-csv "
             "(threat database), then E04-P-export-diagram (Mermaid threat-model diagram). "
-            "Track B files require an operating_model and injected local SRF data. "
-            "Track C also requires vertical_ids. Run exports once, after the final "
-            "P-report. Do not call an API from this README.\n",
+            "An empty source_manifest makes catalog coverage not_applicable. "
+            "Run exports once, after the final P-report. Do not call an API from this README.\n",
             encoding="utf-8",
         )
 
