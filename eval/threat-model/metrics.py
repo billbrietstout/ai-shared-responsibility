@@ -292,6 +292,60 @@ def _phase_qa_issues(
     return []
 
 
+def _id_in_markdown(item_id: str, markdown: str) -> bool:
+    """True when item_id appears as its own token, so T1 does not match T10."""
+    return (
+        re.search(
+            rf"(?<![A-Za-z0-9_-]){re.escape(item_id)}(?![A-Za-z0-9_-])",
+            markdown,
+        )
+        is not None
+    )
+
+
+def report_projection_issues(matrix: dict) -> list[str]:
+    """When P-report has run, every stored threat, position, and control id
+    must appear in report.markdown. Gold-echo leaves report_present false."""
+    qa = matrix.get("qa") or {}
+    if qa.get("report_present") is not True:
+        return []
+    report = matrix.get("report")
+    markdown = report.get("markdown") if isinstance(report, dict) else None
+    if not isinstance(markdown, str) or not markdown.strip():
+        return ["qa.report_present is true but report.markdown is empty"]
+    issues = []
+    missing_threats = [
+        str(row.get("id"))
+        for row in matrix.get("threats") or []
+        if row.get("id") and not _id_in_markdown(str(row["id"]), markdown)
+    ]
+    if missing_threats:
+        issues.append(
+            "report.markdown omits threat ids: " + ", ".join(missing_threats)
+        )
+    missing_positions = [
+        str(row.get("id"))
+        for row in ((matrix.get("adversary") or {}).get("positions") or [])
+        if row.get("id") and not _id_in_markdown(str(row["id"]), markdown)
+    ]
+    if missing_positions:
+        issues.append(
+            "report.markdown omits attacker position ids: "
+            + ", ".join(missing_positions)
+        )
+    missing_controls = [
+        str(row.get("id"))
+        for row in matrix.get("existing_controls") or []
+        if row.get("id") and not _id_in_markdown(str(row["id"]), markdown)
+    ]
+    if missing_controls:
+        issues.append(
+            "report.markdown omits existing control ids: "
+            + ", ".join(missing_controls)
+        )
+    return issues
+
+
 def schema_issues(matrix: dict, schema_required=True) -> list[str]:
     issues = []
     for field in (
@@ -1154,6 +1208,7 @@ def schema_issues(matrix: dict, schema_required=True) -> list[str]:
         issues.append(
             "qa.vertical_join_valid must be null when no vertical joins are present"
         )
+    issues.extend(report_projection_issues(matrix))
     return issues
 
 

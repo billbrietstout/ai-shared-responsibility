@@ -556,7 +556,7 @@ def main():
           <li><code>source_manifest</code> pins every external source used by a mapping.</li>
           <li><code>threats</code>: stable ids with referents, method sources, evidence, external references, importance factors, one action, and validation on mitigate or eliminate.</li>
           <li><code>review_order</code> records the review sequence without claiming likelihood, impact, or residual risk.</li>
-          <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code>. Leave <code>report.reviewer</code> empty.</li>
+          <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code> as a full projection of the matrix: grouped threat tables, every threat/position/control id, architecture prose, and coverage counts. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
           Track B and Track C are optional. After the selected tracks, return to
@@ -618,6 +618,8 @@ def main():
       <p class="section-note">
         These four prompts run once after P-report.
         P-export-md emits the stored report without rewriting it (<code>.md</code>).
+        That stored report projects the matrix: every threat id appears as a
+        table row grouped by diagram referent.
         P-export-json writes the completed record (<code>.json</code>).
         P-export-csv writes one row per threat with stable SRF columns. Track A leaves
         those cells empty (<code>.csv</code>).

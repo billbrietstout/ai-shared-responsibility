@@ -940,7 +940,11 @@
       "required": ["markdown"],
       "properties": {
         "title": { "type": "string" },
-        "markdown": { "type": "string", "minLength": 1 },
+        "markdown": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Readable projection of the completed matrix. Must contain every threats[].id, every adversary.positions[].id, and every existing_controls[].id. Group threats by diagram_referent in tables with the same columns on every row. Do not summarize later threats."
+        },
         "reviewer": { "type": ["string", "null"] }
       }
     },

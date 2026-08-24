@@ -6,7 +6,9 @@ threat models is `/eval/threat-model/`. A prediction is an image, Mermaid
 source, or SVG run through Track A. Version 3 records review context, completes
 typed traditional analysis, runs PHANTOM-B on the AI subset, checks
 AI-to-traditional paths, maps pinned source records, records importance,
-chooses actions, runs QA, and writes a readable report.
+chooses actions, runs QA, and writes a readable report that projects every
+stored threat, attacker position, and drawn control. P-export-md copies that
+string; it does not summarize the matrix.
 
 Automated scores run without calling a model. A claim that Track A beats
 P-zeroshot still needs the SME sheets in `sme/`.
