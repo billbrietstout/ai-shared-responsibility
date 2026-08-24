@@ -74,6 +74,220 @@ def shortcut_paste(pre_id: str, text: str) -> str:
         </div>"""
 
 
+def _json_example(obj: dict) -> str:
+    return json.dumps(obj, indent=2, ensure_ascii=True)
+
+
+def _clinical_review_context(
+    *,
+    operating_model: str | None,
+    vertical_ids: list[str],
+    jurisdictions: list[str],
+) -> dict:
+    return {
+        "profile": "full-system",
+        "profile_confirmation": {
+            "operator_confirmed": False,
+            "evidence_ref": None,
+        },
+        "perspective": (
+            "Healthcare application team that owns intake, triage workflow, "
+            "model integration, and clinician review."
+        ),
+        "vertical_ids": vertical_ids,
+        "jurisdictions": jurisdictions,
+        "operating_model": operating_model,
+        "critical_assets": [
+            {
+                "id": "asset-patient-record",
+                "name": "patient record",
+                "diagram_referents": ["Patient record"],
+                "evidence_refs": ["operator-review-context"],
+            },
+            {
+                "id": "asset-triage-priority",
+                "name": "triage priority",
+                "diagram_referents": ["Triage queue"],
+                "evidence_refs": ["operator-review-context"],
+            },
+        ],
+        "prohibited_outcomes": [
+            {
+                "id": "outcome-no-clinician",
+                "statement": (
+                    "Model output must not suppress an urgent case without "
+                    "clinician review."
+                ),
+                "evidence_refs": ["operator-review-context"],
+            }
+        ],
+        "continuity_safety_constraints": [
+            {
+                "id": "constraint-fallback",
+                "statement": (
+                    "Urgent intake must route to a clinician when the model "
+                    "path is unavailable."
+                ),
+                "evidence_refs": ["operator-review-context"],
+            }
+        ],
+        "supplied_severity": None,
+        "scope": {
+            "included_labels": [],
+            "excluded_labels": ["model-provider training pipeline"],
+            "boundary_statement": (
+                "Review the drawn clinical application, data stores, and model "
+                "API call. Do not review provider training."
+            ),
+        },
+    }
+
+
+def _srf_input_placeholders() -> dict:
+    return {
+        "operating_model": "AI-PaaS",
+        "personas": (
+            "REPLACE_WITH_FULL_OBJECT from "
+            "https://aisharedresponsibility.com/data/personas.json"
+        ),
+        "matrix": (
+            "REPLACE_WITH_FULL_OBJECT from "
+            "https://aisharedresponsibility.com/data/matrix.json"
+        ),
+        "threat_crosswalk": (
+            "REPLACE_WITH_FULL_OBJECT from "
+            "https://aisharedresponsibility.com/data/threats.json"
+        ),
+    }
+
+
+def example_addon_a() -> str:
+    return _json_example(
+        {
+            "role": "application-security",
+            "if_no_ai_nodes": "continue_without_llm",
+            "review_context_input": _clinical_review_context(
+                operating_model=None,
+                vertical_ids=[],
+                jurisdictions=[],
+            ),
+        }
+    )
+
+
+def example_addon_a_artifact() -> str:
+    return _json_example(
+        {
+            "review_context_input": {
+                "profile": "artifact-only",
+                "profile_confirmation": {
+                    "operator_confirmed": True,
+                    "evidence_ref": (
+                        "This review covers the model package and model card "
+                        "only. Integration, inference, deployment, identity, "
+                        "retrieval, and tools are out of scope."
+                    ),
+                },
+                "perspective": (
+                    "Assurance team reviewing a model package without a "
+                    "runtime claim."
+                ),
+                "vertical_ids": [],
+                "jurisdictions": [],
+                "operating_model": None,
+                "critical_assets": [],
+                "prohibited_outcomes": [],
+                "continuity_safety_constraints": [],
+                "supplied_severity": None,
+                "scope": {
+                    "included_labels": ["model package", "model card"],
+                    "excluded_labels": [
+                        "runtime",
+                        "deployment",
+                        "identity",
+                        "retrieval",
+                        "tools",
+                    ],
+                    "boundary_statement": "Static artifact inspection only.",
+                },
+            }
+        }
+    )
+
+
+def example_addon_b() -> str:
+    return _json_example(
+        {
+            "role": "application-security",
+            "if_no_ai_nodes": "continue_without_llm",
+            "review_context_input": _clinical_review_context(
+                operating_model="AI-PaaS",
+                vertical_ids=[],
+                jurisdictions=[],
+            ),
+            "srf_inputs": _srf_input_placeholders(),
+        }
+    )
+
+
+def example_addon_c() -> str:
+    return _json_example(
+        {
+            "role": "application-security",
+            "if_no_ai_nodes": "continue_without_llm",
+            "review_context_input": _clinical_review_context(
+                operating_model="AI-PaaS",
+                vertical_ids=["healthcare"],
+                jurisdictions=["us-federal"],
+            ),
+            "srf_inputs": _srf_input_placeholders(),
+            "vertical_source_rows": [
+                {
+                    "source_id": "srf-healthcare-controls",
+                    "vertical_id": "healthcare",
+                    "kind": "obligation",
+                    "id": "SRF-L3-DEV-001",
+                    "title": "Human-in-the-Loop Gate for High-Stakes Outputs",
+                    "statement": (
+                        "Clinical AI outputs classified as high-risk "
+                        "(diagnosis, treatment selection, medication dosing, "
+                        "procedure recommendation) must be surfaced as "
+                        "advisory only and require explicit clinician "
+                        "confirmation before any downstream action is taken."
+                    ),
+                    "mandatory": True,
+                    "layer": "L3",
+                    "accountable_persona": "clinical-application-developer",
+                    "canonical_url": (
+                        "https://aisharedresponsibility.com/data/"
+                        "healthcare-controls.json"
+                    ),
+                },
+                {
+                    "source_id": "srf-healthcare-controls",
+                    "vertical_id": "healthcare",
+                    "kind": "control_candidate",
+                    "id": "SRF-L3-VV-002",
+                    "title": "Prompt Injection and Input Manipulation Defense",
+                    "statement": (
+                        "LLM-based clinical AI tools must implement and "
+                        "validate defenses against prompt injection, "
+                        "jailbreak, and adversarial input manipulation before "
+                        "clinical deployment."
+                    ),
+                    "mandatory": False,
+                    "layer": "L3",
+                    "accountable_persona": "clinical-application-developer",
+                    "canonical_url": (
+                        "https://aisharedresponsibility.com/data/"
+                        "healthcare-controls.json"
+                    ),
+                },
+            ],
+        }
+    )
+
+
 def prompt_by_id(pack: dict, pid: str) -> dict | None:
     for p in pack["prompts"]:
         if p["id"] == pid:
@@ -223,6 +437,12 @@ def main():
     shortcut_a_html = shortcut_paste("shortcut-text-a", shortcut_a)
     shortcut_b_html = shortcut_paste("shortcut-text-b", shortcut_b)
     shortcut_c_html = shortcut_paste("shortcut-text-c", shortcut_c)
+    example_a_html = shortcut_paste("example-text-a", example_addon_a())
+    example_a_artifact_html = shortcut_paste(
+        "example-text-a-artifact", example_addon_a_artifact()
+    )
+    example_b_html = shortcut_paste("example-text-b", example_addon_b())
+    example_c_html = shortcut_paste("example-text-c", example_addon_c())
     steps = []
     for c in pack["chain"]:
         p = prompt_by_id(pack, c["id"])
@@ -364,6 +584,25 @@ def main():
         white-space: pre-wrap;
         word-break: break-word;
         font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+        max-height: 50vh;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }}
+      .shortcut-example {{
+        margin: 0 0 var(--sp-6);
+        padding: var(--sp-4);
+        background: #fff;
+        border: 1px dashed var(--slate-300);
+        border-radius: var(--radius);
+      }}
+      .shortcut-example .shortcut-paste {{
+        margin-bottom: var(--sp-4);
+      }}
+      .shortcut-example .shortcut-paste:last-child {{
+        margin-bottom: 0;
+      }}
+      .shortcut-example > p:last-child {{
+        margin-bottom: 0;
       }}
       .shortcut-paste button {{
         position: absolute;
@@ -488,8 +727,8 @@ def main():
         </p>
         <ol>
           <li>Required in the first message: the representation and <code>representation_kind</code> (<code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
-          <li>Optional in that same message: role, <code>review_context_input</code> (profile, confirmation for artifact-only, perspective, verticals, jurisdictions, operating model, assets, prohibited outcomes, continuity or safety constraints, supplied severity, scope), <code>if_no_ai_nodes</code>, <code>source_manifest</code> and pinned source records.</li>
-          <li>Track B also needs <code>srf_inputs</code> in that message: operating model plus injected <a href="/data/personas.json">personas</a>, <a href="/data/matrix.json">matrix</a>, and threat_crosswalk rows. Track C also needs <code>vertical_ids</code> and <code>vertical_source_rows</code>. Those rows stay on this page, not in the copied text.</li>
+          <li>Optional in that same message: role, <code>review_context_input</code>, <code>if_no_ai_nodes</code>, <code>source_manifest</code>, and pinned source records. <code>review_context_input</code> may include profile, artifact-only confirmation, perspective, verticals, jurisdictions, operating model, assets, prohibited outcomes, continuity or safety constraints, supplied severity, and scope. Copyable JSON examples sit under each shortcut. Omit keys you do not know.</li>
+          <li>Track B also needs <code>srf_inputs</code> in that message: operating model plus the full <a href="/data/personas.json">personas</a>, <a href="/data/matrix.json">matrix</a>, and <a href="/data/threats.json">threat_crosswalk</a> objects. Track C also needs <code>vertical_ids</code> and <code>vertical_source_rows</code>. Those objects stay on this page, not in the copied shortcut text. Use the examples under Track B and Track C.</li>
           <li>Default role is experienced-threat-modeler. Default <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.</li>
           <li>The model fills later templates from accumulated JSON. Repeat_until steps rerun in the same reply. A failed stop_condition is recorded as a JSON gap, not a question.</li>
           <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
@@ -505,23 +744,82 @@ def main():
           those inputs are already in the message.
         </p>
 {shortcut_a_html}
+        <div class="shortcut-example" id="example-a">
+        <p>
+          <strong>Track A example add-on.</strong>
+          Paste this JSON in the same first message when you have claims the
+          diagram does not show. Omit keys you do not know. Rewrite names and
+          labels to match the attached diagram. Role values:
+          <code>experienced-threat-modeler</code> (default),
+          <code>application-security</code>, <code>llm-caller</code>.
+          Profile values: <code>full-system</code>,
+          <code>bounded-subsystem</code>, <code>artifact-only</code>.
+          Default <code>if_no_ai_nodes</code> is
+          <code>continue_without_llm</code>. A catalog overlay is a
+          <code>source_manifest</code> object with pinned entries; omit it to
+          leave catalog coverage not applicable.
+        </p>
+{example_a_html}
+        <p id="example-a-artifact">
+          Artifact-only confirmation. Traditional-phase
+          <code>not_applicable</code> is allowed only when
+          <code>profile_confirmation.operator_confirmed</code> is true and
+          <code>evidence_ref</code> states that integration is out of scope.
+        </p>
+{example_a_artifact_html}
+        </div>
         <p id="shortcut-b">
           <strong>Track B.</strong>
           Add operating model plus injected personas, matrix, and threat_crosswalk
           in this first message.
         </p>
 {shortcut_b_html}
+        <div class="shortcut-example" id="example-b">
+        <p>
+          <strong>Track B example add-on.</strong>
+          Track B binds an operating model plus the full
+          <code>personas</code>, <code>matrix</code>, and
+          <code>threat_crosswalk</code> objects. Replace the three
+          <code>REPLACE_WITH_FULL_OBJECT</code> strings with those objects from
+          <a href="/data/personas.json">personas.json</a>,
+          <a href="/data/matrix.json">matrix.json</a>, and
+          <a href="/data/threats.json">threats.json</a>.
+          Operating model values from the matrix:
+          <code>AI-SaaS</code>, <code>AI-PaaS</code>,
+          <code>Agent-PaaS</code>, <code>IaaS</code>.
+        </p>
+{example_b_html}
+        </div>
         <p id="shortcut-c">
           <strong>Track C.</strong>
           Add Track B inputs plus <code>vertical_ids</code> and
           <code>vertical_source_rows</code> in this first message.
         </p>
 {shortcut_c_html}
+        <div class="shortcut-example" id="example-c">
+        <p>
+          <strong>Track C example add-on.</strong>
+          Add the Track B inputs plus <code>vertical_ids</code>,
+          <code>jurisdictions</code>, and obligation or control-candidate rows.
+          The two rows below are reshaped from
+          <a href="/data/healthcare-controls.json">healthcare-controls.json</a>.
+          Copy more rows from that file or the matching vertical file and keep
+          this object shape. A control candidate is a proposed control.
+          Vertical ids on this site:
+          <code>healthcare</code>, <code>finance</code>,
+          <code>public-sector</code>, <code>insurance</code>,
+          <code>defense</code>, <code>manufacturing</code>.
+          Jurisdiction ids include <code>us-federal</code> and
+          <code>eu</code> from
+          <a href="/data/jurisdictions.json">jurisdictions.json</a>.
+        </p>
+{example_c_html}
+        </div>
       </div>
 
       <p class="section-label">How to run the chain</p>
       <ol class="q-list">
-        <li>Prefer a one-chat shortcut. Use <a href="#shortcut-a">Track A</a>, <a href="#shortcut-b">Track B</a>, or <a href="#shortcut-c">Track C</a>. Optional fields stay on this page; add any you have in the same first message. The model runs the selected chain without a later prompt from you.</li>
+        <li>Prefer a one-chat shortcut. Use <a href="#shortcut-a">Track A</a>, <a href="#shortcut-b">Track B</a>, or <a href="#shortcut-c">Track C</a>. Optional fields stay on this page; add any you have in the same first message. Copyable examples sit under each shortcut. The model runs the selected chain without a later prompt from you.</li>
         <li>If you copy one block at a time, paste the shared rules once or use a standalone copy block (rules are inlined). Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
         <li>Copy-one-block text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click. Still do not send a later message to supply optional fields; add those in the first message if you have them.</li>
