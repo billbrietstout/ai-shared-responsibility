@@ -16,6 +16,10 @@ def esc(s: str) -> str:
 
 
 def shortcut_text(pack: dict) -> str:
+    return shortcut_text_a(pack)
+
+
+def shortcut_text_a(pack: dict) -> str:
     version = pack["version"]
     return f"""Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
 
@@ -29,6 +33,45 @@ Do not fetch catalog or SRF data. Use data/threat-sources.json as the named sour
 
 Leave report.reviewer empty.
 Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom."""
+
+
+def shortcut_text_b(pack: dict) -> str:
+    version = pack["version"]
+    return f"""Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
+
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from P-context through P-qa, then Track B from P-srf-join through P-srf-coverage, then P-report, then P-export-md, P-export-json, P-export-csv, and P-export-diagram. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg. Role: experienced-threat-modeler unless this message names another role.
+
+Treat omitted operator fields as empty and continue. Do not ask for review context, source records, SRF data, or continue. Use srf_inputs already in this message. If srf_inputs or operating_model is missing, mark Track B incomplete and continue to P-report. Do not ask.
+
+Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true, in this same reply.
+
+Do not fetch catalog or SRF data. Use data/threat-sources.json as the named source registry only. An omitted or empty source_manifest makes catalog coverage not_applicable. Track C runs only after Track B when this message also includes vertical_ids and vertical_source_rows.
+
+Leave report.reviewer empty.
+Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom."""
+
+
+def shortcut_text_c(pack: dict) -> str:
+    version = pack["version"]
+    return f"""Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
+
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from P-context through P-qa, then Track B from P-srf-join through P-srf-coverage, then Track C from P-vertical-join through P-vertical-route, then P-report, then P-export-md, P-export-json, P-export-csv, and P-export-diagram. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg. Role: experienced-threat-modeler unless this message names another role.
+
+Treat omitted operator fields as empty and continue. Do not ask for review context, source records, SRF data, or continue. Use srf_inputs, vertical_ids, and vertical_source_rows already in this message. If Track B cannot close, skip Track C, record the gap, and continue to P-report. Do not ask.
+
+Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true, in this same reply.
+
+Do not fetch catalog or SRF data. Use data/threat-sources.json as the named source registry only. An omitted or empty source_manifest makes catalog coverage not_applicable.
+
+Leave report.reviewer empty.
+Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom."""
+
+
+def shortcut_paste(pre_id: str, text: str) -> str:
+    return f"""        <div class="shortcut-paste">
+          <button type="button" data-shortcut-target="{esc(pre_id)}">Copy</button>
+          <pre id="{esc(pre_id)}">{esc(text)}</pre>
+        </div>"""
 
 
 def prompt_by_id(pack: dict, pid: str) -> dict | None:
@@ -174,7 +217,12 @@ def main():
     export_html = "\n".join(prompt_block(p, pack) for p in export_prompts)
     baseline_html = "\n".join(prompt_block(dict(p, track="eval"), pack) for p in baselines)
     role_ids = ", ".join(r["id"] for r in pack["roles"])
-    shortcut = shortcut_text(pack)
+    shortcut_a = shortcut_text_a(pack)
+    shortcut_b = shortcut_text_b(pack)
+    shortcut_c = shortcut_text_c(pack)
+    shortcut_a_html = shortcut_paste("shortcut-text-a", shortcut_a)
+    shortcut_b_html = shortcut_paste("shortcut-text-b", shortcut_b)
+    shortcut_c_html = shortcut_paste("shortcut-text-c", shortcut_c)
     steps = []
     for c in pack["chain"]:
         p = prompt_by_id(pack, c["id"])
@@ -301,7 +349,7 @@ def main():
       }}
       .shortcut-paste {{
         position: relative;
-        margin: 0;
+        margin: 0 0 var(--sp-6);
       }}
       .shortcut-paste pre {{
         margin: 0;
@@ -415,7 +463,7 @@ def main():
           accountability. Optional Track C joins vertical obligations and controls.
           Then run the export steps once and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
-          The one-chat shortcut lists optional first-message fields on the page, not in the copied text.
+          The one-chat shortcuts list optional first-message fields on the page, not in the copied text.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/tools/prompts/threat-model/releases/">Release notes</a>.
@@ -427,20 +475,21 @@ def main():
     <main id="main" class="page-body" data-llm="threat-model-prompts">
 
       <div class="deliverable" id="shortcut">
-        <p class="deliverable__title">Shortcut: one chat</p>
+        <p class="deliverable__title">Shortcuts: one chat</p>
         <p>
-          Copy the block below and send it once with the representation.
+          Copy one block below and send it once with the representation.
           Optional fields you may add in that same message are listed here;
           they are not in the copied text. The model loads
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
-          and runs Track A through the four exports without asking for more
-          input and without waiting for continue. Omitted fields stay empty.
-          Catalog, SRF, and vertical mapping without injected data are not
-          applicable.
+          and runs the selected tracks through the four exports without asking
+          for more input and without waiting for continue. Omitted fields stay
+          empty. Catalog, SRF, and vertical mapping without injected data are
+          not applicable.
         </p>
         <ol>
           <li>Required in the first message: the representation and <code>representation_kind</code> (<code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
-          <li>Optional in that same message: role, <code>review_context_input</code> (profile, confirmation for artifact-only, perspective, verticals, jurisdictions, operating model, assets, prohibited outcomes, continuity or safety constraints, supplied severity, scope), <code>if_no_ai_nodes</code>, <code>source_manifest</code> and pinned source records, SRF rows for Track B, vertical source rows for Track C.</li>
+          <li>Optional in that same message: role, <code>review_context_input</code> (profile, confirmation for artifact-only, perspective, verticals, jurisdictions, operating model, assets, prohibited outcomes, continuity or safety constraints, supplied severity, scope), <code>if_no_ai_nodes</code>, <code>source_manifest</code> and pinned source records.</li>
+          <li>Track B also needs <code>srf_inputs</code> in that message: operating model plus injected <a href="/data/personas.json">personas</a>, <a href="/data/matrix.json">matrix</a>, and threat_crosswalk rows. Track C also needs <code>vertical_ids</code> and <code>vertical_source_rows</code>. Those rows stay on this page, not in the copied text.</li>
           <li>Default role is experienced-threat-modeler. Default <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.</li>
           <li>The model fills later templates from accumulated JSON. Repeat_until steps rerun in the same reply. A failed stop_condition is recorded as a JSON gap, not a question.</li>
           <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
@@ -450,27 +499,41 @@ def main():
           How to run the chain. Those blocks still do not ask for fields that
           belong in the first message.
         </p>
-        <div class="shortcut-paste">
-          <button type="button" id="shortcut-copy">Copy</button>
-          <pre id="shortcut-text">{esc(shortcut)}</pre>
-        </div>
+        <p id="shortcut-a">
+          <strong>Track A.</strong>
+          Representation and <code>representation_kind</code>. Skip B and C unless
+          those inputs are already in the message.
+        </p>
+{shortcut_a_html}
+        <p id="shortcut-b">
+          <strong>Track B.</strong>
+          Add operating model plus injected personas, matrix, and threat_crosswalk
+          in this first message.
+        </p>
+{shortcut_b_html}
+        <p id="shortcut-c">
+          <strong>Track C.</strong>
+          Add Track B inputs plus <code>vertical_ids</code> and
+          <code>vertical_source_rows</code> in this first message.
+        </p>
+{shortcut_c_html}
       </div>
 
       <p class="section-label">How to run the chain</p>
       <ol class="q-list">
-        <li>Prefer the one-chat shortcut. Optional fields stay on this page; add any you have in the same first message. The model runs the required chain without a later prompt from you.</li>
+        <li>Prefer a one-chat shortcut. Use <a href="#shortcut-a">Track A</a>, <a href="#shortcut-b">Track B</a>, or <a href="#shortcut-c">Track C</a>. Optional fields stay on this page; add any you have in the same first message. The model runs the selected chain without a later prompt from you.</li>
         <li>If you copy one block at a time, paste the shared rules once or use a standalone copy block (rules are inlined). Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
         <li>Copy-one-block text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click. Still do not send a later message to supply optional fields; add those in the first message if you have them.</li>
         <li>Run Track A in order. A chain run repeats P-stride in the same reply until its typed denominator closes. P-importance is required before P-act.</li>
-        <li>Track B runs only when the first message includes B and SRF inputs. Track C runs only after Track B when that message also includes vertical ids and vertical source rows. Otherwise skip those tracks and go to P-report.</li>
+        <li>The Track B shortcut runs B after P-qa. The Track C shortcut runs B then C. Copy-one-block Track B still requires SRF inputs in the first message; Track C still requires Track B plus vertical ids and vertical source rows. Otherwise skip those tracks and go to P-report.</li>
         <li>After P-report, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
 
       <p class="section-label">On this page</p>
       <ul class="q-list">
-        <li><a href="#shortcut">Shortcut: one chat</a></li>
+        <li><a href="#shortcut">Shortcuts: one chat</a> (<a href="#shortcut-a">A</a>, <a href="#shortcut-b">B</a>, <a href="#shortcut-c">C</a>)</li>
         <li><a href="#q1">Track A: Four Questions</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
         <li><a href="#track-c">Track C (optional)</a></li>
@@ -571,10 +634,11 @@ def main():
 
       <p class="section-label" id="track-b">Track B (optional): SRF accountability</p>
       <p class="section-note">
-        Branch here after P-qa when an SRF report, operating-model assignment, or
-        vertical join is requested. Track B consumes the checked Track A matrix,
-        a supplied operating model, and injected local SRF data. It checks expected
-        L1 to L5 coverage before returning to P-report or Track C.
+        Use the <a href="#shortcut-b">Track B one-chat shortcut</a> when SRF
+        inputs are in the first message, or copy the blocks below after P-qa.
+        Track B consumes the checked Track A matrix, a supplied operating model,
+        and injected local SRF data. It checks expected L1 to L5 coverage before
+        returning to P-report or Track C.
       </p>
 {track_b_html}
 
@@ -601,9 +665,11 @@ def main():
 
       <p class="section-label" id="track-c">Track C (optional): vertical obligations and routing</p>
       <p class="section-note">
-        Run Track C only after Track B closes. It joins supported vertical and
-        jurisdiction rows to existing threat ids. It cannot add a threat or treat a
-        candidate control as an existing control.
+        Use the <a href="#shortcut-c">Track C one-chat shortcut</a> when Track B
+        inputs plus vertical ids and vertical source rows are in the first
+        message, or copy the blocks below after Track B closes. It joins
+        supported vertical and jurisdiction rows to existing threat ids. It
+        cannot add a threat or treat a candidate control as an existing control.
       </p>
 {track_c_html}
 
@@ -738,9 +804,9 @@ def main():
         copyPrompt(nxt + '-block', btn);
         block.scrollIntoView({{ block: 'center' }});
       }}
-      function copyShortcut() {{
-        const pre = document.getElementById('shortcut-text');
-        const btn = document.getElementById('shortcut-copy');
+      function copyShortcut(btn) {{
+        const preId = btn.getAttribute('data-shortcut-target');
+        const pre = preId && document.getElementById(preId);
         if (!pre || !btn) return;
         navigator.clipboard.writeText(pre.textContent).then(() => {{
           btn.textContent = 'Copied';
@@ -754,8 +820,9 @@ def main():
       document.addEventListener('DOMContentLoaded', () => {{
         const copyNextBtn = document.getElementById('chain-copy-next');
         if (copyNextBtn) copyNextBtn.addEventListener('click', copyNext);
-        const shortcutBtn = document.getElementById('shortcut-copy');
-        if (shortcutBtn) shortcutBtn.addEventListener('click', copyShortcut);
+        document.querySelectorAll('[data-shortcut-target]').forEach((btn) => {{
+          btn.addEventListener('click', () => copyShortcut(btn));
+        }});
         let last = null;
         try {{ last = localStorage.getItem(TM_STORAGE); }} catch (err) {{}}
         markChain(last);
