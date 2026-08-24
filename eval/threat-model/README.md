@@ -99,7 +99,8 @@ python3 eval/threat-model/run_generate.py --mode identity
 
 Writes filled prompt text under `eval/threat-model/runs/<mode>/prompts/`. Put
 review context, `if_no_ai_nodes`, and any pinned sources in the first prompt
-payload. A chain run does not ask for those fields later. Repeat P-llm-cut or
+payload. The page one-chat shortcuts for Track A, Track B, and Track C do the
+same. A chain run does not ask for those fields later. Repeat P-llm-cut or
 P-stride when its `repeat_until` condition is false; on a chain run those
 repeats happen in the same reply. P-importance is required. If Track B is
 used, include SRF inputs in that first payload and run B01 through B04 after
