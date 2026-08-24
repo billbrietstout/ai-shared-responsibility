@@ -1,0 +1,223 @@
+{
+  "$schema_version": "1.0",
+  "updated": "2026-08-24",
+  "description": "Registry of external sources that may be supplied to threat-model prompt pack v3. The registry identifies each source and its permitted role. It is not a combined threat database, and presence here does not establish that a source was checked in a run.",
+  "run_contract": {
+    "manifest_field": "source_manifest",
+    "required_pin_fields": [
+      "source_id",
+      "source_kind",
+      "canonical_url",
+      "license_id",
+      "integration_mode",
+      "catalog_version",
+      "retrieved_at",
+      "content_sha256"
+    ],
+    "rule": "A run may cite only entries present in its source_manifest. Every mapping must bind an external id to inventory referents and evidence. Catalog coverage is limited to the pinned inputs and is never a threat-completeness claim."
+  },
+  "integration_modes": {
+    "embedded-vocabulary": "Small stable identifiers or locally maintained crosswalk rows may be passed with the prompt pack.",
+    "pinned-mirror": "Use a release or commit-pinned source artifact and record its hash.",
+    "fetch-and-cache": "Query only for identified components or records, then retain the response and hash used by the run.",
+    "reference-only": "Record the canonical source and version without copying its source text."
+  },
+  "sources": [
+    {
+      "id": "srf-threat-crosswalk",
+      "name": "SRF AI threat-to-accountability crosswalk",
+      "kind": "accountability-crosswalk",
+      "authority": "AI Shared Responsibility",
+      "canonical_url": "https://aisharedresponsibility.com/data/threats.json",
+      "license_id": "CC-BY-4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/",
+      "default_integration_mode": "embedded-vocabulary",
+      "identifier_form": "OWASP AI Exchange permalink slug",
+      "supported_use": [
+        "srf-join",
+        "vertical-control-join"
+      ],
+      "binding_rule": "Use only after a system-bound threat exists. This source assigns SRF layer and accountability; it does not define threat completeness or severity."
+    },
+    {
+      "id": "capec",
+      "name": "Common Attack Pattern Enumeration and Classification",
+      "kind": "attack-pattern",
+      "authority": "MITRE",
+      "canonical_url": "https://capec.mitre.org/data/",
+      "license_id": "MITRE-CAPEC-Terms",
+      "license_url": "https://capec.mitre.org/about/termsofuse.html",
+      "default_integration_mode": "pinned-mirror",
+      "identifier_form": "CAPEC-[number]",
+      "supported_use": [
+        "traditional-catalog-challenge",
+        "external-reference"
+      ],
+      "binding_rule": "Bind an attack pattern to a concrete scenario, inventory referent, precondition, and asset. A CAPEC category match alone is insufficient."
+    },
+    {
+      "id": "mitre-attack",
+      "name": "MITRE ATT&CK",
+      "kind": "adversary-behavior",
+      "authority": "MITRE",
+      "canonical_url": "https://attack.mitre.org/resources/attack-data-and-tools/",
+      "license_id": "MITRE-ATTACK-Terms",
+      "license_url": "https://attack.mitre.org/resources/legal-and-branding/terms-of-use/",
+      "default_integration_mode": "pinned-mirror",
+      "identifier_form": "T[number] or T[number].[number]",
+      "supported_use": [
+        "behavior-mapping",
+        "detection-review",
+        "external-reference"
+      ],
+      "binding_rule": "Treat ATT&CK as observed adversary behavior. Do not use an ATT&CK technique as proof of a design weakness or affected product."
+    },
+    {
+      "id": "mitre-atlas",
+      "name": "MITRE ATLAS",
+      "kind": "ai-adversary-behavior",
+      "authority": "MITRE",
+      "canonical_url": "https://atlas.mitre.org/",
+      "license_id": "Apache-2.0",
+      "license_url": "https://www.apache.org/licenses/LICENSE-2.0",
+      "default_integration_mode": "pinned-mirror",
+      "identifier_form": "AML.T[number]",
+      "supported_use": [
+        "ai-catalog-challenge",
+        "behavior-mapping",
+        "external-reference"
+      ],
+      "binding_rule": "Bind ATLAS behavior to a represented AI component or AI-to-traditional path and retain the pinned ATLAS release."
+    },
+    {
+      "id": "owasp-ai-exchange",
+      "name": "OWASP AI Exchange",
+      "kind": "ai-threat-guide",
+      "authority": "OWASP",
+      "canonical_url": "https://owaspai.org/go/aisecuritymatrix/",
+      "license_id": "CC0-1.0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "default_integration_mode": "pinned-mirror",
+      "identifier_form": "permalink slug",
+      "supported_use": [
+        "ai-catalog-challenge",
+        "srf-crosswalk-key",
+        "external-reference"
+      ],
+      "binding_rule": "Treat a slug as a locator. Record the source commit or snapshot because the guide changes without a numbered release."
+    },
+    {
+      "id": "owasp-llm-top10",
+      "name": "OWASP Top 10 for LLM Applications",
+      "kind": "ai-risk-category",
+      "authority": "OWASP GenAI Security Project",
+      "canonical_url": "https://genai.owasp.org/llm-top-10/",
+      "license_id": "CC-BY-SA-4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "default_integration_mode": "reference-only",
+      "identifier_form": "LLM[number]:[year]",
+      "supported_use": [
+        "ai-category-mapping",
+        "external-reference"
+      ],
+      "binding_rule": "Use a year-qualified id and title. A Top 10 category is broader than a system-specific threat unless evidence supports a narrower relation."
+    },
+    {
+      "id": "cwe",
+      "name": "Common Weakness Enumeration",
+      "kind": "weakness-class",
+      "authority": "MITRE",
+      "canonical_url": "https://cwe.mitre.org/data/",
+      "license_id": "MITRE-CWE-Terms",
+      "license_url": "https://cwe.mitre.org/about/termsofuse.html",
+      "default_integration_mode": "pinned-mirror",
+      "identifier_form": "CWE-[number]",
+      "supported_use": [
+        "weakness-mapping",
+        "external-reference"
+      ],
+      "binding_rule": "Map only an allowed weakness-level entry using root-cause evidence. Do not report a CWE category or view as a vulnerability instance."
+    },
+    {
+      "id": "cve",
+      "name": "Common Vulnerabilities and Exposures",
+      "kind": "vulnerability-record",
+      "authority": "CVE Program",
+      "canonical_url": "https://www.cve.org/Downloads",
+      "license_id": "CVE-Terms-of-Use",
+      "license_url": "https://www.cve.org/Legal/TermsOfUse",
+      "default_integration_mode": "fetch-and-cache",
+      "identifier_form": "CVE-[year]-[number]",
+      "supported_use": [
+        "component-vulnerability",
+        "external-reference"
+      ],
+      "binding_rule": "Require supplier, product, version, component reference, and applicability evidence. Product-name similarity is not enough."
+    },
+    {
+      "id": "nvd",
+      "name": "National Vulnerability Database",
+      "kind": "vulnerability-enrichment",
+      "authority": "NIST",
+      "canonical_url": "https://nvd.nist.gov/developers/vulnerabilities",
+      "license_id": "NIST-Public-Data",
+      "license_url": "https://nvd.nist.gov/developers/start-here",
+      "default_integration_mode": "fetch-and-cache",
+      "identifier_form": "CVE id with NVD analysis",
+      "supported_use": [
+        "component-vulnerability-enrichment",
+        "external-reference"
+      ],
+      "binding_rule": "Keep CNA and NVD provenance distinct. Bind CPE and version-range evidence to an inventory component before claiming affected status."
+    },
+    {
+      "id": "cisa-kev",
+      "name": "CISA Known Exploited Vulnerabilities Catalog",
+      "kind": "active-exploitation",
+      "authority": "CISA",
+      "canonical_url": "https://www.cisa.gov/resources-tools/resources/kev-catalog",
+      "license_id": "CC0-1.0",
+      "license_url": "https://www.cisa.gov/sites/default/files/licenses/kev/license.txt",
+      "default_integration_mode": "pinned-mirror",
+      "identifier_form": "CVE id",
+      "supported_use": [
+        "active-exploitation-factor",
+        "remediation-routing",
+        "external-reference"
+      ],
+      "binding_rule": "Join by an applicable CVE. KEV establishes reported exploitation of that CVE; it does not establish that the represented component is affected."
+    },
+    {
+      "id": "nist-sp800-30",
+      "name": "NIST SP 800-30 Rev. 1 threat sources and events",
+      "kind": "threat-event-taxonomy",
+      "authority": "NIST",
+      "canonical_url": "https://csrc.nist.gov/pubs/sp/800/30/r1/final",
+      "license_id": "NIST-Publication",
+      "license_url": "https://www.nist.gov/open/license",
+      "default_integration_mode": "embedded-vocabulary",
+      "identifier_form": "appendix and threat-event reference",
+      "supported_use": [
+        "operational-source-prompt",
+        "external-reference"
+      ],
+      "binding_rule": "Use adversarial, accidental, structural, and environmental classes as prompts. Do not convert every appendix example into a threat."
+    },
+    {
+      "id": "bsi-it-grundschutz",
+      "name": "BSI IT-Grundschutz elementary threats",
+      "kind": "operational-threat-catalog",
+      "authority": "German Federal Office for Information Security",
+      "canonical_url": "https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Standards-und-Zertifizierung/IT-Grundschutz/it-grundschutz_node.html",
+      "license_id": "BSI-Terms",
+      "license_url": "https://www.bsi.bund.de/EN/Service-Navi/Imprint/imprint_node.html",
+      "default_integration_mode": "reference-only",
+      "identifier_form": "G 0.[number]",
+      "supported_use": [
+        "operational-catalog-challenge",
+        "external-reference"
+      ],
+      "binding_rule": "Reference the applicable published edition. Record considered, applicable, or not applicable with a reason; the elementary threats are not exhaustive."
+    }
+  ]
+}

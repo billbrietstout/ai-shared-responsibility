@@ -1,0 +1,10 @@
+flowchart LR
+  subgraph reviewer_boundary["Reviewer boundary"]
+    assurance_reviewer["Assurance reviewer"]
+  end
+  subgraph artifact_boundary["Artifact repository"]
+    model_package[("Model package")]
+    model_card[("Model card")]
+  end
+  model_package -->|"package inspection"| assurance_reviewer
+  model_card -->|"model card inspection"| assurance_reviewer

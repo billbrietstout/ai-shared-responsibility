@@ -6,7 +6,7 @@
     <title>Diagram threat-model eval report · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="How the AI system diagram threat-modeling prompts score against three published professional threat models: Trail of Bits Kubernetes 2019, IETF RFC 6819, and the CNCF Financial User Group Kubernetes threat model. Pack v2.0, 22 August 2026."
+      content="Evaluation method, bounded fixtures, and prior professional-model comparison for AI-enabled system threat-model prompt pack v3.0."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -63,8 +63,8 @@
   "@type": "TechArticle",
   "name": "Diagram threat-model eval report",
   "url": "https://aisharedresponsibility.com/eval/threat-model/",
-  "datePublished": "2026-08-22",
-  "description": "How the AI system diagram threat-modeling prompts score against three published professional threat models.",
+  "datePublished": "2026-08-24",
+  "description": "Evaluation method and bounded fixtures for AI-enabled system threat-model prompt pack v3.0, with the prior v2.0 professional-model comparison retained.",
   "publisher": {
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -93,8 +93,8 @@
           <a href="https://datatracker.ietf.org/doc/html/rfc6819">IETF RFC 6819</a>,
           and the
           <a href="https://github.com/cncf/financial-user-group/tree/main/projects/k8s-threat-model">CNCF Financial User Group Kubernetes threat model</a>.
-          Documents read 22 August 2026. Prompt pack
-          <a href="/tools/prompts/threat-model/prompts.json">v2.0</a>.
+          Documents read 22 August 2026. Current prompt pack
+          <a href="/tools/prompts/threat-model/prompts.json">v3.0</a>.
         </p>
       </div>
     </header>
@@ -102,10 +102,10 @@
     <main id="main" class="page-body" data-llm="threat-model-eval">
 
       <p class="section-note">
-        No model has produced a P-report JSON for the five gold diagrams.
-        The prompt-series score is what Track A asks for. The schema score is
-        what a complete fill can hold. The last two rows are files already in
-        the repository.
+        No model has produced a v3 P-report JSON for the ten gold diagrams.
+        The 47/48 and 44/48 values below are the retained v2.0 comparison.
+        Version 3 adds method denominators that those twelve checks do not
+        measure, so it remains unscored against that comparison.
       </p>
 
       <p class="section-label">Scores</p>
@@ -126,13 +126,19 @@
           </thead>
           <tbody>
             <tr>
+              <td class="tier">Prompt series v3.0</td>
+              <td>Not rescored</td>
+              <td>Open</td>
+              <td>Requires model runs, method-denominator checks, and SME review on the ten fixtures.</td>
+            </tr>
+            <tr>
               <td class="tier">Prompt series v2.0</td>
               <td>47 / 48</td>
               <td>A</td>
               <td>What <a href="/tools/prompts/threat-model/">Track A</a> asks the model to write.</td>
             </tr>
             <tr>
-              <td class="tier">Specified JSON</td>
+              <td class="tier">Specified JSON v2.0</td>
               <td>44 / 48</td>
               <td>A</td>
               <td>What <a href="/eval/threat-model/schema.json">schema.json</a> can hold. Reviewer is a human field, so this column cannot reach 48.</td>
@@ -258,7 +264,7 @@
             <tr>
               <td class="tier">A reviewer can read it without a parser</td>
               <td class="num">4</td><td class="num">4</td><td class="num">0</td><td class="num">0</td>
-              <td>P-report alone writes report.markdown after optional Track B. P-export-md, P-export-json, P-export-csv, and P-export-diagram serialize that final matrix.</td>
+              <td>P-report alone writes report.markdown after the selected optional tracks. The export prompts serialize that final matrix.</td>
             </tr>
             <tr>
               <td class="tier">A way to check a mitigation landed</td>
@@ -271,12 +277,12 @@
 
       <p class="section-label">Verdict on the prompt series</p>
       <p class="section-note">
-        Pack v2.0 adds bounded STRIDE batches, explicit PHANTOM-B applicability,
-        replica inheritance with a required divergence threat, shown control
-        coverage, diagram-visible control gaps, role limits, and optional review
-        ordering. P-report runs after optional Track B and is the sole author of
-        report.markdown. Attack trees stay optional. DREAD is out. There is still
-        no gold threat list.
+        Pack v3.0 requires a review profile and a traditional applicability
+        decision. It uses typed STRIDE, conditional abuse and operational
+        passes, PHANTOM-B, AI-to-traditional path coverage, pinned source
+        manifests, and evidence-backed importance. Track B audits SRF layers.
+        Track C joins vertical obligations. P-report remains the sole author of
+        report.markdown. There is still no gold threat list.
       </p>
       <div class="table-scroll">
         <table class="tier-table">
@@ -310,9 +316,9 @@
 
       <p class="section-label">Machine scores in the repository</p>
       <p class="section-note">
-        Inventory precision and recall, format Jaccard, PHANTOM-B and STRIDE
-        coverage, control-point binding, method applicability, replica evidence,
-        and schema checks run from
+        Inventory precision and recall, format Jaccard, typed STRIDE,
+        PHANTOM-B, composition paths, source provenance, CVE applicability,
+        importance, SRF layer coverage, workflow fixtures, and schema checks run from
         <code>eval/threat-model/</code> without calling a model. Those scripts
         do not award the letter grades on this page. SME sheets in
         <code>sme/</code> are still empty, so <code>closure</code> stays false.

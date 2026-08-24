@@ -1,11 +1,11 @@
 {
-  "version": "2.0",
-  "updated": "2026-08-22",
+  "version": "3.0",
+  "updated": "2026-08-24",
   "canonical_url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
   "schema_url": "/eval/threat-model/schema.json",
   "release_notes_url": "/tools/prompts/threat-model/releases/",
-  "description": "Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix plus a readable report. Track A walks Shostack's Four Questions; each step is filled with the previous step's JSON. STRIDE runs in auditable batches when a diagram exceeds one response. Track B, when selected after P-qa, writes layer, persona, and party before P-report finalizes the matrix. The export steps project that final matrix into markdown, JSON, CSV, and Mermaid.",
-  "lane": "Track A inventories the diagram, records drawn controls and diagram-visible control gaps, elicits threats, classifies them, and chooses actions. P-stride repeats until its coverage object is complete. Optional Track B runs after P-qa and before P-report. P-report is the only author of report.markdown; the export steps emit projections of the final matrix.",
+  "description": "Version 3 prompts for a combined AI-enabled system threat model grounded in a system representation and operator claims. Track A records review context, walks Shostack's Four Questions, gates typed traditional analysis before PHANTOM-B, checks AI/traditional composition, and produces an evidence-bound matrix. Optional Track B assigns SRF accountability from injected registries. Optional Track C adds vertical obligations and acceptance authority without creating threats. P-report authors the report once; export steps only project the final matrix.",
+  "lane": "Track A starts with diagram- and operator-grounded review context, inventories the representation, records drawn controls and visible gaps, completes typed STRIDE, conditional abuse-case and operational analysis, then PHANTOM-B, composition, catalog mapping, deduplication, classification, importance review, actions, and QA. Optional Track B and then optional Track C run after QA and before P-report. P-report is the only author of report.markdown; exports preserve the final matrix.",
   "runtime_defaults": {
     "stride_budget": 72
   },
@@ -14,14 +14,21 @@
     "automated_dimensions": [
       "inventory_fidelity",
       "format_invariance",
+      "review_context_fidelity",
+      "typed_stride_coverage",
+      "traditional_applicability",
       "phantom_b_coverage",
-      "stride_coverage",
-      "crossing_flow_coverage",
+      "composition_coverage",
+      "source_mapping_fidelity",
+      "importance_fidelity",
+      "phase_gate_integrity",
       "schema_validity"
     ],
     "optional_dimensions": [
       "hamming_loss",
-      "srf_join_accuracy"
+      "srf_join_accuracy",
+      "srf_layer_coverage",
+      "vertical_context_accuracy"
     ],
     "human_dimensions": [
       "scenario_clarity",
@@ -67,7 +74,7 @@
       "note": "Shape only: state attack assumptions and existing features before eliciting threats. Do not copy OAuth threats into an unrelated diagram."
     }
   ],
-  "shared_rules": "You are producing one step of a threat model for an AI system from a system representation (image, Mermaid, or SVG).\n\nRules:\n- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?\n- Name the perspective: what we are working on right now, and which team view (application, platform, or model caller).\n- Work only from the diagram and the prior chain output named in this prompt. Do not invent components, vendors, networks, or trust boundaries that are not drawn.\n- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that as a finding. Do not invent boundaries silently.\n- Every threat scenario must name a diagram_referent whose id exists in the inventory.\n- Do not recite a generic catalog line (for example \"LLMs can be prompt-injected\") with no referent in this diagram.\n- Do not use DREAD, OCTAVE, or attack trees as the primary method.\n- PHANTOM-B is a set of questions for LLM and chatbot components. Do not force every STRIDE threat into a PHANTOM-B letter.\n- Do not put mitigations, controls, or defenses in a PHANTOM-B elicitation step.\n- Do not invent OWASP, ATLAS, or AI Exchange identifiers. Cite an id only if you are certain it exists; otherwise omit it.\n- Use the output form named by the step. JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.\n- Once adversary.positions exists, every threat must set attacker_position to one of those ids.\n- List an existing control only when a label, component, or flow on the diagram shows it.\n- For mitigate or eliminate, action.validation is required: kind test, log, or fail_condition, plus detail a reviewer could run.\n- Leave report.reviewer empty. A human fills it.",
+  "shared_rules": "You are producing one step of a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and explicit operator input.\n\nRules:\n- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?\n- Keep the review profile and team perspective explicit.\n- Ground claims in diagram element ids or operator-supplied evidence. Label an unsupported claim as unknown; do not invent components, vendors, networks, trust boundaries, jurisdictions, operating models, assets, obligations, controls, or business consequences.\n- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that finding. Do not add boundaries silently.\n- Every scenario must name a diagram_referent whose id exists in the inventory and retain claim or source evidence.\n- A catalog entry without a system referent and evidence is not a scenario.\n- Do not use DREAD, OCTAVE, attack trees, likelihood, impact, severity, or residual risk as inferred scoring methods. Preserve supplied_severity only as an attributed operator input.\n- PHANTOM-B applies to the AI subset after traditional-analysis gates. Do not force a traditional scenario into a PHANTOM-B letter or put defenses in PHANTOM-B elicitation.\n- Do not invent external identifiers. Use only identifiers and URLs present in the injected source_manifest, source_registry, personas, matrix, or threat_crosswalk inputs.\n- Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.\n- A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.\n- CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.\n- There is no network fetching in this pack. Treat missing injected data as missing input and mark the relevant status incomplete.\n- JSON steps output JSON only, with no markdown fences or commentary. Export steps output only the requested markdown, CSV, or Mermaid source.\n- Once adversary.positions exists, every scenario must use one of those position ids.\n- Record an existing control only when a label, component, or flow on the diagram shows it.\n- For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.\n- Leave report.reviewer empty. A human fills it.",
   "roles": [
     {
       "id": "experienced-threat-modeler",
@@ -115,6 +122,7 @@
       "id": "q1",
       "question": "What are we working on?",
       "prompts": [
+        "P-context",
         "P-norm",
         "P-diag",
         "P-app",
@@ -131,7 +139,11 @@
       "question": "What can go wrong?",
       "prompts": [
         "P-stride",
+        "P-abuse",
+        "P-operational",
         "P-phantom",
+        "P-compose",
+        "P-catalog",
         "P-dedup"
       ]
     },
@@ -142,8 +154,8 @@
         "P-cia",
         "P-stride-map",
         "P-phantom-map",
-        "P-act",
-        "P-rank"
+        "P-importance",
+        "P-act"
       ]
     },
     {
@@ -251,6 +263,7 @@
   ],
   "grounding_urls": {
     "threats": "https://aisharedresponsibility.com/data/threats.json",
+    "threat_sources": "https://aisharedresponsibility.com/data/threat-sources.json",
     "personas": "https://aisharedresponsibility.com/data/personas.json",
     "matrix": "https://aisharedresponsibility.com/data/matrix.json",
     "schema": "https://aisharedresponsibility.com/eval/threat-model/schema.json"
@@ -274,6 +287,12 @@
     "outputcontainsconventionalinjection"
   ],
   "chain": [
+    {
+      "id": "P-context",
+      "track": "A",
+      "stage": "q1",
+      "next": "P-norm"
+    },
     {
       "id": "P-norm",
       "track": "A",
@@ -333,11 +352,37 @@
       "id": "P-stride",
       "track": "A",
       "stage": "q2",
-      "next": "P-phantom",
-      "repeat_until": "stride_coverage.complete is true"
+      "next": "P-abuse",
+      "repeat_until": "stride_coverage.complete is true or traditional_coverage.status is not_applicable"
+    },
+    {
+      "id": "P-abuse",
+      "track": "A",
+      "stage": "q2",
+      "next": "P-operational"
+    },
+    {
+      "id": "P-operational",
+      "track": "A",
+      "stage": "q2",
+      "next": "P-phantom"
     },
     {
       "id": "P-phantom",
+      "track": "A",
+      "stage": "q2",
+      "next": "P-compose",
+      "requires": "traditional_coverage.status is complete or not_applicable"
+    },
+    {
+      "id": "P-compose",
+      "track": "A",
+      "stage": "q2",
+      "next": "P-catalog",
+      "requires": "traditional_coverage.status is complete or not_applicable and phantom_coverage.status is complete or not_applicable"
+    },
+    {
+      "id": "P-catalog",
       "track": "A",
       "stage": "q2",
       "next": "P-dedup"
@@ -346,7 +391,8 @@
       "id": "P-dedup",
       "track": "A",
       "stage": "q2",
-      "next": "P-cia"
+      "next": "P-cia",
+      "requires": "traditional_coverage, phantom_coverage, composition_coverage, and catalog_coverage are not incomplete"
     },
     {
       "id": "P-cia",
@@ -364,28 +410,28 @@
       "id": "P-phantom-map",
       "track": "A",
       "stage": "q3",
-      "next": "P-act"
+      "next": "P-importance"
+    },
+    {
+      "id": "P-importance",
+      "track": "A",
+      "stage": "q3",
+      "next": "P-act",
+      "requires": "traditional_coverage.status is complete or not_applicable"
     },
     {
       "id": "P-act",
       "track": "A",
       "stage": "q3",
-      "next": "P-qa",
-      "optional_next": "P-rank"
-    },
-    {
-      "id": "P-rank",
-      "track": "optional",
-      "stage": "q3",
-      "next": "P-qa",
-      "optional": true
+      "next": "P-qa"
     },
     {
       "id": "P-qa",
       "track": "A",
       "stage": "q4",
       "next": "P-report",
-      "optional_next": "P-srf-join"
+      "optional_next": "P-srf-join",
+      "optional_next_condition": "review_context.operating_model is non-null and injected source_registry, personas, matrix, and threat_crosswalk are available"
     },
     {
       "id": "P-report",
@@ -411,6 +457,30 @@
       "id": "P-srf-owner",
       "track": "B",
       "stage": "srf",
+      "next": "P-srf-coverage",
+      "optional": true
+    },
+    {
+      "id": "P-srf-coverage",
+      "track": "B",
+      "stage": "srf",
+      "next": "P-report",
+      "optional_next": "P-vertical-join",
+      "optional_next_condition": "layer_coverage.status is complete, review_context.vertical_ids is non-empty, review_context.operating_model is non-null, and injected threat_crosswalk is available",
+      "optional": true
+    },
+    {
+      "id": "P-vertical-join",
+      "track": "C",
+      "stage": "vertical",
+      "next": "P-vertical-route",
+      "optional": true,
+      "requires": "layer_coverage.status is complete, review_context.vertical_ids non-empty, review_context.operating_model non-null, and injected threat_crosswalk"
+    },
+    {
+      "id": "P-vertical-route",
+      "track": "C",
+      "stage": "vertical",
       "next": "P-report",
       "optional": true
     },
@@ -441,17 +511,32 @@
   ],
   "prompts": [
     {
+      "id": "P-context",
+      "title": "Establish review context",
+      "track": "A",
+      "stage": "q1",
+      "inputs": [
+        "representation_kind",
+        "representation",
+        "review_context_input"
+      ],
+      "output_key": "review_context",
+      "stop_condition": "profile is full-system, bounded-subsystem, or artifact-only; scope claims cite diagram or operator evidence; artifact-only and not-applicable decisions record operator confirmation; nullable fields stay null when not supplied.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-context. Establish the claim boundary before normalizing the representation.\n\nRepresentation kind: {{representation_kind}}\nRepresentation:\n{{representation}}\n\nOperator-supplied review context (may be empty):\n{{review_context_input}}\n\nUse the representation and explicit operator statements only. Do not derive jurisdictions, operating model, severity, business criticality, or obligations from a product name. For every claim, record evidence with kind diagram or operator, a concrete reference, and the supported claim. A diagram reference should use its visible label until P-norm supplies stable ids; an operator reference should quote or identify the supplied field. Set unknown nullable values to null and unknown arrays to [].\n\nProfiles:\n- full-system: the whole represented AI-enabled system is the review subject.\n- bounded-subsystem: named represented elements and interfaces are the review subject; record the operator's boundary.\n- artifact-only: only a supplied artifact is reviewed, not its integration. This profile requires explicit operator confirmation. Later traditional-analysis not_applicable decisions are allowed only for this confirmed profile; missing integration evidence is incomplete, not not_applicable.\n\nReturn JSON:\n{\n  \"review_context\": {\n    \"profile\": \"full-system|bounded-subsystem|artifact-only\",\n    \"profile_confirmation\": {\"operator_confirmed\": false, \"evidence_ref\": \"operator evidence ref or null\"},\n    \"perspective\": \"team and review subject\",\n    \"vertical_ids\": [\"operator-supplied vertical or sector ids\"],\n    \"jurisdictions\": [\"operator-supplied jurisdiction ids or names\"],\n    \"operating_model\": \"AI-SaaS|AI-PaaS|Agent-PaaS|IaaS|null\",\n    \"critical_assets\": [{\"id\": \"asset-...\", \"name\": \"\", \"diagram_referents\": [\"visible labels until normalized\"], \"evidence_refs\": [\"claim id\"]}],\n    \"prohibited_outcomes\": [{\"id\": \"outcome-...\", \"statement\": \"concrete outcome the operator prohibits\", \"evidence_refs\": [\"claim id\"]}],\n    \"continuity_safety_constraints\": [{\"id\": \"constraint-...\", \"statement\": \"availability, physical-safety, OT, or continuity constraint\", \"evidence_refs\": [\"claim id\"]}],\n    \"supplied_severity\": {\"value\": \"operator value\", \"scale\": \"operator scale\", \"source\": \"operator evidence ref\"},\n    \"scope\": {\"included_labels\": [], \"excluded_labels\": [], \"boundary_statement\": \"\"},\n    \"claim_evidence\": [{\"id\": \"claim-...\", \"kind\": \"diagram|operator\", \"reference\": \"visible label or supplied field\", \"supports\": \"one review-context claim\"}]\n  }\n}\n\nSet operating_model and supplied_severity to null when absent. Do not infer severity, likelihood, impact, or residual risk."
+    },
+    {
       "id": "P-norm",
       "title": "Normalize representation",
       "track": "A",
       "stage": "q1",
       "inputs": [
+        "review_context",
         "representation_kind",
         "representation"
       ],
       "output_key": "inventory",
       "stop_condition": "Inventory lists every visible component, actor, store, flow, and drawn trust boundary, with stable ids. representation.version and source_id are set or explicitly unknown. Distinct boxes remain distinct ids. replica_of is used only when the diagram explicitly shows one scaling group or managed pair. missing_trust_boundaries is true only when none are drawn.",
-      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-norm. Normalize the system representation into a canonical inventory.\n\nRepresentation kind: {{representation_kind}}\nRepresentation follows this line. If kind is mermaid, parse the source text first (nodes, edges, subgraphs as candidate trust zones). If kind is svg, parse groups, labels, and connectors; do not rely on vision alone. If kind is image, read the image only.\n\n{{representation}}\n\nReturn a JSON object with this shape:\n{\n  \"system_name\": \"string\",\n  \"perspective\": \"string naming team view and what we are working on right now\",\n  \"representation\": { \"kind\": \"image|mermaid|svg\", \"source_id\": \"filename or unknown\", \"version\": \"drawn or labeled version, or unknown\", \"commit\": \"commit if labeled, or unknown\" },\n  \"inventory\": {\n    \"components\": [{\"id\": \"kebab-id\", \"name\": \"\", \"type\": \"process\", \"replica_of\": \"canonical component id or null\", \"replica_evidence\": \"drawn scaling-group or managed-pair evidence, or empty\"}],\n    \"external_actors\": [{\"id\": \"\", \"name\": \"\", \"type\": \"actor\"}],\n    \"data_stores\": [{\"id\": \"\", \"name\": \"\", \"type\": \"store\"}],\n    \"data_flows\": [{\"id\": \"\", \"from\": \"id\", \"to\": \"id\", \"label\": \"\", \"crosses_boundary\": \"boundary-id or null\"}],\n    \"trust_boundaries\": [{\"id\": \"\", \"name\": \"\", \"contains\": [\"id\"]}],\n    \"llm_components\": [],\n    \"missing_trust_boundaries\": false\n  }\n}\n\nId rules: lowercase kebab-case, derived from the label on the diagram. Reuse the same id if the label is the same. Do not merge distinct boxes. Set replica_of only when the representation explicitly groups the boxes as configuration copies in one scaling group or managed pair; otherwise use null. A repeated icon or similar name alone is not enough. llm_components may be empty at this step."
+      "template": "{{shared_rules}}\n\nShostack question: What are we working on?\nStep: P-norm. Normalize the system representation into a canonical inventory and bind review-context labels to stable ids.\n\nReview context:\n{{review_context}}\n\nRepresentation kind: {{representation_kind}}\nRepresentation follows this line. If kind is mermaid, parse nodes, edges, and subgraphs as candidate trust zones. If kind is svg, parse groups, labels, and connectors. If kind is image, read the image.\n\n{{representation}}\n\nReturn a JSON object with this shape:\n{\n  \"system_name\": \"string\",\n  \"perspective\": \"review_context.perspective\",\n  \"review_context\": \"same context with diagram_referents resolved to stable ids and claim evidence retained\",\n  \"representation\": { \"kind\": \"image|mermaid|svg\", \"source_id\": \"filename or unknown\", \"version\": \"drawn or labeled version, or unknown\", \"commit\": \"commit if labeled, or unknown\" },\n  \"inventory\": {\n    \"components\": [{\"id\": \"kebab-id\", \"name\": \"\", \"type\": \"process\", \"replica_of\": \"canonical component id or null\", \"replica_evidence\": \"drawn scaling-group or managed-pair evidence, or empty\"}],\n    \"external_actors\": [{\"id\": \"\", \"name\": \"\", \"type\": \"actor\"}],\n    \"data_stores\": [{\"id\": \"\", \"name\": \"\", \"type\": \"store\"}],\n    \"data_flows\": [{\"id\": \"\", \"from\": \"id\", \"to\": \"id\", \"label\": \"\", \"crosses_boundary\": \"boundary-id or null\"}],\n    \"trust_boundaries\": [{\"id\": \"\", \"name\": \"\", \"contains\": [\"id\"]}],\n    \"llm_components\": [],\n    \"missing_trust_boundaries\": false\n  }\n}\n\nId rules: lowercase kebab-case, derived from the diagram label. Reuse the same id if the label is the same. Do not merge distinct boxes. Set replica_of only when the representation explicitly groups boxes as configuration copies in one scaling group or managed pair; otherwise use null. A repeated icon or similar name is not enough. Preserve unresolved context references with a claim-evidence gap; do not fabricate a binding."
     },
     {
       "id": "P-diag",
@@ -546,6 +631,7 @@
       "track": "A",
       "stage": "q1",
       "inputs": [
+        "review_context",
         "solution_description",
         "inventory",
         "adversary"
@@ -573,6 +659,7 @@
       "track": "A",
       "stage": "q2",
       "inputs": [
+        "review_context",
         "solution_description",
         "inventory",
         "in_scope",
@@ -587,8 +674,48 @@
         "role_guidance"
       ],
       "output_key": "stride_scenarios",
-      "stop_condition": "Each required process and each crossing flow has six STRIDE consideration rows, directly or through documented replica inheritance. stride_coverage reports expected, considered, and remaining ids. Do not advance until stride_coverage.complete is true.",
-      "template": "{{shared_rules}}\n\n{{role_guidance}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-stride. Apply STRIDE to every in-scope process and every data flow that crosses a trust boundary. Run in auditable batches when the full set does not fit one response.\n\nSTRIDE letters: S spoofing, T tampering, R repudiation, I information disclosure, D denial of service, E elevation of privilege.\n\nBatch rule:\n- Maximum consideration rows in this reply: {{stride_budget}}. Process whole elements only, six rows per element.\n- Determine expected_elements before writing rows: every in-scope process plus every crossing flow, minus replica ids whose coverage is explicitly inherited in replica_coverage.\n- Count each required replica divergence row against the budget. rows_expected is six times the number of expected_elements plus one row per replica_coverage entry.\n- Continue in inventory order after ids already present in prior_stride_considerations.\n- Return stride_considerations as one cumulative array: prior rows followed by new rows, with no duplicate element_id and letter pair.\n- If rows remain, set complete false and list remaining_elements. The operator reruns P-stride with this cumulative output as prior_stride_considerations.\n- Never use the budget to reduce scope or silently omit an element.\n\nReplica rule:\n- Do not duplicate six rows for an inherited replica pair.\n- Write one concrete configuration-divergence scenario for each replica_coverage row, normally under T tampering, using the replica id as diagram_referent.\n\nScenario rule:\n- For each applicable letter, write one concrete scenario that can happen in this system.\n- If a letter does not apply, record not_applicable with a reason. Do not skip a letter in silence.\n- attacker_position must be an id from adversary.positions.\n- evidence_refs may cite control_absences ids. A cited absence means the diagram does not show that control, not that the deployed system lacks it.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nIn scope:\n{{in_scope}}\nReplica coverage:\n{{replica_coverage}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\nClaim boundary:\n{{claim_boundary}}\nPrior STRIDE considerations (empty on the first pass):\n{{prior_stride_considerations}}\n\nReturn JSON:\n{\n  \"stride_considerations\": [\n    {\n      \"element_id\": \"component or flow id\",\n      \"letter\": \"S\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete text or empty if not_applicable\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"visible in the diagram\",\n      \"evidence_refs\": [\"gap-ctl-id when applicable\"],\n      \"attacker_position\": \"pos-id from adversary.positions\",\n      \"asset\": \"what is harmed\"\n    }\n  ],\n  \"stride_coverage\": {\n    \"budget_rows\": {{stride_budget}},\n    \"letters_per_element\": 6,\n    \"expected_elements\": [\"ids\"],\n    \"considered_elements\": [\"ids complete across all batches\"],\n    \"remaining_elements\": [\"ids\"],\n    \"rows_expected\": 0,\n    \"rows_written_total\": 0,\n    \"complete\": false\n  }\n}"
+      "stop_condition": "Typed STRIDE is complete, or root traditional_coverage is not_applicable only for an operator-confirmed artifact-only review. Every applicable in-scope process, actor, store, and flow has exactly its type-specific rows; boundary coverage and cumulative budget accounting are exact.",
+      "template": "{{shared_rules}}\n\n{{role_guidance}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-stride. Apply typed STRIDE to all applicable in-scope elements in cumulative, auditable batches.\n\nTyped applicability:\n- process: S, T, R, I, D, E\n- actor: S, R\n- store: T, R, I, D\n- flow: T, I, D\n- trust boundary: no direct letter rows; cover it through every crossing flow and drawn control reaching that crossing.\n\nRoot traditional_coverage is the reusable traditional-phase gate. It always has status, expected_referents, considered_referents, exclusions, operator_confirmation, and gaps. status is incomplete after STRIDE while later traditional phases remain, unless the entire traditional phase is operator-confirmed not_applicable for artifact-only. Missing architecture, integration, typing, crossing-flow, or control evidence creates gaps and incomplete status.\n\nExpected scope includes every in-scope applicable process, actor, store, and flow, not only crossings. Exclude an inherited replica only with valid drawn replica evidence and id pairs. traditional_coverage.expected_referents contains the full traditional-analysis denominator; considered_referents records only referents completed so far; exclusions records referent and reason.\n\nCumulative budget:\n- Add at most {{stride_budget}} new rows in this reply; continue after prior_stride_considerations in inventory order.\n- stride_coverage.expected_considerations is an array of {element_id, element_type, letters}; rows_expected is the sum of its letters plus required divergence rows.\n- expected_elements, considered_elements, and remaining_elements are id arrays. rows_written_total counts cumulative unique element_id/letter pairs plus divergence rows. Never reduce scope for budget.\n\nFor each letter, record scenario or not_applicable with reason. Use inventory referents, adversary position ids, and claim or visible-gap evidence. Preserve one configuration-divergence scenario per replica pair.\n\nReview context:\n{{review_context}}\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nIn scope:\n{{in_scope}}\nReplica coverage:\n{{replica_coverage}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\nClaim boundary:\n{{claim_boundary}}\nPrior cumulative STRIDE considerations:\n{{prior_stride_considerations}}\n\nReturn JSON:\n{\n  \"stride_considerations\": [{\"element_id\": \"inventory id\", \"element_type\": \"process|actor|store|flow\", \"letter\": \"S|T|R|I|D|E\", \"status\": \"scenario|not_applicable\", \"scenario\": \"concrete scenario or empty\", \"reason\": \"required for not_applicable\", \"diagram_referent\": \"inventory id\", \"preconditions\": \"evidence-bound conditions\", \"evidence_refs\": [\"claim or gap ids\"], \"attacker_position\": \"pos-id\", \"asset\": \"asset id or concrete asset\"}],\n  \"stride_coverage\": {\n    \"budget_rows\": {{stride_budget}},\n    \"expected_considerations\": [{\"element_id\": \"inventory id\", \"element_type\": \"process|actor|store|flow\", \"letters\": [\"S\"]}],\n    \"expected_elements\": [\"inventory ids\"],\n    \"considered_elements\": [\"completed ids\"],\n    \"remaining_elements\": [\"ids\"],\n    \"rows_expected\": 0,\n    \"rows_written_total\": 0,\n    \"complete\": false,\n    \"boundary_coverage\": [{\"boundary_id\": \"\", \"crossing_flow_ids\": [], \"control_ids\": [], \"status\": \"covered|incomplete\"}]\n  },\n  \"traditional_coverage\": {\"status\": \"complete|incomplete|not_applicable\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [{\"referent\": \"inventory id\", \"reason\": \"\"}], \"operator_confirmation\": null, \"gaps\": []},\n  \"traditional_analysis\": {\"stride\": {\"status\": \"complete|incomplete|not_applicable\", \"reason\": \"\"}}\n}"
+    },
+    {
+      "id": "P-abuse",
+      "title": "Abuse-case analysis",
+      "track": "A",
+      "stage": "q2",
+      "inputs": [
+        "review_context",
+        "inventory",
+        "solution_description",
+        "adversary",
+        "existing_controls",
+        "control_absences",
+        "stride_coverage",
+        "traditional_coverage",
+        "traditional_analysis"
+      ],
+      "output_key": "abuse_scenarios",
+      "stop_condition": "The conditional abuse-case contract records complete or not_applicable. High-value transactions, authorization decisions, and delegated actions are enumerated from evidence and each applicable item has misuse and abuse considerations.",
+      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-abuse. Examine business and authorization behavior that typed STRIDE does not fully express. Do not proceed until stride_coverage.complete is true or root traditional_coverage is operator-confirmed not_applicable.\n\nIdentify diagram- or operator-evidenced high-value transactions, authorization decisions, and delegated actions. For each, consider permitted-actor misuse, decision bypass, transaction replay or alteration, confused-deputy behavior, and action beyond delegated scope. Keep concrete scenarios only.\n\nabuse_coverage uses the reusable phase fields status, expected_referents, considered_referents, exclusions, operator_confirmation, and gaps. Extra expected_subjects is allowed. Set complete when every expected referent is considered; not_applicable only with grounded evidence and any required artifact-only operator confirmation; missing integration is incomplete. Preserve and update root traditional_coverage but do not mark it complete before operational analysis finishes.\n\nReview context:\n{{review_context}}\nInventory:\n{{inventory}}\nSolution description:\n{{solution_description}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\nSTRIDE coverage:\n{{stride_coverage}}\nRoot traditional coverage:\n{{traditional_coverage}}\nTraditional detail:\n{{traditional_analysis}}\n\nReturn JSON:\n{\n  \"abuse_considerations\": [{\"id\": \"abuse-...\", \"kind\": \"high-value-transaction|authorization-decision|delegated-action\", \"referents\": [\"inventory ids\"], \"diagram_referent\": \"inventory id\", \"status\": \"scenario|not_applicable\", \"scenario\": \"concrete misuse or empty\", \"reason\": \"required when not_applicable\", \"attacker_position\": \"pos-id\", \"preconditions\": \"\", \"asset\": \"\", \"evidence_refs\": [\"claim or gap ids\"]}],\n  \"abuse_coverage\": {\"status\": \"complete|incomplete|not_applicable\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [{\"referent\": \"inventory id\", \"reason\": \"\"}], \"operator_confirmation\": null, \"gaps\": [], \"expected_subjects\": [{\"id\": \"abuse-...\", \"kind\": \"high-value-transaction|authorization-decision|delegated-action\", \"referents\": []}]},\n  \"traditional_coverage\": {\"status\": \"incomplete|not_applicable\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [], \"operator_confirmation\": null, \"gaps\": []},\n  \"traditional_analysis\": {\"stride\": \"preserve prior object\", \"abuse_case\": {\"status\": \"complete|incomplete|not_applicable\", \"reason\": \"\"}}\n}"
+    },
+    {
+      "id": "P-operational",
+      "title": "Operational and continuity analysis",
+      "track": "A",
+      "stage": "q2",
+      "inputs": [
+        "review_context",
+        "inventory",
+        "solution_description",
+        "adversary",
+        "existing_controls",
+        "control_absences",
+        "traditional_coverage",
+        "traditional_analysis",
+        "abuse_coverage"
+      ],
+      "output_key": "operational_scenarios",
+      "stop_condition": "NIST operational source classes are considered when availability, physical safety, OT, or continuity applies; otherwise operational_coverage explicitly records not_applicable with evidence.",
+      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-operational. Consider operational sources when availability, physical safety, operational technology, or continuity is relevant.\n\nUse NIST source classes as prompts, not claims: adversarial, accidental, structural, environmental. Tie each relevant class to represented processes, stores, flows, dependencies, and continuity_safety_constraints. Do not invent exposure, safety effects, OT links, capacity, recovery objectives, or provider behavior.\n\noperational_coverage uses status, expected_referents, considered_referents, exclusions, operator_confirmation, and gaps. Extra source-class fields are allowed. complete requires every expected referent and relevant class; not_applicable requires grounded evidence, with operator confirmation when the artifact-only rule applies; missing dependencies or integration means incomplete.\n\nEvery scenario uses an id from adversary.positions. For accidental, structural, or environmental events, use the recorded position for the initiating actor or affected system zone and explain the non-adversarial precondition. If no existing position can represent it, record a gap and status incomplete rather than inventing an id.\n\nThis step finalizes root traditional_coverage by merging typed STRIDE, abuse, and operational denominators. All downstream gates use traditional_coverage, not traditional_analysis. traditional_coverage.status is complete when required phases are complete or locally justified not_applicable; it is not_applicable only for an operator-confirmed artifact-only review in which traditional integration analysis is confirmed unnecessary. Any unresolved integration is incomplete.\n\nReview context:\n{{review_context}}\nInventory:\n{{inventory}}\nSolution description:\n{{solution_description}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\nIncoming traditional coverage:\n{{traditional_coverage}}\nAbuse coverage:\n{{abuse_coverage}}\nTraditional detail:\n{{traditional_analysis}}\n\nReturn JSON:\n{\n  \"operational_considerations\": [{\"id\": \"operational-...\", \"source_class\": \"adversarial|accidental|structural|environmental\", \"status\": \"scenario|not_applicable\", \"scenario\": \"concrete operational failure or empty\", \"reason\": \"required when not_applicable\", \"diagram_referent\": \"inventory id\", \"referents\": [\"inventory ids\"], \"attacker_position\": \"existing pos-id for initiating actor or affected zone\", \"preconditions\": \"\", \"asset\": \"\", \"constraint_ids\": [], \"evidence_refs\": [\"claim or gap ids\"]}],\n  \"operational_coverage\": {\"status\": \"complete|incomplete|not_applicable\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [{\"referent\": \"inventory id\", \"reason\": \"\"}], \"operator_confirmation\": null, \"gaps\": [], \"triggered_by\": [\"availability|physical-safety|ot|continuity\"], \"expected_source_classes\": [], \"considered_source_classes\": [], \"remaining_source_classes\": []},\n  \"traditional_coverage\": {\"status\": \"complete|incomplete|not_applicable\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [{\"referent\": \"inventory id\", \"reason\": \"\"}], \"operator_confirmation\": null, \"gaps\": []},\n  \"traditional_analysis\": {\"stride\": \"preserve prior object\", \"abuse_case\": \"preserve prior object\", \"operational\": {\"status\": \"complete|incomplete|not_applicable\", \"reason\": \"\"}}\n}"
     },
     {
       "id": "P-phantom",
@@ -596,6 +723,7 @@
       "track": "A",
       "stage": "q2",
       "inputs": [
+        "review_context",
         "solution_description",
         "inventory",
         "llm_subset",
@@ -604,30 +732,86 @@
         "adversary",
         "existing_controls",
         "control_absences",
+        "traditional_coverage",
+        "traditional_analysis",
+        "abuse_coverage",
+        "operational_coverage",
         "cyber_role",
         "role_guidance"
       ],
       "output_key": "phantom_scenarios",
-      "stop_condition": "Each non-empty llm_subset id has an answer to all eight PHANTOM-B questions. When llm_subset_empty is true after operator confirmation, phantom_considerations is empty and phantom_coverage.status is not_applicable. No mitigations.",
-      "template": "{{shared_rules}}\n\n{{role_guidance}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-phantom. For each LLM or chatbot component, ask the PHANTOM-B questions about that node. Leave defenses, controls, and mitigations for P-act.\n\nIf llm_subset_empty is true and llm_subset_decision.status is continue_without_llm, return an empty phantom_considerations array and phantom_coverage.status not_applicable. Do not call this complete. If the empty subset was not confirmed, stop and return the P-llm-cut gap.\n\nAsk, for each id in llm_subset:\n1. P Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?\n2. H Hallucination: What if hallucinations exceed our hopes?\n3. A Anthropomorphization: Are we anthropomorphizing?\n4. N Non-explainability: When must we explain or justify the output, and to whom?\n5. T Training issues: What if training data is bad by accident or on purpose?\n6. O Over-reliance: What decisions is the LLM making, and does that expand the attack surface?\n7. M Missing security engineering: Did we skip the rest of the SDL around this component?\n8. B Biases: What biases does the model have, and are they acceptable in this use case?\n\nEach scenario row must set attacker_position to an id from adversary.positions. evidence_refs may cite a control_absences id with the same diagram-observation meaning used in P-stride.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nLLM subset:\n{{llm_subset}}\nLLM subset empty:\n{{llm_subset_empty}}\nLLM subset decision:\n{{llm_subset_decision}}\nAdversary:\n{{adversary}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\n\nReturn JSON:\n{\n  \"phantom_considerations\": [\n    {\n      \"element_id\": \"llm component id\",\n      \"letter\": \"P\",\n      \"status\": \"scenario|not_applicable\",\n      \"scenario\": \"concrete instance in this system, or empty\",\n      \"reason\": \"required when not_applicable\",\n      \"diagram_referent\": \"element_id\",\n      \"preconditions\": \"\",\n      \"evidence_refs\": [\"gap-ctl-id when applicable\"],\n      \"attacker_position\": \"pos-id from adversary.positions\",\n      \"asset\": \"\"\n    }\n  ],\n  \"phantom_coverage\": {\n    \"status\": \"complete|incomplete|not_applicable\",\n    \"expected_elements\": [\"llm_subset ids\"],\n    \"complete_elements\": [\"ids with all eight letters\"],\n    \"missing\": [{\"element_id\": \"\", \"letters\": [\"P\"]}]\n  }\n}"
+      "stop_condition": "Traditional applicability gates are not incomplete before PHANTOM-B starts. Each non-empty llm_subset id has all eight PHANTOM-B answers. A confirmed empty subset records not_applicable. No mitigations are added.",
+      "template": "{{shared_rules}}\n\n{{role_guidance}}\nCyber role: {{cyber_role}}\n\nShostack question: What can go wrong?\nStep: P-phantom. Run PHANTOM-B only after root traditional_coverage.status is complete or not_applicable. If it is incomplete, return phantom_coverage.status incomplete with a gate gap and do not elicit AI scenarios. traditional_analysis is detail only and never controls this gate.\n\nFor each LLM or chatbot component, ask all eight questions and leave defenses for P-act. If llm_subset_empty is true after continue_without_llm confirmation, return no considerations and status not_applicable. An unconfirmed empty subset is incomplete.\n\nAsk, for each id in llm_subset:\n1. P Prompt injection: How could someone prompt inject (direct, indirect, multi-stage) through this component?\n2. H Hallucination: What if hallucinations exceed our hopes?\n3. A Anthropomorphization: Are we anthropomorphizing?\n4. N Non-explainability: When must we explain or justify the output, and to whom?\n5. T Training issues: What if training data is bad by accident or on purpose?\n6. O Over-reliance: What decisions is the LLM making, and does that expand the attack surface?\n7. M Missing security engineering: Did we skip the rest of the SDL around this component?\n8. B Biases: What biases does the model have, and are they acceptable in this use case?\n\nUse adversary position ids and claim, diagram, or control-gap evidence. Do not infer training facts or model internals.\n\nReview context:\n{{review_context}}\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nLLM subset and decision:\n{{llm_subset}}\n{{llm_subset_decision}}\nAdversary:\n{{adversary}}\nExisting controls and visible gaps:\n{{existing_controls}}\n{{control_absences}}\nRoot traditional gate:\n{{traditional_coverage}}\nTraditional detail:\n{{traditional_analysis}}\nAbuse and operational phase coverage:\n{{abuse_coverage}}\n{{operational_coverage}}\n\nReturn JSON:\n{\n  \"phantom_considerations\": [{\"element_id\": \"llm component id\", \"letter\": \"P|H|A|N|T|O|M|B\", \"status\": \"scenario|not_applicable\", \"scenario\": \"concrete instance or empty\", \"reason\": \"required when not_applicable\", \"diagram_referent\": \"element_id\", \"preconditions\": \"\", \"evidence_refs\": [\"claim or gap ids\"], \"attacker_position\": \"pos-id\", \"asset\": \"\"}],\n  \"phantom_coverage\": {\"status\": \"complete|incomplete|not_applicable\", \"expected_elements\": [\"llm_subset ids\"], \"complete_elements\": [\"ids with all eight letters\"], \"missing\": [{\"element_id\": \"\", \"letters\": [\"P\"]}], \"gate_status\": \"passed|blocked\", \"reason\": \"\"}\n}"
+    },
+    {
+      "id": "P-compose",
+      "title": "Analyze AI and traditional composition",
+      "track": "A",
+      "stage": "q2",
+      "inputs": [
+        "review_context",
+        "inventory",
+        "solution_description",
+        "adversary",
+        "existing_controls",
+        "control_absences",
+        "traditional_coverage",
+        "traditional_analysis",
+        "phantom_coverage"
+      ],
+      "output_key": "composition_scenarios",
+      "stop_condition": "The composition denominator is derived from actual represented integration paths and every expected path has a consideration; status is complete, not_applicable, or incomplete with a concrete reason.",
+      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-compose. Analyze failures where AI behavior meets traditional software, people, data, identity, and actuation. Root traditional_coverage must be complete or not_applicable; traditional_analysis is detail only.\n\nBuild expected_paths from represented AI-to-traditional flows, retrieval, identity delegation, tool actuation, output consumption, feedback loops, and shared stores. Each path object is exactly {id, kind, referents}; referents contains at least two inventory ids. For each path, consider identity changes, lost provenance, content becoming instruction, output treated as authorization, excessive side effects, stale feedback, and cross-layer control bypass. Do not repeat isolated STRIDE or PHANTOM-B rows.\n\ncomposition_coverage uses expected_paths, considered_paths, remaining_paths, and status. considered_paths and remaining_paths contain path ids. complete means every expected path id is considered; not_applicable means the representation and operator scope show no AI/traditional integration path; indicated but underspecified integration is incomplete.\n\nReview context:\n{{review_context}}\nInventory:\n{{inventory}}\nSolution description:\n{{solution_description}}\nAdversary:\n{{adversary}}\nExisting controls and visible gaps:\n{{existing_controls}}\n{{control_absences}}\nRoot traditional coverage:\n{{traditional_coverage}}\nTraditional detail:\n{{traditional_analysis}}\nAI coverage:\n{{phantom_coverage}}\n\nReturn JSON:\n{\n  \"composition_considerations\": [{\"path_id\": \"comp-...\", \"referents\": [\"inventory-id-a\", \"inventory-id-b\"], \"diagram_referent\": \"primary inventory id\", \"status\": \"scenario|not_applicable\", \"scenario\": \"cross-layer failure or empty\", \"reason\": \"required when not_applicable\", \"evidence_refs\": [\"claim or gap ids\"]}],\n  \"composition_coverage\": {\"expected_paths\": [{\"id\": \"comp-...\", \"kind\": \"ai-traditional-flow|retrieval|identity-delegation|tool-actuation|output-consumption|feedback-loop|shared-store\", \"referents\": [\"inventory-id-a\", \"inventory-id-b\"]}], \"considered_paths\": [\"comp-...\"], \"remaining_paths\": [], \"status\": \"complete|incomplete|not_applicable\"}\n}"
+    },
+    {
+      "id": "P-catalog",
+      "title": "Map evidence-bound external sources",
+      "track": "A",
+      "stage": "q2",
+      "inputs": [
+        "review_context",
+        "inventory",
+        "stride_scenarios",
+        "abuse_scenarios",
+        "operational_scenarios",
+        "phantom_scenarios",
+        "composition_scenarios",
+        "source_manifest"
+      ],
+      "output_key": "catalog_scenarios",
+      "stop_condition": "Every external_ref is source-bound and status is candidate, mapped, affected, not_affected, or unknown. CVE/NVD affected rows have complete non-unknown applicability_evidence; missing source input is incomplete.",
+      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-catalog. Consume injected source data only; do not fetch URLs. Map an external entry or propose an external-source candidate only when supplied content, system evidence, and a represented failure align.\n\nInjected source manifest:\n{{source_manifest}}\n\nPreserve source_manifest exactly as {source_set_id, entries:[{source_id, source_kind, canonical_url, license_id, integration_mode, catalog_version, retrieved_at, content_sha256}]}. Optional source documents may be injected separately and do not change this shape. Never invent metadata or content.\n\nInputs to compare:\nReview context: {{review_context}}\nInventory: {{inventory}}\nSTRIDE: {{stride_scenarios}}\nAbuse cases: {{abuse_scenarios}}\nOperational: {{operational_scenarios}}\nPHANTOM-B: {{phantom_scenarios}}\nComposition: {{composition_scenarios}}\n\nEvery external_ref retains source_id, external_id, catalog_version, relation exact|narrower|broader|related|supporting, affected_referents, evidence_refs, confidence, and status. status is exactly candidate, mapped, affected, not_affected, or unknown:\n- candidate: supplied entry is worth review but is not yet mapped to this system.\n- mapped: entry is evidence-bound to represented referents, but applicability or effect is not established.\n- affected: supplied evidence establishes that the represented component is affected.\n- not_affected: supplied evidence establishes non-applicability, such as a verified non-affected version.\n- unknown: evidence is missing, conflicting, or cannot resolve applicability.\n\nFor source_id cve or nvd, affected requires applicability_evidence with non-empty, non-unknown supplier, product, version, component_referent, and evidence_refs. component_referent must be in inventory, occur in affected_referents, and be backed by at least one resolving evidence_ref. Product-name similarity, an unknown or ranged-without-resolution version, and CISA KEV presence do not establish affected. Use mapped or unknown until exact applicability is evidenced. A KEV entry may be mapped to an already supplied CVE, but it cannot by itself make the CVE or component affected.\n\nReject word-only matches. Proposed scenarios require a diagram_referent, preconditions, asset, claim evidence, and a complete external_ref. State only which injected sources were examined.\n\nReturn JSON:\n{\n  \"source_manifest\": {\"source_set_id\": \"preserve supplied id\", \"entries\": [{\"source_id\": \"\", \"source_kind\": \"\", \"canonical_url\": \"\", \"license_id\": \"\", \"integration_mode\": \"\", \"catalog_version\": \"\", \"retrieved_at\": \"\", \"content_sha256\": \"\"}]},\n  \"catalog_mappings\": [{\"candidate_ref\": \"method and row id\", \"diagram_referent\": \"inventory id\", \"external_refs\": [{\"source_id\": \"manifest source id\", \"external_id\": \"supplied external id\", \"catalog_version\": \"manifest catalog version\", \"relation\": \"exact\", \"affected_referents\": [\"inventory id\"], \"evidence_refs\": [\"claim id\"], \"confidence\": 0.0, \"status\": \"mapped\"}], \"match_evidence\": \"specific source and system alignment\"}],\n  \"catalog_considerations\": [{\"catalog_candidate_id\": \"external-...\", \"source\": \"external-source\", \"scenario\": \"evidence-bound proposed scenario\", \"diagram_referent\": \"inventory id\", \"attacker_position\": \"pos-id\", \"preconditions\": \"\", \"asset\": \"\", \"evidence_refs\": [\"claim id\"], \"external_refs\": [{\"source_id\": \"manifest source id\", \"external_id\": \"supplied external id\", \"catalog_version\": \"manifest catalog version\", \"relation\": \"supporting\", \"affected_referents\": [\"inventory id\"], \"evidence_refs\": [\"claim id\"], \"confidence\": 0.0, \"status\": \"candidate\"}]}],\n  \"catalog_coverage\": {\"status\": \"complete|incomplete|not_applicable\", \"examined_source_ids\": [], \"reason\": \"coverage of injected inputs only; never a completeness claim\"}\n}\n\nWhen a supplied CVE or NVD record meets the affected contract, include applicability_evidence as {\"supplier\": \"non-unknown supplier\", \"product\": \"non-unknown product\", \"version\": \"non-unknown exact applicable version\", \"component_referent\": \"inventory id\", \"evidence_refs\": [\"resolving evidence id\"]} and set status affected. Otherwise do not claim affected."
     },
     {
       "id": "P-dedup",
-      "title": "Dedup and compose threat list",
+      "title": "Deduplicate and compose threat list",
       "track": "A",
       "stage": "q2",
       "inputs": [
         "stride_scenarios",
         "stride_coverage",
+        "abuse_scenarios",
+        "abuse_coverage",
+        "operational_scenarios",
+        "operational_coverage",
         "phantom_scenarios",
+        "phantom_coverage",
+        "composition_scenarios",
+        "composition_coverage",
+        "catalog_scenarios",
+        "catalog_mappings",
+        "catalog_coverage",
+        "traditional_coverage",
+        "traditional_analysis",
+        "source_manifest",
         "inventory",
         "replica_coverage",
         "perspective",
         "adversary"
       ],
       "output_key": "threats",
-      "stop_condition": "stride_coverage.complete is true before composition. TSS is numbered, duplicates are merged, each scenario has an inventory referent, evidence_refs are preserved, and each replica_coverage row names its divergence threat id.",
-      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-dedup. Merge STRIDE and PHANTOM-B scenarios into threat list TSS.\n\nDo not continue if stride_coverage.complete is false. Return the remaining ids and rerun P-stride first.\n\nPerspective:\n{{perspective}}\nInventory:\n{{inventory}}\nReplica coverage:\n{{replica_coverage}}\nAdversary:\n{{adversary}}\nSTRIDE considerations:\n{{stride_scenarios}}\nSTRIDE coverage:\n{{stride_coverage}}\nPHANTOM-B considerations:\n{{phantom_scenarios}}\n\nRules:\n- Drop not_applicable rows.\n- Merge two scenarios that name the same failure on the same referent into one threat. Record source as \"both\" when both methods found it.\n- Keep a compositional threat only if the named perspective can change a control point on this diagram.\n- Assign ids T1, T2, ... in diagram order (entry points first).\n- Copy attacker_position and evidence_refs from source rows.\n- Preserve one configuration-divergence threat for each replica_coverage row and set replica_coverage[].divergence_threat_id to its T id.\n- stride, phantom_b, cia, and action may be empty arrays or stub objects; later steps fill them. Include a stub action of type accept and detail \"pending P-act\" if required by schema.\n\nReturn JSON:\n{\n  \"threats\": [\n    {\n      \"id\": \"T1\",\n      \"scenario\": \"actor or failure, referent, preconditions, asset, why it can happen here\",\n      \"diagram_referent\": \"inventory id\",\n      \"preconditions\": \"\",\n      \"evidence_refs\": [\"control absence ids when applicable\"],\n      \"attacker_position\": \"pos-id\",\n      \"asset\": \"\",\n      \"source\": \"stride|phantom-b|both\",\n      \"stride\": [],\n      \"phantom_b\": [],\n      \"cia\": [],\n      \"action\": { \"type\": \"accept\", \"detail\": \"pending P-act\" }\n    }\n  ],\n  \"replica_coverage\": [\"same rows with divergence_threat_id filled\"]\n}"
+      "stop_condition": "All required gates pass; scenario sets are consumed; external_ref statuses and CVE/NVD applicability remain valid through merging; every threat has valid inventory and adversary referents.",
+      "template": "{{shared_rules}}\n\nShostack question: What can go wrong?\nStep: P-dedup. Consume every scenario set and form one threat list TSS.\n\nDo not continue when root traditional_coverage, phantom_coverage, composition_coverage, or injected-source coverage is incomplete. traditional_analysis is detail only.\n\nInputs:\nPerspective: {{perspective}}\nInventory: {{inventory}}\nReplica coverage: {{replica_coverage}}\nAdversary: {{adversary}}\nRoot traditional coverage: {{traditional_coverage}}\nTraditional detail: {{traditional_analysis}}\nSTRIDE: {{stride_scenarios}}\n{{stride_coverage}}\nAbuse cases: {{abuse_scenarios}}\n{{abuse_coverage}}\nOperational: {{operational_scenarios}}\n{{operational_coverage}}\nPHANTOM-B: {{phantom_scenarios}}\n{{phantom_coverage}}\nComposition: {{composition_scenarios}}\n{{composition_coverage}}\nExternal-source proposals and mappings: {{catalog_scenarios}}\n{{catalog_mappings}}\n{{catalog_coverage}}\nSource manifest: {{source_manifest}}\n\nDrop not_applicable consideration rows, not coverage records. source and method_sources use only traditional, stride, phantom-b, abuse-case, operational, composition, external-source, vertical, srf, both, kill-chain. External catalog candidates use external-source. Merge only the same failure, referent, preconditions, and asset. Preserve the union of evidence_refs and complete external_refs.\n\nFor each external_ref preserve source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status, and applicability_evidence when present. status is candidate, mapped, affected, not_affected, or unknown. Deduplication cannot promote status. If a CVE or NVD ref says affected without non-unknown applicability_evidence supplier, product, version, component_referent, and evidence_refs, change it to unknown, retain the deficient evidence, and add a gap; do not silently preserve affected. Product-name similarity, unknown version, or KEV membership is insufficient. A KEV ref remains separate and cannot establish CVE applicability.\n\nAssign T ids in diagram order, bind replica divergence ids, and initialize required importance without inference; P-importance replaces provisional positions.\n\nReturn JSON:\n{\n  \"threats\": [{\"id\": \"T1\", \"scenario\": \"actor or failure, referent, preconditions, asset, and system-specific path\", \"diagram_referent\": \"inventory id\", \"preconditions\": \"\", \"evidence_refs\": [\"claim or gap id\"], \"external_refs\": [{\"source_id\": \"manifest source id\", \"external_id\": \"supplied external id\", \"catalog_version\": \"manifest catalog version\", \"relation\": \"exact\", \"affected_referents\": [\"inventory id\"], \"evidence_refs\": [\"claim id\"], \"confidence\": 0.0, \"status\": \"mapped\"}], \"attacker_position\": \"pos-id\", \"asset\": \"\", \"source\": \"external-source\", \"method_sources\": [\"external-source\"], \"importance\": {\"factors\": [], \"needs_input\": [\"pending P-importance\"], \"review_position\": 1}, \"stride\": [], \"phantom_b\": [], \"cia\": [], \"action\": {\"type\": \"accept\", \"detail\": \"pending P-act\"}}],\n  \"source_manifest\": {\"source_set_id\": \"preserved id\", \"entries\": []},\n  \"replica_coverage\": [\"same rows with divergence_threat_id filled\"]\n}\n\nA valid affected CVE or NVD external_ref keeps applicability_evidence {\"supplier\": \"non-unknown\", \"product\": \"non-unknown\", \"version\": \"non-unknown\", \"component_referent\": \"inventory id\", \"evidence_refs\": [\"resolving evidence id\"]}."
     },
     {
       "id": "P-cia",
@@ -669,6 +853,23 @@
       "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-phantom-map. Attach PHANTOM-B letters only when the scenario was elicited from the LLM subset. Do not force every STRIDE threat into PHANTOM-B.\n\nLetters: P prompt injection, H hallucination, A anthropomorphization, N non-explainability, T training issues, O over-reliance, M missing security engineering, B biases.\n\nLLM subset:\n{{llm_subset}}\nThreats:\n{{threats}}\n\nReturn the same threats array with phantom_b filled per the rule above.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
     },
     {
+      "id": "P-importance",
+      "title": "Order threats by evidence-backed importance",
+      "track": "A",
+      "stage": "q3",
+      "inputs": [
+        "review_context",
+        "adversary",
+        "traditional_coverage",
+        "phantom_coverage",
+        "composition_coverage",
+        "threats"
+      ],
+      "output_key": "review_order",
+      "stop_condition": "Every threat has schema-shaped importance and review order. KEV-based active_exploitation cites a valid affected CVE/NVD for the same component; no root importance or inferred risk claim exists.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-importance. Produce the required builder review order immediately before P-act. This is an evidence index, not a risk score. Root traditional_coverage must not be incomplete.\n\nReview context:\n{{review_context}}\nAdversary:\n{{adversary}}\nTraditional, AI, and composition coverage:\n{{traditional_coverage}}\n{{phantom_coverage}}\n{{composition_coverage}}\nThreats:\n{{threats}}\n\nAllowed factor kinds are attacker_access, critical_asset, prohibited_outcome, control_gap, cross_layer_propagation, mandatory_obligation, active_exploitation, uncertainty. For each threat write importance.factors as {kind, evidence, source}; evidence identifies the supporting claim, gap, coverage row, or external ref, and source identifies its resolvable origin. importance.needs_input lists missing evidence. importance.review_position is unique and 1-based.\n\nExternal applicability rule:\n- Respect external_ref.status candidate, mapped, affected, not_affected, or unknown; do not promote it here.\n- A CVE or NVD ref counts as applicable only when status is affected and applicability_evidence has non-unknown supplier, product, version, component_referent, and evidence_refs resolving to the same represented component.\n- Product-name similarity, unknown version, or KEV presence cannot establish applicability.\n- Add active_exploitation from CISA KEV only when the threat has both a KEV reference for the vulnerability and an applicable CVE or NVD reference for the same component. The factor evidence and source must identify both external refs and the applicability evidence. KEV without that CVE/NVD proof adds no active_exploitation factor; put the missing applicability proof in needs_input instead.\n\nReturn review_order rows exactly as {position, threat_id, attacker_position, prerequisite_summary, reason}; position equals importance.review_position. Keep ids, scenarios, refs, methods, and array order unchanged. Never infer likelihood, impact, severity, exploitability, or residual risk.\n\nReturn JSON:\n{\n  \"threats\": [{\"id\": \"T1\", \"importance\": {\"factors\": [{\"kind\": \"active_exploitation\", \"evidence\": \"KEV entry plus affected CVE applicability evidence for this component\", \"source\": \"KEV external-ref id and affected CVE/NVD external-ref id\"}], \"needs_input\": [], \"review_position\": 1}}],\n  \"review_order\": [{\"position\": 1, \"threat_id\": \"T1\", \"attacker_position\": \"pos-id\", \"prerequisite_summary\": \"recorded access and remaining condition\", \"reason\": \"evidence-backed review reason without a risk claim\"}]\n}"
+    },
+    {
       "id": "P-act",
       "title": "Choose an action",
       "track": "A",
@@ -678,25 +879,12 @@
         "inventory",
         "existing_controls",
         "control_absences",
+        "review_order",
         "threats"
       ],
       "output_key": "threats",
-      "stop_condition": "Every threat has action.type in mitigate, eliminate, transfer, accept. Mitigate and eliminate name a control_point that is a component, store, flow, or trust-boundary id and a validation (test, log, or fail_condition).",
-      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-act. Choose one action per threat: mitigate, eliminate, transfer, or accept.\n\nWrite the mitigate, eliminate, transfer, or accept choice here. Leave P-phantom without defenses.\n\n- mitigate: make the attack harder at a named control point on the diagram.\n- eliminate: remove the feature or interface that creates the threat.\n- transfer: another party is better placed to handle it; name that party as shown on the diagram (customer, provider, or an external actor id).\n- accept: keep the threat; say why the cost of the other options undermines the work.\n\nA control_point must be an inventory component, data store, data flow, or trust-boundary id. Use the flow id for an interface to an external actor. Do not use a control_absence id as the control point; it is evidence for the threat, not a place to act.\n\nFor mitigate or eliminate, set action.validation: kind is test, log, or fail_condition, and detail is something a reviewer could run or watch (a test name, a log line, or a fail condition on that control_point). Transfer and accept may set validation to null. Optional citations may include owasp_llm_top10 (form LLMnn:2025), ai_exchange_slug (one of the published slugs), or atlas (AML.T*). Omit any citation you cannot pin. Do not invent ids.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nExisting controls:\n{{existing_controls}}\nControl absences:\n{{control_absences}}\nThreats:\n{{threats}}\n\nReturn the same threats array with action, validation, and optional citations filled.\n\nReturn JSON:\n{ \"threats\": [ ... ] }"
-    },
-    {
-      "id": "P-rank",
-      "title": "Order threats for builder review",
-      "track": "A",
-      "stage": "q3",
-      "optional": true,
-      "inputs": [
-        "adversary",
-        "threats"
-      ],
-      "output_key": "review_order",
-      "stop_condition": "Every threat id appears exactly once in review_order. Ordering is explained from attacker_position and explicit preconditions. Threat ids and threats array order do not change. No likelihood, impact, or residual-risk claim is made.",
-      "template": "{{shared_rules}}\n\nOptional step: P-rank. Give a builder a review order without inventing a risk score.\n\nAdversary positions:\n{{adversary}}\nThreats:\n{{threats}}\n\nRules:\n- Put threats requiring the least additional access or precondition first.\n- Use only attacker_position.already_can and the threat's explicit preconditions as evidence.\n- Do not infer provider capacity, business impact, likelihood, exploitability, or residual risk.\n- Keep threat ids and the threats array in their existing diagram order. review_order is a separate projection.\n- Include every threat id exactly once. Ties may keep diagram order.\n\nReturn JSON:\n{\n  \"review_order\": [{\n    \"position\": 1,\n    \"threat_id\": \"T1\",\n    \"attacker_position\": \"pos-id\",\n    \"prerequisite_summary\": \"what access is already present and what additional condition remains\",\n    \"reason\": \"why this threat appears here\"\n  }]\n}"
+      "stop_condition": "Every threat has action.type in mitigate, eliminate, transfer, accept. Mitigate and eliminate name an inventory control point and executable validation. Importance and review order are preserved unchanged.",
+      "template": "{{shared_rules}}\n\nShostack question: What are we going to do about it?\nStep: P-act. Choose one action per threat after threats[].importance and review_order are complete: mitigate, eliminate, transfer, or accept.\n\n- mitigate: make the scenario harder at a named control point in the representation.\n- eliminate: remove the feature or interface creating the scenario.\n- transfer: name the represented party better placed to handle it.\n- accept: keep the scenario and state the decision basis; do not claim residual risk.\n\nA control_point is an inventory component, store, flow, or trust-boundary id, never a control-gap id. For mitigate or eliminate, validation.kind is test, log, or fail_condition and validation.detail is executable or observable. Transfer and accept may use null validation. External citations may only come from complete threats[].external_refs or source_manifest.\n\nSolution description:\n{{solution_description}}\nInventory:\n{{inventory}}\nExisting controls and visible gaps:\n{{existing_controls}}\n{{control_absences}}\nReview order:\n{{review_order}}\nThreats with embedded importance:\n{{threats}}\n\nReturn the same threats and review_order. Preserve each threats[].importance exactly; fill action and validation only:\n{\"threats\": [...], \"review_order\": [...]}"
     },
     {
       "id": "P-qa",
@@ -707,8 +895,8 @@
         "full_matrix"
       ],
       "output_key": "qa",
-      "stop_condition": "qa flags every failed check in gaps. Structured STRIDE and PHANTOM-B applicability, replica inheritance, control evidence, control-point ids, and action validation are checked. The full matrix is echoed. report_present stays false until P-report.",
-      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-qa. Check the work before any human review.\n\nFull threat matrix so far:\n{{full_matrix}}\n\nChecks:\n1. inventory_components_in_solS: every inventory component id appears in solution_description.\n2. boundary_crossings_covered: every crossing flow has a threat or an explicit replica_coverage inherited_element_pair whose representative is covered. A replica relation does not excuse an unmapped crossing.\n3. llm_subset_empty: equals whether llm_subset is empty.\n4. phantom_b_complete: null when llm_subset_empty is true after continue_without_llm; otherwise true only when every llm_subset id has all eight PHANTOM-B letters. Never use true for an empty subset.\n5. stride_considered: stride_coverage.complete is true, remaining_elements is empty, and every expected element has six scenario or not_applicable rows, directly or by documented replica inheritance.\n6. actions_complete: every threat has action.type in mitigate, eliminate, transfer, accept, and detail is not \"pending P-act\".\n7. open_assumptions: list assumptions that are not on the diagram.\n8. gaps: list failed checks in plain language.\n9. adversary_stated: adversary.assumptions is non-empty and every in-scope trust boundary has a positions row, or a gap says which zone was skipped.\n10. existing_controls_listed: existing_controls is present. Empty is allowed only when none_drawn is true. coverage_referents and coverage_basis do not claim more than the diagram shows.\n11. control_absences_grounded: every control_absence says not shown, names an existing component, store, flow, or trust-boundary expected_referent, and avoids claiming deployed absence.\n12. claim_boundary_stated: claim_boundary.does_not_claim and claim_boundary.box are non-empty.\n13. actions_have_validation: every mitigate or eliminate action has validation.kind in test, log, fail_condition and non-empty detail.\n14. control_points_bound: every mitigate or eliminate action.control_point is a component, data-store, data-flow, or trust-boundary id.\n15. attacker_positions_bound: every threat.attacker_position is an id in adversary.positions.\n16. evidence_refs_bound: every threat.evidence_refs value is a control_absences id.\n17. replica_coverage_complete: every replica_coverage row has drawn evidence, valid inherited id pairs, and divergence_threat_id naming a threat on the replica.\n18. review_order_complete: when review_order is present, every threat id appears exactly once and threat ids or array order did not change.\n\nAlso confirm every threats[].diagram_referent exists in inventory: component, external actor, data store, data flow, or trust boundary. List misses in gaps.\n\nReturn the full matrix JSON with qa filled:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"solution_description\": \"\",\n  \"in_scope\": [],\n  \"out_of_scope\": [],\n  \"replica_coverage\": [],\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"control_absences\": [],\n  \"none_drawn\": false,\n  \"llm_subset\": [],\n  \"llm_subset_empty\": false,\n  \"llm_subset_decision\": {},\n  \"stride_considerations\": [],\n  \"stride_coverage\": {},\n  \"phantom_considerations\": [],\n  \"phantom_coverage\": {},\n  \"threats\": [],\n  \"review_order\": [],\n  \"qa\": {\n    \"inventory_components_in_solS\": true,\n    \"boundary_crossings_covered\": true,\n    \"llm_subset_empty\": false,\n    \"phantom_b_complete\": true,\n    \"stride_considered\": true,\n    \"actions_complete\": true,\n    \"adversary_stated\": true,\n    \"existing_controls_listed\": true,\n    \"control_absences_grounded\": true,\n    \"claim_boundary_stated\": true,\n    \"actions_have_validation\": true,\n    \"control_points_bound\": true,\n    \"attacker_positions_bound\": true,\n    \"evidence_refs_bound\": true,\n    \"replica_coverage_complete\": true,\n    \"review_order_complete\": true,\n    \"report_present\": false,\n    \"open_assumptions\": [],\n    \"gaps\": []\n  },\n  \"claim_boundary\": {}\n}"
+      "stop_condition": "Every phase, source, applicability, KEV/CVE importance, scenario, and action invariant is checked. Failures appear in gaps; report_present remains false.",
+      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-qa. Check the combined workflow before human review.\n\nFull threat matrix so far:\n{{full_matrix}}\n\nChecks:\n1. review_context_grounded: valid profile and confirmation; structured claim objects and claim_evidence remain grounded.\n2. traditional_phase_complete: root traditional_coverage is schema-shaped; not_applicable is confirmed artifact-only and missing integration is incomplete. traditional_analysis never gates.\n3. stride_considered: recompute typed letters, row counts, cumulative budget, and boundary crossings.\n4. abuse_cases_complete and operational_events_complete: reusable phase fields and denominators are accounted for.\n5. phantom_b_complete and composition_complete: phase gates, AI letters, composition paths, and nullable completion states are consistent.\n6. source_refs_bound: source_manifest is schema-shaped; method_sources uses its enum; every external_ref resolves to the manifest and retains source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is only candidate, mapped, affected, not_affected, unknown.\n7. external applicability: every CVE/NVD ref with status affected has applicability_evidence whose supplier, product, version, and component_referent are non-empty and not unknown, whose component is an affected inventory referent, and whose evidence_refs are non-empty and resolve. Product-name similarity, unknown version, or KEV presence never passes this check. Invalid affected refs fail source_refs_bound and are listed in gaps.\n8. importance_complete: every threat embeds importance and positions match review_order. Each active_exploitation factor attributed to CISA KEV identifies a KEV ref plus a CVE/NVD ref with valid affected applicability for the same component; KEV alone fails the check.\n9. referents, controls, replica inheritance, classifications, attacker positions, action validation, and control points are bound.\n10. optional Track B and Track C coverage is valid or null when skipped.\n11. report_present is false.\n\nCompletion fields are null for a not_applicable phase or skipped optional track, except stride_considered remains boolean. Put every failure in gaps and unresolved claims in open_assumptions.\n\nReturn the full matrix unchanged except qa. Required excerpt:\n{\n  \"traditional_coverage\": {\"status\": \"complete\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [], \"operator_confirmation\": null, \"gaps\": []},\n  \"stride_coverage\": {\"budget_rows\": 72, \"expected_considerations\": [], \"expected_elements\": [], \"considered_elements\": [], \"remaining_elements\": [], \"rows_expected\": 0, \"rows_written_total\": 0, \"complete\": true},\n  \"abuse_coverage\": {\"status\": \"complete\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [], \"operator_confirmation\": null, \"gaps\": []},\n  \"operational_coverage\": {\"status\": \"complete\", \"expected_referents\": [], \"considered_referents\": [], \"exclusions\": [], \"operator_confirmation\": null, \"gaps\": []},\n  \"composition_coverage\": {\"expected_paths\": [], \"considered_paths\": [], \"remaining_paths\": [], \"status\": \"complete\"},\n  \"source_manifest\": {\"source_set_id\": \"injected-set-id\", \"entries\": []},\n  \"qa\": {\"llm_subset_empty\": false, \"phantom_b_complete\": true, \"stride_considered\": true, \"traditional_phase_complete\": true, \"abuse_cases_complete\": true, \"operational_events_complete\": true, \"composition_complete\": true, \"source_refs_bound\": true, \"importance_complete\": true, \"srf_layer_coverage_complete\": null, \"vertical_join_valid\": null, \"control_points_bound\": true, \"report_present\": false, \"inventory_components_in_solS\": true, \"boundary_crossings_covered\": true, \"actions_complete\": true, \"adversary_stated\": true, \"existing_controls_listed\": true, \"control_absences_grounded\": true, \"claim_boundary_stated\": true, \"actions_have_validation\": true, \"attacker_positions_bound\": true, \"evidence_refs_bound\": true, \"replica_coverage_complete\": true, \"review_order_complete\": true, \"open_assumptions\": [], \"gaps\": []}\n}\n\nPreserve optional layer_coverage and vertical_context only when present."
     },
     {
       "id": "P-report",
@@ -719,8 +907,8 @@
         "full_matrix"
       ],
       "output_key": "report",
-      "stop_condition": "P-report is the sole author of report.markdown. The document is complete and reflects the final matrix, including SRF columns only when Track B ran. reviewer is null. chain_meta uses the pack root version.",
-      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-report. Finalize the readable threat model after P-qa, or after P-srf-owner when Track B was selected. This is the only step that authors report.markdown. A reviewer must be able to read it without opening the rest of the object.\n\nFull final matrix:\n{{full_matrix}}\n\nreport.markdown sections, in this order:\n1. Title and a metadata table: date, method (Shostack Four Questions; STRIDE on in-scope elements and crossing flows; PHANTOM-B on llm_subset), role, representation, perspective, pack version, and empty reviewer.\n2. Claim boundary.\n3. Attacker assumptions and positions.\n4. Architecture, trust boundaries, in_scope, out_of_scope, and documented replica inheritance.\n5. Existing controls with diagram referent, shown coverage, and coverage basis.\n6. Control gaps observed in the diagram. Phrase each as not shown, with expected_referent. Do not claim deployed absence.\n7. Immediate review order when review_order is present. Call it review order, not risk rank.\n8. Threats grouped by diagram_referent. Each: id, scenario, attacker_position, evidence_refs, STRIDE / PHANTOM-B / CIA, action, validation. Add Layer, Persona, and Party only when Track B fields are present.\n9. Method coverage: STRIDE coverage counts; PHANTOM-B complete, incomplete, or not applicable. When llm_subset_empty is true, say PHANTOM-B was not applicable, never complete.\n10. What this model does not claim.\n11. qa.gaps and open_assumptions.\n12. Reviewer line with empty name and date fields.\n\nDo not add or drop threats. Set qa.report_present true.\nSet chain_meta.method to the method sentence above, chain_meta.date to an ISO date, chain_meta.prompt_pack_version to {{pack_version}}, chain_meta.reviewer to null, and chain_meta.track_b_applied true only when every threat has srf.persona and srf.party.\n\nReturn the full matrix JSON with report and chain_meta filled:\n{\n  \"system_name\": \"\",\n  \"perspective\": \"\",\n  \"representation\": {},\n  \"inventory\": {},\n  \"adversary\": {},\n  \"existing_controls\": [],\n  \"control_absences\": [],\n  \"claim_boundary\": {},\n  \"solution_description\": \"\",\n  \"llm_subset\": [],\n  \"llm_subset_empty\": false,\n  \"stride_coverage\": {},\n  \"phantom_coverage\": {},\n  \"threats\": [],\n  \"review_order\": [],\n  \"qa\": {},\n  \"report\": { \"title\": \"\", \"markdown\": \"full document\", \"reviewer\": null },\n  \"chain_meta\": { \"prompt_pack_version\": \"{{pack_version}}\", \"role\": \"{{cyber_role}}\", \"method\": \"\", \"date\": \"\", \"reviewer\": null, \"track_b_applied\": false }\n}"
+      "stop_condition": "P-report alone authors report.markdown, including external applicability status/evidence and valid KEV/CVE importance linkage. reviewer is null and chain_meta records both optional tracks.",
+      "template": "{{shared_rules}}\n\nShostack question: Did we do a good job?\nStep: P-report. Finalize after P-qa, P-srf-coverage when Track B ran, or P-vertical-route when Track C ran. Only this step authors report.markdown.\n\nFull final matrix:\n{{full_matrix}}\n\nWrite sections in this order:\n1. Metadata, review context with claim evidence, claim boundary, scope, attackers, architecture, controls, and visible gaps.\n2. review_order and each threats[].importance factors, needs_input, and review_position; never call it a risk score.\n3. Threats with method_sources, evidence, classifications, actions, optional SRF/vertical context, and every external_ref field.\n4. External-reference applicability table: source_id, external_id, relation, status candidate|mapped|affected|not_affected|unknown, affected_referents, confidence, evidence_refs, and applicability_evidence when present. Call a CVE/NVD affected only when supplier, product, version, component_referent, and evidence_refs are non-unknown and resolve to this system. Clearly label product-name-only, unknown-version, and KEV-only matches as mapped or unknown, never affected.\n5. For each active_exploitation factor based on CISA KEV, show both the KEV ref and the valid affected CVE/NVD ref for the same component. If that pair is absent, report the QA gap rather than active exploitation.\n6. Traditional, STRIDE, abuse, operational, PHANTOM-B, composition, source, optional layer, and optional vertical coverage.\n7. source_manifest metadata and the statement that injected-source coverage is not a completeness claim.\n8. Non-claims, QA gaps, assumptions, and empty reviewer line.\n\nDo not change threats or external applicability status. Set qa.report_present true. Preserve source_manifest. Set chain_meta version and null reviewer. Track B requires complete layer_coverage; Track C requires Track B and vertical_context. Omit skipped optional objects.\n\nReturn the full matrix with:\n{\"report\": {\"title\": \"\", \"markdown\": \"full document\", \"reviewer\": null}, \"chain_meta\": {\"prompt_pack_version\": \"3.0\", \"role\": \"{{cyber_role}}\", \"method\": \"\", \"date\": \"\", \"reviewer\": null, \"track_b_applied\": false, \"track_c_applied\": false}}"
     },
     {
       "id": "P-srf-join",
@@ -729,11 +917,12 @@
       "stage": "srf",
       "inputs": [
         "full_matrix",
-        "operating_model"
+        "source_registry",
+        "threat_crosswalk"
       ],
       "output_key": "full_matrix",
-      "stop_condition": "When a threat matches a published AI Exchange slug in threats.json, copy layer, affected_layers, persona, and party for the named operating model. Do not re-derive those rows.",
-      "template": "{{shared_rules}}\n\nTrack B is optional. Off by default. This step assigns SRF accountability. It does not invent threats.\n\nStep: P-srf-join. Fetch https://aisharedresponsibility.com/data/threats.json now. Use only ids that exist in that file.\n\nPublished slugs: directpromptinjection, indirectpromptinjection, evasion, runtimemodelpoison, devmodelpoison, datapoison, supplymodelpoison, disclosureinoutput, modelinversionandmembership, devdataleak, modelexfiltration, runtimemodelleak, devmodelleak, airesourceexhaustion, inputdataleak, outputcontainsconventionalinjection.\n\nOperating model: {{operating_model}}\nFull Track A matrix:\n{{full_matrix}}\n\nFor each threat, if the scenario is the same failure as a slug, set:\n  srf.join.ai_exchange_slug = that slug\n  srf.join.copied_from_threats_json = true\n  srf.layer, srf.affected_layers, srf.persona, srf.party copied from threats.json accountability[{{operating_model}}]\nIf no slug matches, set srf.join.ai_exchange_slug to null and copied_from_threats_json to false. Leave layer/persona/party for P-srf-layer and P-srf-owner.\n\nDo not invent slugs. Do not use \"shared\" as srf.party. Keep every non-SRF field unchanged.\n\nReturn the full matrix with the joined srf objects and operating_model filled."
+      "stop_condition": "Threats are joined only to entries present in the injected source_registry or threat_crosswalk for review_context.operating_model; unmatched threats remain explicitly unmatched and no threats are created.",
+      "template": "{{shared_rules}}\n\nTrack B is optional and does not create threats.\nStep: P-srf-join. Consume injected SRF source data; do not fetch URLs.\n\nSource registry:\n{{source_registry}}\nThreat crosswalk:\n{{threat_crosswalk}}\nFull Track A matrix:\n{{full_matrix}}\n\nRequire review_context.operating_model to be non-null. Verify every used source id and external reference exists in source_registry. Match a threat only when the crosswalk describes the same failure, represented referent, and operating model. Copy mapped layer, affected_layers, persona, and party exactly; record source id, crosswalk id, and external reference. If no entry matches, set matched false and leave assignment fields for later Track B steps. Missing injected inputs or operating model makes Track B incomplete, not a reason to infer values.\n\nDo not invent slugs, layers, personas, parties, or references. Keep every non-SRF field unchanged.\n\nReturn the full matrix with review_context.operating_model preserved and threats[].srf.join shaped as {\"matched\": true, \"source_id\": \"\", \"crosswalk_id\": \"\", \"external_ref\": \"\"}."
     },
     {
       "id": "P-srf-layer",
@@ -742,11 +931,12 @@
       "stage": "srf",
       "inputs": [
         "full_matrix",
-        "operating_model"
+        "source_registry",
+        "matrix"
       ],
       "output_key": "full_matrix",
       "stop_condition": "Every threat has srf.layer in L1-L5. Joined rows keep the copied layer.",
-      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-layer. Assign the primary SRF layer where the control point lives, not where the harm appears.\n\nLayers: L1 AI Business and Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider.\n\nIf srf.join.copied_from_threats_json is true, do not change srf.layer or srf.affected_layers.\n\nOperating model: {{operating_model}}\nFull matrix:\n{{full_matrix}}\n\nKeep every non-SRF field unchanged. Return the full matrix with srf.layer filled on every threat."
+      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-layer. Assign the primary SRF layer where the represented control point lives, not where harm appears.\n\nInjected source registry:\n{{source_registry}}\nInjected matrix:\n{{matrix}}\nFull matrix:\n{{full_matrix}}\n\nUse only layer ids and operating-model mappings present in the injected inputs. Preserve a joined assignment. For an unmatched threat, bind the layer to its diagram referent and proposed control point, then cite the matrix row used. If the source data does not support a layer, leave it unresolved and mark Track B incomplete. Keep every non-SRF field unchanged."
     },
     {
       "id": "P-srf-owner",
@@ -755,11 +945,58 @@
       "stage": "srf",
       "inputs": [
         "full_matrix",
-        "operating_model"
+        "personas",
+        "matrix"
       ],
       "output_key": "full_matrix",
       "stop_condition": "Every threat has exactly one srf.persona from personas.json and one srf.party of customer or provider. Shared is not a final answer.",
-      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-owner. Name one accountable persona and one party per threat, then return the entire matrix for P-report.\n\nFetch now:\n- https://aisharedresponsibility.com/data/personas.json\n- https://aisharedresponsibility.com/data/matrix.json\n\nPersona ids (cosai-core only unless the diagram is a federated consortium): agentic-platform-provider, application-developer, data-provider, ai-system-users, ai-system-governance, model-provider, ai-model-serving, ai-platform-provider.\n\nOperating model: {{operating_model}}\nFull matrix with joined/layered threats:\n{{full_matrix}}\n\nRules:\n- Exactly one accountable persona per threat.\n- srf.party is customer or provider. Never \"shared\". If matrix.json says shared at that layer, still name one lead and put the counterparty duty in srf.note.\n- If srf.join.copied_from_threats_json is true, keep the copied persona and party.\n- Persona must exist in personas.json.\n- Keep every non-SRF field unchanged, including controls, absences, coverage, QA, and review_order.\n- Set chain_meta.track_b_applied true. Do not write or update report.markdown; P-report is next.\n\nReturn the full matrix JSON with srf filled on every threat."
+      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-owner. Name one accountable persona and one party per threat from injected data.\n\nInjected personas:\n{{personas}}\nInjected matrix:\n{{matrix}}\nFull matrix with joined and layered threats:\n{{full_matrix}}\n\nRules:\n- Exactly one accountable persona from personas per threat.\n- party is customer or provider, never shared. When matrix assigns shared duties, identify one lead from the represented control point and record the counterparty duty in srf.note with its matrix evidence.\n- Preserve source-backed joined assignments.\n- If no injected row supports an owner, mark the threat unresolved and Track B incomplete; do not guess.\n- Keep every non-SRF field unchanged, including review context, source manifest, coverage, QA, importance, and review_order.\n- Do not write report.markdown. P-srf-coverage is next.\n\nReturn the full matrix with srf.persona, srf.party, srf.note, and assignment_evidence on every resolved threat."
+    },
+    {
+      "id": "P-srf-coverage",
+      "title": "Check SRF layer and owner coverage",
+      "track": "B",
+      "stage": "srf",
+      "inputs": [
+        "full_matrix",
+        "source_registry",
+        "personas",
+        "matrix"
+      ],
+      "output_key": "full_matrix",
+      "stop_condition": "Root layer_coverage has status, expected_layers, considered_layers, and remaining_layers. Every threat has one source-backed primary layer, one accountable persona, and customer or provider party, or Track B remains incomplete with affected ids.",
+      "template": "{{shared_rules}}\n\nTrack B. Step: P-srf-coverage. Check assignments before optional Track C or P-report. Do not create, delete, or rewrite threats.\n\nInjected source registry:\n{{source_registry}}\nInjected personas:\n{{personas}}\nInjected matrix:\n{{matrix}}\nFull matrix:\n{{full_matrix}}\n\nValidate layers against source_registry, personas against personas, operating-model rows against matrix, and party as customer or provider. Derive expected_layers from represented control points and assigned affected layers; use only L1, L2, L3, L4, L5. considered_layers contains layers whose threat assignments and owners were checked. remaining_layers contains expected layers still unresolved. status is complete only when remaining_layers is empty and every threat resolves; otherwise incomplete. Extra threat counts and summaries are allowed.\n\nWrite root layer_coverage. Set chain_meta.track_b_applied true only when layer_coverage.status is complete. Keep report.markdown untouched.\n\nReturn the full matrix with:\n{\"layer_coverage\": {\"status\": \"complete|incomplete|not_applicable\", \"expected_layers\": [\"L1\"], \"considered_layers\": [\"L1\"], \"remaining_layers\": [], \"threats_total\": 0, \"assigned_threat_ids\": [], \"unresolved\": [{\"threat_id\": \"\", \"gap\": \"\"}], \"by_persona\": {}, \"by_party\": {}, \"source_ids\": []}, \"chain_meta\": {\"track_b_applied\": false, \"track_c_applied\": false}}"
+    },
+    {
+      "id": "P-vertical-join",
+      "title": "Join vertical obligations",
+      "track": "C",
+      "stage": "vertical",
+      "optional": true,
+      "inputs": [
+        "full_matrix",
+        "source_registry",
+        "threat_crosswalk"
+      ],
+      "output_key": "full_matrix",
+      "stop_condition": "For each existing threat, applicable vertical obligations and control candidates are joined only from injected sources. No threat is created or materially rewritten.",
+      "template": "{{shared_rules}}\n\nTrack C is optional and may run only after layer_coverage.status is complete, review_context.vertical_ids is non-empty, review_context.operating_model is non-null, and injected threat_crosswalk is available. It never creates threats.\n\nStep: P-vertical-join.\nSource registry:\n{{source_registry}}\nThreat crosswalk:\n{{threat_crosswalk}}\nFull Track B matrix:\n{{full_matrix}}\n\nFor each existing threat, match only crosswalk rows for review_context.vertical_ids, jurisdictions, operating_model, scenario, and represented referent. Add vertical.obligations and vertical.control_candidates with supplied source metadata, applicability evidence, and the exact threat id. A control candidate is proposed, not existing. An obligation is mandatory only when injected evidence says so. Unmatched threats get empty arrays. Preserve threat count, ids, scenarios, and non-vertical fields.\n\nReturn the full matrix with threats[].vertical and vertical_context {\"vertical_ids\": [], \"jurisdictions\": [], \"operating_model\": null, \"source_ids\": [], \"status\": \"complete|incomplete\"}. Preserve root layer_coverage."
+    },
+    {
+      "id": "P-vertical-route",
+      "title": "Route vertical acceptance authority",
+      "track": "C",
+      "stage": "vertical",
+      "optional": true,
+      "inputs": [
+        "full_matrix",
+        "source_registry",
+        "personas",
+        "matrix"
+      ],
+      "output_key": "full_matrix",
+      "stop_condition": "Each joined obligation and acceptance decision has evidence-bound authority routing; threat count and claims are unchanged.",
+      "template": "{{shared_rules}}\n\nTrack C. Step: P-vertical-route. Add acceptance authority and control ownership to already joined vertical context. Do not create threats or change scenarios, importance, actions, or SRF assignments.\n\nSource registry:\n{{source_registry}}\nPersonas:\n{{personas}}\nMatrix:\n{{matrix}}\nFull matrix:\n{{full_matrix}}\n\nFor each vertical obligation and control candidate, name the accountable persona, party, decision or evidence needed, and source row. For action.type accept, add acceptance_authority only when the injected vertical source or matrix identifies that authority for the applicable jurisdiction and operating model. If authority is not supported, set it null and add an unresolved gap; never nominate an executive, regulator, provider, or customer from general knowledge. Set chain_meta.track_c_applied true only when vertical_context.status is complete and all mandatory obligation routes resolve. Preserve every non-vertical field and do not write report.markdown.\n\nReturn the full matrix with vertical routing, vertical_context coverage, and chain_meta.track_c_applied."
     },
     {
       "id": "P-export-md",
@@ -782,8 +1019,8 @@
         "full_matrix"
       ],
       "output_key": "full_matrix",
-      "stop_condition": "The assistant reply is the complete schema-valid matrix as pretty-printed JSON. report.markdown is preserved byte for byte, report.reviewer is null, and chain_meta.prompt_pack_version equals the pack root version.",
-      "template": "{{shared_rules}}\n\nStep: P-export-json. Write the completed threat-model JSON file. Output JSON only. Pretty-print with two-space indent. No fences and no commentary outside the object.\n\nCompleted matrix:\n{{full_matrix}}\n\nThis is a serialization step, not an authoring step:\n- Keep every field and value already present. Do not add, drop, or rewrite threats.\n- Preserve report.markdown byte for byte. If it is missing, stop and run P-report.\n- Require qa.report_present true, report.reviewer null, and chain_meta.reviewer null.\n- Require chain_meta.prompt_pack_version to equal {{pack_version}}.\n- Require llm_subset_empty and nullable qa.phantom_b_complete to agree with the matrix.\n- Require stride_coverage.complete true.\n- Every mitigate or eliminate action.control_point must be a component, store, flow, or trust-boundary id and must have validation.\n- srf.party is never shared.\n\nReturn the complete matrix, pretty-printed with two-space indentation."
+      "stop_condition": "The reply is schema-valid JSON with valid external applicability and KEV/CVE importance linkage; report.markdown is byte-preserved and reviewers are null.",
+      "template": "{{shared_rules}}\n\nStep: P-export-json. Serialize the completed threat-model JSON. Output JSON only, pretty-printed with two-space indent.\n\nCompleted matrix:\n{{full_matrix}}\n\nKeep every field and value and preserve report.markdown byte for byte. Require the completed phase, QA, importance, action, source_manifest, and optional-track contracts. Every external_ref.status must be candidate, mapped, affected, not_affected, or unknown. Reject serialization when a CVE/NVD ref is affected without non-unknown applicability_evidence supplier, product, version, component_referent, and resolving evidence_refs. Product-name similarity, unknown version, or KEV presence is not affected evidence. Reject an active_exploitation factor attributed to CISA KEV unless a valid affected CVE/NVD ref for the same component is present and both refs are cited by the factor. This is serialization, so do not repair, promote, or demote statuses here; stop with the failed invariant.\n\nWhen Track B is applied require layer_coverage.status complete. When Track C is applied require Track B and vertical_context. Return the complete matrix."
     },
     {
       "id": "P-export-csv",
@@ -795,7 +1032,7 @@
       ],
       "output_key": "threats_csv",
       "stop_condition": "The assistant reply is RFC 4180 CSV with a header and one row per threat. No fences.",
-      "template": "{{shared_rules}}\n\nThis step writes the threat database. Output CSV only, starting at the header row. Do not wrap it in a JSON object or in fences.\n\nStep: P-export-csv. Consume the completed matrix after P-report. Flatten threats[] into a spreadsheet a tracker or GRC tool can import.\n\nFull matrix:\n{{full_matrix}}\n\nThe header is intentionally stable across Track A and Track B so one GRC import mapping works for both. Track A leaves SRF cells empty rather than removing the columns.\n\nHeader, exactly these columns in this order:\nsystem_name,threat_id,review_position,scenario,diagram_referent,attacker_position,preconditions,evidence_refs,asset,source,stride,phantom_b,cia,action_type,action_detail,control_point,validation_kind,validation_detail,owasp_llm_top10,ai_exchange_slug,atlas,srf_layer,srf_persona,srf_party,srf_note\n\nRow rules:\n- One row per threat. Include every threat. Do not add threats.\n- threat_id is threats[].id. review_position comes from review_order when present and is empty otherwise.\n- evidence_refs is the ids joined with a pipe, no spaces.\n- system_name is the matrix system_name on every row.\n- stride, phantom_b, and cia are the letters joined with a pipe, no spaces. Empty array is an empty cell.\n- action_type, action_detail, and control_point come from action.\n- validation_kind and validation_detail come from action.validation. Empty when validation is null.\n- owasp_llm_top10, ai_exchange_slug, and atlas come from citations, or from srf.join.ai_exchange_slug when citations.ai_exchange_slug is empty.\n- srf_layer, srf_persona, srf_party, and srf_note come from srf when present. Leave all four cells empty when Track B was not run. srf.party is never shared.\n- Use RFC 4180: UTF-8, comma separators, wrap a field in double quotes when it contains a comma, quote, or newline, and escape a quote as two quotes.\n- Write an empty cell for a missing value. Do not write null.\n- Do not invent ids, slugs, or personas.\n"
+      "template": "{{shared_rules}}\n\nThis step writes the threat database. Output CSV only, starting at the header row, with no fences.\n\nStep: P-export-csv. Flatten completed threats[] after P-report. The v3 header is stable across Tracks A, B, and C; absent optional values use empty cells.\n\nFull matrix:\n{{full_matrix}}\n\nHeader, exactly these columns in this order:\nsystem_name,review_profile,vertical_ids,jurisdictions,operating_model,traditional_status,stride_complete,stride_expected_considerations,stride_rows_written,abuse_status,operational_status,phantom_status,composition_status,source_set_id,source_manifest_ids,layer_coverage_status,vertical_context_status,threat_id,review_position,importance_factor_kinds,importance_evidence,importance_sources,importance_needs_input,scenario,diagram_referent,attacker_position,preconditions,evidence_refs,external_refs,external_ref_statuses,external_ref_applicability_evidence,asset,source,method_sources,stride,phantom_b,cia,action_type,action_detail,control_point,validation_kind,validation_detail,owasp_llm_top10,ai_exchange_slug,atlas,srf_layer,srf_persona,srf_party,srf_note,vertical_obligations,vertical_control_candidates,acceptance_authority\n\nRow rules:\n- One row per threat. Repeat system, review-context, coverage, manifest, and optional-track fields.\n- review_position is threats[].importance.review_position and matches review_order. Join importance kinds, evidence, sources, and needs_input separately with a pipe.\n- Serialize each external_ref as source_id:external_id:catalog_version:relation:affected_referents:evidence_refs:confidence:status; join refs with a double pipe. external_ref_statuses lists candidate, mapped, affected, not_affected, or unknown in the same order.\n- external_ref_applicability_evidence serializes supplier:product:version:component_referent:evidence_refs for each ref, with an empty segment when absent, preserving the same double-pipe order.\n- Stop rather than emit CSV if a CVE/NVD affected ref lacks non-unknown complete applicability evidence, or if KEV-based active_exploitation lacks a valid affected CVE/NVD for the same component. Product similarity, unknown version, and KEV presence do not establish affected.\n- Join other array fields with a pipe. Action, validation, SRF, and vertical fields come from the matrix without inference.\n- Use RFC 4180 UTF-8 CSV: quote fields containing comma, quote, CR, or LF and double embedded quotes. Missing values are empty, never null.\n"
     },
     {
       "id": "P-export-diagram",
@@ -807,21 +1044,21 @@
       ],
       "output_key": "diagram.mermaid",
       "stop_condition": "The assistant reply is Mermaid flowchart source that uses only inventory ids. Every threat id appears on its diagram_referent. No invented nodes. No fences.",
-      "template": "{{shared_rules}}\n\nThis step writes the Mermaid threat-model diagram. Output Mermaid flowchart source only, starting at the first %% line or the flowchart keyword. Do not wrap it in a JSON object or in markdown fences.\n\nStep: P-export-diagram. Consume the completed matrix after P-report. Draw the inventory as a data-flow diagram and hang each threat id on the referent it already names. This diagram does not replace the uploaded source representation.\n\nFull matrix:\n{{full_matrix}}\n\nRequired shape:\n1. First line: %% Threat model: {system_name}\n2. Second line: flowchart LR (use TB only if LR will not fit).\n3. One subgraph per inventory.trust_boundaries row. The subgraph id is that boundary id. Its contains[] members are the only nodes inside it.\n4. One node per inventory component, external_actor, and data_store. Mermaid node id is the inventory id with hyphens changed to underscores. The visible label is inventory.name, then a line break, then every threat id whose diagram_referent equals that inventory id, joined by spaces.\n5. Data stores use the cylinder shape: id[(\"name\")].\n6. One edge per inventory.data_flows row: from -->|label| to. If a threat names that flow id as diagram_referent, append those threat ids to the edge label.\n7. classDef llm for llm_subset nodes. classDef drawnControl for every existing_controls[].coverage_referents id. Use diagram_referent only when coverage_referents is empty. Do not add control nodes.\n8. If inventory.missing_trust_boundaries is true, write %% missing_trust_boundaries: true and draw no subgraphs.\n9. Add %% replica_coverage lines for inherited pairs. Do not merge or omit replica nodes.\n10. After the flowchart, a %% legend listing each threat id, its diagram_referent, stride letters, action.type, and review position when present. One threat per line.\n\nRules:\n- Use only ids that exist in the inventory. Do not invent components, actors, stores, flows, vendors, or trust boundaries.\n- Include every inventory node and every data_flow.\n- Include every threat id exactly once on its referent (node, edge, or boundary annotation).\n- Do not add nodes for attackers, threats, actions, or control absences.\n- Do not draw an attack tree.\n- Do not put proposed mitigations on the graph. drawnControl marks only controls already shown in the source diagram.\n- If a referent is missing from inventory, omit that annotation and add %% gap: threat {id} referent {referent} not in inventory.\n"
+      "template": "{{shared_rules}}\n\nThis step writes Mermaid flowchart source only, with no fences.\n\nStep: P-export-diagram. Project the completed matrix after P-report. Do not replace or reinterpret the source representation.\n\nFull matrix:\n{{full_matrix}}\n\nRequired shape:\n1. Start with comments for system_name; review profile, vertical ids, jurisdictions, and operating model; traditional, PHANTOM-B, and composition coverage statuses; source_manifest source ids; optional SRF and vertical coverage.\n2. Then flowchart LR, or TB only when LR does not fit.\n3. One subgraph per drawn trust boundary with only contains[] members inside.\n4. One node per component, external actor, and store. Replace hyphens only in Mermaid syntax ids. Labels show inventory name and threat ids.\n5. Stores use cylinder shape.\n6. One edge per data flow; append threat ids for threats on that flow.\n7. classDef llm applies to llm_subset. classDef drawnControl applies only to shown control coverage; do not add control nodes.\n8. When missing_trust_boundaries is true, add its comment and draw no invented subgraphs.\n9. Add replica coverage comments and preserve every replica node.\n10. After the graph, one legend comment per threat with referent, method_sources, STRIDE, action, review position, importance factor kinds, external reference ids, and optional vertical obligation ids.\n\nUse only inventory ids and existing threat ids. Include each inventory node, flow, and threat exactly once on its referent. Do not draw attacker, threat, action, control-gap, obligation, or proposed-control nodes. If a referent is invalid, omit its annotation and add a gap comment."
     }
   ],
   "baseline_prompts": [
     {
       "id": "P-zeroshot",
       "title": "Zero-shot threat model",
-      "note": "Single-prompt baseline scored against Track A in eval/threat-model/.",
-      "template": "Threat model this AI system diagram. Representation kind: {{representation_kind}}.\n\n{{representation}}\n\nReturn JSON with system_name, perspective, inventory (components, external_actors, data_stores, data_flows, trust_boundaries, llm_components), solution_description, llm_subset, and threats. Each threat needs id, scenario, diagram_referent, stride, phantom_b, cia, and action (type mitigate|eliminate|transfer|accept, plus detail)."
+      "note": "Version 3 single-prompt baseline scored against Track A in eval/threat-model/.",
+      "template": "Threat model this AI-enabled system representation. Representation kind: {{representation_kind}}.\n\nOperator review context:\n{{review_context_input}}\nInjected source manifest:\n{{source_manifest}}\nRepresentation:\n{{representation}}\n\nReturn schema-compatible JSON with structured review_context claims and claim_evidence; inventory and solution description; root traditional_coverage; typed stride_considerations and stride_coverage; reusable abuse_coverage and operational_coverage; PHANTOM-B coverage; composition_considerations plus expected_paths, considered_paths, remaining_paths, status; source_manifest shaped as source_set_id and metadata entries; threats with schema-enum method_sources, complete external_refs, embedded importance {factors,needs_input,review_position}, actions; matching review_order; and required QA fields. Ground every claim. Do not infer likelihood, impact, severity, or residual risk."
     },
     {
       "id": "P-identity",
       "title": "Short expert identity",
       "note": "Optional STRIDE-GPT-style identity prompt. Not the default baseline.",
-      "template": "You are an expert threat modeler. Using STRIDE, threat model the following AI system diagram (kind={{representation_kind}}).\n\n{{representation}}\n\nList threats with STRIDE type, impact, and a mitigation."
+      "template": "You are an experienced threat modeler. For this AI-enabled system representation (kind={{representation_kind}}), use operator context, typed STRIDE, AI-specific questions, and composition paths.\n\nContext: {{review_context_input}}\nRepresentation: {{representation}}\n\nReturn review_context with claim evidence, root traditional_coverage, typed phase coverage, evidence-bound threats with schema-shaped external_refs and embedded importance, matching review_order, actions, and required QA fields. Preserve supplied severity as attributed input but do not infer likelihood, impact, severity, or residual risk."
     }
   ],
   "kill_chain_optional": {

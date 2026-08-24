@@ -1,0 +1,32 @@
+{
+  "system_id": "artifact-only-model-package",
+  "system_name": "Model package artifact review",
+  "perspective": "Assurance team reviewing a model package and model card without a runtime or integration claim.",
+  "review_profile_hint": "artifact-only",
+  "vertical_ids": [],
+  "jurisdictions": [],
+  "workflow_expectations": {
+    "traditional_status": "not_applicable",
+    "ai_status": "not_applicable",
+    "composition_status": "not_applicable",
+    "claim_boundary": "The fixture represents static artifact inspection only. It does not represent inference, deployment, identity, retrieval, tools, output consumption, or operational controls."
+  },
+  "components": [],
+  "external_actors": [
+    { "id": "assurance-reviewer", "name": "Assurance reviewer", "type": "actor" }
+  ],
+  "data_stores": [
+    { "id": "model-package", "name": "Model package", "type": "store" },
+    { "id": "model-card", "name": "Model card", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-package-read", "from": "model-package", "to": "assurance-reviewer", "label": "package inspection", "crosses_boundary": "artifact-boundary" },
+    { "id": "f-card-read", "from": "model-card", "to": "assurance-reviewer", "label": "model card inspection", "crosses_boundary": "artifact-boundary" }
+  ],
+  "trust_boundaries": [
+    { "id": "reviewer-boundary", "name": "Reviewer boundary", "contains": ["assurance-reviewer"] },
+    { "id": "artifact-boundary", "name": "Artifact repository", "contains": ["model-package", "model-card"] }
+  ],
+  "llm_components": [],
+  "missing_trust_boundaries": false
+}

@@ -30,7 +30,7 @@ For the same `system_id`, take the three format predictions. Jaccard of
 inventory id sets, then Jaccard of threat `diagram_referent` sets. Mean over
 the three pairs (image-mermaid, image-svg, mermaid-svg).
 
-## Coverage (Q2)
+## Method and phase coverage (Q2)
 
 - PHANTOM-B fraction: gold LLM components whose predicted threats include all
   eight letters P, H, A, N, T, O, M, B. Letters may be spread across several
@@ -38,18 +38,34 @@ the three pairs (image-mermaid, image-svg, mermaid-svg).
 - An empty `llm_subset` requires `llm_subset_empty: true`,
   `phantom_coverage.status: not_applicable`, and
   `qa.phantom_b_complete: null`. An empty subset never counts as complete.
-- STRIDE fraction: gold processes that have at least one predicted STRIDE
-  letter on a threat pointing at them. Full six-letter consideration is a
-  schema and harness check when `stride_considerations` is present.
-- `stride_coverage.complete` must be true, `remaining_elements` must be empty,
-  and every `expected_elements` id must have all six consideration rows.
+- Traditional applicability: every run records `traditional_coverage.status`
+  as `complete`, `incomplete`, or `not_applicable`. Only a confirmed
+  `artifact-only` review may use `not_applicable`. Missing runtime or
+  integration evidence is `incomplete`.
+- Typed STRIDE: processes receive S, T, R, I, D, E; actors receive S and R;
+  stores receive T, R, I, D; flows receive T, I, D. The evaluator compares
+  the declared `expected_considerations` pairs with the consideration rows.
+  Duplicate, missing, and extra pairs fail.
+- Abuse-case coverage records each evidenced high-value transaction,
+  authorization decision, and delegated action. A conditional exclusion names
+  the referent and reason.
+- Operational coverage records NIST adversarial, accidental, structural, and
+  environmental source classes when availability, physical safety, OT, or
+  continuity is in scope.
 - Crossing fraction: gold flows with `crosses_boundary` set that are named as
   a `diagram_referent` or whose endpoints are.
+- Composition coverage declares paths for AI-to-traditional flows, retrieval,
+  identity delegation, tool actuation, output consumption, feedback loops,
+  and shared stores. `considered_paths` and `remaining_paths` must partition
+  the expected path ids.
 
 ## Report completeness (Track A, after P-report)
 
-These fields are required by prompt pack v2:
+These fields are required by prompt pack v3:
 
+- `review_context` with profile, claim evidence, critical assets, prohibited
+  outcomes, continuity or safety constraints, and supplied context that is
+  either attributed or null
 - `representation.version` or `source_id` set, or explicitly `unknown`
 - `adversary.assumptions` non-empty; `adversary.positions` covers drawn zones
 - `existing_controls` present; empty only with `none_drawn`
@@ -63,13 +79,22 @@ These fields are required by prompt pack v2:
 - each `evidence_refs` value resolves to a `control_absences` id
 - each replica inheritance maps representative and replica inventory ids and
   names one configuration-divergence threat
-- optional `review_order` contains each threat id once; it does not change ids
-  or claim likelihood, impact, or residual risk
+- each threat has `importance.factors`, `importance.needs_input`, and a unique
+  review position; factors name their evidence and source
+- `review_order` contains each threat id once; it does not change ids or claim
+  likelihood, impact, severity, or residual risk
+- `source_manifest` records source id, kind, URL, license, integration mode,
+  catalog version, retrieval date, and content hash
+- each external reference names its mapping relation, affected referents,
+  evidence, confidence, and status
+- CVE and NVD references may claim `affected` only with known supplier,
+  product, version, component referent, and applicability evidence
 - `report.markdown` is present; `report.reviewer` is null until a human signs
 - `P-report` is the only step that authors `report.markdown`
 - `P-export-md` emits that stored string, `P-export-json` serializes the final
   matrix, and `P-export-csv` writes one row per threat with a stable header
-- Track A leaves the SRF CSV cells empty; Track B fills the same columns
+- Track A leaves SRF and vertical CSV cells empty; Track B and Track C fill the
+  same stable columns
 - `P-export-diagram` writes a Mermaid threat-model diagram of the inventory
   with threat ids on their referents
 
@@ -87,7 +112,15 @@ Schema is skipped:
 - existing-control coverage and control-absence evidence resolve to inventory ids
 - replica inheritance ids and divergence threat resolve
 - `review_order`, when present, contains every threat id once
-- `chain_meta.prompt_pack_version` is `2.0`
+- `chain_meta.prompt_pack_version` is `3.0`
+- review profile and traditional applicability agree
+- typed STRIDE rows equal the declared element-letter pairs
+- traditional, abuse, operational, AI, and composition QA flags agree with
+  their coverage states
+- composition considerations bind to declared paths and inventory referents
+- source ids resolve to the run manifest; catalog versions match
+- affected CVE or NVD mappings include product and version evidence
+- importance positions are unique and every factor has evidence
 - STRIDE / PHANTOM-B / CIA letters in the published alphabets
 - `srf.party` must not be `shared`
 - `ai_exchange_slug` must be one of the sixteen ids in `data/threats.json`
@@ -98,7 +131,7 @@ When `labels/expert-corrections.json` lists gold STRIDE and CIA letter sets per
 threat id, Hamming loss is the fraction of alphabet letters that disagree.
 Auspex Table 2 method. Do not compute this against the model's own labels.
 
-## SRF track (optional)
+## SRF and vertical tracks (optional)
 
 If `threats[].srf` is present:
 
@@ -107,6 +140,22 @@ If `threats[].srf` is present:
 - `party` is customer or provider
 - If `copied_from_threats_json` is true, persona must match
   `threats.json` accountability for the named operating model
+- `layer_coverage` states expected, considered, and remaining L1 to L5 layers
+- Track C requires completed Track B, non-empty `vertical_ids`, and injected
+  source rows
+- each vertical obligation and candidate control retains its source id and
+  applicability evidence
+- acceptance authority remains null when the supplied source does not name it
+
+## Workflow fixtures
+
+Gold fixture metadata checks these bounded contracts:
+
+- a traditional-only service marks AI and composition not applicable
+- a full or bounded AI system cannot skip traditional analysis
+- an artifact-only review states the claim boundary that permits exclusion
+- a mixed system requires composition coverage
+- an unknown component version forbids an affected CVE claim
 
 ## SME (required for closure)
 

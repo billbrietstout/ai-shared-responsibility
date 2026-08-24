@@ -132,6 +132,7 @@ def stage_section(qid: str, title: str, pack: dict) -> str:
 def main():
     pack = PACK
     track_b = [p for p in pack["prompts"] if p["track"] == "B"]
+    track_c = [p for p in pack["prompts"] if p["track"] == "C"]
     export_prompts = [p for p in pack["prompts"] if p["track"] == "export"]
     baselines = pack["baseline_prompts"]
     pb = "\n".join(f"<li><strong>{esc(q['letter'])}</strong> {esc(q['name'])}: {esc(q['ask'])}</li>" for q in pack["phantom_b_questions"])
@@ -148,11 +149,12 @@ def main():
         )
 
     roles = "\n".join(role_li(r) for r in pack["roles"])
-    q1 = stage_section("q1", "Read the diagram into a solution description. Then state attackers and existing controls. Each step is filled with the prior JSON.", pack)
-    q2 = stage_section("q2", "Run STRIDE in complete batches on in-scope elements and crossing flows. Run PHANTOM-B on the LLM subset, then merge.", pack)
-    q3 = stage_section("q3", "Map CIA, STRIDE, and PHANTOM-B letters. Choose one action in P-act. P-rank is an optional review order based on attacker position and explicit preconditions.", pack)
-    q4 = stage_section("q4", "Run the mechanical self-check. Choose optional Track B here, before P-report writes the final readable document.", pack)
+    q1 = stage_section("q1", "Set the review profile and claim boundary, then read the whole representation into a structured inventory.", pack)
+    q2 = stage_section("q2", "Complete typed STRIDE and conditional abuse and operational passes before PHANTOM-B. Then test AI-to-traditional paths and pinned source mappings.", pack)
+    q3 = stage_section("q3", "Map method labels, record evidence-backed importance, and choose one action with a testable control point.", pack)
+    q4 = stage_section("q4", "Check phase gates, denominators, evidence, and actions. Optional accountability and vertical joins run here before the report.", pack)
     track_b_html = "\n".join(prompt_block(p, pack) for p in track_b)
+    track_c_html = "\n".join(prompt_block(p, pack) for p in track_c)
     export_html = "\n".join(prompt_block(p, pack) for p in export_prompts)
     baseline_html = "\n".join(prompt_block(dict(p, track="eval"), pack) for p in baselines)
     role_ids = ", ".join(r["id"] for r in pack["roles"])
@@ -177,10 +179,10 @@ def main():
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AI System Diagram Threat Modeling · AI Shared Responsibility</title>
+    <title>AI-Enabled System Threat Modeling · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a threat matrix, a markdown report, completed JSON, a threat-database CSV, and a Mermaid threat-model diagram. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat. Eval report at /eval/threat-model/."
+      content="Version 3 prompts for AI-enabled system threat modeling. Track A combines typed STRIDE, conditional abuse and operational analysis, PHANTOM-B, composition paths, and pinned source references. Optional tracks assign SRF accountability and vertical obligations."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -361,9 +363,9 @@ def main():
 {{
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "name": "AI System Diagram Threat Modeling Prompts",
+  "name": "AI-Enabled System Threat Modeling Prompts",
   "url": "https://aisharedresponsibility.com/tools/prompts/threat-model/",
-  "description": "Prompts that read an AI system diagram and write a threat matrix, a markdown report, completed JSON, a threat-database CSV, and a Mermaid threat-model diagram. Track A walks Shostack's Four Questions. Track B writes one SRF persona onto each threat.",
+  "description": "Version 3 prompts that model a whole AI-enabled system with typed STRIDE, conditional abuse and operational analysis, PHANTOM-B, composition paths, pinned source references, and optional SRF and vertical assignments.",
   "publisher": {{
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -372,9 +374,6 @@ def main():
 }}
     </script>
     <!-- llm:meta -->
-    <meta name="llm:type" content="tool" />
-    <meta name="llm:canonical-id" content="srf.page.tools-prompts-threat-model" />
-    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.data.threats" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -385,20 +384,21 @@ def main():
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
         <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / <a href="/tools/prompts/">System Instructions</a> / Threat modeling / Pack v{esc(pack['version'])}</span>
-        <h1 class="page-hero__title">AI system diagram threat modeling</h1>
+        <h1 class="page-hero__title">AI-enabled system threat modeling</h1>
         <p class="page-hero__lede">
-          Prompts that read an AI system diagram (image, Mermaid, or SVG) and write a
+          Prompts that read a system representation (image, Mermaid, or SVG) and write a
           threat matrix, a markdown report, completed JSON, a threat-database CSV,
           and a Mermaid threat-model diagram.
-          Track A walks Shostack's Four Questions; each step is filled with the previous
-          step's JSON (the Auspex chain shape). STRIDE repeats in bounded batches until
-          coverage is complete. Optional Track B runs after QA and before the report.
+          Track A requires a traditional-security applicability decision, typed STRIDE,
+          conditional abuse and operational passes, PHANTOM-B for the AI subset, and
+          AI-to-traditional composition coverage. Optional Track B assigns SRF
+          accountability. Optional Track C joins vertical obligations and controls.
           Then run the export steps once and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
-          <a href="/eval/threat-model/">How this pack scores against three published threat models</a>.
-          <a href="{esc(pack['release_notes_url'])}">Release notes and compatibility changes</a>.
+          <a href="/tools/prompts/threat-model/releases/">Release notes</a>.
+          <a href="/eval/threat-model/">Evaluation method and fixtures</a>.
         </p>
       </div>
     </header>
@@ -408,32 +408,34 @@ def main():
       <div class="deliverable" id="shortcut">
         <p class="deliverable__title">Shortcut: one chat</p>
         <p>
-          Attach the diagram (image, Mermaid, or SVG) to a chat that can fetch URLs.
+          Attach the representation and supply the review profile, scope, and any
+          vertical or jurisdiction facts. Supply pinned source inputs when external
+          mappings are required.
           Copy the block below. The model runs Track A from
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           You do not copy the Track A steps.
         </p>
         <ol>
-          <li>Fetch the pack. Use its root version, runtime defaults, selected role guidance, and chain routes.</li>
+          <li>Load the pack. Use its root version, runtime defaults, selected role guidance, and chain routes.</li>
           <li>Fill each template from the prior JSON (<code>inventory</code>, <code>threats</code>, <code>full_matrix</code>, and the other <code>{{{{ }}}}</code> slots).</li>
           <li>Keep the diagram attached on every step that names <code>{{{{representation}}}}</code>. Set <code>representation_kind</code> to match the attachment.</li>
           <li>If a <code>stop_condition</code> fails, stop and show the gap. Repeat a step when its <code>repeat_until</code> field is not satisfied.</li>
           <li>After P-report, run P-export-md, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
-          <li>If Track B is requested, branch from P-qa to P-srf-join, run all three Track B steps, then return to P-report. Otherwise P-qa goes directly to P-report.</li>
+          <li>If Track B is requested, branch from P-qa and run its four steps. Track C may follow when vertical ids and source inputs are supplied. Return to P-report after the selected optional tracks.</li>
         </ol>
         <p>
-          If the chat cannot fetch that file, use the copy-one-block steps under
+          If the chat cannot load that file, use the copy-one-block steps under
           How to run the chain.
         </p>
         <div class="shortcut-paste">
           <button type="button" id="shortcut-copy">Copy</button>
-          <pre id="shortcut-text">Attach this diagram. Fetch https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json now.
+          <pre id="shortcut-text">Attach this system representation. Load https://aisharedresponsibility.com/tools/prompts/threat-model/prompts.json.
 
-Use the pack root version and runtime_defaults. Run the required Track A route from P-norm through P-report. For each step, fill the template slots from the accumulated JSON. Keep this diagram attached on every step whose template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg to match the attachment. Role: experienced-threat-modeler unless I name another role. Insert that role's tradecraft, notices_first, and declines_to_opine as role_guidance.
+Use pack version 3.0 and runtime_defaults. Run required Track A from P-context through P-report. Ask me for review_context_input before P-context. Fill every later template slot from accumulated JSON. Keep the representation attached when a template includes {{{{representation}}}}. Set representation_kind to image, mermaid, or svg. Role: experienced-threat-modeler unless I name another role.
 
 Do not skip a step. If a stop_condition fails, stop and show the gap. When a chain object has repeat_until, rerun that same step with its cumulative prior output until the condition is true.
 
-P-rank is optional. Run it only if I ask for review ordering. Track B is optional. If I supply an operating model and request SRF assignments, branch from P-qa to P-srf-join, P-srf-layer, and P-srf-owner, then return to P-report. Otherwise P-qa goes directly to P-report.
+Do not fetch catalog or SRF data during the chain. Ask me to supply source_manifest and any pinned source records. Use data/threat-sources.json as the source registry. Track B is optional and requires an operating model plus injected SRF data. Track C requires completed Track B, vertical_ids, and injected vertical source rows.
 
 After P-report, run P-export-md, then P-export-json, then P-export-csv, then P-export-diagram. I will save those replies as .md, .json, .csv, and .mmd. Leave report.reviewer empty.
 
@@ -447,8 +449,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li>Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
         <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
         <li>Copy one block at a time. The copied text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click.</li>
-        <li>Run Track A in order. Repeat P-stride until <code>stride_coverage.complete</code> is true. P-rank is optional before P-qa.</li>
-        <li>At P-qa, either continue to P-report or run <a href="#track-b">Track B</a> with an operating model, then return to P-report.</li>
+        <li>Run Track A in order. Repeat P-stride until its typed denominator closes. P-importance is required before P-act.</li>
+        <li>At P-qa, continue to P-report or run <a href="#track-b">Track B</a>. Run <a href="#track-c">Track C</a> only after Track B closes and vertical source rows are supplied.</li>
         <li>After P-report, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
         <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
       </ol>
@@ -458,6 +460,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li><a href="#shortcut">Shortcut: one chat</a></li>
         <li><a href="#q1">Track A: Four Questions</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
+        <li><a href="#track-c">Track C (optional)</a></li>
         <li><a href="#export-report">Export the report, JSON, CSV, and diagram</a></li>
         <li><a href="#baselines">Evaluation baselines</a></li>
       </ul>
@@ -487,8 +490,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         {pb}
       </ul>
       <p class="section-note">
-        Ask these eight questions for each chatbot or model-runtime node. STRIDE still
-        applies to every component. Write mitigations in P-act.
+        Ask these eight questions for each eligible AI node after traditional
+        applicability closes. Write mitigations in P-act.
       </p>
 
       <p class="section-label">Roles</p>
@@ -503,15 +506,16 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <li>Crossman et al., <a href="https://arxiv.org/abs/2503.09586">Auspex</a> (arXiv:2503.09586). Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack.</li>
         <li>IETF <a href="https://datatracker.ietf.org/doc/html/rfc6819">RFC 6819</a>. Attack assumptions and existing features are stated before new threats. Do not copy its OAuth threat list onto an unrelated diagram.</li>
         <li>CoSAI SRF accountability data: <a href="/data/threats.json">threats.json</a>, <a href="/data/personas.json">personas.json</a>, <a href="/data/matrix.json">matrix.json</a>.</li>
+        <li>External source registry: <a href="/data/threat-sources.json">threat-sources.json</a>. A run records the exact source versions and hashes in <code>source_manifest</code>.</li>
       </ul>
 
       <p class="section-label">Lane</p>
       <p class="section-note">
-        Track A records the diagram, drawn controls, control gaps visible in the
-        diagram, threats, actions, and method coverage. Optional Track B writes one
-        SRF persona and one party onto each threat after QA. P-report then writes the
-        final report once. Cite an OWASP, ATLAS, or AI Exchange id only when it exists
-        in that source.
+        Track A records review context, the full inventory, traditional and AI
+        applicability, composition paths, threats, actions, and source provenance.
+        Track B assigns one SRF layer, persona, and party. Track C adds source-bound
+        obligations, control candidates, and acceptance authority. A catalog entry
+        needs an inventory referent and evidence before it can attach to a threat.
       </p>
 
 {q1}
@@ -523,7 +527,8 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
         <p class="deliverable__title">What Track A has filled</p>
         <p>
           P-qa produces the checked Track A matrix. Run optional
-          <a href="#track-b">Track B</a> before P-report, or run P-report
+          <a href="#track-b">Track B</a> and <a href="#track-c">Track C</a>
+          before P-report, or run P-report
           immediately. Then run the <a href="#export-report">export steps</a> and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
           <code>.mmd</code> replies.
@@ -533,17 +538,18 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
           <code>mermaid.json</code> / <code>svg.json</code>).
         </p>
         <ul>
-          <li><code>inventory</code>, <code>solution_description</code>, <code>replica_coverage</code>, and <code>llm_subset_empty</code>.</li>
+          <li><code>review_context</code>, <code>inventory</code>, <code>solution_description</code>, <code>replica_coverage</code>, and <code>llm_subset_empty</code>.</li>
           <li><code>adversary</code>: assumptions and positions (who already sits in which zone).</li>
           <li><code>existing_controls</code> with shown coverage, plus <code>control_absences</code> for expected controls not shown at a named referent.</li>
           <li><code>claim_boundary</code>: what this review does not claim, plus the time or component box.</li>
-          <li><code>stride_coverage</code> and <code>phantom_coverage</code> state what was considered and what remains.</li>
-          <li><code>threats</code>: ids T1, T2, and so on. Each row has a scenario, diagram referent, attacker position, method letters, one action, and validation on mitigate or eliminate.</li>
-          <li>Optional <code>review_order</code> records the builder review sequence without changing threat ids or claiming a risk score.</li>
+          <li><code>traditional_coverage</code>, typed <code>stride_coverage</code>, <code>phantom_coverage</code>, and <code>composition_coverage</code> record method denominators and gaps.</li>
+          <li><code>source_manifest</code> pins every external source used by a mapping.</li>
+          <li><code>threats</code>: stable ids with referents, method sources, evidence, external references, importance factors, one action, and validation on mitigate or eliminate.</li>
+          <li><code>review_order</code> records the review sequence without claiming likelihood, impact, or residual risk.</li>
           <li><code>qa</code> records failed checks. P-report later fills <code>report.markdown</code>. Leave <code>report.reviewer</code> empty.</li>
         </ul>
         <p>
-          Track B is optional and reads the P-qa JSON. After Track B, return to
+          Track B and Track C are optional. After the selected tracks, return to
           P-report. Then run the <a href="#export-report">export steps</a> and save the
           <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
           <code>.mmd</code> replies.
@@ -552,31 +558,50 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
 
       <p class="section-label" id="track-b">Track B (optional): SRF accountability</p>
       <p class="section-note">
-        Off by default. Branch here after P-qa. Track B consumes the checked Track A
-        JSON plus an operating model, then returns the full matrix to P-report.
-        Join published AI Exchange slugs from threats.json instead of re-deriving them.
+        Branch here after P-qa when an SRF report, operating-model assignment, or
+        vertical join is requested. Track B consumes the checked Track A matrix,
+        a supplied operating model, and injected local SRF data. It checks expected
+        L1 to L5 coverage before returning to P-report or Track C.
       </p>
 {track_b_html}
 
       <div class="deliverable" id="track-b-output">
         <p class="deliverable__title">What Track B has filled</p>
         <p>
-          The assistant JSON after P-srf-owner is the Track A matrix with
-          <code>srf</code> on every threat. Same schema;
-          <code>chain_meta.track_b_applied</code> is true. Run P-report next so the
-          report includes layer, persona, and party.
+          The assistant JSON after P-srf-coverage is the Track A matrix with
+          <code>srf</code> on every threat and a <code>layer_coverage</code> audit.
+          <code>chain_meta.track_b_applied</code> is true only when that audit closes.
         </p>
         <ul>
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
           <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
           <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
           <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
+          <li><code>layer_coverage</code>: expected, considered, and remaining SRF layers.</li>
         </ul>
         <p>
-          Track B does not add threats. A threat with no matching slug still needs
-          layer, persona, and party from P-srf-layer and P-srf-owner. Next, run
-          P-report, then <a href="#export-report">Export the report, JSON, CSV, and diagram</a>.
+          Track B does not add threats. A threat with no matching crosswalk row still
+          needs a source-backed layer, persona, and party. Run Track C when vertical
+          context is supplied, or run P-report next.
         </p>
+      </div>
+
+      <p class="section-label" id="track-c">Track C (optional): vertical obligations and routing</p>
+      <p class="section-note">
+        Run Track C only after Track B closes. It joins supported vertical and
+        jurisdiction rows to existing threat ids. It cannot add a threat or treat a
+        candidate control as an existing control.
+      </p>
+{track_c_html}
+
+      <div class="deliverable" id="track-c-output">
+        <p class="deliverable__title">What Track C has filled</p>
+        <ul>
+          <li>Applicable obligation citations from injected regulation or crosswalk rows.</li>
+          <li>Candidate controls kept separate from diagram-visible existing controls.</li>
+          <li>One accountable persona and acceptance authority when the source data identifies them.</li>
+          <li>Unresolved authority or applicability gaps instead of guessed assignments.</li>
+        </ul>
       </div>
 
       <p class="section-label" id="export-report">Export the report, JSON, CSV, and diagram</p>
@@ -603,7 +628,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
       <p class="section-label">Output schema</p>
       <p class="section-note">
         Full JSON Schema: <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
-        Gold diagrams (five systems, three formats) and the scoring scripts are in
+        Gold diagrams and bounded workflow fixtures are in
         <code>eval/threat-model/</code> of the site repository.
       </p>
     </main>

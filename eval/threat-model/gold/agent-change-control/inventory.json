@@ -1,0 +1,53 @@
+{
+  "system_id": "agent-change-control",
+  "system_name": "Agent acting on infrastructure change control",
+  "perspective": "Platform team that owns the agent gateway, approval service, and deployment adapter.",
+  "review_profile_hint": "full-system",
+  "operating_model_hint": "Agent-PaaS",
+  "vertical_ids": [],
+  "jurisdictions": [],
+  "critical_assets": ["production infrastructure", "deployment credentials"],
+  "prohibited_outcomes": ["agent executes an unapproved production change"],
+  "continuity_safety_constraints": ["production changes require rollback evidence"],
+  "workflow_expectations": {
+    "traditional_status": "complete",
+    "ai_status": "complete",
+    "composition_status": "complete",
+    "reason": "Model-generated tool calls cross an approval boundary and actuate a traditional deployment system."
+  },
+  "components": [
+    { "id": "agent-gateway", "name": "Agent gateway", "type": "process" },
+    { "id": "agent-runtime", "name": "Agent runtime", "type": "process" },
+    { "id": "approval-service", "name": "Approval service", "type": "process" },
+    { "id": "deployment-adapter", "name": "Deployment adapter", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "operator", "name": "Platform operator", "type": "actor" },
+    { "id": "model-endpoint", "name": "Model endpoint", "type": "external" },
+    { "id": "deployment-api", "name": "Deployment API", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "change-store", "name": "Change request store", "type": "store" },
+    { "id": "credential-vault", "name": "Credential vault", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-goal", "from": "operator", "to": "agent-gateway", "label": "change goal", "crosses_boundary": "operator-boundary" },
+    { "id": "f-agent-input", "from": "agent-gateway", "to": "agent-runtime", "label": "bounded goal", "crosses_boundary": null },
+    { "id": "f-model-prompt", "from": "agent-runtime", "to": "model-endpoint", "label": "plan prompt", "crosses_boundary": "agent-to-provider" },
+    { "id": "f-tool-call", "from": "model-endpoint", "to": "agent-runtime", "label": "proposed tool call", "crosses_boundary": "agent-to-provider" },
+    { "id": "f-change", "from": "agent-runtime", "to": "change-store", "label": "change proposal", "crosses_boundary": "agent-to-control" },
+    { "id": "f-approval", "from": "operator", "to": "approval-service", "label": "approval decision", "crosses_boundary": "operator-boundary" },
+    { "id": "f-approved-call", "from": "approval-service", "to": "deployment-adapter", "label": "approved action", "crosses_boundary": "agent-to-control" },
+    { "id": "f-credential", "from": "credential-vault", "to": "deployment-adapter", "label": "scoped credential", "crosses_boundary": "control-to-data" },
+    { "id": "f-deploy", "from": "deployment-adapter", "to": "deployment-api", "label": "deployment command", "crosses_boundary": "control-to-production" }
+  ],
+  "trust_boundaries": [
+    { "id": "operator-boundary", "name": "Operator boundary", "contains": ["operator"] },
+    { "id": "agent", "name": "Agent zone", "contains": ["agent-gateway", "agent-runtime"] },
+    { "id": "provider", "name": "Model provider", "contains": ["model-endpoint"] },
+    { "id": "control", "name": "Change control zone", "contains": ["approval-service", "deployment-adapter", "change-store", "credential-vault"] },
+    { "id": "production", "name": "Production boundary", "contains": ["deployment-api"] }
+  ],
+  "llm_components": ["agent-runtime", "model-endpoint"],
+  "missing_trust_boundaries": false
+}

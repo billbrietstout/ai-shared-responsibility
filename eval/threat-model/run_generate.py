@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Saturate the Track A / Track B / baseline prompt templates for gold diagrams.
+"""Saturate Track A, optional tracks, and baseline prompts for gold diagrams.
 
 Writes prompt text files a human or an API runner can execute. Does not call a
 model unless --call-api is set and OPENAI_API_KEY (or TM_API_KEY) is present.
@@ -20,6 +20,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 PROMPTS = ROOT / "tools" / "prompts" / "threat-model" / "prompts.json"
+DATA = ROOT / "data"
 FORMAT_FILES = {
     "image": "diagram.png",
     "mermaid": "diagram.mmd",
@@ -29,6 +30,10 @@ FORMAT_FILES = {
 
 def load_pack() -> dict:
     return json.loads(PROMPTS.read_text(encoding="utf-8"))
+
+
+def load_data(name: str) -> dict:
+    return json.loads((DATA / name).read_text(encoding="utf-8"))
 
 
 def saturate(template: str, mapping: dict) -> str:
@@ -65,6 +70,36 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
             *[f"- {item}" for item in role_row.get("declines_to_opine", [])],
         ]
     )
+    source_registry = load_data("threat-sources.json")
+    source_manifest = {
+        "source_set_id": "fixture-no-external-catalogs",
+        "entries": [],
+    }
+    review_profile = gold.get("review_profile_hint", "full-system")
+    review_context_input = {
+        "profile": review_profile,
+        "profile_confirmation": (
+            {
+                "operator_confirmed": True,
+                "evidence": gold.get("workflow_expectations", {}).get(
+                    "claim_boundary",
+                    "Fixture metadata limits this run to the supplied artifact.",
+                ),
+            }
+            if review_profile == "artifact-only"
+            else {"operator_confirmed": False}
+        ),
+        "perspective": gold["perspective"],
+        "vertical_ids": gold.get("vertical_ids", []),
+        "jurisdictions": gold.get("jurisdictions", []),
+        "operating_model": gold.get("operating_model_hint"),
+        "critical_assets": gold.get("critical_assets", []),
+        "prohibited_outcomes": gold.get("prohibited_outcomes", []),
+        "continuity_safety_constraints": gold.get(
+            "continuity_safety_constraints", []
+        ),
+        "supplied_severity": None,
+    }
     mapping_base = {
         "shared_rules": pack["shared_rules"],
         "pack_version": pack["version"],
@@ -73,6 +108,8 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         "role_guidance": role_guidance,
         "perspective": gold["perspective"],
         "operating_model": gold.get("operating_model_hint", "AI-PaaS"),
+        "review_context_input": review_context_input,
+        "review_context": "(fill from P-context output)",
         "inventory": gold,
         "architecture_description": "(fill from P-diag output)",
         "application_details": "(fill from P-app output)",
@@ -88,11 +125,29 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         "stride_scenarios": "(fill from P-stride output)",
         "stride_coverage": "(fill from P-stride output)",
         "phantom_scenarios": "(fill from P-phantom output)",
+        "phantom_coverage": "(fill from P-phantom output)",
         "threats": "(fill from prior step)",
         "adversary": "(fill from P-adv output)",
         "existing_controls": "(fill from P-controls output)",
         "control_absences": "(fill from P-controls output)",
         "claim_boundary": "(fill from P-adv output)",
+        "traditional_coverage": "(fill from P-stride through P-operational output)",
+        "traditional_analysis": "(fill from P-stride through P-operational output)",
+        "abuse_scenarios": "(fill from P-abuse output)",
+        "abuse_coverage": "(fill from P-abuse output)",
+        "operational_scenarios": "(fill from P-operational output)",
+        "operational_coverage": "(fill from P-operational output)",
+        "composition_scenarios": "(fill from P-compose output)",
+        "composition_coverage": "(fill from P-compose output)",
+        "catalog_scenarios": "(fill from P-catalog output)",
+        "catalog_mappings": "(fill from P-catalog output)",
+        "catalog_coverage": "(fill from P-catalog output)",
+        "review_order": "(fill from P-importance output)",
+        "source_manifest": source_manifest,
+        "source_registry": source_registry,
+        "threat_crosswalk": load_data("threats.json"),
+        "personas": load_data("personas.json"),
+        "matrix": load_data("matrix.json"),
         "full_matrix": "(fill with the accumulated matrix)",
     }
     chain = [c["id"] for c in pack["chain"] if c["track"] == "A"]
@@ -118,6 +173,10 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         for j, pid in enumerate(b_ids, start=1):
             text = saturate(prompts[pid]["template"], mapping)
             (out_dir / f"B{j:02d}-{pid}.txt").write_text(text + "\n", encoding="utf-8")
+        c_ids = [c["id"] for c in pack["chain"] if c["track"] == "C"]
+        for j, pid in enumerate(c_ids, start=1):
+            text = saturate(prompts[pid]["template"], mapping)
+            (out_dir / f"C{j:02d}-{pid}.txt").write_text(text + "\n", encoding="utf-8")
         export_ids = [c["id"] for c in pack["chain"] if c["track"] == "export"]
         for k, pid in enumerate(export_ids, start=1):
             text = saturate(prompts[pid]["template"], mapping)
@@ -125,15 +184,16 @@ def write_tradecraft(pack: dict, gold: dict, gold_dir: Path, dest: Path, role: s
         readme = out_dir / "README.txt"
         readme.write_text(
             "Run Track A prompts in numeric order. Repeat P-llm-cut or P-stride "
-            "when its repeat_until condition is false. O01-P-rank is optional before "
-            "P-qa. If you use Track B, stop after P-qa, run B01 through B03, then "
-            "run P-report. Otherwise run P-report directly after P-qa. Paste each "
-            "JSON output into the next prompt's prior-output slot. After P-report, "
-            "run E01-P-export-md "
+            "when its repeat_until condition is false. If you use Track B, stop "
+            "after P-qa, run B01 through B04, then run P-report. Track C requires "
+            "complete Track B coverage and runs C01 through C02 before P-report. "
+            "Otherwise run P-report directly after P-qa. Paste each JSON output "
+            "into the next prompt's prior-output slot. After P-report, run E01-P-export-md "
             "(markdown), E02-P-export-json (completed JSON), E03-P-export-csv "
             "(threat database), then E04-P-export-diagram (Mermaid threat-model diagram). "
-            "Track B files require an operating_model. Run the exports once, after the "
-            "final P-report. Do not call an API from this README.\n",
+            "Track B files require an operating_model and injected local SRF data. "
+            "Track C also requires vertical_ids. Run exports once, after the final "
+            "P-report. Do not call an API from this README.\n",
             encoding="utf-8",
         )
 
@@ -148,6 +208,26 @@ def write_baseline(pack: dict, gold: dict, gold_dir: Path, dest: Path, prompt_id
             "shared_rules": pack["shared_rules"],
             "representation_kind": kind,
             "representation": representation_payload(gold_dir, kind),
+            "review_context_input": {
+                "profile": gold.get("review_profile_hint", "full-system"),
+                "profile_confirmation": (
+                    {
+                        "operator_confirmed": True,
+                        "evidence": gold.get("workflow_expectations", {}).get(
+                            "claim_boundary",
+                            "Fixture metadata limits this run to the supplied artifact.",
+                        ),
+                    }
+                    if gold.get("review_profile_hint") == "artifact-only"
+                    else {"operator_confirmed": False}
+                ),
+                "perspective": gold["perspective"],
+                "operating_model": gold.get("operating_model_hint"),
+            },
+            "source_manifest": {
+                "source_set_id": "fixture-no-external-catalogs",
+                "entries": [],
+            },
         })
         (out_dir / f"00-{prompt_id}.txt").write_text(text + "\n", encoding="utf-8")
 

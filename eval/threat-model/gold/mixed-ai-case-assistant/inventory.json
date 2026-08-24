@@ -1,0 +1,50 @@
+{
+  "system_id": "mixed-ai-case-assistant",
+  "system_name": "AI-assisted case management application",
+  "perspective": "Application team that owns case intake, retrieval, prompt assembly, and the case workflow.",
+  "review_profile_hint": "full-system",
+  "operating_model_hint": "AI-PaaS",
+  "vertical_ids": ["public-sector"],
+  "jurisdictions": [],
+  "critical_assets": ["case records", "case disposition"],
+  "prohibited_outcomes": ["model output changes a case disposition without worker approval"],
+  "workflow_expectations": {
+    "traditional_status": "complete",
+    "ai_status": "complete",
+    "composition_status": "complete",
+    "reason": "The model reads traditional records and its output enters a human case decision."
+  },
+  "components": [
+    { "id": "case-portal", "name": "Case portal", "type": "process" },
+    { "id": "retrieval-service", "name": "Retrieval service", "type": "process" },
+    { "id": "prompt-builder", "name": "Prompt builder", "type": "process" },
+    { "id": "case-workflow", "name": "Case workflow", "type": "process" }
+  ],
+  "external_actors": [
+    { "id": "case-worker", "name": "Case worker", "type": "actor" },
+    { "id": "model-api", "name": "Model API", "type": "external" }
+  ],
+  "data_stores": [
+    { "id": "case-store", "name": "Case store", "type": "store" },
+    { "id": "document-index", "name": "Document index", "type": "store" }
+  ],
+  "data_flows": [
+    { "id": "f-worker-request", "from": "case-worker", "to": "case-portal", "label": "case question", "crosses_boundary": "workforce" },
+    { "id": "f-retrieve", "from": "case-portal", "to": "retrieval-service", "label": "retrieval request", "crosses_boundary": null },
+    { "id": "f-index", "from": "retrieval-service", "to": "document-index", "label": "document search", "crosses_boundary": "app-to-data" },
+    { "id": "f-case-data", "from": "case-store", "to": "retrieval-service", "label": "case facts", "crosses_boundary": "app-to-data" },
+    { "id": "f-context", "from": "retrieval-service", "to": "prompt-builder", "label": "retrieved context", "crosses_boundary": null },
+    { "id": "f-prompt", "from": "prompt-builder", "to": "model-api", "label": "case prompt", "crosses_boundary": "app-to-provider" },
+    { "id": "f-draft", "from": "model-api", "to": "case-portal", "label": "draft recommendation", "crosses_boundary": "app-to-provider" },
+    { "id": "f-approval", "from": "case-worker", "to": "case-workflow", "label": "approved disposition", "crosses_boundary": "workforce" },
+    { "id": "f-disposition", "from": "case-workflow", "to": "case-store", "label": "case disposition", "crosses_boundary": "app-to-data" }
+  ],
+  "trust_boundaries": [
+    { "id": "workforce", "name": "Workforce boundary", "contains": ["case-worker"] },
+    { "id": "application", "name": "Application zone", "contains": ["case-portal", "retrieval-service", "prompt-builder", "case-workflow"] },
+    { "id": "data", "name": "Data zone", "contains": ["case-store", "document-index"] },
+    { "id": "provider", "name": "Model provider", "contains": ["model-api"] }
+  ],
+  "llm_components": ["prompt-builder", "model-api"],
+  "missing_trust_boundaries": false
+}
