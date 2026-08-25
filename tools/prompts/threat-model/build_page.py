@@ -67,9 +67,15 @@ Leave report.reviewer empty.
 Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom."""
 
 
-def shortcut_paste(pre_id: str, text: str) -> str:
+def shortcut_paste(
+    pre_id: str,
+    text: str,
+    *,
+    label: str,
+    aria_label: str,
+) -> str:
     return f"""        <div class="shortcut-paste">
-          <button type="button" data-shortcut-target="{esc(pre_id)}">Copy</button>
+          <button type="button" data-shortcut-target="{esc(pre_id)}" data-copy-label="{esc(label)}" aria-label="{esc(aria_label)}">{esc(label)}</button>
           <pre id="{esc(pre_id)}">{esc(text)}</pre>
         </div>"""
 
@@ -384,7 +390,7 @@ def prompt_block(p: dict, pack: dict, *, collapsed: bool = True) -> str:
           <span class="prompt-block__label">{esc(label)}</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('{esc(pid)}-block', this)" aria-expanded="{expanded}">{toggle}</button>
-            <button class="prompt-block__copy" type="button" onclick="copyPrompt('{esc(pid)}-block', this)">Copy</button>
+            <button class="prompt-block__copy" type="button" onclick="copyPrompt('{esc(pid)}-block', this)" aria-label="Copy {esc(pid)} prompt">Copy</button>
           </div>
         </div>
         <pre>{esc(tmpl)}</pre>
@@ -396,7 +402,7 @@ def stage_section(qid: str, title: str, pack: dict) -> str:
     ids = q["prompts"]
     by = {p["id"]: p for p in pack["prompts"]}
     blocks = "\n".join(prompt_block(by[i], pack) for i in ids)
-    return f"""      <p class="section-label" id="{esc(qid)}">{esc(qid.upper())}. {esc(q['question'])}</p>
+    return f"""      <h2 class="section-label" id="{esc(qid)}">{esc(qid.upper())}. {esc(q['question'])}</h2>
       <p class="section-note">{esc(title)}</p>
 {blocks}
 """
@@ -434,15 +440,48 @@ def main():
     shortcut_a = shortcut_text_a(pack)
     shortcut_b = shortcut_text_b(pack)
     shortcut_c = shortcut_text_c(pack)
-    shortcut_a_html = shortcut_paste("shortcut-text-a", shortcut_a)
-    shortcut_b_html = shortcut_paste("shortcut-text-b", shortcut_b)
-    shortcut_c_html = shortcut_paste("shortcut-text-c", shortcut_c)
-    example_a_html = shortcut_paste("example-text-a", example_addon_a())
-    example_a_artifact_html = shortcut_paste(
-        "example-text-a-artifact", example_addon_a_artifact()
+    shortcut_a_html = shortcut_paste(
+        "shortcut-text-a",
+        shortcut_a,
+        label="Copy shortcut",
+        aria_label="Copy Track A one-chat shortcut",
     )
-    example_b_html = shortcut_paste("example-text-b", example_addon_b())
-    example_c_html = shortcut_paste("example-text-c", example_addon_c())
+    shortcut_b_html = shortcut_paste(
+        "shortcut-text-b",
+        shortcut_b,
+        label="Copy shortcut",
+        aria_label="Copy Track B one-chat shortcut",
+    )
+    shortcut_c_html = shortcut_paste(
+        "shortcut-text-c",
+        shortcut_c,
+        label="Copy shortcut",
+        aria_label="Copy Track C one-chat shortcut",
+    )
+    example_a_html = shortcut_paste(
+        "example-text-a",
+        example_addon_a(),
+        label="Copy example",
+        aria_label="Copy Track A review-context example",
+    )
+    example_a_artifact_html = shortcut_paste(
+        "example-text-a-artifact",
+        example_addon_a_artifact(),
+        label="Copy example",
+        aria_label="Copy Track A artifact-only example",
+    )
+    example_b_html = shortcut_paste(
+        "example-text-b",
+        example_addon_b(),
+        label="Copy example",
+        aria_label="Copy Track B SRF-input example",
+    )
+    example_c_html = shortcut_paste(
+        "example-text-c",
+        example_addon_c(),
+        label="Copy example",
+        aria_label="Copy Track C vertical-row example",
+    )
     steps = []
     for c in pack["chain"]:
         p = prompt_by_id(pack, c["id"])
@@ -554,12 +593,19 @@ def main():
         text-transform: uppercase;
         color: var(--slate-400);
         margin: 0 0 var(--sp-3);
+        line-height: var(--leading-normal);
       }}
-      .deliverable p, .deliverable ul, .deliverable ol {{
+      .deliverable p, .deliverable ul, .deliverable ol, .deliverable h3 {{
         margin: 0 0 var(--sp-3);
         font-size: var(--text-sm);
         color: var(--slate-700);
         line-height: var(--leading-normal);
+      }}
+      .deliverable h3 {{
+        font-weight: 700;
+        color: var(--slate-800);
+        letter-spacing: 0;
+        text-transform: none;
       }}
       .deliverable ul, .deliverable ol {{
         padding-left: 1.2rem;
@@ -574,7 +620,7 @@ def main():
       .shortcut-paste pre {{
         margin: 0;
         padding: var(--sp-4);
-        padding-top: 2.4rem;
+        padding-top: 2.8rem;
         background: var(--slate-50);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
@@ -587,22 +633,6 @@ def main():
         max-height: 50vh;
         overflow-y: auto;
         overscroll-behavior: contain;
-      }}
-      .shortcut-example {{
-        margin: 0 0 var(--sp-6);
-        padding: var(--sp-4);
-        background: #fff;
-        border: 1px dashed var(--slate-300);
-        border-radius: var(--radius);
-      }}
-      .shortcut-example .shortcut-paste {{
-        margin-bottom: var(--sp-4);
-      }}
-      .shortcut-example .shortcut-paste:last-child {{
-        margin-bottom: 0;
-      }}
-      .shortcut-example > p:last-child {{
-        margin-bottom: 0;
       }}
       .shortcut-paste button {{
         position: absolute;
@@ -620,6 +650,32 @@ def main():
       .shortcut-paste button.is-copied {{
         color: #047857;
         border-color: #6ee7b7;
+      }}
+      .shortcut-more {{
+        margin: 0 0 var(--sp-5);
+        padding: var(--sp-3) var(--sp-4);
+        border: 1px dashed var(--slate-300);
+        border-radius: var(--radius);
+        background: #fff;
+      }}
+      .shortcut-more > summary {{
+        cursor: pointer;
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--slate-800);
+        line-height: var(--leading-normal);
+      }}
+      .shortcut-more[open] > summary {{
+        margin-bottom: var(--sp-3);
+      }}
+      .shortcut-more .shortcut-paste {{
+        margin-bottom: var(--sp-4);
+      }}
+      .shortcut-more .shortcut-paste:last-child {{
+        margin-bottom: 0;
+      }}
+      .shortcut-more p:last-of-type {{
+        margin-bottom: var(--sp-3);
       }}
       .prompt-block pre {{
         margin: 0;
@@ -642,13 +698,14 @@ def main():
         opacity: 0;
         overflow: hidden;
       }}
-      .section-label {{
+      h2.section-label, h3.section-label {{
         font-size: var(--text-xs);
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
         color: var(--slate-400);
         margin: var(--sp-10) 0 var(--sp-3);
+        line-height: var(--leading-normal);
       }}
       .section-note {{
         font-size: var(--text-sm);
@@ -693,16 +750,12 @@ def main():
         <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / <a href="/tools/prompts/">System Instructions</a> / Threat modeling / Pack v{esc(pack['version'])}</span>
         <h1 class="page-hero__title">AI-enabled system threat modeling</h1>
         <p class="page-hero__lede">
-          Prompts that read a system representation (image, Mermaid, or SVG) and write a
-          threat matrix, a markdown report, completed JSON, a threat-database CSV,
-          and a Mermaid threat-model diagram.
-          Track A requires a traditional-security applicability decision, typed STRIDE,
-          conditional abuse and operational passes, PHANTOM-B for the AI subset, and
-          AI-to-traditional composition coverage. Optional Track B assigns SRF
-          accountability. Optional Track C joins vertical obligations and controls.
-          Then run the export steps once and save the
-          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code> replies.
-          The one-chat shortcuts list optional first-message fields on the page, not in the copied text.
+          Attach a system representation (image, Mermaid, or SVG) and run one chat.
+          The pack writes a threat matrix and four export replies:
+          <code>.md</code>, <code>.json</code>, <code>.csv</code>, and
+          <code>.mmd</code>. Start with Track A. Open Track B to assign one SRF
+          layer, persona, and party. Open Track C after Track B to join vertical
+          obligations.
           Templates:
           <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
           <a href="/tools/prompts/threat-model/releases/">Release notes</a>.
@@ -713,125 +766,10 @@ def main():
 
     <main id="main" class="page-body" data-llm="threat-model-prompts">
 
-      <div class="deliverable" id="shortcut">
-        <p class="deliverable__title">Shortcuts: one chat</p>
-        <p>
-          Copy one block below and send it once with the representation.
-          Optional fields you may add in that same message are listed here;
-          they are not in the copied text. The model loads
-          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
-          and runs the selected tracks through the four exports without asking
-          for more input and without waiting for continue. Omitted fields stay
-          empty. Catalog, SRF, and vertical mapping without injected data are
-          not applicable.
-        </p>
-        <ol>
-          <li>Required in the first message: the representation and <code>representation_kind</code> (<code>image</code>, <code>mermaid</code>, or <code>svg</code>).</li>
-          <li>Optional in that same message: role, <code>review_context_input</code>, <code>if_no_ai_nodes</code>, <code>source_manifest</code>, and pinned source records. <code>review_context_input</code> may include profile, artifact-only confirmation, perspective, verticals, jurisdictions, operating model, assets, prohibited outcomes, continuity or safety constraints, supplied severity, and scope. Copyable JSON examples sit under each shortcut. Omit keys you do not know.</li>
-          <li>Track B also needs <code>srf_inputs</code> in that message: operating model plus the full <a href="/data/personas.json">personas</a>, <a href="/data/matrix.json">matrix</a>, and <a href="/data/threats.json">threat_crosswalk</a> objects. Track C also needs <code>vertical_ids</code> and <code>vertical_source_rows</code>. Those objects stay on this page, not in the copied shortcut text. Use the examples under Track B and Track C.</li>
-          <li>Default role is experienced-threat-modeler. Default <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.</li>
-          <li>The model fills later templates from accumulated JSON. Repeat_until steps rerun in the same reply. A failed stop_condition is recorded as a JSON gap, not a question.</li>
-          <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
-        </ol>
-        <p>
-          If the chat cannot load that file, use the copy-one-block steps under
-          How to run the chain. Those blocks still do not ask for fields that
-          belong in the first message.
-        </p>
-        <p id="shortcut-a">
-          <strong>Track A.</strong>
-          Representation and <code>representation_kind</code>. Skip B and C unless
-          those inputs are already in the message.
-        </p>
-{shortcut_a_html}
-        <div class="shortcut-example" id="example-a">
-        <p>
-          <strong>Track A example add-on.</strong>
-          Paste this JSON in the same first message when you have claims the
-          diagram does not show. Omit keys you do not know. Rewrite names and
-          labels to match the attached diagram. Role values:
-          <code>experienced-threat-modeler</code> (default),
-          <code>application-security</code>, <code>llm-caller</code>.
-          Profile values: <code>full-system</code>,
-          <code>bounded-subsystem</code>, <code>artifact-only</code>.
-          Default <code>if_no_ai_nodes</code> is
-          <code>continue_without_llm</code>. A catalog overlay is a
-          <code>source_manifest</code> object with pinned entries; omit it to
-          leave catalog coverage not applicable.
-        </p>
-{example_a_html}
-        <p id="example-a-artifact">
-          Artifact-only confirmation. Traditional-phase
-          <code>not_applicable</code> is allowed only when
-          <code>profile_confirmation.operator_confirmed</code> is true and
-          <code>evidence_ref</code> states that integration is out of scope.
-        </p>
-{example_a_artifact_html}
-        </div>
-        <p id="shortcut-b">
-          <strong>Track B.</strong>
-          Add operating model plus injected personas, matrix, and threat_crosswalk
-          in this first message.
-        </p>
-{shortcut_b_html}
-        <div class="shortcut-example" id="example-b">
-        <p>
-          <strong>Track B example add-on.</strong>
-          Track B binds an operating model plus the full
-          <code>personas</code>, <code>matrix</code>, and
-          <code>threat_crosswalk</code> objects. Replace the three
-          <code>REPLACE_WITH_FULL_OBJECT</code> strings with those objects from
-          <a href="/data/personas.json">personas.json</a>,
-          <a href="/data/matrix.json">matrix.json</a>, and
-          <a href="/data/threats.json">threats.json</a>.
-          Operating model values from the matrix:
-          <code>AI-SaaS</code>, <code>AI-PaaS</code>,
-          <code>Agent-PaaS</code>, <code>IaaS</code>.
-        </p>
-{example_b_html}
-        </div>
-        <p id="shortcut-c">
-          <strong>Track C.</strong>
-          Add Track B inputs plus <code>vertical_ids</code> and
-          <code>vertical_source_rows</code> in this first message.
-        </p>
-{shortcut_c_html}
-        <div class="shortcut-example" id="example-c">
-        <p>
-          <strong>Track C example add-on.</strong>
-          Add the Track B inputs plus <code>vertical_ids</code>,
-          <code>jurisdictions</code>, and obligation or control-candidate rows.
-          The two rows below are reshaped from
-          <a href="/data/healthcare-controls.json">healthcare-controls.json</a>.
-          Copy more rows from that file or the matching vertical file and keep
-          this object shape. A control candidate is a proposed control.
-          Vertical ids on this site:
-          <code>healthcare</code>, <code>finance</code>,
-          <code>public-sector</code>, <code>insurance</code>,
-          <code>defense</code>, <code>manufacturing</code>.
-          Jurisdiction ids include <code>us-federal</code> and
-          <code>eu</code> from
-          <a href="/data/jurisdictions.json">jurisdictions.json</a>.
-        </p>
-{example_c_html}
-        </div>
-      </div>
-
-      <p class="section-label">How to run the chain</p>
-      <ol class="q-list">
-        <li>Prefer a one-chat shortcut. Use <a href="#shortcut-a">Track A</a>, <a href="#shortcut-b">Track B</a>, or <a href="#shortcut-c">Track C</a>. Optional fields stay on this page; add any you have in the same first message. Copyable examples sit under each shortcut. The model runs the selected chain without a later prompt from you.</li>
-        <li>If you copy one block at a time, paste the shared rules once or use a standalone copy block (rules are inlined). Attach or paste the diagram. Set <code>{{{{representation_kind}}}}</code> to image, mermaid, or svg.</li>
-        <li>Pick a role: {esc(role_ids)}. Default is experienced-threat-modeler.</li>
-        <li>Copy-one-block text starts with a <code>[chain]</code> line that names this step and the next. The strip below this list remembers the last Copy click. Still do not send a later message to supply optional fields; add those in the first message if you have them.</li>
-        <li>Run Track A in order. A chain run repeats P-stride in the same reply until its typed denominator closes. P-importance is required before P-act.</li>
-        <li>The Track B shortcut runs B after P-qa. The Track C shortcut runs B then C. Copy-one-block Track B still requires SRF inputs in the first message; Track C still requires Track B plus vertical ids and vertical source rows. Otherwise skip those tracks and go to P-report.</li>
-        <li>After P-report, run <a href="#export-report">P-export-md</a>, P-export-json, P-export-csv, then P-export-diagram. Save those replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
-        <li>Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.</li>
-      </ol>
-
-      <p class="section-label">On this page</p>
+      <h2 class="section-label">On this page</h2>
       <ul class="q-list">
-        <li><a href="#shortcut">Shortcuts: one chat</a> (<a href="#shortcut-a">A</a>, <a href="#shortcut-b">B</a>, <a href="#shortcut-c">C</a>)</li>
+        <li><a href="#shortcut">Start here</a> (<a href="#shortcut-a">Track A</a>, <a href="#shortcut-b">Track B</a>, <a href="#shortcut-c">Track C</a>)</li>
+        <li><a href="#copy-one-block">Run one prompt at a time</a></li>
         <li><a href="#q1">Track A: Four Questions</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
         <li><a href="#track-c">Track C (optional)</a></li>
@@ -839,15 +777,124 @@ def main():
         <li><a href="#baselines">Evaluation baselines</a></li>
       </ul>
 
+      <div class="deliverable" id="shortcut">
+        <h2 class="deliverable__title">Start here: one chat</h2>
+        <ol>
+          <li>Attach the representation and set <code>representation_kind</code> to <code>image</code>, <code>mermaid</code>, or <code>svg</code>.</li>
+          <li>Copy the Track A shortcut. Send it once with the representation.</li>
+          <li>Save the four export replies as <code>.md</code>, <code>.json</code>, <code>.csv</code>, and <code>.mmd</code>.</li>
+        </ol>
+        <p>
+          The model loads
+          <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>
+          and runs Track A through the four exports. Omitted fields stay empty.
+          Catalog, SRF, and vertical mapping without injected data are not
+          applicable. Optional JSON stays on this page; it is not in the copied
+          shortcut. If the chat cannot load that file, use
+          <a href="#copy-one-block">Run one prompt at a time</a>.
+        </p>
+        <h3 id="shortcut-a">Track A</h3>
+        <p>
+          Default path. Representation and <code>representation_kind</code> are
+          enough. Default role is experienced-threat-modeler. Default
+          <code>if_no_ai_nodes</code> is <code>continue_without_llm</code>.
+        </p>
+{shortcut_a_html}
+        <details class="shortcut-more" id="example-a">
+          <summary>Add review context (optional JSON)</summary>
+          <p>
+            Paste this JSON in the same first message when you have claims the
+            diagram does not show. Omit keys you do not know. Rewrite names and
+            labels to match the attached diagram. Role values:
+            <code>experienced-threat-modeler</code> (default),
+            <code>application-security</code>, <code>llm-caller</code>.
+            Profile values: <code>full-system</code>,
+            <code>bounded-subsystem</code>, <code>artifact-only</code>.
+            A catalog overlay is a <code>source_manifest</code> object with
+            pinned entries; omit it to leave catalog coverage not applicable.
+          </p>
+{example_a_html}
+          <p id="example-a-artifact">
+            Artifact-only confirmation. Traditional-phase
+            <code>not_applicable</code> is allowed only when
+            <code>profile_confirmation.operator_confirmed</code> is true and
+            <code>evidence_ref</code> states that integration is out of scope.
+          </p>
+{example_a_artifact_html}
+        </details>
+        <details class="shortcut-more" id="shortcut-b">
+          <summary>Track B: assign SRF accountability</summary>
+          <p>
+            Use this when the first message already includes an operating model
+            plus the full <a href="/data/personas.json">personas</a>,
+            <a href="/data/matrix.json">matrix</a>, and
+            <a href="/data/threats.json">threat_crosswalk</a> objects.
+            Operating model values: <code>AI-SaaS</code>, <code>AI-PaaS</code>,
+            <code>Agent-PaaS</code>, <code>IaaS</code>.
+          </p>
+          <ol>
+            <li>Copy the Track B shortcut.</li>
+            <li>Open the three files. Copy each file's full JSON object.</li>
+            <li>Copy the example below. Replace the three
+              <code>REPLACE_WITH_FULL_OBJECT</code> strings with those objects.
+              Keep <code>operating_model</code> the same in
+              <code>review_context_input</code> and <code>srf_inputs</code>.</li>
+            <li>Paste the shortcut, the representation, and the filled JSON in
+              the same first message.</li>
+          </ol>
+{shortcut_b_html}
+{example_b_html}
+        </details>
+        <details class="shortcut-more" id="shortcut-c">
+          <summary>Track C: join vertical obligations</summary>
+          <p>
+            Use this after Track B inputs are in the first message, plus
+            <code>vertical_ids</code> and <code>vertical_source_rows</code>.
+            The two rows in the example are reshaped from
+            <a href="/data/healthcare-controls.json">healthcare-controls.json</a>.
+            Copy more rows from that file or the matching vertical file and keep
+            this object shape. A control candidate is a proposed control.
+            Vertical ids on this site: <code>healthcare</code>,
+            <code>finance</code>, <code>public-sector</code>,
+            <code>insurance</code>, <code>defense</code>,
+            <code>manufacturing</code>. Jurisdiction ids include
+            <code>us-federal</code> and <code>eu</code> from
+            <a href="/data/jurisdictions.json">jurisdictions.json</a>.
+          </p>
+          <ol>
+            <li>Complete the Track B packing steps.</li>
+            <li>Set <code>vertical_ids</code> and <code>jurisdictions</code> on
+              <code>review_context_input</code>.</li>
+            <li>Add obligation and control-candidate rows. Paste shortcut,
+              representation, and the filled JSON in the same first message.</li>
+          </ol>
+{shortcut_c_html}
+{example_c_html}
+        </details>
+      </div>
+
+      <h2 class="section-label" id="copy-one-block">Run one prompt at a time</h2>
+      <p class="section-note">
+        Use this when the chat cannot load
+        <a href="/tools/prompts/threat-model/prompts.json">prompts.json</a>.
+        Copy P-context first, then use Copy next. Optional review context, SRF
+        data, and vertical rows still belong in the first message.
+        Role values: {esc(role_ids)}. Default is experienced-threat-modeler.
+        Copy-one-block text starts with a <code>[chain]</code> line. A chain
+        run of P-stride repeats in the same reply until its typed denominator
+        closes. P-importance is required before P-act. After P-report, run the
+        <a href="#export-report">export steps</a>.
+      </p>
+
       <div class="chain-status" id="chain-status">
         <p class="chain-status__text" aria-live="polite">
           Last copied: <strong id="chain-last">none</strong>.
-          Next: <strong id="chain-next">P-norm (Normalize representation)</strong>.
+          Next: <strong id="chain-next">P-context (Establish review context)</strong>.
         </p>
         <button type="button" class="chain-status__btn" id="chain-copy-next">Copy next</button>
       </div>
 
-      <p class="section-label">Shostack's Four Questions</p>
+      <h2 class="section-label">Shostack's Four Questions</h2>
       <ol class="q-list">
         <li>What are we working on?</li>
         <li>What can go wrong?</li>
@@ -859,7 +906,7 @@ def main():
         State the team view and what we are working on right now.
       </p>
 
-      <p class="section-label">PHANTOM-B questions (LLM subset)</p>
+      <h2 class="section-label">PHANTOM-B questions (LLM subset)</h2>
       <ul class="pb-list">
         {pb}
       </ul>
@@ -868,12 +915,12 @@ def main():
         applicability closes. Write mitigations in P-act.
       </p>
 
-      <p class="section-label">Roles</p>
+      <h2 class="section-label">Roles</h2>
       <ul class="cite-list">
         {roles}
       </ul>
 
-      <p class="section-label">Sources</p>
+      <h2 class="section-label">Sources</h2>
       <ul class="cite-list">
         <li>Adam Shostack, <a href="https://shostack.org/files/papers/The_Four_Question_Framework.pdf">The Four Question Framework for Threat Modeling</a> (CC-BY).</li>
         <li>Adam Shostack, <a href="https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf">PHANTOM-B: A STRIDE Analog for LLMs</a> (CC-BY).</li>
@@ -883,7 +930,7 @@ def main():
         <li>External source registry: <a href="/data/threat-sources.json">threat-sources.json</a>. A run records the exact source versions and hashes in <code>source_manifest</code>.</li>
       </ul>
 
-      <p class="section-label">Lane</p>
+      <h2 class="section-label">What each track records</h2>
       <p class="section-note">
         Track A records review context, the full inventory, traditional and AI
         applicability, composition paths, threats, actions, and source provenance.
@@ -898,7 +945,7 @@ def main():
 {q4}
 
       <div class="deliverable" id="track-a-output">
-        <p class="deliverable__title">What Track A has filled</p>
+        <h2 class="deliverable__title">What Track A has filled</h2>
         <p>
           P-qa produces the checked Track A matrix. Run optional
           <a href="#track-b">Track B</a> and <a href="#track-c">Track C</a>
@@ -930,7 +977,7 @@ def main():
         </p>
       </div>
 
-      <p class="section-label" id="track-b">Track B (optional): SRF accountability</p>
+      <h2 class="section-label" id="track-b">Track B (optional): SRF accountability</h2>
       <p class="section-note">
         Use the <a href="#shortcut-b">Track B one-chat shortcut</a> when SRF
         inputs are in the first message, or copy the blocks below after P-qa.
@@ -941,7 +988,7 @@ def main():
 {track_b_html}
 
       <div class="deliverable" id="track-b-output">
-        <p class="deliverable__title">What Track B has filled</p>
+        <h2 class="deliverable__title">What Track B has filled</h2>
         <p>
           The assistant JSON after P-srf-coverage is the Track A matrix with
           <code>srf</code> on every threat and a <code>layer_coverage</code> audit.
@@ -961,7 +1008,7 @@ def main():
         </p>
       </div>
 
-      <p class="section-label" id="track-c">Track C (optional): vertical obligations and routing</p>
+      <h2 class="section-label" id="track-c">Track C (optional): vertical obligations and routing</h2>
       <p class="section-note">
         Use the <a href="#shortcut-c">Track C one-chat shortcut</a> when Track B
         inputs plus vertical ids and vertical source rows are in the first
@@ -972,7 +1019,7 @@ def main():
 {track_c_html}
 
       <div class="deliverable" id="track-c-output">
-        <p class="deliverable__title">What Track C has filled</p>
+        <h2 class="deliverable__title">What Track C has filled</h2>
         <ul>
           <li>Applicable obligation citations from injected regulation or crosswalk rows.</li>
           <li>Candidate controls kept separate from diagram-visible existing controls.</li>
@@ -981,7 +1028,7 @@ def main():
         </ul>
       </div>
 
-      <p class="section-label" id="export-report">Export the report, JSON, CSV, and diagram</p>
+      <h2 class="section-label" id="export-report">Export the report, JSON, CSV, and diagram</h2>
       <p class="section-note">
         These four prompts run once after P-report.
         P-export-md emits the stored report without rewriting it (<code>.md</code>).
@@ -996,7 +1043,7 @@ def main():
       </p>
 {export_html}
 
-      <p class="section-label" id="baselines">Evaluation baselines</p>
+      <h2 class="section-label" id="baselines">Evaluation baselines</h2>
       <p class="section-note">
         P-zeroshot and P-identity are the two short baselines scored in
         <code>eval/threat-model/</code>. Machine scores stay open until the SME sheets
@@ -1004,7 +1051,7 @@ def main():
       </p>
 {baseline_html}
 
-      <p class="section-label">Output schema</p>
+      <h2 class="section-label">Output schema</h2>
       <p class="section-note">
         Full JSON Schema: <a href="/eval/threat-model/schema.json">eval/threat-model/schema.json</a>.
         Gold diagrams and bounded workflow fixtures are in
@@ -1026,7 +1073,7 @@ def main():
         return TM_TITLES[id] || id;
       }}
       function nextId(id) {{
-        if (!id) return 'P-norm';
+        if (!id) return 'P-context';
         const s = stepById(id);
         if (!s) return null;
         if (s.repeat_until) return id;
@@ -1106,14 +1153,23 @@ def main():
         const preId = btn.getAttribute('data-shortcut-target');
         const pre = preId && document.getElementById(preId);
         if (!pre || !btn) return;
+        const original = btn.getAttribute('data-copy-label') || btn.textContent;
         navigator.clipboard.writeText(pre.textContent).then(() => {{
           btn.textContent = 'Copied';
           btn.classList.add('is-copied');
           setTimeout(() => {{
-            btn.textContent = 'Copy';
+            btn.textContent = original;
             btn.classList.remove('is-copied');
           }}, 2000);
         }});
+      }}
+      function openHashDetails() {{
+        const id = (location.hash || '').replace(/^#/, '');
+        if (!id) return;
+        const el = document.getElementById(id);
+        if (!el) return;
+        const details = el.closest('details');
+        if (details) details.open = true;
       }}
       document.addEventListener('DOMContentLoaded', () => {{
         const copyNextBtn = document.getElementById('chain-copy-next');
@@ -1121,6 +1177,8 @@ def main():
         document.querySelectorAll('[data-shortcut-target]').forEach((btn) => {{
           btn.addEventListener('click', () => copyShortcut(btn));
         }});
+        window.addEventListener('hashchange', openHashDetails);
+        openHashDetails();
         let last = null;
         try {{ last = localStorage.getItem(TM_STORAGE); }} catch (err) {{}}
         markChain(last);
