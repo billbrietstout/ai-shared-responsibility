@@ -115,6 +115,8 @@ def classify(rel):
     if top == "developers":
         return "developer", ["srf.framework.cosai-srf", "srf.concept.control"]
     if top == "presentation":
+        if len(seg) == 1:
+            return "redirect", []
         return "presentation", ["srf.framework.cosai-srf"] + LAYERS
     if top in VERTICALS or top == "medical":
         v = "healthcare" if top == "medical" else top
