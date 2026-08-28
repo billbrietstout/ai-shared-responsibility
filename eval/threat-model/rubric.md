@@ -130,7 +130,7 @@ Schema is skipped:
 - importance positions are unique and every factor has evidence
 - STRIDE / PHANTOM-B / CIA letters in the published alphabets
 - `srf.party` must not be `shared`
-- `ai_exchange_slug` must be one of the sixteen ids in `data/threats.json`
+- `ai_exchange_slug` must be an id in `data/threats.json` whose `ai_exchange` field is a URL. DSGAI-keyed ids (`dsgaiNN`) are not AI Exchange slugs.
 
 ## Hamming loss (optional)
 

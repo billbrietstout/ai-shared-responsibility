@@ -1,13 +1,13 @@
 {
-  "$schema_version": "0.1",
+  "$schema_version": "0.2",
   "srf_version": "1.0",
-  "updated": "2026-07-12",
+  "updated": "2026-08-27",
   "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers.",
-  "id_convention": "Entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Threat names and the impact and attack_surface fields are taken verbatim from the AI Exchange AI security matrix. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json.",
+  "id_convention": "AI Exchange entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Entries that exist only in the OWASP GenAI Data Security Risks taxonomy are keyed dsgaiNN (lowercase), matching the published DSGAI identifier. Threat names for AI Exchange rows are taken verbatim from the AI Exchange AI security matrix; names for DSGAI-only rows are taken verbatim from the DSGAI 2026 taxonomy. impact and attack_surface for DSGAI-only rows are derived from the published DSGAI summary, because that taxonomy does not use the AI Exchange field names. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. This file cites DSGAI identifiers; it does not copy DSGAI mitigation text. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json. DSGAI07 (governance, lifecycle, and classification as an enabling condition) and DSGAI08 (regulatory non-compliance as an outcome) have no rows: they are not attack techniques. Classification and provenance duties already sit on the Data Provider persona at L2.",
   "accountability_convention": "One accountable persona per threat per operating model. The responsibility object quotes the customer and provider cell values verbatim from /data/matrix.json for the threat's primary SRF layer. Where the matrix says shared, this file still names a single accountable lead and records the counterparty obligation in the note, because shared is not a valid final answer.",
   "verification": {
-    "date": "2026-07-12",
-    "method": "AI Exchange slugs and matrix rows verified against owaspai.org (AI security matrix, permalink set). ATLAS technique IDs verified against atlas.mitre.org technique pages and the MISP galaxy mirror of ATLAS attack patterns. LLM Top 10 2025 IDs verified against genai.owasp.org. BIML IDs verified against the BIML-LLM24 report text, which uses the bracket convention [LLMtop10:n:name].",
+    "date": "2026-08-27",
+    "method": "AI Exchange slugs and matrix rows verified against owaspai.org (AI security matrix, permalink set). ATLAS technique IDs verified against atlas.mitre.org technique pages and the MISP galaxy mirror of ATLAS attack patterns. LLM Top 10 2025 IDs verified against genai.owasp.org. BIML IDs verified against the BIML-LLM24 report text, which uses the bracket convention [LLMtop10:n:name]. DSGAI identifiers and names verified against the OWASP GenAI Data Security Risks & Mitigations 2026 taxonomy (DSGAI01 to DSGAI21) as published at genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/ and in datasets/_shared/dsgai_taxonomy.json of the OWASP GenAI Data Security Initiative repository. New DSGAI-only rows use only ATLAS and LLM IDs already present in this file or on the 2025 LLM Top 10 list; invented IDs are not used.",
     "policy": "TBD or null is acceptable; invented IDs are not."
   },
   "sources": {
@@ -31,9 +31,16 @@
       "name": "BIML: An Architectural Risk Analysis of Large Language Models (January 2024)",
       "url": "https://berryvilleiml.com/results/BIML-LLM24.pdf",
       "id_form": "[LLMtop10:n:name], as printed in the report"
+    },
+    "owasp_dsgai": {
+      "name": "OWASP GenAI Data Security Risks & Mitigations 2026",
+      "url": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "repository": "https://github.com/GenAI-Security-Project/GenAI-Data-Security-Initiative",
+      "id_form": "DSGAInn",
+      "license_note": "The initiative is CC BY-SA 4.0. This file cites DSGAI identifiers and published names; it does not copy DSGAI control text, mitigations, or crosswalk JSON."
     }
   },
-  "count": 16,
+  "count": 31,
   "threats": [
     {
       "id": "directpromptinjection",
@@ -42,38 +49,54 @@
       "impact": "Model behaviour integrity",
       "attack_surface": "Runtime, model use",
       "srf_layer": "L3",
-      "affected_layers": ["L3", "L5"],
+      "affected_layers": [
+        "L3",
+        "L5"
+      ],
       "layer_rationale": "The attacker's input crosses the trust boundary at the application layer, which owns input mediation. The manipulated behavior manifests at the model layer, but the control point is L3.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The SaaS provider's application team owns input defenses. Customer testing of these defenses requires provider authorization."
         },
         "AI-PaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "shared" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
           "note": "The customer builds the application and owns injection defenses. The platform provider supplies guardrail primitives; demand their documented limits."
         },
         "Agent-PaaS": {
           "accountable_persona": "agentic-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
           "note": "The orchestration runtime provider leads on input mediation and tool-execution safety. The customer's application-developer remains accountable for injection paths opened by its own agent definitions."
         },
         "IaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns the full application stack and all injection defenses."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM01:2025 Prompt Injection",
         "mitre_atlas": "AML.T0051 LLM Prompt Injection",
-        "biml_llm24": "[LLMtop10:5:prompt manipulation]"
+        "biml_llm24": "[LLMtop10:5:prompt manipulation]",
+        "owasp_dsgai": null
       },
       "related_controls": [
         "srf.control.finance.SRF-L3-DEV-001",
@@ -91,38 +114,55 @@
       "impact": "Model behaviour integrity",
       "attack_surface": "Runtime, model use",
       "srf_layer": "L3",
-      "affected_layers": ["L2", "L3", "L5"],
+      "affected_layers": [
+        "L2",
+        "L3",
+        "L5"
+      ],
       "layer_rationale": "The payload arrives inside retrieved or referenced content rather than the user's own prompt, so the data layer supplies the attack path and the application layer owns mediation of what reaches the model. The AI Exchange names this the key threat in most agentic AI systems.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider's application owns mediation of retrieved content. The customer's data-provider remains accountable for the integrity of context data it connects."
         },
         "AI-PaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "shared" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
           "note": "The customer owns retrieval design and content mediation. Its data-provider owns integrity of augmentation sources."
         },
         "Agent-PaaS": {
           "accountable_persona": "agentic-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
           "note": "The runtime provider leads on blast-radius control around tool execution. The customer's application-developer owns which sources its agents may read, and its data-provider owns integrity of those sources."
         },
         "IaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns the retrieval pipeline and all mediation."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM01:2025 Prompt Injection",
         "mitre_atlas": "AML.T0051 LLM Prompt Injection",
-        "biml_llm24": "[LLMtop10:5:prompt manipulation]"
+        "biml_llm24": "[LLMtop10:5:prompt manipulation]",
+        "owasp_dsgai": null
       },
       "related_controls": [
         "srf.control.finance.SRF-L3-DEV-001",
@@ -140,38 +180,54 @@
       "impact": "Model behaviour integrity",
       "attack_surface": "Runtime, model use",
       "srf_layer": "L5",
-      "affected_layers": ["L3", "L5"],
+      "affected_layers": [
+        "L3",
+        "L5"
+      ],
       "layer_rationale": "Adversarial examples exploit model robustness, a property of the model itself. Input handling at L3 can reduce exposure but cannot fix a non-robust model.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "Robustness testing of the provider's model requires provider authorization."
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "model-evaluation", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "model-evaluation",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns model robustness. The customer owns evaluating that robustness against its own use cases before and during adoption."
         },
         "Agent-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "Lead sits with the model provider. The customer owns validating model behavior under its agent workloads."
         },
         "IaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer trains or hosts its own model and owns its robustness."
         }
       },
       "mappings": {
         "owasp_llm_top10": null,
         "mitre_atlas": "AML.T0015 Evade ML Model; AML.T0043 Craft Adversarial Data",
-        "biml_llm24": "[LLMtop10:5:prompt manipulation]"
+        "biml_llm24": "[LLMtop10:5:prompt manipulation]",
+        "owasp_dsgai": null
       },
       "related_controls": [
         "srf.control.healthcare.SRF-L3-DEV-003",
@@ -186,38 +242,54 @@
       "impact": "Model behaviour integrity",
       "attack_surface": "Runtime, break into deployed model",
       "srf_layer": "L4",
-      "affected_layers": ["L4", "L5"],
+      "affected_layers": [
+        "L4",
+        "L5"
+      ],
       "layer_rationale": "The attack requires breaking into the serving environment. Whoever runs the platform that hosts the deployed model owns preventing and detecting that break-in.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns serving-environment integrity end to end."
         },
         "AI-PaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns serving-environment integrity end to end."
         },
         "Agent-PaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns serving-environment integrity end to end."
         },
         "IaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "shared" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
           "note": "The customer runs the serving stack and owns its integrity. The infrastructure provider retains obligations for the physical and virtual infrastructure underneath it."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM04:2025 Data and Model Poisoning",
         "mitre_atlas": "AML.T0018 Backdoor ML Model",
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": "DSGAI04 Data, Model & Artifact Poisoning"
       },
       "related_controls": [
         "srf.control.insurance.SRF-L4-MON-003",
@@ -233,38 +305,53 @@
       "impact": "Model behaviour integrity",
       "attack_surface": "Development, engineering environment",
       "srf_layer": "L5",
-      "affected_layers": ["L5"],
+      "affected_layers": [
+        "L5"
+      ],
       "layer_rationale": "The attack tampers with the model inside the environment where it is trained or fine-tuned. Whoever operates that environment owns its security.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns its training environment. Demand attestation of development-environment security in vendor due diligence."
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "model-evaluation", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "model-evaluation",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns its training environment. The customer owns evaluating model integrity signals before adoption, and owns any fine-tuning environment it operates itself."
         },
         "Agent-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "Lead sits with the model provider for the foundation model. The customer owns any customization environment it controls."
         },
         "IaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer operates the training environment and owns its security."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM04:2025 Data and Model Poisoning",
         "mitre_atlas": "AML.T0018.000 Poison ML Model",
-        "biml_llm24": "[LLMtop10:6:poison in the data]"
+        "biml_llm24": "[LLMtop10:6:poison in the data]",
+        "owasp_dsgai": "DSGAI04 Data, Model & Artifact Poisoning"
       },
       "related_controls": [
         "srf.control.finance.SRF-L5-DEV-002",
@@ -281,38 +368,54 @@
       "impact": "Model behaviour integrity",
       "attack_surface": "Development, engineering environment",
       "srf_layer": "L2",
-      "affected_layers": ["L2", "L5"],
+      "affected_layers": [
+        "L2",
+        "L5"
+      ],
       "layer_rationale": "The manipulated asset is data. The data layer owns provenance, quality baselines, and integrity verification before that data reaches training or augmentation.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns integrity of the data used to build the managed application and its model. The customer stays accountable for the integrity of context data it supplies."
         },
         "AI-PaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "The customer leads for the fine-tune and augmentation data it brings. The provider owns integrity of data planes it manages on the customer's behalf."
         },
         "Agent-PaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "The customer leads for agent context and memory stores it populates. The provider owns integrity of managed state."
         },
         "IaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns the entire data pipeline."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM04:2025 Data and Model Poisoning",
         "mitre_atlas": "AML.T0020 Poison Training Data",
-        "biml_llm24": "[LLMtop10:6:poison in the data]"
+        "biml_llm24": "[LLMtop10:6:poison in the data]",
+        "owasp_dsgai": "DSGAI04 Data, Model & Artifact Poisoning"
       },
       "related_controls": [
         "srf.control.finance.SRF-L2-DEV-001",
@@ -329,38 +432,54 @@
       "impact": "Model behaviour integrity",
       "attack_surface": "Development, supply chain",
       "srf_layer": "L5",
-      "affected_layers": ["L2", "L5"],
+      "affected_layers": [
+        "L2",
+        "L5"
+      ],
       "layer_rationale": "A poisoned model arrives through the model supply chain. The party that produces or selects the model owns provenance verification at each handoff.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns its model supply chain. Demand supply-chain attestation in vendor due diligence."
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "model-evaluation", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "model-evaluation",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns the supply chain of models it hosts. The customer owns verifying provenance of any model artifacts it brings to the platform."
         },
         "Agent-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "Lead sits with the model provider. The customer owns provenance of models and tools it plugs into its agents."
         },
         "IaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer selects and imports models and owns verifying their provenance."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM03:2025 Supply Chain",
         "mitre_atlas": "AML.T0010.003 ML Supply Chain Compromise: Model",
-        "biml_llm24": "[LLMtop10:6:poison in the data]"
+        "biml_llm24": "[LLMtop10:6:poison in the data]",
+        "owasp_dsgai": "DSGAI04 Data, Model & Artifact Poisoning"
       },
       "related_controls": [
         "srf.control.finance.SRF-L5-DEV-002",
@@ -378,38 +497,54 @@
       "impact": "Training data confidentiality",
       "attack_surface": "Runtime, model use",
       "srf_layer": "L5",
-      "affected_layers": ["L3", "L5"],
+      "affected_layers": [
+        "L3",
+        "L5"
+      ],
       "layer_rationale": "Sensitive training data escapes through model output. The model layer owns what the model memorized. The application layer owns output filtering as a compensating control.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns both the model's memorization behavior and the application-level output filtering in front of it."
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "model-evaluation", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "model-evaluation",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns model memorization behavior. The customer's application-developer owns output filtering in the application it builds, and the customer owns disclosure risk from data it used in fine-tuning."
         },
         "Agent-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "Lead sits with the model provider. The customer owns output handling in agent workflows, where disclosed content can propagate through tools."
         },
         "IaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns training data selection, memorization risk, and output filtering."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM02:2025 Sensitive Information Disclosure",
         "mitre_atlas": "AML.T0057 LLM Data Leakage",
-        "biml_llm24": "[LLMtop10:8:data ownership]"
+        "biml_llm24": "[LLMtop10:8:data ownership]",
+        "owasp_dsgai": "DSGAI01 Sensitive Data Leakage"
       },
       "related_controls": [
         "srf.control.finance.SRF-L3-DEV-002",
@@ -425,38 +560,54 @@
       "impact": "Training data confidentiality",
       "attack_surface": "Runtime, model use",
       "srf_layer": "L5",
-      "affected_layers": ["L3", "L5"],
+      "affected_layers": [
+        "L3",
+        "L5"
+      ],
       "layer_rationale": "The attack reconstructs training data or infers membership through normal inference. Resistance to it is a property of the model and its training regime.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns inversion resistance. Testing it against the provider's model requires provider authorization."
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "model-evaluation", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "model-evaluation",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns inversion resistance of the base model. The customer owns the added risk from data it fine-tunes with."
         },
         "Agent-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "Lead sits with the model provider."
         },
         "IaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns the model and its privacy properties."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM02:2025 Sensitive Information Disclosure",
         "mitre_atlas": "AML.T0024.000 Infer Training Data Membership; AML.T0024.001 Invert ML Model",
-        "biml_llm24": "[LLMtop10:8:data ownership]"
+        "biml_llm24": "[LLMtop10:8:data ownership]",
+        "owasp_dsgai": "DSGAI18 Inference & Data Reconstruction"
       },
       "related_controls": [
         "srf.control.finance.SRF-L5-DEV-003",
@@ -470,38 +621,53 @@
       "impact": "Training data confidentiality",
       "attack_surface": "Development, engineering environment",
       "srf_layer": "L2",
-      "affected_layers": ["L2"],
+      "affected_layers": [
+        "L2"
+      ],
       "layer_rationale": "Training data is stolen from the engineering environment that holds it. The data layer owns classification, handling, and protection of that data wherever it rests.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns protection of data in its development environment, including customer data used for tuning. The customer stays accountable for what it chose to share."
         },
         "AI-PaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "The customer leads for its own datasets in its own pipelines. The provider owns protection of data planes it manages."
         },
         "Agent-PaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "The customer leads for context and memory data it populates. The provider owns managed state."
         },
         "IaaS": {
           "accountable_persona": "data-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns data protection across its whole environment."
         }
       },
       "mappings": {
         "owasp_llm_top10": null,
         "mitre_atlas": "AML.T0025 Exfiltration via Cyber Means",
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": null
       },
       "related_controls": [
         "srf.control.finance.SRF-L2-MON-002",
@@ -515,38 +681,55 @@
       "impact": "Model confidentiality",
       "attack_surface": "Runtime, model use",
       "srf_layer": "L5",
-      "affected_layers": ["L3", "L4", "L5"],
+      "affected_layers": [
+        "L3",
+        "L4",
+        "L5"
+      ],
       "layer_rationale": "The model is replicated by harvesting inputs and outputs through normal use. The model owner holds the asset at risk; rate limiting and access control at the application and platform layers are the practical defenses.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns the model asset and the rate limiting and monitoring that protect it."
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "model-evaluation", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "model-evaluation",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns protection of hosted models. The customer owns protecting any proprietary model it deploys to the platform."
         },
         "Agent-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "Lead sits with the model provider. The customer owns query patterns its agents expose to third parties."
         },
         "IaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns its model asset and the serving controls around it."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM10:2025 Unbounded Consumption",
         "mitre_atlas": "AML.T0024.002 Extract ML Model",
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": "DSGAI20 Model Exfiltration & IP Replication"
       },
       "related_controls": [
         "srf.control.finance.SRF-L4-DEV-002",
@@ -562,38 +745,54 @@
       "impact": "Model confidentiality",
       "attack_surface": "Runtime, break into deployed model",
       "srf_layer": "L4",
-      "affected_layers": ["L4", "L5"],
+      "affected_layers": [
+        "L4",
+        "L5"
+      ],
       "layer_rationale": "The model file is stolen by breaking into the serving environment. The platform operator owns preventing and detecting that intrusion.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns serving-environment security."
         },
         "AI-PaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns serving-environment security."
         },
         "Agent-PaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns serving-environment security."
         },
         "IaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "shared" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
           "note": "The customer runs the serving stack and owns its security. The infrastructure provider retains obligations for the infrastructure underneath it."
         }
       },
       "mappings": {
         "owasp_llm_top10": null,
         "mitre_atlas": "AML.T0025 Exfiltration via Cyber Means",
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": "DSGAI20 Model Exfiltration & IP Replication"
       },
       "related_controls": [
         "srf.control.insurance.SRF-L4-MON-001",
@@ -609,38 +808,53 @@
       "impact": "Model confidentiality",
       "attack_surface": "Development, engineering environment",
       "srf_layer": "L5",
-      "affected_layers": ["L5"],
+      "affected_layers": [
+        "L5"
+      ],
       "layer_rationale": "The model is stolen from the environment where it is built. Whoever operates the training environment owns protecting the artifacts inside it.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns development-environment security for its models."
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "model-evaluation", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "model-evaluation",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns its development environment. The customer owns any fine-tuning environment it operates."
         },
         "Agent-PaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "shared" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
           "note": "Lead sits with the model provider for foundation model artifacts."
         },
         "IaaS": {
           "accountable_persona": "model-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns protection of its own model artifacts."
         }
       },
       "mappings": {
         "owasp_llm_top10": null,
         "mitre_atlas": "AML.T0025 Exfiltration via Cyber Means",
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": "DSGAI20 Model Exfiltration & IP Replication"
       },
       "related_controls": [
         "srf.control.finance.SRF-L4-DEV-003",
@@ -654,38 +868,54 @@
       "impact": "Model behaviour availability",
       "attack_surface": "Runtime, model use",
       "srf_layer": "L4",
-      "affected_layers": ["L3", "L4"],
+      "affected_layers": [
+        "L3",
+        "L4"
+      ],
       "layer_rationale": "Availability of the serving infrastructure is a platform property. Rate limiting at the application boundary reduces exposure; capacity and isolation live at L4.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns capacity, isolation, and rate limiting."
         },
         "AI-PaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns platform availability. The customer's application-developer owns request budgeting in the application it builds."
         },
         "Agent-PaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns runtime availability. The customer owns bounding agent loops that can self-inflict exhaustion."
         },
         "IaaS": {
           "accountable_persona": "ai-platform-provider",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "shared" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
           "note": "The customer owns serving capacity and limits. The infrastructure provider retains obligations for underlying infrastructure availability."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM10:2025 Unbounded Consumption",
         "mitre_atlas": "AML.T0029 Denial of ML Service",
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": null
       },
       "related_controls": [
         "srf.control.finance.SRF-L4-DEV-002",
@@ -700,38 +930,54 @@
       "impact": "Model input data confidentiality",
       "attack_surface": "Runtime, all IT",
       "srf_layer": "L3",
-      "affected_layers": ["L3", "L4"],
+      "affected_layers": [
+        "L3",
+        "L4"
+      ],
       "layer_rationale": "Prompts and other model inputs leak from wherever they are handled or stored at runtime. The application layer decides what goes into prompts and how long input persists; the platform layer protects input in transit and at rest.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider owns input confidentiality across the managed application. The customer's ai-system-users remain accountable for what they submit."
         },
         "AI-PaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "shared" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
           "note": "The customer owns prompt construction and input retention. Demand the platform provider's input logging and retention terms."
         },
         "Agent-PaaS": {
           "accountable_persona": "agentic-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
           "note": "The runtime provider leads on protecting input flowing through managed state. The customer owns what its agent definitions place into prompts."
         },
         "IaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns input confidentiality end to end."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM07:2025 System Prompt Leakage (system prompt subset of input leakage)",
         "mitre_atlas": "AML.T0056 Extract LLM System Prompt (system prompt subset of input leakage)",
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": null
       },
       "related_controls": [
         "srf.control.finance.SRF-L2-MON-002",
@@ -746,44 +992,1018 @@
       "impact": "Any asset, CIA",
       "attack_surface": "Runtime, all IT",
       "srf_layer": "L3",
-      "affected_layers": ["L3"],
+      "affected_layers": [
+        "L3"
+      ],
       "layer_rationale": "Model output carrying injection payloads only becomes an exploit when downstream code consumes it unescaped. Output encoding and handling are application-layer duties.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "provider",
-          "responsibility": { "customer": "N/A", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
           "note": "The provider's application owns output encoding before output reaches downstream consumers."
         },
         "AI-PaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "shared" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
           "note": "The customer owns treating model output as untrusted in everything it builds downstream."
         },
         "Agent-PaaS": {
           "accountable_persona": "agentic-platform-provider",
           "accountable_party": "provider",
-          "responsibility": { "customer": "shared", "provider": "provider-managed" },
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
           "note": "The runtime provider leads on safe handling where output feeds tool execution. The customer owns downstream consumers its agents write to."
         },
         "IaaS": {
           "accountable_persona": "application-developer",
           "accountable_party": "customer",
-          "responsibility": { "customer": "customer-owned", "provider": "N/A" },
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
           "note": "The customer owns output handling end to end."
         }
       },
       "mappings": {
         "owasp_llm_top10": "LLM05:2025 Improper Output Handling",
         "mitre_atlas": null,
-        "biml_llm24": null
+        "biml_llm24": null,
+        "owasp_dsgai": null
       },
       "related_controls": [
         "srf.control.finance.SRF-L3-DEV-002",
         "srf.control.finance.SRF-L3-MON-002",
         "srf.control.healthcare.SRF-L3-PMS-002",
         "srf.control.insurance.SRF-L3-TPO-001"
+      ]
+    },
+    {
+      "id": "dsgai02",
+      "name": "Agent Identity & Credential Exposure",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, agent identity and credentials",
+      "srf_layer": "L4",
+      "affected_layers": [
+        "L3",
+        "L4"
+      ],
+      "layer_rationale": "Over-scoped tokens and leaked agent credentials open the data plane. The platform that issues, stores, and rotates those credentials is the control point; application tool-calling can shrink blast radius but cannot substitute for platform IAM.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider issues and rotates credentials used by the managed application and its agents. Customer testing of those identity controls requires provider authorization."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The platform provider owns identity primitives for hosted agents and model callers. The customer's application-developer owns not embedding long-lived secrets in prompts, tools, or logs."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "agentic-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The orchestration runtime issues agent identities and tool tokens. The customer owns which tools its agent definitions request and must refuse standing credentials in those definitions."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer runs the identity stack for its agents. The infrastructure provider retains obligations for the IAM substrate it operates."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI02 Agent Identity & Credential Exposure",
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L4-MON-002",
+        "srf.control.finance.SRF-L3-DEV-003",
+        "srf.control.finance.SRF-L4-DEV-002"
+      ]
+    },
+    {
+      "id": "dsgai03",
+      "name": "Shadow AI & Unsanctioned Data Flows",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, unsanctioned AI services",
+      "srf_layer": "L1",
+      "affected_layers": [
+        "L1",
+        "L2"
+      ],
+      "layer_rationale": "Employees and business units send sensitive data to AI services outside inventory and policy. Acceptable-use and inventory live at the business layer. The data layer owns the classification that says which stores may leave; it cannot see a flow the business never authorized.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The L1 matrix cell describes the managed application. This failure is staff sending data to other AI services. The customer's governance function owns the acceptable-use policy and the inventory of tools in use. The SaaS provider cannot see those other services."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns inventory and acceptable use. Demand that the platform provider's contract forbids using customer data to train the provider's own models, which is a sanctioned-path counterpart, not a substitute for detecting unsanctioned tools."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns which agent runtimes and plugins staff may use. The runtime provider can report plugins registered on its platform; it cannot inventory tools staff run elsewhere."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns the full tool inventory and egress policy."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI03 Shadow AI & Unsanctioned Data Flows",
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L1-DEV-002",
+        "srf.control.finance.SRF-L1-DEV-003",
+        "srf.control.finance.SRF-L1-MON-001",
+        "srf.control.public-sector.SRF-L2-ACQ-002",
+        "srf.control.defense.SRF-L2-OPS-004"
+      ]
+    },
+    {
+      "id": "dsgai05",
+      "name": "Data Integrity & Validation Failures",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Model behaviour integrity",
+      "attack_surface": "Development and runtime, data pipelines",
+      "srf_layer": "L2",
+      "affected_layers": [
+        "L2"
+      ],
+      "layer_rationale": "Tampered or malformed records pass ingestion, transformation, or retrieval because nobody checks integrity. That is a data-layer duty. It is distinct from adversarial poisoning: the failure is missing validation, not a named poisoner.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns integrity checks on data the managed application ingests. The customer stays accountable for the integrity of context data it connects."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for pipelines it owns. Demand the platform provider's checksum, schema, and lineage guarantees for data planes it manages."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for memory and knowledge stores it populates. The runtime provider owns integrity of managed state it writes."
+        },
+        "IaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns validation at every hop in its pipeline."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI05 Data Integrity & Validation Failures",
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-VAL-001",
+        "srf.control.finance.SRF-L2-DEV-001",
+        "srf.control.healthcare.SRF-L2-PMS-003",
+        "srf.control.manufacturing.SRF-L2-DES-001"
+      ]
+    },
+    {
+      "id": "dsgai06",
+      "name": "Tool, Plugin & Agent Data Exchange Risks",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Any asset, CIA",
+      "attack_surface": "Runtime, tool and plugin exchange",
+      "srf_layer": "L3",
+      "affected_layers": [
+        "L3",
+        "L4"
+      ],
+      "layer_rationale": "Context moves between tools, plugins, and agents with over-broad permissions or unfiltered payloads. The application and orchestration layer decides which tools exist and what they may see. The platform enforces the token and network boundary those tools cross.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider's application owns which plugins run and what they receive. Customer testing of those exchanges requires provider authorization."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer owns tool wiring in the application it builds. Demand the platform's documented limits on plugin data movement."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "agentic-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The runtime provider leads on tool-execution mediation and inter-agent context filters. The customer's application-developer owns which tools its agent definitions attach."
+        },
+        "IaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns every tool boundary."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI06 Tool, Plugin & Agent Data Exchange Risks",
+        "owasp_llm_top10": "LLM06:2025 Excessive Agency (tool and plugin permission scope)",
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L3-DEV-003",
+        "srf.control.finance.SRF-L3-DEV-001",
+        "srf.control.finance.SRF-L4-DEV-002",
+        "srf.control.healthcare.SRF-L2-PMS-003"
+      ]
+    },
+    {
+      "id": "dsgai09",
+      "name": "Multimodal Capture & Cross-Channel Data Leakage",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, image audio video and metadata channels",
+      "srf_layer": "L2",
+      "affected_layers": [
+        "L2",
+        "L3"
+      ],
+      "layer_rationale": "Sensitive content leaves through images, audio, video, OCR, or embedded metadata that text-only filters never see. Classification and handling rules for those modalities sit with the data owner. The application must treat non-text channels as in-scope for the same rules.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns filtering and retention on every modality the managed application accepts. The customer stays accountable for which images, recordings, or files it uploads."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for modality policy and classification. Demand that the platform's content filters cover the modalities the application actually sends, not text only."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for what its agents may capture (screenshots, call audio, camera). The runtime provider owns whether those captures persist in managed memory."
+        },
+        "IaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns multimodal handling end to end."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI09 Multimodal Capture & Cross-Channel Data Leakage",
+        "owasp_llm_top10": "LLM02:2025 Sensitive Information Disclosure (non-text channels)",
+        "mitre_atlas": "AML.T0057 LLM Data Leakage",
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-DEV-002",
+        "srf.control.finance.SRF-L3-DEV-002",
+        "srf.control.defense.SRF-L2-ACQ-001",
+        "srf.control.healthcare.SRF-L4-DEV-003"
+      ]
+    },
+    {
+      "id": "dsgai10",
+      "name": "Synthetic Data, Anonymization & Transformation Pitfalls",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Training data confidentiality",
+      "attack_surface": "Development, synthetic and de-identified datasets",
+      "srf_layer": "L2",
+      "affected_layers": [
+        "L2",
+        "L5"
+      ],
+      "layer_rationale": "A dataset labelled synthetic or de-identified still supports re-identification, attribute disclosure, or membership inference. The data owner who authorized that transformation owns the residual disclosure risk. The model layer inherits it if training proceeds on the transformed set.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns claims it makes about synthetic or de-identified data used to build the managed application. The customer owns residual risk in any dataset it supplied for that purpose."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for transformations it applies before fine-tuning or RAG. Demand the provider's re-identification test results for any synthetic data the platform supplies."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for synthetic or redacted corpora it loads into agent memory. The provider owns residual risk in corpora it ships with the runtime."
+        },
+        "IaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns every transformation claim and the tests that back it."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI10 Synthetic Data, Anonymization & Transformation Pitfalls",
+        "owasp_llm_top10": "LLM02:2025 Sensitive Information Disclosure (re-identification of transformed data)",
+        "mitre_atlas": "AML.T0024.000 Infer Training Data Membership",
+        "biml_llm24": "[LLMtop10:8:data ownership]"
+      },
+      "related_controls": [
+        "srf.control.healthcare.SRF-L2-DEV-001",
+        "srf.control.finance.SRF-L2-DEV-002",
+        "srf.control.finance.SRF-L5-DEV-003",
+        "srf.control.public-sector.SRF-L2-ACQ-001"
+      ]
+    },
+    {
+      "id": "dsgai11",
+      "name": "Cross-Context & Multi-User Conversation Bleed",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, session cache and multi-tenant memory",
+      "srf_layer": "L4",
+      "affected_layers": [
+        "L2",
+        "L4"
+      ],
+      "layer_rationale": "Session, tenant, or user data appears in another context because caches, memory stores, or isolation boundaries are mis-scoped. Isolation of those stores is a platform property. The data layer owns which tenants' data may share a store at all.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns tenant isolation in the managed service, including prompt cache and conversation memory. Customer testing of cross-tenant bleed requires provider authorization."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The platform provider owns isolation of hosted caches and memory. The customer's data-provider owns not placing multiple tenants in one logical store the customer itself created."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The runtime provider owns isolation of managed agent memory across sessions and tenants. The customer owns scoping of memory stores it attaches."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer owns session and tenant isolation in the stack it runs. The infrastructure provider retains isolation obligations for the shared hardware underneath."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI11 Cross-Context & Multi-User Conversation Bleed",
+        "owasp_llm_top10": "LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)",
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-MON-003",
+        "srf.control.healthcare.SRF-L2-PMS-003",
+        "srf.control.finance.SRF-L4-DEV-001",
+        "srf.control.public-sector.SRF-L4-MON-004"
+      ]
+    },
+    {
+      "id": "dsgai12",
+      "name": "Unsafe Natural-Language Data Gateways",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Any asset, CIA",
+      "attack_surface": "Runtime, natural-language to query translation",
+      "srf_layer": "L3",
+      "affected_layers": [
+        "L3"
+      ],
+      "layer_rationale": "A prompt becomes a SQL, GraphQL, or vector query without a scope check. The application that translates language into data access is the control point. This is not generic prompt injection against model behaviour; it is injection into a data gateway the application chose to expose.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider's application owns any natural-language query feature and the authorization bound to generated queries."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer owns the gateway it builds. Treat generated queries as untrusted until an authorization layer scoped to the calling user has bound them."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "agentic-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The runtime provider leads where the platform itself offers NL-to-query tools. The customer owns gateways its agent definitions add on top."
+        },
+        "IaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns every query gateway."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI12 Unsafe Natural-Language Data Gateways",
+        "owasp_llm_top10": "LLM01:2025 Prompt Injection (natural-language to query translation)",
+        "mitre_atlas": "AML.T0051 LLM Prompt Injection",
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L3-DEV-001",
+        "srf.control.finance.SRF-L3-DEV-003",
+        "srf.control.finance.SRF-L2-DEV-002",
+        "srf.control.healthcare.SRF-L3-PMS-002"
+      ]
+    },
+    {
+      "id": "dsgai13",
+      "name": "Vector Store Platform Data Security",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, vector store and embedding platform",
+      "srf_layer": "L4",
+      "affected_layers": [
+        "L2",
+        "L4"
+      ],
+      "layer_rationale": "Weak authentication, missing tenant isolation, embedding inversion, or unaudited admin paths on the vector store. The store is platform infrastructure. The data owner still classifies what may be embedded into it.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns the retrieval store behind the managed application. Customer testing of isolation or inversion resistance requires provider authorization."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The platform provider owns hosted vector stores. The customer's data-provider owns classification of documents it embeds and any store the customer runs itself."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The runtime provider owns managed embedding stores. The customer owns corpora it loads and any external vector service it attaches."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer runs the vector store and owns its authentication, isolation, and inversion resistance. The infrastructure provider retains obligations for the compute underneath."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI13 Vector Store Platform Data Security",
+        "owasp_llm_top10": "LLM08:2025 Vector and Embedding Weaknesses",
+        "mitre_atlas": "AML.T0024.001 Invert ML Model (embedding inversion)",
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-DEV-002",
+        "srf.control.finance.SRF-L2-MON-002",
+        "srf.control.healthcare.SRF-L2-PMS-003",
+        "srf.control.public-sector.SRF-L4-MON-004"
+      ]
+    },
+    {
+      "id": "dsgai14",
+      "name": "Excessive Telemetry & Monitoring Leakage",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, logs traces and debug pipelines",
+      "srf_layer": "L4",
+      "affected_layers": [
+        "L2",
+        "L4"
+      ],
+      "layer_rationale": "Prompts, responses, and tool payloads land in observability stacks outside the AI security boundary. The platform that emits and ships those signals owns default retention and redaction. The data owner sets which classification levels may appear in logs at all.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns what the managed service logs and where those logs go. Demand retention, redaction, and subprocessors in writing; customer inspection of production logs usually requires provider authorization."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The platform provider owns default telemetry for hosted inference. The customer's application-developer owns not logging raw prompts at L3, and its data-provider owns the classification rule that forbids that log line."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The runtime provider owns traces of tool calls and agent state. The customer owns not echoing those traces into a second logging stack it controls without redaction."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer owns every collector and sink. The infrastructure provider retains obligations for logs it collects on the hypervisor or control plane."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI14 Excessive Telemetry & Monitoring Leakage",
+        "owasp_llm_top10": null,
+        "mitre_atlas": "AML.T0025 Exfiltration via Cyber Means",
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-MON-002",
+        "srf.control.healthcare.SRF-L4-DEV-003",
+        "srf.control.public-sector.SRF-L4-MON-004",
+        "srf.control.defense.SRF-L2-OPS-004"
+      ]
+    },
+    {
+      "id": "dsgai15",
+      "name": "Over-Broad Context Windows & Prompt Over-Sharing",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, prompt and retrieval assembly",
+      "srf_layer": "L3",
+      "affected_layers": [
+        "L2",
+        "L3"
+      ],
+      "layer_rationale": "System prompts, retrieved chunks, tool outputs, and accumulated agent state put data the caller is not authorized to see into one context window. The application assembles that window. The data layer owns the classification that should have blocked the extra chunks from retrieval.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider's application owns what enters the context window, including retrieval breadth. The customer's data-provider remains accountable for which stores it connected."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer owns retrieval design and prompt assembly. Its data-provider owns not returning chunks above the caller's clearance. Demand the platform's documented context-isolation limits."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "agentic-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The runtime provider leads on how agent state, tool output, and memory are concatenated. The customer owns which sources its agents may read."
+        },
+        "IaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns prompt assembly and retrieval scope end to end."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI15 Over-Broad Context Windows & Prompt Over-Sharing",
+        "owasp_llm_top10": "LLM02:2025 Sensitive Information Disclosure (over-broad context as a disclosure path)",
+        "mitre_atlas": "AML.T0057 LLM Data Leakage",
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-DEV-002",
+        "srf.control.finance.SRF-L3-DEV-001",
+        "srf.control.finance.SRF-L2-MON-003",
+        "srf.control.healthcare.SRF-L2-PMS-003"
+      ]
+    },
+    {
+      "id": "dsgai16",
+      "name": "Endpoint & Browser Assistant Overreach",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Runtime, browser IDE and OS assistants",
+      "srf_layer": "L3",
+      "affected_layers": [
+        "L1",
+        "L3"
+      ],
+      "layer_rationale": "A browser, IDE, or OS assistant reads screen content, local files, or DOM data beyond the current task, often outside enterprise DLP. The assistant is an application. Acceptable-use policy at L1 decides whether that assistant may run at all.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "When the assistant is the SaaS product, the provider owns capture scope. When staff install a different assistant against the SaaS, that is DSGAI03 on the customer side; do not collapse the two."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer owns assistants it builds or mandates (IDE plugins, browser extensions). The platform provider owns capture only inside its own hosted UI."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "If the runtime ships a desktop or browser agent, the provider leads on that agent's capture scope. The customer owns any additional endpoint agent it deploys, and L1 governance owns whether that class of tool is permitted."
+        },
+        "IaaS": {
+          "accountable_persona": "application-developer",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns every endpoint assistant and its capture policy."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI16 Endpoint & Browser Assistant Overreach",
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L1-DEV-003",
+        "srf.control.finance.SRF-L3-DEV-001",
+        "srf.control.defense.SRF-L2-OPS-004",
+        "srf.control.public-sector.SRF-L2-ACQ-002"
+      ]
+    },
+    {
+      "id": "dsgai17",
+      "name": "Data Availability & Resilience Failures in AI Pipelines",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Model behaviour availability",
+      "attack_surface": "Runtime, retrieval and embedding pipelines",
+      "srf_layer": "L4",
+      "affected_layers": [
+        "L2",
+        "L4"
+      ],
+      "layer_rationale": "Index corruption, embedding-store outages, or cascading degradation take a data-bearing pipeline offline. Serving capacity for the model is a different threat (AI resource exhaustion). Availability of the retrieval and feature stores is a platform property; the data owner owns rebuild and integrity of the corpus after an outage.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns availability of retrieval and embedding infrastructure behind the managed application."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The platform provider owns hosted index and store availability. The customer's data-provider owns rebuild of corpora it loaded after an outage."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "N/A",
+            "provider": "provider-managed"
+          },
+          "note": "The runtime provider owns managed memory and retrieval availability. The customer owns stores it runs outside the runtime."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-platform-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "shared"
+          },
+          "note": "The customer owns pipeline availability. The infrastructure provider retains obligations for the compute and storage underneath."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI17 Data Availability & Resilience Failures in AI Pipelines",
+        "owasp_llm_top10": null,
+        "mitre_atlas": "AML.T0029 Denial of ML Service (data-plane availability)",
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L4-DEV-002",
+        "srf.control.public-sector.SRF-L4-MON-006",
+        "srf.control.defense.SRF-L4-OPS-010",
+        "srf.control.finance.SRF-L2-MON-001"
+      ]
+    },
+    {
+      "id": "dsgai19",
+      "name": "Human-in-the-Loop & Labeler Overexposure",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Data confidentiality",
+      "attack_surface": "Development, annotation and review platforms",
+      "srf_layer": "L2",
+      "affected_layers": [
+        "L1",
+        "L2"
+      ],
+      "layer_rationale": "Annotators, reviewers, and RLHF labelers see raw sensitive records beyond the task, and the data persists in the labelling platform. The data owner who released that set for labelling owns minimization, access, and deletion. L1 owns whether that labour is in-house or a vendor.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns labelling of data used to build the managed application. The customer owns exposure created by any labelling it commissioned on data it supplied."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for labelling of its own datasets. Demand deletion certificates and access logs from any labelling vendor, including one the platform provider introduces."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for human review of agent traces that contain production data. The provider owns labelling of any corpus it ships with the runtime."
+        },
+        "IaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns every labelling workflow and the vendor contracts behind it."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI19 Human-in-the-Loop & Labeler Overexposure",
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-DEV-002",
+        "srf.control.healthcare.SRF-L2-DEV-001",
+        "srf.control.public-sector.SRF-L2-ACQ-001",
+        "srf.control.finance.SRF-L1-DEV-003"
+      ]
+    },
+    {
+      "id": "dsgai21",
+      "name": "Disinformation & Integrity Attacks via Data Poisoning",
+      "ai_exchange": null,
+      "dsgai": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/",
+      "impact": "Model behaviour integrity",
+      "attack_surface": "Runtime, retrieval corpora and trusted feeds",
+      "srf_layer": "L2",
+      "affected_layers": [
+        "L2",
+        "L3"
+      ],
+      "layer_rationale": "Adversarial content is inserted into a trusted retrieval source at runtime (RAG corpus, web search, third-party feed) so the model repeats it. The data owner of that corpus owns integrity. This is distinct from training-time data poisoning, which the AI Exchange already names as datapoison.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "provider",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "The provider owns integrity of corpora the managed application retrieves. The customer stays accountable for feeds it connected."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for RAG corpora and search indexes it populates. Demand the platform's integrity guarantees for any corpus it manages."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "shared"
+          },
+          "note": "The customer leads for sources its agents may read. The runtime provider owns integrity of managed memory those agents write back into."
+        },
+        "IaaS": {
+          "accountable_persona": "data-provider",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "N/A"
+          },
+          "note": "The customer owns every retrieval source."
+        }
+      },
+      "mappings": {
+        "owasp_dsgai": "DSGAI21 Disinformation & Integrity Attacks via Data Poisoning",
+        "owasp_llm_top10": "LLM04:2025 Data and Model Poisoning (runtime retrieval corpus)",
+        "mitre_atlas": null,
+        "biml_llm24": null
+      },
+      "related_controls": [
+        "srf.control.finance.SRF-L2-DEV-001",
+        "srf.control.finance.SRF-L2-MON-003",
+        "srf.control.defense.SRF-L2-OPS-005",
+        "srf.control.healthcare.SRF-L2-PMS-003",
+        "srf.control.insurance.SRF-L2-TPO-001"
       ]
     }
   ]
