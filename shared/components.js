@@ -26,7 +26,7 @@ const FOOTER_LINKS = [
   { label: "Industries",   href: "/industries/" },
   { label: "Compare",      href: "/compare/" },
   { label: "Developers",  href: "/developers/" },
-  { label: "Presentation",href: "/presentation/" },
+  { label: "Presentation",href: "/presentation/unprompted-oct2026/" },
   { label: "About",       href: "/about/" },
   { label: "Changelog",   href: "/changelog/" },
   { label: "llms.txt",    href: "/llms.txt" },
