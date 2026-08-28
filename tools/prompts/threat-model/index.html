@@ -1624,7 +1624,9 @@ Track B is optional. Off by default. This step assigns SRF accountability. It do
 
 Step: P-srf-join. Fetch https://aisharedresponsibility.com/data/threats.json now. Use only ids that exist in that file.
 
-Published slugs: directpromptinjection, indirectpromptinjection, evasion, runtimemodelpoison, devmodelpoison, datapoison, supplymodelpoison, disclosureinoutput, modelinversionandmembership, devdataleak, modelexfiltration, runtimemodelleak, devmodelleak, airesourceexhaustion, inputdataleak, outputcontainsconventionalinjection.
+Published AI Exchange slugs: directpromptinjection, indirectpromptinjection, evasion, runtimemodelpoison, devmodelpoison, datapoison, supplymodelpoison, disclosureinoutput, modelinversionandmembership, devdataleak, modelexfiltration, runtimemodelleak, devmodelleak, airesourceexhaustion, inputdataleak, outputcontainsconventionalinjection.
+
+threats.json also contains DSGAI-keyed ids (dsgai02, dsgai03, dsgai05, dsgai06, dsgai09, dsgai10, dsgai11, dsgai12, dsgai13, dsgai14, dsgai15, dsgai16, dsgai17, dsgai19, dsgai21). Those are not AI Exchange slugs. Do not put a dsgai id in srf.join.ai_exchange_slug.
 
 Operating model: {{operating_model}}
 Full Track A matrix:
@@ -1745,7 +1747,7 @@ Return the full matrix JSON with srf filled on every threat.</pre>
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
           <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
           <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
-          <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
+          <li><code>srf.join.ai_exchange_slug</code>: an AI Exchange slug from <a href="/data/threats.json">threats.json</a> (not a <code>dsgaiNN</code> id), or null.</li>
         </ul>
         <p>
           Track B does not add threats. A threat with no matching slug still needs

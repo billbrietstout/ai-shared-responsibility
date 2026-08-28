@@ -344,6 +344,7 @@
                 <div class="cat__val cat__serves">
                   <span class="member-tag">BIML</span>
                   <span class="member-tag">OWASP AI Exchange</span>
+                  <span class="member-tag">OWASP GenAI Security Project</span>
                   <span class="member-tag">NIST</span>
                 </div>
               </div>
@@ -361,9 +362,12 @@
               <div class="cat__row">
                 <div class="cat__key">Gap</div>
                 <div class="cat__val cat__val--gap">
-                  The crosswalk covers the sixteen threats in the AI Exchange
-                  security matrix. Extending it to the full BIML risk set and
-                  ATLAS technique catalog remains open.
+                  The crosswalk covers the sixteen AI Exchange matrix threats
+                  plus fifteen DSGAI 2026 data-plane failures the AI Exchange
+                  slug set does not name. Extending it to the full BIML risk
+                  set and ATLAS technique catalog remains open. DSGAI07 and
+                  DSGAI08 are omitted because they are a control gap and a
+                  compliance outcome, not attack techniques.
                 </div>
               </div>
             </div>
@@ -616,8 +620,8 @@
           <p class="section__body">
             Each threat definition belongs to its external source. The crosswalk
             adds the SRF layer where the threat lands and the accountable persona
-            per operating model. A sample of the sixteen entries follows; the full
-            set is at <a href="/data/threats.json">/data/threats.json</a>.
+            per operating model. A sample follows; the full set of 31 entries
+            is at <a href="/data/threats.json">/data/threats.json</a>.
           </p>
 
           <div class="table-scroll">
@@ -782,7 +786,8 @@
               application developer. Under AI-SaaS the layer is provider-managed,
               so customer testing requires provider authorization. The
               <a href="/data/threats.json">crosswalk</a> publishes this
-              resolution for all sixteen matrix threats today.
+              resolution for the sixteen AI Exchange matrix threats and for
+              fifteen DSGAI 2026 data-plane failures today.
             </p>
           </div>
           <div class="callout">
@@ -818,11 +823,11 @@
 
       const SAMPLE = [
         "directpromptinjection",
-        "indirectpromptinjection",
         "datapoison",
-        "supplymodelpoison",
+        "dsgai03",
+        "dsgai13",
         "disclosureinoutput",
-        "airesourceexhaustion",
+        "dsgai15",
       ];
 
       function personaName(id) {
@@ -852,6 +857,7 @@
           body.innerHTML = rows
             .map((t) => {
               const ext =
+                (t.mappings && t.mappings.owasp_dsgai) ||
                 (t.mappings && t.mappings.owasp_llm_top10) ||
                 (t.mappings && t.mappings.mitre_atlas) ||
                 "n/a";
@@ -881,7 +887,7 @@
             (data.count || (data.threats || []).length) +
             " threats. Source verified " +
             (data.updated || "") +
-            " against the OWASP AI Exchange security matrix.";
+            " against the OWASP AI Exchange security matrix and the OWASP GenAI Data Security Risks 2026 taxonomy.";
         } catch (e) {
           body.innerHTML =
             '<tr><td colspan="5" style="color:var(--slate-500)">' +

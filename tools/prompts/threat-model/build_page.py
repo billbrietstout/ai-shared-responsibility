@@ -570,7 +570,7 @@ Do not rephrase Shostack's four questions. Do not put mitigations in P-phantom.<
           <li><code>srf.layer</code>: L1 to L5, the layer where the control point lives.</li>
           <li><code>srf.persona</code>: one id from <a href="/data/personas.json">personas.json</a>.</li>
           <li><code>srf.party</code>: <code>customer</code> or <code>provider</code>. Never <code>shared</code>.</li>
-          <li><code>srf.join.ai_exchange_slug</code>: a published slug from <a href="/data/threats.json">threats.json</a>, or null.</li>
+          <li><code>srf.join.ai_exchange_slug</code>: an AI Exchange slug from <a href="/data/threats.json">threats.json</a> (not a <code>dsgaiNN</code> id), or null.</li>
         </ul>
         <p>
           Track B does not add threats. A threat with no matching slug still needs

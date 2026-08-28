@@ -41,7 +41,7 @@ The SRF limits itself to accountability. Attack techniques, threats, and test me
 
 ## Worked example
 
-The AI Exchange page for direct prompt injection links to controls and related standards through the taxonomy today. With the binding it can also resolve the accountability data. The threat lands at SRF layer L3. Under AI-PaaS the accountable persona is the application developer on the customer side. Under AI-SaaS the layer is provider-managed, so customer testing requires provider authorization. The companion crosswalk (`data/threats.json` on the site) publishes this resolution for the sixteen threats in the AI Exchange security matrix, with mappings to the LLM Top 10, ATLAS techniques, and BIML risk IDs.
+The AI Exchange page for direct prompt injection links to controls and related standards through the taxonomy today. With the binding it can also resolve the accountability data. The threat lands at SRF layer L3. Under AI-PaaS the accountable persona is the application developer on the customer side. Under AI-SaaS the layer is provider-managed, so customer testing requires provider authorization. The companion crosswalk (`data/threats.json` on the site) publishes this resolution for the sixteen threats in the AI Exchange security matrix and for fifteen DSGAI 2026 data-plane failures the AI Exchange slug set does not name, with mappings to the LLM Top 10, ATLAS techniques, BIML risk IDs, and DSGAI identifiers.
 
 ## Ask
 
