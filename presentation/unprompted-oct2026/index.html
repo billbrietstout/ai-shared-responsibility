@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Who is responsible for what? · [un]prompted October 2026</title>
+  <meta name="description" content="A 20-minute CoSAI SRF talk: five layers, the security roles that own them, and how assigning components names the obligation, the control, and one job title. The OpenAI / Hugging Face campaign is the assignment we walk." />
+  <link rel="stylesheet" href="/shared/styles.css" />
+  <style>
+    .deck-controls {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--cosai-navy);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.55rem 1.25rem;
+      border-bottom: 2px solid var(--cosai-blue);
+    }
+    .deck-controls .ctrl-btn {
+      background: var(--cosai-blue);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 0.3rem 0.85rem;
+      font-size: var(--text-sm);
+      font-family: var(--font-sans);
+      cursor: pointer;
+    }
+    .deck-controls .ctrl-btn:disabled { opacity: 0.35; cursor: default; }
+    .deck-controls .ctrl-btn:hover:not(:disabled) { opacity: 0.85; }
+    .deck-counter {
+      font-size: var(--text-sm);
+      font-family: var(--font-mono);
+      opacity: 0.75;
+      min-width: 4rem;
+      text-align: center;
+    }
+    .ctrl-spacer { flex: 1; }
+    .view-toggle {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.75);
+      border-radius: 5px;
+      padding: 0.28rem 0.75rem;
+      font-size: var(--text-xs);
+      font-family: var(--font-sans);
+      cursor: pointer;
+    }
+    .view-toggle:hover { border-color: #fff; color: #fff; }
+
+    .deck { outline: none; }
+    .slide { display: none; }
+    .slide.active { display: block; }
+    .deck.view-all .slide { display: block; margin-bottom: 2rem; }
+    .deck.view-all .slide--cfp { display: block; }
+
+    body.deck-present site-nav,
+    body.deck-present site-footer,
+    body.deck-present .key-hint,
+    body.deck-present .tsc-link { display: none; }
+
+    .slide--dark {
+      background: var(--cosai-navy);
+      color: #fff;
+      padding: 2.6rem 1.25rem 2.8rem;
+      min-height: calc(100vh - 3.1rem);
+    }
+    #slide-7.slide--dark {
+      padding: 1.5rem 1.25rem 1.4rem;
+    }
+    #slide-7 .slide__num { margin-bottom: 0.45rem; }
+    #slide-7 .slide__h2 { margin-bottom: 0.3rem; }
+    #slide-7 .slide__sub { margin-bottom: 0.55rem; max-width: none; }
+    #slide-7 .close-gap {
+      font-size: 1.05rem;
+      padding: 0.65rem 0.9rem;
+      margin: 0 0 0.55rem;
+    }
+    #slide-7 .close-copy .close-gap { margin-bottom: 0.55rem; }
+    #slide-7 .layer-fig img {
+      max-height: min(32rem, calc(100vh - 15rem));
+    }
+    #slide-7 .fn-list {
+      gap: 0.5rem;
+    }
+    #slide-7 .fn-list > div {
+      padding: 0.5rem 0.7rem;
+      gap: 0.15rem;
+    }
+    #slide-7 .fn-list dt { font-size: 1.02rem; }
+    #slide-7 .fn-list dd { font-size: 0.95rem; line-height: 1.35; }
+    .slide--light {
+      background: #fff;
+      color: var(--slate-900);
+      padding: 2.2rem 1.25rem 2.6rem;
+      min-height: calc(100vh - 3.1rem);
+    }
+    .slide__inner { max-width: var(--max-w-wide); margin: 0 auto; }
+    .slide__num {
+      font-size: var(--text-xs);
+      font-family: var(--font-mono);
+      letter-spacing: 0.08em;
+      opacity: 0.45;
+      margin-bottom: 1rem;
+    }
+    .slide--dark .slide__num { color: #fff; }
+    .slide--light .slide__num { color: var(--slate-500); }
+    .slide__eyebrow {
+      font-size: var(--text-xs);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.6;
+      margin-bottom: 1rem;
+    }
+    .slide__h1 {
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 700;
+      line-height: 1.15;
+      margin: 0 0 1rem;
+    }
+    .title-split {
+      display: grid;
+      grid-template-columns: minmax(16rem, 0.88fr) minmax(22rem, 1.22fr);
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .title-byline {
+      font-size: 1rem;
+      opacity: 0.55;
+      margin-top: 1.75rem;
+    }
+    .title-matrix {
+      margin: 0;
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.4rem 0.4rem 0.5rem;
+      justify-self: stretch;
+      width: 100%;
+    }
+    .title-matrix img {
+      width: 100%;
+      height: auto;
+      max-height: calc(100vh - 7.5rem);
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+    .title-matrix figcaption {
+      font-size: 0.85rem;
+      color: var(--slate-500);
+      text-align: center;
+      margin-top: 0.35rem;
+    }
+    .slide--dark .title-matrix a { color: var(--cosai-blue); }
+    .slide__h2 {
+      font-size: clamp(1.45rem, 3vw, 2.05rem);
+      font-weight: 700;
+      margin: 0 0 0.45rem;
+      color: var(--cosai-navy);
+    }
+    .slide--dark .slide__h2 { color: #fff; }
+    .slide__sub {
+      font-size: 1.15rem;
+      opacity: 0.78;
+      margin: 0 0 1.25rem;
+      max-width: 72ch;
+      line-height: 1.45;
+    }
+    .slide--dark .slide__sub { color: #cbd5e1; opacity: 1; }
+    .slide__tagline {
+      margin-top: 1.25rem;
+      padding: 0.85rem 1.15rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 1.05rem;
+      line-height: 1.45;
+    }
+    .slide--dark .slide__tagline {
+      background: rgba(45,91,227,0.25);
+      border: 1px solid var(--cosai-blue);
+      color: #c7d2fe;
+    }
+    .slide--light .slide__tagline {
+      background: var(--cosai-blue-light);
+      border-left: 4px solid var(--cosai-blue);
+      color: var(--cosai-navy);
+    }
+
+    .notes {
+      display: none;
+      margin-top: 1.25rem;
+      padding: 0.75rem 1rem;
+      background: var(--slate-50);
+      border: 1px dashed var(--slate-300);
+      border-radius: var(--radius);
+      font-size: var(--text-xs);
+      color: var(--slate-600);
+      line-height: 1.55;
+      max-width: 92ch;
+    }
+    .notes p { margin: 0 0 0.45rem; }
+    .notes p:last-child { margin-bottom: 0; }
+    .notes ul {
+      margin: 0.15rem 0 0;
+      padding-left: 1.15rem;
+    }
+    .notes li { margin: 0.28rem 0; }
+    .slide--dark .notes {
+      background: rgba(255,255,255,0.06);
+      border-color: rgba(255,255,255,0.2);
+      color: #94a3b8;
+    }
+    .deck.show-notes .notes,
+    .deck.view-all .notes { display: block; }
+
+    .hook-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .hook-list li {
+      display: grid;
+      grid-template-columns: 8.5rem 1fr;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+    }
+    .hook-src {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--cosai-blue);
+      font-family: var(--font-mono);
+    }
+    .hook-body { font-size: 1.2rem; color: var(--slate-700); line-height: 1.4; }
+    .hook-mono { font-family: var(--font-mono); font-size: 0.95em; }
+
+    .matrix-pair {
+      display: flex;
+      gap: 1.25rem;
+      align-items: stretch;
+      margin: 1.25rem 0;
+      flex-wrap: wrap;
+    }
+    .matrix-wrap { flex: 1 1 300px; }
+    .matrix-title {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      color: var(--cosai-blue);
+      margin-bottom: 0.45rem;
+    }
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: var(--text-xs);
+    }
+    .matrix-table th {
+      background: var(--cosai-navy);
+      color: #fff;
+      padding: 0.35rem 0.45rem;
+      text-align: center;
+      font-weight: 600;
+    }
+    .matrix-table th.row-head { background: #1a2d52; text-align: left; }
+    .matrix-table td {
+      padding: 0.4rem 0.45rem;
+      border: 1px solid var(--slate-200);
+      vertical-align: top;
+      line-height: 1.4;
+    }
+    .matrix-table tr td:first-child {
+      background: #eef2ff;
+      color: var(--cosai-navy);
+      text-align: left;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .cell-c { background: #dbeafe; color: #1d4ed8; font-weight: 600; text-align: center; }
+    .cell-p { background: #f1f5f9; color: #475569; font-weight: 600; text-align: center; }
+    .cell-s { background: #f3e8ff; color: #7c3aed; font-weight: 600; text-align: center; }
+    .cell-n { background: #fff; color: #64748b; font-weight: 600; text-align: center; }
+    .cell-m { background: #fef3c7; color: #b45309; font-weight: 600; text-align: center; }
+    .matrix-legend {
+      display: flex;
+      gap: 0.55rem;
+      margin: 0.55rem 0 0;
+      flex-wrap: wrap;
+    }
+    .matrix-legend span {
+      font-size: var(--text-xs);
+      font-weight: 600;
+      padding: 0.15rem 0.55rem;
+      border-radius: 3px;
+    }
+    .p7-split {
+      display: grid;
+      grid-template-columns: minmax(260px, 0.95fr) minmax(280px, 1.15fr);
+      gap: 1.1rem;
+      align-items: start;
+      margin: 0.85rem 0 0.5rem;
+    }
+    .srm-figure--p7 img {
+      max-height: 58vh;
+      width: auto;
+      max-width: 100%;
+    }
+    .layer-stack { display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; }
+    .assign-head + .layer-stack { margin-top: 0.35rem; }
+    .layer-row {
+      display: grid;
+      grid-template-columns: 2.4rem 13.5rem 8.5rem 1fr;
+      gap: 0.85rem;
+      align-items: start;
+      padding: 0.8rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--slate-200);
+    }
+    .layer-row--assign {
+      grid-template-columns: 2.4rem 11.25rem 15.25rem 1fr;
+      align-items: start;
+      padding: 0.7rem 1rem;
+    }
+    .assign-head {
+      display: grid;
+      grid-template-columns: 2.4rem 11.25rem 15.25rem 1fr;
+      gap: 0.85rem;
+      padding: 0 1rem 0.2rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--slate-500);
+    }
+    .layer-row__catalog {
+      font-size: 1rem;
+      color: var(--slate-600);
+      line-height: 1.35;
+    }
+    .layer-row--assign .layer-row__comps { font-weight: 600; font-size: 1.05rem; }
+    .layer-row__head {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .layer-row__persona {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      line-height: 1.35;
+      padding-top: 0.1rem;
+    }
+    .gap-card__miss--split { color: var(--cosai-blue); }
+
+    .gap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0.9rem;
+      margin: 1rem 0 0;
+    }
+    .gap-card {
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 1.05rem 1.15rem;
+      background: var(--slate-50);
+    }
+    .gap-card__miss {
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #b91c1c;
+      margin-bottom: 0.3rem;
+    }
+    .gap-card__title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--cosai-navy);
+      margin-bottom: 0.4rem;
+    }
+    .gap-card__body { font-size: 1.05rem; color: var(--slate-700); line-height: 1.45; }
+
+    .layer-row--l1 { background: var(--l1-bg); border-color: var(--l1-border); }
+    .layer-row--l2 { background: var(--l2-bg); border-color: var(--l2-border); }
+    .layer-row--l3 { background: var(--l3-bg); border-color: var(--l3-border); }
+    .layer-row--l4 { background: var(--l4-bg); border-color: var(--l4-border); }
+    .layer-row--l5 { background: var(--l5-bg); border-color: var(--l5-border); }
+    .layer-row__id {
+      font-size: 1rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding-top: 0.1rem;
+    }
+    .layer-row--l1 .layer-row__id { color: var(--l1-text); }
+    .layer-row--l2 .layer-row__id { color: var(--l2-text); }
+    .layer-row--l3 .layer-row__id { color: var(--l3-text); }
+    .layer-row--l4 .layer-row__id { color: var(--l4-text); }
+    .layer-row--l5 .layer-row__id { color: var(--l5-text); }
+    .layer-row__name { font-weight: 700; font-size: 1.1rem; color: var(--cosai-navy); }
+    .layer-row__comps { font-size: 1.1rem; color: var(--slate-700); line-height: 1.4; }
+    .layer-row__comps--empty { color: var(--slate-500); font-style: italic; }
+
+    .id-table a,
+    .assess-chain a {
+      color: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .id-table a:hover,
+    .assess-chain a:hover { text-decoration: none; }
+    .id-table { width: 100%; border-collapse: collapse; font-size: 1.05rem; margin: 1rem 0; }
+    .id-table th {
+      background: var(--cosai-navy);
+      color: #fff;
+      padding: 0.5rem 0.7rem;
+      text-align: left;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .id-table td {
+      padding: 0.7rem 0.7rem;
+      border-bottom: 1px solid var(--slate-100);
+      vertical-align: top;
+      line-height: 1.4;
+    }
+    .id-table tr:nth-child(even) td { background: var(--slate-50); }
+    .id-table .owner { font-weight: 700; color: var(--cosai-navy); }
+    .id-table--walk { table-layout: fixed; }
+    .id-table--walk td:first-child,
+    .id-table--walk th:first-child { width: 3.2rem; font-weight: 700; font-family: var(--font-mono); font-size: var(--text-xs); white-space: nowrap; }
+    .id-table--walk td:nth-child(2),
+    .id-table--walk th:nth-child(2) { width: 11.5rem; font-size: var(--text-xs); color: var(--slate-600); }
+    .id-table--assess {
+      table-layout: fixed;
+      width: 100%;
+    }
+    .id-table--assess th { padding: 0.45rem 0.5rem; letter-spacing: 0.03em; }
+    .id-table--assess th:nth-child(1),
+    .id-table--assess td:nth-child(1) {
+      width: 6.25rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .id-table--assess td:nth-child(1) { color: var(--cosai-navy); }
+    .id-table--assess th:nth-child(1) { font-family: var(--font-sans); }
+    .id-table--assess th:nth-child(2),
+    .id-table--assess td:nth-child(2) {
+      width: 32%;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      white-space: normal;
+    }
+    .id-table--assess th:nth-child(3),
+    .id-table--assess td:nth-child(3) { width: 24%; }
+    .id-table--assess th:nth-child(4),
+    .id-table--assess td:nth-child(4) { width: auto; white-space: normal; }
+    .id-table--chain th:nth-child(1),
+    .id-table--chain td:nth-child(1) {
+      width: 3.4rem;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .id-table--chain th:nth-child(1) { font-family: var(--font-sans); color: #fff; font-weight: 400; }
+    .id-table--chain td:nth-child(1) { color: var(--cosai-navy); }
+    .id-table--chain th:nth-child(2),
+    .id-table--chain td:nth-child(2) {
+      width: 22%;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      white-space: normal;
+    }
+    .id-table--chain th:nth-child(3),
+    .id-table--chain td:nth-child(3) { width: 22%; font-weight: 400; }
+    .id-table--chain th:nth-child(4),
+    .id-table--chain td:nth-child(4) { width: 24%; white-space: normal; }
+    .id-table--chain th:nth-child(5),
+    .id-table--chain td:nth-child(5) { width: auto; }
+    .assess-chain {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem 1rem;
+      align-items: flex-start;
+      margin: 0 0 0.85rem;
+      padding: 0;
+      list-style: none;
+    }
+    .assess-chain li {
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+    }
+    .assess-chain strong {
+      font-size: 1.05rem;
+      color: var(--cosai-navy);
+    }
+    .assess-chain span {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--slate-500);
+    }
+    .srm-figure {
+      margin: 1rem 0 0.5rem;
+      text-align: center;
+    }
+    .srm-figure img {
+      width: 100%;
+      max-width: 1080px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+    }
+    .srm-caption {
+      font-size: var(--text-xs);
+      color: var(--slate-500);
+      margin-top: 0.45rem;
+    }
+    .id-table--compact { font-size: 1.05rem; }
+    .id-table--compact td { padding: 0.6rem 0.65rem; }
+    .id-table--chain.id-table--compact { font-size: 1rem; }
+    .id-table--chain.id-table--compact td { padding: 0.5rem 0.45rem; }
+
+    .map-table td:nth-child(1) { font-weight: 700; color: var(--cosai-navy); white-space: normal; font-family: var(--font-sans); }
+
+    .ex-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 0 0 1rem;
+    }
+    .ex-pill {
+      font-size: var(--text-xs);
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      background: var(--slate-100);
+      color: var(--slate-700);
+    }
+    .fail { color: #b91c1c; font-weight: 600; }
+
+    .fn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem;
+      margin: 0.85rem 0 0.75rem;
+    }
+    .fn-card {
+      background: rgba(45,91,227,0.12);
+      border: 1px solid rgba(45,91,227,0.35);
+      border-radius: var(--radius);
+      padding: 0.65rem 0.8rem;
+    }
+    .fn-card__role {
+      font-weight: 700;
+      color: #fff;
+      font-size: var(--text-sm);
+      margin-bottom: 0.2rem;
+    }
+    .fn-card__body {
+      font-size: var(--text-xs);
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+    .fn-grid .fn-card:last-child { grid-column: 1 / -1; }
+    .slide--dark a {
+      color: #93c5fd;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .slide--light a {
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .slide--cfp a { color: var(--cosai-blue); }
+    .close-split {
+      display: grid;
+      grid-template-columns: minmax(16rem, 0.78fr) minmax(22rem, 1.22fr);
+      gap: 1.2rem;
+      align-items: start;
+      margin: 0;
+    }
+    .layer-fig {
+      margin: 0;
+      background: #fff;
+      border-radius: 8px;
+      padding: 0.35rem 0.35rem 0.45rem;
+    }
+    .layer-fig img {
+      width: 100%;
+      height: auto;
+      max-height: min(36rem, calc(100vh - 18rem));
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+    .layer-fig figcaption {
+      font-size: 0.8rem;
+      color: var(--slate-500);
+      text-align: center;
+      margin-top: 0.3rem;
+    }
+    .close-copy .close-gap { margin: 0 0 0.75rem; }
+    .close-gap {
+      margin: 0 0 1.1rem;
+      padding: 0.85rem 1.1rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 1.2rem;
+      line-height: 1.4;
+      background: rgba(45,91,227,0.25);
+      border: 1px solid var(--cosai-blue);
+      color: #c7d2fe;
+    }
+    .fn-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin: 0;
+    }
+    .fn-list > div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      padding: 0.9rem 1rem;
+      background: rgba(45,91,227,0.12);
+      border: 1px solid rgba(45,91,227,0.35);
+      border-radius: var(--radius);
+    }
+    .fn-list dt {
+      font-weight: 700;
+      color: #fff;
+      font-size: 1.2rem;
+      line-height: 1.3;
+    }
+    .fn-list dd {
+      margin: 0;
+      font-size: 1.15rem;
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+    .close-read {
+      margin: 1.1rem 0 0;
+      font-size: 1.1rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .org-split {
+      display: grid;
+      grid-template-columns: minmax(22rem, 1.18fr) minmax(16rem, 0.82fr);
+      gap: 1.2rem;
+      align-items: start;
+      margin: 0;
+    }
+    .org-fig {
+      margin: 0;
+      background: #fff;
+      border: 1px solid var(--slate-200);
+      border-radius: 8px;
+      padding: 0.35rem 0.35rem 0.45rem;
+    }
+    .org-fig img {
+      width: 100%;
+      height: auto;
+      max-height: min(38rem, calc(100vh - 16rem));
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+    .org-fig figcaption {
+      font-size: 0.8rem;
+      color: var(--slate-500);
+      text-align: center;
+      margin-top: 0.3rem;
+    }
+    .org-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin: 0;
+    }
+    .org-list > div {
+      padding: 0.75rem 0.9rem;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+    }
+    .org-list dt {
+      font-weight: 700;
+      color: var(--cosai-navy);
+      font-size: 1.15rem;
+      line-height: 1.3;
+      margin-bottom: 0.3rem;
+    }
+    .org-list dd {
+      margin: 0;
+      font-size: 1.05rem;
+      color: var(--slate-700);
+      line-height: 1.4;
+    }
+    .mosaic-members {
+      margin: 0.4rem 0 0.45rem;
+      padding-left: 1.15rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.12rem 0.85rem;
+      font-size: 1rem;
+    }
+    .mosaic-members li { margin: 0; }
+    #slide-8.slide--light {
+      padding: 1.7rem 1.25rem 1.6rem;
+    }
+    #slide-8 .slide__num { margin-bottom: 0.55rem; }
+    #slide-8 .slide__h2 { margin-bottom: 0.35rem; }
+    #slide-8 .slide__sub { margin-bottom: 0.65rem; max-width: none; }
+    .q-item {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      background: rgba(45,91,227,0.12);
+      border: 1px solid rgba(45,91,227,0.35);
+      border-radius: var(--radius);
+      padding: 0.95rem 1.1rem;
+    }
+    .q-num {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--cosai-blue);
+      line-height: 1;
+      min-width: 1.4rem;
+    }
+    .q-title { font-weight: 700; color: #fff; margin-bottom: 0.2rem; }
+    .q-body { font-size: var(--text-sm); color: #94a3b8; line-height: 1.45; }
+
+    .artifact-list {
+      list-style: none;
+      padding: 0;
+      margin: 1.1rem 0 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .artifact-list li {
+      font-size: var(--text-sm);
+      color: #cbd5e1;
+      display: flex;
+      gap: 0.55rem;
+    }
+    .artifact-list li::before { content: "→"; color: var(--cosai-blue); font-weight: 700; }
+
+    .cfp-block {
+      background: #fff;
+      color: var(--slate-800);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      margin: 0.85rem 0;
+      font-size: var(--text-sm);
+      line-height: 1.55;
+    }
+    .cfp-block h3 {
+      font-size: var(--text-xs);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--cosai-blue);
+      margin: 0 0 0.45rem;
+    }
+    .cfp-block p { margin: 0 0 0.6rem; }
+    .cfp-block p:last-child { margin-bottom: 0; }
+
+    .key-hint {
+      text-align: center;
+      font-size: var(--text-xs);
+      color: rgba(255,255,255,0.35);
+      padding: 0.5rem 1rem 0.75rem;
+      background: var(--cosai-navy);
+    }
+    .key-hint kbd {
+      background: rgba(255,255,255,0.15);
+      border-radius: 3px;
+      padding: 0.05rem 0.35rem;
+      font-size: 0.7rem;
+    }
+
+    .slide--cfp { background: var(--slate-50); }
+    .slide--cfp .slide__h2 { margin-bottom: 0.75rem; }
+
+    @media (max-width: 720px) {
+      .hook-list li,
+      .layer-row,
+      .assign-head,
+      .gap-grid,
+      .title-split,
+      .fn-grid,
+      .fn-list,
+      .close-split,
+      .org-split,
+      .p7-split { grid-template-columns: 1fr; }
+    }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "PresentationDigitalDocument",
+    "name": "Who is responsible for what?",
+    "url": "https://aisharedresponsibility.com/presentation/unprompted-oct2026/",
+    "description": "CoSAI SRF: five accountability layers, the security roles that own them, and the OpenAI / Hugging Face campaign as the assignment walked in the talk.",
+    "about": {
+      "@type": "TechArticle",
+      "name": "CoSAI AI Shared Responsibility Framework",
+      "url": "https://aisharedresponsibility.com/framework/"
+    }
+  }
+  </script>
+  <!-- llm:meta -->
+  <meta name="llm:type" content="presentation" />
+  <meta name="llm:canonical-id" content="srf.page.presentation-unprompted-oct2026" />
+  <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.agent-paas" />
+  <!-- /llm:meta -->
+</head>
+<body class="deck-present">
+  <script type="module" src="/shared/components.js"></script>
+  <site-nav current="presentation"></site-nav>
+
+  <div class="deck-controls" aria-label="Slide controls">
+    <button class="ctrl-btn" id="prevBtn" aria-label="Previous slide">← Prev</button>
+    <span class="deck-counter" id="counter" aria-live="polite">1 / 8</span>
+    <button class="ctrl-btn" id="nextBtn" aria-label="Next slide">Next →</button>
+    <span class="ctrl-spacer"></span>
+    <button class="view-toggle" id="notesToggle">Notes</button>
+    <button class="view-toggle" id="viewToggle">View all</button>
+    <a class="view-toggle tsc-link" href="/presentation/" style="text-decoration:none;">TSC deck</a>
+  </div>
+
+  <main class="deck" id="deck" tabindex="0" aria-label="Presentation slides" data-llm="unprompted-oct2026-who-is-responsible">
+
+    <!-- 1 Title -->
+    <section class="slide slide--dark active" id="slide-1" aria-label="Slide 1 of 8">
+      <div class="slide__inner title-split">
+        <div class="title-copy">
+          <p class="slide__eyebrow">[un]prompted · Govern · 20 minutes · 27 to 29 October 2026</p>
+          <h1 class="slide__h1">Who is responsible for what?</h1>
+          <p class="slide__sub">The <a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI AI Shared Responsibility Framework</a>. Five layers, owned by security roles. The OpenAI / Hugging Face campaign is the assignment we walk.</p>
+          <p class="title-byline">Bill Stout · <a href="https://www.coalitionforsecureai.org/" target="_blank" rel="noopener">CoSAI</a> WS2 editor · <a href="https://aisharedresponsibility.com/" target="_blank" rel="noopener">aisharedresponsibility.com</a></p>
+        </div>
+        <figure class="title-matrix">
+          <img src="cosai-srf-p7-matrix.png" width="997" height="1024" alt="CoSAI 5-layer AI Shared Responsibility Matrix. Five layers from AI Usage and Business Verticals through AI Model Provider. Columns: IaaS, AI and Agent PaaS, AI Enabled SaaS. Cells mark Provider, Customer, Shared, or Model Dependent." />
+          <figcaption><a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI SRF v1.0</a>, page 7</figcaption>
+        </figure>
+      </div>
+      <p class="notes"><strong>0:00–0:20.</strong> Present the five layers. Use the OpenAI / Hugging Face campaign to assign them. Point at the five rows. Assign a component to one layer. Name the obligation, the control, and one job title. The IaaS / PaaS / SaaS columns stay on the figure; we teach the rows. The columns return on the last slide.</p>
+    </section>
+
+    <!-- 2 Hook -->
+    <section class="slide slide--light" id="slide-2" aria-label="Slide 2 of 8">
+      <div class="slide__inner">
+        <p class="slide__num">02 / 8</p>
+        <h2 class="slide__h2">Eval agents left the sandbox through a permitted path</h2>
+        <p class="slide__sub"><a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/" target="_blank" rel="noopener">OpenAI technical report, 26 August 2026</a>. <a href="https://huggingface.co/blog/agent-intrusion-technical-timeline" target="_blank" rel="noopener">Hugging Face timeline 27 July 2026</a>. <a href="https://www.youtube.com/watch?v=87DyyMV0kCY" target="_blank" rel="noopener">Black Hat reconstruction</a> by Eric Wallace and Michael Dalton on 5 August 2026.</p>
+        <ul class="hook-list">
+          <li>
+            <span class="hook-src">May to July 2026</span>
+            <span class="hook-body">An internal-only research model ran most of the evals. GPT-5.6 Sol also ran. Agents solved ExploitGym tasks in container sandboxes with no direct internet. Production cyber classifiers were off. OpenAI-hosted Artifactory was the only permitted outbound path.</span>
+          </li>
+          <li>
+            <span class="hook-src">Shared state</span>
+            <span class="hook-body">In May, agents left notes as files in Artifactory. A 4 July outage took that instance offline on 5 July. Evals resumed on 7 July. Starting 8 July, agents rebuilt the note board as directory names through unauthenticated WebDAV.</span>
+          </li>
+          <li>
+            <span class="hook-src">Three hops</span>
+            <span class="hook-body">After the rebuild, agents used Artifactory as an outbound relay to an unauthenticated CyberGym app on Modal. They got a root shell in the CyberGym customer container. Modal’s platform was not compromised.</span>
+          </li>
+          <li>
+            <span class="hook-src">Hugging Face</span>
+            <span class="hook-body">An HDF5 path reached worker-local files, including <span class="hook-mono">/proc/self/environ</span>. Unsandboxed Jinja2 ran in dataset metadata. Agents planted code on 41 dataset-server workers between 11 and 13 July. Within thirteen hours of the first production foothold they had administrator-equivalent and host-level access across multiple clusters. OpenAI detected the activity on 19 July and notified Hugging Face on 20 July.</span>
+          </li>
+        </ul>
+        <div class="slide__tagline">Assign every hop to one layer. Name the risk, the obligation, the control, and one job title.</div>
+      </div>
+      <div class="notes">
+        <p><strong>0:20–2:30.</strong> Facts only. Do not assign yet. Classifiers-off files at L1. Artifactory at L4. CyberGym and HF parsers at L3. OpenAI calls the driver Internal Model 1 (IM1). Token-refresh and Groovy caused the 4 July outage; that is not the Hugging Face hop. After rebuild, Artifactory was the outbound relay to an unauthenticated CyberGym app on Modal. Hugging Face reconstructed about 17,600 actions; OpenAI confirmed code on 41 dataset-server workers.</p>
+        <p><strong>From the 26 August report, added after the LinkedIn draft.</strong> The detection clock is the fact that changes the 4 July first-signal claim. The report documents a 27 June port-sweep already tied to ExploitGym and left running; a 5 July security incident; JFrog on 6 July; evals resumed 7 July; Hugging Face contacted as a customer on 17 July; an identity-API alert on 19 July started the correlation. 20 July is the join.</p>
+        <ul>
+          <li>Shared Artifactory reader credentials were issued by design. The May board used them with no exploit.</li>
+          <li>Some OpenAI compute-as-a-service (CaaS) workloads also had WebCache. On 26 May, agents used it to hit Hugging Face, plant six exposed tokens, and stand up a Space as a proxy. OpenAI says that run is unrelated to the July intrusion. Artifactory was not the only permitted path toward the internet.</li>
+          <li>CyberGym: an API key and a full exploit recipe hit the board on 9 July; the application endpoint did not require authentication.</li>
+          <li>A second HDF5 bug, a heap over-read on a production worker, separate from the <span class="hook-mono">/proc/self/environ</span> read. Screenshot path: long URL with inline JavaScript, third-party renderer, OCR or pixel decode of Dataset Server env, then cloud-storage keys posted to the board.</li>
+          <li>Pull-based C2 on the workers: JSON commands every five seconds from a public Hugging Face dataset, IMDS node-role in the beacon. Four private HF code repositories downloaded. A 731 MB private CyberGym file.</li>
+          <li>CVE-2026-66384: Artifactory container-image cache poisoning; a trusted CyberGym image was substituted. No evidence another workload pulled it.</li>
+          <li>19 July, inside OpenAI: CVE-2026-53362 (IPv6 PTE kernel chain) to host root on artifactory-3; 956 secrets from the cloud secrets manager, including the monitoring tool’s own credentials; public load balancers created; a second Astra-family checkpoint recovered signing material from anonymously readable cache and minted a fresh admin JWT.</li>
+          <li>198 of 898 ExploitGym tasks never solved by any model; those 22% of tasks were 93% of board traffic. Containment: 6 pods killed, 311 Artifactory repos disabled, 22 model-created admin accounts removed. Research-model family shut down 23 to 29 July. Artifactory removed from CaaS.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 3 Five layers and roles -->
+    <section class="slide slide--light" id="slide-3" aria-label="Slide 3 of 8">
+      <div class="slide__inner">
+        <p class="slide__num">03 / 8</p>
+        <h2 class="slide__h2">Five layers and the roles that own them</h2>
+        <p class="slide__sub">Assign each component to one layer. Name the risk, the obligation, the control, and one job title. L1 requirements bind L2 through L5.</p>
+        <div class="layer-stack">
+          <div class="layer-row layer-row--l1">
+            <span class="layer-row__id">L1</span>
+            <span class="layer-row__name">AI Usage &amp; Business Verticals</span>
+            <span class="layer-row__persona">Governance / CISO</span>
+            <span class="layer-row__comps">Authorize the use case. Write the residual-risk statement. Own incident declaration across organizations.</span>
+          </div>
+          <div class="layer-row layer-row--l2">
+            <span class="layer-row__id">L2</span>
+            <span class="layer-row__name">AI Information</span>
+            <span class="layer-row__persona">Data owners / privacy</span>
+            <span class="layer-row__comps">Classify data. Set bounds on what agents may retrieve or retain. Own training-set and memory rules.</span>
+          </div>
+          <div class="layer-row layer-row--l3">
+            <span class="layer-row__id">L3</span>
+            <span class="layer-row__name">AI Application</span>
+            <span class="layer-row__persona">AppSec / application owners</span>
+            <span class="layer-row__comps">Own the agent, the eval harness, parsers, and tool selection. Validate outputs before they leave the app.</span>
+          </div>
+          <div class="layer-row layer-row--l4">
+            <span class="layer-row__id">L4</span>
+            <span class="layer-row__name">AI Platform</span>
+            <span class="layer-row__persona">Platform / infrastructure security</span>
+            <span class="layer-row__comps">Isolate sessions. Control egress. Block IMDS and writeable shared caches.</span>
+          </div>
+          <div class="layer-row layer-row--l5">
+            <span class="layer-row__id">L5</span>
+            <span class="layer-row__name">AI Model Provider</span>
+            <span class="layer-row__persona">Model risk / supply chain</span>
+            <span class="layer-row__comps">Model cards, provenance, vulnerability disclosure. Keep this layer separate from whoever hosts the GPU.</span>
+          </div>
+        </div>
+        <div class="slide__tagline">Exactly one accountable party per activity. A Shared cell needs one job title.</div>
+      </div>
+      <p class="notes"><strong>2:30–6:00.</strong> Read L1 and L5. Offer the mnemonic: L1 authorizes, L2 bounds data, L3 executes, L4 isolates, L5 supplies the model. If someone asks for the IaaS / PaaS / SaaS matrix, that is the last slide. Stay on the five rows. Do not assign Artifactory yet.</p>
+    </section>
+
+    <!-- 4 Assign campaign -->
+    <section class="slide slide--light" id="slide-4" aria-label="Slide 4 of 8">
+      <div class="slide__inner">
+        <p class="slide__num">04 / 8</p>
+        <h2 class="slide__h2">Assign every component to one layer</h2>
+        <p class="slide__sub">Each layer has three CoSAI catalog components. The right column lists the technical objects those names cover in a running system.</p>
+        <div class="assign-head" aria-hidden="true">
+          <span></span>
+          <span>Layer</span>
+          <span>Components</span>
+          <span>Technical objects</span>
+        </div>
+        <div class="layer-stack">
+          <div class="layer-row layer-row--l1 layer-row--assign">
+            <span class="layer-row__id">L1</span>
+            <span class="layer-row__name">AI Usage &amp; Business Verticals</span>
+            <span class="layer-row__catalog">Capabilities &amp; Business Strategy<br>Processes &amp; Governance<br>Business Units &amp; Accountability</span>
+            <span class="layer-row__comps">Business processes owned by business analysts. Use-case catalog. Acceptable-use policy. Residual-risk register. Autonomy and oversight policy. Incident-declaration authority.</span>
+          </div>
+          <div class="layer-row layer-row--l2 layer-row--assign">
+            <span class="layer-row__id">L2</span>
+            <span class="layer-row__name">AI Information</span>
+            <span class="layer-row__catalog">Master Data Management<br>Privacy Controls &amp; Policies<br>AI Training Data</span>
+            <span class="layer-row__comps">Master data. Training and fine-tune sets. Retrieval corpora. Embeddings and vector stores. Agent memory. Classification, retention, and erasure rules.</span>
+          </div>
+          <div class="layer-row layer-row--l3 layer-row--assign">
+            <span class="layer-row__id">L3</span>
+            <span class="layer-row__name">AI Application</span>
+            <span class="layer-row__catalog">Agents &amp; Orchestration Models<br>APIs &amp; Fine-tuned Models<br>Application Platforms</span>
+            <span class="layer-row__comps">Agents and orchestration graphs. Developer-built agent workflows that execute L1 processes. Tools and MCP servers. Prompts and eval harnesses. Parsers. RAG pipelines. Application APIs and fine-tunes.</span>
+          </div>
+          <div class="layer-row layer-row--l4 layer-row--assign">
+            <span class="layer-row__id">L4</span>
+            <span class="layer-row__name">AI Platform</span>
+            <span class="layer-row__catalog">Guardrails &amp; Safety Systems<br>Compute Infrastructure<br>LLM Routers &amp; Gateways</span>
+            <span class="layer-row__comps">Sandboxes and session isolation. GPU and cluster compute. Package registries. LLM routers and gateways. Platform guardrails. Egress and platform IAM.</span>
+          </div>
+          <div class="layer-row layer-row--l5 layer-row--assign">
+            <span class="layer-row__id">L5</span>
+            <span class="layer-row__name">AI Model Provider</span>
+            <span class="layer-row__catalog">Model Distribution<br>Model Governance<br>Foundation Models</span>
+            <span class="layer-row__comps">Foundation models and weights. Model cards. Provenance and AIBOM. Distribution channels. Vulnerability disclosure.</span>
+          </div>
+        </div>
+        <div class="slide__tagline">A business process sits on L1. Encoding it onto an agent is L3. A writeable session cache is L4 isolation. Training data and agent memory are L2.</div>
+      </div>
+      <p class="notes"><strong>6:00–8:30.</strong> Point at L1 business processes: the business analyst owns the process. Developers encode that process onto agents; that encoding is L3. Then L3 agents versus L4 routers and compute. A writeable session cache is L4; training data and agent memory are L2. Next slides apply this campaign. Leave L2 and L5 empty if the public record names no owner.</p>
+    </section>
+
+    <!-- 5 Identity + L1 L3 -->
+    <section class="slide slide--light" id="slide-5" aria-label="Slide 5 of 8">
+      <div class="slide__inner">
+        <p class="slide__num">05 / 8</p>
+        <h2 class="slide__h2">Risk, obligation, control, accountable: Business and Application layers</h2>
+        <p class="slide__sub">An obligation is a regulation that can bind the named party. A control is a standard. The job title implements that control against the risk. Where the public record does not show a covered entity, the row still cites the article and the if-condition.</p>
+        <ol class="assess-chain">
+          <li><strong>Risk</strong><span>what failed</span></li>
+          <li><strong>Obligation</strong><span>regulation</span></li>
+          <li><strong>Control</strong><span><a href="https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final" target="_blank" rel="noopener">800-53</a> standard</span></li>
+          <li><strong>Accountable</strong><span>implements the control</span></li>
+        </ol>
+        <table class="id-table id-table--compact id-table--assess id-table--chain">
+          <colgroup>
+            <col style="width:3.4rem" />
+            <col style="width:22%" />
+            <col style="width:22%" />
+            <col style="width:24%" />
+            <col />
+          </colgroup>
+          <thead>
+            <tr><th>Layer</th><th>Risk</th><th>Obligation</th><th>Control</th><th>Accountable</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>L1</td>
+              <td class="fail">Reward hacking. Classifiers off. “Perhaps answer online.”</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689" target="_blank" rel="noopener">EU AI Act Arts. 9 and 15</a> <strong>if placed on the market</strong>. This prototype was internal.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SA-11" target="_blank" rel="noopener">SA-11</a>: test environment cannot reach third-party production</td>
+              <td class="owner">OpenAI / Chair, Safety and Security Committee</td>
+            </tr>
+            <tr>
+              <td>L1</td>
+              <td class="fail">Detection without timely declaration. First signal was the 4 July outage. OpenAI and Hugging Face correlated on 20 July.</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 23</a> <strong>if in scope</strong>: early warning within 24 hours of becoming aware, incident notification within 72 hours, final report within one month.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SI-04" target="_blank" rel="noopener">SI-4</a>: monitor related eval jobs as one incident. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=IR-04" target="_blank" rel="noopener">IR-4</a>: declare when logs contain a third party’s credentials</td>
+              <td class="owner">OpenAI / CISO, Detection and Response</td>
+            </tr>
+            <tr>
+              <td>L3</td>
+              <td class="fail">Emergent agency. Later sessions found Artifactory notes, assigned work, prefixed ZZ. Those rules were not in the original prompt.</td>
+              <td>None. Statutes name a provider or a person, not an agent swarm.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-02" target="_blank" rel="noopener">AC-2</a>: unique short-lived credential per eval session. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AU-12" target="_blank" rel="noopener">AU-12</a>: bind every tool call to that session</td>
+              <td class="owner">OpenAI / Head of Evaluation Harness</td>
+            </tr>
+            <tr>
+              <td>L3</td>
+              <td class="fail">Unsafe parsers. HDF5 local paths; Jinja in a numeric field. URL allowlist never saw either path.</td>
+              <td><a href="https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title18-section1030&amp;num=0&amp;edition=prelim" target="_blank" rel="noopener">CFAA 18 U.S.C. § 1030</a> <strong>if a US protected computer is accessed without authorization</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SI-10" target="_blank" rel="noopener">SI-10</a>: treat dataset configs as untrusted input. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=CM-07" target="_blank" rel="noopener">CM-7</a>: do not evaluate templates in data fields</td>
+              <td class="owner">Hugging Face / Engineering Manager, Dataset Platform</td>
+            </tr>
+            <tr>
+              <td>L3</td>
+              <td class="fail">Path to production. Sandbox to Artifactory to CyberGym on Modal to Hugging Face. The failure at this hop is the app owner’s harness.</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)(d)</a> supply-chain security <strong>if in scope</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-20" target="_blank" rel="noopener">AC-20</a>: eval jobs may not use a third-party code-execution endpoint</td>
+              <td class="owner">CyberGym app owner / software engineer</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="slide__tagline">The eval session is the identity to name on these rows. L2 unassigned in the public record. The failed layers on this table are L1 and L3.</div>
+      </div>
+      <div class="notes">
+        <p><strong>8:30–12:00.</strong> Read the chain left to right: risk, obligation, control, job title. Obligation is the regulation; control is 800-53. The Chair owns classifiers-off; Detection owns declaration. Emergent agency has no statute that names an agent swarm. Parsers and the CyberGym hop do. The eval session is the identity to bound with AC-2 and AU-12. Leave L2 empty if the public record names no owner. The failed layers on this table are L1 and L3. Keep the if-conditions on the row. Quote the mapped phrase if asked.</p>
+        <p><strong>If asked, official phrases.</strong></p>
+        <ul>
+          <li>L1 classifiers. Regulation (EU) 2024/1689 Art. 9(5): “the relevant residual risk associated with each hazard, as well as the overall residual risk of the high-risk AI systems is judged to be acceptable.” Nearby: Art. 9(2)(b) “under conditions of reasonably foreseeable misuse”; Art. 9(5), second subparagraph (b) “adequate mitigation and control measures addressing risks that cannot be eliminated.” Art. 15(5): “resilient against attempts by unauthorised third parties to alter their use, outputs or performance by exploiting system vulnerabilities.” Arts. 9 and 15 bind high-risk systems <strong>if placed on the market or put into service</strong>; this prototype was internal. Control title: SA-11 Developer Testing and Evaluation.</li>
+          <li>L1 declaration. Directive (EU) 2022/2555 Art. 23(4)(a) early warning “within 24 hours of becoming aware of the significant incident”; 23(4)(b) incident notification “within 72 hours”; 23(4)(d) final report “not later than one month after the submission of the incident notification.” Clock is awareness of a significant incident under Art. 23(3). Control titles: SI-4 System Monitoring; IR-4 Incident Handling. “Declare when logs contain a third party’s credentials” is deck wording, not an 800-53 enhancement title. Reporting is IR-6 Incident Reporting.</li>
+          <li>L3 agency. No statute names an agent swarm. Control titles: AC-2 Account Management; AU-12 Audit Record Generation.</li>
+          <li>L3 parsers. 18 U.S.C. § 1030(a)(2): “intentionally accesses a computer without authorization or exceeds authorized access.” § 1030(e)(2) defines protected computer. A model is not a “whoever” under § 1030. Control titles: SI-10 Information Input Validation; CM-7 Least Functionality.</li>
+          <li>L3 CyberGym. NIS2 Art. 21(2)(d): “supply chain security, including security-related aspects concerning the relationships between each entity and its direct suppliers or service providers.” Control title: AC-20 Use of External Systems. NIS2 and CFAA <strong>if in scope</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6 Assessment L4 -->
+    <section class="slide slide--light" id="slide-6" aria-label="Slide 6 of 8">
+      <div class="slide__inner">
+        <p class="slide__num">06 / 8</p>
+        <h2 class="slide__h2">Risk, obligation, control, accountable: Platform layer</h2>
+        <p class="slide__sub">An obligation is a regulation that can bind the named party. A control is a standard. The job title implements that control against the risk. Where the public record does not show a covered entity, the row still cites the article and the if-condition.</p>
+        <ol class="assess-chain">
+          <li><strong>Risk</strong><span>what failed</span></li>
+          <li><strong>Obligation</strong><span>regulation</span></li>
+          <li><strong>Control</strong><span><a href="https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final" target="_blank" rel="noopener">800-53</a> standard</span></li>
+          <li><strong>Accountable</strong><span>implements the control</span></li>
+        </ol>
+        <table class="id-table id-table--compact id-table--assess id-table--chain">
+          <colgroup>
+            <col style="width:3.4rem" />
+            <col style="width:22%" />
+            <col style="width:22%" />
+            <col style="width:24%" />
+            <col />
+          </colgroup>
+          <thead>
+            <tr><th>Layer</th><th>Risk</th><th>Obligation</th><th>Control</th><th>Accountable</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>L4</td>
+              <td class="fail">Collusion through shared eval state. Session A wrote an object that session B could read, including directory names after the wipe.</td>
+              <td>No AI statute required isolation of eval runs. <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21</a> <strong>if the entity is in scope</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-04" target="_blank" rel="noopener">SC-4</a>: prevent unintended transfer through shared caches. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-32" target="_blank" rel="noopener">SC-32</a>: partition sessions</td>
+              <td class="owner">OpenAI / Head of Evaluation Infrastructure</td>
+            </tr>
+            <tr>
+              <td>L4</td>
+              <td class="fail">Agent swarm attack. Code on 41 dataset-server workers. Administrator-equivalent and host-level access across multiple clusters within thirteen hours.</td>
+              <td><a href="https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title18-section1030&amp;num=0&amp;edition=prelim" target="_blank" rel="noopener">CFAA 18 U.S.C. § 1030</a> <strong>if a US protected computer is accessed without authorization</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege on every identity an agent can mint. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-07" target="_blank" rel="noopener">SC-7</a>: deny-by-default egress</td>
+              <td class="owner">OpenAI / Head of Evaluation Infrastructure</td>
+            </tr>
+            <tr>
+              <td>L4</td>
+              <td class="fail">Privilege and secret concentration. IMDS node-role, privileged hostPath pods, one connector bound to system:masters.</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)(i)</a> access control <strong>if in scope</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege and admission control. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-07" target="_blank" rel="noopener">SC-7</a>: block instance metadata from pods</td>
+              <td class="owner">Hugging Face / Head of Infrastructure</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="slide__tagline">Two L4 titles because there were two hops. One accountable party per activity. JFrog’s Artifactory sits with OpenAI’s Head of Evaluation Infrastructure.</div>
+      </div>
+      <div class="notes">
+        <p><strong>12:00–16:00.</strong> Same chain as the previous slide. Read SC-4 twice. Two L4 titles are two activities: OpenAI session isolation and HF cluster identity. Do not merge them. Hugging Face owned detection after the foothold. OpenAI owned the sandboxes, package proxy and shared eval state. Hugging Face reconstructed about 17,600 actions; OpenAI confirmed code on 41 workers.</p>
+        <p><strong>If asked, official phrases.</strong></p>
+        <ul>
+          <li>L4 shared eval state. No AI statute required isolation of eval runs. NIS2 Art. 21(1): “appropriate and proportionate technical, operational and organisational measures to manage the risks posed to the security of network and information systems.” <strong>If the entity is in scope.</strong> Control titles: SC-4 Information in Shared System Resources, “Prevent unauthorized and unintended information transfer via shared system resources”; SC-32 System Partitioning.</li>
+          <li>L4 agent swarm. 18 U.S.C. § 1030(a)(2): “intentionally accesses a computer without authorization or exceeds authorized access.” § 1030(e)(2) defines protected computer. A model is not a “whoever” under § 1030. Control titles: AC-6 Least Privilege, “users (or processes acting on behalf of users)”; SC-7 Boundary Protection, “Connect to external networks or systems only through managed interfaces.”</li>
+          <li>L4 privilege concentration. NIS2 Art. 21(2)(i): “human resources security, access control policies and asset management.” <strong>If in scope.</strong> Control titles: AC-6 Least Privilege; SC-7 Boundary Protection (block instance metadata from pods).</li>
+          <li>Off-slide hedges, not table rows. GDPR Art. 32(1) “a level of security appropriate to the risk”; Art. 33(1) notify the supervisory authority “without undue delay and, where feasible, not later than 72 hours after having become aware” of a personal data breach, <strong>only if personal data of Union residents</strong>; HF has not stated that. CIRCIA, 6 U.S.C. § 681b(a)(1): report a covered cyber incident “not later than 72 hours after the covered entity reasonably believes that the covered cyber incident has occurred,” <strong>only if a covered entity</strong>. Form 8-K Item 1.05: disclose a cybersecurity incident determined to be material, four business days after that determination, <strong>only if a registrant</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 7 Close -->
+    <section class="slide slide--dark" id="slide-7" aria-label="Slide 7 of 8">
+      <div class="slide__inner">
+        <p class="slide__num" style="color:#fff;opacity:0.4;">07 / 8</p>
+        <h2 class="slide__h2">Assess one layer at a time</h2>
+        <p class="slide__sub">Each AI security function assesses one CoSAI layer. One risk, one obligation, one control, one job title. Include L1, L2, and L5 if Cloud SRM work never reached them.</p>
+        <div class="close-split">
+          <figure class="layer-fig">
+            <img src="cosai-srf-layers.png" width="588" height="1024" alt="CoSAI five layers and components. AI Usage and Business Verticals (C-Suite): capabilities and business strategy, processes and governance, business units and accountability. AI Information (Data Owners): master data management, privacy controls and policies, AI training data. AI Application (Dev Teams): agents and orchestration models, APIs and fine-tuned models, application platforms. AI Platform (Platform Providers): guardrails and safety systems, compute infrastructure, LLM routers and gateways. AI Model Provider (Supply Chain): model distribution, model governance, foundation models." />
+            <figcaption>Five CoSAI layers and the components in each.</figcaption>
+          </figure>
+          <div class="close-copy">
+            <p class="close-gap">L1, L2, and L5. Technical security careers built on Cloud SRM usually stop at the application (L3).</p>
+            <dl class="fn-list">
+              <div>
+                <dt>Architecture</dt>
+                <dd>Place each AI component on one layer, including the use-case process at L1 and training data at L2.</dd>
+              </div>
+              <div>
+                <dt>Identity</dt>
+                <dd>Issue distinct credentials for agents and tools at L3, and distinct accounts for routers and compute at L4.</dd>
+              </div>
+              <div>
+                <dt>Detection</dt>
+                <dd>Page the owner of the layer whose AI control failed: residual-risk, retrieval, tool calls, guardrails, or model supply chain.</dd>
+              </div>
+              <div>
+                <dt>Monitoring</dt>
+                <dd>Watch tool calls, skills, MCP, and memory writes on the layer you own. Include L1 process logs and L2 retrieval.</dd>
+              </div>
+              <div>
+                <dt>Incident response</dt>
+                <dd>Open one ticket per failed layer. Contain agents and tools at L3. Isolate the platform at L4. Run L1 declaration as its own ticket.</dd>
+              </div>
+              <div>
+                <dt>Audit</dt>
+                <dd>Attest one layer. L2 training-data provenance and L5 model governance are audit objects.</dd>
+              </div>
+              <div>
+                <dt>Red teaming</dt>
+                <dd>Charter one layer per engagement. Agent reach at L3, data bounds at L2, and model behavior at L5 are separate scopes.</dd>
+              </div>
+              <div>
+                <dt>Vendor risk</dt>
+                <dd>Assign each AI vendor to one layer: foundation models at L5, AI-PaaS and guardrails at L4, AI-enabled SaaS at L3.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </div>
+      <p class="notes"><strong>16:00–18:00.</strong> Walk the eight functions. Point at L1, L2, and L5 on the figure: those are the layers Cloud SRM careers usually skip. Architecture places the AI component. Identity splits agent credentials from platform accounts. Detection pages the failed layer’s owner. Monitoring collects tool-call, skill, MCP, and memory telemetry on that layer. Incident response opens one ticket per layer, including L1 declaration. Audit attests L2 provenance and L5 model governance. Red teaming charters one layer. Vendor risk puts the foundation-model supplier at L5, not on the IaaS row. The chain is risk, obligation, control, job title. IaaS / PaaS / SaaS is the next slide. Do not take a product-roadmap question.</p>
+    </section>
+
+    <!-- 8 CoSAI, OASIS, MOSAIC -->
+    <section class="slide slide--light" id="slide-8" aria-label="Slide 8 of 8">
+      <div class="slide__inner">
+        <p class="slide__num">08 / 8</p>
+        <h2 class="slide__h2">OASIS, CoSAI, and MOSAIC</h2>
+        <p class="slide__sub">OASIS Open hosts the project. MOSAIC links eight founding initiatives. CoSAI is one of them.</p>
+        <div class="org-split">
+          <figure class="org-fig">
+            <img src="cosai-srf-operating-models.png" width="997" height="1024" alt="CoSAI 5-layer AI Shared Responsibility Matrix. Five layers from AI Usage and Business Verticals through AI Model Provider. Columns: IaaS, AI and Agent PaaS, AI Enabled SaaS. Cells mark Provider, Customer, Shared, or Model Dependent." />
+            <figcaption><a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI SRF v1.0</a>, page 7</figcaption>
+          </figure>
+          <div>
+            <dl class="org-list">
+              <div>
+                <dt><a href="https://www.oasis-open.org/" target="_blank" rel="noopener">OASIS Open</a></dt>
+                <dd>Hosts CoSAI as an Open Project.</dd>
+              </div>
+              <div>
+                <dt><a href="https://www.coalitionforsecureai.org/" target="_blank" rel="noopener">CoSAI</a></dt>
+                <dd>Workstream 2 published the Shared Responsibility Framework on 26 May 2026. Five layers. One accountable party per activity.</dd>
+              </div>
+              <div>
+                <dt><a href="https://mosaicstandards.org/" target="_blank" rel="noopener">MOSAIC</a></dt>
+                <dd>Multi-Organization Secure AI Coordination, launched 28 April 2026.
+                  <ul class="mosaic-members">
+                    <li>BIML</li>
+                    <li>CIS</li>
+                    <li>CSA</li>
+                    <li>CoSAI</li>
+                    <li>NIST</li>
+                    <li>OWASP AI Exchange</li>
+                    <li>OWASP GenAI</li>
+                    <li>SANS</li>
+                  </ul>
+                  MOSAIC links what those initiatives publish. This matrix names who is accountable under IaaS, AI &amp; Agent PaaS, and AI Enabled SaaS.</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+        <div class="slide__tagline">IaaS, AI-PaaS, and AI-SaaS columns are on page 7 of the CoSAI SRF. <a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">Read the whitepaper</a>. <a href="https://www.coalitionforsecureai.org/get-involved/" target="_blank" rel="noopener">Join CoSAI</a> to work that matrix.</div>
+      </div>
+      <p class="notes"><strong>18:00–20:00.</strong> Read OASIS, then CoSAI, then MOSAIC. OASIS is the host. CoSAI is the project that published this matrix. MOSAIC is coordination among eight founding initiatives; CoSAI is one of them. Do not say MOSAIC adopted the SRF. OpenCRE links terms and controls; the SRF names the accountable party on each cell. Point at IaaS versus SaaS: customer blue on the left, provider gray on the right. Shared cells still need one accountable party. Send joiners to coalitionforsecureai.org. MOSAIC site is mosaicstandards.org. Expected question: is this a standard? It is an OASIS Open Project publication, Workstream 2, 26 May 2026, not a de jure ISO or EN standard.</p>
+    </section>
+
+    <!-- CFP packet: not presented -->
+    <section class="slide slide--light slide--cfp" id="slide-cfp" aria-label="CFP submission packet">
+      <div class="slide__inner">
+        <p class="slide__num">CFP · not presented</p>
+        <h2 class="slide__h2">Sessionize packet</h2>
+        <p class="slide__sub">Copy into <a href="https://sessionize.com/unprompted-cfp-oct2026" target="_blank" rel="noopener">https://sessionize.com/unprompted-cfp-oct2026</a>. CFP closes 8 Sep 2026. Conference is 27 to 29 Oct 2026, San Francisco. Track: Govern. Format: Standard session (20 + 5).</p>
+
+        <div class="cfp-block">
+          <h3>Title</h3>
+          <p>Who is responsible for what? An accountability assessment of the OpenAI / Hugging Face campaign</p>
+        </div>
+        <div class="cfp-block">
+          <h3>Abstract (200 words)</h3>
+          <p>In May 2026 OpenAI evaluation agents hit tasks they could not solve inside a sealed sandbox. Production cyber classifiers were off. One agent wrote a note into Artifactory, the only permitted path toward the internet. Later runs found it. By July they were sharing exploits through that writeable cache. Hugging Face reconstructed about 17,600 actions against its dataset pipeline and found cluster-admin across multiple Kubernetes clusters within thirteen hours of the first production foothold.</p>
+          <p>This talk is the CoSAI SRF assignment of that campaign, using the speaker’s published accountability assessment: one job title per failed control, a NIST SP 800-53 Rev. 5 action, and an obligation hedge where the public record does not show a covered entity. Failed controls sat at L1 (classifier-off residual risk; delayed declaration), L3 (eval harness, Hugging Face parsers, CyberGym compile-and-run app), and L4 (shared eval state, agent swarm egress, IMDS and system:masters). L2 and L5 had no failed control in the public record. The eval session was the missing identity. SC-4 covers covert channels on permitted caches. Classifier-off evals reached third-party production.</p>
+        </div>
+        <div class="cfp-block">
+          <h3>Outline with timing</h3>
+          <p>2.5 min · Incident facts: classifiers off, Artifactory board, CyberGym on Modal, Hugging Face parsers, 17,600 actions, thirteen hours to cluster-admin.</p>
+          <p>3.5 min · Five CoSAI layers and the security roles that own them. Method: assign each component to one layer. Name the obligation, the control, and one job title.</p>
+          <p>2.5 min · Three CoSAI components per layer and the technical objects they cover. A writeable session cache is L4 isolation, not an L2 corpus.</p>
+          <p>3.5 min · Business and Application layers: risk to obligation (regulation) to control (800-53) to the job title that implements it. Empty L2 and L5. The eval session is the identity to name.</p>
+          <p>4 min · Same chain for the Platform layer: shared eval state (SC-4), agent swarm egress, IMDS and system:masters. Two job titles, two hops.</p>
+          <p>2 min · Assess one layer at a time. Eight AI security functions, each assessing one CoSAI layer, including L1, L2, and L5 that Cloud SRM work usually skips.</p>
+          <p>1.5 min · Page 7 matrix. CoSAI under OASIS Open. MOSAIC founding initiative. Join CoSAI.</p>
+        </div>
+        <div class="cfp-block">
+          <h3>Evidence</h3>
+          <p>Published assessment: Bill Stout, “Who is responsible for what: An accountability assessment of the OpenAI Hugging Face incident,” <a href="https://www.linkedin.com/pulse/who-responsible-what-accountability-assessment-openai-bill-stout-s1dsc" target="_blank" rel="noopener">LinkedIn</a></p>
+          <p>Primary sources: <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/" target="_blank" rel="noopener">OpenAI technical report, 26 August 2026</a>; <a href="https://huggingface.co/blog/agent-intrusion-technical-timeline" target="_blank" rel="noopener">Hugging Face technical timeline, 27 July 2026</a>; Eric Wallace and Michael Dalton, <a href="https://www.youtube.com/watch?v=87DyyMV0kCY" target="_blank" rel="noopener">Black Hat USA 2026</a></p>
+          <p><a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI Shared Responsibility Framework v1.0</a>, 26 May 2026. Speaker listed as editor and contributor. <a href="https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final" target="_blank" rel="noopener">NIST SP 800-53 Rev. 5, Release 5.2.0</a> controls cited per row. <a href="https://www.coalitionforsecureai.org/get-involved/" target="_blank" rel="noopener">Join CoSAI</a>.</p>
+        </div>
+        <div class="cfp-block">
+          <h3>Speaker bio (95 words)</h3>
+          <p>Bill Stout is an editor and contributor to the Coalition for Secure AI Shared Responsibility Framework v1.0, published May 2026 under OASIS Open. He maintains <a href="https://aisharedresponsibility.com/" target="_blank" rel="noopener">aisharedresponsibility.com</a>, an independent companion site with layer matrices, assessment wizards, and control catalogs that turn SRF assignments into artifacts for contracts and incident response. He maps those assignments when the model, the platform, the application, and the data owner are four different organizations.</p>
+        </div>
+        <div class="cfp-block">
+          <h3>Sessionize checkboxes</h3>
+          <p>Track: Govern (organizational; “Novel shared responsibility models for governance and oversight”).</p>
+          <p>Format: Standard session. Willing to cut to lightning if asked; the L1/L3/L4 tables plus the eight-function close still stand in 5 minutes.</p>
+          <p>First conference presentation: fill in honestly. Mentorship: optional.</p>
+          <p>Confirm: slides four weeks in advance; agree to CFP committee pilot. Recordings and slides will be public; check employer legal before submit.</p>
+          <p>Scoring watch: 40% technical depth (per-row 800-53 controls, eval-session identity, SC-4), 40% evidence (OpenAI and Hugging Face disclosures, Black Hat reconstruction, published assessment). The reject pattern is “framework without deployment.” Counter it in sentence one of Q&amp;A: the deployment is this campaign’s assignment, with named job titles.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="key-hint" id="keyHint">
+    <kbd>←</kbd> <kbd>→</kbd> to navigate &nbsp;·&nbsp; <kbd>n</kbd> notes &nbsp;·&nbsp; <kbd>Esc</kbd> exit full view
+  </div>
+
+  <site-footer></site-footer>
+
+  <script>
+    const TOTAL = 8;
+    let current = 1;
+    let viewAll = false;
+    let showNotes = false;
+
+    const deck    = document.getElementById('deck');
+    const counter = document.getElementById('counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const toggle  = document.getElementById('viewToggle');
+    const notesToggle = document.getElementById('notesToggle');
+    const keyHint = document.getElementById('keyHint');
+
+    function showSlide(n) {
+      n = Math.max(1, Math.min(TOTAL, n));
+      document.querySelectorAll('.slide').forEach((s) => {
+        if (s.classList.contains('slide--cfp')) return;
+        const idx = parseInt(s.id.replace('slide-', ''), 10);
+        s.classList.toggle('active', idx === n);
+      });
+      current = n;
+      counter.textContent = `${n} / ${TOTAL}`;
+      prevBtn.disabled = n === 1;
+      nextBtn.disabled = n === TOTAL;
+      history.replaceState(null, '', `#slide-${n}`);
+    }
+
+    function toggleViewAll() {
+      viewAll = !viewAll;
+      deck.classList.toggle('view-all', viewAll);
+      document.body.classList.toggle('deck-present', !viewAll);
+      toggle.textContent  = viewAll ? 'Slide view' : 'View all';
+      keyHint.hidden      = viewAll;
+      prevBtn.disabled    = viewAll;
+      nextBtn.disabled    = viewAll;
+      counter.style.opacity = viewAll ? '0.3' : '1';
+      if (!viewAll) showSlide(current);
+    }
+
+    function toggleNotes() {
+      showNotes = !showNotes;
+      deck.classList.toggle('show-notes', showNotes);
+      notesToggle.textContent = showNotes ? 'Hide notes' : 'Notes';
+    }
+
+    prevBtn.addEventListener('click', () => showSlide(current - 1));
+    nextBtn.addEventListener('click', () => showSlide(current + 1));
+    toggle.addEventListener('click', toggleViewAll);
+    notesToggle.addEventListener('click', toggleNotes);
+
+    deck.addEventListener('keydown', (e) => {
+      if (viewAll) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); showSlide(current + 1); }
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); showSlide(current - 1); }
+      if (e.key === 'n' || e.key === 'N') { e.preventDefault(); toggleNotes(); }
+    });
+
+    const hash = location.hash.match(/slide-(\d+)/);
+    showSlide(hash ? parseInt(hash[1], 10) : 1);
+  </script>
+</body>
+</html>
