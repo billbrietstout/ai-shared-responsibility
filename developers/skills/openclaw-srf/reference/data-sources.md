@@ -44,7 +44,7 @@ accountable persona, applicable operating models, and a regulatory mapping.
 | File | URL | Use it for |
 | --- | --- | --- |
 | Vendor risk categories | `https://aisharedresponsibility.com/data/vendor-risk.json` | Vendor-vs-customer split, attestation baseline, evidence to demand per supplier category |
-| Threat-to-accountability crosswalk | `https://aisharedresponsibility.com/data/threats.json` | The sixteen OWASP AI Exchange threats mapped to an SRF layer and accountable persona per operating model |
+| Threat-to-accountability crosswalk | `https://aisharedresponsibility.com/data/threats.json` | Sixteen OWASP AI Exchange threats plus fifteen DSGAI 2026 data-plane failures, each mapped to an SRF layer and accountable persona per operating model |
 | Finding routing reference | `https://aisharedresponsibility.com/data/finding-routing.json` | Resolving a scored finding to one accountable persona and an escalation ladder |
 
 ## Canonical IDs and knowledge layer
