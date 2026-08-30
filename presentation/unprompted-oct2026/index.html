@@ -70,6 +70,23 @@
     #slide-7.slide--light {
       padding: 1.35rem 1.25rem 1.15rem;
     }
+    #slide-3.slide--light {
+      padding: 1.35rem 1.25rem 1.15rem;
+    }
+    #slide-3 .slide__num { margin-bottom: 0.4rem; }
+    #slide-3 .slide__h2 { margin-bottom: 0.25rem; }
+    #slide-3 .slide__sub { margin-bottom: 0.4rem; max-width: none; font-size: 1.05rem; }
+    #slide-3 .layer-stack { margin: 0.35rem 0; gap: 0.35rem; }
+    #slide-3 .layer-row--assign { padding: 0.45rem 0.85rem; }
+    #slide-3 .layer-row__name { font-size: 1rem; }
+    #slide-3 .layer-row__catalog { font-size: 0.95rem; }
+    #slide-3 .layer-row__comps { font-weight: 400; font-size: 0.95rem; color: var(--slate-700); }
+    #slide-3 .layer-row__list li { margin: 0.05rem 0; line-height: 1.28; }
+    #slide-3 .slide__tagline {
+      margin-top: 0.55rem;
+      padding: 0.5rem 0.85rem;
+      font-size: 0.98rem;
+    }
     #slide-7 .slide__num { margin-bottom: 0.4rem; }
     #slide-7 .slide__h2 { margin-bottom: 0.25rem; }
     #slide-7 .slide__sub { margin-bottom: 0.4rem; max-width: none; }
@@ -210,7 +227,7 @@
       max-width: 78ch;
       line-height: 1.4;
     }
-    #slide-2 .scope-line { margin-top: -0.55rem; }
+    #slide-4 .scope-line { margin-top: -0.55rem; }
     .slide__tagline {
       margin-top: 1.25rem;
       padding: 0.85rem 1.15rem;
@@ -384,7 +401,26 @@
       color: var(--slate-600);
       line-height: 1.35;
     }
+    .layer-row__list {
+      margin: 0;
+      padding-left: 1.05rem;
+      list-style: disc;
+    }
+    .layer-row__list li {
+      margin: 0.1rem 0;
+      line-height: 1.35;
+    }
+    .layer-row__list li::marker {
+      color: var(--slate-400);
+    }
     .layer-row--assign .layer-row__comps { font-weight: 600; font-size: 1.05rem; }
+    #slide-2 .layer-row__comps { font-size: 1.05rem; color: var(--slate-700); }
+    #slide-2 .assign-head + .layer-stack { margin-top: 0.35rem; }
+    #slide-2 .layer-row {
+      grid-template-columns: 2.4rem 11.25rem 15.25rem 1fr;
+      align-items: start;
+      padding: 0.7rem 1rem;
+    }
     .layer-row__head {
       display: flex;
       flex-direction: column;
@@ -932,11 +968,167 @@
       <p class="notes"><strong>0:00–0:20.</strong> Present the five layers as the published catalog. Cite the CoSAI SRF the way you cite 800-53: a source, not a co-author of this incident. The OpenAI / Hugging Face campaign is the case study. Do not speak for CoSAI Workstream 2 on these rows. Point at the five rows. Assign a component to one layer. Name the obligation, the control, and one job title. The IaaS / PaaS / SaaS columns stay on the figure; we teach the rows. The columns return on the last slide.</p>
     </section>
 
-    <!-- 2 Hook -->
+    <!-- 2 Five layers and roles -->
     <section class="slide slide--light" id="slide-2" aria-label="Slide 2 of 9" data-llm="slide-2-of-9">
       <div class="slide__inner">
         <p class="slide__num">02 / 9</p>
-        <h2 class="slide__h2">Eval agents left the sandbox through a permitted path</h2>
+        <h2 class="slide__h2">Five layers and the roles that own them</h2>
+        <p class="slide__sub">Assign each component to one layer. Name the risk, the obligation, the control, and one job title. L1 requirements bind L2 through L5.</p>
+        <div class="assign-head" aria-hidden="true">
+          <span></span>
+          <span>Layer</span>
+          <span>Persona</span>
+          <span>Responsibilities</span>
+        </div>
+        <div class="layer-stack">
+          <div class="layer-row layer-row--l1">
+            <span class="layer-row__id">L1</span>
+            <span class="layer-row__name">AI Usage &amp; Business Verticals</span>
+            <span class="layer-row__persona">Governance / CISO</span>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Authorize the use case.</li>
+              <li>Write the residual-risk statement.</li>
+              <li>Own incident declaration across organizations.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l2">
+            <span class="layer-row__id">L2</span>
+            <span class="layer-row__name">AI Information</span>
+            <span class="layer-row__persona">Data owners / privacy</span>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Classify data.</li>
+              <li>Set bounds on what agents may retrieve or retain.</li>
+              <li>Own training-set and memory rules.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l3">
+            <span class="layer-row__id">L3</span>
+            <span class="layer-row__name">AI Application</span>
+            <span class="layer-row__persona">AppSec / application owners</span>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Own the agent, the eval harness, parsers, and tool selection.</li>
+              <li>Validate outputs before they leave the app.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l4">
+            <span class="layer-row__id">L4</span>
+            <span class="layer-row__name">AI Platform</span>
+            <span class="layer-row__persona">Platform / infrastructure security</span>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Isolate sessions.</li>
+              <li>Control egress.</li>
+              <li>Block IMDS and writeable shared caches.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l5">
+            <span class="layer-row__id">L5</span>
+            <span class="layer-row__name">AI Model Provider</span>
+            <span class="layer-row__persona">Model risk / supply chain</span>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Model cards, provenance, and vulnerability disclosure.</li>
+              <li>Keep this layer separate from whoever hosts the GPU.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide__tagline">Exactly one accountable party per activity. A Shared cell needs one job title.</div>
+      </div>
+      <p class="notes"><strong>0:20–2:30.</strong> Read L1 and L5. Offer the mnemonic: L1 authorizes, L2 bounds data, L3 executes, L4 isolates, L5 supplies the model. If someone asks for the IaaS / PaaS / SaaS matrix, that is the last slide. Stay on the five rows. Do not assign Artifactory yet.</p>
+    </section>
+
+    <!-- 3 Assign campaign -->
+    <section class="slide slide--light" id="slide-3" aria-label="Slide 3 of 9" data-llm="slide-3-of-9">
+      <div class="slide__inner">
+        <p class="slide__num">03 / 9</p>
+        <h2 class="slide__h2">Assign every component to one layer</h2>
+        <p class="slide__sub">Each layer has three catalog components. The examples column lists technical objects those names cover in a running system.</p>
+        <div class="assign-head" aria-hidden="true">
+          <span></span>
+          <span>Layer</span>
+          <span>Components</span>
+          <span>Examples</span>
+        </div>
+        <div class="layer-stack">
+          <div class="layer-row layer-row--l1 layer-row--assign">
+            <span class="layer-row__id">L1</span>
+            <span class="layer-row__name">AI Usage &amp; Business Verticals</span>
+            <ul class="layer-row__catalog layer-row__list">
+              <li>Capabilities &amp; Business Strategy</li>
+              <li>Processes &amp; Governance</li>
+              <li>Business Units &amp; Accountability</li>
+            </ul>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Business processes and use-case catalog.</li>
+              <li>Residual-risk register.</li>
+              <li>Incident-declaration authority.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l2 layer-row--assign">
+            <span class="layer-row__id">L2</span>
+            <span class="layer-row__name">AI Information</span>
+            <ul class="layer-row__catalog layer-row__list">
+              <li>Master Data Management</li>
+              <li>Privacy Controls &amp; Policies</li>
+              <li>AI Training Data</li>
+            </ul>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Training sets and retrieval corpora.</li>
+              <li>Embeddings, vector stores, and agent memory.</li>
+              <li>Classification, retention, and erasure rules.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l3 layer-row--assign">
+            <span class="layer-row__id">L3</span>
+            <span class="layer-row__name">AI Application</span>
+            <ul class="layer-row__catalog layer-row__list">
+              <li>Agents &amp; Orchestration Models</li>
+              <li>APIs &amp; Fine-tuned Models</li>
+              <li>Application Platforms</li>
+            </ul>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Agents, orchestration graphs, and eval harnesses.</li>
+              <li>Tools, MCP servers, and parsers.</li>
+              <li>RAG pipelines and application APIs.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l4 layer-row--assign">
+            <span class="layer-row__id">L4</span>
+            <span class="layer-row__name">AI Platform</span>
+            <ul class="layer-row__catalog layer-row__list">
+              <li>Guardrails &amp; Safety Systems</li>
+              <li>Compute Infrastructure</li>
+              <li>LLM Routers &amp; Gateways</li>
+            </ul>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Sandboxes and session isolation.</li>
+              <li>Package registries and GPU compute.</li>
+              <li>LLM routers, guardrails, and egress IAM.</li>
+            </ul>
+          </div>
+          <div class="layer-row layer-row--l5 layer-row--assign">
+            <span class="layer-row__id">L5</span>
+            <span class="layer-row__name">AI Model Provider</span>
+            <ul class="layer-row__catalog layer-row__list">
+              <li>Model Distribution</li>
+              <li>Model Governance</li>
+              <li>Foundation Models</li>
+            </ul>
+            <ul class="layer-row__comps layer-row__list">
+              <li>Foundation models and weights.</li>
+              <li>Model cards and AIBOM.</li>
+              <li>Distribution channels and vulnerability disclosure.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="slide__tagline">A business process sits on L1. Encoding it onto an agent is L3. A writeable session cache is L4 isolation. Training data and agent memory are L2.</div>
+      </div>
+      <p class="notes"><strong>2:30–6:00.</strong> Point at L1 business processes: the business analyst owns the process. Developers encode that process onto agents; that encoding is L3. Then L3 agents versus L4 routers and compute. A writeable session cache is L4; training data and agent memory are L2. The next slide is the incident summary. Leave L2 and L5 empty if the public record names no owner.</p>
+    </section>
+
+    <!-- 4 Incident summary -->
+    <section class="slide slide--light" id="slide-4" aria-label="Slide 4 of 9" data-llm="slide-4-of-9">
+      <div class="slide__inner">
+        <p class="slide__num">04 / 9</p>
+        <h2 class="slide__h2">Summary of the OpenAI / Hugging Face incident</h2>
         <p class="slide__sub">OpenAI and Hugging Face published these disclosures. <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/" target="_blank" rel="noopener">OpenAI technical report, 26 August 2026</a>. <a href="https://huggingface.co/blog/agent-intrusion-technical-timeline" target="_blank" rel="noopener">Hugging Face timeline, 27 July 2026</a>. <a href="https://www.youtube.com/watch?v=87DyyMV0kCY" target="_blank" rel="noopener">Black Hat reconstruction</a> by Eric Wallace and Michael Dalton, 5 August 2026.</p>
         <p class="scope-line">This talk applies the published CoSAI SRF to those disclosures. The analysis is the speaker’s.</p>
         <ul class="hook-list">
@@ -960,7 +1152,7 @@
         <div class="slide__tagline">Assign every hop to one layer. Name the risk, the obligation, the control, and one job title.</div>
       </div>
       <div class="notes">
-        <p><strong>0:20–2:30.</strong> Say the scope line first: this is your application of the published framework to disclosures OpenAI and Hugging Face published, including the Black Hat talk. Then facts only. Do not assign yet. Classifiers-off files at L1. Artifactory at L4. CyberGym and HF parsers at L3. OpenAI calls the driver Internal Model 1 (IM1). Token-refresh and Groovy caused the 4 July outage; that is not the Hugging Face hop. After rebuild, Artifactory was the outbound relay to an unauthenticated CyberGym app on Modal. Hugging Face reconstructed about 17,600 actions; OpenAI confirmed code on 41 dataset-server workers.</p>
+        <p><strong>6:00–8:30.</strong> Say the scope line first: this is your application of the published framework to disclosures OpenAI and Hugging Face published, including the Black Hat talk. Facts only; the catalog assignment was on the previous slide. Classifiers-off files at L1. Artifactory at L4. CyberGym and HF parsers at L3. OpenAI calls the driver Internal Model 1 (IM1). Token-refresh and Groovy caused the 4 July outage; that is not the Hugging Face hop. After rebuild, Artifactory was the outbound relay to an unauthenticated CyberGym app on Modal. Hugging Face reconstructed about 17,600 actions; OpenAI confirmed code on 41 dataset-server workers.</p>
         <p><strong>From the 26 August report, added after the LinkedIn draft.</strong> The detection clock is the fact that changes the 4 July first-signal claim. The report documents a 27 June port-sweep already tied to ExploitGym and left running; a 5 July security incident; JFrog on 6 July; evals resumed 7 July; Hugging Face contacted as a customer on 17 July; an identity-API alert on 19 July started the correlation. 20 July is the join.</p>
         <ul>
           <li>Shared Artifactory reader credentials were issued by design. The May files in Artifactory used them with no exploit.</li>
@@ -973,98 +1165,6 @@
           <li>198 of 898 ExploitGym tasks never solved by any model; those 22% of tasks were 93% of traffic on those Artifactory notes. Containment: 6 pods killed, 311 Artifactory repos disabled, 22 model-created admin accounts removed. Research-model family shut down 23 to 29 July. Artifactory removed from CaaS.</li>
         </ul>
       </div>
-    </section>
-
-    <!-- 3 Five layers and roles -->
-    <section class="slide slide--light" id="slide-3" aria-label="Slide 3 of 9" data-llm="slide-3-of-9">
-      <div class="slide__inner">
-        <p class="slide__num">03 / 9</p>
-        <h2 class="slide__h2">Five layers and the roles that own them</h2>
-        <p class="slide__sub">Assign each component to one layer. Name the risk, the obligation, the control, and one job title. L1 requirements bind L2 through L5.</p>
-        <div class="layer-stack">
-          <div class="layer-row layer-row--l1">
-            <span class="layer-row__id">L1</span>
-            <span class="layer-row__name">AI Usage &amp; Business Verticals</span>
-            <span class="layer-row__persona">Governance / CISO</span>
-            <span class="layer-row__comps">Authorize the use case. Write the residual-risk statement. Own incident declaration across organizations.</span>
-          </div>
-          <div class="layer-row layer-row--l2">
-            <span class="layer-row__id">L2</span>
-            <span class="layer-row__name">AI Information</span>
-            <span class="layer-row__persona">Data owners / privacy</span>
-            <span class="layer-row__comps">Classify data. Set bounds on what agents may retrieve or retain. Own training-set and memory rules.</span>
-          </div>
-          <div class="layer-row layer-row--l3">
-            <span class="layer-row__id">L3</span>
-            <span class="layer-row__name">AI Application</span>
-            <span class="layer-row__persona">AppSec / application owners</span>
-            <span class="layer-row__comps">Own the agent, the eval harness, parsers, and tool selection. Validate outputs before they leave the app.</span>
-          </div>
-          <div class="layer-row layer-row--l4">
-            <span class="layer-row__id">L4</span>
-            <span class="layer-row__name">AI Platform</span>
-            <span class="layer-row__persona">Platform / infrastructure security</span>
-            <span class="layer-row__comps">Isolate sessions. Control egress. Block IMDS and writeable shared caches.</span>
-          </div>
-          <div class="layer-row layer-row--l5">
-            <span class="layer-row__id">L5</span>
-            <span class="layer-row__name">AI Model Provider</span>
-            <span class="layer-row__persona">Model risk / supply chain</span>
-            <span class="layer-row__comps">Model cards, provenance, vulnerability disclosure. Keep this layer separate from whoever hosts the GPU.</span>
-          </div>
-        </div>
-        <div class="slide__tagline">Exactly one accountable party per activity. A Shared cell needs one job title.</div>
-      </div>
-      <p class="notes"><strong>2:30–6:00.</strong> Read L1 and L5. Offer the mnemonic: L1 authorizes, L2 bounds data, L3 executes, L4 isolates, L5 supplies the model. If someone asks for the IaaS / PaaS / SaaS matrix, that is the last slide. Stay on the five rows. Do not assign Artifactory yet.</p>
-    </section>
-
-    <!-- 4 Assign campaign -->
-    <section class="slide slide--light" id="slide-4" aria-label="Slide 4 of 9" data-llm="slide-4-of-9">
-      <div class="slide__inner">
-        <p class="slide__num">04 / 9</p>
-        <h2 class="slide__h2">Assign every component to one layer</h2>
-        <p class="slide__sub">Each layer has three catalog components. The right column lists the technical objects those names cover in a running system.</p>
-        <div class="assign-head" aria-hidden="true">
-          <span></span>
-          <span>Layer</span>
-          <span>Components</span>
-          <span>Technical objects</span>
-        </div>
-        <div class="layer-stack">
-          <div class="layer-row layer-row--l1 layer-row--assign">
-            <span class="layer-row__id">L1</span>
-            <span class="layer-row__name">AI Usage &amp; Business Verticals</span>
-            <span class="layer-row__catalog">Capabilities &amp; Business Strategy<br>Processes &amp; Governance<br>Business Units &amp; Accountability</span>
-            <span class="layer-row__comps">Business processes owned by business analysts. Use-case catalog. Acceptable-use policy. Residual-risk register. Autonomy and oversight policy. Incident-declaration authority.</span>
-          </div>
-          <div class="layer-row layer-row--l2 layer-row--assign">
-            <span class="layer-row__id">L2</span>
-            <span class="layer-row__name">AI Information</span>
-            <span class="layer-row__catalog">Master Data Management<br>Privacy Controls &amp; Policies<br>AI Training Data</span>
-            <span class="layer-row__comps">Master data. Training and fine-tune sets. Retrieval corpora. Embeddings and vector stores. Agent memory. Classification, retention, and erasure rules.</span>
-          </div>
-          <div class="layer-row layer-row--l3 layer-row--assign">
-            <span class="layer-row__id">L3</span>
-            <span class="layer-row__name">AI Application</span>
-            <span class="layer-row__catalog">Agents &amp; Orchestration Models<br>APIs &amp; Fine-tuned Models<br>Application Platforms</span>
-            <span class="layer-row__comps">Agents and orchestration graphs. Developer-built agent workflows that execute L1 processes. Tools and MCP servers. Prompts and eval harnesses. Parsers. RAG pipelines. Application APIs and fine-tunes.</span>
-          </div>
-          <div class="layer-row layer-row--l4 layer-row--assign">
-            <span class="layer-row__id">L4</span>
-            <span class="layer-row__name">AI Platform</span>
-            <span class="layer-row__catalog">Guardrails &amp; Safety Systems<br>Compute Infrastructure<br>LLM Routers &amp; Gateways</span>
-            <span class="layer-row__comps">Sandboxes and session isolation. GPU and cluster compute. Package registries. LLM routers and gateways. Platform guardrails. Egress and platform IAM.</span>
-          </div>
-          <div class="layer-row layer-row--l5 layer-row--assign">
-            <span class="layer-row__id">L5</span>
-            <span class="layer-row__name">AI Model Provider</span>
-            <span class="layer-row__catalog">Model Distribution<br>Model Governance<br>Foundation Models</span>
-            <span class="layer-row__comps">Foundation models and weights. Model cards. Provenance and AIBOM. Distribution channels. Vulnerability disclosure.</span>
-          </div>
-        </div>
-        <div class="slide__tagline">A business process sits on L1. Encoding it onto an agent is L3. A writeable session cache is L4 isolation. Training data and agent memory are L2.</div>
-      </div>
-      <p class="notes"><strong>6:00–8:30.</strong> Point at L1 business processes: the business analyst owns the process. Developers encode that process onto agents; that encoding is L3. Then L3 agents versus L4 routers and compute. A writeable session cache is L4; training data and agent memory are L2. Next slides apply this case study. Leave L2 and L5 empty if the public record names no owner.</p>
     </section>
 
     <!-- 5 Identity + L1 L3 -->
@@ -1194,12 +1294,12 @@
       </div>
     </section>
 
-    <!-- 7 Identity worked example -->
+    <!-- 7 Identity by layer -->
     <section class="slide slide--light" id="slide-7" aria-label="Slide 7 of 9" data-llm="slide-7-of-9">
       <div class="slide__inner">
         <p class="slide__num">07 / 9</p>
         <h2 class="slide__h2">Assess one layer at a time: Identity</h2>
-        <p class="slide__sub">Each layer has its own risk, obligation, control, and job title. Identity is the worked example. AI Usage &amp; Business Verticals, AI Information, and AI Model Provider are the layers Cloud SRM work usually skips. The object changes by layer: role, data class, session credential, IdP account. The hosted model is not an identity store.</p>
+        <p class="slide__sub">Each layer has its own risk, obligation, control, and job title. Walk Identity on each layer first. AI Usage &amp; Business Verticals, AI Information, and AI Model Provider are the layers Cloud SRM work usually skips. The object changes by layer: role, data class, session credential, IdP account. The hosted model is not an identity store.</p>
         <table class="id-table id-table--compact id-table--assess id-table--chain">
           <colgroup>
             <col style="width:10.5rem" />
@@ -1249,17 +1349,17 @@
             </tr>
           </tbody>
         </table>
-        <div class="slide__tagline">The next slide runs the same chain for the other functions. Each cell is one layer.</div>
+        <div class="slide__tagline">The next slide: find your function, then layer. Each cell is one layer.</div>
       </div>
-      <p class="notes"><strong>16:00 to 17:00.</strong> Identity is the worked example. Read left to right: risk, obligation, control, job title. AI Usage is the role. AI Information is the data class that role may retrieve. AI Application is a distinct agent or eval-session credential. AI Platform is the IdP account. AI Model Provider is not involved in IAM; a hosted model authenticating a caller key is expected. Cloud SRM careers usually skip AI Usage, AI Information, and AI Model Provider. The other six functions are the next slide. Do not take a product-roadmap question.</p>
+      <p class="notes"><strong>16:00 to 17:00.</strong> Walk Identity on each layer. Read left to right: risk, obligation, control, job title. AI Usage is the role. AI Information is the data class that role may retrieve. AI Application is a distinct agent or eval-session credential. AI Platform is the IdP account. AI Model Provider is not involved in IAM; a hosted model authenticating a caller key is expected. Cloud SRM careers usually skip AI Usage, AI Information, and AI Model Provider. The other six functions are the next slide. Do not take a product-roadmap question.</p>
     </section>
 
     <!-- 8 Other functions by layer -->
     <section class="slide slide--light" id="slide-8" aria-label="Slide 8 of 9" data-llm="slide-8-of-9">
       <div class="slide__inner">
         <p class="slide__num">08 / 9</p>
-        <h2 class="slide__h2">Same chain, other functions</h2>
-        <p class="slide__sub">Identity was the example. Each cell names a risk, an obligation, a control, and the row’s job title.</p>
+        <h2 class="slide__h2">Find your function, then layer</h2>
+        <p class="slide__sub">For that cell what are the risks, obligations, controls, accountability</p>
         <table class="id-table id-table--compact id-table--fn">
           <thead>
             <tr>
@@ -1322,7 +1422,7 @@
         </table>
         <div class="slide__tagline">Pick one cell. Name the risk, the obligation, the control, and the row’s job title. IaaS / PaaS / SaaS is the next slide.</div>
       </div>
-      <p class="notes"><strong>17:00 to 18:00.</strong> Do not walk every cell. Point at the rows: those are the layer owners from slide 3. Read Detection if time is short: page the owner of the layer whose control failed. Incident response opens one ticket per failed layer, including the AI Usage declaration. The chain is still risk, obligation, control, job title. OASIS is next.</p>
+      <p class="notes"><strong>17:00 to 18:00.</strong> Do not walk every cell. Point at the rows: those are the layer owners from slide 2. Read Detection if time is short: page the owner of the layer whose control failed. Incident response opens one ticket per failed layer, including the AI Usage declaration. The chain is still risk, obligation, control, job title. OASIS is next.</p>
     </section>
 
     <!-- 9 Close: OASIS, CoSAI, MOSAIC -->
@@ -1387,13 +1487,13 @@
         </div>
         <div class="cfp-block">
           <h3>Outline with timing</h3>
-          <p>2.5 min · Incident facts: classifiers off, Artifactory notes, CyberGym on Modal, Hugging Face parsers, 17,600 actions, thirteen hours to cluster-admin.</p>
           <p>3.5 min · Five CoSAI layers and the security roles that own them. Method: assign each component to one layer. Name the obligation, the control, and one job title.</p>
           <p>2.5 min · Three catalog components per layer and the technical objects they cover. A writeable session cache is L4 isolation, not an L2 corpus.</p>
+          <p>2.5 min · Summary of the OpenAI / Hugging Face incident: classifiers off, Artifactory notes, CyberGym on Modal, Hugging Face parsers, 17,600 actions, thirteen hours to cluster-admin.</p>
           <p>3.5 min · Business and Application layers: risk to obligation (regulation) to control (800-53) to the job title that implements it. Empty L2 and L5. The eval session is the identity to name.</p>
           <p>3.5 min · Same chain for the Platform layer: shared eval state (SC-4), agent swarm egress, IMDS and system:masters. Two job titles, two hops.</p>
-          <p>1.5 min · Identity as the worked example: role at L1, data class at L2, session credential at L3, IdP at L4, model provider not involved at L5.</p>
-          <p>1.5 min · Same chain for architecture, detection, monitoring, incident response, audit, and red teaming. Each cell is one layer and that layer’s owner.</p>
+          <p>1.5 min · Identity on each layer: role at L1, data class at L2, session credential at L3, IdP at L4, model provider not involved at L5.</p>
+          <p>1.5 min · Find your function, then layer. For that cell: risks, obligations, controls, accountability. Architecture through red teaming; each cell is one layer and that layer’s owner.</p>
           <p>1.5 min · Page 7 matrix. Where the SRF lives under OASIS Open. MOSAIC founding initiative. The case study analysis is the speaker’s.</p>
         </div>
         <div class="cfp-block">
