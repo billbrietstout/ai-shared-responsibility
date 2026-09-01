@@ -8,7 +8,7 @@ assessment workflow:
   /data/security-principles.json    classic engineering axioms, normalized
                                     from security_principles_reference.oscal.json
   /data/ai-agentic-principles.json  contemporary AI and agentic consensus,
-                                    normalized from the 41-source synthesis at
+                                    normalized from the 52-source synthesis at
                                     agentic-ai-security/agentic-security.md
 
 Both are derived. Do not hand-edit the generated JSON; edit the source and
@@ -16,7 +16,7 @@ regenerate.
 
 Sources of truth:
   security_principles_reference.oscal.json   OSCAL 1.1.2 catalog, 93 controls
-  agentic-ai-security/agentic-security.md    22-section synthesis, 126 bullets
+  agentic-ai-security/agentic-security.md    22-section synthesis, 135 bullets
 
 Editorial judgment that cannot be derived from either source (stable ids,
 category tags, which restatements merge, which sentences describe an absence
@@ -42,7 +42,7 @@ SITE = "https://aisharedresponsibility.com"
 # Fixed literal, never date.today(): the CI regeneration drift gate diffs
 # generated output against what is committed, so this must be reproducible
 # from committed source. Bump when publishing an update.
-UPDATED = "2026-07-25"
+UPDATED = "2026-09-01"
 
 OSCAL_SRC = "security_principles_reference.oscal.json"
 SYNTH_SRC = "agentic-ai-security/agentic-security.md"
@@ -283,6 +283,7 @@ CURATION = {
         ("execution-provenance-traceable-as-inventory", "monitoring"),
         ("observability-extends-to-goals-and-decisions", "monitoring"),
         ("extend-existing-logging-controls-to-agents", "monitoring"),
+        ("agent-component-inventory-covers-full-stack", "monitoring"),
     ],
     "untrusted-input": [
         ("treat-tool-descriptions-and-content-as-untrusted", "input-validation"),
@@ -290,6 +291,8 @@ CURATION = {
         ("lethal-trifecta-rule-of-two", "risk-management"),
         ("chat-visibility-not-execution-control", "input-validation"),
         ("agents-amplify-not-new-vuln-class", "risk-management"),
+        ("deterministic-controls-outside-reasoning-loop", "access-control"),
+        ("agent-security-spans-distinct-control-layers", "design"),
     ],
     "mcp-security": [
         ("explicit-per-capability-grants", "access-control"),
@@ -305,6 +308,7 @@ CURATION = {
         ("pinned-checksum-verified-versions", "supply-chain"),
         ("signing-extends-to-runtime-dependencies", "supply-chain"),
         ("supply-chain-inseparable-from-secure-by-design", "supply-chain"),
+        ("agent-skills-are-supply-chain-artifacts", "supply-chain"),
     ],
     "shared-responsibility": [
         ("exactly-one-accountable-party", "governance"),
@@ -312,6 +316,7 @@ CURATION = {
         ("model-safety-vs-deployment-security-distinct", "governance"),
         ("accountability-depends-on-operating-model", "governance"),
         ("shared-responsibility-complements-process-frameworks", "governance"),
+        ("layer-dependencies-invariant-of-org-structure", "governance"),
     ],
     "emerging-risk-models": [
         ("shadow-ai-already-present", "risk-management"),
@@ -371,6 +376,7 @@ CURATION = {
         ("blameless-postincident-review-fixes-root-cause", "incident-response"),
         ("contributors-accountable-for-ai-assisted-work", "governance"),
         ("blast-radius-containment-via-segmentation", "resilience"),
+        ("treat-environments-as-potentially-compromised", "incident-response"),
     ],
     "red-teaming": [
         ("no-vendor-claims-full-coverage", "red-teaming"),
@@ -379,6 +385,7 @@ CURATION = {
         ("testing-calibrated-to-system-maturity", "red-teaming"),
         ("destructive-testing-in-sandbox-only", "red-teaming"),
         ("redteam-vendors-governed-as-privileged-third-party", "governance"),
+        ("hazardous-capability-eval-is-a-release-gate", "red-teaming"),
     ],
     "llm-appsec": [
         ("untrusted-content-segregated-and-labeled", "input-validation"),
@@ -387,10 +394,12 @@ CURATION = {
         ("strict-separation-of-prompts-under-change-control", "design"),
         ("model-wrong-or-manipulated-is-constant-condition", "risk-management"),
         ("agent-controls-depend-on-model-infra-controls", "design"),
+        ("assistant-instruction-files-encode-defaults", "design"),
     ],
     "enterprise-readiness": [
         ("=", "access-control-never-delegated-to-model"),
         ("complexity-is-the-enemy-of-security", "design"),
+        ("blocking-ai-use-is-not-a-viable-control", "governance"),
         ("model-registries-non-negotiable", "governance"),
         ("board-level-accountability-for-ai-risk", "governance"),
         ("identity-is-the-primary-attack-surface", "identity"),
@@ -401,7 +410,7 @@ CURATION = {
     "decommissioning-availability": [
         ("decommissioning-is-a-designed-capability", "resilience"),
         ("dos-is-its-own-threat-category", "resilience"),
-        ("x", "No source addresses AI-specific disaster recovery, business continuity, or failover. The silence spans all 41 sources."),
+        ("x", "No source addresses AI-specific disaster recovery, business continuity, or failover. The silence spans all 52 sources."),
     ],
     "human-factors": [
         ("x", "Classic security engineering treats control usability as inseparable from effectiveness. The AI-specific corpus does not engage with that warning."),
@@ -413,7 +422,7 @@ CURATION = {
 # Each section's Gap note resolved to the classic-catalog id(s) it points at.
 # kind: gap                  the classic catalog asks something the corpus does not answer
 #       editorial            the document takes an explicit position rather than reporting a dispute
-#       unaddressed-in-corpus the document flags an absence spanning all 41 sources
+#       unaddressed-in-corpus the document flags an absence spanning all 52 sources
 GAP_INDEX = {
     "agent-identity": (["ms-immutable-5"], "gap"),
     "zero-standing-privilege": (["sch-2"], "gap"),
@@ -696,8 +705,8 @@ def main():
         "$schema_version": "1.0",
         "description": (
             "Contemporary AI and agentic security principles, normalized from "
-            "a 41-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, "
-            "2019 to 2026) organized into 22 topic sections. These are current "
+            "a 52-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, "
+            "ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) organized into 22 topic sections. These are current "
             "industry positions, not settled axioms; weigh disagreement with "
             "an entry here less heavily than disagreement with the classic "
             "catalog. Companion catalog: security-principles.json."),

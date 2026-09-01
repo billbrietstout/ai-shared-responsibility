@@ -1,14 +1,14 @@
 {
   "$schema_version": "1.0",
-  "description": "Contemporary AI and agentic security principles, normalized from a 41-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, 2019 to 2026) organized into 22 topic sections. These are current industry positions, not settled axioms; weigh disagreement with an entry here less heavily than disagreement with the classic catalog. Companion catalog: security-principles.json.",
-  "updated": "2026-07-25",
+  "description": "Contemporary AI and agentic security principles, normalized from a 52-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) organized into 22 topic sections. These are current industry positions, not settled axioms; weigh disagreement with an entry here less heavily than disagreement with the classic catalog. Companion catalog: security-principles.json.",
+  "updated": "2026-09-01",
   "generated_from": "agentic-ai-security/agentic-security.md",
   "source_document": "https://aisharedresponsibility.com/agentic-ai-security/",
   "method": "Bulleted claims transcribed per section with their original citations. Bullets the synthesis itself calls restatements of an earlier claim were merged, contributing only their sources. Sentences describing an absence of coverage in the corpus, rather than a claim any source makes, were excluded from the principle list and are carried in `gap_index` instead, so a statement about what nobody said is not represented as if somebody said it.",
-  "raw_bullet_count": 126,
+  "raw_bullet_count": 135,
   "merged_restatements": 2,
   "excluded_absence_statements": 3,
-  "count": 121,
+  "count": 130,
   "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper.",
   "sources": {
     "CIS-AGENTS": {
@@ -256,6 +256,72 @@
       "org": "SANS Institute",
       "date": "2025",
       "url": "https://www.sans.org/white-papers/own-ai-securely-sans-secure-ai-blueprint"
+    },
+    "SANS-CAISG14": {
+      "title": "Critical AI Security Guidelines v1.4",
+      "org": "SANS Institute",
+      "date": "March 2026",
+      "url": "https://assets.contentstack.io/v3/assets/bltabe50a4554f8e97f/blte964a6eef293d57e/whitepaper-critical-ai-security-guidelines"
+    },
+    "SANS-MATURITY": {
+      "title": "SANS AI Security Maturity Model eBook",
+      "org": "SANS Institute",
+      "date": "May 11, 2026",
+      "url": "https://www.sans.org/white-papers/sans-ai-security-maturity-model-ebook"
+    },
+    "OWASP-LLMTOP10-2026": {
+      "title": "OWASP GenAI LLM Top 10 2026",
+      "org": "OWASP GenAI Security Project",
+      "date": "August 3, 2026",
+      "url": "https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/"
+    },
+    "OWASP-AST10": {
+      "title": "OWASP Agentic Skills Top 10 (AST10)",
+      "org": "OWASP GenAI Security Project",
+      "date": "2026",
+      "url": "https://owasp.org/www-project-agentic-skills-top-10/"
+    },
+    "NIST-218A": {
+      "title": "Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile (SP 800-218A)",
+      "org": "National Institute of Standards and Technology",
+      "date": "July 26, 2024",
+      "url": "https://csrc.nist.gov/pubs/sp/800/218/a/final"
+    },
+    "ETSI-304223": {
+      "title": "ETSI EN 304 223 V2.1.1: Baseline Cyber Security Requirements for AI Models and Systems",
+      "org": "ETSI",
+      "date": "December 2025",
+      "url": "https://www.etsi.org/deliver/etsi_en/304200_304299/304223/02.01.01_60/en_304223v020101p.pdf"
+    },
+    "ENISA-FRONTIER": {
+      "title": "ENISA's view on Cybersecurity in the Frontier AI Era",
+      "org": "ENISA",
+      "date": "July 2026",
+      "url": "https://www.enisa.europa.eu/publications/enisas-view-on-cybersecurity-in-the-frontier-ai-era"
+    },
+    "FMF-AGENTS": {
+      "title": "Emerging Security Practices for AI Agents",
+      "org": "Frontier Model Forum",
+      "date": "June 3, 2026",
+      "url": "https://www.frontiermodelforum.org/issue-briefs/emerging-security-practices-for-ai-agents/"
+    },
+    "FMF-CYBER": {
+      "title": "Managing Advanced Cyber Risks in Frontier AI Frameworks",
+      "org": "Frontier Model Forum",
+      "date": "February 13, 2026",
+      "url": "https://www.frontiermodelforum.org/technical-reports/managing-advanced-cyber-risks-in-frontier-ai-frameworks/"
+    },
+    "OPENSSF-ASSIST": {
+      "title": "Security-Focused Guide for AI Code Assistant Instructions",
+      "org": "OpenSSF",
+      "date": "August 1, 2025",
+      "url": "https://best.openssf.org/Security-Focused-Guide-for-AI-Code-Assistant-Instructions"
+    },
+    "AIVERIFY-MAGF": {
+      "title": "Model AI Governance Framework for Agentic AI v1.5",
+      "org": "AI Verify Foundation",
+      "date": "May 20, 2026",
+      "url": "https://www.imda.gov.sg/assets/63438074-73f6-4dcc-a281-030f42642cf4.pdf"
     }
   },
   "sections": {
@@ -541,7 +607,7 @@
         "cis-design-2"
       ],
       "kind": "gap",
-      "note": "since no source claims prompt injection can be fully prevented, the practical question shifts from \"how do we stop this\" to \"where do we spend finite defensive effort first,\" and none of the 41 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once)."
+      "note": "since no source claims prompt injection can be fully prevented, the practical question shifts from \"how do we stop this\" to \"where do we spend finite defensive effort first,\" and none of the 52 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once)."
     },
     "mcp-security": {
       "classic_ids": [
@@ -647,14 +713,14 @@
         "psychological-acceptability"
       ],
       "kind": "unaddressed-in-corpus",
-      "note": "this document names control-adoption friction as a blind spot in the field, but none of the 41 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented."
+      "note": "this document names control-adoption friction as a blind spot in the field, but none of the 52 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented."
     }
   },
   "excluded_statements": [
     {
       "section": "decommissioning-availability",
-      "reason": "No source addresses AI-specific disaster recovery, business continuity, or failover. The silence spans all 41 sources.",
-      "text": "Disaster recovery, business continuity, and failover planning specific to AI systems have no dedicated treatment anywhere in this corpus, a silence spanning all forty-one sources rather than an oversight in a handful of them"
+      "reason": "No source addresses AI-specific disaster recovery, business continuity, or failover. The silence spans all 52 sources.",
+      "text": "Disaster recovery, business continuity, and failover planning specific to AI systems have no dedicated treatment anywhere in this corpus, a silence spanning all fifty-two sources rather than an oversight in a handful of them"
     },
     {
       "section": "human-factors",
@@ -664,7 +730,7 @@
     {
       "section": "human-factors",
       "reason": "No source examines whether friction from its own recommended controls leads operators to disable or route around them.",
-      "text": "None of the forty-one sources examine whether the friction created by their own recommended controls, continuous re-verification, dual sign-off, per-hop checks, leads operators to disable or route around them under real-world pressure"
+      "text": "None of the fifty-two sources examine whether the friction created by their own recommended controls, continuous re-verification, dual sign-off, per-hop checks, leads operators to disable or route around them under real-world pressure"
     }
   ],
   "principles": [
@@ -939,17 +1005,28 @@
       "category": "governance",
       "statement": "Authority to invoke each tier of human override is explicitly assigned, up to CISO- or executive-level authorization for emergency shutdown",
       "src": [
-        "COSAI-SRF"
+        "COSAI-SRF",
+        "ETSI-304223"
       ]
     },
     {
       "id": "oversight-scales-with-autonomy-and-risk",
       "section": "human-oversight",
       "category": "agent-autonomy",
-      "statement": "Oversight requirements scale with autonomy level and business risk rather than applying as a flat rule",
+      "statement": "Oversight requirements scale with autonomy level and business risk; checkpoints concentrate on high-stakes and irreversible actions, since continuous approval of every agent step does not scale",
       "src": [
         "COSAI-SRF",
-        "COSAI-SBD"
+        "COSAI-SBD",
+        "AIVERIFY-MAGF"
+      ]
+    },
+    {
+      "id": "agent-component-inventory-covers-full-stack",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "An agent's security-relevant components, meaning model, instructions, memory, planning, tools, protocols, access controls, guardrails, approvals, and logging, are each in scope for inventory and controls",
+      "src": [
+        "AIVERIFY-MAGF"
       ]
     },
     {
@@ -1000,12 +1077,22 @@
       ]
     },
     {
+      "id": "agent-security-spans-distinct-control-layers",
+      "section": "untrusted-input",
+      "category": "design",
+      "statement": "Agent security spans the model, system guardrails, harness orchestration, and tool access; each layer has its own controls",
+      "src": [
+        "FMF-AGENTS"
+      ]
+    },
+    {
       "id": "agents-amplify-not-new-vuln-class",
       "section": "untrusted-input",
       "category": "risk-management",
-      "statement": "Agents are treated as amplifying existing LLM-level vulnerabilities rather than introducing an entirely new vulnerability class",
+      "statement": "Agents are treated as amplifying existing LLM-level vulnerabilities rather than introducing an entirely new vulnerability class; model-as-component risks stay on the LLM Top 10, and model-as-actor risks pair with the Agentic Top 10",
       "src": [
-        "OWASP-TOP10"
+        "OWASP-TOP10",
+        "OWASP-LLMTOP10-2026"
       ]
     },
     {
@@ -1018,23 +1105,34 @@
       ]
     },
     {
+      "id": "deterministic-controls-outside-reasoning-loop",
+      "section": "untrusted-input",
+      "category": "access-control",
+      "statement": "Tool, filesystem, egress, and credential limits are enforced in the harness, outside the model's reasoning loop; probabilistic model defenses are not treated as the control",
+      "src": [
+        "FMF-AGENTS"
+      ]
+    },
+    {
       "id": "lethal-trifecta-rule-of-two",
       "section": "untrusted-input",
       "category": "risk-management",
       "statement": "The \"Lethal Trifecta,\" meaning private data access plus exposure to untrusted content plus outbound communication, is treated as exploitable end to end; the \"Rule of Two\" caps an agent at satisfying no more than two of the three without human approval",
       "src": [
-        "OWASP-STATE"
+        "OWASP-STATE",
+        "FMF-AGENTS"
       ]
     },
     {
       "id": "treat-tool-descriptions-and-content-as-untrusted",
       "section": "untrusted-input",
       "category": "input-validation",
-      "statement": "All tool descriptions, retrieved content, and inter-agent messages are treated as untrusted input, never trusted by default",
+      "statement": "All tool descriptions, retrieved content, inter-agent messages, tool outputs that re-enter the reasoning loop, and content written to persistent memory are treated as untrusted input, never trusted by default",
       "src": [
         "COSAI-MCP",
         "OWASP-MCP-DEV",
-        "OWASP-TOP10"
+        "OWASP-TOP10",
+        "FMF-AGENTS"
       ]
     },
     {
@@ -1110,6 +1208,15 @@
       ]
     },
     {
+      "id": "agent-skills-are-supply-chain-artifacts",
+      "section": "supply-chain",
+      "category": "supply-chain",
+      "statement": "Agent skills, meaning natural-language-plus-code packages that give an agent executable capability, are inventoried, pinned, sandboxed, and provenance-checked across author, publish, install, load, and execute; an unsandboxed skill inherits the agent's full security context",
+      "src": [
+        "OWASP-AST10"
+      ]
+    },
+    {
       "id": "pinned-checksum-verified-versions",
       "section": "supply-chain",
       "category": "supply-chain",
@@ -1122,12 +1229,13 @@
       "id": "provenance-via-signed-manifests-sbom",
       "section": "supply-chain",
       "category": "supply-chain",
-      "statement": "Model and tool provenance is verifiable through signed manifests or SBOM/AIBOM-style records",
+      "statement": "Model and tool provenance is verifiable through signed manifests or SBOM/AIBOM-style records covering data, models, and prompts",
       "src": [
         "COSAI-SBD",
         "OWASP-TOP10",
         "OWASP-STATE",
-        "OWASP-MCP-DEV"
+        "OWASP-MCP-DEV",
+        "ETSI-304223"
       ]
     },
     {
@@ -1171,6 +1279,15 @@
       "section": "shared-responsibility",
       "category": "governance",
       "statement": "Exactly one party is accountable per activity or component; overlapping accountability is not permitted",
+      "src": [
+        "COSAI-SRF"
+      ]
+    },
+    {
+      "id": "layer-dependencies-invariant-of-org-structure",
+      "section": "shared-responsibility",
+      "category": "governance",
+      "statement": "The dependencies encoded in the five architecture layers remain invariant regardless of how an organization structures its teams",
       "src": [
         "COSAI-SRF"
       ]
@@ -1282,7 +1399,7 @@
       "id": "skepticism-toward-redteaming-alone",
       "section": "architectural-risk",
       "category": "red-teaming",
-      "statement": "Red-teaming and anthropomorphizing a model are treated with explicit skepticism as sufficient validation on their own",
+      "statement": "Red-teaming and anthropomorphizing a model are treated with explicit skepticism as sufficient validation on their own, because LLMs are auto-associative predictive generators rather than reasoning systems",
       "src": [
         "BIML-LLM24",
         "BIML-23RISKS",
@@ -1303,10 +1420,11 @@
       "id": "aibom-is-a-governance-artifact",
       "section": "supply-chain-provenance",
       "category": "supply-chain",
-      "statement": "An AI Bill of Materials is treated as a governance artifact on par with a traditional software bill of materials",
+      "statement": "An AI Bill of Materials is treated as a governance artifact on par with a traditional software bill of materials, with disclosure of technical supply-chain detail restricted so that an AIBOM does not itself become an adversary aid",
       "src": [
         "NIST-ADVML",
         "SANS-CAISG12",
+        "SANS-CAISG14",
         "SANS-BLUEPRINT"
       ]
     },
@@ -1543,9 +1661,10 @@
       "id": "blast-radius-containment-via-segmentation",
       "section": "incident-response",
       "category": "resilience",
-      "statement": "Blast-radius containment through segmentation is the primary control once vulnerability discovery volume outpaces any realistic patch cadence",
+      "statement": "Blast-radius containment through segmentation is the primary control once vulnerability discovery volume outpaces any realistic patch cadence, including when exploit windows are negative and an attacker holds a working exploit before a vendor fix ships",
       "src": [
-        "CSA-VULN"
+        "CSA-VULN",
+        "ENISA-FRONTIER"
       ]
     },
     {
@@ -1603,6 +1722,15 @@
       ]
     },
     {
+      "id": "treat-environments-as-potentially-compromised",
+      "section": "incident-response",
+      "category": "incident-response",
+      "statement": "Defenders treat environments as potentially compromised, including agentic endpoints and enterprise browsers",
+      "src": [
+        "ENISA-FRONTIER"
+      ]
+    },
+    {
       "id": "critical-findings-require-human-verification",
       "section": "red-teaming",
       "category": "red-teaming",
@@ -1618,6 +1746,16 @@
       "statement": "Destructive tool testing happens in a sandboxed, dry-run environment rather than against production systems",
       "src": [
         "OWASP-REDTEAM"
+      ]
+    },
+    {
+      "id": "hazardous-capability-eval-is-a-release-gate",
+      "section": "red-teaming",
+      "category": "red-teaming",
+      "statement": "Systematic evaluation for hazardous dual-use capabilities, including cyber uplift and end-to-end autonomous operations, is a release gate for a frontier model rather than a post-release assurance activity",
+      "src": [
+        "NIST-218A",
+        "FMF-CYBER"
       ]
     },
     {
@@ -1665,7 +1803,8 @@
         "OWASP-LLMTOP10",
         "OWASP-AIEXCHANGE",
         "SANS-CAISG1",
-        "SANS-CAISG11"
+        "SANS-CAISG11",
+        "SANS-CAISG14"
       ]
     },
     {
@@ -1678,12 +1817,23 @@
       ]
     },
     {
+      "id": "assistant-instruction-files-encode-defaults",
+      "section": "llm-appsec",
+      "category": "design",
+      "statement": "Project instruction files for AI code assistants encode validation, secrets handling, and least-privilege defaults; they do not replace ASVS, SCVS, or AISVS verification",
+      "src": [
+        "OPENSSF-ASSIST"
+      ]
+    },
+    {
       "id": "model-wrong-or-manipulated-is-constant-condition",
       "section": "llm-appsec",
       "category": "risk-management",
-      "statement": "An AI model being wrong or manipulated is treated as a constant design condition, not an edge case handled separately when it occurs",
+      "statement": "An AI model being wrong or manipulated is treated as a constant design condition, not an edge case handled separately when it occurs; systems are built so that when the model is fooled, nothing important breaks, including when a misaligned benign request meets overly broad scope and permissions",
       "src": [
-        "OWASP-AIEXCHANGE"
+        "OWASP-AIEXCHANGE",
+        "OWASP-LLMTOP10-2026",
+        "FMF-AGENTS"
       ]
     },
     {
@@ -1714,6 +1864,16 @@
       ]
     },
     {
+      "id": "blocking-ai-use-is-not-a-viable-control",
+      "section": "enterprise-readiness",
+      "category": "governance",
+      "statement": "Blocking AI use is not a viable security control; the job is to secure adoption already embedded in products",
+      "src": [
+        "SANS-CAISG1",
+        "SANS-CAISG14"
+      ]
+    },
+    {
       "id": "board-level-accountability-for-ai-risk",
       "section": "enterprise-readiness",
       "category": "governance",
@@ -1735,7 +1895,7 @@
       "id": "guidance-is-explicitly-point-in-time",
       "section": "enterprise-readiness",
       "category": "governance",
-      "statement": "AI security guidance is treated as explicitly point-in-time given how fast the field moves, rather than written as a stable, long-lived standard",
+      "statement": "AI security guidance is treated as explicitly point-in-time given how fast published guidance ages, rather than written as a stable, long-lived standard",
       "src": [
         "SANS-CAISG1"
       ]
@@ -1771,9 +1931,10 @@
       "id": "three-track-governance-model",
       "section": "enterprise-readiness",
       "category": "governance",
-      "statement": "Governance is organized around three distinct, coordinated tracks: protecting AI, utilizing AI, and governing AI, rather than one undifferentiated program",
+      "statement": "Governance is organized around three distinct, coordinated tracks: protecting AI, utilizing AI, and governing AI; overall maturity cannot exceed the Govern score, and self-reported capability without documentary evidence is not treated as a stage claim",
       "src": [
-        "SANS-BLUEPRINT"
+        "SANS-BLUEPRINT",
+        "SANS-MATURITY"
       ]
     },
     {
@@ -1782,7 +1943,8 @@
       "category": "resilience",
       "statement": "A deactivation or decommissioning mechanism is a designed system capability, not an improvised response built after a system is already flagged as unacceptably risky",
       "src": [
-        "NIST-GAI"
+        "NIST-GAI",
+        "ETSI-304223"
       ]
     },
     {
