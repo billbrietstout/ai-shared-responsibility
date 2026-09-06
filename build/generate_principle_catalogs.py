@@ -3,16 +3,19 @@
 generate_principle_catalogs.py
 
 Generates the two security principle catalogs used by the whitepaper
-assessment workflow:
+assessment workflow, plus slim projections the assessment prompt fetches:
 
-  /data/security-principles.json    classic engineering axioms, normalized
-                                    from security_principles_reference.oscal.json
-  /data/ai-agentic-principles.json  contemporary AI and agentic consensus,
-                                    normalized from the 52-source synthesis at
-                                    agentic-ai-security/agentic-security.md
+  /data/security-principles.json         classic engineering axioms, normalized
+                                         from security_principles_reference.oscal.json
+  /data/security-principles.slim.json    id, statement, category, related
+  /data/ai-agentic-principles.json       contemporary AI and agentic consensus,
+                                         normalized from the 52-source synthesis at
+                                         agentic-ai-security/agentic-security.md
+  /data/ai-agentic-principles.slim.json  id, section, category, statement, gap_index
 
-Both are derived. Do not hand-edit the generated JSON; edit the source and
-regenerate.
+All four are derived. Do not hand-edit the generated JSON; edit the source and
+regenerate. The slim files omit `src`, framework tables, and the sources
+table. Fetch a full file when a mapping row needs a citation check.
 
 Sources of truth:
   security_principles_reference.oscal.json   OSCAL 1.1.2 catalog, 93 controls
@@ -60,6 +63,67 @@ def write_json(relpath, obj):
 def fail(msg):
     print("ERROR: " + msg, file=sys.stderr)
     sys.exit(1)
+
+
+def slim_classic(classic_out):
+    principles = []
+    for p in classic_out["principles"]:
+        row = {
+            "id": p["id"],
+            "statement": p["statement"],
+            "category": p["category"],
+        }
+        if p.get("related"):
+            row["related"] = p["related"]
+        principles.append(row)
+    return {
+        "$schema_version": "1.0",
+        "projection": "slim",
+        "full_catalog": f"{SITE}/data/security-principles.json",
+        "description": (
+            "Slim projection of security-principles.json for assessment "
+            "mapping: id, statement, category, and related. Fetch the full "
+            "catalog for src citations and the framework table."
+        ),
+        "updated": classic_out["updated"],
+        "count": classic_out["count"],
+        "principles": principles,
+    }
+
+
+def slim_agentic(agentic_out):
+    principles = [
+        {
+            "id": p["id"],
+            "section": p["section"],
+            "category": p["category"],
+            "statement": p["statement"],
+        }
+        for p in agentic_out["principles"]
+    ]
+    gap = {
+        k: {
+            "classic_ids": v["classic_ids"],
+            "kind": v["kind"],
+            "note": v["note"],
+        }
+        for k, v in agentic_out["gap_index"].items()
+    }
+    return {
+        "$schema_version": "1.0",
+        "projection": "slim",
+        "full_catalog": f"{SITE}/data/ai-agentic-principles.json",
+        "description": (
+            "Slim projection of ai-agentic-principles.json for assessment "
+            "mapping: id, section, category, statement, and gap_index. Fetch "
+            "the full catalog for src citations and the sources table."
+        ),
+        "updated": agentic_out["updated"],
+        "count": agentic_out["count"],
+        "gap_index_description": agentic_out["gap_index_description"],
+        "gap_index": gap,
+        "principles": principles,
+    }
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -756,7 +820,9 @@ def main():
 
     written = [
         write_json("data/security-principles.json", classic_out),
+        write_json("data/security-principles.slim.json", slim_classic(classic_out)),
         write_json("data/ai-agentic-principles.json", agentic_out),
+        write_json("data/ai-agentic-principles.slim.json", slim_agentic(agentic_out)),
     ]
     print(f"Wrote {len(written)} files.")
     print("Summary:", json.dumps(summary, indent=2))

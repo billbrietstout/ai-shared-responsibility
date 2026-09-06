@@ -1,7 +1,7 @@
 {
  "description": "Machine-readable data index for aisharedresponsibility.com. All files are static JSON served from /data/. Framework concepts (layers, personas, operating models) are defined in the CoSAI AI Shared Responsibility Framework v1.0.",
  "framework_reference": "https://aisharedresponsibility.com/framework/",
- "updated": "2026-08-24",
+ "updated": "2026-09-05",
  "files": [
   {
    "file": "layers.json",
@@ -364,6 +364,21 @@
    "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
   },
   {
+   "file": "security-principles.slim.json",
+   "url": "https://aisharedresponsibility.com/data/security-principles.slim.json",
+   "description": "Slim projection of security-principles.json for the whitepaper assessment prompt: id, statement, category, and related. Omits src citations and the framework table. Fetch the full catalog when a mapping row needs a source check.",
+   "schema_keys": [
+    "id",
+    "statement",
+    "category",
+    "related"
+   ],
+   "record_count": 87,
+   "projection_of": "security-principles.json",
+   "generated_from": "security_principles_reference.oscal.json",
+   "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
+  },
+  {
    "file": "ai-agentic-principles.json",
    "url": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
    "description": "130 contemporary AI and agentic security principles normalized from a 52-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) across 22 topic sections. Includes a gap_index resolving each section's Gap note to the classic principle it points at, and the source documents that assert each claim. Current industry positions rather than settled axioms.",
@@ -379,9 +394,24 @@
    "related_page": "https://aisharedresponsibility.com/agentic-ai-security/"
   },
   {
+   "file": "ai-agentic-principles.slim.json",
+   "url": "https://aisharedresponsibility.com/data/ai-agentic-principles.slim.json",
+   "description": "Slim projection of ai-agentic-principles.json for the whitepaper assessment prompt: id, section, category, statement, and gap_index. Omits src citations and the sources table. Fetch the full catalog when a mapping row needs a source check.",
+   "schema_keys": [
+    "id",
+    "section",
+    "category",
+    "statement"
+   ],
+   "record_count": 130,
+   "projection_of": "ai-agentic-principles.json",
+   "generated_from": "agentic-ai-security/agentic-security.md",
+   "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
+  },
+  {
    "file": "principle-candidates.json",
    "url": "https://aisharedresponsibility.com/data/principle-candidates.json",
-   "description": "PROPOSALS, NOT ACCEPTED PRINCIPLES. Review queue for candidate principles surfaced by whitepaper assessments, so each is triaged once with the reasoning recorded rather than re-proposed at every future review. Every entry carries a status, an evidentiary tier for its source, and closest_existing links to the catalog entries it was checked against. Do not cite an entry here as an established principle. The accepted catalogs are https://aisharedresponsibility.com/data/security-principles.json and https://aisharedresponsibility.com/data/ai-agentic-principles.json.",
+   "description": "PROPOSALS, NOT ACCEPTED PRINCIPLES. Maintainer review queue for candidate principles. Whitepaper assessment prompt v2.2 no longer asks users to file candidates. Do not cite an entry here as an established principle. The accepted catalogs are https://aisharedresponsibility.com/data/security-principles.json and https://aisharedresponsibility.com/data/ai-agentic-principles.json.",
    "schema_keys": [
     "id",
     "statement",
