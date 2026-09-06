@@ -1,8 +1,8 @@
 {
  "$schema_version": "1.0",
- "WARNING": "These are PROPOSALS, not accepted principles. Nothing in this file is part of the SRF principle catalogs. Do not cite an entry here as an established principle, and do not use this file as a source when assessing a document. The accepted catalogs are https://aisharedresponsibility.com/data/security-principles.json and https://aisharedresponsibility.com/data/ai-agentic-principles.json.",
- "description": "Review queue for candidate principles surfaced by whitepaper assessments. A Novel or Extended finding from an assessment lands here first so it can be triaged once, with the reasoning recorded, rather than re-proposed at every future review. This is the one file under /data/ that is hand-maintained rather than generated.",
- "updated": "2026-07-25",
+ "WARNING": "These are PROPOSALS, not accepted principles. Nothing in this file is part of the SRF principle catalogs. Do not cite an entry here as an established principle, and do not use this file as a source when assessing a document. Whitepaper assessment prompt v2.2 no longer asks users to file candidates. The accepted catalogs are https://aisharedresponsibility.com/data/security-principles.json and https://aisharedresponsibility.com/data/ai-agentic-principles.json.",
+ "description": "Maintainer review queue for candidate principles. A Novel or Extended finding may land here when a catalog maintainer triages it. Whitepaper assessment prompt v2.2 no longer asks users to file candidates. This is the one file under /data/ that is hand-maintained rather than generated.",
+ "updated": "2026-09-05",
  "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/",
  "lifecycle": {
   "proposed": "Surfaced by an assessment. No triage done yet.",
@@ -23,7 +23,7 @@
   "agentic": "Additions to ai-agentic-principles.json are made by editing agentic-ai-security/agentic-security.md. A principle cannot be added without adding its source document to the source table, because the catalog records what specific published papers assert. The generator's CURATION table must be updated in the same change or the build fails.",
   "after_editing": "Run python3 build/generate_principle_catalogs.py, then commit the regenerated JSON with the source edit."
  },
- "count": 4,
+ "count": 33,
  "candidates": [
   {
    "id": "cand-2026-07-001",
@@ -35,8 +35,8 @@
     "title": "Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile",
     "url": "https://csrc.nist.gov/pubs/sp/800/218/a/final",
     "tier": "published-standard",
-    "citation_verified": false,
-    "verification_note": "Title recorded from reviewer report and prior knowledge. Live fetch of the NIST page timed out during triage. Confirm title, publication date, and URL before accepting."
+    "citation_verified": true,
+    "verification_note": "Title, URL, and 26 July 2024 publication date confirmed against the NIST CSRC page. FMF Managing Advanced Cyber Risks (13 Feb 2026) added as a published-framework second source."
    },
    "surfaced_by": {
     "review_date": "2026-07-25",
@@ -64,10 +64,10 @@
     }
    ],
    "proposed_disposition": "accepted",
-   "status": "triaged",
+   "status": "accepted",
    "opencre_checked": false,
-   "disposition_note": "Reads as a genuine addition. The catalog has no entry making pre-release capability evaluation a build gate, and no entry naming dual-use hazardous capability classes at all. Accepting requires adding NIST SP 800-218A to the synthesis source table as a new source document.",
-   "incorporated_into": null
+   "disposition_note": "Incorporated 1 Sep 2026 as hazardous-capability-eval-is-a-release-gate in section red-teaming, citing NIST-218A and FMF-CYBER. Closest existing ids remain adjacent: they halt a system already judged too risky, or calibrate test depth, and do not make pre-release evaluation of named hazardous capability classes a build gate.",
+   "incorporated_into": "agentic-ai-security/agentic-security.md"
   },
   {
    "id": "cand-2026-07-002",
@@ -217,6 +217,1024 @@
    "status": "triaged",
    "opencre_checked": false,
    "disposition_note": "Sits between Extended and Novel. pinned-checksum-verified-versions covers the between-sessions case and explicit-per-capability-grants covers grant breadth, but neither covers a tool mutating its schema mid-session. Leaning Extended off pinned-checksum-verified-versions. Same preprint evidentiary limit as cand-2026-07-003.",
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-001",
+   "statement": "Tool, filesystem, egress, and credential limits are enforced in the harness, outside the model's reasoning loop. Probabilistic model defenses are not treated as the control.",
+   "proposed_category": "access-control",
+   "proposed_section": "untrusted-input",
+   "source": {
+    "label": "FMF-AGENTS",
+    "title": "Emerging Security Practices for AI Agents",
+    "url": "https://www.frontiermodelforum.org/issue-briefs/emerging-security-practices-for-ai-agents/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Title, date (3 June 2026), and URL taken from the MOSAIC spreadsheet Coalitions tab and the Frontier Model Forum issue-brief page."
+   },
+   "closest_existing": [
+    {
+     "id": "access-control-never-delegated-to-model",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Says what not to ask of the model. Does not name where the control must live."
+    },
+    {
+     "id": "chat-visibility-not-execution-control",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Separates conversation visibility from execution control. Does not require harness-level enforcement of tool and egress limits."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as deterministic-controls-outside-reasoning-loop in section untrusted-input.",
+   "incorporated_into": "agentic-ai-security/agentic-security.md",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   }
+  },
+  {
+   "id": "cand-2026-09-002",
+   "statement": "Agent skills, meaning natural-language-plus-code packages that give an agent executable capability, are inventoried, pinned, sandboxed, and provenance-checked across author, publish, install, load, and execute. An unsandboxed skill inherits the agent's full security context.",
+   "proposed_category": "supply-chain",
+   "proposed_section": "supply-chain",
+   "source": {
+    "label": "OWASP-AST10",
+    "title": "OWASP Agentic Skills Top 10 (AST10)",
+    "url": "https://owasp.org/www-project-agentic-skills-top-10/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Title and URL taken from the MOSAIC spreadsheet MOSAIC tab row 44."
+   },
+   "closest_existing": [
+    {
+     "id": "no-loading-unsigned-artifacts",
+     "catalog": "agentic",
+     "relation": "partial",
+     "note": "Covers unsigned datasets, checkpoints, and pipeline artifacts. Does not name skills."
+    },
+    {
+     "id": "pinned-checksum-verified-versions",
+     "catalog": "agentic",
+     "relation": "partial",
+     "note": "Pins MCP server and tool versions. Does not cover rug-pull of skill instruction files after install."
+    },
+    {
+     "id": "treat-tool-descriptions-and-content-as-untrusted",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Treats tool descriptions as untrusted content. Skills blend natural language and code as a distinct artifact class."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as agent-skills-are-supply-chain-artifacts in section supply-chain. The catalog covered models, datasets, MCP servers, and tools; it did not name skills.",
+   "incorporated_into": "agentic-ai-security/agentic-security.md",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   }
+  },
+  {
+   "id": "cand-2026-09-003",
+   "statement": "Project instruction files for AI code assistants encode validation, secrets handling, and least-privilege defaults. They do not replace ASVS, SCVS, or AISVS verification.",
+   "proposed_category": "design",
+   "proposed_section": "llm-appsec",
+   "source": {
+    "label": "OPENSSF-ASSIST",
+    "title": "Security-Focused Guide for AI Code Assistant Instructions",
+    "url": "https://best.openssf.org/Security-Focused-Guide-for-AI-Code-Assistant-Instructions",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Title, date (1 August 2025), and URL taken from the MOSAIC spreadsheet Coalitions tab."
+   },
+   "closest_existing": [
+    {
+     "id": "contributors-accountable-for-ai-assisted-work",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Covers human accountability for generated code. Does not treat the instruction file as a control surface."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as assistant-instruction-files-encode-defaults in section llm-appsec. Language-specific coding rules from the same guide were rejected as controls, not principles.",
+   "incorporated_into": "agentic-ai-security/agentic-security.md",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   }
+  },
+  {
+   "id": "cand-2026-09-004",
+   "statement": "An AI Bill of Materials is a governed artifact whose technical supply-chain detail is disclosed on a restricted basis, because publishing that detail can aid an adversary.",
+   "proposed_category": "supply-chain",
+   "proposed_section": "supply-chain-provenance",
+   "source": {
+    "label": "SANS-CAISG14",
+    "title": "Critical AI Security Guidelines v1.4",
+    "url": "https://assets.contentstack.io/v3/assets/bltabe50a4554f8e97f/blte964a6eef293d57e/whitepaper-critical-ai-security-guidelines",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "SANS Institute paper, March 2026, aligned with the OWASP AI Exchange. MOSAIC tab row 39 after the 1 Sep 2026 spreadsheet fix."
+   },
+   "closest_existing": [
+    {
+     "id": "aibom-is-a-governance-artifact",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already treats AIBOM as a governance artifact on par with SBOM. Does not restrict disclosure."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording aibom-is-a-governance-artifact to include restricted disclosure. No new id.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-005",
+   "statement": "Systems are built so that when the model is fooled, nothing important breaks, because the prompt-injection surface cannot be closed.",
+   "proposed_category": "risk-management",
+   "proposed_section": "llm-appsec",
+   "source": {
+    "label": "OWASP-LLMTOP10-2026",
+    "title": "OWASP GenAI LLM Top 10 2026",
+    "url": "https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 42, published 3 August 2026. Successor to OWASP-LLMTOP10 (2025)."
+   },
+   "closest_existing": [
+    {
+     "id": "model-wrong-or-manipulated-is-constant-condition",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already treats a wrong or manipulated model as a constant design condition. The 2026 edition states the design consequence."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording model-wrong-or-manipulated-is-constant-condition. Ranking-method claims from the same paper were rejected.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-006",
+   "statement": "Overall AI security maturity cannot exceed the Govern score. Self-reported capability without documentary evidence is not treated as a stage claim.",
+   "proposed_category": "governance",
+   "proposed_section": "enterprise-readiness",
+   "source": {
+    "label": "SANS-MATURITY",
+    "title": "SANS AI Security Maturity Model eBook",
+    "url": "https://www.sans.org/white-papers/sans-ai-security-maturity-model-ebook",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 46, published 11 May 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "three-track-governance-model",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already names Protect, Utilize, and Govern as distinct tracks. Does not state the ceiling or the evidence cap."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording three-track-governance-model. Five-stage scoring mechanics were rejected as a maturity-model procedure, not a principle.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-007",
+   "statement": "Continuous human approval of every agent step does not scale. Checkpoints concentrate on high-stakes and irreversible actions.",
+   "proposed_category": "agent-autonomy",
+   "proposed_section": "human-oversight",
+   "source": {
+    "label": "AIVERIFY-MAGF",
+    "title": "Model AI Governance Framework for Agentic AI v1.5",
+    "url": "https://www.imda.gov.sg/assets/63438074-73f6-4dcc-a281-030f42642cf4.pdf",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab. AI Verify Foundation / IMDA Singapore, 20 May 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "oversight-scales-with-autonomy-and-risk",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already scales oversight with autonomy and risk. Does not name continuous per-step approval as the failure mode."
+    },
+    {
+     "id": "approval-before-high-impact-actions",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Requires approval before high-impact actions. Does not say continuous approval of every step fails to scale."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording oversight-scales-with-autonomy-and-risk.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-008",
+   "statement": "Exploit windows can be negative: an attacker may hold a working exploit before a vendor fix ships. Containment is the control, not a patch SLA.",
+   "proposed_category": "resilience",
+   "proposed_section": "incident-response",
+   "source": {
+    "label": "ENISA-FRONTIER",
+    "title": "ENISA's view on Cybersecurity in the Frontier AI Era",
+    "url": "https://www.enisa.europa.eu/publications/enisas-view-on-cybersecurity-in-the-frontier-ai-era",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Peer SDOs tab. Position paper, July 2026, not a binding regulation."
+   },
+   "closest_existing": [
+    {
+     "id": "blast-radius-containment-via-segmentation",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already names segmentation as the primary control once discovery outpaces patching. Does not state negative exploit windows."
+    },
+    {
+     "id": "permanent-vulnerability-operations-capability",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Replaces periodic patch cycles with continuous vulnerability operations. Does not name attacker-held exploits before vendor fixes."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording blast-radius-containment-via-segmentation. Single-digit-minute MTTD/MTTR/MTTC targets were rejected as unmeasurable as stated.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-009",
+   "statement": "Proper data and model disposal at end of life is a designed lifecycle requirement, not an improvised response.",
+   "proposed_category": "resilience",
+   "proposed_section": "decommissioning-availability",
+   "source": {
+    "label": "ETSI-304223",
+    "title": "ETSI EN 304 223 V2.1.1: Baseline Cyber Security Requirements for AI Models and Systems",
+    "url": "https://www.etsi.org/deliver/etsi_en/304200_304299/304223/02.01.01_60/en_304223v020101p.pdf",
+    "tier": "published-standard",
+    "citation_verified": true,
+    "verification_note": "Peer SDOs tab. Principle 13. Highest evidentiary tier in this review."
+   },
+   "closest_existing": [
+    {
+     "id": "decommissioning-is-a-designed-capability",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already requires a designed deactivation mechanism. ETSI P13 adds data and model disposal as the end-of-life form."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by adding ETSI-304223 as a source on decommissioning-is-a-designed-capability. The thirteen ETSI principles were not cloned as new ids.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-010",
+   "statement": "Data, models, and prompts are documented as tracked assets across the lifecycle, not only model weights and datasets.",
+   "proposed_category": "supply-chain",
+   "proposed_section": "supply-chain",
+   "source": {
+    "label": "ETSI-304223",
+    "title": "ETSI EN 304 223 V2.1.1: Baseline Cyber Security Requirements for AI Models and Systems",
+    "url": "https://www.etsi.org/deliver/etsi_en/304200_304299/304223/02.01.01_60/en_304223v020101p.pdf",
+    "tier": "published-standard",
+    "citation_verified": true,
+    "verification_note": "Peer SDOs tab. Principle 8."
+   },
+   "closest_existing": [
+    {
+     "id": "provenance-via-signed-manifests-sbom",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already requires signed manifests or SBOM/AIBOM records for model and tool provenance. Does not name prompts as tracked assets."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording provenance-via-signed-manifests-sbom to cover data, models, and prompts.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-011",
+   "statement": "Human responsibility for AI systems remains enabled across the lifecycle.",
+   "proposed_category": "governance",
+   "proposed_section": "human-oversight",
+   "source": {
+    "label": "ETSI-304223",
+    "title": "ETSI EN 304 223 V2.1.1: Baseline Cyber Security Requirements for AI Models and Systems",
+    "url": "https://www.etsi.org/deliver/etsi_en/304200_304299/304223/02.01.01_60/en_304223v020101p.pdf",
+    "tier": "published-standard",
+    "citation_verified": true,
+    "verification_note": "Peer SDOs tab. Principle 4."
+   },
+   "closest_existing": [
+    {
+     "id": "override-authority-explicitly-assigned",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already assigns named override authority. ETSI P4 is the published-standard restatement of human responsibility."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by adding ETSI-304223 as a source on override-authority-explicitly-assigned.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-012",
+   "statement": "Release decisions weigh defender benefit of the same cyber capabilities, not offense alone.",
+   "proposed_category": "governance",
+   "proposed_section": "red-teaming",
+   "source": {
+    "label": "FMF-CYBER",
+    "title": "Managing Advanced Cyber Risks in Frontier AI Frameworks",
+    "url": "https://www.frontiermodelforum.org/technical-reports/managing-advanced-cyber-risks-in-frontier-ai-frameworks/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab, 13 February 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "hazardous-capability-eval-is-a-release-gate",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "The release-gate id covers evaluation as a precondition of release. Defender-benefit weighting is a frontier-lab policy claim, not an engineering invariable."
+    }
+   ],
+   "proposed_disposition": "deferred",
+   "status": "deferred",
+   "disposition_note": "Adjacent to cand-2026-07-001 / hazardous-capability-eval-is-a-release-gate. Watch. Do not mint a separate id unless a later source states it as an engineering requirement rather than a policy preference. closest_existing points at an id added in the same 1 Sep 2026 change.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-013",
+   "statement": "AISVS verification requirements are objectively testable, do not replace ASVS or SCVS, and exclude governance-only obligations that have no security test.",
+   "proposed_category": "governance",
+   "proposed_section": "llm-appsec",
+   "source": {
+    "label": "OWASP-AISVS",
+    "title": "OWASP Artificial Intelligence Security Verification Standard (AISVS) 1.0",
+    "url": "https://github.com/OWASP/AISVS/releases/tag/v1.0",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 43, 24 June 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "agent-controls-depend-on-model-infra-controls",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "States that agent controls depend on underlying model and infrastructure security. AISVS is the verification overlay, not a new invariable."
+    }
+   ],
+   "proposed_disposition": "deferred",
+   "status": "deferred",
+   "disposition_note": "Process rules for a verification standard, not security invariables. A chapter-level pass of the twelve control families may still surface an AI-specific verification invariant. AISVS was not added to the synthesis source table until that pass.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-014",
+   "statement": "Map production AI controls and detections to ATLAS techniques and mitigations during threat modeling.",
+   "proposed_category": "adversarial-ml",
+   "proposed_section": "adversarial-ml",
+   "source": {
+    "label": "MITRE ATLAS v2026.08",
+    "title": "MITRE ATLAS (Adversarial Threat Landscape for AI Systems) v2026.08",
+    "url": "https://atlas.mitre.org/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Peer SDOs tab. Living taxonomy, not a principle catalog."
+   },
+   "closest_existing": [
+    {
+     "id": "attack-objective-maps-to-three-violations",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "NIST-ADVML classifies attack objectives. ATLAS enumerates techniques. Different artifact type."
+    }
+   ],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Threat taxonomy. Belongs in threats.json / ATLAS mapping. Agentic techniques AML.T0116 through AML.T0128 are not principles. Sheet 'principles' are usage instructions.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-015",
+   "statement": "Workbook tracking must tie each CIS Safeguard to a named accountable party and evidence artifact for LLM, agent, and MCP components.",
+   "proposed_category": "governance",
+   "proposed_section": "shared-responsibility",
+   "source": {
+    "label": "CIS Controls v8.1.2 AI Security Guidance Workbook",
+    "title": "CIS Controls v8.1.2 AI Security Guidance Workbook",
+    "url": "https://www.cisecurity.org/insights/white-papers/controls-v8-1-2-ai-security-guidance-workbook",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 45, 27 July 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "exactly-one-accountable-party",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already requires exactly one accountable party per activity. The workbook is an implementation tracker for that rule."
+    }
+   ],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Implementation aid. Restates exactly-one-accountable-party. Do not add as a principle source.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-016",
+   "statement": "Significant capability updates after deployment trigger renewed governance, not one-time sign-off. Select the checklist matching model capability and release type.",
+   "proposed_category": "governance",
+   "proposed_section": "risk-governance",
+   "source": {
+    "label": "PAI",
+    "title": "Guidance for Safe Foundation Model Deployment",
+    "url": "https://partnershiponai.org/modeldeployment/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab. 24 October 2023."
+   },
+   "closest_existing": [
+    {
+     "id": "govern-runs-continuously-through-other-functions",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already requires Govern to run continuously through Map, Measure, and Manage."
+    },
+    {
+     "id": "decommissioning-is-a-designed-capability",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Covers designed deactivation. PAI's restrict/suspend/retire criteria are checklist methodology."
+    }
+   ],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "2023 checklist guidance superseded by the 2025-2026 corpus. Product instructions ('select the checklist on our site') are not principles.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-017",
+   "statement": "Blocking AI use is not a viable security control. AI adoption is already embedded in enterprise products; the security job is to secure that adoption.",
+   "proposed_category": "governance",
+   "proposed_section": "enterprise-readiness",
+   "source": {
+    "label": "SANS-CAISG14",
+    "title": "Critical AI Security Guidelines v1.4",
+    "url": "https://assets.contentstack.io/v3/assets/bltabe50a4554f8e97f/blte964a6eef293d57e/whitepaper-critical-ai-security-guidelines",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 39. Restates SANS-CAISG1 'biggest risk of AI is not using it,' which was already in synthesis prose but not a catalog bullet."
+   },
+   "closest_existing": [
+    {
+     "id": "shadow-ai-already-present",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Treats undiscovered agents as already present. Does not say blocking AI use fails as a control."
+    },
+    {
+     "id": "programs-remain-reactive-despite-known-better",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Describes lagging programs. Does not name a ban on use as an invalid control."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as blocking-ai-use-is-not-a-viable-control in section enterprise-readiness, citing SANS-CAISG1 and SANS-CAISG14. The v1.0 prose already said this; the axiom pass extracted it as a catalog id.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": "agentic-ai-security/agentic-security.md"
+  },
+  {
+   "id": "cand-2026-09-018",
+   "statement": "Agent security spans the model, system guardrails, harness orchestration, and tool access. Each layer has its own controls.",
+   "proposed_category": "design",
+   "proposed_section": "untrusted-input",
+   "source": {
+    "label": "FMF-AGENTS",
+    "title": "Emerging Security Practices for AI Agents",
+    "url": "https://www.frontiermodelforum.org/issue-briefs/emerging-security-practices-for-ai-agents/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab. 3 June 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "agent-controls-depend-on-model-infra-controls",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Says agent controls only hold if model and infrastructure security are already in place. Does not split agent security into four named layers with distinct controls."
+    },
+    {
+     "id": "deterministic-controls-outside-reasoning-loop",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Places tool, filesystem, egress, and credential limits in the harness. That is one layer of the four-layer split, not the split itself."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as agent-security-spans-distinct-control-layers in section untrusted-input.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": "agentic-ai-security/agentic-security.md"
+  },
+  {
+   "id": "cand-2026-09-019",
+   "statement": "The dependencies encoded in the five SRF architecture layers remain invariant regardless of how an organization structures its teams.",
+   "proposed_category": "governance",
+   "proposed_section": "shared-responsibility",
+   "source": {
+    "label": "COSAI-SRF",
+    "title": "AI Shared Responsibility Framework (SRF) v1.0",
+    "url": "https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 41. Axiom column. 26 May 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "accountability-depends-on-operating-model",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Says the accountable party can change with operating model. The layer-dependency axiom says the layer stack itself does not change with the org chart."
+    },
+    {
+     "id": "exactly-one-accountable-party",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Assigns one party per activity. Does not say layer dependencies survive a reorg."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as layer-dependencies-invariant-of-org-structure in section shared-responsibility.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": "agentic-ai-security/agentic-security.md"
+  },
+  {
+   "id": "cand-2026-09-020",
+   "statement": "An agent's security-relevant components include model, instructions, memory, planning, tools, protocols, access controls, guardrails, approvals, and logging, and each is in scope for inventory and controls.",
+   "proposed_category": "monitoring",
+   "proposed_section": "observability",
+   "source": {
+    "label": "AIVERIFY-MAGF",
+    "title": "Model AI Governance Framework for Agentic AI v1.5",
+    "url": "https://www.imda.gov.sg/assets/63438074-73f6-4dcc-a281-030f42642cf4.pdf",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab. AI Verify Foundation / IMDA Singapore, 20 May 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "execution-provenance-traceable-as-inventory",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Requires execution provenance as traceable as a static software inventory. Does not name the agent component set."
+    },
+    {
+     "id": "model-registries-non-negotiable",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Requires a model registry. Does not inventory instructions, memory, planning, or approvals."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as agent-component-inventory-covers-full-stack in section observability.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": "agentic-ai-security/agentic-security.md"
+  },
+  {
+   "id": "cand-2026-09-021",
+   "statement": "Defenders treat environments as potentially compromised, including agentic endpoints and enterprise browsers.",
+   "proposed_category": "incident-response",
+   "proposed_section": "incident-response",
+   "source": {
+    "label": "ENISA-FRONTIER",
+    "title": "ENISA's view on Cybersecurity in the Frontier AI Era",
+    "url": "https://www.enisa.europa.eu/publications/enisas-view-on-cybersecurity-in-the-frontier-ai-era",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Peer SDOs tab. Position paper, July 2026, not a binding regulation."
+   },
+   "closest_existing": [
+    {
+     "id": "blast-radius-containment-via-segmentation",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Names segmentation as the control once discovery outpaces patching. Does not state assume-compromise as the starting posture, including agentic endpoints."
+    },
+    {
+     "id": "programs-remain-reactive-despite-known-better",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Describes lagging programs. Does not require treating environments as already compromised."
+    }
+   ],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 1 Sep 2026 as treat-environments-as-potentially-compromised in section incident-response. Minute-scale MTTD numbers stay rejected with cand-2026-09-008.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": "agentic-ai-security/agentic-security.md"
+  },
+  {
+   "id": "cand-2026-09-022",
+   "statement": "Tool output that re-enters the reasoning loop, and content written to persistent memory, are untrusted input, the same class as tool descriptions.",
+   "proposed_category": "input-validation",
+   "proposed_section": "untrusted-input",
+   "source": {
+    "label": "FMF-AGENTS",
+    "title": "Emerging Security Practices for AI Agents",
+    "url": "https://www.frontiermodelforum.org/issue-briefs/emerging-security-practices-for-ai-agents/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab. Primary attack vectors named: prompt injection, memory poisoning, and tool supply-chain compromise where tool output re-enters reasoning."
+   },
+   "closest_existing": [
+    {
+     "id": "treat-tool-descriptions-and-content-as-untrusted",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already treats tool descriptions, retrieved content, and inter-agent messages as untrusted. Does not name tool output re-entering the loop or persistent memory."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording treat-tool-descriptions-and-content-as-untrusted and adding FMF-AGENTS as a source.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-023",
+   "statement": "Misaligned benign requests cause harm without an external attacker when scope and permissions are too broad.",
+   "proposed_category": "risk-management",
+   "proposed_section": "llm-appsec",
+   "source": {
+    "label": "FMF-AGENTS",
+    "title": "Emerging Security Practices for AI Agents",
+    "url": "https://www.frontiermodelforum.org/issue-briefs/emerging-security-practices-for-ai-agents/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab."
+   },
+   "closest_existing": [
+    {
+     "id": "model-wrong-or-manipulated-is-constant-condition",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already treats a wrong or manipulated model as a constant design condition. Does not name harm from a benign request with overly broad scope."
+    },
+    {
+     "id": "tool-permissions-never-exceed-function-need",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Caps tool permissions. Does not state that a benign request can cause harm without an attacker."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording model-wrong-or-manipulated-is-constant-condition and adding FMF-AGENTS as a source.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-024",
+   "statement": "Zero model trust: models cannot be fully trusted; external controls, validation, and guardrails are required at runtime.",
+   "proposed_category": "access-control",
+   "proposed_section": "enterprise-readiness",
+   "source": {
+    "label": "SANS-CAISG14",
+    "title": "Critical AI Security Guidelines v1.4",
+    "url": "https://assets.contentstack.io/v3/assets/bltabe50a4554f8e97f/blte964a6eef293d57e/whitepaper-critical-ai-security-guidelines",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 39."
+   },
+   "closest_existing": [
+    {
+     "id": "access-control-never-delegated-to-model",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "The enterprise-readiness restatement already says a model's guardrails are never a sufficient security boundary. Zero model trust is that claim named as an axiom."
+    },
+    {
+     "id": "deterministic-controls-outside-reasoning-loop",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Places controls outside the reasoning loop. Does not use the zero-model-trust phrasing."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by adding SANS-CAISG14 as a source on the guardrails-not-sufficient restatement of access-control-never-delegated-to-model. No new id.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-025",
+   "statement": "Model-as-component risks stay on the LLM Top 10; model-as-actor risks pair with the OWASP Agentic Top 10.",
+   "proposed_category": "risk-management",
+   "proposed_section": "untrusted-input",
+   "source": {
+    "label": "OWASP-LLMTOP10-2026",
+    "title": "OWASP GenAI LLM Top 10 2026",
+    "url": "https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 42. 3 August 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "agents-amplify-not-new-vuln-class",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already treats agents as amplifying LLM-level vulnerabilities rather than a new class. The 2026 edition names the two-list split that follows from that."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording agents-amplify-not-new-vuln-class and adding OWASP-LLMTOP10-2026 as a source. Ranking-method axioms (vote vs incident corpus) were rejected as publication method.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-026",
+   "statement": "LLMs are auto-associative predictive generators, not reasoning or understanding systems. Anthropomorphizing them misleads evaluation.",
+   "proposed_category": "red-teaming",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "BIML-LLM24",
+    "title": "An Architectural Risk Analysis of Large Language Models (BIML-LLM24)",
+    "url": "https://berryvilleiml.com/results/BIML-LLM24.pdf",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab rows 3-5. Also BIML-23RISKS and BIML-NOMETER. Original corpus axiom that was in synthesis prose but not on the catalog bullet."
+   },
+   "closest_existing": [
+    {
+     "id": "skepticism-toward-redteaming-alone",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already treats anthropomorphizing a model as insufficient validation. Does not state the generator-not-reasoner claim on the bullet."
+    }
+   ],
+   "proposed_disposition": "extended",
+   "status": "extended",
+   "disposition_note": "Applied 1 Sep 2026 by rewording skepticism-toward-redteaming-alone. No new id.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-027",
+   "statement": "Community vote (75% weight) and incident corpus (25% weight) jointly set LLM Top 10 rankings; 7,714 incidents classified for the 2026 edition.",
+   "proposed_category": "governance",
+   "proposed_section": "llm-appsec",
+   "source": {
+    "label": "OWASP-LLMTOP10-2026",
+    "title": "OWASP GenAI LLM Top 10 2026",
+    "url": "https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "MOSAIC tab row 42."
+   },
+   "closest_existing": [
+    {
+     "id": "agents-amplify-not-new-vuln-class",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "The two-list split was extended onto that id. Ranking weights are how the list is produced, not a security axiom."
+    }
+   ],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Publication-method axiom. Same class as AISVS 'every requirement begins with Verify that' and the red-team landscape taxonomy axioms: how a document is built, not what a system must do.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-028",
+   "statement": "Recursive Criticism and Improvement (RCI) loops ask an AI code assistant to review and fix its own prior output with linters and scanners. Instructions should stay concise and project-specific.",
+   "proposed_category": "design",
+   "proposed_section": "llm-appsec",
+   "source": {
+    "label": "OPENSSF-ASSIST",
+    "title": "Security-Focused Guide for AI Code Assistant Instructions",
+    "url": "https://best.openssf.org/Security-Focused-Guide-for-AI-Code-Assistant-Instructions",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Coalitions tab. 1 August 2025."
+   },
+   "closest_existing": [
+    {
+     "id": "assistant-instruction-files-encode-defaults",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already requires project instruction files to encode validation and least-privilege defaults. RCI is a prompting technique, not a second principle."
+    },
+    {
+     "id": "contributors-accountable-for-ai-assisted-work",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "Already keeps developers accountable for generated code."
+    }
+   ],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Technique and drafting advice. Same bar that kept CaMeL off the catalog: a named method is not an invariable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-09-029",
+   "statement": "Spreadsheet Axioms for MOSAIC rows 1 through 38, plus ETSI/ATLAS/CIS workbook/AISVS/PAI/red-team landscape document-structure axioms, restate claims already in the synthesis or are publication-method claims.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "MOSAIC_AI_Security_Whitepapers",
+    "title": "MOSAIC_AI_Security_Whitepapers spreadsheet, Axioms column",
+    "url": "https://docs.google.com/spreadsheets/d/161FFOVjQUNxiaOzMryT6sbEuYjq-uLf-vcDEHfvlFbE/edit",
+    "tier": "practitioner-report",
+    "citation_verified": true,
+    "verification_note": "Axiom-column pass of MOSAIC, Peer SDOs, and Coalitions tabs on 1 Sep 2026. Rows 1-38 are the original MOSAIC-member corpus already synthesized."
+   },
+   "closest_existing": [
+    {
+     "id": "architecture-risk-analysis-before-bolt-on-fixes",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "BIML design-level security, data/model/input as attack surfaces, security as an emergent property, and the white-box to black-box spectrum are already in section 12 prose and bullets."
+    },
+    {
+     "id": "identity-is-the-primary-attack-surface",
+     "catalog": "agentic",
+     "relation": "covers",
+     "note": "CSA-STATE identity axiom is already a catalog bullet."
+    }
+   ],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Record of the axiom pass so those rows are not re-proposed. Individual novel axioms from later rows and from Peer SDOs/Coalitions were filed as cand-2026-09-017 through 028. AISVS, ATLAS, CIS workbook, and PAI remain under cand-2026-09-013 through 016. ETSI document-structure axioms remain under cand-2026-09-009 through 011.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-09-01",
+    "reviewer": "bill",
+    "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
+   },
    "incorporated_into": null
   }
  ]

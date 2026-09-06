@@ -39,7 +39,7 @@ SITE = "https://aisharedresponsibility.com"
 # regenerates these files and diffs them against what is committed, so the value
 # must be reproducible from committed source rather than the wall clock (otherwise
 # any push validated by CI on a later UTC day fails). Bump it when publishing an update.
-UPDATED = "2026-07-28"
+UPDATED = "2026-09-02"
 SRF_VERSION = "1.0"
 
 # ─────────────────────────────────────────────────────────────────────────────

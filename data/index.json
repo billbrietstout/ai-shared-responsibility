@@ -1,7 +1,7 @@
 {
  "description": "Machine-readable data index for aisharedresponsibility.com. All files are static JSON served from /data/. Framework concepts (layers, personas, operating models) are defined in the CoSAI AI Shared Responsibility Framework v1.0.",
  "framework_reference": "https://aisharedresponsibility.com/framework/",
- "updated": "2026-08-24",
+ "updated": "2026-09-05",
  "files": [
   {
    "file": "layers.json",
@@ -111,7 +111,7 @@
   {
    "file": "finance-controls.json",
    "url": "https://aisharedresponsibility.com/data/finance-controls.json",
-   "description": "40 controls for financial services AI deployments. Each control maps to an SRF layer (L1-L5), accountable persona, applicable operating models, and evidence thresholds. Regulatory context: SR 26-2, FINOS AIGF, OWASP LLM Top 10, EU AI Act. Four MRM stages: development, validation, deployment, monitoring.",
+   "description": "41 controls for financial services AI deployments. Each control maps to an SRF layer (L1-L5), accountable persona, applicable operating models, and evidence thresholds. Regulatory context: SR 26-2, FINOS AIGF, OWASP LLM Top 10, EU AI Act. Four MRM stages: development, validation, deployment, monitoring.",
    "schema_keys": [
     "id",
     "layer",
@@ -124,7 +124,7 @@
     "mappings",
     "threshold"
    ],
-   "record_count": 40,
+   "record_count": 41,
    "srf_version": "1.0",
    "related_page": "https://aisharedresponsibility.com/finance/",
    "controls_page": "https://aisharedresponsibility.com/finance/controls/"
@@ -132,7 +132,7 @@
   {
    "file": "healthcare-controls.json",
    "url": "https://aisharedresponsibility.com/data/healthcare-controls.json",
-   "description": "40 controls for healthcare AI deployments including clinical decision support, AI-assisted diagnostics, and agentic care coordination. Each control maps to an SRF layer (L1-L5), accountable persona, clinical lifecycle stage, and FHIR AuditEvent evidence pointer. Regulatory context: FDA TPLC, FDA PCCP, ONC HTI-1, HIPAA, EU AI Act, IEC 62304, ISO 14971.",
+   "description": "41 controls for healthcare AI deployments including clinical decision support, AI-assisted diagnostics, and agentic care coordination. Each control maps to an SRF layer (L1-L5), accountable persona, clinical lifecycle stage, and FHIR AuditEvent evidence pointer. Regulatory context: FDA TPLC, FDA PCCP, ONC HTI-1, HIPAA, EU AI Act, IEC 62304, ISO 14971.",
    "schema_keys": [
     "id",
     "layer",
@@ -145,7 +145,7 @@
     "mappings",
     "threshold"
    ],
-   "record_count": 40,
+   "record_count": 41,
    "srf_version": "1.0",
    "related_page": "https://aisharedresponsibility.com/healthcare/",
    "controls_page": "https://aisharedresponsibility.com/healthcare/controls/"
@@ -364,9 +364,24 @@
    "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
   },
   {
+   "file": "security-principles.slim.json",
+   "url": "https://aisharedresponsibility.com/data/security-principles.slim.json",
+   "description": "Slim projection of security-principles.json for the whitepaper assessment prompt: id, statement, category, and related. Omits src citations and the framework table. Fetch the full catalog when a mapping row needs a source check.",
+   "schema_keys": [
+    "id",
+    "statement",
+    "category",
+    "related"
+   ],
+   "record_count": 87,
+   "projection_of": "security-principles.json",
+   "generated_from": "security_principles_reference.oscal.json",
+   "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
+  },
+  {
    "file": "ai-agentic-principles.json",
    "url": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
-   "description": "121 contemporary AI and agentic security principles normalized from a 41-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, 2019 to 2026) across 22 topic sections. Includes a gap_index resolving each section's Gap note to the classic principle it points at, and the source documents that assert each claim. Current industry positions rather than settled axioms.",
+   "description": "130 contemporary AI and agentic security principles normalized from a 52-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) across 22 topic sections. Includes a gap_index resolving each section's Gap note to the classic principle it points at, and the source documents that assert each claim. Current industry positions rather than settled axioms.",
    "schema_keys": [
     "id",
     "section",
@@ -374,14 +389,29 @@
     "statement",
     "src"
    ],
-   "record_count": 121,
+   "record_count": 130,
    "generated_from": "agentic-ai-security/agentic-security.md",
    "related_page": "https://aisharedresponsibility.com/agentic-ai-security/"
   },
   {
+   "file": "ai-agentic-principles.slim.json",
+   "url": "https://aisharedresponsibility.com/data/ai-agentic-principles.slim.json",
+   "description": "Slim projection of ai-agentic-principles.json for the whitepaper assessment prompt: id, section, category, statement, and gap_index. Omits src citations and the sources table. Fetch the full catalog when a mapping row needs a source check.",
+   "schema_keys": [
+    "id",
+    "section",
+    "category",
+    "statement"
+   ],
+   "record_count": 130,
+   "projection_of": "ai-agentic-principles.json",
+   "generated_from": "agentic-ai-security/agentic-security.md",
+   "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
+  },
+  {
    "file": "principle-candidates.json",
    "url": "https://aisharedresponsibility.com/data/principle-candidates.json",
-   "description": "PROPOSALS, NOT ACCEPTED PRINCIPLES. Review queue for candidate principles surfaced by whitepaper assessments, so each is triaged once with the reasoning recorded rather than re-proposed at every future review. Every entry carries a status, an evidentiary tier for its source, and closest_existing links to the catalog entries it was checked against. Do not cite an entry here as an established principle. The accepted catalogs are https://aisharedresponsibility.com/data/security-principles.json and https://aisharedresponsibility.com/data/ai-agentic-principles.json.",
+   "description": "PROPOSALS, NOT ACCEPTED PRINCIPLES. Maintainer review queue for candidate principles. Whitepaper assessment prompt v2.2 no longer asks users to file candidates. Do not cite an entry here as an established principle. The accepted catalogs are https://aisharedresponsibility.com/data/security-principles.json and https://aisharedresponsibility.com/data/ai-agentic-principles.json.",
    "schema_keys": [
     "id",
     "statement",
@@ -396,7 +426,7 @@
     "disposition_note",
     "incorporated_into"
    ],
-   "record_count": 4,
+   "record_count": 33,
    "hand_maintained": true,
    "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
   }
@@ -559,15 +589,15 @@
    "file": "export/srf-oscal-verticals-catalog.json",
    "url": "https://aisharedresponsibility.com/export/srf-oscal-verticals-catalog.json",
    "format": "oscal-catalog",
-   "description": "OSCAL 1.2.2 catalog of all 258 industry vertical controls, grouped by SRF layer (L1-L5) with one subgroup per vertical. Each control carries the accountability assignment, a threshold parameter, regulatory mapping links, and evidence pointers. Proposed extension; not part of the official CoSAI release. Generated from data/*-controls.json.",
-   "record_count": 258
+   "description": "OSCAL 1.2.2 catalog of all 260 industry vertical controls, grouped by SRF layer (L1-L5) with one subgroup per vertical. Each control carries the accountability assignment, a threshold parameter, regulatory mapping links, and evidence pointers. Proposed extension; not part of the official CoSAI release. Generated from data/*-controls.json.",
+   "record_count": 260
   },
   {
    "file": "export/srf-finance.profile.json",
    "url": "https://aisharedresponsibility.com/export/srf-finance.profile.json",
    "format": "oscal-profile",
-   "description": "OSCAL 1.2.2 profile for the finance vertical: imports the SRF vertical controls catalog, selects the 40 finance controls, and binds every threshold parameter value. Proposed extension; not part of the official CoSAI release.",
-   "record_count": 40,
+   "description": "OSCAL 1.2.2 profile for the finance vertical: imports the SRF vertical controls catalog, selects the 41 finance controls, and binds every threshold parameter value. Proposed extension; not part of the official CoSAI release.",
+   "record_count": 41,
    "related_page": "https://aisharedresponsibility.com/finance/controls/"
   },
   {
@@ -582,8 +612,8 @@
    "file": "export/srf-healthcare.profile.json",
    "url": "https://aisharedresponsibility.com/export/srf-healthcare.profile.json",
    "format": "oscal-profile",
-   "description": "OSCAL 1.2.2 profile for the healthcare vertical: imports the SRF vertical controls catalog, selects the 40 healthcare controls, and binds every threshold parameter value. Proposed extension; not part of the official CoSAI release.",
-   "record_count": 40,
+   "description": "OSCAL 1.2.2 profile for the healthcare vertical: imports the SRF vertical controls catalog, selects the 41 healthcare controls, and binds every threshold parameter value. Proposed extension; not part of the official CoSAI release.",
+   "record_count": 41,
    "related_page": "https://aisharedresponsibility.com/healthcare/controls/"
   },
   {

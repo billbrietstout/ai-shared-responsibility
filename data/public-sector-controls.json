@@ -296,6 +296,45 @@
       }
     },
     {
+      "id": "SRF-L1-ACQ-010",
+      "layer": "L1",
+      "component": "Governance and Processes",
+      "title": "Third-Party AI Vendor Register and Supply Chain Risk Assessment",
+      "description": "The agency must maintain a register of every AI vendor and conduct a supply chain risk assessment covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. Each vendor is tagged with one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually. This control was previously published as SRF-L5-MON-007.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Shared-Service"
+      ],
+      "public_sector_stage": "acquisition-integration",
+      "responsibility_split": "agency",
+      "mappings": {
+        "m_25_21": "N/A",
+        "m_25_22": "Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)",
+        "fedramp_20x_ksi": "KSI-SCR-MIT (persistent supply chain risk identification and mitigation); KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities)",
+        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)",
+        "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+        "owasp_llm": "N/A",
+        "cis": "CIS Control 15: Service Provider Management",
+        "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)"
+      },
+      "threshold": {
+        "metric": "supply_chain_risk_assessment_current",
+        "description": "Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, names a vendor-risk category and an accountable officer, and was refreshed within the prior annual cycle.",
+        "evidence": {
+          "ocsf_class": "Document management artifact.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
+      }
+    },
+    {
       "id": "SRF-L1-ACQ-008",
       "layer": "L1",
       "component": "Governance and Processes",
@@ -1289,7 +1328,7 @@
       "layer": "L5",
       "component": "Model and Supplier",
       "title": "Model Documentation Completeness per M-25-22 Transparency Terms",
-      "description": "AI vendors must provide model documentation covering training data sources, known limitations, evaluation results, and applicable use-case constraints, per M-25-22 transparency requirements. The agency must verify documentation completeness at contract execution and before renewing or expanding use.",
+      "description": "AI vendors must provide model documentation covering training data sources, known limitations, evaluation results, and applicable use-case constraints, per M-25-22 transparency requirements. The agency must verify documentation completeness at contract execution and before renewing or expanding use. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract.",
       "accountable_persona": "model-provider",
       "operating_models": [
         "AI-SaaS",
@@ -1503,45 +1542,6 @@
         "param_type": "zero-tolerance",
         "window": "per-model-version-change",
         "breach_action": "block-new-model-version-in-production; notify-CAIO; escalate-to-Authorizing-Official; initiate-expedited-re-validation"
-      }
-    },
-    {
-      "id": "SRF-L5-MON-007",
-      "layer": "L5",
-      "component": "Model and Supplier",
-      "title": "Third-Party AI Supply Chain Risk Assessment",
-      "description": "The agency must conduct a supply chain risk assessment for each AI vendor covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually.",
-      "accountable_persona": "model-provider",
-      "operating_models": [
-        "AI-SaaS",
-        "AI-PaaS",
-        "Shared-Service"
-      ],
-      "public_sector_stage": "ongoing-monitoring",
-      "responsibility_split": "agency",
-      "mappings": {
-        "m_25_21": "N/A",
-        "m_25_22": "Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)",
-        "fedramp_20x_ksi": "KSI-SCR-MIT (persistent supply chain risk identification and mitigation); KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities)",
-        "nist_ai_rmf": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)",
-        "cosais": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
-        "owasp_llm": "N/A",
-        "cis": "CIS Control 15: Service Provider Management",
-        "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)"
-      },
-      "threshold": {
-        "metric": "supply_chain_risk_assessment_current",
-        "description": "Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, and was refreshed within the prior annual cycle.",
-        "evidence": {
-          "ocsf_class": "Document management artifact.",
-          "attribute": "TBD",
-          "ocsf_version": "1.8.0"
-        },
-        "operator": "==",
-        "param": "true",
-        "param_type": "verification",
-        "window": "annual-review",
-        "breach_action": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
       }
     }
   ],

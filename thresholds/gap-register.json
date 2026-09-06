@@ -1,5 +1,5 @@
 {
-  "generated": "2026-07-06",
+  "generated": "2026-09-02",
   "oscal_catalog": {
     "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
     "title": "Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures",
@@ -476,9 +476,9 @@
   "verticals": {
     "finance": {
       "source_file": "finance-controls.json",
-      "control_count": 40,
+      "control_count": 41,
       "with_bindings": 0,
-      "without_bindings": 40,
+      "without_bindings": 41,
       "oscal_profile": "https://aisharedresponsibility.com/export/srf-finance.profile.json",
       "controls": [
         {
@@ -540,6 +540,22 @@
             "param": "true",
             "window": "at-production-promotion",
             "breach_action": "block-agent-production-deployment; notify-cro-and-legal"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-005",
+          "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+          "srf_layer": "L1",
+          "defined_in": "finance-controls.json",
+          "threshold": {
+            "metric": "vendor_register_accountable_officer_coverage",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "identify-vendors-without-accountable-officer; freeze-new-vendor-onboarding; escalate-to-cro"
           },
           "bindings": [],
           "best_case": "no_binding",
@@ -1243,6 +1259,22 @@
           "objective_can_bind": false
         },
         {
+          "id": "SRF-L1-ACQ-010",
+          "title": "Third-Party AI Vendor Register and Supply Chain Risk Assessment",
+          "srf_layer": "L1",
+          "defined_in": "public-sector-controls.json",
+          "threshold": {
+            "metric": "supply_chain_risk_assessment_current",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
           "id": "SRF-L1-ACQ-008",
           "title": "AI Staff Training and Assessment Coverage",
           "srf_layer": "L1",
@@ -1753,30 +1785,14 @@
           "bindings": [],
           "best_case": "no_binding",
           "objective_can_bind": false
-        },
-        {
-          "id": "SRF-L5-MON-007",
-          "title": "Third-Party AI Supply Chain Risk Assessment",
-          "srf_layer": "L5",
-          "defined_in": "public-sector-controls.json",
-          "threshold": {
-            "metric": "supply_chain_risk_assessment_current",
-            "operator": "==",
-            "param": "true",
-            "window": "annual-review",
-            "breach_action": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
-          },
-          "bindings": [],
-          "best_case": "no_binding",
-          "objective_can_bind": false
         }
       ]
     },
     "healthcare": {
       "source_file": "healthcare-controls.json",
-      "control_count": 40,
+      "control_count": 41,
       "with_bindings": 0,
-      "without_bindings": 40,
+      "without_bindings": 41,
       "oscal_profile": "https://aisharedresponsibility.com/export/srf-healthcare.profile.json",
       "controls": [
         {
@@ -1822,6 +1838,22 @@
             "param": "true",
             "window": "annual-review",
             "breach_action": "escalate-to-board"
+          },
+          "bindings": [],
+          "best_case": "no_binding",
+          "objective_can_bind": false
+        },
+        {
+          "id": "SRF-L1-DEV-004",
+          "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+          "srf_layer": "L1",
+          "defined_in": "healthcare-controls.json",
+          "threshold": {
+            "metric": "vendor_register_accountable_officer_coverage",
+            "operator": "==",
+            "param": "true",
+            "window": "annual-review",
+            "breach_action": "identify-vendors-without-accountable-officer-or-BAA; freeze-new-vendor-onboarding; escalate-to-privacy-officer"
           },
           "bindings": [],
           "best_case": "no_binding",

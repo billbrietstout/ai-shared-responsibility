@@ -1,0 +1,948 @@
+{
+  "$schema_version": "1.0",
+  "projection": "slim",
+  "full_catalog": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
+  "description": "Slim projection of ai-agentic-principles.json for assessment mapping: id, section, category, statement, and gap_index. Fetch the full catalog for src citations and the sources table.",
+  "updated": "2026-09-01",
+  "count": 130,
+  "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper.",
+  "gap_index": {
+    "agent-identity": {
+      "classic_ids": [
+        "ms-immutable-5"
+      ],
+      "kind": "gap",
+      "note": "none of the sources discuss the strength of the human credential used to approve or provision a new agent identity in the first place (Microsoft's Immutable Law 5, weak passwords). All the rigor in this section is spent on the agent's own credential once it exists; a cryptographically airtight non-human identity is still bootstrapped by a human step that can be defeated by a weak or reused password."
+    },
+    "zero-standing-privilege": {
+      "classic_ids": [
+        "sch-2"
+      ],
+      "kind": "gap",
+      "note": "none of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable."
+    },
+    "delegation-chains": {
+      "classic_ids": [
+        "nist-p31"
+      ],
+      "kind": "gap",
+      "note": "none of the sources ask whether two agents in the same delegation chain, each individually scoped correctly on its own, can still jointly reconstruct information neither was authorized to hold alone (NIST SP 800-27's principle of addressing overlapping information domains). Scope narrowing is checked hop by hop; nothing here checks what two properly narrowed hops can do when combined."
+    },
+    "ephemeral-execution": {
+      "classic_ids": [
+        "nist-p20"
+      ],
+      "kind": "gap",
+      "note": "ephemeral execution solves persistence risk, not reach, and none of the sources discuss bounding which mission-critical backend systems an ephemeral agent is still permitted to touch while it runs (NIST SP 800-27's principle of isolating public-access systems from mission-critical resources). An environment that's guaranteed to be destroyed after use can still do real damage to whatever it was allowed to reach during that one run."
+    },
+    "human-oversight": {
+      "classic_ids": [
+        "nist-p7"
+      ],
+      "kind": "gap",
+      "note": "none of the sources weigh what a human approval gate costs an organization in decision latency against the risk it prevents (NIST SP 800-27's principle of identifying trade-offs between risk reduction and operational effectiveness). An escalation tier that's well designed on paper but too slow to use in a live incident gets bypassed in practice, which is the same failure mode named directly in [Human Factors and the Limits of Technical Controls](#human-factors), just not yet connected back to this section's specific oversight tiers."
+    },
+    "observability": {
+      "classic_ids": [
+        "nist-p4"
+      ],
+      "kind": "gap",
+      "note": "every source here treats logging as a purely technical control, and none discuss whether the people expected to review an audit trail are actually trained to recognize what they're looking at (NIST SP 800-27's requirement that developers, and by extension operators, be trained to work securely). An immutable log nobody knows how to read produces the same outcome as no log at all."
+    },
+    "untrusted-input": {
+      "classic_ids": [
+        "cis-design-2"
+      ],
+      "kind": "gap",
+      "note": "since no source claims prompt injection can be fully prevented, the practical question shifts from \"how do we stop this\" to \"where do we spend finite defensive effort first,\" and none of the 52 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once)."
+    },
+    "mcp-security": {
+      "classic_ids": [
+        "encryption-is-not-sufficient"
+      ],
+      "kind": "gap",
+      "note": "the sources require OAuth 2.1/OIDC and TLS for MCP transport, but none discuss where or how the key material and secrets underneath those protocols are themselves stored, rotated, or protected (Microsoft's law that encrypted data is only as secure as its decryption key, and its related risk law that encryption alone isn't a data protection solution). A correctly configured OAuth flow is still only as strong as the keys backing it."
+    },
+    "supply-chain": {
+      "classic_ids": [
+        "ms-immutable-3"
+      ],
+      "kind": "gap",
+      "note": "signing and provenance protect an artifact's chain of custody once it exists in digital form, but none of the sources discuss physical access controls over the systems that actually build or store that artifact (NIST SP 800-27's and Microsoft's shared principle that physical access defeats software-level guarantees). A signed model manifest doesn't help if the build server that produced it was physically accessible to anyone who walked up to it."
+    },
+    "shared-responsibility": {
+      "classic_ids": [
+        "nist-p1"
+      ],
+      "kind": "gap",
+      "note": "COSAI-SRF assigns exactly one accountable party per layer, but none of the sources require that accountability be backed by a written security policy stating what that party is actually supposed to do (NIST SP 800-27's principle of establishing a sound security policy as the foundation for design). Naming who's accountable isn't the same as documenting what they're accountable for."
+    },
+    "emerging-risk-models": {
+      "classic_ids": [
+        "corollary-2"
+      ],
+      "kind": "gap",
+      "note": "Shadow AI and the attribution gap both describe agents nobody is tracking; none of the sources map the sharper failure mode of a single compromised agent identity, once discovered, cascading through everything it was ever delegated into (the cloud architecture corollary that identity compromise cascades through an entire environment). The attribution gap is a visibility problem; the cascade is what happens after visibility fails."
+    },
+    "architectural-risk": {
+      "classic_ids": [
+        "sch-5"
+      ],
+      "kind": "editorial",
+      "note": "Kerckhoffs's open-design principle holds that security should never depend on secrecy of design. The corpus's general acceptance of closed, black-box foundation models is not a competing security principle of equal standing, it is an industry-accepted risk being tolerated for commercial and safety reasons, and this document takes that position explicitly rather than treating the two as a neutral disagreement. BIML-LLM24 and BIML-23RISKS argue for regulating the black box (requiring disclosure of training data, evaluation criteria, and results) rather than accepting its opacity as sufficient, which is the same underlying preference for openness, just aimed at the model rather than at the surrounding system."
+    },
+    "supply-chain-provenance": {
+      "classic_ids": [
+        "cis-design-3"
+      ],
+      "kind": "gap",
+      "note": "signing every artifact and manifest is specified here in exacting detail, but none of the sources address whether this is achievable in practice across an organization running thousands of models and constantly retrained checkpoints, only that it should happen (CIS's own design principle that every safeguard must be specific and feasible to implement, not just correct in theory)."
+    },
+    "adversarial-ml": {
+      "classic_ids": [
+        "cis18-12"
+      ],
+      "kind": "gap",
+      "note": "extraction and query-flooding attacks against a model often show up first as an unusual pattern at the network layer, and none of the sources tie NIST-ADVML's attack taxonomy back to network infrastructure monitoring as a detection point before an attack reaches the model itself (CIS Control 12, Network Infrastructure Management). The taxonomy classifies what happened; nothing here says where to watch for it happening."
+    },
+    "risk-governance": {
+      "classic_ids": [
+        "cis-design-1"
+      ],
+      "kind": "gap",
+      "note": "none of the governance frameworks require their own risk categories to be revised based on real, observed attacker behavior rather than a static, predefined taxonomy of AI risks (CIS's own design principle that offense informs defense). NIST AI RMF and the AI Controls Matrix both describe what to manage; neither describes a feedback loop from live incidents back into the framework itself."
+    },
+    "data-security": {
+      "classic_ids": [
+        "ms-immutable-9"
+      ],
+      "kind": "gap",
+      "note": "data minimization and classification propagation are covered in depth here, but none of the sources caution that anonymization or de-identification of training or inference data is never a complete guarantee (Microsoft's law that absolute anonymity isn't practically achievable, online or offline). That caveat matters directly given this section's own point that deleted data can persist inside model weights regardless of what the deletion request assumed."
+    },
+    "incident-response": {
+      "classic_ids": [
+        "ms-risk-8"
+      ],
+      "kind": "gap",
+      "note": "none of the sources describe verifying that a quarantined agent or session is actually inert during containment, rather than just unreachable (Microsoft's cybersecurity risk law that isolated networks aren't automatically secure). Cutting an agent off from the network is not the same as confirming it has stopped acting."
+    },
+    "red-teaming": {
+      "classic_ids": [
+        "cis-design-4"
+      ],
+      "kind": "editorial",
+      "note": "BIML-NOMETER's claim that no benchmark can certify a system as secure is not, and should not be read as, an argument against red-teaming's value. Read together with OWASP-REDTEAM's insistence on rigorous, reproducible, human-verified testing, the corpus's own position amounts to testing to the fullest extent practical, in full knowledge that no test suite will find every vulnerability, rather than treating incompleteness as a reason not to test. CIS's design principle that every control be measurable and BIML's rejection of a security \"meter\" are only in tension if measurability is mistaken for certification; used instead as an incomplete but necessary check, both positions hold at once."
+    },
+    "llm-appsec": {
+      "classic_ids": [
+        "cis18-9"
+      ],
+      "kind": "gap",
+      "note": "a growing share of LLM applications are embedded inside browser extensions or email-integrated assistants, and none of the sources discuss that delivery surface specifically, as distinct from the API-level application security the rest of this section covers (CIS Control 9, Email and Web Browser Protections). The OWASP Top 10 for LLM applications addresses what the model does once invoked; none of the sources address the browser or mail client as the thing that invoked it."
+    },
+    "enterprise-readiness": {
+      "classic_ids": [
+        "ms-risk-1"
+      ],
+      "kind": "gap",
+      "note": "enterprise-readiness guidance here measures governance maturity and control completeness, but none of the sources frame program success in terms of the economic cost imposed on an attacker (Microsoft's cybersecurity risk law that security success means ruining the attacker's ROI). A fully governed AI program and an expensive-to-attack one are not automatically the same thing."
+    },
+    "decommissioning-availability": {
+      "classic_ids": [
+        "cis18-11",
+        "nist-p23"
+      ],
+      "kind": "unaddressed-in-corpus",
+      "note": "NIST-GAI requires the capability to deactivate a system found to pose unacceptable risk, but nothing in the corpus specifies how quickly that deactivation needs to happen once triggered, the recovery-time and recovery-point figures an incident responder would actually need (CIS Control 11, Data Recovery, and NIST SP 800-27's contingency-planning principle, both still otherwise unaddressed per the note above). A documented capability to shut a system down is not the same as a documented target for how fast that shutdown has to complete."
+    },
+    "human-factors": {
+      "classic_ids": [
+        "psychological-acceptability"
+      ],
+      "kind": "unaddressed-in-corpus",
+      "note": "this document names control-adoption friction as a blind spot in the field, but none of the 52 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented."
+    }
+  },
+  "principles": [
+    {
+      "id": "agentic-iam-extends-existing-iam",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "Agentic IAM extends existing identity infrastructure rather than requiring a parallel, separate system"
+    },
+    {
+      "id": "credentials-short-lived-task-scoped",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "Credentials must be short-lived and task-scoped rather than standing"
+    },
+    {
+      "id": "distinct-agent-identity",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "Every agent needs its own distinct, verifiable identity, never a shared account or reused human credential"
+    },
+    {
+      "id": "identity-claims-cryptographically-verifiable",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "Identity claims must be cryptographically verifiable and attestable"
+    },
+    {
+      "id": "no-implicit-trust-between-agents",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "No implicit or default trust exists between agents simply because both are internal to the same organization"
+    },
+    {
+      "id": "non-human-identity-lifecycle-management",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "Non-human identities require the same lifecycle management (issuance, rotation, retirement) as any other governed credential"
+    },
+    {
+      "id": "continuous-reverification",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "Access is continuously re-verified against current context, not granted once and left standing"
+    },
+    {
+      "id": "controls-scale-with-capability-and-sensitivity",
+      "section": "zero-standing-privilege",
+      "category": "risk-management",
+      "statement": "Controls scale with an agent's actual capability and the sensitivity of what it touches, rather than applying uniformly to every agent"
+    },
+    {
+      "id": "fine-grained-attribute-policy-access-control",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "Access control uses fine-grained, attribute- and policy-based models rather than coarse role-based grants"
+    },
+    {
+      "id": "least-privilege-extends-to-decision-layer",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "Least privilege extends to the agent's decision-making layer, not only its infrastructure access"
+    },
+    {
+      "id": "short-lived-scoped-revocable-credentials",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "Credentials and permissions are short-lived, scoped, and automatically revocable"
+    },
+    {
+      "id": "delegation-narrows-never-expands",
+      "section": "delegation-chains",
+      "category": "access-control",
+      "statement": "Delegated authority narrows at every hop and never expands"
+    },
+    {
+      "id": "delegation-traceable-to-human-principal",
+      "section": "delegation-chains",
+      "category": "monitoring",
+      "statement": "Delegation chains stay traceable back to the human principal that originated them"
+    },
+    {
+      "id": "no-raw-token-forwarding",
+      "section": "delegation-chains",
+      "category": "access-control",
+      "statement": "Raw upstream tokens are never forwarded downstream; only newly scoped credentials pass along the chain"
+    },
+    {
+      "id": "no-self-approval-of-deployment",
+      "section": "delegation-chains",
+      "category": "access-control",
+      "statement": "An authoring agent never self-approves its own pull request or bypasses CI/CD to deploy a unilateral change; write access stops at the declarative repository, with production deployment enforced through immutable GitOps rather than direct agent write access to the runtime"
+    },
+    {
+      "id": "per-hop-independent-authorization",
+      "section": "delegation-chains",
+      "category": "access-control",
+      "statement": "Each hop enforces authorization independently rather than assuming a perimeter check elsewhere already covered it"
+    },
+    {
+      "id": "retrieval-agent-never-exceeds-invoker-entitlements",
+      "section": "delegation-chains",
+      "category": "access-control",
+      "statement": "A retrieval or query agent never operates with broader entitlements than the identity that invoked it, regardless of the agent's own standing access"
+    },
+    {
+      "id": "revocation-cascades-downstream",
+      "section": "delegation-chains",
+      "category": "access-control",
+      "statement": "Revoking a delegation at any point in a chain automatically invalidates every downstream delegation built on it"
+    },
+    {
+      "id": "access-grants-expire-automatically",
+      "section": "ephemeral-execution",
+      "category": "access-control",
+      "statement": "Access grants expire automatically instead of persisting past the task that required them"
+    },
+    {
+      "id": "default-deny-egress-bounded-swarm",
+      "section": "ephemeral-execution",
+      "category": "resilience",
+      "statement": "Network egress from an autonomous execution environment defaults to deny, with swarm topology bounded rather than left open-ended, pairing network-level containment with the compute-level containment ephemerality already provides"
+    },
+    {
+      "id": "ephemerality-as-containment",
+      "section": "ephemeral-execution",
+      "category": "resilience",
+      "statement": "Ephemeral execution functions as a containment strategy for attacks that can't be reliably filtered at the input layer"
+    },
+    {
+      "id": "guaranteed-teardown",
+      "section": "ephemeral-execution",
+      "category": "design",
+      "statement": "Environment teardown is a guaranteed platform property, not best-effort cleanup"
+    },
+    {
+      "id": "zero-state-initialization",
+      "section": "ephemeral-execution",
+      "category": "design",
+      "statement": "Autonomous execution loops start from a verified image and are destroyed immediately after each run"
+    },
+    {
+      "id": "approval-before-high-impact-actions",
+      "section": "human-oversight",
+      "category": "agent-autonomy",
+      "statement": "Human approval is required before high-impact, irreversible, or goal-changing actions"
+    },
+    {
+      "id": "continuous-validation-against-purpose",
+      "section": "human-oversight",
+      "category": "resilience",
+      "statement": "Systems are continuously validated against their intended purpose and predefined failure modes, not checked once at launch and left alone"
+    },
+    {
+      "id": "intervention-capability-regardless-of-autonomy",
+      "section": "human-oversight",
+      "category": "agent-autonomy",
+      "statement": "Human intervention capability exists regardless of an agent's autonomy level"
+    },
+    {
+      "id": "kill-switch-or-budget-limit",
+      "section": "human-oversight",
+      "category": "agent-autonomy",
+      "statement": "A kill-switch, circuit-breaker, or budget limit exists for fully autonomous agents"
+    },
+    {
+      "id": "override-authority-explicitly-assigned",
+      "section": "human-oversight",
+      "category": "governance",
+      "statement": "Authority to invoke each tier of human override is explicitly assigned, up to CISO- or executive-level authorization for emergency shutdown"
+    },
+    {
+      "id": "oversight-scales-with-autonomy-and-risk",
+      "section": "human-oversight",
+      "category": "agent-autonomy",
+      "statement": "Oversight requirements scale with autonomy level and business risk; checkpoints concentrate on high-stakes and irreversible actions, since continuous approval of every agent step does not scale"
+    },
+    {
+      "id": "agent-component-inventory-covers-full-stack",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "An agent's security-relevant components, meaning model, instructions, memory, planning, tools, protocols, access controls, guardrails, approvals, and logging, are each in scope for inventory and controls"
+    },
+    {
+      "id": "execution-provenance-traceable-as-inventory",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Execution provenance is kept as traceable as a static software inventory"
+    },
+    {
+      "id": "extend-existing-logging-controls-to-agents",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Existing CIS Controls v8.1 logging requirements are extended to agent actions rather than replaced with a new control set"
+    },
+    {
+      "id": "immutable-tamper-evident-logging",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Logging of agent actions, tool calls, and inter-agent messages is immutable and tamper-evident"
+    },
+    {
+      "id": "observability-extends-to-goals-and-decisions",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Observability extends to agent goals and decision paths, not only the actions ultimately taken"
+    },
+    {
+      "id": "telemetry-covers-full-decision-path",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Telemetry covers the full decision path, not just the final action taken"
+    },
+    {
+      "id": "agent-security-spans-distinct-control-layers",
+      "section": "untrusted-input",
+      "category": "design",
+      "statement": "Agent security spans the model, system guardrails, harness orchestration, and tool access; each layer has its own controls"
+    },
+    {
+      "id": "agents-amplify-not-new-vuln-class",
+      "section": "untrusted-input",
+      "category": "risk-management",
+      "statement": "Agents are treated as amplifying existing LLM-level vulnerabilities rather than introducing an entirely new vulnerability class; model-as-component risks stay on the LLM Top 10, and model-as-actor risks pair with the Agentic Top 10"
+    },
+    {
+      "id": "chat-visibility-not-execution-control",
+      "section": "untrusted-input",
+      "category": "input-validation",
+      "statement": "Visibility into an agent's conversation or chat log is not equivalent to cryptographic control over what it can execute"
+    },
+    {
+      "id": "deterministic-controls-outside-reasoning-loop",
+      "section": "untrusted-input",
+      "category": "access-control",
+      "statement": "Tool, filesystem, egress, and credential limits are enforced in the harness, outside the model's reasoning loop; probabilistic model defenses are not treated as the control"
+    },
+    {
+      "id": "lethal-trifecta-rule-of-two",
+      "section": "untrusted-input",
+      "category": "risk-management",
+      "statement": "The \"Lethal Trifecta,\" meaning private data access plus exposure to untrusted content plus outbound communication, is treated as exploitable end to end; the \"Rule of Two\" caps an agent at satisfying no more than two of the three without human approval"
+    },
+    {
+      "id": "treat-tool-descriptions-and-content-as-untrusted",
+      "section": "untrusted-input",
+      "category": "input-validation",
+      "statement": "All tool descriptions, retrieved content, inter-agent messages, tool outputs that re-enter the reasoning loop, and content written to persistent memory are treated as untrusted input, never trusted by default"
+    },
+    {
+      "id": "validate-at-every-trust-boundary",
+      "section": "untrusted-input",
+      "category": "input-validation",
+      "statement": "Input is validated at every trust boundary it crosses, not only at the outermost one"
+    },
+    {
+      "id": "containers-not-sufficient-mcp-boundary",
+      "section": "mcp-security",
+      "category": "mcp-protocol",
+      "statement": "Containers alone are not treated as a sufficient security boundary for MCP execution"
+    },
+    {
+      "id": "dual-signoff-third-party-mcp",
+      "section": "mcp-security",
+      "category": "governance",
+      "statement": "A security reviewer and a domain owner both sign off before a third-party MCP server is enabled"
+    },
+    {
+      "id": "error-responses-no-internal-details",
+      "section": "mcp-security",
+      "category": "mcp-protocol",
+      "statement": "Error responses returned to the model never include stack traces, tokens, file paths, or other internal details"
+    },
+    {
+      "id": "explicit-per-capability-grants",
+      "section": "mcp-security",
+      "category": "access-control",
+      "statement": "Every capability or tool is granted individually and explicitly, never through a broad or opaque grant"
+    },
+    {
+      "id": "isolated-sessions-no-shared-state",
+      "section": "mcp-security",
+      "category": "mcp-protocol",
+      "statement": "User sessions and execution contexts are fully isolated, with no shared global state across users"
+    },
+    {
+      "id": "oauth-oidc-per-request-validation",
+      "section": "mcp-security",
+      "category": "mcp-protocol",
+      "statement": "Remote MCP servers require OAuth 2.1/OIDC with per-request validation of issuer, audience, expiry, and signature"
+    },
+    {
+      "id": "real-mcp-incidents-cited",
+      "section": "mcp-security",
+      "category": "risk-management",
+      "statement": "Real, documented MCP incidents are cited as evidence the threat is active, not a hypothetical worst case"
+    },
+    {
+      "id": "agent-skills-are-supply-chain-artifacts",
+      "section": "supply-chain",
+      "category": "supply-chain",
+      "statement": "Agent skills, meaning natural-language-plus-code packages that give an agent executable capability, are inventoried, pinned, sandboxed, and provenance-checked across author, publish, install, load, and execute; an unsandboxed skill inherits the agent's full security context"
+    },
+    {
+      "id": "pinned-checksum-verified-versions",
+      "section": "supply-chain",
+      "category": "supply-chain",
+      "statement": "Approved server and tool versions are pinned and checksum-verified to block a silent malicious upgrade"
+    },
+    {
+      "id": "provenance-via-signed-manifests-sbom",
+      "section": "supply-chain",
+      "category": "supply-chain",
+      "statement": "Model and tool provenance is verifiable through signed manifests or SBOM/AIBOM-style records covering data, models, and prompts"
+    },
+    {
+      "id": "signing-extends-to-runtime-dependencies",
+      "section": "supply-chain",
+      "category": "supply-chain",
+      "statement": "Cryptographic signing extends to tools and dependencies invoked at runtime, not only the deployed agent application"
+    },
+    {
+      "id": "supply-chain-inseparable-from-secure-by-design",
+      "section": "supply-chain",
+      "category": "supply-chain",
+      "statement": "Supply chain security is treated as inseparable from the rest of an agent's secure-by-design posture, not a separate compliance step"
+    },
+    {
+      "id": "accountability-depends-on-operating-model",
+      "section": "shared-responsibility",
+      "category": "governance",
+      "statement": "The same activity can land on a different accountable party depending on the operating model in use (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS), not only on which architectural layer it belongs to"
+    },
+    {
+      "id": "accountability-shifts-with-autonomy",
+      "section": "shared-responsibility",
+      "category": "governance",
+      "statement": "Accountability shifts toward the application developer and agentic provider as autonomy increases"
+    },
+    {
+      "id": "exactly-one-accountable-party",
+      "section": "shared-responsibility",
+      "category": "governance",
+      "statement": "Exactly one party is accountable per activity or component; overlapping accountability is not permitted"
+    },
+    {
+      "id": "layer-dependencies-invariant-of-org-structure",
+      "section": "shared-responsibility",
+      "category": "governance",
+      "statement": "The dependencies encoded in the five architecture layers remain invariant regardless of how an organization structures its teams"
+    },
+    {
+      "id": "model-safety-vs-deployment-security-distinct",
+      "section": "shared-responsibility",
+      "category": "governance",
+      "statement": "Model-level safety and deployment-layer security are distinct responsibilities that cannot be governed as one function"
+    },
+    {
+      "id": "shared-responsibility-complements-process-frameworks",
+      "section": "shared-responsibility",
+      "category": "governance",
+      "statement": "Shared-responsibility frameworks are treated as complementary to, not competitive with, process frameworks like NIST AI RMF and management-system standards like ISO 42001"
+    },
+    {
+      "id": "attribution-gap-structural",
+      "section": "emerging-risk-models",
+      "category": "identity",
+      "statement": "The attribution gap, the lack of a distinct governed agent identity, is named as a structural problem across current architectures"
+    },
+    {
+      "id": "safety-security-cannot-be-governed-separately",
+      "section": "emerging-risk-models",
+      "category": "governance",
+      "statement": "Deployment-layer safety and deployment-layer security cannot be governed as separate functions for autonomous agents, though no source claims a proven organizational template for merging them"
+    },
+    {
+      "id": "shadow-ai-already-present",
+      "section": "emerging-risk-models",
+      "category": "risk-management",
+      "statement": "Shadow AI is treated as already present in every organization, not a hypothetical future risk"
+    },
+    {
+      "id": "architecture-risk-analysis-before-bolt-on-fixes",
+      "section": "architectural-risk",
+      "category": "design",
+      "statement": "Architectural risk analysis, meaning design-level threat modeling, comes before operational bolt-on fixes, not after"
+    },
+    {
+      "id": "classic-design-principles-apply-to-ml",
+      "section": "architectural-risk",
+      "category": "design",
+      "statement": "Classic security design principles (fail securely, least privilege, compartmentalize, defense in depth, keep it simple, be reluctant to trust) apply directly to ML systems"
+    },
+    {
+      "id": "cryptographic-grade-randomness-for-weights",
+      "section": "architectural-risk",
+      "category": "design",
+      "statement": "Randomness used for model weights and thresholds relies on cryptographic-grade generators, never naive or predictable ones"
+    },
+    {
+      "id": "inherited-backdoor-risk-in-pretrained-models",
+      "section": "architectural-risk",
+      "category": "supply-chain",
+      "statement": "Reusing a pretrained or transfer-learned model carries the risk of an inherited backdoor or Trojan planted in the original training run, which no amount of downstream fine-tuning reliably removes"
+    },
+    {
+      "id": "process-based-security-assurance",
+      "section": "architectural-risk",
+      "category": "governance",
+      "statement": "Security assurance follows a process-based model, measuring the rigor of development rather than scoring model output as a proxy for security"
+    },
+    {
+      "id": "recursive-pollution-guarded-against",
+      "section": "architectural-risk",
+      "category": "data-protection",
+      "statement": "Recursive pollution, meaning a model trained on its own or another model's output, degrades integrity across generations and has to be guarded against directly"
+    },
+    {
+      "id": "skepticism-toward-redteaming-alone",
+      "section": "architectural-risk",
+      "category": "red-teaming",
+      "statement": "Red-teaming and anthropomorphizing a model are treated with explicit skepticism as sufficient validation on their own, because LLMs are auto-associative predictive generators rather than reasoning systems"
+    },
+    {
+      "id": "training-data-curation-is-foundational",
+      "section": "architectural-risk",
+      "category": "data-protection",
+      "statement": "Training data curation, provenance, and integrity are a foundational control, not an afterthought"
+    },
+    {
+      "id": "aibom-is-a-governance-artifact",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "An AI Bill of Materials is treated as a governance artifact on par with a traditional software bill of materials, with disclosure of technical supply-chain detail restricted so that an AIBOM does not itself become an adversary aid"
+    },
+    {
+      "id": "classification-labels-propagate",
+      "section": "supply-chain-provenance",
+      "category": "data-protection",
+      "statement": "Data classification labels propagate to every derivative of a dataset, surviving transformation steps rather than being lost along the way"
+    },
+    {
+      "id": "internal-model-not-assumed-safer",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "An internally developed or internally stored model is never assumed safer by default than a third-party one"
+    },
+    {
+      "id": "no-loading-unsigned-artifacts",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "Unsigned datasets, checkpoints, or pipeline artifacts are never loaded, executed, or promoted"
+    },
+    {
+      "id": "no-unsafe-serialization-formats",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "Unsafe serialization formats, such as pickle, are never used for model persistence or exchange"
+    },
+    {
+      "id": "provenance-continuously-monitored",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "Model and data provenance stay tamper-proof, traceable end to end, and continuously monitored rather than vetted once at intake"
+    },
+    {
+      "id": "signed-artifact-tying-producer-identity",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "Every model artifact carries a signature tying producer identity to its exact content, verified before use"
+    },
+    {
+      "id": "staged-signature-maturity-path",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "Signature verification follows a staged maturity path, from basic integrity checks to full structured attestation, rather than requiring the strictest form immediately"
+    },
+    {
+      "id": "attack-objective-maps-to-three-violations",
+      "section": "adversarial-ml",
+      "category": "adversarial-ml",
+      "statement": "Every attack's objective maps to availability breakdown, integrity violation, or privacy compromise, with no fourth category"
+    },
+    {
+      "id": "defenses-evaluated-against-adaptive-adversaries",
+      "section": "adversarial-ml",
+      "category": "adversarial-ml",
+      "statement": "Defenses are evaluated against adaptive, worst-case adversaries, never against a fixed or weak attacker model"
+    },
+    {
+      "id": "no-mitigation-absolute-guarantee",
+      "section": "adversarial-ml",
+      "category": "adversarial-ml",
+      "statement": "No mitigation offers an absolute guarantee; empirical defenses remain vulnerable to attacker techniques that haven't been invented yet"
+    },
+    {
+      "id": "predai-genai-distinct-taxonomies",
+      "section": "adversarial-ml",
+      "category": "adversarial-ml",
+      "statement": "Predictive AI and generative AI require related but distinct attack taxonomies rather than one taxonomy applied uniformly to both"
+    },
+    {
+      "id": "robustness-accuracy-tradeoff-inherent",
+      "section": "adversarial-ml",
+      "category": "adversarial-ml",
+      "statement": "A robustness-accuracy trade-off is treated as inherent to current mitigation techniques, not a solvable engineering gap"
+    },
+    {
+      "id": "standardized-terminology-across-communities",
+      "section": "adversarial-ml",
+      "category": "governance",
+      "statement": "A standardized, common terminology is used across the ML and cybersecurity communities, so an attack described by a data scientist and a security engineer resolves to the same classification rather than two incompatible vocabularies"
+    },
+    {
+      "id": "control-ownership-assigned-per-role",
+      "section": "risk-governance",
+      "category": "governance",
+      "statement": "Control ownership is assigned per stakeholder role, never left ambiguous, across every pillar of a governance framework"
+    },
+    {
+      "id": "govern-runs-continuously-through-other-functions",
+      "section": "risk-governance",
+      "category": "governance",
+      "statement": "The Govern function runs through Map, Measure, and Manage continuously; it is not a separate fourth step"
+    },
+    {
+      "id": "governance-considers-whether-to-build-at-all",
+      "section": "risk-governance",
+      "category": "governance",
+      "statement": "Governance guidance explicitly considers whether an AI system is the right tool at all, not only how to secure one already being built"
+    },
+    {
+      "id": "risk-frameworks-and-control-catalogs-differ",
+      "section": "risk-governance",
+      "category": "governance",
+      "statement": "Risk management frameworks and operational control catalogs serve different purposes and don't substitute for each other: a risk framework names what to manage, a control matrix specifies how"
+    },
+    {
+      "id": "unacceptable-risk-stops-the-system",
+      "section": "risk-governance",
+      "category": "risk-management",
+      "statement": "A system presenting unacceptable or catastrophic risk stops, regardless of business pressure to proceed"
+    },
+    {
+      "id": "valid-reliable-is-base-condition",
+      "section": "risk-governance",
+      "category": "governance",
+      "statement": "Valid & Reliable is treated as the necessary base condition underlying every other trustworthiness characteristic, not one criterion among equals"
+    },
+    {
+      "id": "context-window-is-flat-namespace",
+      "section": "data-security",
+      "category": "data-protection",
+      "statement": "The LLM context window is treated as a flat namespace with no internal access control between the trust domains it merges, a risk category traditional software security did not previously need to address"
+    },
+    {
+      "id": "deletion-does-not-guarantee-model-removal",
+      "section": "data-security",
+      "category": "data-protection",
+      "statement": "Deleting source data does not guarantee removal from a trained model's weights or embeddings"
+    },
+    {
+      "id": "each-lifecycle-stage-is-its-own-exposure-point",
+      "section": "data-security",
+      "category": "data-protection",
+      "statement": "Each stage of the AI data lifecycle, from collection through monitoring, is treated as its own exposure point rather than covered by a single perimeter control"
+    },
+    {
+      "id": "non-human-identities-rotated-periodically",
+      "section": "data-security",
+      "category": "identity",
+      "statement": "Non-human identities interacting with data are rotated periodically, with no standing exemption"
+    },
+    {
+      "id": "sensitive-data-encrypted-always",
+      "section": "data-security",
+      "category": "data-protection",
+      "statement": "Sensitive data stays encrypted at rest, in transit, and in use, without exception"
+    },
+    {
+      "id": "blameless-postincident-review-fixes-root-cause",
+      "section": "incident-response",
+      "category": "incident-response",
+      "statement": "Post-incident reviews are always blameless, and remediation addresses the underlying vulnerability, not just its symptom"
+    },
+    {
+      "id": "blast-radius-containment-via-segmentation",
+      "section": "incident-response",
+      "category": "resilience",
+      "statement": "Blast-radius containment through segmentation is the primary control once vulnerability discovery volume outpaces any realistic patch cadence, including when exploit windows are negative and an attacker holds a working exploit before a vendor fix ships"
+    },
+    {
+      "id": "contributors-accountable-for-ai-assisted-work",
+      "section": "incident-response",
+      "category": "governance",
+      "statement": "Contributors remain personally accountable for AI-assisted work product under their own signed agreements, regardless of how much the AI tool generated"
+    },
+    {
+      "id": "every-critical-system-has-an-owner",
+      "section": "incident-response",
+      "category": "governance",
+      "statement": "Every critical AI system has an assigned owner, and non-human identities are inventoried and controlled as part of incident response"
+    },
+    {
+      "id": "five-incident-domains",
+      "section": "incident-response",
+      "category": "incident-response",
+      "statement": "AI incidents are classified into five domains: data, model, deployment, infrastructure, user interaction"
+    },
+    {
+      "id": "forensic-logging-containment-preserves-evidence",
+      "section": "incident-response",
+      "category": "incident-response",
+      "statement": "Raw prompts, parameters, and completions are logged and preserved for forensic reconstruction; containment never destroys evidence"
+    },
+    {
+      "id": "permanent-vulnerability-operations-capability",
+      "section": "incident-response",
+      "category": "incident-response",
+      "statement": "A permanent Vulnerability Operations capability replaces the periodic patch cycle, since the discovery-to-weaponization window has collapsed to hours"
+    },
+    {
+      "id": "security-is-a-cross-role-effort",
+      "section": "incident-response",
+      "category": "incident-response",
+      "statement": "Securing AI systems is treated as a coordinated, cross-role effort, not a task for the security team alone"
+    },
+    {
+      "id": "treat-environments-as-potentially-compromised",
+      "section": "incident-response",
+      "category": "incident-response",
+      "statement": "Defenders treat environments as potentially compromised, including agentic endpoints and enterprise browsers"
+    },
+    {
+      "id": "critical-findings-require-human-verification",
+      "section": "red-teaming",
+      "category": "red-teaming",
+      "statement": "Critical or emergent-behavior findings require human verification, not LLM-judge-only scoring"
+    },
+    {
+      "id": "destructive-testing-in-sandbox-only",
+      "section": "red-teaming",
+      "category": "red-teaming",
+      "statement": "Destructive tool testing happens in a sandboxed, dry-run environment rather than against production systems"
+    },
+    {
+      "id": "hazardous-capability-eval-is-a-release-gate",
+      "section": "red-teaming",
+      "category": "red-teaming",
+      "statement": "Systematic evaluation for hazardous dual-use capabilities, including cyber uplift and end-to-end autonomous operations, is a release gate for a frontier model rather than a post-release assurance activity"
+    },
+    {
+      "id": "no-vendor-claims-full-coverage",
+      "section": "red-teaming",
+      "category": "red-teaming",
+      "statement": "No vendor legitimately claims full coverage or one-click red teaming"
+    },
+    {
+      "id": "redteam-vendors-governed-as-privileged-third-party",
+      "section": "red-teaming",
+      "category": "governance",
+      "statement": "Red-teaming vendors themselves are governed under explicit authorization, scope, and data-handling policy, the same as any other privileged third party"
+    },
+    {
+      "id": "testing-calibrated-to-system-maturity",
+      "section": "red-teaming",
+      "category": "red-teaming",
+      "statement": "Testing guidance is calibrated to system maturity, since simple and advanced or agentic GenAI systems carry different risk profiles requiring different testing sophistication"
+    },
+    {
+      "id": "tool-calls-never-assumed-safe-during-testing",
+      "section": "red-teaming",
+      "category": "red-teaming",
+      "statement": "Tool calls, MCP outputs, and agent actions are never assumed inherently safe during testing"
+    },
+    {
+      "id": "access-control-never-delegated-to-model",
+      "section": "llm-appsec",
+      "category": "access-control",
+      "statement": "Access control is never delegated to the model or agent itself"
+    },
+    {
+      "id": "agent-controls-depend-on-model-infra-controls",
+      "section": "llm-appsec",
+      "category": "design",
+      "statement": "Agent-level security controls are only meaningful once the underlying model and infrastructure security they depend on is already in place"
+    },
+    {
+      "id": "assistant-instruction-files-encode-defaults",
+      "section": "llm-appsec",
+      "category": "design",
+      "statement": "Project instruction files for AI code assistants encode validation, secrets handling, and least-privilege defaults; they do not replace ASVS, SCVS, or AISVS verification"
+    },
+    {
+      "id": "model-wrong-or-manipulated-is-constant-condition",
+      "section": "llm-appsec",
+      "category": "risk-management",
+      "statement": "An AI model being wrong or manipulated is treated as a constant design condition, not an edge case handled separately when it occurs; systems are built so that when the model is fooled, nothing important breaks, including when a misaligned benign request meets overly broad scope and permissions"
+    },
+    {
+      "id": "strict-separation-of-prompts-under-change-control",
+      "section": "llm-appsec",
+      "category": "design",
+      "statement": "A strict separation exists between system prompts, user input, and retrieved context, enforced as a configuration item under change control"
+    },
+    {
+      "id": "tool-permissions-never-exceed-function-need",
+      "section": "llm-appsec",
+      "category": "access-control",
+      "statement": "Extension and tool permissions never exceed what the specific function requires"
+    },
+    {
+      "id": "untrusted-content-segregated-and-labeled",
+      "section": "llm-appsec",
+      "category": "input-validation",
+      "statement": "Untrusted external content is segregated and labeled apart from trusted instructions, never trusted by default"
+    },
+    {
+      "id": "blocking-ai-use-is-not-a-viable-control",
+      "section": "enterprise-readiness",
+      "category": "governance",
+      "statement": "Blocking AI use is not a viable security control; the job is to secure adoption already embedded in products"
+    },
+    {
+      "id": "board-level-accountability-for-ai-risk",
+      "section": "enterprise-readiness",
+      "category": "governance",
+      "statement": "Ultimate accountability for AI risk outcomes sits with the board and executive team, not the security function alone"
+    },
+    {
+      "id": "complexity-is-the-enemy-of-security",
+      "section": "enterprise-readiness",
+      "category": "design",
+      "statement": "Complexity is treated as the enemy of security in its own right; a simpler architecture is a security advantage, not just an operational one"
+    },
+    {
+      "id": "guidance-is-explicitly-point-in-time",
+      "section": "enterprise-readiness",
+      "category": "governance",
+      "statement": "AI security guidance is treated as explicitly point-in-time given how fast published guidance ages, rather than written as a stable, long-lived standard"
+    },
+    {
+      "id": "identity-is-the-primary-attack-surface",
+      "section": "enterprise-readiness",
+      "category": "identity",
+      "statement": "Identity, not infrastructure, is the primary attack surface for both cloud and AI workloads"
+    },
+    {
+      "id": "model-registries-non-negotiable",
+      "section": "enterprise-readiness",
+      "category": "governance",
+      "statement": "Model registries are a non-negotiable governance requirement for production AI"
+    },
+    {
+      "id": "programs-remain-reactive-despite-known-better",
+      "section": "enterprise-readiness",
+      "category": "risk-management",
+      "statement": "Current security programs remain reactive and incident-focused by default, despite general awareness that a preventive posture would be more effective"
+    },
+    {
+      "id": "three-track-governance-model",
+      "section": "enterprise-readiness",
+      "category": "governance",
+      "statement": "Governance is organized around three distinct, coordinated tracks: protecting AI, utilizing AI, and governing AI; overall maturity cannot exceed the Govern score, and self-reported capability without documentary evidence is not treated as a stage claim"
+    },
+    {
+      "id": "decommissioning-is-a-designed-capability",
+      "section": "decommissioning-availability",
+      "category": "resilience",
+      "statement": "A deactivation or decommissioning mechanism is a designed system capability, not an improvised response built after a system is already flagged as unacceptably risky"
+    },
+    {
+      "id": "dos-is-its-own-threat-category",
+      "section": "decommissioning-availability",
+      "category": "resilience",
+      "statement": "Denial of Service is treated as its own named threat category for AI systems, not folded into a generic resilience catch-all"
+    },
+    {
+      "id": "simpler-architecture-easier-to-operate-correctly",
+      "section": "human-factors",
+      "category": "human-factors",
+      "statement": "A simpler architecture is treated as easier to secure in part because it is easier to operate correctly, though only as an implicit design virtue rather than a direct study of control adoption or bypass"
+    }
+  ]
+}

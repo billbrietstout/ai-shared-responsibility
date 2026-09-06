@@ -80,7 +80,7 @@ the regenerated JSON.
 ## OSCAL vertical catalog and profiles
 
 `generate_oscal_verticals.py` reads the six `data/*-controls.json` files and
-writes `export/srf-oscal-verticals-catalog.json` (OSCAL 1.2.2 catalog, 258
+writes `export/srf-oscal-verticals-catalog.json` (OSCAL 1.2.2 catalog, 260
 controls grouped by SRF layer with one subgroup per vertical) plus one
 `export/srf-{vertical}.profile.json` per vertical. Thresholds become OSCAL
 parameters, verified regulatory mappings become links into back-matter, and

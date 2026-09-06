@@ -268,9 +268,9 @@ Machine-readable: https://aisharedresponsibility.com/data/finance-controls.json
 Finance-sector control schema for the CoSAI AI Shared Responsibility Framework. Maps SRF layers and accountable personas to the MRM lifecycle (SR 26-2 principles), with threshold tuples and OCSF evidence pointers per control.
 
 
-Total controls: 40
+Total controls: 41
 
-#### L1: AI Business & Usage (9 controls)
+#### L1: AI Business & Usage (10 controls)
 Framework layer reference: https://aisharedresponsibility.com/framework/
 
 ##### SRF-L1-DEV-001: AI Risk Appetite Statement with Named Accountable Executive
@@ -350,6 +350,28 @@ Regulatory mappings:
   - sr26_2: Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)
   - eu_ai_act: Article 14 (Human oversight)
   - nist_ai_rmf: GOVERN 1.3 (level of risk management activity is set by risk tolerance); GOVERN 3.2 (policies define human-AI configurations and oversight)
+
+
+
+##### SRF-L1-DEV-005: Third-Party AI Vendor Register with Named Accountable Officer
+
+Layer: L1 (AI Business & Usage) | Persona: `ai-system-governance` | Component: Processes & Governance
+Mrm Stage: development
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+
+The institution must maintain a register of every third-party AI vendor whose systems, models, data services, or professional services are used in production or in model development. Each vendor entry must name an institution-side accountable officer and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through.
+
+Evidence: Binary: a third-party AI vendor register exists, every vendor entry names an accountable officer and a vendor-risk category, and the register was reviewed within the prior annual cycle.
+Threshold: vendor_register_accountable_officer_coverage == true
+Breach action: identify-vendors-without-accountable-officer; freeze-new-vendor-onboarding; escalate-to-cro
+
+Regulatory mappings:
+  - finos_aigf: AIR-PREV-007 (Legal and Contractual Frameworks for AI Systems)
+  - aicm: STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review); GRC-06 (Governance Responsibility Model)
+  - sr26_2: Section VII (Vendor and Other Third-Party Products)
+  - eu_ai_act: Article 25 (responsibilities along the AI value chain); Article 26 (obligations of deployers of high-risk AI systems)
+  - cis: CIS Control 15: Service Provider Management
+  - nist_ai_rmf: GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 2.1 (roles and responsibilities are documented)
 
 
 ##### SRF-L1-VAL-001: Independent Review of AI Risk Appetite by Second Line
@@ -1101,9 +1123,9 @@ Machine-readable: https://aisharedresponsibility.com/data/healthcare-controls.js
 Healthcare-sector control schema for the CoSAI AI Shared Responsibility Framework. Maps SRF layers and accountable clinical personas to the FDA AI/ML SaMD lifecycle (design & development, verification & validation, post-market surveillance, human oversight & review), with safety thresholds and HL7 FHIR AuditEvent evidence pointers per control.
 
 
-Total controls: 40
+Total controls: 41
 
-#### L1: AI Business & Usage (9 controls)
+#### L1: AI Business & Usage (10 controls)
 Framework layer reference: https://aisharedresponsibility.com/framework/
 
 ##### SRF-L1-DEV-001: Clinical AI Risk Classification Policy
@@ -1176,6 +1198,32 @@ Regulatory mappings:
   - nist_ai_rmf: GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 3.2 (policies define human-AI configurations and oversight)
   - owasp_llm: N/A
   - aicm: GRC-06 (Governance Responsibility Model)
+
+
+##### SRF-L1-DEV-004: Third-Party AI Vendor Register with Named Accountable Officer
+
+Layer: L1 (AI Business & Usage) | Persona: `clinical-ai-governance` | Component: Governance & Processes
+Clinical Stage: design-development
+Operating models: SaMD-Cloud, EHR-Embedded, Agent-Clinical, On-Premise
+
+The organization must maintain a register of every third-party AI vendor whose systems, models, data services, or professional services are used in clinical workflows. Each vendor entry must name an organization-side accountable officer and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. A Business Associate Agreement must be on file for every vendor that touches PHI. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through.
+
+Evidence: Binary: a third-party AI vendor register exists, every vendor entry names an accountable officer and a vendor-risk category, a BAA is on file for every vendor that touches PHI, and the register was reviewed within the prior annual cycle.
+Threshold: vendor_register_accountable_officer_coverage == true
+Breach action: identify-vendors-without-accountable-officer-or-BAA; freeze-new-vendor-onboarding; escalate-to-privacy-officer
+
+Regulatory mappings:
+  - fda_tplc: Section 3.2: Cybersecurity and supply chain
+  - fda_pccp: N/A
+  - onc_hti1: N/A
+  - hipaa: 45 CFR §164.308(b): Business associate contracts; 45 CFR §164.502(e): Disclosures to business associates
+  - eu_ai_act: Article 25 (responsibilities along the AI value chain); Article 26 (obligations of deployers of high-risk AI systems)
+  - iec_62304: §8: Software configuration management; SOUP documentation
+  - iso_14971: §4.2: Hazard identification (from third-party components)
+  - nist_ai_rmf: GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 2.1 (roles and responsibilities are documented)
+  - owasp_llm: LLM03: Supply Chain
+  - cis: CIS Control 15: Service Provider Management
+  - aicm: STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review); GRC-06 (Governance Responsibility Model)
 
 ##### SRF-L1-HOR-001: Clinical AI Governance Review Cadence
 
@@ -2953,7 +3001,7 @@ Public-sector control schema for the CoSAI AI Shared Responsibility Framework. S
 
 Total controls: 40
 
-#### L1: AI Business & Usage (9 controls)
+#### L1: AI Business & Usage (10 controls)
 Framework layer reference: https://aisharedresponsibility.com/framework/
 
 ##### SRF-L1-ACQ-001: AI Use-Case Inventory Completeness and Public Posting
@@ -3092,6 +3140,28 @@ Regulatory mappings:
   - cosais: TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.
   - owasp_llm: N/A
   - aicm: STA-11 (Supply Chain Agreement Review)
+
+
+##### SRF-L1-ACQ-010: Third-Party AI Vendor Register and Supply Chain Risk Assessment
+
+Layer: L1 (AI Business & Usage) | Persona: `ai-system-governance` | Component: Governance and Processes
+Operating models: AI-SaaS, AI-PaaS, Shared-Service
+
+The agency must maintain a register of every AI vendor and conduct a supply chain risk assessment covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. Each vendor is tagged with one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually. This control was previously published as SRF-L5-MON-007.
+
+Evidence: Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, names a vendor-risk category and an accountable officer, and was refreshed within the prior annual cycle.
+Threshold: supply_chain_risk_assessment_current == true
+Breach action: escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment
+
+Regulatory mappings:
+  - m_25_21: N/A
+  - m_25_22: Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)
+  - fedramp_20x_ksi: KSI-SCR-MIT (persistent supply chain risk identification and mitigation); KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities)
+  - nist_ai_rmf: GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)
+  - cosais: TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.
+  - owasp_llm: N/A
+  - cis: CIS Control 15: Service Provider Management
+  - aicm: STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)
 
 ##### SRF-L1-ACQ-008: AI Staff Training and Assessment Coverage
 
@@ -3620,7 +3690,7 @@ Regulatory mappings:
   - cis: CIS Control 7: Continuous Vulnerability Management
   - aicm: TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)
 
-#### L5: AI Model Provider (7 controls)
+#### L5: AI Model Provider (6 controls)
 Framework layer reference: https://aisharedresponsibility.com/framework/
 
 ##### SRF-L5-ACQ-001: Model Documentation Completeness per M-25-22 Transparency Terms
@@ -3741,28 +3811,6 @@ Regulatory mappings:
   - cosais: TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.
   - owasp_llm: N/A
   - aicm: MDS-10 (Model Continuous Monitoring)
-
-##### SRF-L5-MON-007: Third-Party AI Supply Chain Risk Assessment
-
-Layer: L5 (AI Model Provider) | Persona: `model-provider` | Component: Model and Supplier
-Operating models: AI-SaaS, AI-PaaS, Shared-Service
-
-The agency must conduct a supply chain risk assessment for each AI vendor covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually.
-
-Evidence: Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, and was refreshed within the prior annual cycle.
-Threshold: supply_chain_risk_assessment_current == true
-Breach action: escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment
-
-Regulatory mappings:
-  - m_25_21: N/A
-  - m_25_22: Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)
-  - fedramp_20x_ksi: KSI-SCR-MIT (persistent supply chain risk identification and mitigation); KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities)
-  - nist_ai_rmf: GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)
-  - cosais: TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.
-  - owasp_llm: N/A
-  - cis: CIS Control 15: Service Provider Management
-  - aicm: STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)
-
 
 ---
 
@@ -6277,11 +6325,6 @@ URL: https://aisharedresponsibility.com/tools/prompts/threat-model/releases/
 
 Version 3.0 breaking workflow and schema changes, v2.0 history, and compatibility rules.
 
-### Threat-model Prompt Pack Release Notes
-URL: https://aisharedresponsibility.com/tools/prompts/threat-model/releases/
-
-Repository-backed release record for pack versions 2.0, 1.4, 1.3, 1.2, and 1.0, including v2 schema, CSV, and chain-route compatibility changes. No committed prompts.json file uses version 1.1.
-
 ### Diagram threat-model eval report
 URL: https://aisharedresponsibility.com/eval/threat-model/
 
@@ -6290,12 +6333,12 @@ Evaluation method and ten bounded fixtures for pack v3.0. Checks phase applicabi
 ### Whitepaper Assessment
 URL: https://aisharedresponsibility.com/assess/whitepaper-assessment/
 
-Copy-ready prompt for reviewing an AI security whitepaper against both published principle catalogs plus live SRF accountability and regulatory data. The assistant fetches /data/security-principles.json and /data/ai-agentic-principles.json. Confirms the paper was read in full before assessing it; screens citation integrity, unpinned dependency recommendations, text aimed at the reviewing model, unsupported claims, stale references, and leftover production artifacts; maps every claim to a catalog id; checks threat attribution against the layer that owns the control point; and ranks every finding on one P1 to P4 scale with severity capped by evidence quality.
+Copy-ready prompt v2.2 for reviewing an AI security whitepaper against both published principle catalogs plus live SRF accountability and regulatory data. Confirms the paper was read in full, then fetches slim catalogs at /data/security-principles.slim.json and /data/ai-agentic-principles.slim.json. Screens citation integrity, unpinned dependency recommendations, text aimed at the reviewing model, unsupported claims, stale references, and leftover production artifacts; maps every claim to a catalog id; checks threat attribution against the layer that owns the control point; and ranks every finding on one P1 to P4 scale with severity capped by evidence quality. Say map-only to skip the citation registries, live SRF fetch, and draft mechanics.
 
 ### Whitepaper Assessment changelog
 URL: https://aisharedresponsibility.com/assess/whitepaper-assessment/changes/
 
-Prompt versions 2.1 and 2.0. What each version added or demoted, and which older reports stay valid.
+Prompt versions 2.2, 2.1, and 2.0. What each version added or demoted, and which older reports stay valid.
 
 ### AI Security Lifecycle
 URL: https://aisharedresponsibility.com/framework/security-lifecycle/
@@ -6310,7 +6353,7 @@ Six categories, each with the SRF contribution and the open gap:
 
 3. Secure development and AI supply chain. Contribution: names who attests at each handoff in the model and data supply chain and who verifies it, per operating model. Serves CoSAI, CIS, OWASP AI Exchange. Site has the Vendor Risk Assessment and the supply-chain threats in the crosswalk. Gap: an attestation handoff map as data.
 
-4. Control implementation and benchmarking. Contribution: control ownership. Every catalog says what good looks like; none say who at your company owns each control under your deployment model. The vertical schemas prove the pattern with 258 controls carrying an accountable persona. Serves CIS, CSA, OWASP AI Exchange, NIST. Site has the AICM and Security Controls assessments, six vertical schemas, the OSCAL catalog, and a CIS Controls card on the compare page. Thirty-four controls across the six vertical schemas carry a control-level `cis` mapping key (CIS Controls v8.1), verified against the official 18-control list and the April 2026 AI/LLM Companion Guide. No open gap at the control level mapped; safeguard-level (N.N) mapping remains future work.
+4. Control implementation and benchmarking. Contribution: control ownership. Every catalog says what good looks like; none say who at your company owns each control under your deployment model. The vertical schemas prove the pattern with 260 controls carrying an accountable persona. Serves CIS, CSA, OWASP AI Exchange, NIST. Site has the AICM and Security Controls assessments, six vertical schemas, the OSCAL catalog, and a CIS Controls card on the compare page. Thirty-four controls across the six vertical schemas carry a control-level `cis` mapping key (CIS Controls v8.1), verified against the official 18-control list and the April 2026 AI/LLM Companion Guide. No open gap at the control level mapped; safeguard-level (N.N) mapping remains future work.
 
 5. Vulnerability management and finding remediation. Contribution: routing. Severity scoring rates how bad a finding is. The SRF adds whose queue it goes in and who signs acceptance if it will not be fixed. Serves OWASP GenAI Security Project (AIVSS) and coordinated disclosure practice. Site has the finding routing reference (/data/finding-routing.json), which resolves an AIVSS- or CVSS-scored finding to an accountable persona and breach action by SRF layer and operating model, and the Incident Response Playbooks (machine-readable at /export/playbooks.json). No open gap; AIVSS's own numeric severity-band cut points remain TBD pending its full v0.8 documentation, so routing keys on the qualitative band.
 

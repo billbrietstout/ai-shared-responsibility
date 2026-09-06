@@ -6,7 +6,7 @@
     <title>Whitepaper Assessment Prompt Changelog: CoSAI SRF</title>
     <meta
       name="description"
-      content="What changed in whitepaper assessment prompt v2.1 and v2.0, and which older assessment reports stay valid."
+      content="What changed in whitepaper assessment prompt v2.2, v2.1, and v2.0, and which older assessment reports stay valid."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -31,7 +31,7 @@
   "@type": "TechArticle",
   "name": "Whitepaper Assessment Prompt Changelog",
   "url": "https://aisharedresponsibility.com/assess/whitepaper-assessment/changes/",
-  "description": "What changed in whitepaper assessment prompt v2.1 and v2.0, and which older assessment reports stay valid.",
+  "description": "What changed in whitepaper assessment prompt v2.2, v2.1, and v2.0, and which older assessment reports stay valid.",
   "publisher": {
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -56,13 +56,79 @@
       <p class="page-hero__eyebrow">Assess</p>
       <h1>Whitepaper assessment changelog</h1>
       <p class="page-hero__lede">
-        Prompt versions 2.1 and 2.0. What each version added or demoted, and
+        Prompt versions 2.2, 2.1, and 2.0. What each version added or demoted, and
         which older reports stay valid. The live prompt is
-        <a href="/assess/whitepaper-assessment/">v2.1</a>.
+        <a href="/assess/whitepaper-assessment/">v2.2</a>.
       </p>
     </header>
 
     <main id="main" class="page-body">
+      <p class="section-label">What changed in 2.2</p>
+      <p class="lede-p">
+        Eleven steps became nine. Intake now runs before any catalog fetch.
+        Novel stays a map result the user can challenge, and is no longer a
+        form for adding entries to an admin-managed catalog. An assessment
+        produced under 2.1 stays valid; it fetched full catalogs, emitted
+        every Matched row, and packaged Novel rows for catalog addition.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr><th>Change</th><th>Reason</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">Intake before catalog fetch</td>
+              <td>A truncated PDF already had 217 ids in context, which is how a partial read manufactures coverage gaps. Stop first. Fetch slim catalogs only if the read is whole.</td>
+            </tr>
+            <tr>
+              <td class="tier">Prompt fetches slim catalogs</td>
+              <td>Full JSON carries src tables the mapping pass does not need. Slim files keep id, statement, category, related or section, and gap_index. Full files remain for a src check.</td>
+            </tr>
+            <tr>
+              <td class="tier">Extract, map, and classify merged</td>
+              <td>Three numbered steps rewrote the same table twice. One pass per section, at most 20 statements, and most sections have fewer. The cap was being read as a quota.</td>
+            </tr>
+            <tr>
+              <td class="tier">Matched rows collapsed</td>
+              <td>A clean match is a count plus catalog ids. Full table rows stay for Extended, Novel, Contradicted, and Unverified, where the Note does work.</td>
+            </tr>
+            <tr>
+              <td class="tier">Novel is a map result, not catalog ingest</td>
+              <td>Users cannot edit the OSCAL source, the synthesis, or principle-candidates.json. The Note still names the closest ids so a miss can be challenged. OpenCRE is no longer a user obligation.</td>
+            </tr>
+            <tr>
+              <td class="tier">Citation audit bounded</td>
+              <td>Fifteen or more entries run a pinned reference audit tool. Fewer than 15 resolve against one registry of record. A second registry runs only on a miss or a title mismatch. Four registries per row was work most assistants skipped or faked.</td>
+            </tr>
+            <tr>
+              <td class="tier">Pinning contradiction is conditional</td>
+              <td>"Name a paper that violates the pinning principles" read as a required finding. The check now fires only if this paper argues for pinning and recommends an unpinned install.</td>
+            </tr>
+            <tr>
+              <td class="tier">P1 recurrence defined</td>
+              <td>"Tier above" from P1 had nowhere to go. Three or more P2s of the same shape become one P1. P1 stays P1 and is reported once.</td>
+            </tr>
+            <tr>
+              <td class="tier">Coverage limited to declared scope</td>
+              <td>Unused categories outside the paper's topic are out of scope, not a gap list. A classic axiom the advice would violate still gets named.</td>
+            </tr>
+            <tr>
+              <td class="tier">llms.txt fetched only on 404</td>
+              <td>Step 5 already named the live paths. Prefetching the inventory cost tokens on every regulatory check and added nothing when those paths resolved.</td>
+            </tr>
+            <tr>
+              <td class="tier">map-only switch</td>
+              <td>A 4-page blog and an 80-page draft should not pay the same citation-registry bill. Named in the prompt header so reports stay comparable.</td>
+            </tr>
+            <tr>
+              <td class="tier">Draft mechanics does not repeat step 1</td>
+              <td>Production artifacts already have a home in the submission screen. Step 6 is for remaining editorial, link, structure, and machine-readability defects.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <p class="section-label">What changed in 2.1</p>
       <p class="lede-p">
         Step 1 grew three checks. All of them replace judging prose by eye with

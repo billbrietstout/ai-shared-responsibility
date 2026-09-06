@@ -144,6 +144,48 @@
       }
     },
     {
+      "id": "SRF-L1-DEV-004",
+      "layer": "L1",
+      "component": "Governance & Processes",
+      "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+      "description": "The organization must maintain a register of every third-party AI vendor whose systems, models, data services, or professional services are used in clinical workflows. Each vendor entry must name an organization-side accountable officer and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. A Business Associate Agreement must be on file for every vendor that touches PHI. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through.",
+      "accountable_persona": "clinical-ai-governance",
+      "operating_models": [
+        "SaMD-Cloud",
+        "EHR-Embedded",
+        "Agent-Clinical",
+        "On-Premise"
+      ],
+      "clinical_stage": "design-development",
+      "mappings": {
+        "fda_tplc": "Section 3.2: Cybersecurity and supply chain",
+        "fda_pccp": "N/A",
+        "onc_hti1": "N/A",
+        "hipaa": "45 CFR \u00a7164.308(b): Business associate contracts; 45 CFR \u00a7164.502(e): Disclosures to business associates",
+        "eu_ai_act": "Article 25 (responsibilities along the AI value chain); Article 26 (obligations of deployers of high-risk AI systems)",
+        "iec_62304": "\u00a78: Software configuration management; SOUP documentation",
+        "iso_14971": "\u00a74.2: Hazard identification (from third-party components)",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 2.1 (roles and responsibilities are documented)",
+        "owasp_llm": "LLM03: Supply Chain",
+        "cis": "CIS Control 15: Service Provider Management",
+        "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review); GRC-06 (Governance Responsibility Model)"
+      },
+      "threshold": {
+        "metric": "vendor_register_accountable_officer_coverage",
+        "description": "Binary: a third-party AI vendor register exists, every vendor entry names an accountable officer and a vendor-risk category, a BAA is on file for every vendor that touches PHI, and the register was reviewed within the prior annual cycle.",
+        "evidence": {
+          "fhir_resource": "DocumentReference",
+          "attribute": "category.code == 'vendor-register', status == 'current', author (accountable officer)",
+          "fhir_version": "R4"
+        },
+        "operator": "==",
+        "param": "true",
+        "param_type": "verification",
+        "window": "annual-review",
+        "breach_action": "identify-vendors-without-accountable-officer-or-BAA; freeze-new-vendor-onboarding; escalate-to-privacy-officer"
+      }
+    },
+    {
       "id": "SRF-L1-HOR-001",
       "layer": "L1",
       "component": "Governance & Processes",
@@ -1524,7 +1566,7 @@
       "layer": "L5",
       "component": "Model",
       "title": "Model Artifact Signing and Supply-Chain Provenance",
-      "description": "All clinical AI model artifacts must be cryptographically signed before deployment. The signing key must be controlled by the model provider and verified by the health platform provider at load time. A supply-chain provenance record must link the signed artifact to the training data, code commit, and build pipeline.",
+      "description": "All clinical AI model artifacts must be cryptographically signed before deployment. The signing key must be controlled by the model provider and verified by the health platform provider at load time. A supply-chain provenance record must link the signed artifact to the training data, code commit, and build pipeline. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract.",
       "accountable_persona": "model-provider",
       "operating_models": [
         "SaMD-Cloud",
