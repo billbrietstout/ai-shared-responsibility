@@ -3,7 +3,7 @@
   "uuid": "ef9d58aa-53d8-5be7-adde-e60b22009035",
   "metadata": {
    "title": "CoSAI AI Shared Responsibility Framework — Industry Vertical Controls (Proposed Extension)",
-   "last-modified": "2026-07-28T22:58:14+00:00",
+   "last-modified": "2026-09-02T20:00:57+00:00",
    "version": "0.1.0",
    "oscal-version": "1.2.2",
    "props": [
@@ -15,7 +15,7 @@
     {
      "name": "control-count",
      "ns": "https://aisharedresponsibility.com/ns/oscal",
-     "value": "258"
+     "value": "260"
     },
     {
      "name": "source",
@@ -687,6 +687,168 @@
           "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
           "rel": "reference",
           "text": "GOVERN 1.3 (level of risk management activity is set by risk tolerance); GOVERN 3.2 (policies define human-AI configurations and oversight)"
+         }
+        ]
+       },
+       {
+        "id": "fin-srf-l1-dev-005",
+        "class": "srf-vertical-control",
+        "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+        "params": [
+         {
+          "id": "fin-srf-l1-dev-005-p1",
+          "label": "vendor_register_accountable_officer_coverage",
+          "props": [
+           {
+            "name": "operator",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "=="
+           },
+           {
+            "name": "window",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "annual-review"
+           }
+          ],
+          "values": [
+           "true"
+          ],
+          "guidelines": [
+           {
+            "prose": "Binary: a third-party AI vendor register exists, every vendor entry names an accountable officer and a vendor-risk category, and the register was reviewed within the prior annual cycle."
+           }
+          ]
+         }
+        ],
+        "props": [
+         {
+          "name": "srf-id",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "SRF-L1-DEV-005"
+         },
+         {
+          "name": "vertical",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "finance"
+         },
+         {
+          "name": "layer",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "L1"
+         },
+         {
+          "name": "component",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "Processes & Governance"
+         },
+         {
+          "name": "accountable-persona",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "ai-system-governance"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "AI-SaaS"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "AI-PaaS"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "Agent-PaaS"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "IaaS"
+         },
+         {
+          "name": "mrm-stage",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "development"
+         },
+         {
+          "name": "breach-action",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "identify-vendors-without-accountable-officer; freeze-new-vendor-onboarding; escalate-to-cro"
+         },
+         {
+          "name": "ocsf-class",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "TBD: vendor register is a governance record. Candidate: audit_activity (3002) if the vendor management platform emits change events."
+         },
+         {
+          "name": "ocsf-attribute",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "TBD"
+         },
+         {
+          "name": "ocsf-version",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "1.8.0"
+         },
+         {
+          "name": "mapping-cis",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "CIS Control 15: Service Provider Management"
+         }
+        ],
+        "parts": [
+         {
+          "id": "fin-srf-l1-dev-005_stmt",
+          "name": "statement",
+          "prose": "The institution must maintain a register of every third-party AI vendor whose systems, models, data services, or professional services are used in production or in model development. Each vendor entry must name an institution-side accountable officer and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through."
+         },
+         {
+          "id": "fin-srf-l1-dev-005_obj",
+          "name": "objective",
+          "prose": "Maintain vendor_register_accountable_officer_coverage == {{ insert: param, fin-srf-l1-dev-005-p1 }} over window annual-review. Breach action: identify-vendors-without-accountable-officer; freeze-new-vendor-onboarding; escalate-to-cro."
+         }
+        ],
+        "links": [
+         {
+          "href": "#42d3a8ce-e217-5de0-a841-81b227deb27b",
+          "rel": "reference",
+          "text": "AIR-PREV-007 (Legal and Contractual Frameworks for AI Systems)"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "STA-14 (Supply Chain Governance Review)"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "STA-11 (Supply Chain Agreement Review)"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "GRC-06 (Governance Responsibility Model)"
+         },
+         {
+          "href": "#3f564f95-c419-5856-82e2-62e4a8215e87",
+          "rel": "reference",
+          "text": "Section VII (Vendor and Other Third-Party Products)"
+         },
+         {
+          "href": "#51bbabe9-02b8-5813-994d-891f4c95ef21",
+          "rel": "reference",
+          "text": "Article 25 (responsibilities along the AI value chain)"
+         },
+         {
+          "href": "#51bbabe9-02b8-5813-994d-891f4c95ef21",
+          "rel": "reference",
+          "text": "Article 26 (obligations of deployers of high-risk AI systems)"
+         },
+         {
+          "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
+          "rel": "reference",
+          "text": "GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 2.1 (roles and responsibilities are documented)"
          }
         ]
        },
@@ -2607,6 +2769,181 @@
         ]
        },
        {
+        "id": "pubsec-srf-l1-acq-010",
+        "class": "srf-vertical-control",
+        "title": "Third-Party AI Vendor Register and Supply Chain Risk Assessment",
+        "params": [
+         {
+          "id": "pubsec-srf-l1-acq-010-p1",
+          "label": "supply_chain_risk_assessment_current",
+          "props": [
+           {
+            "name": "operator",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "=="
+           },
+           {
+            "name": "window",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "annual-review"
+           },
+           {
+            "name": "param-type",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "verification"
+           }
+          ],
+          "values": [
+           "true"
+          ],
+          "guidelines": [
+           {
+            "prose": "Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, names a vendor-risk category and an accountable officer, and was refreshed within the prior annual cycle."
+           }
+          ]
+         }
+        ],
+        "props": [
+         {
+          "name": "srf-id",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "SRF-L1-ACQ-010"
+         },
+         {
+          "name": "vertical",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "public-sector"
+         },
+         {
+          "name": "layer",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "L1"
+         },
+         {
+          "name": "component",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "Governance and Processes"
+         },
+         {
+          "name": "accountable-persona",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "ai-system-governance"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "AI-SaaS"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "AI-PaaS"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "Shared-Service"
+         },
+         {
+          "name": "responsibility-split",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "agency"
+         },
+         {
+          "name": "public-sector-stage",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "acquisition-integration"
+         },
+         {
+          "name": "breach-action",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
+         },
+         {
+          "name": "ocsf-class",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "Document management artifact."
+         },
+         {
+          "name": "ocsf-attribute",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "TBD"
+         },
+         {
+          "name": "ocsf-version",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "1.8.0"
+         },
+         {
+          "name": "mapping-m-25-21",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "N/A",
+          "class": "unresolved"
+         },
+         {
+          "name": "mapping-cosais",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
+          "class": "unresolved"
+         },
+         {
+          "name": "mapping-owasp-llm",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "N/A",
+          "class": "unresolved"
+         },
+         {
+          "name": "mapping-cis",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "CIS Control 15: Service Provider Management"
+         }
+        ],
+        "parts": [
+         {
+          "id": "pubsec-srf-l1-acq-010_stmt",
+          "name": "statement",
+          "prose": "The agency must maintain a register of every AI vendor and conduct a supply chain risk assessment covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. Each vendor is tagged with one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually. This control was previously published as SRF-L5-MON-007."
+         },
+         {
+          "id": "pubsec-srf-l1-acq-010_obj",
+          "name": "objective",
+          "prose": "Maintain supply_chain_risk_assessment_current == {{ insert: param, pubsec-srf-l1-acq-010-p1 }} over window annual-review. Breach action: escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment."
+         }
+        ],
+        "links": [
+         {
+          "href": "#ae7bd07d-92c3-5ea1-915d-6542ebb67973",
+          "rel": "reference",
+          "text": "Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)"
+         },
+         {
+          "href": "#aec75536-9650-52f9-bd36-918743c7b0a5",
+          "rel": "reference",
+          "text": "KSI-SCR-MIT (persistent supply chain risk identification and mitigation)"
+         },
+         {
+          "href": "#aec75536-9650-52f9-bd36-918743c7b0a5",
+          "rel": "reference",
+          "text": "KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities)"
+         },
+         {
+          "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
+          "rel": "reference",
+          "text": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "STA-14 (Supply Chain Governance Review)"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "STA-11 (Supply Chain Agreement Review)"
+         }
+        ]
+       },
+       {
         "id": "pubsec-srf-l1-acq-008",
         "class": "srf-vertical-control",
         "title": "AI Staff Training and Assessment Coverage",
@@ -3481,6 +3818,200 @@
           "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
           "rel": "reference",
           "text": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 3.2 (policies define human-AI configurations and oversight)"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "GRC-06 (Governance Responsibility Model)"
+         }
+        ]
+       },
+       {
+        "id": "hc-srf-l1-dev-004",
+        "class": "srf-vertical-control",
+        "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+        "params": [
+         {
+          "id": "hc-srf-l1-dev-004-p1",
+          "label": "vendor_register_accountable_officer_coverage",
+          "props": [
+           {
+            "name": "operator",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "=="
+           },
+           {
+            "name": "window",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "annual-review"
+           },
+           {
+            "name": "param-type",
+            "ns": "https://aisharedresponsibility.com/ns/oscal",
+            "value": "verification"
+           }
+          ],
+          "values": [
+           "true"
+          ],
+          "guidelines": [
+           {
+            "prose": "Binary: a third-party AI vendor register exists, every vendor entry names an accountable officer and a vendor-risk category, a BAA is on file for every vendor that touches PHI, and the register was reviewed within the prior annual cycle."
+           }
+          ]
+         }
+        ],
+        "props": [
+         {
+          "name": "srf-id",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "SRF-L1-DEV-004"
+         },
+         {
+          "name": "vertical",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "healthcare"
+         },
+         {
+          "name": "layer",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "L1"
+         },
+         {
+          "name": "component",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "Governance & Processes"
+         },
+         {
+          "name": "accountable-persona",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "clinical-ai-governance"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "SaMD-Cloud"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "EHR-Embedded"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "Agent-Clinical"
+         },
+         {
+          "name": "operating-model",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "On-Premise"
+         },
+         {
+          "name": "clinical-stage",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "design-development"
+         },
+         {
+          "name": "breach-action",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "identify-vendors-without-accountable-officer-or-BAA; freeze-new-vendor-onboarding; escalate-to-privacy-officer"
+         },
+         {
+          "name": "fhir-resource",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "DocumentReference"
+         },
+         {
+          "name": "fhir-attribute",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "category.code == 'vendor-register', status == 'current', author (accountable officer)"
+         },
+         {
+          "name": "fhir-version",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "R4"
+         },
+         {
+          "name": "mapping-fda-pccp",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "N/A",
+          "class": "unresolved"
+         },
+         {
+          "name": "mapping-onc-hti1",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "N/A",
+          "class": "unresolved"
+         },
+         {
+          "name": "mapping-cis",
+          "ns": "https://aisharedresponsibility.com/ns/oscal",
+          "value": "CIS Control 15: Service Provider Management"
+         }
+        ],
+        "parts": [
+         {
+          "id": "hc-srf-l1-dev-004_stmt",
+          "name": "statement",
+          "prose": "The organization must maintain a register of every third-party AI vendor whose systems, models, data services, or professional services are used in clinical workflows. Each vendor entry must name an organization-side accountable officer and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. A Business Associate Agreement must be on file for every vendor that touches PHI. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through."
+         },
+         {
+          "id": "hc-srf-l1-dev-004_obj",
+          "name": "objective",
+          "prose": "Maintain vendor_register_accountable_officer_coverage == {{ insert: param, hc-srf-l1-dev-004-p1 }} over window annual-review. Breach action: identify-vendors-without-accountable-officer-or-BAA; freeze-new-vendor-onboarding; escalate-to-privacy-officer."
+         }
+        ],
+        "links": [
+         {
+          "href": "#df7383c9-314e-55e0-97c8-40d19485fcd7",
+          "rel": "reference",
+          "text": "Section 3.2: Cybersecurity and supply chain"
+         },
+         {
+          "href": "#8d9146e5-7a72-5eac-a274-e74a728227e7",
+          "rel": "reference",
+          "text": "45 CFR §164.308(b): Business associate contracts; 45 CFR §164.502(e): Disclosures to business associates"
+         },
+         {
+          "href": "#51bbabe9-02b8-5813-994d-891f4c95ef21",
+          "rel": "reference",
+          "text": "Article 25 (responsibilities along the AI value chain)"
+         },
+         {
+          "href": "#51bbabe9-02b8-5813-994d-891f4c95ef21",
+          "rel": "reference",
+          "text": "Article 26 (obligations of deployers of high-risk AI systems)"
+         },
+         {
+          "href": "#8670371b-4bcd-57ff-860c-f76b86fe9aef",
+          "rel": "reference",
+          "text": "§8: Software configuration management; SOUP documentation"
+         },
+         {
+          "href": "#9b4bdb6c-5956-583c-a67b-554142092ad9",
+          "rel": "reference",
+          "text": "§4.2: Hazard identification (from third-party components)"
+         },
+         {
+          "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
+          "rel": "reference",
+          "text": "GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 2.1 (roles and responsibilities are documented)"
+         },
+         {
+          "href": "#c403b49d-9023-519a-a9f4-fefbab79a3ce",
+          "rel": "reference",
+          "text": "LLM03: Supply Chain"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "STA-14 (Supply Chain Governance Review)"
+         },
+         {
+          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+          "rel": "reference",
+          "text": "STA-11 (Supply Chain Agreement Review)"
          },
          {
           "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
@@ -4998,7 +5529,7 @@
          {
           "id": "ins-srf-l1-dev-003_stmt",
           "name": "statement",
-          "prose": "The insurer must maintain a register of all third-party AI vendors whose systems are used in underwriting, rating, claims, or consumer-facing workflows. Each vendor entry must name the insurer-side accountable officer responsible for oversight of that vendor relationship, consistent with the NAIC Model Bulletin's third-party oversight requirements."
+          "prose": "The insurer must maintain a register of all third-party AI vendors whose systems are used in underwriting, rating, claims, or consumer-facing workflows. Each vendor entry must name the insurer-side accountable officer responsible for oversight of that vendor relationship, consistent with the NAIC Model Bulletin's third-party oversight requirements. Each vendor is tagged with one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through."
          },
          {
           "id": "ins-srf-l1-dev-003_obj",
@@ -7308,7 +7839,7 @@
          {
           "id": "def-srf-l1-acq-006_stmt",
           "name": "statement",
-          "prose": "Before acquiring an AI system or foundation model, the program must conduct a supply chain risk assessment covering the provenance of training data, model weights, third-party components, and hosting infrastructure. The assessment must identify foreign-origin components and apply appropriate ITAR/EAR and supply chain risk management controls."
+          "prose": "Before acquiring an AI system or foundation model, the program must conduct a supply chain risk assessment covering the provenance of training data, model weights, third-party components, and hosting infrastructure. The assessment must identify foreign-origin components and apply appropriate ITAR/EAR and supply chain risk management controls. Each vendor is tagged with one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the assessment must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through."
          },
          {
           "id": "def-srf-l1-acq-006_obj",
@@ -9591,7 +10122,7 @@
          {
           "id": "mfg-srf-l1-des-006_stmt",
           "name": "statement",
-          "prose": "The manufacturer must maintain a procurement policy for third-party AI systems that requires: EU declaration of conformity for high-risk systems, technical documentation per Article 11, supplier contractual obligations for post-market monitoring data sharing, and a supply chain AI risk assessment for OT-deployed components. The policy must apply to equipment OEMs, AI software vendors, and system integrators supplying AI-enabled systems."
+          "prose": "The manufacturer must maintain a procurement policy for third-party AI systems that requires: EU declaration of conformity for high-risk systems, technical documentation per Article 11, supplier contractual obligations for post-market monitoring data sharing, and a supply chain AI risk assessment for OT-deployed components. The policy must apply to equipment OEMs, AI software vendors, and system integrators supplying AI-enabled systems. Each vendor is tagged with one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the procurement record must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through."
          },
          {
           "id": "mfg-srf-l1-des-006_obj",
@@ -39025,7 +39556,7 @@
          {
           "id": "fin-srf-l5-dev-002_stmt",
           "name": "statement",
-          "prose": "The model provider must cryptographically sign all model artifacts (weights, tokenizer, configuration files) before distribution. The signing key must be managed under the provider's documented key management policy, with the public key published in a verifiable trust store. The model provider must also publish a Software Bill of Materials (SBOM) or equivalent supply-chain provenance record for each model release, covering training framework versions, key dependencies, and any third-party components incorporated into the model architecture. This provenance record enables the ai-platform-provider to verify model integrity at load (SRF-L5-MON-001) and supports the institution's third-party risk management obligations under SR 26-2's inherited vendor management principles."
+          "prose": "The model provider must cryptographically sign all model artifacts (weights, tokenizer, configuration files) before distribution. The signing key must be managed under the provider's documented key management policy, with the public key published in a verifiable trust store. The model provider must also publish a Software Bill of Materials (SBOM) or equivalent supply-chain provenance record for each model release, covering training framework versions, key dependencies, and any third-party components incorporated into the model architecture. This provenance record enables the ai-platform-provider to verify model integrity at load (SRF-L5-MON-001) and supports the institution's third-party risk management obligations under SR 26-2's inherited vendor management principles. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract."
          },
          {
           "id": "fin-srf-l5-dev-002_obj",
@@ -40012,7 +40543,7 @@
          {
           "id": "pubsec-srf-l5-acq-001_stmt",
           "name": "statement",
-          "prose": "AI vendors must provide model documentation covering training data sources, known limitations, evaluation results, and applicable use-case constraints, per M-25-22 transparency requirements. The agency must verify documentation completeness at contract execution and before renewing or expanding use."
+          "prose": "AI vendors must provide model documentation covering training data sources, known limitations, evaluation results, and applicable use-case constraints, per M-25-22 transparency requirements. The agency must verify documentation completeness at contract execution and before renewing or expanding use. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract."
          },
          {
           "id": "pubsec-srf-l5-acq-001_obj",
@@ -40840,181 +41371,6 @@
           "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
           "rel": "reference",
           "text": "MDS-10 (Model Continuous Monitoring)"
-         }
-        ]
-       },
-       {
-        "id": "pubsec-srf-l5-mon-007",
-        "class": "srf-vertical-control",
-        "title": "Third-Party AI Supply Chain Risk Assessment",
-        "params": [
-         {
-          "id": "pubsec-srf-l5-mon-007-p1",
-          "label": "supply_chain_risk_assessment_current",
-          "props": [
-           {
-            "name": "operator",
-            "ns": "https://aisharedresponsibility.com/ns/oscal",
-            "value": "=="
-           },
-           {
-            "name": "window",
-            "ns": "https://aisharedresponsibility.com/ns/oscal",
-            "value": "annual-review"
-           },
-           {
-            "name": "param-type",
-            "ns": "https://aisharedresponsibility.com/ns/oscal",
-            "value": "verification"
-           }
-          ],
-          "values": [
-           "true"
-          ],
-          "guidelines": [
-           {
-            "prose": "Binary: a completed supply chain risk assessment exists for every AI vendor, was reviewed by CAIO and Authorizing Official, and was refreshed within the prior annual cycle."
-           }
-          ]
-         }
-        ],
-        "props": [
-         {
-          "name": "srf-id",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "SRF-L5-MON-007"
-         },
-         {
-          "name": "vertical",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "public-sector"
-         },
-         {
-          "name": "layer",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "L5"
-         },
-         {
-          "name": "component",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "Model and Supplier"
-         },
-         {
-          "name": "accountable-persona",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "model-provider"
-         },
-         {
-          "name": "operating-model",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "AI-SaaS"
-         },
-         {
-          "name": "operating-model",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "AI-PaaS"
-         },
-         {
-          "name": "operating-model",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "Shared-Service"
-         },
-         {
-          "name": "responsibility-split",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "agency"
-         },
-         {
-          "name": "public-sector-stage",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "ongoing-monitoring"
-         },
-         {
-          "name": "breach-action",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment"
-         },
-         {
-          "name": "ocsf-class",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "Document management artifact."
-         },
-         {
-          "name": "ocsf-attribute",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "TBD"
-         },
-         {
-          "name": "ocsf-version",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "1.8.0"
-         },
-         {
-          "name": "mapping-m-25-21",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "N/A",
-          "class": "unresolved"
-         },
-         {
-          "name": "mapping-cosais",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "TBD: COSAiS overlays are pre-draft as of January 2026 (annotated outline of the Predictive AI overlay only; csrc.nist.gov/projects/cosais). Bind on initial public drafts. Do not substitute invented IDs.",
-          "class": "unresolved"
-         },
-         {
-          "name": "mapping-owasp-llm",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "N/A",
-          "class": "unresolved"
-         },
-         {
-          "name": "mapping-cis",
-          "ns": "https://aisharedresponsibility.com/ns/oscal",
-          "value": "CIS Control 15: Service Provider Management"
-         }
-        ],
-        "parts": [
-         {
-          "id": "pubsec-srf-l5-mon-007_stmt",
-          "name": "statement",
-          "prose": "The agency must conduct a supply chain risk assessment for each AI vendor covering financial stability, national security considerations, sub-processor dependencies, and open-source component provenance. The assessment must be reviewed by the CAIO and Authorizing Official before contract execution and refreshed annually."
-         },
-         {
-          "id": "pubsec-srf-l5-mon-007_obj",
-          "name": "objective",
-          "prose": "Maintain supply_chain_risk_assessment_current == {{ insert: param, pubsec-srf-l5-mon-007-p1 }} over window annual-review. Breach action: escalate-to-contracting-officer; flag-for-CAIO-review; delay-contract-renewal-pending-assessment."
-         }
-        ],
-        "links": [
-         {
-          "href": "#ae7bd07d-92c3-5ea1-915d-6542ebb67973",
-          "rel": "reference",
-          "text": "Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)"
-         },
-         {
-          "href": "#aec75536-9650-52f9-bd36-918743c7b0a5",
-          "rel": "reference",
-          "text": "KSI-SCR-MIT (persistent supply chain risk identification and mitigation)"
-         },
-         {
-          "href": "#aec75536-9650-52f9-bd36-918743c7b0a5",
-          "rel": "reference",
-          "text": "KSI-SCR-MON (automated monitoring of third-party software for upstream vulnerabilities)"
-         },
-         {
-          "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
-          "rel": "reference",
-          "text": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)"
-         },
-         {
-          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
-          "rel": "reference",
-          "text": "STA-14 (Supply Chain Governance Review)"
-         },
-         {
-          "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
-          "rel": "reference",
-          "text": "STA-11 (Supply Chain Agreement Review)"
          }
         ]
        }
@@ -41879,7 +42235,7 @@
          {
           "id": "hc-srf-l5-vv-002_stmt",
           "name": "statement",
-          "prose": "All clinical AI model artifacts must be cryptographically signed before deployment. The signing key must be controlled by the model provider and verified by the health platform provider at load time. A supply-chain provenance record must link the signed artifact to the training data, code commit, and build pipeline."
+          "prose": "All clinical AI model artifacts must be cryptographically signed before deployment. The signing key must be controlled by the model provider and verified by the health platform provider at load time. A supply-chain provenance record must link the signed artifact to the training data, code commit, and build pipeline. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract."
          },
          {
           "id": "hc-srf-l5-vv-002_obj",
@@ -43411,7 +43767,7 @@
          {
           "id": "ins-srf-l5-tpo-001_stmt",
           "name": "statement",
-          "prose": "For each third-party AI model used in underwriting, rating, or claims, the insurer must assemble and retain a due-diligence evidence package covering: model card (SRF-L5-DEV-001), independent validation results (SRF-L5-VAL-002), fairness evaluation (SRF-L5-VAL-001), artifact signing (SRF-L5-DEV-002), and performance SLA (SRF-L5-MON-001). This package is the primary artifact for demonstrating third-party model oversight to examiners."
+          "prose": "For each third-party AI model used in underwriting, rating, or claims, the insurer must assemble and retain a due-diligence evidence package covering: model card (SRF-L5-DEV-001), independent validation results (SRF-L5-VAL-002), fairness evaluation (SRF-L5-VAL-001), artifact signing (SRF-L5-DEV-002), and performance SLA (SRF-L5-MON-001). This package is the primary artifact for demonstrating third-party model oversight to examiners. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract."
          },
          {
           "id": "ins-srf-l5-tpo-001_obj",
@@ -45106,7 +45462,7 @@
          {
           "id": "def-srf-l5-acq-008_stmt",
           "name": "statement",
-          "prose": "Before selecting a foundation model or AI component provider, the component must assess supply chain risk covering country of origin of training data and model weights, ownership structure, export control status, and any foreign government relationships. Assessments must be updated when ownership or control of the provider changes."
+          "prose": "Before selecting a foundation model or AI component provider, the component must assess supply chain risk covering country of origin of training data and model weights, ownership structure, export control status, and any foreign government relationships. Assessments must be updated when ownership or control of the provider changes. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract."
          },
          {
           "id": "def-srf-l5-acq-008_obj",
@@ -46876,7 +47232,7 @@
          {
           "id": "mfg-srf-l5-des-008_stmt",
           "name": "statement",
-          "prose": "Before contracting a model supplier for an OT-edge or product-embedded AI system, the model provider evaluation must include: financial stability and support horizon, security disclosure history, jurisdictional risk (data residency, export control), EU AI Act compliance status for high-risk models, and OT environment compatibility. The due diligence record must be reviewed by procurement and the OT security lead and retained with the supplier record."
+          "prose": "Before contracting a model supplier for an OT-edge or product-embedded AI system, the model provider evaluation must include: financial stability and support horizon, security disclosure history, jurisdictional risk (data residency, export control), EU AI Act compliance status for high-risk models, and OT environment compatibility. The due diligence record must be reviewed by procurement and the OT security lead and retained with the supplier record. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract."
          },
          {
           "id": "mfg-srf-l5-des-008_obj",

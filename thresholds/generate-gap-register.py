@@ -24,7 +24,7 @@ place to live in the catalog. Output: gap-register.json (machine-readable)
 and gap-register.md (NIST feedback draft).
 
 Beyond the baseline threshold catalog, the register now covers the six
-industry vertical control sets in data/*-controls.json (258 controls, each
+industry vertical control sets in data/*-controls.json (260 controls, each
 with a threshold tuple). Vertical controls that declare
 threshold.evidence.oscal_bindings are resolved against the catalog exactly
 like baseline controls; controls without bindings are classified
@@ -416,7 +416,7 @@ def render_markdown(reg):
       "carry operational thresholds natively, and would let a resolved threshold emit "
       "`set-parameter` values that provably match the live alerting configuration.")
     w("3. **For the COSAiS overlay series (NISTIR 8605, 8605A-D):** the industry vertical "
-      "sections above enumerate 258 measured thresholds with no 800-53 binding yet. Where an "
+      "sections above enumerate 260 measured thresholds with no 800-53 binding yet. Where an "
       "overlay control covers the same behavior (guardrail coverage, drift bounds, oversight "
       "responsiveness), the overlay's ODPs are the natural home for these objectives; typed "
       "measured-objective ODPs in 8605B (Generative AI) and 8605D (Agentic AI) would let the "

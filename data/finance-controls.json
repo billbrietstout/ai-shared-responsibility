@@ -153,6 +153,42 @@
       }
     },
     {
+      "id": "SRF-L1-DEV-005",
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "title": "Third-Party AI Vendor Register with Named Accountable Officer",
+      "description": "The institution must maintain a register of every third-party AI vendor whose systems, models, data services, or professional services are used in production or in model development. Each vendor entry must name an institution-side accountable officer and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through.",
+      "accountable_persona": "ai-system-governance",
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "mrm_stage": "development",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-007 (Legal and Contractual Frameworks for AI Systems)",
+        "aicm": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review); GRC-06 (Governance Responsibility Model)",
+        "sr26_2": "Section VII (Vendor and Other Third-Party Products)",
+        "eu_ai_act": "Article 25 (responsibilities along the AI value chain); Article 26 (obligations of deployers of high-risk AI systems)",
+        "cis": "CIS Control 15: Service Provider Management",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); GOVERN 2.1 (roles and responsibilities are documented)"
+      },
+      "threshold": {
+        "metric": "vendor_register_accountable_officer_coverage",
+        "description": "Binary: a third-party AI vendor register exists, every vendor entry names an accountable officer and a vendor-risk category, and the register was reviewed within the prior annual cycle.",
+        "evidence": {
+          "ocsf_class": "TBD: vendor register is a governance record. Candidate: audit_activity (3002) if the vendor management platform emits change events.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": "==",
+        "param": "true",
+        "window": "annual-review",
+        "breach_action": "identify-vendors-without-accountable-officer; freeze-new-vendor-onboarding; escalate-to-cro"
+      }
+    },
+    {
       "id": "SRF-L1-VAL-001",
       "layer": "L1",
       "component": "Processes & Governance",
@@ -1244,7 +1280,7 @@
       "layer": "L5",
       "component": "Model Distribution",
       "title": "Model Artifact Signing and Supply-Chain Provenance",
-      "description": "The model provider must cryptographically sign all model artifacts (weights, tokenizer, configuration files) before distribution. The signing key must be managed under the provider's documented key management policy, with the public key published in a verifiable trust store. The model provider must also publish a Software Bill of Materials (SBOM) or equivalent supply-chain provenance record for each model release, covering training framework versions, key dependencies, and any third-party components incorporated into the model architecture. This provenance record enables the ai-platform-provider to verify model integrity at load (SRF-L5-MON-001) and supports the institution's third-party risk management obligations under SR 26-2's inherited vendor management principles.",
+      "description": "The model provider must cryptographically sign all model artifacts (weights, tokenizer, configuration files) before distribution. The signing key must be managed under the provider's documented key management policy, with the public key published in a verifiable trust store. The model provider must also publish a Software Bill of Materials (SBOM) or equivalent supply-chain provenance record for each model release, covering training framework versions, key dependencies, and any third-party components incorporated into the model architecture. This provenance record enables the ai-platform-provider to verify model integrity at load (SRF-L5-MON-001) and supports the institution's third-party risk management obligations under SR 26-2's inherited vendor management principles. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract.",
       "accountable_persona": "model-provider",
       "operating_models": [
         "AI-PaaS",
