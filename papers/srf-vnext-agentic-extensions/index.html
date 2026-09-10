@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Proposed SRF next-version agentic extensions — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Independently proposed companion extensions to CoSAI SRF v1.0 for spawn, fail-closed halt, enforcement planes, and related agentic accountability asks. Not part of CoSAI SRF v1.0."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="canonical" href="https://aisharedresponsibility.com/papers/srf-vnext-agentic-extensions/" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .ask-list { display: flex; flex-direction: column; gap: var(--sp-5); margin: var(--sp-6) 0; }
+      .ask {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        padding: var(--sp-5);
+        box-shadow: var(--shadow);
+      }
+      .ask__id {
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        color: var(--slate-400);
+        margin-bottom: var(--sp-1);
+      }
+      .ask__title {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--slate-900);
+        margin: 0 0 var(--sp-3);
+      }
+      .ask p { margin: 0 0 var(--sp-2); font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); }
+      .ask p:last-child { margin-bottom: 0; }
+      .ask strong { color: var(--slate-800); }
+      .refused { margin-top: var(--sp-8); }
+      .refused li { font-size: var(--text-sm); color: var(--slate-600); margin-bottom: var(--sp-2); }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "name": "Proposed SRF next-version agentic extensions",
+      "url": "https://aisharedresponsibility.com/papers/srf-vnext-agentic-extensions/",
+      "description": "Independently proposed companion extensions to CoSAI SRF v1.0 for agentic accountability. Not part of CoSAI SRF v1.0.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "AI Shared Responsibility",
+        "url": "https://aisharedresponsibility.com/"
+      }
+    }
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="reference" />
+    <meta name="llm:canonical-id" content="srf.page.papers-srf-vnext-agentic-extensions" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade, srf.concept.autonomy-level, srf.concept.human-override-tier, srf.opmodel.agent-paas, srf.concept.accountability-continuity, srf.concept.agent-replication, srf.concept.fail-closed-override, srf.concept.persistence-scope, srf.concept.enforcement-plane, srf.concept.protocol-independent-evidence" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Companion proposal</span>
+        <h1 class="page-hero__title">Proposed SRF next-version agentic extensions</h1>
+        <p class="page-hero__lede">
+          Nine asks for a future CoSAI SRF revision. Each names the v1.0 hook it
+          extends. Autonomy L0 to L5 and override T1 to T5 stay as published.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="srf-vnext-agentic-extensions">
+      <div role="note" class="callout callout--warn" style="margin-bottom: var(--sp-8);">
+        <strong>Independently proposed.</strong> This register is a companion
+        extension of this site. It is not part of CoSAI SRF v1.0 and has not
+        been endorsed by CoSAI or OASIS. Machine-readable source:
+        <a href="/data/srf-vnext-extensions.json">/data/srf-vnext-extensions.json</a>.
+        Prose copy:
+        <a href="/papers/srf-vnext-agentic-extensions.md">markdown</a>.
+      </div>
+
+      <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 640px; line-height: var(--leading-normal);">
+        Production agents act, delegate, and use tools under named personas and
+        operating models. This note does not claim to solve alignment of systems
+        more capable than their operators. Autonomy classifies how independently
+        an agent may act. It does not move the accountable persona.
+      </p>
+
+      <div id="asks">
+        <p style="color: var(--slate-400); font-size: var(--text-sm);">Loading register…</p>
+      </div>
+
+      <p style="font-size: var(--text-sm); color: var(--slate-600); margin-top: var(--sp-8);">
+        Related:
+        <a href="/glossary/#agentic-extensions">glossary agentic extensions</a>,
+        <a href="/compare/">framework comparison</a> (AI SAFE² as an enforcement spec),
+        <a href="/operating-models/">operating models</a>.
+      </p>
+    </main>
+
+    <site-footer></site-footer>
+    <script type="module">
+      const root = document.getElementById("asks");
+      try {
+        const res = await fetch("/data/srf-vnext-extensions.json");
+        const data = await res.json();
+        const items = data.items.map((item) => {
+          const gloss = item.glossary_anchor
+            ? `<p><strong>Glossary:</strong> <a href="/glossary/#${item.glossary_anchor}">${item.glossary_anchor}</a></p>`
+            : "";
+          const inspired = (item.inspired_by || []).join("; ");
+          return `<article class="ask" id="${item.id}">
+            <div class="ask__id">${item.id}</div>
+            <h2 class="ask__title">${item.title}</h2>
+            <p><strong>v1.0 hook:</strong> ${item.v1_0_hook}</p>
+            <p><strong>Ask for the next paper:</strong> ${item.cosai_vnext_ask}</p>
+            ${gloss}
+            <p><strong>Drawn from:</strong> ${inspired}</p>
+          </article>`;
+        }).join("");
+        const refused = (data.refused || []).map((r) =>
+          `<li><strong>${r.label}.</strong> ${r.reason}</li>`
+        ).join("");
+        root.innerHTML = `
+          <h2 class="section-title" style="margin-top: var(--sp-8);">Asks</h2>
+          <div class="ask-list">${items}</div>
+          <div class="refused">
+            <h2 class="section-title">Do not propose</h2>
+            <ul>${refused}</ul>
+          </div>
+        `;
+      } catch {
+        root.innerHTML = `<p style="color:var(--status-bad)">Could not load <a href="/data/srf-vnext-extensions.json">srf-vnext-extensions.json</a>.</p>`;
+      }
+    </script>
+  </body>
+</html>

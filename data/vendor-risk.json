@@ -4,7 +4,7 @@
   "source": "https://aisharedresponsibility.com/tools/vendor-risk/",
   "how_to": "https://aisharedresponsibility.com/tools/vendor-risk/how-to/",
   "version": "1.0",
-  "updated": "2026-06-20T18:18:11+00:00",
+  "updated": "2026-09-09T00:00:00+00:00",
   "status": "Proposed extension of the CoSAI Shared Responsibility Framework; not part of CoSAI SRF v1.0; not an endorsement of any named vendor; not legal advice.",
   "description": "Seven AI vendor categories mapped to the CoSAI SRF. Each category states the SRF layers and operating models it touches, the responsibilities the vendor owns versus those the customer keeps, the attestation baseline, and the evidence to demand before signing. Includes a three-tier risk model, cross-cutting AI risks to check on every vendor, and a reference for what each attestation actually proves.",
   "risk_tiers": [
@@ -209,6 +209,42 @@
           "attestation_baseline": "ISO 42001",
           "evidence": "Defenses for the case where an agent reads untrusted content or tool output and acts on it.",
           "ai_specific": true
+        },
+        {
+          "risk_area": "Spawn and descendant inventory",
+          "attestation_baseline": "Disclosure",
+          "evidence": "Whether the product can create child agents, whether descendant capabilities are narrower than the parent, whether a live inventory of descendants exists, and whether revoke reaches the full tree.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Fail-closed halt authorization",
+          "attestation_baseline": "Contract",
+          "evidence": "For irreversible, financially material, security-control-modifying, physical, or cross-organization actions, the action blocks if the assigned halt authority cannot be reached.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Spend ceiling halt vs alert",
+          "attestation_baseline": "Contract",
+          "evidence": "Whether the spend or economic ceiling stops the agent or only alerts, and which party owns that control.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Persistence scope of memory and RAG",
+          "attestation_baseline": "Disclosure",
+          "evidence": "Whether retained state is request-scoped, handle-scoped, or durable, and who governs durable state.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Enforcement-plane control",
+          "attestation_baseline": "Disclosure",
+          "evidence": "Which plane the vendor actually enforces: north-south (model provider), east-west (agent to agent), or agent-to-tool.",
+          "ai_specific": true
+        },
+        {
+          "risk_area": "Owner-of-record vs halt-authority coverage",
+          "attestation_baseline": "Disclosure",
+          "evidence": "Named operational owner coverage and named halt-authority coverage, auditable as two lists.",
+          "ai_specific": true
         }
       ]
     },
@@ -384,6 +420,10 @@
     {
       "title": "AI management system maturity",
       "description": "Whether the vendor runs a governed AI program. ISO 42001 certification and a NIST AI RMF profile are the signals."
+    },
+    {
+      "title": "Spawn, fail-closed halt, and enforcement plane",
+      "description": "Whether agents can create children, whether high-impact actions block when halt authority is unreachable, and which enforcement plane the vendor actually controls."
     }
   ],
   "attestation_reference": [

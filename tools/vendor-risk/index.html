@@ -395,7 +395,7 @@
     <!-- llm:meta -->
     <meta name="llm:type" content="tool" />
     <meta name="llm:canonical-id" content="srf.page.tools-vendor-risk" />
-    <meta name="llm:concepts" content="srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.role.model-provider, srf.role.ai-platform-provider, srf.role.agentic-platform-provider, srf.role.application-developer, srf.role.data-provider, srf.role.ai-system-governance, srf.concept.evidence-threshold" />
+    <meta name="llm:concepts" content="srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.role.model-provider, srf.role.ai-platform-provider, srf.role.agentic-platform-provider, srf.role.application-developer, srf.role.data-provider, srf.role.ai-system-governance, srf.concept.evidence-threshold, srf.concept.agent-replication, srf.concept.fail-closed-override, srf.concept.persistence-scope, srf.concept.enforcement-plane" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -678,6 +678,12 @@
                   <tr><td>Guardrail bypass monitoring</td><td><span class="att">SOC 2 +</span></td><td>Detection of guardrail bypass, runtime integrity verification, and a complete action audit trail.</td></tr>
                   <tr><td>Blast-radius containment</td><td><span class="att">Contract</span></td><td>Rate limits, spend caps, rollback, and a documented kill-switch.</td></tr>
                   <tr><td>Indirect prompt injection <span class="gap-flag">AI-specific</span></td><td><span class="att">ISO 42001</span></td><td>Defenses for the case where an agent reads untrusted content or tool output and acts on it.</td></tr>
+                  <tr><td>Spawn and descendant inventory <span class="gap-flag">AI-specific</span></td><td><span class="att">Disclosure</span></td><td>Whether the product can create child agents, whether descendant capabilities are narrower than the parent, whether a live inventory of descendants exists, and whether revoke reaches the full tree.</td></tr>
+                  <tr><td>Fail-closed halt authorization <span class="gap-flag">AI-specific</span></td><td><span class="att">Contract</span></td><td>For irreversible, financially material, security-control-modifying, physical, or cross-organization actions, the action blocks if the assigned halt authority cannot be reached.</td></tr>
+                  <tr><td>Spend ceiling halt vs alert <span class="gap-flag">AI-specific</span></td><td><span class="att">Contract</span></td><td>Whether the spend or economic ceiling stops the agent or only alerts, and which party owns that control.</td></tr>
+                  <tr><td>Persistence scope of memory and RAG <span class="gap-flag">AI-specific</span></td><td><span class="att">Disclosure</span></td><td>Whether retained state is request-scoped, handle-scoped, or durable, and who governs durable state.</td></tr>
+                  <tr><td>Enforcement-plane control <span class="gap-flag">AI-specific</span></td><td><span class="att">Disclosure</span></td><td>Which plane the vendor actually enforces: north-south (model provider), east-west (agent to agent), or agent-to-tool.</td></tr>
+                  <tr><td>Owner-of-record vs halt-authority coverage <span class="gap-flag">AI-specific</span></td><td><span class="att">Disclosure</span></td><td>Named operational owner coverage and named halt-authority coverage, auditable as two lists.</td></tr>
                 </tbody>
               </table>
             </div>
@@ -820,6 +826,7 @@
           <div class="xrisk"><div class="xrisk__name">Versioning and decommissioning</div><p class="xrisk__desc">How model and feature versions are tracked, notified, deprecated, and rolled back without breaking your controls.</p></div>
           <div class="xrisk"><div class="xrisk__name">Liability for AI-generated harm</div><p class="xrisk__desc">Contractual allocation of liability when model output causes financial, legal, or safety harm.</p></div>
           <div class="xrisk"><div class="xrisk__name">AI management system maturity</div><p class="xrisk__desc">Whether the vendor runs a governed AI program. ISO 42001 certification and a NIST AI RMF profile are the signals.</p></div>
+          <div class="xrisk"><div class="xrisk__name">Spawn, fail-closed halt, and enforcement plane</div><p class="xrisk__desc">Whether agents can create children, whether high-impact actions block when halt authority is unreachable, and which enforcement plane the vendor actually controls.</p></div>
         </div>
       </section>
 
@@ -886,7 +893,7 @@
 
         <div class="tmpl">
           <div class="tmpl__head"><span class="tmpl__name">Agentic controls and kill-switch</span><button class="copy-btn" type="button">Copy</button></div>
-          <div class="tmpl__body">For any autonomous or agentic capability, Vendor shall provide [Customer] with configurable controls over autonomy level and human override, scope and rate limits on tool and action use, the ability to require human approval for [defined high-impact actions], a complete audit trail of agent actions, and a documented mechanism to immediately suspend agent activity. Vendor shall not change default autonomy or override settings without prior written notice.</div>
+          <div class="tmpl__body">For any autonomous or agentic capability, Vendor shall provide [Customer] with configurable controls over autonomy level and human override, scope and rate limits on tool and action use, the ability to require human approval for [defined high-impact actions], a complete audit trail of agent actions, and a documented mechanism to immediately suspend agent activity. High-impact actions that are irreversible, financially material, security-control-modifying, physical, or cross-organizational shall fail closed if the assigned halt authority cannot be reached. If the product can spawn child agents, descendant capabilities shall not exceed the parent, a live descendant inventory shall be available, and revocation shall reach the full tree. A spend or economic ceiling shall halt the agent, not only alert, unless [Customer] has accepted alert-only in writing. Vendor shall not change default autonomy or override settings without prior written notice.</div>
         </div>
 
         <div class="tmpl">
@@ -905,8 +912,13 @@
 6. Describe your defenses against prompt injection, including indirect injection from retrieved content or tool output.
 7. Provide model and weight provenance, signing, and an AI bill of materials (AIBOM).
 8. For agentic features, state the autonomy levels and human-override tiers supported, the permission model, and the kill-switch mechanism.
-9. Describe how you notify customers of model, sub-processor, and autonomy changes, and the notice period.
-10. Provide your data-retention and secure-deletion policy, including certificates of destruction on exit.</div>
+9. State whether the product can spawn child agents, how descendant authority is narrowed, how descendants are inventoried, and how revoke reaches the tree.
+10. For high-impact actions, confirm fail-closed behavior when halt authority is unreachable, and whether spend ceilings halt or only alert.
+11. State persistence scope of memory and RAG (request, handle-scoped, or durable) and who governs durable state.
+12. State which enforcement plane the vendor actually controls (north-south, east-west, or agent-to-tool).
+13. Name operational owner coverage and halt-authority coverage as two auditable lists.
+14. Describe how you notify customers of model, sub-processor, and autonomy changes, and the notice period.
+15. Provide your data-retention and secure-deletion policy, including certificates of destruction on exit.</div>
         </div>
         <p class="tmpl-note">The downloadable <a href="/tools/vendor-risk/how-to/vendor-risk-workpaper.xlsx" download>VRA workpaper</a> includes these clauses, the RFP questions, and an attestation-to-evidence mapping as separate tabs.</p>
       </section>

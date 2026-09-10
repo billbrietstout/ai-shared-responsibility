@@ -34,11 +34,15 @@ ROLES8   = ["srf.role.ai-system-users", "srf.role.ai-system-governance",
             "srf.role.data-provider", "srf.role.application-developer",
             "srf.role.agentic-platform-provider", "srf.role.ai-model-serving",
             "srf.role.ai-platform-provider", "srf.role.model-provider"]
+VNEXT    = ["srf.concept.accountability-continuity", "srf.concept.agent-replication",
+            "srf.concept.fail-closed-override", "srf.concept.persistence-scope",
+            "srf.concept.enforcement-plane", "srf.concept.protocol-independent-evidence"]
 GLOSS    = ["srf.concept.accountability", "srf.concept.accountable-party",
             "srf.concept.responsibility-cascade", "srf.concept.shared-responsibility",
             "srf.concept.operating-model", "srf.concept.persona",
             "srf.concept.autonomy-level", "srf.concept.human-override-tier",
-            "srf.concept.agentic-system", "srf.concept.control",
+            "srf.concept.agentic-system"] + VNEXT + [
+            "srf.concept.control",
             "srf.concept.evidence-threshold", "srf.concept.ocsf",
             "srf.concept.control-schema"]
 ACCT     = ["srf.concept.accountability", "srf.concept.responsibility-cascade"]
@@ -68,7 +72,8 @@ def classify(rel):
     top = seg[0] if seg and seg[0] else ""
 
     if rel in ("", "."):
-        return "home", ["srf.framework.cosai-srf"] + LAYERS + OPMODELS + ACCT
+        return "home", ["srf.framework.cosai-srf"] + LAYERS + OPMODELS + ACCT + [
+            "srf.concept.autonomy-level", "srf.concept.human-override-tier"]
     if rel == "llm/test":
         return "tool", ["srf.framework.cosai-srf"] + GLOSS[:6]
     if top == "framework" and len(seg) == 1:
@@ -78,7 +83,8 @@ def classify(rel):
     if rel == "framework/nice-mapping":
         return "mapping", ROLES8 + ["srf.framework.cosai-srf"]
     if top == "operating-models":
-        return "operating-models", OPMODELS + TAPESTRY + LAYERS
+        return "operating-models", OPMODELS + TAPESTRY + LAYERS + [
+            "srf.concept.enforcement-plane"]
     if top == "tapestry" and len(seg) > 1 and seg[1] == "controls":
         return "controls", (LAYERS + TAPESTRY + TAPESTRY_ROLES
                             + ["srf.concept.control", "srf.concept.accountability"])
@@ -96,10 +102,14 @@ def classify(rel):
         return "industries", ["srf.framework.cosai-srf", "srf.concept.control"] + LAYERS
     if top == "about":
         return "about", ["srf.framework.cosai-srf"]
+    if rel == "papers/srf-vnext-agentic-extensions":
+        return "reference", ["srf.framework.cosai-srf"] + ACCT + [
+            "srf.concept.autonomy-level", "srf.concept.human-override-tier",
+            "srf.opmodel.agent-paas"] + VNEXT
     if top == "agentic-ai-security":
         return "reference", ["srf.framework.cosai-srf"] + ACCT + [
             "srf.concept.agentic-system", "srf.concept.autonomy-level",
-            "srf.concept.human-override-tier"]
+            "srf.concept.human-override-tier"] + VNEXT
     if top == "changelog":
         return "reference", ["srf.framework.cosai-srf"]
     if rel == "developers/schema":
@@ -135,7 +145,12 @@ def classify(rel):
         leaf = seg[-1]
         if "ir-playbooks" in rel:        return "tool", LAYERS + OPMODELS
         if "vendor-risk" in rel:
-            vr = LAYERS + OPMODELS + VENDOR_RISK_ROLES + ["srf.concept.evidence-threshold"]
+            vr = (LAYERS + OPMODELS + VENDOR_RISK_ROLES
+                  + ["srf.concept.evidence-threshold"]
+                  + ["srf.concept.agent-replication",
+                     "srf.concept.fail-closed-override",
+                     "srf.concept.persistence-scope",
+                     "srf.concept.enforcement-plane"])
             return ("how-to" if leaf == "how-to" else "tool"), vr
         if "layer-matrix" in rel:        return "tool", LAYERS + OPMODELS
         if "policy-pyramid" in rel:      return "tool", LAYERS + ["srf.concept.responsibility-cascade"]

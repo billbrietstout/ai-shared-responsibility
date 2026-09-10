@@ -303,6 +303,48 @@
         },
         {
           "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#accountability-continuity",
+          "termCode": "accountability-continuity",
+          "name": "Accountability Continuity",
+          "url": "https://aisharedresponsibility.com/glossary/#accountability-continuity"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#agent-replication",
+          "termCode": "agent-replication",
+          "name": "Agent Replication",
+          "url": "https://aisharedresponsibility.com/glossary/#agent-replication"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#fail-closed-override",
+          "termCode": "fail-closed-override",
+          "name": "Fail-Closed Override",
+          "url": "https://aisharedresponsibility.com/glossary/#fail-closed-override"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#persistence-scope",
+          "termCode": "persistence-scope",
+          "name": "Persistence Scope",
+          "url": "https://aisharedresponsibility.com/glossary/#persistence-scope"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#enforcement-plane",
+          "termCode": "enforcement-plane",
+          "name": "Enforcement Plane",
+          "url": "https://aisharedresponsibility.com/glossary/#enforcement-plane"
+        },
+        {
+          "@type": "DefinedTerm",
+          "@id": "https://aisharedresponsibility.com/glossary/#protocol-independent-evidence",
+          "termCode": "protocol-independent-evidence",
+          "name": "Protocol-Independent Evidence",
+          "url": "https://aisharedresponsibility.com/glossary/#protocol-independent-evidence"
+        },
+        {
+          "@type": "DefinedTerm",
           "@id": "https://aisharedresponsibility.com/glossary/#control",
           "termCode": "control",
           "name": "Control",
@@ -337,7 +379,7 @@
     <!-- llm:meta -->
     <meta name="llm:type" content="glossary" />
     <meta name="llm:canonical-id" content="srf.page.glossary" />
-    <meta name="llm:concepts" content="srf.concept.accountability, srf.concept.accountable-party, srf.concept.responsibility-cascade, srf.concept.shared-responsibility, srf.concept.operating-model, srf.concept.persona, srf.concept.autonomy-level, srf.concept.human-override-tier, srf.concept.agentic-system, srf.concept.control, srf.concept.evidence-threshold, srf.concept.ocsf, srf.concept.control-schema" />
+    <meta name="llm:concepts" content="srf.concept.accountability, srf.concept.accountable-party, srf.concept.responsibility-cascade, srf.concept.shared-responsibility, srf.concept.operating-model, srf.concept.persona, srf.concept.autonomy-level, srf.concept.human-override-tier, srf.concept.agentic-system, srf.concept.accountability-continuity, srf.concept.agent-replication, srf.concept.fail-closed-override, srf.concept.persistence-scope, srf.concept.enforcement-plane, srf.concept.protocol-independent-evidence, srf.concept.control, srf.concept.evidence-threshold, srf.concept.ocsf, srf.concept.control-schema" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -487,6 +529,36 @@
 
               <dt id="agentic-system"><a href="#agentic-system" class="gloss-anchor">#</a> Agentic System</dt>
               <dd>An AI system that can take multi-step actions, use tools, or operate across sessions with limited human supervision. Agentic systems require autonomy level and human override tier declarations in addition to standard SRF layer assignments.</dd>
+
+              <dt id="accountability-continuity"><a href="#accountability-continuity" class="gloss-anchor">#</a> Accountability Continuity</dt>
+              <dd>The rule that delegated authority must not silently expand, and that a child agent's authority stays inside the parent assignment. Extends the v1.0 rule of exactly one accountable party per activity. Companion extension of this site; not part of CoSAI SRF v1.0.
+                <p class="gloss-crosslink">Proposal: <a href="/papers/srf-vnext-agentic-extensions/#accountability-continuity">srf-vnext-agentic-extensions/#accountability-continuity</a></p>
+              </dd>
+
+              <dt id="agent-replication"><a href="#agent-replication" class="gloss-anchor">#</a> Agent Replication</dt>
+              <dd>An activity class covering spawn of child agents, descendant capability narrowing, live descendant inventory, and revocation of the full descendant tree. Companion extension of this site; not part of CoSAI SRF v1.0.
+                <p class="gloss-crosslink">Proposal: <a href="/papers/srf-vnext-agentic-extensions/#agent-replication">srf-vnext-agentic-extensions/#agent-replication</a></p>
+              </dd>
+
+              <dt id="fail-closed-override"><a href="#fail-closed-override" class="gloss-anchor">#</a> Fail-Closed Override</dt>
+              <dd>A halt rule for high-impact actions: if the assigned override authority cannot be reached, the action is blocked rather than allowed to proceed. Applies to irreversible, financially material, security-control-modifying, physical, or cross-organization actions. Companion extension of this site; not part of CoSAI SRF v1.0.
+                <p class="gloss-crosslink">Proposal: <a href="/papers/srf-vnext-agentic-extensions/#fail-closed-override">srf-vnext-agentic-extensions/#fail-closed-override</a></p>
+              </dd>
+
+              <dt id="persistence-scope"><a href="#persistence-scope" class="gloss-anchor">#</a> Persistence Scope</dt>
+              <dd>How long an agent's information effect lasts: request (this interaction only), handle_scoped (only through an explicitly governed state handle), or durable (survives those lifetimes and needs durable-state governance). Companion extension of this site; not part of CoSAI SRF v1.0.
+                <p class="gloss-crosslink">Proposal: <a href="/papers/srf-vnext-agentic-extensions/#persistence-scope">srf-vnext-agentic-extensions/#persistence-scope</a></p>
+              </dd>
+
+              <dt id="enforcement-plane"><a href="#enforcement-plane" class="gloss-anchor">#</a> Enforcement Plane</dt>
+              <dd>The traffic path where authorization is enforced for an agent action: north-south (agent to model provider), east-west (agent to agent), or agent-to-tool (MCP or other tools). Not a sixth architecture layer. Companion extension of this site; not part of CoSAI SRF v1.0.
+                <p class="gloss-crosslink">Proposal: <a href="/papers/srf-vnext-agentic-extensions/#enforcement-plane">srf-vnext-agentic-extensions/#enforcement-plane</a></p>
+              </dd>
+
+              <dt id="protocol-independent-evidence"><a href="#protocol-independent-evidence" class="gloss-anchor">#</a> Protocol-Independent Evidence</dt>
+              <dd>Evidence for an agent action binds to principals, capability grants, delegation chains, policy versions, and state handles, not to a session identifier owned by a protocol. Companion extension of this site; not part of CoSAI SRF v1.0.
+                <p class="gloss-crosslink">Proposal: <a href="/papers/srf-vnext-agentic-extensions/#protocol-independent-evidence">srf-vnext-agentic-extensions/#protocol-independent-evidence</a></p>
+              </dd>
 
             </dl>
           </section>

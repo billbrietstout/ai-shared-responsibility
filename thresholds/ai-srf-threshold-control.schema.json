@@ -76,6 +76,24 @@
         }
       }
     },
+    "persistence_scope": {
+      "type": "string",
+      "enum": ["request", "handle_scoped", "durable"],
+      "description": "Site companion extension; not in CoSAI SRF v1.0. How long the governed information effect lasts: request (this interaction only), handle_scoped (explicit state handle), durable (survives those lifetimes)."
+    },
+    "enforcement_plane": {
+      "type": "string",
+      "enum": ["north_south", "east_west", "agent_to_tool"],
+      "description": "Site companion extension; not in CoSAI SRF v1.0. Traffic path where authorization is enforced: north_south (agent to model provider), east_west (agent to agent), agent_to_tool (MCP or other tools)."
+    },
+    "fail_closed": {
+      "type": "boolean",
+      "description": "Site companion extension; not in CoSAI SRF v1.0. When true, the governed action blocks if the assigned halt authority cannot be reached."
+    },
+    "spawn_in_scope": {
+      "type": "boolean",
+      "description": "Site companion extension; not in CoSAI SRF v1.0. When true, this control applies to spawn of child agents and descendant inventory."
+    },
     "indicator": {
       "type": "object",
       "description": "Service Level Indicator: the measured quantity.",

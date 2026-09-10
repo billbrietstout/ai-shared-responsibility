@@ -24,6 +24,10 @@ All taxonomy values are verified against the CoSAI AI Shared Responsibility Fram
 
 An earlier draft invented its own autonomy labels (informational, suggestive, delegated_bounded, and so on). Those are gone; the framework has a canonical L0-L5 taxonomy and this schema uses it.
 
+## Companion fields (not SRF v1.0)
+
+Optional properties `persistence_scope`, `enforcement_plane`, `fail_closed`, and `spawn_in_scope` are site companion extensions. They are proposed for a future CoSAI SRF revision. See `/papers/srf-vnext-agentic-extensions/`. Do not treat them as Appendix A taxonomies.
+
 ## Design decisions
 
 **Catalog and profile, mirroring OSCAL.** One vertical-agnostic baseline catalog holds the controls. Thin per-vertical profiles override only `target_value`, `error_budget`, `enforcement`, and `regulatory_drivers`, or add wholly new controls that have no general equivalent (healthcare's drift monitoring control, driven by FDA's Predetermined Change Control Plan, is the canonical example). This keeps regulatory deltas reviewable: a compliance reader can see exactly what a vertical tightens without rereading the whole catalog.

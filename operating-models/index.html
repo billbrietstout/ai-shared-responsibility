@@ -271,7 +271,7 @@
     <!-- llm:meta -->
     <meta name="llm:type" content="operating-models" />
     <meta name="llm:canonical-id" content="srf.page.operating-models" />
-    <meta name="llm:concepts" content="srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.opmodel.federated-consortium, srf.concept.project-tapestry, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5" />
+    <meta name="llm:concepts" content="srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.opmodel.federated-consortium, srf.concept.project-tapestry, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.concept.enforcement-plane" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -296,6 +296,26 @@
 
       <div id="root">
         <p style="color: var(--slate-400); font-size: var(--text-sm);">Loading...</p>
+      </div>
+
+      <div class="callout callout--warn" role="note" style="margin-top: var(--sp-8);">
+        <strong>Companion explanation; not a fifth CoSAI operating model.</strong>
+        SRF v1.0 still has four models. Autonomy classifies how independently an
+        agent may act; it does not move the accountable persona. For Agent-PaaS
+        and IaaS especially, ask where authorization is actually enforced, not
+        only where the agent executes.
+        <a href="/papers/srf-vnext-agentic-extensions/#control-plane-location">Proposed for the next SRF paper →</a>
+      </div>
+      <div class="callout" role="note" style="margin-top: var(--sp-4);">
+        <strong>Enforcement planes.</strong> North-south is agent to model
+        provider (often L5 policy and spend). East-west is agent to agent
+        (Agent-PaaS identity and delegation). Agent-to-tool is MCP or other
+        tools (L3). On Agent-PaaS the provider typically owns the orchestration
+        runtime that can halt a swarm; the customer owns agent definitions and
+        which tools are granted. On IaaS the customer owns nearly the entire
+        enforcement path. On AI-SaaS the provider owns most runtime
+        enforcement; the customer still owns L1 outcomes.
+        See <a href="/glossary/#enforcement-plane">enforcement plane</a>.
       </div>
 
     </main>
