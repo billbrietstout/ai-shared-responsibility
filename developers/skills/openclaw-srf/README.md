@@ -117,9 +117,9 @@ from memory.
 
 ## Notes on the framework itself
 
-The base SRF (five layers, eight personas, four operating models) is CoSAI SRF
-v1.0. The six vertical control schemas this skill can fetch (finance,
-healthcare, insurance, public sector, defense, manufacturing) are independently
-proposed extensions published on aisharedresponsibility.com and are not part of
-the official CoSAI release. `SKILL.md` instructs the agent to say so rather
-than presenting vertical control data as CoSAI-ratified.
+The base SRF (five layers, eight personas, four CoSAI-core operating models) is
+CoSAI SRF v1.0. Companion-site extensions this skill can also fetch include the
+six industry vertical control schemas, the proposed Federated-Consortium
+operating model, and Project Tapestry controls. Those are not part of the
+official CoSAI release. `SKILL.md` instructs the agent to say so rather than
+presenting extension data as CoSAI-ratified.

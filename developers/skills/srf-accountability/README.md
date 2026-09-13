@@ -4,7 +4,7 @@ An Anthropic Agent Skill that grounds any Claude-family agent in the CoSAI AI Sh
 
 ## What it does
 
-Loading this skill teaches an agent to answer accountability questions by fetching the published SRF data from aisharedresponsibility.com instead of guessing from training data. It enforces the framework's core rule, exactly one accountable party per activity, and requires every answer to cite a canonical URL or ID from the live site.
+Loading this skill teaches an agent to answer accountability questions by fetching the published SRF data from aisharedresponsibility.com instead of guessing from training data. It enforces the framework's core rule, exactly one accountable party per activity, covers CoSAI-core operating models plus the proposed Federated-Consortium / Tapestry extension, and requires every answer to cite a canonical URL or ID from the live site.
 
 ## Where it works
 
