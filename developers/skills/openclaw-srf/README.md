@@ -54,34 +54,29 @@ system prompt. The instructions tell the agent to:
 
 ## Install it
 
-OpenClaw loads skills from a folder containing `SKILL.md`. Pick whichever
-install path matches your setup:
-
-**Copy into your workspace (simplest):**
+OpenClaw loads skills from a folder containing `SKILL.md`. Download from the
+live site (no repository checkout):
 
 ```bash
-cp -r openclaw-srf ~/.openclaw/workspace/skills/
-```
-
-Restart the gateway or start a new session so OpenClaw picks up the new
-skill:
-
-```bash
+mkdir -p ~/.openclaw/workspace/skills/openclaw-srf/reference
+curl -fsSL -o ~/.openclaw/workspace/skills/openclaw-srf/SKILL.md \
+  https://aisharedresponsibility.com/developers/skills/openclaw-srf/SKILL.md
+curl -fsSL -o ~/.openclaw/workspace/skills/openclaw-srf/reference/data-sources.md \
+  https://aisharedresponsibility.com/developers/skills/openclaw-srf/reference/data-sources.md
 openclaw gateway restart
 ```
 
-**Install from a local checkout with the CLI:**
+**Install from a folder you already have on disk:**
 
 ```bash
-openclaw skills install ./openclaw-srf --as srf-accountability
+openclaw skills install /path/to/openclaw-srf --as srf-accountability
 ```
 
-**Make it available to every agent on the machine**, instead of one
-workspace, by adding `--global` (installs into `~/.openclaw/skills` instead
-of the workspace `skills/` directory):
+**Make it available to every agent on the machine** (installs into
+`~/.openclaw/skills` instead of the workspace `skills/` directory):
 
 ```bash
-openclaw skills install ./openclaw-srf --as srf-accountability --global
+openclaw skills install /path/to/openclaw-srf --as srf-accountability --global
 ```
 
 **Verify it loaded:**

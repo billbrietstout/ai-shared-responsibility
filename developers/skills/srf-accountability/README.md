@@ -18,11 +18,19 @@ No code changes are needed for any of these. The skill is pure instruction; it c
 
 ## How to install
 
-Copy the `srf-accountability` folder (this `SKILL.md` and this `README.md`) into your skills directory:
+Download the published files from the live site (no repository checkout):
 
-- **Claude Code**: place it under your project's `.claude/skills/` or your user-level skills directory as `srf-accountability/SKILL.md`.
-- **Cowork**: use the skill installer to add a local or downloaded skill, pointing it at this folder.
-- **Agent SDK**: add the folder to the `skills` path your agent is configured to load from.
+```bash
+mkdir -p .claude/skills/srf-accountability
+curl -fsSL -o .claude/skills/srf-accountability/SKILL.md \
+  https://aisharedresponsibility.com/developers/skills/srf-accountability/SKILL.md
+curl -fsSL -o .claude/skills/srf-accountability/README.md \
+  https://aisharedresponsibility.com/developers/skills/srf-accountability/README.md
+```
+
+- **Claude Code**: use the path above under your project, or the same layout in your user-level skills directory.
+- **Cowork**: use the skill installer and point it at the downloaded folder.
+- **Agent SDK**: add the downloaded folder to the `skills` path your agent loads.
 
 Once installed, the agent picks up the skill automatically when a question matches its trigger description (accountability questions, "who owns this," per-vertical control lookups, and so on). No manual invocation syntax is required.
 

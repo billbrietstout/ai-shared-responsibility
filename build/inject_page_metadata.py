@@ -122,6 +122,15 @@ def classify(rel):
             "srf.moral.action",
             "srf.moral.outcome",
         ]
+    if rel == "developers/prompts":
+        # Canonical copy UI is /tools/prompts/; this path redirects there.
+        return "redirect", []
+    if rel == "developers/skills":
+        return "developer", [
+            "srf.framework.cosai-srf",
+            "srf.concept.accountability",
+            "srf.concept.control",
+        ]
     if top == "developers":
         return "developer", ["srf.framework.cosai-srf", "srf.concept.control"]
     if top == "presentation":

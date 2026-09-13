@@ -70,7 +70,7 @@
     <!-- llm:meta -->
     <meta name="llm:type" content="developer" />
     <meta name="llm:canonical-id" content="srf.page.developers-skills" />
-    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.control" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -96,12 +96,17 @@
         <h2 class="skill__name">srf-accountability</h2>
         <p class="skill__meta">Claude Code · Cowork · Agent SDK</p>
         <p>
-          Anthropic Agent Skills format. Copy the folder into a project or user
-          skills directory. The agent fetches
-          <code>/llms.txt</code>, vertical control schemas, the responsibility
-          matrix, and the ontology when a question matches.
+          Anthropic Agent Skills format. Download the published files into a
+          project or user skills directory. No repository checkout required.
+          The agent then fetches <code>/llms.txt</code>, vertical control
+          schemas, the responsibility matrix, and the ontology when a question
+          matches.
         </p>
-        <pre>cp -r developers/skills/srf-accountability .claude/skills/</pre>
+        <pre>mkdir -p .claude/skills/srf-accountability
+curl -fsSL -o .claude/skills/srf-accountability/SKILL.md \
+  https://aisharedresponsibility.com/developers/skills/srf-accountability/SKILL.md
+curl -fsSL -o .claude/skills/srf-accountability/README.md \
+  https://aisharedresponsibility.com/developers/skills/srf-accountability/README.md</pre>
         <div class="skill__links">
           <a href="/developers/skills/srf-accountability/README.md">README</a>
           <a href="/developers/skills/srf-accountability/SKILL.md">SKILL.md</a>
@@ -113,14 +118,21 @@
         <h2 class="skill__name">openclaw-srf</h2>
         <p class="skill__meta">OpenClaw</p>
         <p>
-          OpenClaw-native skill folder. Loads via workspace copy or
-          <code>openclaw skills install</code>. Uses built-in
-          <code>web_fetch</code> against the same published files.
+          OpenClaw-native skill folder. Download into the workspace skills
+          directory, then restart the gateway. Uses built-in
+          <code>web_fetch</code> against the same published files. No repository
+          checkout required.
         </p>
-        <pre>cp -r developers/skills/openclaw-srf ~/.openclaw/workspace/skills/
+        <pre>mkdir -p ~/.openclaw/workspace/skills/openclaw-srf/reference
+curl -fsSL -o ~/.openclaw/workspace/skills/openclaw-srf/SKILL.md \
+  https://aisharedresponsibility.com/developers/skills/openclaw-srf/SKILL.md
+curl -fsSL -o ~/.openclaw/workspace/skills/openclaw-srf/reference/data-sources.md \
+  https://aisharedresponsibility.com/developers/skills/openclaw-srf/reference/data-sources.md
 openclaw gateway restart</pre>
-        <p>Or:</p>
-        <pre>openclaw skills install ./developers/skills/openclaw-srf --as srf-accountability</pre>
+        <p>
+          If you already have the folder on disk, you can also run
+          <code>openclaw skills install /path/to/openclaw-srf --as srf-accountability</code>.
+        </p>
         <div class="skill__links">
           <a href="/developers/skills/openclaw-srf/README.md">README</a>
           <a href="/developers/skills/openclaw-srf/SKILL.md">SKILL.md</a>
