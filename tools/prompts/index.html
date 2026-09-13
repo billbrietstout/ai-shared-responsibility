@@ -94,6 +94,37 @@
         background: rgba(255,255,255,0.14);
         color: rgba(255,255,255,0.9);
       }
+      .prompt-toc {
+        position: sticky;
+        top: 56px;
+        z-index: 3;
+        max-width: 720px;
+        margin: 0 0 var(--sp-8);
+        padding: var(--sp-4) 0;
+        background: var(--paper, #f4f5f7);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .prompt-toc__label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin: 0 0 var(--sp-2);
+      }
+      .prompt-toc ol {
+        margin: 0;
+        padding-left: 1.25rem;
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        columns: 2;
+        column-gap: var(--sp-8);
+      }
+      @media (max-width: 640px) {
+        .prompt-toc ol { columns: 1; }
+      }
+      .prompt-toc li { margin-bottom: var(--sp-1); break-inside: avoid; }
 
       /* ── Section label ────────────────────────────────────────────── */
       .section-label {
@@ -390,8 +421,25 @@
 
     <main id="main" class="page-body" data-llm="system-instructions">
 
+      <div class="callout callout--warn prompt-injection-warning" role="note">
+        <strong>Prompt injection warning</strong>
+        Always review prompts before referencing or copying them into an assistant, agent, or production system.
+      </div>
+
+      <nav class="prompt-toc" aria-label="On this page">
+        <p class="prompt-toc__label">On this page</p>
+        <ol>
+          <li><a href="#builders">Builders</a></li>
+          <li><a href="#core-block">Core system instruction</a></li>
+          <li><a href="#primer-block">Site-aware primer</a></li>
+          <li><a href="#response-structure">Response structure</a></li>
+          <li><a href="#role-variants">Role variants</a></li>
+          <li><a href="#sector-context">Sector context</a></li>
+        </ol>
+      </nav>
+
       <!-- Lifecycle builder pointer -->
-      <div class="roadmap-block" style="max-width: 720px; margin-bottom: var(--sp-10);">
+      <div class="roadmap-block" id="builders" style="max-width: 720px; margin-bottom: var(--sp-10);">
         <p class="roadmap-block__title">Build a stage-specific prompt</p>
         <p>
           Need a prompt for one deployment rather than a general instruction? The
@@ -426,13 +474,13 @@
       </div>
 
       <!-- Core prompt -->
-      <p class="section-label">Core system instruction</p>
+      <p class="section-label" id="core-heading">Core system instruction</p>
 
-      <div class="prompt-block is-collapsed" id="core-block">
+      <div class="prompt-block" id="core-block">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">SRF v2.0 &middot; Core &middot; May 2026</span>
+          <span class="prompt-block__label">SRF v1.0 &middot; Core &middot; companion prompt pack</span>
           <div class="prompt-block__actions">
-            <button class="prompt-block__toggle" onclick="togglePrompt('core-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__toggle" onclick="togglePrompt('core-block', this)" aria-expanded="true">Hide</button>
             <button class="prompt-block__copy" onclick="copyPrompt('core-block', this)">Copy</button>
           </div>
         </div>
@@ -442,10 +490,10 @@
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: governance-analysis
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
-You are an expert AI Governance Analyst using the CoSAI AI Shared Responsibility Framework v2.0 (May 2026 or later).
+You are an expert AI Governance Analyst using the CoSAI AI Shared Responsibility Framework v1.0.
 
 Core Principles (never violate):
 - There must be exactly one accountable party per activity/component. Use RACI (Responsible, Accountable, Consulted, Informed) but always identify the single Accountable owner.
@@ -482,11 +530,11 @@ Be precise, actionable, and neutral. Prioritize clarity for executives, auditors
         your questions directly.
       </p>
 
-      <div class="prompt-block is-collapsed" id="primer-block">
+      <div class="prompt-block" id="primer-block">
         <div class="prompt-block__header">
           <span class="prompt-block__label">Site-aware primer &middot; aisharedresponsibility.com</span>
           <div class="prompt-block__actions">
-            <button class="prompt-block__toggle" onclick="togglePrompt('primer-block', this)" aria-expanded="false">Show</button>
+            <button class="prompt-block__toggle" onclick="togglePrompt('primer-block', this)" aria-expanded="true">Hide</button>
             <button class="prompt-block__copy" onclick="copyPrompt('primer-block', this)">Copy</button>
           </div>
         </div>
@@ -496,7 +544,7 @@ Be precise, actionable, and neutral. Prioritize clarity for executives, auditors
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: site-primer
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 You are helping me explore the CoSAI AI Shared Responsibility Framework (SRF) using content from aisharedresponsibility.com.
@@ -525,7 +573,7 @@ When I ask about a specific vertical or regulation, reference the relevant secti
       </div>
 
       <!-- Response structure -->
-      <p class="section-label">Response structure</p>
+      <p class="section-label" id="response-structure">Response structure</p>
       <ul class="steps-list" style="max-width: 680px; margin-bottom: var(--sp-12);">
         <li>
           <div class="steps-list__num"></div>
@@ -579,7 +627,7 @@ When I ask about a specific vertical or regulation, reference the relevant secti
       </ul>
 
       <!-- Role variants -->
-      <p class="section-label">Role variants</p>
+      <p class="section-label" id="role-variants">Role variants</p>
       <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 640px; margin-bottom: var(--sp-6); line-height: var(--leading-normal);">
         Append one of these modifiers to the core instruction to focus output for a specific audience.
         The core rules still apply; only the output emphasis changes.
@@ -603,7 +651,7 @@ When I ask about a specific vertical or regulation, reference the relevant secti
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: executive
 # purpose: role-variant
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 Output focus: Executive summary.
@@ -627,7 +675,7 @@ Lead with a one-paragraph board-ready summary of accountability owners and top r
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: auditor
 # purpose: role-variant
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 Output focus: Audit program.
@@ -651,7 +699,7 @@ Expand step 6 (Evidence Requirements) into a full audit test plan. For each acco
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: developer
 # purpose: role-variant
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 Output focus: Technical controls.
@@ -675,7 +723,7 @@ Emphasize L3 (AI Application) and L4 (AI Platform) controls. For each accountabi
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: legal
 # purpose: role-variant
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 Output focus: Contract language.
@@ -685,7 +733,7 @@ Translate each gap and recommendation into draft contract clause language. For e
       </div>
 
       <!-- Sector context parameters -->
-      <p class="section-label">Sector context parameters</p>
+      <p class="section-label" id="sector-context">Sector context parameters</p>
       <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 640px; margin-bottom: var(--sp-6); line-height: var(--leading-normal);">
         Add the relevant parameter block at the top of your conversation to activate sector-specific regulatory crosswalks and evidence pointers.
         Each maps to an <a href="/industries/">industry vertical schema</a>.
@@ -703,7 +751,7 @@ Translate each gap and recommendation into draft contract clause language. For e
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 [Industry: Financial Services]
@@ -729,7 +777,7 @@ Translate each gap and recommendation into draft contract clause language. For e
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 [Industry: Healthcare]
@@ -755,7 +803,7 @@ Translate each gap and recommendation into draft contract clause language. For e
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 [Industry: Insurance]
@@ -781,7 +829,7 @@ Translate each gap and recommendation into draft contract clause language. For e
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 [Industry: Federal Civilian (FCEB)]
@@ -807,7 +855,7 @@ Translate each gap and recommendation into draft contract clause language. For e
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 [Industry: Defense]
@@ -833,7 +881,7 @@ Translate each gap and recommendation into draft contract clause language. For e
 # operating_model: all (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS)
 # audience: general
 # purpose: sector-context
-# version: 2.0
+# prompt_pack: companion-2
 # canonical_url: https://aisharedresponsibility.com/tools/prompts/
 #
 [Industry: Manufacturing]

@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { id: "regulations", label: "Regulations", href: "/regulations/" },
   { id: "industries",  label: "Industries",  href: "/industries/" },
   { id: "compare",     label: "Compare",     href: "/compare/" },
-  { id: "developers",  label: "Developers",  href: "/developers/" },
+  { id: "developers",  label: "Data & agents",  href: "/developers/" },
   { id: "about",       label: "About",       href: "/about/" },
 ];
 
@@ -25,7 +25,7 @@ const FOOTER_LINKS = [
   { label: "Regulations",  href: "/regulations/" },
   { label: "Industries",   href: "/industries/" },
   { label: "Compare",      href: "/compare/" },
-  { label: "Developers",  href: "/developers/" },
+  { label: "Data & agents",  href: "/developers/" },
   { label: "Presentation",href: "/presentation/unprompted-oct2026/" },
   { label: "About",       href: "/about/" },
   { label: "Changelog",   href: "/changelog/" },

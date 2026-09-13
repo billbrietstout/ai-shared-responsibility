@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Skills — AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="Installable agent skills that ground Claude-family and OpenClaw agents in the CoSAI AI Shared Responsibility Framework using published HTTPS data."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .skill {
+        max-width: 720px;
+        margin: 0 0 var(--sp-10);
+        padding: 0 0 var(--sp-8);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .skill:last-of-type { border-bottom: 0; }
+      .skill__name {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--cosai-navy);
+        margin: 0 0 var(--sp-2);
+      }
+      .skill__meta {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin: 0 0 var(--sp-3);
+      }
+      .skill p {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        margin: 0 0 var(--sp-3);
+      }
+      .skill pre {
+        margin: 0 0 var(--sp-4);
+        padding: var(--sp-4);
+        background: var(--slate-50);
+        border: 1px solid var(--slate-200);
+        font-size: 0.8rem;
+        overflow-x: auto;
+      }
+      .skill__links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-4);
+        font-size: var(--text-sm);
+      }
+    </style>
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "name": "CoSAI SRF Agent Skills",
+  "url": "https://aisharedresponsibility.com/developers/skills/",
+  "description": "Installable skills that ground agents in the CoSAI SRF using published HTTPS data.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="developer" />
+    <meta name="llm:canonical-id" content="srf.page.developers-skills" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="developers"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow"><a href="/developers/">Data &amp; agents</a> / Skills</span>
+        <h1 class="page-hero__title">Agent skills</h1>
+        <p class="page-hero__lede">
+          Drop-in instruction packs that teach an agent to answer SRF
+          accountability questions by fetching published JSON over HTTPS.
+          Exactly one accountable party per activity. No MCP server, no API keys.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="developers-skills">
+
+      <article class="skill" id="srf-accountability">
+        <h2 class="skill__name">srf-accountability</h2>
+        <p class="skill__meta">Claude Code · Cowork · Agent SDK</p>
+        <p>
+          Anthropic Agent Skills format. Copy the folder into a project or user
+          skills directory. The agent fetches
+          <code>/llms.txt</code>, vertical control schemas, the responsibility
+          matrix, and the ontology when a question matches.
+        </p>
+        <pre>cp -r developers/skills/srf-accountability .claude/skills/</pre>
+        <div class="skill__links">
+          <a href="/developers/skills/srf-accountability/README.md">README</a>
+          <a href="/developers/skills/srf-accountability/SKILL.md">SKILL.md</a>
+          <a href="https://github.com/billbrietstout/ai-shared-responsibility/tree/main/developers/skills/srf-accountability">GitHub</a>
+        </div>
+      </article>
+
+      <article class="skill" id="openclaw-srf">
+        <h2 class="skill__name">openclaw-srf</h2>
+        <p class="skill__meta">OpenClaw</p>
+        <p>
+          OpenClaw-native skill folder. Loads via workspace copy or
+          <code>openclaw skills install</code>. Uses built-in
+          <code>web_fetch</code> against the same published files.
+        </p>
+        <pre>cp -r developers/skills/openclaw-srf ~/.openclaw/workspace/skills/
+openclaw gateway restart</pre>
+        <p>Or:</p>
+        <pre>openclaw skills install ./developers/skills/openclaw-srf --as srf-accountability</pre>
+        <div class="skill__links">
+          <a href="/developers/skills/openclaw-srf/README.md">README</a>
+          <a href="/developers/skills/openclaw-srf/SKILL.md">SKILL.md</a>
+          <a href="/developers/skills/openclaw-srf/reference/data-sources.md">Data sources</a>
+          <a href="https://github.com/billbrietstout/ai-shared-responsibility/tree/main/developers/skills/openclaw-srf">GitHub</a>
+        </div>
+      </article>
+
+      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600);">
+        For paste-ready system instructions without installing a skill, use
+        <a href="/tools/prompts/">System Instructions</a> under Tools.
+      </p>
+
+    </main>
+
+    <site-footer></site-footer>
+  </body>
+</html>

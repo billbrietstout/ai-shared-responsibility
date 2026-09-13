@@ -12,11 +12,12 @@
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
 
-      /* ── Hero ────────────────────────────────────────────────────── */
+      /* ── Masthead ───────────────────────────────────────────────── */
       .hero {
-        background: var(--cosai-navy);
-        color: #fff;
-        padding: var(--sp-20) var(--page-pad) var(--sp-16);
+        background: var(--paper);
+        color: var(--ink);
+        padding: var(--sp-16) var(--page-pad) var(--sp-12);
+        border-bottom: 1px solid var(--slate-200);
       }
       .hero__inner {
         max-width: var(--max-w);
@@ -28,8 +29,21 @@
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #93c5fd;
-        margin-bottom: var(--sp-6);
+        color: var(--slate-500);
+        margin-bottom: var(--sp-4);
+      }
+      .hero__provenance {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        max-width: 62ch;
+        margin: 0 0 var(--sp-6);
+      }
+      .hero__provenance a {
+        color: var(--cosai-blue);
+        font-weight: 600;
+        text-decoration: underline;
+        text-underline-offset: 2px;
       }
       .hero__title {
         font-family: var(--font-display);
@@ -37,19 +51,20 @@
         font-weight: 600;
         letter-spacing: -0.02em;
         line-height: 1.15;
+        color: var(--ink);
         max-width: 760px;
         margin-bottom: var(--sp-5);
       }
       .hero__title em {
         font-style: italic;
         font-weight: 600;
-        color: #93c5fd;
+        color: inherit;
       }
       .hero__lede {
         font-family: var(--font-serif);
         font-size: var(--text-lg);
-        color: #cbd5e1;
-        max-width: 580px;
+        color: var(--ink-muted);
+        max-width: 62ch;
         line-height: var(--leading-snug);
         margin-bottom: var(--sp-6);
       }
@@ -63,23 +78,22 @@
       .hero__release a {
         font-size: var(--text-sm);
         font-weight: 600;
-        color: #93c5fd;
+        color: var(--cosai-blue);
         text-decoration: none;
-        border-bottom: 1px solid rgba(147,197,253,0.4);
-        transition: border-color 0.12s;
+        border-bottom: 1px solid var(--cosai-blue-soft);
       }
-      .hero__release a:hover { border-color: #93c5fd; }
+      .hero__release a:hover { border-bottom-color: var(--cosai-blue); }
       .hero__release-sep {
-        color: rgba(255,255,255,0.25);
+        color: var(--slate-300);
         font-size: var(--text-sm);
       }
 
-      /* ── Role entry list (hero bottom) ──────────────────────────── */
+      /* ── Role entry list ────────────────────────────────────────── */
       .role-list {
         list-style: none;
         margin: 0 0 var(--sp-8);
         padding: 0;
-        border-top: 1px solid rgba(255,255,255,0.18);
+        border-top: 1px solid var(--slate-200);
       }
       .role-list a {
         display: grid;
@@ -87,7 +101,7 @@
         gap: var(--sp-4);
         align-items: baseline;
         padding: var(--sp-4) 0;
-        border-bottom: 1px solid rgba(255,255,255,0.18);
+        border-bottom: 1px solid var(--slate-200);
         text-decoration: none;
         color: inherit;
       }
@@ -99,22 +113,22 @@
       .role-list__role {
         font-size: var(--text-sm);
         font-weight: 700;
-        color: #fff;
+        color: var(--ink);
       }
       .role-list__desc {
         font-size: var(--text-sm);
-        color: #cbd5e1;
+        color: var(--slate-600);
         line-height: var(--leading-normal);
         margin: 0;
       }
       .role-list__cta {
         font-size: var(--text-xs);
         font-weight: 700;
-        color: #93c5fd;
+        color: var(--cosai-blue);
         white-space: nowrap;
       }
 
-      /* ── Decision Record CTA (hero) ─────────────────────────────── */
+      /* ── Decision Record CTA ────────────────────────────────────── */
       .hero__decision {
         margin-top: var(--sp-4);
         display: flex;
@@ -122,49 +136,52 @@
         justify-content: space-between;
         flex-wrap: wrap;
         gap: var(--sp-4);
-        background: rgba(45,91,227,0.16);
-        border: 1px solid rgba(147,197,253,0.4);
+        background: #fff;
+        border: 1px solid var(--slate-200);
         padding: var(--sp-4) var(--sp-5);
       }
       .hero__decision-text {
         font-size: var(--text-sm);
-        color: #cbd5e1;
+        color: var(--slate-600);
         line-height: var(--leading-normal);
         max-width: 62ch;
         margin: 0;
       }
-      .hero__decision-text strong { color: #fff; font-weight: 700; }
+      .hero__decision-text strong { color: var(--ink); font-weight: 700; }
       .hero__primary {
         flex: none;
         display: inline-flex;
         align-items: center;
         gap: var(--sp-2);
-        background: #2d5be3;
+        background: var(--cosai-blue);
         color: #fff;
         font-size: var(--text-sm);
         font-weight: 700;
         text-decoration: none;
         padding: var(--sp-3) var(--sp-5);
         border-radius: var(--radius);
-        border: 1px solid #2d5be3;
-        transition: background 0.14s;
+        border: 1px solid var(--cosai-blue);
       }
-      .hero__primary:hover { background: #1e47c4; color: #fff; text-decoration: none; }
+      .hero__primary:hover {
+        background: #142c52;
+        border-color: #142c52;
+        color: #fff;
+        text-decoration: none;
+      }
 
-      /* ── AI analysis feature callout ────────────────────────────── */
+      /* ── SRF Stress Test (paper catalog entry) ──────────────────── */
       .feature-callout {
         padding: var(--sp-16) var(--page-pad);
-        background: var(--cosai-navy-light);
-        border-top: 1px solid rgba(255,255,255,0.12);
-        border-bottom: 1px solid rgba(255,255,255,0.12);
+        background: var(--paper);
+        border-bottom: 1px solid var(--slate-200);
       }
       .feature-callout__inner {
         max-width: var(--max-w);
         margin: 0 auto;
         display: grid;
-        grid-template-columns: 1fr 420px;
+        grid-template-columns: 1fr minmax(260px, 380px);
         gap: var(--sp-12);
-        align-items: center;
+        align-items: start;
       }
       .feature-callout__badge {
         display: block;
@@ -172,14 +189,14 @@
         font-weight: 700;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: #93c5fd;
+        color: var(--slate-500);
         margin-bottom: var(--sp-4);
       }
       .feature-callout__heading {
         font-family: var(--font-display);
         font-size: var(--text-2xl);
         font-weight: 600;
-        color: #fff;
+        color: var(--ink);
         letter-spacing: -0.015em;
         line-height: var(--leading-tight);
         margin-bottom: var(--sp-4);
@@ -187,56 +204,56 @@
       .feature-callout__body {
         font-family: var(--font-serif);
         font-size: var(--text-base);
-        color: #cbd5e1;
+        color: var(--ink-muted);
         line-height: var(--leading-normal);
         margin-bottom: var(--sp-6);
+        max-width: 62ch;
       }
       .feature-callout__link {
         display: inline-flex;
         align-items: center;
         gap: var(--sp-2);
-        padding: var(--sp-3) var(--sp-6);
-        background: var(--cosai-blue);
-        color: #fff;
-        border-radius: var(--radius);
         font-size: var(--text-sm);
         font-weight: 700;
+        color: var(--cosai-blue);
         text-decoration: none;
-        transition: background 0.12s;
+        border-bottom: 1px solid var(--cosai-blue-soft);
+        padding: 0;
+        background: none;
       }
       .feature-callout__link:hover {
-        background: #234acc;
+        border-bottom-color: var(--cosai-blue);
         text-decoration: none;
-        color: #fff;
+        color: var(--cosai-blue);
       }
       .feature-demo {
-        background: rgba(0,0,0,0.25);
-        border: 1px solid rgba(255,255,255,0.15);
+        background: #fff;
+        border: 1px solid var(--slate-200);
         padding: var(--sp-5);
       }
       .feature-demo__title {
         font-size: var(--text-xs);
-        color: rgba(255,255,255,0.45);
+        color: var(--slate-500);
         font-family: var(--font-mono);
         margin-bottom: var(--sp-4);
       }
       .feature-demo__content {
         font-family: var(--font-mono);
         font-size: 0.75rem;
-        color: #cbd5e1;
+        color: var(--slate-700);
         line-height: 1.7;
       }
       .feature-demo__input {
-        color: #e2e8f0;
+        color: var(--ink);
         margin-bottom: var(--sp-3);
         padding-bottom: var(--sp-3);
-        border-bottom: 1px solid rgba(255,255,255,0.15);
+        border-bottom: 1px solid var(--slate-200);
       }
       .feature-demo__label {
         font-size: 0.65rem;
         text-transform: uppercase;
         letter-spacing: 0.1em;
-        color: #93c5fd;
+        color: var(--slate-500);
         margin-bottom: 4px;
       }
       .feature-demo__output-row {
@@ -245,11 +262,11 @@
         gap: var(--sp-2);
         margin-bottom: 4px;
       }
-      .feature-demo__key { color: #e2e8f0; }
-      .feature-demo__val { color: #93c5fd; text-align: right; }
+      .feature-demo__key { color: var(--slate-700); }
+      .feature-demo__val { color: var(--cosai-blue); text-align: right; font-weight: 600; }
       .feature-demo__flags {
         margin-top: var(--sp-3);
-        color: #e2e8f0;
+        color: var(--slate-600);
         font-size: 0.7rem;
       }
 
@@ -604,6 +621,11 @@
       <section class="hero" data-llm="named-owner-per-activity">
         <div class="hero__inner">
           <p class="hero__eyebrow">CoSAI · OASIS Open Project · V1.0</p>
+          <p class="hero__provenance">
+            Independent companion to the
+            <a href="https://www.coalitionforsecureai.org/" target="_blank" rel="noopener">CoSAI Shared Responsibility Framework</a>.
+            Maintained by Bill Stout. Content CC BY 4.0; code Apache-2.0.
+          </p>
           <h1 class="hero__title">
             Make <em>responsibility</em> clear before you scale AI.<br>
             CoSAI SRF maps every obligation and control to an <em>accountable owner.</em>
@@ -678,7 +700,7 @@
               risk flags in seconds. Powered by GPT-4o mini.
             </p>
             <a class="feature-callout__link" href="/assess/srf-stress/">
-              Try the SRF Stress Test →
+              Open the SRF Stress Test →
             </a>
           </div>
           <div class="feature-demo" aria-hidden="true">
@@ -920,7 +942,7 @@
               </a>
             </li>
             <li>
-              <a href="/developers/prompts/">
+              <a href="/tools/prompts/">
                 <span>
                   <span class="tool-list__name">Official System Prompts</span>
                   <span class="tool-list__meta">Reference</span>
@@ -931,10 +953,10 @@
             <li>
               <a href="/developers/schema/">
                 <span>
-                  <span class="tool-list__name">SRF Schema Viewer</span>
+                  <span class="tool-list__name">Join Conventions</span>
                   <span class="tool-list__meta">Reference</span>
                 </span>
-                <p class="tool-list__desc">Browse layers, operating models, and accountability assignments as structured data.</p>
+                <p class="tool-list__desc">How to join the static JSON catalog, ontology edges, and regulation mapping keys.</p>
               </a>
             </li>
           </ul>
@@ -971,12 +993,12 @@
               </a>
             </li>
             <li>
-              <a href="/data/index.json">
+              <a href="/developers/schema/">
                 <span>
                   <span class="tool-list__name">Machine-readable data</span>
-                  <span class="tool-list__meta">JSON</span>
+                  <span class="tool-list__meta">Join · JSON</span>
                 </span>
-                <p class="tool-list__desc">Every control schema, layer, persona, and responsibility matrix as static JSON.</p>
+                <p class="tool-list__desc">Human landing for every control schema, layer, persona, and responsibility matrix. Raw index at /data/index.json.</p>
               </a>
             </li>
             <li>
@@ -989,12 +1011,12 @@
               </a>
             </li>
             <li>
-              <a href="/developers/schema/">
+              <a href="/data/index.json">
                 <span>
-                  <span class="tool-list__name">SRF Schema Viewer</span>
-                  <span class="tool-list__meta">Reference</span>
+                  <span class="tool-list__name">Data index (raw JSON)</span>
+                  <span class="tool-list__meta">index.json</span>
                 </span>
-                <p class="tool-list__desc">Browse layers, operating models, and accountability assignments as structured data.</p>
+                <p class="tool-list__desc">Programmatic catalog of every data file with schema descriptions and record counts.</p>
               </a>
             </li>
             <li>
