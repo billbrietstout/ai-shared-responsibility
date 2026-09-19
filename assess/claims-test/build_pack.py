@@ -9,7 +9,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.3"
+VERSION = "1.0.4"
 UPDATED = "2026-09-18"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
@@ -22,12 +22,12 @@ SHARED_RULES = f"""You are assessing a draft AI security whitepaper. You extract
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B/C when those inputs are present, then C-qa, C-suggest, and C-report. C-attacks is required. Empty dimension_profile.topics does not skip it. The conversation reply is C-export-md: report.markdown only. That markdown must include a heading Published attack classes with ATT-xx rows. Do not replace that table with a short list of draft-only failure modes. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
 Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Required headings include Scorecard, ROCA, Published attack classes, Inventory, and Suggestion packets. Published attack classes is a table of ATT-01 rows with name, family, draft overlap (named, implied, or omitted), and catalog or paper. Do not replace that table with draft-only failure modes. Every suggestion packet appears in full. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -40,10 +40,10 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
-- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch {PACK_URL}. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch {PACK_URL}. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
 - Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
-- Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks collects published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
+- Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
 - Accountability mapping stays AI SRF. Track B copies persona and layer from injected srf_inputs. Do not guess a persona from training memory.
 - Vertical control schemas are independently proposed extensions to CoSAI SRF v1.0. Track C findings carry that caveat.
@@ -138,14 +138,16 @@ def build() -> dict:
             "modes": {
                 "chain_run": (
                     "The operator asked to run the claims-test chain, or named this "
-                    "pack chain. Execute every required Track A step in order internally. "
-                    "After C-score, run Track B when tracks includes B and srf_inputs is "
-                    "present, then Track C when tracks includes C and vertical_source_rows "
-                    "is present. Then run C-qa, C-suggest, and C-report. The conversation "
-                    "reply is C-export-md: report.markdown only. Do not print intermediate "
-                    "JSON. Emit C-export-json only when the first message asks for JSON. "
-                    "Do not ask a question. Do not request continue. Do not request a "
-                    "field from operator_initial_inputs."
+                    "pack chain. Execute Track A internally in this order: C-intake, "
+                    "C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, "
+                    "C-roca, C-score. After C-score, run Track B when tracks includes B "
+                    "and srf_inputs is present, then Track C when tracks includes C and "
+                    "vertical_source_rows is present. Then run C-qa, C-suggest, and "
+                    "C-report. C-attacks is required. Empty topics does not skip it. "
+                    "The conversation reply is C-export-md: report.markdown only, and it "
+                    "must include Published attack classes with ATT-xx rows. Do not print "
+                    "intermediate JSON. Emit C-export-json only when the first message "
+                    "asks for JSON. Do not ask a question."
                 ),
                 "copy_one_block": (
                     "This message contains a single [chain] banner. Produce only that "
@@ -166,18 +168,22 @@ def build() -> dict:
                 "halt because prompts.json is absent from pinned_sources."
             ),
             "chain_run_output": (
-                "Reply with report.markdown only, starting at its title heading. No JSON "
-                "wrapper. No markdown fences around the document. Include every "
-                "suggestion packet in full. The operator saves that reply as a .md file. "
-                "Copy-one-block JSON steps still output JSON only."
+                "Reply with report.markdown only, starting at its title heading. Required "
+                "headings include Scorecard, ROCA, Published attack classes, Inventory, "
+                "and Suggestion packets. Published attack classes is a table of ATT-xx "
+                "rows with name, family, draft overlap, and catalog or paper. Do not "
+                "replace that table with draft-only failure modes. Include every "
+                "suggestion packet in full. No JSON wrapper. No markdown fences around "
+                "the document. Copy-one-block JSON steps still output JSON only."
             ),
             "pack_load": (
                 "Read prompts.json from this message (paste or attachment) or fetch "
                 f"{PACK_URL}. "
-                "That load is required. The pack is not a pinned_source. Empty "
-                "pinned_sources does not block the chain. Do not invent templates. "
-                "Do not fetch citation, catalog, principle, or SRF URLs unless they "
-                "appear in pinned_sources."
+                "If both exist, use the attached copy. If a fetched pack is older than "
+                "this shortcut, still run C-attacks and still print Published attack "
+                "classes. The pack is not a pinned_source. Empty pinned_sources does "
+                "not block the chain. Do not invent templates. Do not fetch citation, "
+                "catalog, principle, or SRF URLs unless they appear in pinned_sources."
             ),
         },
         "operator_initial_inputs": {
@@ -709,7 +715,7 @@ Return JSON:
                 "attacks",
                 ["intake", "claims", "foundations", "draft_body", "pinned_sources"],
                 "attacks",
-                "Each row is a published attack class for the declared topic, with a failure mode and draft_overlap named, implied, or omitted. No reproduction steps. At most 40 rows.",
+                "Each row is a published attack class for the declared topic, with a failure mode and draft_overlap named, implied, or omitted. Empty topics does not skip this step. Floor 8 rows when title or headings mention attack, threat, taxonomy, multimodal, or agentic; otherwise floor 5. At most 40 rows. No reproduction steps.",
                 """{{shared_rules}}
 
 Step: C-attacks. Collect published attack classes that can test the draft's claims. This list is the coverage fixture, not a rewrite of the draft.
@@ -725,7 +731,9 @@ Pinned sources:
 Draft body:
 {{draft_body}}
 
-Subject: dimension_profile.topics plus industry_pilot. If topics is empty, derive from headings and mark topics_derived true.
+Subject: dimension_profile.topics plus industry_pilot. If topics is empty, derive from title and headings and mark topics_derived true. Empty topics does not skip this step.
+
+This step is not a paraphrase of the draft's own risk list. A list of draft-only failure modes with no ATT ids is a failed stop_condition.
 
 Sources, in this order:
 1. Attack classes the draft names or implies.
@@ -746,7 +754,7 @@ Each row:
 - draft_overlap: named (draft states the class), implied (draft describes the failure without naming it), omitted (published for this topic, draft is silent)
 - stage: a label from stage_vocabulary when it fits; otherwise null
 
-Prefer 8 to 25 rows. Never more than 40. Prefer rows that can falsify a coverage claim (fully addresses, all risks, complete). Include omitted classes when a credible catalog or paper describes them for this topic.
+Prefer 8 to 25 rows. Never more than 40. Floor: 8 rows and at least 2 omitted catalog or paper classes when title or headings contain attack, threat, taxonomy, multimodal, or agentic; otherwise 5 rows. Prefer rows that can falsify a coverage claim (fully addresses, all risks, complete). Include omitted classes when a credible catalog or paper describes them for this topic.
 
 A training_memory paper_ref stays unresolved_unpinned. Catalog ids may be used without a paper_ref.
 
@@ -780,7 +788,7 @@ Return JSON:
                 "inventory",
                 ["intake", "claims", "attacks", "foundations", "draft_body"],
                 "inventory",
-                "Each named or implied ATT row has a RSK row. Omitted ATT rows stay off inventory. No reproduction steps.",
+                "Each named or implied ATT row has a RSK row. Halt if attacks.items is empty; do not substitute a draft-only failure-mode list. Omitted ATT rows stay off inventory. No reproduction steps.",
                 """{{shared_rules}}
 
 Step: C-inventory. Bind draft-treated risks to C-attacks. Omitted published attacks stay on the attacks object; they are the coverage test, not extra draft risks.
@@ -797,6 +805,8 @@ Draft body:
 {{draft_body}}
 
 Use dimension_profile.topics and industry_pilot as the subject. If topics is empty, copy topics_derived from C-attacks.
+
+If attacks.items is empty, stop and rerun C-attacks. Do not emit a draft-only failure-mode list. Do not title any section Topic-Risk Inventory.
 
 Each named or implied ATT row becomes one RSK row. Copy failure_mode, taxonomy_ref, and stage when they still match the draft. Set attack_ids to that ATT id. source is the draft heading.
 
@@ -1296,7 +1306,7 @@ Return JSON:
                 "report",
                 ["intake", "claims", "screen", "foundations", "attacks", "inventory", "tags", "roca", "scores", "qa", "suggestions", "srf_coverage", "vertical_context"],
                 "report",
-                "report.markdown contains every claim id, every ATT id, every score, and every suggestion packet in full. reviewer is null. Score deltas appear only when prior_assessment_id is set.",
+                "report.markdown contains a heading Published attack classes, every claim id, every ATT id, every score, and every suggestion packet in full. reviewer is null. Score deltas appear only when prior_assessment_id is set. Do not emit the report if attacks.items is empty.",
                 """{{shared_rules}}
 
 Step: C-report. Author the readable assessment once. On a chain run this markdown is the conversation reply. Copy-one-block still returns JSON so C-export-md can copy the stored string.
@@ -1336,7 +1346,7 @@ Write in this order:
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
 5. Foundations: axioms, invariables, principles, references. Mark provisional.
-6. Published attack classes: ATT id, name, family, draft overlap (named, implied, omitted), catalog or paper. Counts per overlap. No reproduction steps.
+6. Published attack classes: heading exactly that phrase. Table of ATT id, name, family, draft overlap (named, implied, omitted), catalog or paper. Counts per overlap. If attacks.items is empty, stop and rerun C-attacks; do not substitute a draft-only risk list. No reproduction steps.
 7. Inventory: draft-treated risk id, linked ATT ids, failure mode, tags. No reproduction steps.
 8. Screen findings table, or a sentence that screen was skipped.
 9. QA gaps, including absolute coverage language, omitted attacks, and scope creep.
@@ -1369,7 +1379,7 @@ Step: C-export-md. Output report.markdown exactly as stored, starting at its tit
 Completed assessment:
 {{report}}
 
-If report.markdown is missing or empty, stop and say C-report must run first. If any claim id or ATT id is absent from report.markdown, stop and say C-report must rewrite the projection. Do not reconstruct the document in this export step.
+If report.markdown is missing or empty, stop and say C-report must run first. If the heading Published attack classes is absent, or any claim id or ATT id is absent from report.markdown, stop and say C-report must rewrite the projection. Do not reconstruct the document in this export step.
 """,
             ),
             prompt(

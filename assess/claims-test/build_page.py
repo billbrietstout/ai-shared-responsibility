@@ -21,14 +21,17 @@ PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
 
 def pack_load_block() -> str:
     return f"""Load the claims-test pack.
-If this message already contains prompts.json (paste or attachment), use that copy.
+If this message already contains prompts.json (paste or attachment), use that copy and ignore an older fetched file.
 Else fetch {PACK_URL}. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message."""
 
 
 def chain_run_output_block() -> str:
     return """Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
+Required headings: Scorecard, ROCA, Published attack classes, Inventory, Suggestion packets.
+Published attack classes is a table of ATT-01 rows with name, family, draft overlap (named, implied, or omitted), and catalog or paper. Do not replace it with a short list of draft-only failure modes. Empty topics does not skip C-attacks.
 Write every suggestion packet in full in that report (anchor, why it fails, and the replacement or review comment and diff). Save this reply as a .md file.
 Emit schema JSON only if this message asks for JSON."""
 
@@ -38,7 +41,7 @@ def shortcut_text_a(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report internally. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
 
 {chain_run_output_block()}
 
@@ -57,7 +60,7 @@ def shortcut_text_b(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score internally, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. Channel: google-docs unless this message names github-md or published.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 {chain_run_output_block()}
 
@@ -76,7 +79,7 @@ def shortcut_text_c(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score internally, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. Channel: google-docs unless this message names github-md or published.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 {chain_run_output_block()}
 
@@ -513,10 +516,11 @@ def main() -> None:
         <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v{esc(version)}</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
-          Paste a draft once. The pack extracts claims, binds each one to a
-          risk, an obligation, a control, and one accountable party, then
-          replies with a markdown report that includes Google Docs or GitHub
-          suggestion packets. Independently proposed; not part of CoSAI SRF v1.0.
+          Paste a draft once. The pack extracts claims, collects published
+          topic attacks, binds each claim to a risk, an obligation, a control,
+          and one accountable party, then replies with a markdown report that
+          includes Google Docs or GitHub suggestion packets. Independently
+          proposed; not part of CoSAI SRF v1.0.
           Templates:
           <a href="/assess/claims-test/prompts.json">prompts.json</a>.
           Schema:
@@ -554,7 +558,7 @@ def main() -> None:
       <div class="deliverable" id="shortcut">
         <h2 class="deliverable__title">Start here: one chat</h2>
         <ol>
-          <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>. For ChatGPT, also attach <a href="/assess/claims-test/prompts.json">prompts.json</a>.</li>
+          <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>. For ChatGPT or Grok, also attach <a href="/assess/claims-test/prompts.json">prompts.json</a>.</li>
           <li>Copy the Track A shortcut. Send it once with the draft, the pack file if attached, and the intake fields you have.</li>
           <li>Save the reply as a <code>.md</code> file. Apply the suggestion packets in Docs or the PR, not in the chat. Ask for JSON only if a machine eval needs it.</li>
         </ol>
@@ -562,9 +566,11 @@ def main() -> None:
           The model loads
           <a href="/assess/claims-test/prompts.json">prompts.json</a>
           (fetch or attach that file), runs Track A internally, and replies
-          with the markdown report. Intermediate JSON stays internal.
-          ChatGPT file upload cannot fetch the pack URL; attach
-          <code>prompts.json</code> as a second file with the draft. The pack is
+          with the markdown report. That report must include a Published
+          attack classes table of ATT-xx rows. Intermediate JSON stays internal.
+          ChatGPT and Grok file upload cannot fetch the pack URL; attach
+          <code>prompts.json</code> as a second file with the draft. If a fetch
+          returns an older pack, still run C-attacks. The pack is
           not a pinned source. Omitted fields stay empty.
           SRF and vertical mapping without injected data are not applicable.
           If neither fetch nor attach is possible, use

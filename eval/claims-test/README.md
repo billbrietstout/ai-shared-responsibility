@@ -52,7 +52,7 @@ Checks:
 - Shared is not a final owner
 - Suggestion packets for every Partial, Unsupported, Blocked, and P1/P2 screen finding
 - Inventory failure modes do not contain reproduction-step language
-- Report markdown contains every gold claim id, every ATT id, and the full suggestion packet text
+- Report markdown contains the heading Published attack classes, every gold claim id, every ATT id, and the full suggestion packet text
 
 `closure` stays false until a second gold fixture and a human review of
 suggestion-packet quality exist.

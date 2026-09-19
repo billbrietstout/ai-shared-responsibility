@@ -9,7 +9,7 @@ live site unless the owner asks.
 **Workspace:** `/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com`  
 **Live site:** https://aisharedresponsibility.com  
 **Lane:** research and assessment method; not a new CoSAI SRF object  
-**Status:** v1.0.3 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional. C-attacks collects published topic attacks before draft-treated inventory.
+**Status:** v1.0.4 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional. C-attacks is required. The Track A shortcut names it and requires a Published attack classes table of ATT-xx rows even when a fetched pack is older or topics is empty.
 
 Related live tools (cousins, not duplicates):
 
@@ -189,7 +189,7 @@ as Supported without a mechanism and one owner.
 | Artifact | Location | Notes |
 | --- | --- | --- |
 | This handoff | `whitepaper-claims-test-handoff.md` | Design notes; `prompts.json` is the chain source of truth |
-| Prompt pack v1.0.3 | `assess/claims-test/prompts.json` | Chain ids include C-attacks. Pack load is fetch or attach; citations stay pinned. Chain run replies with markdown. |
+| Prompt pack v1.0.4 | `assess/claims-test/prompts.json` | C-attacks is required. Shortcut names the step and the Published attack classes table even if a fetched pack is older. Citations stay pinned. Chain run replies with markdown. |
 | Site page | `/assess/claims-test/` | Owner asked 18 Sep 2026; independently proposed |
 | Gold fixture | `eval/claims-test/gold/agent-identity-draft/` | Seven claims; Docs packets in `expected.json`; GitHub sample beside it |
 | Eval stub | `eval/claims-test/run_eval.py` | Schema, scores, ROCA columns, tags, suggestion coverage |
@@ -222,8 +222,9 @@ profile example** and optional gold fixture, not as the only scope of the pack.
 3. Done: gold draft fixture `eval/claims-test/gold/agent-identity-draft/` with expected claim scores and sample suggestion packets.
 4. Done: eval stub after `eval/threat-model/` (`schema.json`, `run_eval.py`). Closure stays false until a second fixture and a human review of packets.
 5. Done: public page at `/assess/claims-test/` (owner ask, 18 Sep 2026).
-6. Optional: second industry or WS1–WS4 profile packs as pinned source sets.
-7. Optional: streaming multimodal gold fixture from local `papers/streaming-multimodal-*.md` (gitignored).
+6. Done: v1.0.4. A Track A shortcut that said "C-intake through C-report" plus a fetched 1.0.2 pack produced a draft-only Topic-Risk Inventory with no ATT ids. The shortcut now names C-attacks and requires a Published attack classes table even when the fetched pack is older or topics is empty.
+7. Optional: second industry or WS1–WS4 profile packs as pinned source sets.
+8. Optional: streaming multimodal gold fixture from local `papers/streaming-multimodal-*.md` (gitignored).
 
 ---
 

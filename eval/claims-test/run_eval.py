@@ -212,6 +212,8 @@ def reproduction_issues(obj: dict) -> list[str]:
 def report_id_issues(obj: dict, gold: dict) -> list[str]:
     md = (obj.get("report") or {}).get("markdown") or ""
     issues = []
+    if "Published attack classes" not in md:
+        issues.append("report missing Published attack classes heading")
     for claim in gold.get("claims") or []:
         cid = claim["id"]
         if cid not in md:

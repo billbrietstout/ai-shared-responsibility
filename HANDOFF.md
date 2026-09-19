@@ -60,7 +60,7 @@ Refused brands and scales (do not import): A0 to A6, SAFE² ACT-1 to ACT-4, AISM
 ### Practitioner tools already on the site
 
 - Whitepaper assessment prompt v2.2 at `/assess/whitepaper-assessment/` (intake first; slim catalogs; Novel is a map result)
-- Draft claims-test pack v1.0.3 at `/assess/claims-test/` (ROCA + Docs/PR suggestion packets; cousin of whitepaper assessment, not a merge). Pack load is fetch or attach `prompts.json`; citation URLs stay pinned. Chain run replies with the markdown report. C-attacks collects published topic attacks.
+- Draft claims-test pack v1.0.4 at `/assess/claims-test/` (ROCA + Docs/PR suggestion packets; cousin of whitepaper assessment, not a merge). Pack load is fetch or attach `prompts.json`; citation URLs stay pinned. Chain run replies with the markdown report. C-attacks is required; the shortcut names it and requires a Published attack classes table of ATT-xx rows even when a fetched pack is older or topics is empty.
 - Threat-model prompt pack v3 at `/tools/prompts/threat-model/` with gold eval under `eval/threat-model/`
 - Vendor-risk questionnaire, regulation discovery, controls assessment, IR playbooks, NICE mapping, security-lifecycle page
 - [un]prompted October 2026 deck at `/presentation/unprompted-oct2026/`. May 2026 TSC deck removed; `/presentation/` redirects.
@@ -177,7 +177,7 @@ Prioritize with the owner. None of these are in-flight in git.
 
 4. **Telemetry draft publish-or-hold.** Local working draft: `papers/what-new-telemetry-agents-need.md` (gitignored with other `papers/*`). Thesis: AITF is the baseline; propose SRF persona/layer attrs, T1 to T5 oversight events, erasure-compatible evidence, feedback spans, actuation events. Protocol-independent evidence is already a vnext ask. Publishing requires a `papers/` gitignore exception like the vnext paper.
 
-5. **Draft whitepaper claims-test pack.** Shipped at `/assess/claims-test/` (prompts.json, page, gold fixture, eval stub). v1.0.3 collects published topic attacks before scoring coverage claims; JSON is optional. Design notes remain in `whitepaper-claims-test-handoff.md`. Do not merge with `/assess/whitepaper-assessment/`. Second industry or WS1–WS4 profile packs are optional follow-on.
+5. **Draft whitepaper claims-test pack.** Shipped at `/assess/claims-test/` (prompts.json, page, gold fixture, eval stub). v1.0.4 requires C-attacks in the Track A shortcut so a stale fetch cannot skip the published-attack table; JSON is optional. Design notes remain in `whitepaper-claims-test-handoff.md`. Do not merge with `/assess/whitepaper-assessment/`. Second industry or WS1–WS4 profile packs are optional follow-on.
 
 6. **Gardening.** Regulation `last_verified` older than 180 days shows Verify on `/regulations/`. Follow PRs and CI on `main`/`develop`.
 
