@@ -174,6 +174,8 @@ def classify(rel):
             if rel.rstrip("/").endswith("changes"):
                 return "reference", concepts
             return "tool", concepts
+        if "claims-test" in rel:
+            return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS
         if rel.startswith("tools/prompts/threat-model"):
             return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + [
                 "srf.data.threats",

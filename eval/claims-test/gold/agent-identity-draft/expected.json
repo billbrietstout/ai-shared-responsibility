@@ -1,0 +1,481 @@
+{
+  "intake": {
+    "channel": "google-docs",
+    "mode": "full",
+    "tracks": ["A"],
+    "draft_title": "Agent Identity Binding for Delegated Tool Use",
+    "authors": ["example"],
+    "draft_status": "early",
+    "industry_pilot": "none",
+    "dimension_profile": {
+      "topics": ["agent-identity"],
+      "cosai_workstreams": ["WS2", "WS4"],
+      "stage_vocabulary": ["design", "runtime", "revocation"]
+    },
+    "prior_assessment_id": null,
+    "prior_scorecard_present": false,
+    "pinned_source_ids": [],
+    "srf_inputs_present": false,
+    "vertical_rows_present": false,
+    "heading_count": 10,
+    "word_count": 320,
+    "unread": [],
+    "anchorable": true,
+    "halt": false,
+    "mode_error": null,
+    "notes": []
+  },
+  "claims": [
+    {
+      "id": "CLM-01",
+      "text": "The Application Developer implements NIST SP 800-53 AC-2 so each agent identity is unique, recorded, and revocable before any tool call, under NIST AI RMF GOVERN 1.2, and is the single accountable party at L3.",
+      "kind": "recommendation",
+      "anchor": {
+        "heading": "2. Binding obligation and control",
+        "quote": "The Application Developer implements NIST SP 800-53 AC-2 (Account Management) so each agent identity is unique, recorded, and revocable before any tool call.",
+        "line_start": 16,
+        "line_end": 18
+      },
+      "reused": false
+    },
+    {
+      "id": "CLM-02",
+      "text": "Tool platforms should log every call because logs help investigators.",
+      "kind": "recommendation",
+      "anchor": {
+        "heading": "3. Logging as implied mitigation",
+        "quote": "Tool platforms should log every call. Logs help investigators.",
+        "line_start": 24,
+        "line_end": 24
+      },
+      "reused": false
+    },
+    {
+      "id": "CLM-03",
+      "text": "The approach ensures trust and addresses the gap in current practice.",
+      "kind": "coverage",
+      "anchor": {
+        "heading": "4. Trust language",
+        "quote": "This approach ensures trust across the agent identity landscape and addresses the gap in current practice.",
+        "line_start": 27,
+        "line_end": 28
+      },
+      "reused": false
+    },
+    {
+      "id": "CLM-04",
+      "text": "Identity binding is a shared responsibility between the platform and the application.",
+      "kind": "accountability",
+      "anchor": {
+        "heading": "5. Shared ownership",
+        "quote": "Identity binding is a shared responsibility between the platform and the application.",
+        "line_start": 31,
+        "line_end": 32
+      },
+      "reused": false
+    },
+    {
+      "id": "CLM-05",
+      "text": "Hospitals must bill the correct CPT code when an agent drafts a clinical note.",
+      "kind": "recommendation",
+      "anchor": {
+        "heading": "6. Hospital billing",
+        "quote": "Hospitals must bill the correct CPT code when an agent drafts a clinical note.",
+        "line_start": 35,
+        "line_end": 36
+      },
+      "reused": false
+    },
+    {
+      "id": "CLM-06",
+      "text": "Smith 2024 shows that unsigned agent identities are the leading cause of tool misuse.",
+      "kind": "risk-assertion",
+      "anchor": {
+        "heading": "7. Unsigned survey",
+        "quote": "Smith (2024, doi:10.9999/not-a-real-doi) shows that unsigned agent identities are the leading cause of tool misuse.",
+        "line_start": 39,
+        "line_end": 40
+      },
+      "reused": false
+    },
+    {
+      "id": "CLM-07",
+      "text": "This paper fully addresses all agent identity risks.",
+      "kind": "coverage",
+      "anchor": {
+        "heading": "8. Coverage statement",
+        "quote": "This paper fully addresses all agent identity risks.",
+        "line_start": 43,
+        "line_end": 43
+      },
+      "reused": false
+    }
+  ],
+  "screen": {
+    "status": "complete",
+    "findings": [
+      {
+        "id": "SCR-01",
+        "tier": "P2",
+        "kind": "citation",
+        "blocks_scoring": true,
+        "anchor": {
+          "heading": "7. Unsigned survey",
+          "quote": "doi:10.9999/not-a-real-doi",
+          "line_start": 39,
+          "line_end": 39
+        },
+        "summary": "The DOI 10.9999/not-a-real-doi is not a valid DOI shape; the 10.9999 prefix is a placeholder, so the citation cannot be resolved.",
+        "related_claim_ids": ["CLM-06"]
+      }
+    ]
+  },
+  "foundations": {
+    "axioms": [
+      {
+        "id": "AX-01",
+        "statement": "An agent that can call tools must present a stable identity a reviewer can revoke.",
+        "anchor": {
+          "heading": "Abstract",
+          "quote": "an agent that can call tools must present a stable identity that a reviewer can revoke"
+        },
+        "status": "cited"
+      }
+    ],
+    "invariables": [
+      {
+        "id": "INV-01",
+        "statement": "Agent identity is unique, recorded, and revocable before any tool call.",
+        "anchor": {
+          "heading": "2. Binding obligation and control",
+          "quote": "each agent identity is unique, recorded, and revocable before any tool call"
+        },
+        "status": "cited"
+      }
+    ],
+    "principles": [
+      {
+        "id": "PR-01",
+        "statement": "Exactly one accountable party owns the identity-binding activity at L3.",
+        "anchor": {
+          "heading": "2. Binding obligation and control",
+          "quote": "The Application Developer is the single accountable party for this binding at layer L3."
+        },
+        "status": "cited"
+      }
+    ],
+    "references": [
+      {
+        "id": "REF-01",
+        "title": "NIST AI RMF GOVERN 1.2",
+        "identifier": "NIST AI RMF GOVERN 1.2",
+        "valid": true,
+        "provisional": false,
+        "screen_id": null
+      },
+      {
+        "id": "REF-02",
+        "title": "NIST SP 800-53 AC-2 Account Management",
+        "identifier": "SP 800-53 AC-2",
+        "valid": true,
+        "provisional": false,
+        "screen_id": null
+      },
+      {
+        "id": "REF-03",
+        "title": "Smith 2024",
+        "identifier": "10.9999/not-a-real-doi",
+        "valid": false,
+        "provisional": false,
+        "screen_id": "SCR-01"
+      }
+    ]
+  },
+  "inventory": {
+    "topics_used": ["agent-identity"],
+    "topics_derived": false,
+    "risks": [
+      {
+        "id": "RSK-01",
+        "name": "confused-deputy actuation",
+        "failure_mode": "A payment tool acts under the wrong principal because it cannot tell which agent was authorized for that call.",
+        "source": "1. The confused-deputy failure",
+        "taxonomy_ref": null,
+        "stage": "runtime",
+        "layer": "L3"
+      },
+      {
+        "id": "RSK-02",
+        "name": "agent-identity spoofing",
+        "failure_mode": "A caller presents another agent's identity on a tool call.",
+        "source": "1. The confused-deputy failure",
+        "taxonomy_ref": null,
+        "stage": "runtime",
+        "layer": "L3"
+      },
+      {
+        "id": "RSK-03",
+        "name": "unrevoked agent identity",
+        "failure_mode": "An agent identity that cannot be revoked keeps tool access after the reviewer withdraws it.",
+        "source": "Abstract",
+        "taxonomy_ref": null,
+        "stage": "revocation",
+        "layer": "L3"
+      }
+    ]
+  },
+  "tags": {
+    "claims": [
+      { "id": "CLM-01", "ai_tags": ["Agent"], "stage": "runtime", "layer": "L3" },
+      { "id": "CLM-02", "ai_tags": ["Agent"], "stage": "runtime", "layer": null },
+      { "id": "CLM-03", "ai_tags": ["Agent"], "stage": null, "layer": null },
+      { "id": "CLM-04", "ai_tags": ["Agent"], "stage": null, "layer": null },
+      { "id": "CLM-05", "ai_tags": ["Agent"], "stage": null, "layer": null },
+      { "id": "CLM-06", "ai_tags": ["Agent"], "stage": null, "layer": null },
+      { "id": "CLM-07", "ai_tags": ["Agent"], "stage": null, "layer": null }
+    ],
+    "risks": [
+      { "id": "RSK-01", "ai_tags": ["Agent"], "stage": "runtime", "layer": "L3" },
+      { "id": "RSK-02", "ai_tags": ["Agent"], "stage": "runtime", "layer": "L3" },
+      { "id": "RSK-03", "ai_tags": ["Agent"], "stage": "revocation", "layer": "L3" }
+    ]
+  },
+  "roca": [
+    {
+      "id": "ROCA-01",
+      "claim_id": "CLM-01",
+      "risk_id": "RSK-01",
+      "obligation": {
+        "kind": "regulation",
+        "id": "NIST AI RMF GOVERN 1.2",
+        "statement": "The deploying organization must assign accountability for AI actors."
+      },
+      "control": {
+        "catalog": "NIST SP 800-53",
+        "id": "AC-2",
+        "statement": "Account Management: each agent identity is unique, recorded, and revocable before any tool call."
+      },
+      "accountable_party": {
+        "kind": "job-title",
+        "id": "application-developer",
+        "name": "Application Developer"
+      },
+      "party_raw": "Application Developer",
+      "if_condition": "If the agent holds a delegated user token, bind that token to the agent identity on the same request.",
+      "layer": "L3",
+      "split_needed": false
+    },
+    {
+      "id": "ROCA-02",
+      "claim_id": "CLM-02",
+      "risk_id": "RSK-01",
+      "obligation": { "kind": null, "id": null, "statement": "" },
+      "control": { "catalog": null, "id": null, "statement": "Tool platforms should log every call." },
+      "accountable_party": { "kind": null, "id": null, "name": null },
+      "party_raw": "Tool platforms",
+      "if_condition": "",
+      "layer": null,
+      "split_needed": false
+    },
+    {
+      "id": "ROCA-03",
+      "claim_id": "CLM-03",
+      "risk_id": null,
+      "obligation": { "kind": null, "id": null, "statement": "" },
+      "control": { "catalog": null, "id": null, "statement": "" },
+      "accountable_party": { "kind": null, "id": null, "name": null },
+      "party_raw": "",
+      "if_condition": "",
+      "layer": null,
+      "split_needed": false
+    },
+    {
+      "id": "ROCA-04",
+      "claim_id": "CLM-04",
+      "risk_id": "RSK-02",
+      "obligation": { "kind": null, "id": null, "statement": "" },
+      "control": { "catalog": null, "id": null, "statement": "" },
+      "accountable_party": { "kind": null, "id": null, "name": null },
+      "party_raw": "shared responsibility between the platform and the application",
+      "if_condition": "",
+      "layer": null,
+      "split_needed": false
+    },
+    {
+      "id": "ROCA-06",
+      "claim_id": "CLM-06",
+      "risk_id": "RSK-02",
+      "obligation": { "kind": null, "id": null, "statement": "" },
+      "control": { "catalog": null, "id": null, "statement": "" },
+      "accountable_party": { "kind": null, "id": null, "name": null },
+      "party_raw": "",
+      "if_condition": "",
+      "layer": null,
+      "split_needed": false
+    },
+    {
+      "id": "ROCA-07",
+      "claim_id": "CLM-07",
+      "risk_id": null,
+      "obligation": { "kind": null, "id": null, "statement": "" },
+      "control": { "catalog": null, "id": null, "statement": "" },
+      "accountable_party": { "kind": null, "id": null, "name": null },
+      "party_raw": "",
+      "if_condition": "",
+      "layer": null,
+      "split_needed": false
+    }
+  ],
+  "scores": [
+    {
+      "claim_id": "CLM-01",
+      "score": "Supported",
+      "reason": "Draft names GOVERN 1.2, AC-2, confused-deputy risk, and Application Developer as the single L3 owner.",
+      "blocking_screen_ids": [],
+      "roca_id": "ROCA-01",
+      "delta": null
+    },
+    {
+      "claim_id": "CLM-02",
+      "score": "Partial",
+      "reason": "Logging is named; obligation, control id, and one owner are missing.",
+      "blocking_screen_ids": [],
+      "roca_id": "ROCA-02",
+      "delta": null
+    },
+    {
+      "claim_id": "CLM-03",
+      "score": "Unsupported",
+      "reason": "Ensures trust and addresses the gap name no actor, artifact, threshold, or failure mode.",
+      "blocking_screen_ids": [],
+      "roca_id": "ROCA-03",
+      "delta": null
+    },
+    {
+      "claim_id": "CLM-04",
+      "score": "Partial",
+      "reason": "Shared is analysis input, not a final owner, so the accountability claim has no one party.",
+      "blocking_screen_ids": [],
+      "roca_id": "ROCA-04",
+      "delta": null
+    },
+    {
+      "claim_id": "CLM-05",
+      "score": "Out of scope",
+      "reason": "Hospital CPT billing sits outside declared topic agent-identity and workstreams WS2 and WS4.",
+      "blocking_screen_ids": [],
+      "roca_id": null,
+      "delta": null
+    },
+    {
+      "claim_id": "CLM-06",
+      "score": "Blocked",
+      "reason": "The cited DOI is a placeholder, so the survey claim cannot be scored until the citation is fixed.",
+      "blocking_screen_ids": ["SCR-01"],
+      "roca_id": "ROCA-06",
+      "delta": null
+    },
+    {
+      "claim_id": "CLM-07",
+      "score": "Unsupported",
+      "reason": "Fully addresses all names no count method, miss rule, or remaining risk.",
+      "blocking_screen_ids": [],
+      "roca_id": "ROCA-07",
+      "delta": null
+    }
+  ],
+  "srf_coverage": null,
+  "vertical_context": null,
+  "qa": {
+    "every_claim_scored": true,
+    "roca_present": true,
+    "one_owner": true,
+    "obligation_control_split": true,
+    "tag_rules": true,
+    "scope_creep_ids": [],
+    "absolute_coverage_ids": ["CLM-07"],
+    "orphan_risk_ids": ["RSK-03"],
+    "no_reproduction_steps": true,
+    "track_b_status": null,
+    "track_c_status": null,
+    "report_present": true,
+    "gaps": [
+      "RSK-03 is never cited by a ROCA row.",
+      "CLM-07 uses absolute coverage language without a count method.",
+      "Section 9 names an LLM planner; no claim row was extracted for that surface."
+    ]
+  },
+  "suggestions": {
+    "status": "complete",
+    "channel": "google-docs",
+    "items": [
+      {
+        "claim_id": "CLM-02",
+        "anchor": {
+          "heading": "3. Logging as implied mitigation",
+          "quote": "Tool platforms should log every call. Logs help investigators."
+        },
+        "comment": "The sentence names a log and no obligation, control id, or owner.",
+        "suggested_text": "The Application Developer records each tool call with the agent identity, the delegated user, and the timestamp (NIST SP 800-53 AU-2). If a call lacks that triple, the runtime refuses the actuation."
+      },
+      {
+        "claim_id": "CLM-03",
+        "anchor": {
+          "heading": "4. Trust language",
+          "quote": "This approach ensures trust across the agent identity landscape and addresses the gap in current practice."
+        },
+        "comment": "Ensures trust and addresses the gap are not testable claims.",
+        "suggested_text": "After AC-2 binding is in place, a reviewer can list every agent identity, revoke one, and show the next tool call from that identity is refused. That is the evidence this draft offers."
+      },
+      {
+        "claim_id": "CLM-04",
+        "anchor": {
+          "heading": "5. Shared ownership",
+          "quote": "Identity binding is a shared responsibility between the platform and the application."
+        },
+        "comment": "Shared is not a final owner. Name one party and what the other still supplies.",
+        "suggested_text": "The Application Developer is accountable for binding each tool call to an agent identity at L3. The platform provider still supplies the identity primitive; the Application Developer accepts or rejects a call that arrives without it."
+      },
+      {
+        "claim_id": "CLM-06",
+        "anchor": {
+          "heading": "7. Unsigned survey",
+          "quote": "Smith (2024, doi:10.9999/not-a-real-doi) shows that unsigned agent identities are the leading cause of tool misuse."
+        },
+        "comment": "The DOI is a placeholder. Blocked until a real identifier replaces it.",
+        "suggested_text": "Delete the Smith 2024 sentence until a DOI or arXiv id that resolves to a matching title is available. Do not keep a placeholder identifier."
+      },
+      {
+        "claim_id": "CLM-07",
+        "anchor": {
+          "heading": "8. Coverage statement",
+          "quote": "This paper fully addresses all agent identity risks."
+        },
+        "comment": "Absolute coverage with no count method.",
+        "suggested_text": "This draft treats three failure modes: confused-deputy actuation, identity spoofing, and unrevoked identity. It does not treat model-weight provenance or prompt injection."
+      },
+      {
+        "claim_id": "SCR-01",
+        "anchor": {
+          "heading": "7. Unsigned survey",
+          "quote": "doi:10.9999/not-a-real-doi"
+        },
+        "comment": "P2 citation integrity: placeholder DOI.",
+        "suggested_text": "Remove doi:10.9999/not-a-real-doi. Add a resolving identifier or drop the citation."
+      }
+    ]
+  },
+  "report": {
+    "title": "Claims test: Agent Identity Binding for Delegated Tool Use",
+    "reviewer": null,
+    "markdown": "# Claims test: Agent Identity Binding for Delegated Tool Use\n\n| Field | Value |\n| --- | --- |\n| Date | 2026-09-18 |\n| Pack | 1.0 |\n| Channel | google-docs |\n| Mode | full |\n| Tracks | A |\n| Draft status | early |\n| Reviewer | |\n\nThis method is independently proposed and is not part of CoSAI SRF v1.0.\n\n## Scorecard\n\n| Claim | Score | Reason | ROCA |\n| --- | --- | --- | --- |\n| CLM-01 | Supported | Draft names GOVERN 1.2, AC-2, confused-deputy risk, and Application Developer as the single L3 owner. | ROCA-01 |\n| CLM-02 | Partial | Logging is named; obligation, control id, and one owner are missing. | ROCA-02 |\n| CLM-03 | Unsupported | Ensures trust and addresses the gap name no actor, artifact, threshold, or failure mode. | ROCA-03 |\n| CLM-04 | Partial | Shared is analysis input, not a final owner, so the accountability claim has no one party. | ROCA-04 |\n| CLM-05 | Out of scope | Hospital CPT billing sits outside declared topic agent-identity and workstreams WS2 and WS4. | |\n| CLM-06 | Blocked | The cited DOI is a placeholder, so the survey claim cannot be scored until the citation is fixed. | ROCA-06 |\n| CLM-07 | Unsupported | Fully addresses all names no count method, miss rule, or remaining risk. | ROCA-07 |\n\nCounts: Supported 1, Partial 2, Unsupported 2, Out of scope 1, Blocked 1.\n\nNo prior_assessment_id, so there is no score delta table.\n\n## ROCA\n\n| Claim | Risk | Obligation | Control | Owner | If |\n| --- | --- | --- | --- | --- | --- |\n| CLM-01 | RSK-01 confused-deputy actuation | NIST AI RMF GOVERN 1.2 | NIST SP 800-53 AC-2 | Application Developer | delegated user token bound on the same request |\n| CLM-02 | RSK-01 | | log every call | | |\n| CLM-03 | | | | | |\n| CLM-04 | RSK-02 | | | | |\n| CLM-06 | RSK-02 | | | | |\n| CLM-07 | | | | | |\n\n## Foundations\n\nAxiom AX-01: an agent that can call tools must present a stable identity a reviewer can revoke (cited).\nInvariable INV-01: identity is unique, recorded, and revocable before any tool call (cited).\nPrinciple PR-01: one accountable party owns the binding at L3 (cited).\nReferences: NIST AI RMF GOVERN 1.2; NIST SP 800-53 AC-2; Smith 2024 identifier invalid (SCR-01).\n\n## Inventory\n\n| Risk | Failure mode | Tags |\n| --- | --- | --- |\n| RSK-01 | Payment tool acts under the wrong principal. | Agent |\n| RSK-02 | Caller presents another agent's identity. | Agent |\n| RSK-03 | Identity that cannot be revoked keeps tool access. | Agent |\n\nNo reproduction steps.\n\n## Screen\n\nSCR-01 P2 citation: doi:10.9999/not-a-real-doi is a placeholder. Blocks CLM-06.\n\n## QA gaps\n\nRSK-03 is never cited by a ROCA row. CLM-07 uses absolute coverage language without a count method. Section 9 names an LLM planner; no claim row was extracted for that surface.\n\n## Suggestion index\n\nCLM-02 heading 3. Logging as implied mitigation.\nCLM-03 heading 4. Trust language.\nCLM-04 heading 5. Shared ownership.\nCLM-06 heading 7. Unsigned survey.\nCLM-07 heading 8. Coverage statement.\nSCR-01 heading 7. Unsigned survey.\n\nPackets are in the JSON suggestions.items array.\n\nTrack B: not_applicable. Track C: not_applicable.\n\n## Open problems\n\nThe draft never says who issues the agent identity primitive, so Track A cannot name a platform control without inventing one. Section 9 names an LLM planner and an L4 runtime without a ROCA row for either surface.\n"
+  },
+  "chain_meta": {
+    "prompt_pack_version": "1.0",
+    "date": "2026-09-18",
+    "reviewer": null,
+    "track_b_applied": false,
+    "track_c_applied": false,
+    "assessment_id": "ct-gold-agent-identity-draft"
+  }
+}

@@ -1,0 +1,349 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aisharedresponsibility.com/eval/claims-test/schema.json",
+  "title": "Draft whitepaper claims-test assessment v1",
+  "description": "JSON shape written by the claims-test prompt pack. Track A records claims, screen findings, foundations, inventory, tags, ROCA rows, scores, QA, suggestion packets, and a readable report. Optional Track B and Track C add injected SRF and vertical joins.",
+  "type": "object",
+  "required": [
+    "intake",
+    "claims",
+    "screen",
+    "foundations",
+    "inventory",
+    "tags",
+    "roca",
+    "scores",
+    "qa",
+    "suggestions",
+    "report"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "intake": { "$ref": "#/$defs/intake" },
+    "claims": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/claim" }
+    },
+    "screen": { "$ref": "#/$defs/screen" },
+    "foundations": { "$ref": "#/$defs/foundations" },
+    "inventory": { "$ref": "#/$defs/inventory" },
+    "tags": { "$ref": "#/$defs/tags" },
+    "roca": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/roca_row" }
+    },
+    "scores": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/score_row" }
+    },
+    "srf_coverage": { "$ref": "#/$defs/srf_coverage" },
+    "vertical_context": { "$ref": "#/$defs/vertical_context" },
+    "qa": { "$ref": "#/$defs/qa" },
+    "suggestions": { "$ref": "#/$defs/suggestions" },
+    "report": { "$ref": "#/$defs/report" },
+    "chain_meta": { "$ref": "#/$defs/chain_meta" }
+  },
+  "$defs": {
+    "intake": {
+      "type": "object",
+      "required": ["channel", "mode", "tracks", "anchorable", "halt"],
+      "properties": {
+        "channel": { "type": "string", "enum": ["google-docs", "github-md", "published"] },
+        "mode": { "type": "string", "enum": ["full", "map-only", "suggest-only"] },
+        "tracks": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["A", "B", "C"] }
+        },
+        "draft_title": { "type": ["string", "null"] },
+        "authors": { "type": "array", "items": { "type": "string" } },
+        "draft_status": { "type": "string", "enum": ["early", "advanced", "published"] },
+        "industry_pilot": {
+          "type": "string",
+          "enum": ["none", "streaming", "adas", "call-center", "critical-infrastructure"]
+        },
+        "dimension_profile": {
+          "type": "object",
+          "properties": {
+            "topics": { "type": "array", "items": { "type": "string" } },
+            "cosai_workstreams": { "type": "array", "items": { "type": "string" } },
+            "stage_vocabulary": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "prior_assessment_id": { "type": ["string", "null"] },
+        "prior_scorecard_present": { "type": "boolean" },
+        "pinned_source_ids": { "type": "array", "items": { "type": "string" } },
+        "srf_inputs_present": { "type": "boolean" },
+        "vertical_rows_present": { "type": "boolean" },
+        "heading_count": { "type": "integer", "minimum": 0 },
+        "word_count": { "type": "integer", "minimum": 0 },
+        "unread": { "type": "array", "items": { "type": "string" } },
+        "anchorable": { "type": "boolean" },
+        "halt": { "type": "boolean" },
+        "mode_error": { "type": ["string", "null"] },
+        "notes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "anchor": {
+      "type": "object",
+      "properties": {
+        "heading": { "type": "string" },
+        "quote": { "type": "string" },
+        "line_start": { "type": ["integer", "null"] },
+        "line_end": { "type": ["integer", "null"] }
+      }
+    },
+    "claim": {
+      "type": "object",
+      "required": ["id", "text", "anchor"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^CLM-[0-9]+$" },
+        "text": { "type": "string", "minLength": 1 },
+        "kind": {
+          "type": "string",
+          "enum": ["recommendation", "coverage", "accountability", "risk-assertion", "other"]
+        },
+        "anchor": { "$ref": "#/$defs/anchor" },
+        "reused": { "type": "boolean" }
+      }
+    },
+    "screen": {
+      "type": "object",
+      "required": ["status", "findings"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["complete", "skipped_map_only", "skipped_suggest_only"]
+        },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/screen_finding" }
+        }
+      }
+    },
+    "screen_finding": {
+      "type": "object",
+      "required": ["id", "tier", "kind", "blocks_scoring", "summary"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^SCR-[0-9]+$" },
+        "tier": { "type": "string", "enum": ["P1", "P2", "P3", "P4"] },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "citation",
+            "definition",
+            "embedded-instruction",
+            "unpinned-dependency",
+            "unsupported-figure",
+            "mechanics",
+            "disclosure"
+          ]
+        },
+        "blocks_scoring": { "type": "boolean" },
+        "anchor": { "$ref": "#/$defs/anchor" },
+        "summary": { "type": "string" },
+        "related_claim_ids": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "foundations": {
+      "type": "object",
+      "required": ["axioms", "invariables", "principles", "references"],
+      "properties": {
+        "axioms": { "type": "array", "items": { "$ref": "#/$defs/foundation_entry" } },
+        "invariables": { "type": "array", "items": { "$ref": "#/$defs/foundation_entry" } },
+        "principles": { "type": "array", "items": { "$ref": "#/$defs/foundation_entry" } },
+        "references": { "type": "array", "items": { "$ref": "#/$defs/reference_entry" } }
+      }
+    },
+    "foundation_entry": {
+      "type": "object",
+      "required": ["id", "statement", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "statement": { "type": "string" },
+        "anchor": { "$ref": "#/$defs/anchor" },
+        "status": { "type": "string", "enum": ["cited", "provisional"] }
+      }
+    },
+    "reference_entry": {
+      "type": "object",
+      "required": ["id", "valid"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "identifier": { "type": ["string", "null"] },
+        "valid": { "type": "boolean" },
+        "provisional": { "type": "boolean" },
+        "screen_id": { "type": ["string", "null"] }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "required": ["risks"],
+      "properties": {
+        "topics_used": { "type": "array", "items": { "type": "string" } },
+        "topics_derived": { "type": "boolean" },
+        "risks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/risk" }
+        }
+      }
+    },
+    "risk": {
+      "type": "object",
+      "required": ["id", "name", "failure_mode"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^RSK-" },
+        "name": { "type": "string" },
+        "failure_mode": { "type": "string" },
+        "source": { "type": "string" },
+        "taxonomy_ref": { "type": ["string", "null"] },
+        "stage": { "type": ["string", "null"] },
+        "layer": { "type": ["string", "null"] }
+      }
+    },
+    "tags": {
+      "type": "object",
+      "required": ["claims", "risks"],
+      "properties": {
+        "claims": { "type": "array", "items": { "$ref": "#/$defs/tag_row" } },
+        "risks": { "type": "array", "items": { "$ref": "#/$defs/tag_row" } }
+      }
+    },
+    "tag_row": {
+      "type": "object",
+      "required": ["id", "ai_tags"],
+      "properties": {
+        "id": { "type": "string" },
+        "ai_tags": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["GenAI", "LLM", "AI", "ML", "Agent"] }
+        },
+        "stage": { "type": ["string", "null"] },
+        "layer": { "type": ["string", "null"] }
+      }
+    },
+    "roca_row": {
+      "type": "object",
+      "required": ["id", "claim_id"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^ROCA-" },
+        "claim_id": { "type": "string" },
+        "risk_id": { "type": ["string", "null"] },
+        "obligation": { "$ref": "#/$defs/obligation" },
+        "control": { "$ref": "#/$defs/control" },
+        "accountable_party": { "$ref": "#/$defs/party" },
+        "party_raw": { "type": "string" },
+        "if_condition": { "type": "string" },
+        "layer": { "type": ["string", "null"] },
+        "split_needed": { "type": "boolean" },
+        "srf": { "type": "object" }
+      }
+    },
+    "obligation": {
+      "type": "object",
+      "properties": {
+        "kind": { "type": ["string", "null"] },
+        "id": { "type": ["string", "null"] },
+        "statement": { "type": "string" }
+      }
+    },
+    "control": {
+      "type": "object",
+      "properties": {
+        "catalog": { "type": ["string", "null"] },
+        "id": { "type": ["string", "null"] },
+        "statement": { "type": "string" }
+      }
+    },
+    "party": {
+      "type": ["object", "null"],
+      "properties": {
+        "kind": { "type": ["string", "null"] },
+        "id": { "type": ["string", "null"] },
+        "name": { "type": ["string", "null"] }
+      }
+    },
+    "score_row": {
+      "type": "object",
+      "required": ["claim_id", "score", "reason"],
+      "properties": {
+        "claim_id": { "type": "string" },
+        "score": {
+          "type": "string",
+          "enum": ["Supported", "Partial", "Unsupported", "Out of scope", "Blocked"]
+        },
+        "reason": { "type": "string", "minLength": 1 },
+        "blocking_screen_ids": { "type": "array", "items": { "type": "string" } },
+        "roca_id": { "type": ["string", "null"] },
+        "delta": { "type": ["string", "null"] }
+      }
+    },
+    "srf_coverage": {
+      "type": ["object", "null"],
+      "properties": {
+        "status": { "type": "string", "enum": ["complete", "incomplete", "not_applicable"] },
+        "operating_model": { "type": ["string", "null"] },
+        "in_scope_claims": { "type": "integer" },
+        "matched": { "type": "integer" },
+        "unmatched_ids": { "type": "array", "items": { "type": "string" } },
+        "gaps": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "vertical_context": {
+      "type": ["object", "null"],
+      "properties": {
+        "status": { "type": "string", "enum": ["complete", "incomplete", "not_applicable"] },
+        "caveat": { "type": "string" },
+        "joins": { "type": "array" }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "required": ["every_claim_scored", "gaps"],
+      "properties": {
+        "every_claim_scored": { "type": "boolean" },
+        "roca_present": { "type": "boolean" },
+        "one_owner": { "type": "boolean" },
+        "obligation_control_split": { "type": "boolean" },
+        "tag_rules": { "type": "boolean" },
+        "scope_creep_ids": { "type": "array", "items": { "type": "string" } },
+        "absolute_coverage_ids": { "type": "array", "items": { "type": "string" } },
+        "orphan_risk_ids": { "type": "array", "items": { "type": "string" } },
+        "no_reproduction_steps": { "type": "boolean" },
+        "track_b_status": { "type": ["string", "null"] },
+        "track_c_status": { "type": ["string", "null"] },
+        "report_present": { "type": "boolean" },
+        "gaps": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "suggestions": {
+      "type": "object",
+      "required": ["status", "channel", "items"],
+      "properties": {
+        "status": { "type": "string", "enum": ["complete", "skipped_map_only"] },
+        "channel": { "type": "string", "enum": ["google-docs", "github-md", "published"] },
+        "items": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "report": {
+      "type": "object",
+      "required": ["markdown"],
+      "properties": {
+        "title": { "type": "string" },
+        "markdown": { "type": "string", "minLength": 1 },
+        "reviewer": { "type": ["string", "null"] }
+      }
+    },
+    "chain_meta": {
+      "type": "object",
+      "properties": {
+        "prompt_pack_version": { "type": "string" },
+        "date": { "type": "string" },
+        "reviewer": { "type": ["string", "null"] },
+        "track_b_applied": { "type": "boolean" },
+        "track_c_applied": { "type": "boolean" },
+        "assessment_id": { "type": "string" }
+      }
+    }
+  }
+}
