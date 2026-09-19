@@ -9,7 +9,7 @@ live site unless the owner asks.
 **Workspace:** `/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com`  
 **Live site:** https://aisharedresponsibility.com  
 **Lane:** research and assessment method; not a new CoSAI SRF object  
-**Status:** v1.0 shipped at `/assess/claims-test/`; chain ids frozen in `prompts.json`
+**Status:** v1.0.1 at `/assess/claims-test/`; chain ids frozen in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned.
 
 Related live tools (cousins, not duplicates):
 
@@ -78,7 +78,7 @@ Profile fields:
 | `cosai_workstreams` | Multi-select: WS1 supply chain, WS2 defenders, WS3 GRC, WS4 design patterns |
 | `stage_vocabulary` | Industry or lifecycle stage labels for inventory rows |
 | `industry_pilot` | Optional: streaming, ADAS, call-center, critical-infrastructure, none |
-| `pinned_sources` | Injected docs only; no silent URL fetch unless operator pinned them |
+| `pinned_sources` | Injected citation or SRF docs only. Pack load is separate: fetch or attach `prompts.json`. Empty pinned_sources does not block the chain. |
 
 Technology papers (agent identity, multimedia) and CoSAI WS1–WS4 papers all use
 the same steps. Multi-workstream drafts are allowed; C-qa flags claims outside
@@ -188,7 +188,7 @@ as Supported without a mechanism and one owner.
 | Artifact | Location | Notes |
 | --- | --- | --- |
 | This handoff | `whitepaper-claims-test-handoff.md` | Design notes; `prompts.json` is the chain source of truth |
-| Prompt pack v1.0 | `assess/claims-test/prompts.json` | Chain ids, intake, serializers, pre-flight, zero-shot baseline |
+| Prompt pack v1.0.1 | `assess/claims-test/prompts.json` | Chain ids, intake, serializers, pre-flight, zero-shot baseline. Pack load is fetch or attach; citations stay pinned. |
 | Site page | `/assess/claims-test/` | Owner asked 18 Sep 2026; independently proposed |
 | Gold fixture | `eval/claims-test/gold/agent-identity-draft/` | Seven claims; Docs packets in `expected.json`; GitHub sample beside it |
 | Eval stub | `eval/claims-test/run_eval.py` | Schema, scores, ROCA columns, tags, suggestion coverage |

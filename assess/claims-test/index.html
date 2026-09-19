@@ -253,7 +253,7 @@
 
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
-        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0</span>
+        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.1</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
           Paste a draft once. The pack extracts claims, binds each one to a
@@ -297,16 +297,19 @@
       <div class="deliverable" id="shortcut">
         <h2 class="deliverable__title">Start here: one chat</h2>
         <ol>
-          <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>.</li>
-          <li>Copy the Track A shortcut. Send it once with the draft and the intake fields you have.</li>
+          <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>. For ChatGPT, also attach <a href="/assess/claims-test/prompts.json">prompts.json</a>.</li>
+          <li>Copy the Track A shortcut. Send it once with the draft, the pack file if attached, and the intake fields you have.</li>
           <li>Save the two export replies as <code>.md</code> and <code>.json</code>. Apply suggestion packets in Docs or the PR, not in the chat.</li>
         </ol>
         <p>
           The model loads
           <a href="/assess/claims-test/prompts.json">prompts.json</a>
-          and runs Track A through the exports. Omitted fields stay empty.
+          (fetch or attach that file) and runs Track A through the exports.
+          ChatGPT file upload cannot fetch the pack URL; attach
+          <code>prompts.json</code> as a second file with the draft. The pack is
+          not a pinned source. Omitted fields stay empty.
           SRF and vertical mapping without injected data are not applicable.
-          If the chat cannot load that file, use
+          If neither fetch nor attach is possible, use
           <a href="#copy-one-block">Run one prompt at a time</a>.
         </p>
         <h3 id="shortcut-a">Track A</h3>
@@ -316,15 +319,19 @@
         </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="shortcut-text-a" data-copy-label="Copy shortcut" aria-label="Copy Track A one-chat shortcut">Copy shortcut</button>
-          <pre id="shortcut-text-a">Paste the draft body in this message. Load https://aisharedresponsibility.com/assess/claims-test/prompts.json.
+          <pre id="shortcut-text-a">Paste the draft body in this message.
+Load the claims-test pack.
+If this message already contains prompts.json (paste or attachment), use that copy.
+Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report, then C-export-md and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version 1.0.1, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report, then C-export-md and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. If this message already contains dimension_profile, pinned_sources, srf_inputs, or vertical_source_rows, use those values.
 
 Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-Do not fetch URLs. Use only pinned_sources already in this message. Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_source_rows.
+Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_source_rows.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps.</pre>
@@ -339,15 +346,19 @@ Do not merge this run with the whitepaper-assessment catalog grader. Do not writ
           </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="shortcut-text-b" data-copy-label="Copy shortcut" aria-label="Copy Track B one-chat shortcut">Copy shortcut</button>
-          <pre id="shortcut-text-b">Paste the draft body in this message. Load https://aisharedresponsibility.com/assess/claims-test/prompts.json.
+          <pre id="shortcut-text-b">Paste the draft body in this message.
+Load the claims-test pack.
+If this message already contains prompts.json (paste or attachment), use that copy.
+Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.1, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. Use srf_inputs already in this message. If srf_inputs or operating_model is missing, mark Track B incomplete and continue to C-qa. Do not ask.
 
 Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-Do not fetch URLs. Track C runs only after Track B when this message also includes vertical_source_rows.
+Track C runs only after Track B when this message also includes vertical_source_rows.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps.</pre>
@@ -362,15 +373,17 @@ Do not merge this run with the whitepaper-assessment catalog grader. Do not writ
           </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="shortcut-text-c" data-copy-label="Copy shortcut" aria-label="Copy Track C one-chat shortcut">Copy shortcut</button>
-          <pre id="shortcut-text-c">Paste the draft body in this message. Load https://aisharedresponsibility.com/assess/claims-test/prompts.json.
+          <pre id="shortcut-text-c">Paste the draft body in this message.
+Load the claims-test pack.
+If this message already contains prompts.json (paste or attachment), use that copy.
+Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.1, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. Use srf_inputs and vertical_source_rows already in this message. If Track B cannot close, skip Track C, record the gap, and continue to C-qa. Do not ask.
 
 Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
-
-Do not fetch URLs.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps.</pre>
@@ -511,7 +524,7 @@ Do not fetch URLs. Do not assess claims. Do not emit ROCA.
 
       <h2 class="section-label" id="copy-one-block">Run one prompt at a time</h2>
       <p class="section-note">
-        Use this when the chat cannot load
+        Use this when the chat cannot fetch or attach
         <a href="/assess/claims-test/prompts.json">prompts.json</a>.
         Copy C-intake first, then use Copy next. Intake fields still belong
         in the first message. Copy-one-block text starts with a
@@ -578,7 +591,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -680,7 +694,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -776,7 +791,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -874,7 +890,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -950,7 +967,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1040,7 +1058,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1117,7 +1136,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1209,7 +1229,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1298,7 +1319,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1400,7 +1422,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1513,7 +1536,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1556,7 +1580,7 @@ Vertical context:
 report.markdown is a projection, not a summary. A reviewer who never opens the JSON must still see every claim id, score, ROCA owner, and suggestion target.
 
 Write in this order:
-1. Title. Metadata table: date, pack version 1.0, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0.
+1. Title. Metadata table: date, pack version 1.0.1, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0.
 2. Scorecard table: claim id, score, one-line reason, roca_id. Counts per score.
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
@@ -1573,7 +1597,7 @@ Key takeaways, if any, must be testable claims a reader could not predict from t
 Set qa.report_present true. Leave reviewer null.
 
 Return the accumulated object plus:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
+{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": 1.0.1, "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
 </pre>
       </div>
 
@@ -1616,7 +1640,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1683,7 +1708,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1746,7 +1772,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1826,7 +1853,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1894,7 +1922,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1962,7 +1991,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -2018,7 +2048,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.

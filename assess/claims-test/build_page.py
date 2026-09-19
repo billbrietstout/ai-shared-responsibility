@@ -16,9 +16,20 @@ def esc(s: str) -> str:
     return html.escape(s, quote=False)
 
 
+PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
+
+
+def pack_load_block() -> str:
+    return f"""Load the claims-test pack.
+If this message already contains prompts.json (paste or attachment), use that copy.
+Else fetch {PACK_URL}. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message."""
+
+
 def shortcut_text_a(pack: dict) -> str:
     version = pack["version"]
-    return f"""Paste the draft body in this message. Load https://aisharedresponsibility.com/assess/claims-test/prompts.json.
+    return f"""Paste the draft body in this message.
+{pack_load_block()}
 
 Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report, then C-export-md and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
 
@@ -26,7 +37,7 @@ Treat omitted operator fields as empty and continue. Do not ask for dimension_pr
 
 Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-Do not fetch URLs. Use only pinned_sources already in this message. Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_source_rows.
+Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_source_rows.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps."""
@@ -34,7 +45,8 @@ Do not merge this run with the whitepaper-assessment catalog grader. Do not writ
 
 def shortcut_text_b(pack: dict) -> str:
     version = pack["version"]
-    return f"""Paste the draft body in this message. Load https://aisharedresponsibility.com/assess/claims-test/prompts.json.
+    return f"""Paste the draft body in this message.
+{pack_load_block()}
 
 Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
 
@@ -42,7 +54,7 @@ Treat omitted operator fields as empty and continue. Do not ask for dimension_pr
 
 Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-Do not fetch URLs. Track C runs only after Track B when this message also includes vertical_source_rows.
+Track C runs only after Track B when this message also includes vertical_source_rows.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps."""
@@ -50,15 +62,14 @@ Do not merge this run with the whitepaper-assessment catalog grader. Do not writ
 
 def shortcut_text_c(pack: dict) -> str:
     version = pack["version"]
-    return f"""Paste the draft body in this message. Load https://aisharedresponsibility.com/assess/claims-test/prompts.json.
+    return f"""Paste the draft body in this message.
+{pack_load_block()}
 
 Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. Use srf_inputs and vertical_source_rows already in this message. If Track B cannot close, skip Track C, record the gap, and continue to C-qa. Do not ask.
 
 Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
-
-Do not fetch URLs.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps."""
@@ -517,16 +528,19 @@ def main() -> None:
       <div class="deliverable" id="shortcut">
         <h2 class="deliverable__title">Start here: one chat</h2>
         <ol>
-          <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>.</li>
-          <li>Copy the Track A shortcut. Send it once with the draft and the intake fields you have.</li>
+          <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>. For ChatGPT, also attach <a href="/assess/claims-test/prompts.json">prompts.json</a>.</li>
+          <li>Copy the Track A shortcut. Send it once with the draft, the pack file if attached, and the intake fields you have.</li>
           <li>Save the two export replies as <code>.md</code> and <code>.json</code>. Apply suggestion packets in Docs or the PR, not in the chat.</li>
         </ol>
         <p>
           The model loads
           <a href="/assess/claims-test/prompts.json">prompts.json</a>
-          and runs Track A through the exports. Omitted fields stay empty.
+          (fetch or attach that file) and runs Track A through the exports.
+          ChatGPT file upload cannot fetch the pack URL; attach
+          <code>prompts.json</code> as a second file with the draft. The pack is
+          not a pinned source. Omitted fields stay empty.
           SRF and vertical mapping without injected data are not applicable.
-          If the chat cannot load that file, use
+          If neither fetch nor attach is possible, use
           <a href="#copy-one-block">Run one prompt at a time</a>.
         </p>
         <h3 id="shortcut-a">Track A</h3>
@@ -621,7 +635,7 @@ def main() -> None:
 
       <h2 class="section-label" id="copy-one-block">Run one prompt at a time</h2>
       <p class="section-note">
-        Use this when the chat cannot load
+        Use this when the chat cannot fetch or attach
         <a href="/assess/claims-test/prompts.json">prompts.json</a>.
         Copy C-intake first, then use Copy next. Intake fields still belong
         in the first message. Copy-one-block text starts with a

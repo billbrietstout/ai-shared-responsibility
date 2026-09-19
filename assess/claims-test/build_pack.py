@@ -9,14 +9,15 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0"
+VERSION = "1.0.1"
 UPDATED = "2026-09-18"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
+PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
 SCHEMA = "/eval/claims-test/schema.json"
 COUSIN = "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
 TM_PACK = "https://aisharedresponsibility.com/tools/prompts/threat-model/"
 
-SHARED_RULES = """You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
+SHARED_RULES = f"""You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
@@ -39,7 +40,8 @@ Rules:
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
-- Do not fetch URLs unless the operator pinned them in pinned_sources. There is no network fetching in this pack.
+- Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch {PACK_URL}. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -159,11 +161,20 @@ def build() -> dict:
                 "Record the gap in that step's JSON. Do not ask the operator for more "
                 "information. Continue later steps that can run from the draft body "
                 "and first-message fields. Stop the remaining chain only when C-intake "
-                "cannot find an anchorable draft_body."
+                "cannot find an anchorable draft_body. Do not halt because "
+                "prompts.json is absent from pinned_sources."
             ),
             "chain_run_output": (
                 "Emit a prompt-id heading, then that step's JSON or export payload, "
                 "then the next step. No other commentary. No markdown fences around JSON."
+            ),
+            "pack_load": (
+                "Read prompts.json from this message (paste or attachment) or fetch "
+                f"{PACK_URL}. "
+                "That load is required. The pack is not a pinned_source. Empty "
+                "pinned_sources does not block the chain. Do not invent templates. "
+                "Do not fetch citation, catalog, principle, or SRF URLs unless they "
+                "appear in pinned_sources."
             ),
         },
         "operator_initial_inputs": {
@@ -246,7 +257,9 @@ def build() -> dict:
                     "id": "pinned_sources",
                     "default": [],
                     "include_in_first_message": (
-                        "Injected documents only. Do not fetch URLs that are not in this list."
+                        "Injected citation or SRF documents only. The pack at "
+                        f"{PACK_URL} "
+                        "is loaded separately and is not a pinned source."
                     ),
                 },
                 {
@@ -1225,7 +1238,7 @@ Vertical context:
 report.markdown is a projection, not a summary. A reviewer who never opens the JSON must still see every claim id, score, ROCA owner, and suggestion target.
 
 Write in this order:
-1. Title. Metadata table: date, pack version 1.0, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0.
+1. Title. Metadata table: date, pack version """ + VERSION + """, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0.
 2. Scorecard table: claim id, score, one-line reason, roca_id. Counts per score.
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
@@ -1242,7 +1255,7 @@ Key takeaways, if any, must be testable claims a reader could not predict from t
 Set qa.report_present true. Leave reviewer null.
 
 Return the accumulated object plus:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
+{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": """ + VERSION + """, "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
 """,
             ),
             prompt(
