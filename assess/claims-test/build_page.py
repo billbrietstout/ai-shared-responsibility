@@ -26,16 +26,25 @@ Else fetch {PACK_URL}. That one fetch is required. The pack is not a pinned_sour
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message."""
 
 
+def chain_run_output_block() -> str:
+    return """Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
+Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
+Write every suggestion packet in full in that report (anchor, why it fails, and the replacement or review comment and diff). Save this reply as a .md file.
+Emit schema JSON only if this message asks for JSON."""
+
+
 def shortcut_text_a(pack: dict) -> str:
     version = pack["version"]
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report, then C-export-md and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report internally. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+
+{chain_run_output_block()}
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. If this message already contains dimension_profile, pinned_sources, srf_inputs, or vertical_source_rows, use those values.
 
-Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
+Do not skip a step. If a stop_condition fails, record the gap in the report QA section and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
 Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_source_rows.
 
@@ -48,11 +57,13 @@ def shortcut_text_b(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score internally, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. Channel: google-docs unless this message names github-md or published.
+
+{chain_run_output_block()}
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. Use srf_inputs already in this message. If srf_inputs or operating_model is missing, mark Track B incomplete and continue to C-qa. Do not ask.
 
-Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
+Do not skip a step. If a stop_condition fails, record the gap in the report QA section and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
 Track C runs only after Track B when this message also includes vertical_source_rows.
 
@@ -65,11 +76,13 @@ def shortcut_text_c(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score internally, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. Channel: google-docs unless this message names github-md or published.
+
+{chain_run_output_block()}
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. Use srf_inputs and vertical_source_rows already in this message. If Track B cannot close, skip Track C, record the gap, and continue to C-qa. Do not ask.
 
-Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
+Do not skip a step. If a stop_condition fails, record the gap in the report QA section and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps."""
@@ -86,6 +99,18 @@ def chain_entry(pack: dict, pid: str) -> dict | None:
     return next((c for c in pack["chain"] if c["id"] == pid), None)
 
 
+def _chain_next_cell(c: dict) -> str:
+    nxt = c.get("next") or ""
+    opt = c.get("optional_next") or ""
+    if nxt and opt:
+        return f"{nxt} (optional {opt})"
+    if nxt:
+        return nxt
+    if opt:
+        return f"end (optional {opt})"
+    return "end"
+
+
 def operator_banner(p: dict, pack: dict) -> str:
     entry = chain_entry(pack, p["id"])
     nxt = (entry or {}).get("next")
@@ -99,7 +124,7 @@ def operator_banner(p: dict, pack: dict) -> str:
         trail = " The chain ends after this step."
     return (
         f"[chain] This prompt is {p['id']} ({title}).{trail} "
-        "Do not echo this line in the JSON.\n\n"
+        "Do not echo this line in the reply.\n\n"
     )
 
 
@@ -225,7 +250,7 @@ def main() -> None:
             f"<tr><td class=\"tier\">{esc(c['id'])}</td>"
             f"<td>{esc(by_id[c['id']]['title'])}</td>"
             f"<td>{esc(c['track'])}</td>"
-            f"<td>{esc(c.get('next') or 'end')}</td></tr>"
+            f"<td>{esc(_chain_next_cell(c))}</td></tr>"
         )
         for c in pack["chain"]
         if c["id"] in by_id
@@ -488,9 +513,9 @@ def main() -> None:
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
           Paste a draft once. The pack extracts claims, binds each one to a
-          risk, an obligation, a control, and one accountable party, then emits
-          edit packets for Google Docs suggestion mode or a GitHub review.
-          Independently proposed; not part of CoSAI SRF v1.0.
+          risk, an obligation, a control, and one accountable party, then
+          replies with a markdown report that includes Google Docs or GitHub
+          suggestion packets. Independently proposed; not part of CoSAI SRF v1.0.
           Templates:
           <a href="/assess/claims-test/prompts.json">prompts.json</a>.
           Schema:
@@ -522,7 +547,7 @@ def main() -> None:
         <li><a href="#track-a">Track A</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
         <li><a href="#track-c">Track C (optional)</a></li>
-        <li><a href="#export-report">Export markdown and JSON</a></li>
+        <li><a href="#export-report">Export the report</a></li>
       </ul>
 
       <div class="deliverable" id="shortcut">
@@ -530,12 +555,13 @@ def main() -> None:
         <ol>
           <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>. For ChatGPT, also attach <a href="/assess/claims-test/prompts.json">prompts.json</a>.</li>
           <li>Copy the Track A shortcut. Send it once with the draft, the pack file if attached, and the intake fields you have.</li>
-          <li>Save the two export replies as <code>.md</code> and <code>.json</code>. Apply suggestion packets in Docs or the PR, not in the chat.</li>
+          <li>Save the reply as a <code>.md</code> file. Apply the suggestion packets in Docs or the PR, not in the chat. Ask for JSON only if a machine eval needs it.</li>
         </ol>
         <p>
           The model loads
           <a href="/assess/claims-test/prompts.json">prompts.json</a>
-          (fetch or attach that file) and runs Track A through the exports.
+          (fetch or attach that file), runs Track A internally, and replies
+          with the markdown report. Intermediate JSON stays internal.
           ChatGPT file upload cannot fetch the pack URL; attach
           <code>prompts.json</code> as a second file with the draft. The pack is
           not a pinned source. Omitted fields stay empty.
@@ -638,9 +664,10 @@ def main() -> None:
         Use this when the chat cannot fetch or attach
         <a href="/assess/claims-test/prompts.json">prompts.json</a>.
         Copy C-intake first, then use Copy next. Intake fields still belong
-        in the first message. Copy-one-block text starts with a
-        <code>[chain]</code> line. After C-report, run the
-        <a href="#export-report">export steps</a>.
+        in the first message. Copy-one-block JSON steps still return JSON.
+        Copy-one-block text starts with a <code>[chain]</code> line. After
+        C-report, copy <a href="#export-report">C-export-md</a> to get the
+        readable file. C-export-json is optional.
       </p>
 
       <div class="chain-status" id="chain-status">
@@ -687,9 +714,11 @@ def main() -> None:
       </p>
 {track_c_html}
 
-      <h2 class="section-label" id="export-report">Export the report and JSON</h2>
+      <h2 class="section-label" id="export-report">Export the report</h2>
       <p class="section-note">
-        C-report authors the document once. Export steps copy it. They do not
+        A chain run replies with the markdown report only. Save that reply as
+        a <code>.md</code> file. C-report authors the document once. C-export-md
+        copies it. C-export-json is optional for machine eval. Exports do not
         re-author judgment.
       </p>
 {export_html}

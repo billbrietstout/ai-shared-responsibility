@@ -40,7 +40,8 @@ Prediction layout:
 
 Each file must match `eval/claims-test/schema.json`. After Track A,
 optional Track B and Track C run only when those inputs were in the first
-message. After C-report, run C-export-md then C-export-json.
+message. A chain run replies with the markdown report. C-export-json is
+optional for machine eval.
 
 Checks:
 
@@ -51,7 +52,7 @@ Checks:
 - Shared is not a final owner
 - Suggestion packets for every Partial, Unsupported, Blocked, and P1/P2 screen finding
 - Inventory failure modes do not contain reproduction-step language
-- Report markdown contains every gold claim id
+- Report markdown contains every gold claim id and the full suggestion packet text
 
 `closure` stays false until a second gold fixture and a human review of
 suggestion-packet quality exist.

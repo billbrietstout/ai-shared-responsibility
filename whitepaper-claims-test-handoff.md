@@ -9,7 +9,7 @@ live site unless the owner asks.
 **Workspace:** `/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com`  
 **Live site:** https://aisharedresponsibility.com  
 **Lane:** research and assessment method; not a new CoSAI SRF object  
-**Status:** v1.0.1 at `/assess/claims-test/`; chain ids frozen in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned.
+**Status:** v1.0.2 at `/assess/claims-test/`; chain ids frozen in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional.
 
 Related live tools (cousins, not duplicates):
 
@@ -112,7 +112,7 @@ are subsets of supporting infrastructure. Keep stage and layer on the same row.
 | C-qa | Orphans, tag rules, absolute coverage language | Gaps listed |
 | C-suggest | Docs packets or PR comments/diffs | Every Partial/Unsupported/Blocked (+ P1/P2 screen) has a review item |
 | C-report | Readable assessment + scorecard id | Report authored once |
-| C-export-md / json | Project tables | Exports do not re-author judgment |
+| C-export-md | Markdown report (chain-run reply). JSON export is optional | Exports do not re-author judgment |
 
 **Track B (optional):** SRF persona/layer join when `srf_inputs` present.  
 **Track C (optional):** Vertical obligations when `vertical_source_rows` present.  
@@ -188,7 +188,7 @@ as Supported without a mechanism and one owner.
 | Artifact | Location | Notes |
 | --- | --- | --- |
 | This handoff | `whitepaper-claims-test-handoff.md` | Design notes; `prompts.json` is the chain source of truth |
-| Prompt pack v1.0.1 | `assess/claims-test/prompts.json` | Chain ids, intake, serializers, pre-flight, zero-shot baseline. Pack load is fetch or attach; citations stay pinned. |
+| Prompt pack v1.0.2 | `assess/claims-test/prompts.json` | Chain ids, intake, serializers, pre-flight, zero-shot baseline. Pack load is fetch or attach; citations stay pinned. Chain run replies with markdown. |
 | Site page | `/assess/claims-test/` | Owner asked 18 Sep 2026; independently proposed |
 | Gold fixture | `eval/claims-test/gold/agent-identity-draft/` | Seven claims; Docs packets in `expected.json`; GitHub sample beside it |
 | Eval stub | `eval/claims-test/run_eval.py` | Schema, scores, ROCA columns, tags, suggestion coverage |

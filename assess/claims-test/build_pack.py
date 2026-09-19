@@ -9,7 +9,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 UPDATED = "2026-09-18"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
@@ -22,12 +22,12 @@ SHARED_RULES = f"""You are assessing a draft AI security whitepaper. You extract
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -137,15 +137,14 @@ def build() -> dict:
             "modes": {
                 "chain_run": (
                     "The operator asked to run the claims-test chain, or named this "
-                    "pack chain. Execute every required Track A step in order in this "
-                    "conversation. After C-score, run Track B when tracks includes B "
-                    "and srf_inputs is present, then Track C when tracks includes C "
-                    "and vertical_source_rows is present. Then run C-qa, C-suggest, "
-                    "C-report, C-export-md, and C-export-json. After a step meets its "
-                    "stop_condition, immediately produce the next chain id. Do not ask "
-                    "a question. Do not request continue. Do not request a field from "
-                    "operator_initial_inputs. Do not write that you will proceed to a "
-                    "step without producing that step's output."
+                    "pack chain. Execute every required Track A step in order internally. "
+                    "After C-score, run Track B when tracks includes B and srf_inputs is "
+                    "present, then Track C when tracks includes C and vertical_source_rows "
+                    "is present. Then run C-qa, C-suggest, and C-report. The conversation "
+                    "reply is C-export-md: report.markdown only. Do not print intermediate "
+                    "JSON. Emit C-export-json only when the first message asks for JSON. "
+                    "Do not ask a question. Do not request continue. Do not request a "
+                    "field from operator_initial_inputs."
                 ),
                 "copy_one_block": (
                     "This message contains a single [chain] banner. Produce only that "
@@ -158,15 +157,18 @@ def build() -> dict:
                 "vertical mapping without injected data are not_applicable."
             ),
             "failed_stop_condition": (
-                "Record the gap in that step's JSON. Do not ask the operator for more "
-                "information. Continue later steps that can run from the draft body "
-                "and first-message fields. Stop the remaining chain only when C-intake "
-                "cannot find an anchorable draft_body. Do not halt because "
-                "prompts.json is absent from pinned_sources."
+                "Record the gap in that step's working object and in the report QA "
+                "section. Do not dump the working object into a chain-run reply. Do not "
+                "ask the operator for more information. Continue later steps that can "
+                "run from the draft body and first-message fields. Stop the remaining "
+                "chain only when C-intake cannot find an anchorable draft_body. Do not "
+                "halt because prompts.json is absent from pinned_sources."
             ),
             "chain_run_output": (
-                "Emit a prompt-id heading, then that step's JSON or export payload, "
-                "then the next step. No other commentary. No markdown fences around JSON."
+                "Reply with report.markdown only, starting at its title heading. No JSON "
+                "wrapper. No markdown fences around the document. Include every "
+                "suggestion packet in full. The operator saves that reply as a .md file. "
+                "Copy-one-block JSON steps still output JSON only."
             ),
             "pack_load": (
                 "Read prompts.json from this message (paste or attachment) or fetch "
@@ -451,7 +453,7 @@ def build() -> dict:
             chain_row("C-qa", "A", "qa", "C-suggest"),
             chain_row("C-suggest", "A", "suggest", "C-report"),
             chain_row("C-report", "A", "report", "C-export-md"),
-            chain_row("C-export-md", "export", "export", "C-export-json"),
+            chain_row("C-export-md", "export", "export", None, optional_next="C-export-json"),
             chain_row("C-export-json", "export", "export", None),
         ],
         "prompts": [
@@ -1205,10 +1207,10 @@ Return JSON:
                 "report",
                 ["intake", "claims", "screen", "foundations", "inventory", "tags", "roca", "scores", "qa", "suggestions", "srf_coverage", "vertical_context"],
                 "report",
-                "report.markdown contains every claim id, every score, and every suggestion item id. reviewer is null. Score deltas appear only when prior_assessment_id is set.",
+                "report.markdown contains every claim id, every score, and every suggestion packet in full. reviewer is null. Score deltas appear only when prior_assessment_id is set.",
                 """{{shared_rules}}
 
-Step: C-report. Author the readable assessment once. Export steps copy this string.
+Step: C-report. Author the readable assessment once. On a chain run this markdown is the conversation reply. Copy-one-block still returns JSON so C-export-md can copy the stored string.
 
 Intake:
 {{intake}}
@@ -1235,10 +1237,10 @@ SRF coverage:
 Vertical context:
 {{vertical_context}}
 
-report.markdown is a projection, not a summary. A reviewer who never opens the JSON must still see every claim id, score, ROCA owner, and suggestion target.
+report.markdown is the export. A reviewer who never opens JSON must still see every claim id, score, ROCA owner, and every suggestion packet.
 
 Write in this order:
-1. Title. Metadata table: date, pack version """ + VERSION + """, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0.
+1. Title. Metadata table: date, pack version """ + VERSION + """, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
 2. Scorecard table: claim id, score, one-line reason, roca_id. Counts per score.
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
@@ -1246,7 +1248,7 @@ Write in this order:
 6. Inventory: risk id, failure mode, tags, taxonomy_ref. No reproduction steps.
 7. Screen findings table, or a sentence that screen was skipped.
 8. QA gaps, including absolute coverage language and scope creep.
-9. Suggestion index: claim or screen id, channel, heading. Do not paste every replacement if the packets are long; list ids and headings so the packets can be found in JSON.
+9. Suggestion packets: one subsection per item. Include claim or screen id, heading, quoted span or line range, why it fails, and the full suggested replacement (google-docs suggested_text, github-md review_comment plus diff, published errata). Do not defer packets to JSON. If suggestions.status is skipped_map_only, say so in one sentence.
 10. Optional Track B and Track C coverage, or not_applicable.
 11. Open problems the current draft cannot yet answer. Name concrete holes, not generic emerging-tech language.
 
@@ -1254,8 +1256,8 @@ Key takeaways, if any, must be testable claims a reader could not predict from t
 
 Set qa.report_present true. Leave reviewer null.
 
-Return the accumulated object plus:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": """ + VERSION + """, "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
+Copy-one-block return the accumulated object plus:
+{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": """ + json.dumps(VERSION) + """, "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
 """,
             ),
             prompt(
@@ -1270,7 +1272,7 @@ Return the accumulated object plus:
 
 This step writes the downloadable report. C-report already authored the document.
 
-Step: C-export-md. Output report.markdown exactly as stored, starting at its title heading. Do not revise, regenerate, summarize, or add sections. Do not wrap it in a JSON object or markdown fences. Do not echo the chain banner.
+Step: C-export-md. Output report.markdown exactly as stored, starting at its title heading. Do not revise, regenerate, summarize, or add sections. Do not wrap it in a JSON object or markdown fences. Do not echo the chain banner. On a chain run this is the only assistant reply.
 
 Completed assessment:
 {{report}}
@@ -1288,7 +1290,7 @@ If report.markdown is missing or empty, stop and say C-report must run first. If
                 "The reply is schema-valid JSON. report.markdown is byte-preserved. reviewer is null. Exports do not re-author judgment.",
                 """{{shared_rules}}
 
-Step: C-export-json. Serialize the completed assessment JSON. Output JSON only, pretty-printed with two-space indent.
+Step: C-export-json. Optional machine serialization. On a chain run, skip this step unless the first message asked for JSON. Copy-one-block: serialize the completed assessment JSON. Output JSON only, pretty-printed with two-space indent.
 
 Completed assessment:
 {{full_assessment}}

@@ -253,13 +253,13 @@
 
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
-        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.1</span>
+        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.2</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
           Paste a draft once. The pack extracts claims, binds each one to a
-          risk, an obligation, a control, and one accountable party, then emits
-          edit packets for Google Docs suggestion mode or a GitHub review.
-          Independently proposed; not part of CoSAI SRF v1.0.
+          risk, an obligation, a control, and one accountable party, then
+          replies with a markdown report that includes Google Docs or GitHub
+          suggestion packets. Independently proposed; not part of CoSAI SRF v1.0.
           Templates:
           <a href="/assess/claims-test/prompts.json">prompts.json</a>.
           Schema:
@@ -291,7 +291,7 @@
         <li><a href="#track-a">Track A</a></li>
         <li><a href="#track-b">Track B (optional)</a></li>
         <li><a href="#track-c">Track C (optional)</a></li>
-        <li><a href="#export-report">Export markdown and JSON</a></li>
+        <li><a href="#export-report">Export the report</a></li>
       </ul>
 
       <div class="deliverable" id="shortcut">
@@ -299,12 +299,13 @@
         <ol>
           <li>Paste the draft body. Set <code>channel</code> to <code>google-docs</code>, <code>github-md</code>, or <code>published</code>. For ChatGPT, also attach <a href="/assess/claims-test/prompts.json">prompts.json</a>.</li>
           <li>Copy the Track A shortcut. Send it once with the draft, the pack file if attached, and the intake fields you have.</li>
-          <li>Save the two export replies as <code>.md</code> and <code>.json</code>. Apply suggestion packets in Docs or the PR, not in the chat.</li>
+          <li>Save the reply as a <code>.md</code> file. Apply the suggestion packets in Docs or the PR, not in the chat. Ask for JSON only if a machine eval needs it.</li>
         </ol>
         <p>
           The model loads
           <a href="/assess/claims-test/prompts.json">prompts.json</a>
-          (fetch or attach that file) and runs Track A through the exports.
+          (fetch or attach that file), runs Track A internally, and replies
+          with the markdown report. Intermediate JSON stays internal.
           ChatGPT file upload cannot fetch the pack URL; attach
           <code>prompts.json</code> as a second file with the draft. The pack is
           not a pinned source. Omitted fields stay empty.
@@ -325,11 +326,16 @@ If this message already contains prompts.json (paste or attachment), use that co
 Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.1, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report, then C-export-md and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version 1.0.2, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-report internally. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+
+Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
+Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
+Write every suggestion packet in full in that report (anchor, why it fails, and the replacement or review comment and diff). Save this reply as a .md file.
+Emit schema JSON only if this message asks for JSON.
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. If this message already contains dimension_profile, pinned_sources, srf_inputs, or vertical_source_rows, use those values.
 
-Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
+Do not skip a step. If a stop_condition fails, record the gap in the report QA section and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
 Track B runs only when this message includes srf_inputs. Track C runs only after Track B when this message includes vertical_source_rows.
 
@@ -352,11 +358,16 @@ If this message already contains prompts.json (paste or attachment), use that co
 Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.1, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.2, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score internally, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. Channel: google-docs unless this message names github-md or published.
+
+Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
+Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
+Write every suggestion packet in full in that report (anchor, why it fails, and the replacement or review comment and diff). Save this reply as a .md file.
+Emit schema JSON only if this message asks for JSON.
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. Use srf_inputs already in this message. If srf_inputs or operating_model is missing, mark Track B incomplete and continue to C-qa. Do not ask.
 
-Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
+Do not skip a step. If a stop_condition fails, record the gap in the report QA section and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
 Track C runs only after Track B when this message also includes vertical_source_rows.
 
@@ -379,11 +390,16 @@ If this message already contains prompts.json (paste or attachment), use that co
 Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.1, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, C-report, C-export-md, and C-export-json. Fill every later template slot from accumulated JSON. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.2, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A from C-intake through C-score internally, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. Channel: google-docs unless this message names github-md or published.
+
+Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
+Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
+Write every suggestion packet in full in that report (anchor, why it fails, and the replacement or review comment and diff). Save this reply as a .md file.
+Emit schema JSON only if this message asks for JSON.
 
 Treat omitted operator fields as empty and continue. Do not ask for dimension_profile, pinned sources, SRF data, or continue. Use srf_inputs and vertical_source_rows already in this message. If Track B cannot close, skip Track C, record the gap, and continue to C-qa. Do not ask.
 
-Do not skip a step. If a stop_condition fails, record the gap in that step's JSON and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
+Do not skip a step. If a stop_condition fails, record the gap in the report QA section and continue later steps that can run. Halt the remaining chain only when C-intake cannot find an anchorable draft_body.
 
 Leave report.reviewer empty.
 Do not merge this run with the whitepaper-assessment catalog grader. Do not write reproduction steps.</pre>
@@ -486,7 +502,7 @@ Then: Run the claims-test chain.
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-preflight-block', this)" aria-label="Copy C-preflight prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-preflight (Fill an intake packet from a messy paste). The chain ends after this step. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-preflight (Fill an intake packet from a messy paste). The chain ends after this step. Do not echo this line in the reply.
 
 You help an operator fill a claims-test intake packet. You do not score the draft.
 
@@ -527,9 +543,10 @@ Do not fetch URLs. Do not assess claims. Do not emit ROCA.
         Use this when the chat cannot fetch or attach
         <a href="/assess/claims-test/prompts.json">prompts.json</a>.
         Copy C-intake first, then use Copy next. Intake fields still belong
-        in the first message. Copy-one-block text starts with a
-        <code>[chain]</code> line. After C-report, run the
-        <a href="#export-report">export steps</a>.
+        in the first message. Copy-one-block JSON steps still return JSON.
+        Copy-one-block text starts with a <code>[chain]</code> line. After
+        C-report, copy <a href="#export-report">C-export-md</a> to get the
+        readable file. C-export-json is optional.
       </p>
 
       <div class="chain-status" id="chain-status">
@@ -547,7 +564,7 @@ Do not fetch URLs. Do not assess claims. Do not emit ROCA.
             <tr><th>Step</th><th>Purpose</th><th>Track</th><th>Next</th></tr>
           </thead>
           <tbody>
-            <tr><td class="tier">C-intake</td><td>Record intake and halt if the body is not anchorable</td><td>A</td><td>C-claims</td></tr><tr><td class="tier">C-claims</td><td>Extract claims with stable ids and anchors</td><td>A</td><td>C-screen</td></tr><tr><td class="tier">C-screen</td><td>Integrity screen and draft mechanics</td><td>A</td><td>C-foundations</td></tr><tr><td class="tier">C-foundations</td><td>Harvest axioms, invariables, principles, and references</td><td>A</td><td>C-inventory</td></tr><tr><td class="tier">C-inventory</td><td>Inventory topic risks and attack classes</td><td>A</td><td>C-tag</td></tr><tr><td class="tier">C-tag</td><td>Tag AI, GenAI, LLM, ML, and Agent surfaces</td><td>A</td><td>C-roca</td></tr><tr><td class="tier">C-roca</td><td>Bind risk, obligation, control, and one owner</td><td>A</td><td>C-score</td></tr><tr><td class="tier">C-score</td><td>Score every claim</td><td>A</td><td>C-qa</td></tr><tr><td class="tier">C-srf-join</td><td>Join ROCA rows to injected SRF layer data</td><td>B</td><td>C-srf-owner</td></tr><tr><td class="tier">C-srf-owner</td><td>Assign one injected SRF persona per ROCA row</td><td>B</td><td>C-srf-coverage</td></tr><tr><td class="tier">C-srf-coverage</td><td>Check SRF layer and owner coverage</td><td>B</td><td>C-qa</td></tr><tr><td class="tier">C-vertical-join</td><td>Join injected vertical obligations</td><td>C</td><td>C-vertical-route</td></tr><tr><td class="tier">C-vertical-route</td><td>Route vertical acceptance authority</td><td>C</td><td>C-qa</td></tr><tr><td class="tier">C-qa</td><td>Check orphans, tag rules, and absolute coverage language</td><td>A</td><td>C-suggest</td></tr><tr><td class="tier">C-suggest</td><td>Emit channel-native suggestion packets</td><td>A</td><td>C-report</td></tr><tr><td class="tier">C-report</td><td>Write the readable assessment</td><td>A</td><td>C-export-md</td></tr><tr><td class="tier">C-export-md</td><td>Write the downloadable markdown report</td><td>export</td><td>C-export-json</td></tr><tr><td class="tier">C-export-json</td><td>Write the completed JSON file</td><td>export</td><td>end</td></tr>
+            <tr><td class="tier">C-intake</td><td>Record intake and halt if the body is not anchorable</td><td>A</td><td>C-claims</td></tr><tr><td class="tier">C-claims</td><td>Extract claims with stable ids and anchors</td><td>A</td><td>C-screen</td></tr><tr><td class="tier">C-screen</td><td>Integrity screen and draft mechanics</td><td>A</td><td>C-foundations</td></tr><tr><td class="tier">C-foundations</td><td>Harvest axioms, invariables, principles, and references</td><td>A</td><td>C-inventory</td></tr><tr><td class="tier">C-inventory</td><td>Inventory topic risks and attack classes</td><td>A</td><td>C-tag</td></tr><tr><td class="tier">C-tag</td><td>Tag AI, GenAI, LLM, ML, and Agent surfaces</td><td>A</td><td>C-roca</td></tr><tr><td class="tier">C-roca</td><td>Bind risk, obligation, control, and one owner</td><td>A</td><td>C-score</td></tr><tr><td class="tier">C-score</td><td>Score every claim</td><td>A</td><td>C-qa (optional C-srf-join)</td></tr><tr><td class="tier">C-srf-join</td><td>Join ROCA rows to injected SRF layer data</td><td>B</td><td>C-srf-owner</td></tr><tr><td class="tier">C-srf-owner</td><td>Assign one injected SRF persona per ROCA row</td><td>B</td><td>C-srf-coverage</td></tr><tr><td class="tier">C-srf-coverage</td><td>Check SRF layer and owner coverage</td><td>B</td><td>C-qa (optional C-vertical-join)</td></tr><tr><td class="tier">C-vertical-join</td><td>Join injected vertical obligations</td><td>C</td><td>C-vertical-route</td></tr><tr><td class="tier">C-vertical-route</td><td>Route vertical acceptance authority</td><td>C</td><td>C-qa</td></tr><tr><td class="tier">C-qa</td><td>Check orphans, tag rules, and absolute coverage language</td><td>A</td><td>C-suggest</td></tr><tr><td class="tier">C-suggest</td><td>Emit channel-native suggestion packets</td><td>A</td><td>C-report</td></tr><tr><td class="tier">C-report</td><td>Write the readable assessment</td><td>A</td><td>C-export-md</td></tr><tr><td class="tier">C-export-md</td><td>Write the downloadable markdown report</td><td>export</td><td>end (optional C-export-json)</td></tr><tr><td class="tier">C-export-json</td><td>Write the completed JSON file</td><td>export</td><td>end</td></tr>
           </tbody>
         </table>
       </div>
@@ -566,19 +583,19 @@ Do not fetch URLs. Do not assess claims. Do not emit ROCA.
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-intake-block', this)" aria-label="Copy C-intake prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-intake (Record intake and halt if the body is not anchorable). Next prompt: C-claims. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-intake (Record intake and halt if the body is not anchorable). Next prompt: C-claims. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -669,19 +686,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-claims-block', this)" aria-label="Copy C-claims prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-claims (Extract claims with stable ids and anchors). Next prompt: C-screen. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-claims (Extract claims with stable ids and anchors). Next prompt: C-screen. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -766,19 +783,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-screen-block', this)" aria-label="Copy C-screen prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-screen (Integrity screen and draft mechanics). Next prompt: C-foundations. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-screen (Integrity screen and draft mechanics). Next prompt: C-foundations. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -865,19 +882,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-foundations-block', this)" aria-label="Copy C-foundations prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-foundations (Harvest axioms, invariables, principles, and references). Next prompt: C-inventory. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-foundations (Harvest axioms, invariables, principles, and references). Next prompt: C-inventory. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -942,19 +959,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-inventory-block', this)" aria-label="Copy C-inventory prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-inventory (Inventory topic risks and attack classes). Next prompt: C-tag. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-inventory (Inventory topic risks and attack classes). Next prompt: C-tag. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1033,19 +1050,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-tag-block', this)" aria-label="Copy C-tag prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-tag (Tag AI, GenAI, LLM, ML, and Agent surfaces). Next prompt: C-roca. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-tag (Tag AI, GenAI, LLM, ML, and Agent surfaces). Next prompt: C-roca. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1111,19 +1128,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-roca-block', this)" aria-label="Copy C-roca prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-roca (Bind risk, obligation, control, and one owner). Next prompt: C-score. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-roca (Bind risk, obligation, control, and one owner). Next prompt: C-score. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1204,19 +1221,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-score-block', this)" aria-label="Copy C-score prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-score (Score every claim). Next prompt: C-qa. Optional route: C-srf-join. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-score (Score every claim). Next prompt: C-qa. Optional route: C-srf-join. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1294,19 +1311,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-qa-block', this)" aria-label="Copy C-qa prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-qa (Check orphans, tag rules, and absolute coverage language). Next prompt: C-suggest. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-qa (Check orphans, tag rules, and absolute coverage language). Next prompt: C-suggest. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1397,19 +1414,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-suggest-block', this)" aria-label="Copy C-suggest prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-suggest (Emit channel-native suggestion packets). Next prompt: C-report. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-suggest (Emit channel-native suggestion packets). Next prompt: C-report. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1511,19 +1528,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-report-block', this)" aria-label="Copy C-report prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-report (Write the readable assessment). Next prompt: C-export-md. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-report (Write the readable assessment). Next prompt: C-export-md. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1550,7 +1567,7 @@ Rules:
 - Key takeaways in the report must be non-obvious and testable. Future-work names a concrete open problem.
 
 
-Step: C-report. Author the readable assessment once. Export steps copy this string.
+Step: C-report. Author the readable assessment once. On a chain run this markdown is the conversation reply. Copy-one-block still returns JSON so C-export-md can copy the stored string.
 
 Intake:
 {{intake}}
@@ -1577,10 +1594,10 @@ SRF coverage:
 Vertical context:
 {{vertical_context}}
 
-report.markdown is a projection, not a summary. A reviewer who never opens the JSON must still see every claim id, score, ROCA owner, and suggestion target.
+report.markdown is the export. A reviewer who never opens JSON must still see every claim id, score, ROCA owner, and every suggestion packet.
 
 Write in this order:
-1. Title. Metadata table: date, pack version 1.0.1, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0.
+1. Title. Metadata table: date, pack version 1.0.2, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
 2. Scorecard table: claim id, score, one-line reason, roca_id. Counts per score.
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
@@ -1588,7 +1605,7 @@ Write in this order:
 6. Inventory: risk id, failure mode, tags, taxonomy_ref. No reproduction steps.
 7. Screen findings table, or a sentence that screen was skipped.
 8. QA gaps, including absolute coverage language and scope creep.
-9. Suggestion index: claim or screen id, channel, heading. Do not paste every replacement if the packets are long; list ids and headings so the packets can be found in JSON.
+9. Suggestion packets: one subsection per item. Include claim or screen id, heading, quoted span or line range, why it fails, and the full suggested replacement (google-docs suggested_text, github-md review_comment plus diff, published errata). Do not defer packets to JSON. If suggestions.status is skipped_map_only, say so in one sentence.
 10. Optional Track B and Track C coverage, or not_applicable.
 11. Open problems the current draft cannot yet answer. Name concrete holes, not generic emerging-tech language.
 
@@ -1596,8 +1613,8 @@ Key takeaways, if any, must be testable claims a reader could not predict from t
 
 Set qa.report_present true. Leave reviewer null.
 
-Return the accumulated object plus:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": 1.0.1, "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
+Copy-one-block return the accumulated object plus:
+{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0.2", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
 </pre>
       </div>
 
@@ -1615,19 +1632,19 @@ Return the accumulated object plus:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-srf-join-block', this)" aria-label="Copy C-srf-join prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-srf-join (Join ROCA rows to injected SRF layer data). Next prompt: C-srf-owner. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-srf-join (Join ROCA rows to injected SRF layer data). Next prompt: C-srf-owner. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1683,19 +1700,19 @@ Return the ROCA array with srf.join on each row: {"matched": false, "source_id":
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-srf-owner-block', this)" aria-label="Copy C-srf-owner prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-srf-owner (Assign one injected SRF persona per ROCA row). Next prompt: C-srf-coverage. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-srf-owner (Assign one injected SRF persona per ROCA row). Next prompt: C-srf-coverage. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1747,19 +1764,19 @@ Return ROCA with srf.persona, srf.party, srf.note, and assignment_evidence on re
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-srf-coverage-block', this)" aria-label="Copy C-srf-coverage prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-srf-coverage (Check SRF layer and owner coverage). Next prompt: C-qa. Optional route: C-vertical-join. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-srf-coverage (Check SRF layer and owner coverage). Next prompt: C-qa. Optional route: C-vertical-join. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1828,19 +1845,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-vertical-join-block', this)" aria-label="Copy C-vertical-join prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-vertical-join (Join injected vertical obligations). Next prompt: C-vertical-route. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-vertical-join (Join injected vertical obligations). Next prompt: C-vertical-route. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1897,19 +1914,19 @@ Return JSON:
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-vertical-route-block', this)" aria-label="Copy C-vertical-route prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-vertical-route (Route vertical acceptance authority). Next prompt: C-qa. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-vertical-route (Route vertical acceptance authority). Next prompt: C-qa. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -1953,32 +1970,34 @@ Return vertical_context with routing fields and chain_meta.track_c_applied.
 </pre>
       </div>
 
-      <h2 class="section-label" id="export-report">Export the report and JSON</h2>
+      <h2 class="section-label" id="export-report">Export the report</h2>
       <p class="section-note">
-        C-report authors the document once. Export steps copy it. They do not
+        A chain run replies with the markdown report only. Save that reply as
+        a <code>.md</code> file. C-report authors the document once. C-export-md
+        copies it. C-export-json is optional for machine eval. Exports do not
         re-author judgment.
       </p>
       <div class="prompt-block is-collapsed" id="C-export-md-block" data-prompt-id="C-export-md">
         <div class="prompt-block__header">
-          <span class="prompt-block__label">C-export-md · Write the downloadable markdown report · Export · next C-export-json</span>
+          <span class="prompt-block__label">C-export-md · Write the downloadable markdown report · Export · optional next C-export-json</span>
           <div class="prompt-block__actions">
             <button class="prompt-block__toggle" type="button" onclick="togglePrompt('C-export-md-block', this)" aria-expanded="false">Show</button>
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-export-md-block', this)" aria-label="Copy C-export-md prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-export-md (Write the downloadable markdown report). Next prompt: C-export-json. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-export-md (Write the downloadable markdown report). The chain ends after this step. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -2007,7 +2026,7 @@ Rules:
 
 This step writes the downloadable report. C-report already authored the document.
 
-Step: C-export-md. Output report.markdown exactly as stored, starting at its title heading. Do not revise, regenerate, summarize, or add sections. Do not wrap it in a JSON object or markdown fences. Do not echo the chain banner.
+Step: C-export-md. Output report.markdown exactly as stored, starting at its title heading. Do not revise, regenerate, summarize, or add sections. Do not wrap it in a JSON object or markdown fences. Do not echo the chain banner. On a chain run this is the only assistant reply.
 
 Completed assessment:
 {{report}}
@@ -2023,19 +2042,19 @@ If report.markdown is missing or empty, stop and say C-report must run first. If
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-export-json-block', this)" aria-label="Copy C-export-json prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-export-json (Write the completed JSON file). The chain ends after this step. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-export-json (Write the completed JSON file). The chain ends after this step. Do not echo this line in the reply.
 
 You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
 This pack is independently proposed companion method. It is not part of CoSAI SRF v1.0 and is not CoSAI-endorsed.
 
 Run mode:
-- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order in this conversation. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, C-report, C-export-md, and C-export-json. After a step meets its stop_condition, immediately produce the next chain id. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.
+- If the operator asked to run the claims-test chain, or named this pack chain, this is a chain run. Execute every required Track A step in order internally. After C-score, if tracks includes B and srf_inputs is present, run C-srf-join through C-srf-coverage. After Track B, if tracks includes C and vertical_source_rows is present, run C-vertical-join through C-vertical-route. Then run C-qa, C-suggest, and C-report. The conversation reply is C-export-md: report.markdown only. Do not print intermediate JSON, prompt-id headings, or a JSON export. Emit C-export-json only when the first message asks for JSON. If C-intake cannot find an anchorable draft_body, reply with a short prose halt note and no JSON. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs.
 - If this message contains a single [chain] banner, produce only that named step.
 
-Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
+Missing first-message fields are empty (null, false, or []). Optional SRF and vertical mapping without injected data are not_applicable. If a stop_condition fails, record the gap in that step's working object and in the report QA section. Do not ask the operator for more information. Continue later steps that can run from the draft body and first-message fields. Stop the remaining chain only when C-intake cannot find an anchorable draft_body.
 
-For a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown or JSON.
+For a chain run, reply with report.markdown only, starting at its title heading. No JSON wrapper. No markdown fences around the document. Every suggestion packet appears in full in that markdown so the operator can save the reply as a .md file. Copy-one-block JSON steps output JSON only, with no markdown fences. C-export-md outputs only the markdown report. C-export-json outputs JSON only when requested or when this message is a copy-one-block for that step.
 
 Modes:
 - full: run screen, suggest packets, and scoring.
@@ -2062,7 +2081,7 @@ Rules:
 - Key takeaways in the report must be non-obvious and testable. Future-work names a concrete open problem.
 
 
-Step: C-export-json. Serialize the completed assessment JSON. Output JSON only, pretty-printed with two-space indent.
+Step: C-export-json. Optional machine serialization. On a chain run, skip this step unless the first message asked for JSON. Copy-one-block: serialize the completed assessment JSON. Output JSON only, pretty-printed with two-space indent.
 
 Completed assessment:
 {{full_assessment}}
@@ -2091,7 +2110,7 @@ When Track B is applied require srf_coverage.status complete or incomplete with 
             <button class="prompt-block__copy" type="button" onclick="copyPrompt('C-zeroshot-block', this)" aria-label="Copy C-zeroshot prompt">Copy</button>
           </div>
         </div>
-        <pre>[chain] This prompt is C-zeroshot (Zero-shot draft claims test). The chain ends after this step. Do not echo this line in the JSON.
+        <pre>[chain] This prompt is C-zeroshot (Zero-shot draft claims test). The chain ends after this step. Do not echo this line in the reply.
 
 Assess this draft AI security whitepaper. Channel: {{channel}}. Mode: {{mode}}.
 
@@ -2116,7 +2135,7 @@ Return schema-compatible JSON with claims (stable ids and anchors), screen findi
     <site-footer></site-footer>
     <script>
       const CT_STORAGE = 'srf.ct.lastPrompt';
-      const CT_STEPS = [{"id": "C-intake", "title": "Record intake and halt if the body is not anchorable", "next": "C-claims", "optional_next": null, "track": "A"}, {"id": "C-claims", "title": "Extract claims with stable ids and anchors", "next": "C-screen", "optional_next": null, "track": "A"}, {"id": "C-screen", "title": "Integrity screen and draft mechanics", "next": "C-foundations", "optional_next": null, "track": "A"}, {"id": "C-foundations", "title": "Harvest axioms, invariables, principles, and references", "next": "C-inventory", "optional_next": null, "track": "A"}, {"id": "C-inventory", "title": "Inventory topic risks and attack classes", "next": "C-tag", "optional_next": null, "track": "A"}, {"id": "C-tag", "title": "Tag AI, GenAI, LLM, ML, and Agent surfaces", "next": "C-roca", "optional_next": null, "track": "A"}, {"id": "C-roca", "title": "Bind risk, obligation, control, and one owner", "next": "C-score", "optional_next": null, "track": "A"}, {"id": "C-score", "title": "Score every claim", "next": "C-qa", "optional_next": "C-srf-join", "track": "A"}, {"id": "C-srf-join", "title": "Join ROCA rows to injected SRF layer data", "next": "C-srf-owner", "optional_next": null, "track": "B"}, {"id": "C-srf-owner", "title": "Assign one injected SRF persona per ROCA row", "next": "C-srf-coverage", "optional_next": null, "track": "B"}, {"id": "C-srf-coverage", "title": "Check SRF layer and owner coverage", "next": "C-qa", "optional_next": "C-vertical-join", "track": "B"}, {"id": "C-vertical-join", "title": "Join injected vertical obligations", "next": "C-vertical-route", "optional_next": null, "track": "C"}, {"id": "C-vertical-route", "title": "Route vertical acceptance authority", "next": "C-qa", "optional_next": null, "track": "C"}, {"id": "C-qa", "title": "Check orphans, tag rules, and absolute coverage language", "next": "C-suggest", "optional_next": null, "track": "A"}, {"id": "C-suggest", "title": "Emit channel-native suggestion packets", "next": "C-report", "optional_next": null, "track": "A"}, {"id": "C-report", "title": "Write the readable assessment", "next": "C-export-md", "optional_next": null, "track": "A"}, {"id": "C-export-md", "title": "Write the downloadable markdown report", "next": "C-export-json", "optional_next": null, "track": "export"}, {"id": "C-export-json", "title": "Write the completed JSON file", "next": null, "optional_next": null, "track": "export"}];
+      const CT_STEPS = [{"id": "C-intake", "title": "Record intake and halt if the body is not anchorable", "next": "C-claims", "optional_next": null, "track": "A"}, {"id": "C-claims", "title": "Extract claims with stable ids and anchors", "next": "C-screen", "optional_next": null, "track": "A"}, {"id": "C-screen", "title": "Integrity screen and draft mechanics", "next": "C-foundations", "optional_next": null, "track": "A"}, {"id": "C-foundations", "title": "Harvest axioms, invariables, principles, and references", "next": "C-inventory", "optional_next": null, "track": "A"}, {"id": "C-inventory", "title": "Inventory topic risks and attack classes", "next": "C-tag", "optional_next": null, "track": "A"}, {"id": "C-tag", "title": "Tag AI, GenAI, LLM, ML, and Agent surfaces", "next": "C-roca", "optional_next": null, "track": "A"}, {"id": "C-roca", "title": "Bind risk, obligation, control, and one owner", "next": "C-score", "optional_next": null, "track": "A"}, {"id": "C-score", "title": "Score every claim", "next": "C-qa", "optional_next": "C-srf-join", "track": "A"}, {"id": "C-srf-join", "title": "Join ROCA rows to injected SRF layer data", "next": "C-srf-owner", "optional_next": null, "track": "B"}, {"id": "C-srf-owner", "title": "Assign one injected SRF persona per ROCA row", "next": "C-srf-coverage", "optional_next": null, "track": "B"}, {"id": "C-srf-coverage", "title": "Check SRF layer and owner coverage", "next": "C-qa", "optional_next": "C-vertical-join", "track": "B"}, {"id": "C-vertical-join", "title": "Join injected vertical obligations", "next": "C-vertical-route", "optional_next": null, "track": "C"}, {"id": "C-vertical-route", "title": "Route vertical acceptance authority", "next": "C-qa", "optional_next": null, "track": "C"}, {"id": "C-qa", "title": "Check orphans, tag rules, and absolute coverage language", "next": "C-suggest", "optional_next": null, "track": "A"}, {"id": "C-suggest", "title": "Emit channel-native suggestion packets", "next": "C-report", "optional_next": null, "track": "A"}, {"id": "C-report", "title": "Write the readable assessment", "next": "C-export-md", "optional_next": null, "track": "A"}, {"id": "C-export-md", "title": "Write the downloadable markdown report", "next": null, "optional_next": "C-export-json", "track": "export"}, {"id": "C-export-json", "title": "Write the completed JSON file", "next": null, "optional_next": null, "track": "export"}];
       const CT_TITLES = {"C-intake": "Record intake and halt if the body is not anchorable", "C-claims": "Extract claims with stable ids and anchors", "C-screen": "Integrity screen and draft mechanics", "C-foundations": "Harvest axioms, invariables, principles, and references", "C-inventory": "Inventory topic risks and attack classes", "C-tag": "Tag AI, GenAI, LLM, ML, and Agent surfaces", "C-roca": "Bind risk, obligation, control, and one owner", "C-score": "Score every claim", "C-srf-join": "Join ROCA rows to injected SRF layer data", "C-srf-owner": "Assign one injected SRF persona per ROCA row", "C-srf-coverage": "Check SRF layer and owner coverage", "C-vertical-join": "Join injected vertical obligations", "C-vertical-route": "Route vertical acceptance authority", "C-qa": "Check orphans, tag rules, and absolute coverage language", "C-suggest": "Emit channel-native suggestion packets", "C-report": "Write the readable assessment", "C-export-md": "Write the downloadable markdown report", "C-export-json": "Write the completed JSON file", "C-preflight": "Fill an intake packet from a messy paste", "C-zeroshot": "Zero-shot draft claims test"};
 
       function stepById(id) {

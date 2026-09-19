@@ -203,6 +203,16 @@ def report_id_issues(obj: dict, gold: dict) -> list[str]:
         cid = claim["id"]
         if cid not in md:
             issues.append(f"report missing {cid}")
+    for item in (obj.get("suggestions") or {}).get("items") or []:
+        cid = item.get("claim_id")
+        body = (
+            item.get("suggested_text")
+            or item.get("review_comment")
+            or item.get("comment")
+            or ""
+        ).strip()
+        if body and body not in md:
+            issues.append(f"report missing packet text for {cid}")
     return issues
 
 
