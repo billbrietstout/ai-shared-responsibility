@@ -9,7 +9,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.4"
+VERSION = "1.0.5"
 UPDATED = "2026-09-18"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
@@ -55,23 +55,22 @@ Rules:
 """
 
 INTAKE_EXAMPLE = """[claims-test intake]
-channel: google-docs
-mode: full
+channel: [google-docs | github-md | published]
+mode: [full | map-only | suggest-only]
 tracks: [A]
 
-draft_title: Agent Identity Binding for Delegated Tool Use
-authors: [example]
-draft_status: early
-industry_pilot: none
+draft_title: [title as printed]
+authors: [Author Name]
+draft_status: [early | advanced | published]
+industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
 dimension_profile:
-  topics: [agent-identity]
-  cosai_workstreams: [WS2, WS4]
-  stage_vocabulary: [design, runtime, revocation]
+  topics: [agent-identity | multimodal | MCP | model-signing]
+  stage_vocabulary: [design | runtime | revocation]
 
-prior_assessment_id: null
-pinned_sources: []
-srf_inputs: null
-vertical_source_rows: []
+prior_assessment_id: [null | ct-...]
+pinned_sources: [DOI | arXiv id | URL already in this message]
+srf_inputs: [null | operating_model plus personas and matrix]
+vertical_source_rows: [none | obligation and control rows]
 
 draft_body: |
   (paste the draft)
@@ -241,12 +240,11 @@ def build() -> dict:
                     "id": "dimension_profile",
                     "default": {
                         "topics": [],
-                        "cosai_workstreams": [],
                         "stage_vocabulary": [],
                     },
                     "include_in_first_message": (
-                        "topics, cosai_workstreams (WS1 supply chain, WS2 defenders, "
-                        "WS3 GRC, WS4 design patterns), and stage_vocabulary."
+                        "topics (agent-identity, multimodal, MCP, model-signing) and "
+                        "stage_vocabulary (design, runtime, revocation)."
                     ),
                 },
                 {
@@ -371,12 +369,6 @@ def build() -> dict:
                 "edit_surface": "Errata or next version",
                 "emit": "Scorecard plus report; suggestions optional",
             },
-        ],
-        "cosai_workstreams": [
-            {"id": "WS1", "name": "supply chain"},
-            {"id": "WS2", "name": "defenders"},
-            {"id": "WS3", "name": "GRC"},
-            {"id": "WS4", "name": "design patterns"},
         ],
         "citations": [
             {
@@ -511,7 +503,7 @@ Draft body follows:
 Anchorable means the body has at least one heading, or at least one contiguous quoted sentence a later step can point at. Empty body, binary garbage, or a shell page is not anchorable.
 
 Rules:
-- Copy operator fields. Do not infer topics, workstreams, or industry from the title.
+- Copy operator fields. Do not infer topics or industry from the title. Ignore cosai_workstreams if present.
 - Default mode is full, tracks is [A], draft_status is early, industry_pilot is none, dimension_profile arrays are empty.
 - Include B only when srf_inputs is a non-null object. Include C only when B is included and vertical_source_rows is a non-empty array. Drop an illegal track and record the drop in notes.
 - suggest-only requires prior_scorecard with claims[] and scores[]. If missing, set mode_error and keep mode suggest-only so later steps emit empty packets.
@@ -529,7 +521,7 @@ Return JSON:
     "authors": [],
     "draft_status": "early|advanced|published",
     "industry_pilot": "none|streaming|adas|call-center|critical-infrastructure",
-    "dimension_profile": {"topics": [], "cosai_workstreams": [], "stage_vocabulary": []},
+    "dimension_profile": {"topics": [], "stage_vocabulary": []},
     "prior_assessment_id": null,
     "prior_scorecard_present": false,
     "pinned_source_ids": [],
@@ -975,7 +967,7 @@ Scores:
 - Supported: draft text plus ROCA or foundations backs the claim. Risk, obligation, control, and one owner are all present and distinct.
 - Partial: implied; mechanism or owner missing. Includes Shared as the only named party.
 - Unsupported: no named actor, artifact, threshold, or failure mode. Includes "ensures trust" and "addresses the gap" without a mechanism. A coverage claim (fully addresses, all risks) is Unsupported when C-attacks lists omitted rows for that topic.
-- Out of scope: outside declared dimension_profile.topics or cosai_workstreams. If those arrays are empty, do not use Out of scope for subject mismatch; use Unsupported or Partial.
+- Out of scope: outside declared dimension_profile.topics. If topics is empty, do not use Out of scope for subject mismatch; use Unsupported or Partial.
 - Blocked: a C-screen finding with blocks_scoring true applies to this claim (citation or definition defect).
 
 If mode is suggest-only, copy scores from prior_scorecard.
@@ -1159,7 +1151,7 @@ Return vertical_context with routing fields and chain_meta.track_c_applied.
                 "qa",
                 ["intake", "claims", "screen", "inventory", "attacks", "tags", "roca", "scores", "srf_coverage", "vertical_context"],
                 "qa",
-                "Gaps list orphans, illegal tags, Shared as a final owner, obligation/control collisions, claims outside the declared workstream set, omitted published attacks against coverage claims, and absolute coverage language. report_present is false.",
+                "Gaps list orphans, illegal tags, Shared as a final owner, obligation/control collisions, claims outside the declared topic set, omitted published attacks against coverage claims, and absolute coverage language. report_present is false.",
                 """{{shared_rules}}
 
 Step: C-qa. Check the assessment before suggestions and the report.
@@ -1192,7 +1184,7 @@ Checks:
 4. obligation_control_split: when both statement strings are non-empty they are not identical.
 5. tag_rules: every ai_tags value is in GenAI, LLM, AI, ML, Agent.
 6. orphans: inventory risks never cited by a ROCA row; ROCA risk_ids missing from inventory; screen blocks_scoring findings with no Blocked claim.
-7. scope_creep: claims scored in-scope whose subject sits outside dimension_profile.topics or cosai_workstreams when those arrays were declared.
+7. scope_creep: claims scored in-scope whose subject sits outside dimension_profile.topics when that array was declared.
 8. absolute_coverage: draft language such as "all", "every", "fully addresses", or "100%" without a count method. List the claim ids.
 9. no_reproduction_steps: inventory and attacks failure_mode text does not contain exploit, payload, poc, or step-by-step intrusion language.
 10. optional tracks: srf_coverage and vertical_context are schema-shaped or null when skipped.
@@ -1416,28 +1408,27 @@ The operator will paste a draft, a URL note, or a partial form. Ask nothing afte
 Output only the intake packet in this shape, then stop:
 
 [claims-test intake]
-channel: google-docs | github-md | published
-mode: full
+channel: [google-docs | github-md | published]
+mode: [full | map-only | suggest-only]
 tracks: [A]
 
-draft_title: …
-authors: […]
-draft_status: early | advanced | published
-industry_pilot: none | streaming | adas | call-center | critical-infrastructure
+draft_title: [title as printed]
+authors: [Author Name]
+draft_status: [early | advanced | published]
+industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
 dimension_profile:
-  topics: […]
-  cosai_workstreams: []
-  stage_vocabulary: […]
+  topics: [agent-identity | multimodal | MCP | model-signing]
+  stage_vocabulary: [design | runtime | revocation]
 
-prior_assessment_id: null
-pinned_sources: []
-srf_inputs: null
-vertical_source_rows: []
+prior_assessment_id: [null | ct-...]
+pinned_sources: [DOI | arXiv id | URL already in this message]
+srf_inputs: [null | operating_model plus personas and matrix]
+vertical_source_rows: [none | obligation and control rows]
 
 draft_body: |
   …
 
-Guess topics from headings, not from marketing language. Workstream ids are WS1 supply chain, WS2 defenders, WS3 GRC, WS4 design patterns. Include a workstream only when the draft is clearly that CoSAI lane. Default industry_pilot to none. Default channel to google-docs for prose without line numbers, github-md when the paste is a .md file with headings, published when the operator supplied a URL of a finished paper.
+Bracketed values are examples. Pick one option per field, or omit the field to leave it empty. Do not emit cosai_workstreams. Guess topics from headings, not from marketing language. Default industry_pilot to none. Default channel to google-docs for prose without line numbers, github-md when the paste is a .md file with headings, published when the operator supplied a URL of a finished paper.
 
 Do not fetch URLs. Do not assess claims. Do not emit ROCA.
 """,

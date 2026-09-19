@@ -253,7 +253,7 @@
 
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
-        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.4</span>
+        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.5</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
           Paste a draft once. The pack extracts claims, collects published
@@ -330,7 +330,7 @@ Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. T
 If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.4, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version 1.0.5, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -365,7 +365,7 @@ Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. T
 If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.4, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.5, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -400,7 +400,7 @@ Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. T
 If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.4, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.5, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -421,30 +421,31 @@ Do not merge this run with the whitepaper-assessment catalog grader. Do not writ
 
       <h2 class="section-label" id="intake">Intake packet</h2>
       <p class="section-note">
-        Put every answer in the first message. The chain does not pause to
-        ask. Missing optional fields stay empty. Then write
+        Optional extras for the first message. Bracketed values are examples.
+        Replace each with one choice, or omit the field. Add B to
+        <code>tracks</code> only with <code>srf_inputs</code>. Add C only with
+        B plus <code>vertical_source_rows</code>. Then write
         <code>Run the claims-test chain.</code>
       </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="intake-example" data-copy-label="Copy packet" aria-label="Copy intake packet example">Copy packet</button>
           <pre id="intake-example">[claims-test intake]
-channel: google-docs
-mode: full
+channel: [google-docs | github-md | published]
+mode: [full | map-only | suggest-only]
 tracks: [A]
 
-draft_title: Agent Identity Binding for Delegated Tool Use
-authors: [example]
-draft_status: early
-industry_pilot: none
+draft_title: [title as printed]
+authors: [Author Name]
+draft_status: [early | advanced | published]
+industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
 dimension_profile:
-  topics: [agent-identity]
-  cosai_workstreams: [WS2, WS4]
-  stage_vocabulary: [design, runtime, revocation]
+  topics: [agent-identity | multimodal | MCP | model-signing]
+  stage_vocabulary: [design | runtime | revocation]
 
-prior_assessment_id: null
-pinned_sources: []
-srf_inputs: null
-vertical_source_rows: []
+prior_assessment_id: [null | ct-...]
+pinned_sources: [DOI | arXiv id | URL already in this message]
+srf_inputs: [null | operating_model plus personas and matrix]
+vertical_source_rows: [none | obligation and control rows]
 
 draft_body: |
   (paste the draft)
@@ -523,28 +524,27 @@ The operator will paste a draft, a URL note, or a partial form. Ask nothing afte
 Output only the intake packet in this shape, then stop:
 
 [claims-test intake]
-channel: google-docs | github-md | published
-mode: full
+channel: [google-docs | github-md | published]
+mode: [full | map-only | suggest-only]
 tracks: [A]
 
-draft_title: …
-authors: […]
-draft_status: early | advanced | published
-industry_pilot: none | streaming | adas | call-center | critical-infrastructure
+draft_title: [title as printed]
+authors: [Author Name]
+draft_status: [early | advanced | published]
+industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
 dimension_profile:
-  topics: […]
-  cosai_workstreams: []
-  stage_vocabulary: […]
+  topics: [agent-identity | multimodal | MCP | model-signing]
+  stage_vocabulary: [design | runtime | revocation]
 
-prior_assessment_id: null
-pinned_sources: []
-srf_inputs: null
-vertical_source_rows: []
+prior_assessment_id: [null | ct-...]
+pinned_sources: [DOI | arXiv id | URL already in this message]
+srf_inputs: [null | operating_model plus personas and matrix]
+vertical_source_rows: [none | obligation and control rows]
 
 draft_body: |
   …
 
-Guess topics from headings, not from marketing language. Workstream ids are WS1 supply chain, WS2 defenders, WS3 GRC, WS4 design patterns. Include a workstream only when the draft is clearly that CoSAI lane. Default industry_pilot to none. Default channel to google-docs for prose without line numbers, github-md when the paste is a .md file with headings, published when the operator supplied a URL of a finished paper.
+Bracketed values are examples. Pick one option per field, or omit the field to leave it empty. Do not emit cosai_workstreams. Guess topics from headings, not from marketing language. Default industry_pilot to none. Default channel to google-docs for prose without line numbers, github-md when the paste is a .md file with headings, published when the operator supplied a URL of a finished paper.
 
 Do not fetch URLs. Do not assess claims. Do not emit ROCA.
 </pre>
@@ -586,8 +586,8 @@ Do not fetch URLs. Do not assess claims. Do not emit ROCA.
         Required. Dimension profile swaps topic vocabulary; it does not fork
         the process. C-attacks collects published ATLAS, OWASP, BIML, and
         related-paper classes for that topic so coverage claims can be scored
-        against omitted rows. Multi-workstream drafts are allowed. C-qa flags
-        claims outside the declared set as Out of scope or scope creep.
+        against omitted rows. Claims outside declared topics are Out of
+        scope or scope creep.
       </p>
       <div class="prompt-block is-collapsed" id="C-intake-block" data-prompt-id="C-intake">
         <div class="prompt-block__header">
@@ -657,7 +657,7 @@ Draft body follows:
 Anchorable means the body has at least one heading, or at least one contiguous quoted sentence a later step can point at. Empty body, binary garbage, or a shell page is not anchorable.
 
 Rules:
-- Copy operator fields. Do not infer topics, workstreams, or industry from the title.
+- Copy operator fields. Do not infer topics or industry from the title. Ignore cosai_workstreams if present.
 - Default mode is full, tracks is [A], draft_status is early, industry_pilot is none, dimension_profile arrays are empty.
 - Include B only when srf_inputs is a non-null object. Include C only when B is included and vertical_source_rows is a non-empty array. Drop an illegal track and record the drop in notes.
 - suggest-only requires prior_scorecard with claims[] and scores[]. If missing, set mode_error and keep mode suggest-only so later steps emit empty packets.
@@ -675,7 +675,7 @@ Return JSON:
     "authors": [],
     "draft_status": "early|advanced|published",
     "industry_pilot": "none|streaming|adas|call-center|critical-infrastructure",
-    "dimension_profile": {"topics": [], "cosai_workstreams": [], "stage_vocabulary": []},
+    "dimension_profile": {"topics": [], "stage_vocabulary": []},
     "prior_assessment_id": null,
     "prior_scorecard_present": false,
     "pinned_source_ids": [],
@@ -1417,7 +1417,7 @@ Scores:
 - Supported: draft text plus ROCA or foundations backs the claim. Risk, obligation, control, and one owner are all present and distinct.
 - Partial: implied; mechanism or owner missing. Includes Shared as the only named party.
 - Unsupported: no named actor, artifact, threshold, or failure mode. Includes "ensures trust" and "addresses the gap" without a mechanism. A coverage claim (fully addresses, all risks) is Unsupported when C-attacks lists omitted rows for that topic.
-- Out of scope: outside declared dimension_profile.topics or cosai_workstreams. If those arrays are empty, do not use Out of scope for subject mismatch; use Unsupported or Partial.
+- Out of scope: outside declared dimension_profile.topics. If topics is empty, do not use Out of scope for subject mismatch; use Unsupported or Partial.
 - Blocked: a C-screen finding with blocks_scoring true applies to this claim (citation or definition defect).
 
 If mode is suggest-only, copy scores from prior_scorecard.
@@ -1518,7 +1518,7 @@ Checks:
 4. obligation_control_split: when both statement strings are non-empty they are not identical.
 5. tag_rules: every ai_tags value is in GenAI, LLM, AI, ML, Agent.
 6. orphans: inventory risks never cited by a ROCA row; ROCA risk_ids missing from inventory; screen blocks_scoring findings with no Blocked claim.
-7. scope_creep: claims scored in-scope whose subject sits outside dimension_profile.topics or cosai_workstreams when those arrays were declared.
+7. scope_creep: claims scored in-scope whose subject sits outside dimension_profile.topics when that array was declared.
 8. absolute_coverage: draft language such as "all", "every", "fully addresses", or "100%" without a count method. List the claim ids.
 9. no_reproduction_steps: inventory and attacks failure_mode text does not contain exploit, payload, poc, or step-by-step intrusion language.
 10. optional tracks: srf_coverage and vertical_context are schema-shaped or null when skipped.
@@ -1741,7 +1741,7 @@ Vertical context:
 report.markdown is the export. A reviewer who never opens JSON must still see every claim id, every ATT id, score, ROCA owner, and every suggestion packet.
 
 Write in this order:
-1. Title. Metadata table: date, pack version 1.0.4, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
+1. Title. Metadata table: date, pack version 1.0.5, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
 2. Scorecard table: claim id, score, one-line reason, roca_id. Counts per score.
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
@@ -1759,7 +1759,7 @@ Key takeaways, if any, must be testable claims a reader could not predict from t
 Set qa.report_present true. Leave reviewer null.
 
 Copy-one-block return the accumulated object plus:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0.4", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
+{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0.5", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
 </pre>
       </div>
 

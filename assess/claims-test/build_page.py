@@ -605,8 +605,10 @@ def main() -> None:
 
       <h2 class="section-label" id="intake">Intake packet</h2>
       <p class="section-note">
-        Put every answer in the first message. The chain does not pause to
-        ask. Missing optional fields stay empty. Then write
+        Optional extras for the first message. Bracketed values are examples.
+        Replace each with one choice, or omit the field. Add B to
+        <code>tracks</code> only with <code>srf_inputs</code>. Add C only with
+        B plus <code>vertical_source_rows</code>. Then write
         <code>Run the claims-test chain.</code>
       </p>
 {shortcut_paste("intake-example", intake_example, label="Copy packet", aria_label="Copy intake packet example")}
@@ -702,8 +704,8 @@ def main() -> None:
         Required. Dimension profile swaps topic vocabulary; it does not fork
         the process. C-attacks collects published ATLAS, OWASP, BIML, and
         related-paper classes for that topic so coverage claims can be scored
-        against omitted rows. Multi-workstream drafts are allowed. C-qa flags
-        claims outside the declared set as Out of scope or scope creep.
+        against omitted rows. Claims outside declared topics are Out of
+        scope or scope creep.
       </p>
 {track_a_html}
 

@@ -9,7 +9,7 @@ live site unless the owner asks.
 **Workspace:** `/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com`  
 **Live site:** https://aisharedresponsibility.com  
 **Lane:** research and assessment method; not a new CoSAI SRF object  
-**Status:** v1.0.4 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional. C-attacks is required. The Track A shortcut names it and requires a Published attack classes table of ATT-xx rows even when a fetched pack is older or topics is empty.
+**Status:** v1.0.5 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional. C-attacks is required. The Track A shortcut names it and requires a Published attack classes table of ATT-xx rows even when a fetched pack is older or topics is empty. Intake packet values are bracketed examples; `cosai_workstreams` is not an intake field.
 
 Related live tools (cousins, not duplicates):
 
@@ -74,15 +74,13 @@ Profile fields:
 
 | Field | Purpose |
 | --- | --- |
-| `topics` | e.g. agent-identity, multimedia, MCP, model-signing |
-| `cosai_workstreams` | Multi-select: WS1 supply chain, WS2 defenders, WS3 GRC, WS4 design patterns |
+| `topics` | e.g. agent-identity, multimodal, MCP, model-signing |
 | `stage_vocabulary` | Industry or lifecycle stage labels for inventory rows |
 | `industry_pilot` | Optional: streaming, ADAS, call-center, critical-infrastructure, none |
 | `pinned_sources` | Injected citation or SRF docs only. Pack load is separate: fetch or attach `prompts.json`. Empty pinned_sources does not block the chain. |
 
-Technology papers (agent identity, multimedia) and CoSAI WS1–WS4 papers all use
-the same steps. Multi-workstream drafts are allowed; C-qa flags claims outside
-the declared set as Out of scope or scope creep.
+Technology papers (agent identity, multimodal) use the same steps. C-qa flags
+claims outside the declared topics as Out of scope or scope creep.
 
 **AI / GenAI / ML / Agent tags** mark model and agent surfaces. Those surfaces
 are subsets of supporting infrastructure. Keep stage and layer on the same row.
@@ -128,23 +126,22 @@ Modes: `full` | `map-only` (skip screen suggest depth as defined in prompts) |
 
 ```text
 [claims-test intake]
-channel: google-docs
-mode: full
+channel: [google-docs | github-md | published]
+mode: [full | map-only | suggest-only]
 tracks: [A]
 
-draft_title: …
-authors: […]
-draft_status: early | advanced | published
-industry_pilot: none | streaming | adas | call-center | critical-infrastructure
+draft_title: [title as printed]
+authors: [Author Name]
+draft_status: [early | advanced | published]
+industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
 dimension_profile:
-  topics: […]
-  cosai_workstreams: [WS2, WS4]
-  stage_vocabulary: […]
+  topics: [agent-identity | multimodal | MCP | model-signing]
+  stage_vocabulary: [design | runtime | revocation]
 
-prior_assessment_id: null
-pinned_sources: []
-srf_inputs: null
-vertical_source_rows: []
+prior_assessment_id: [null | ct-...]
+pinned_sources: [DOI | arXiv id | URL already in this message]
+srf_inputs: [null | operating_model plus personas and matrix]
+vertical_source_rows: [none | obligation and control rows]
 
 draft_body: |
   …
@@ -189,7 +186,7 @@ as Supported without a mechanism and one owner.
 | Artifact | Location | Notes |
 | --- | --- | --- |
 | This handoff | `whitepaper-claims-test-handoff.md` | Design notes; `prompts.json` is the chain source of truth |
-| Prompt pack v1.0.4 | `assess/claims-test/prompts.json` | C-attacks is required. Shortcut names the step and the Published attack classes table even if a fetched pack is older. Citations stay pinned. Chain run replies with markdown. |
+| Prompt pack v1.0.5 | `assess/claims-test/prompts.json` | C-attacks is required. Intake packet uses bracketed examples; no `cosai_workstreams` field. Citations stay pinned. Chain run replies with markdown. |
 | Site page | `/assess/claims-test/` | Owner asked 18 Sep 2026; independently proposed |
 | Gold fixture | `eval/claims-test/gold/agent-identity-draft/` | Seven claims; Docs packets in `expected.json`; GitHub sample beside it |
 | Eval stub | `eval/claims-test/run_eval.py` | Schema, scores, ROCA columns, tags, suggestion coverage |
@@ -223,8 +220,9 @@ profile example** and optional gold fixture, not as the only scope of the pack.
 4. Done: eval stub after `eval/threat-model/` (`schema.json`, `run_eval.py`). Closure stays false until a second fixture and a human review of packets.
 5. Done: public page at `/assess/claims-test/` (owner ask, 18 Sep 2026).
 6. Done: v1.0.4. A Track A shortcut that said "C-intake through C-report" plus a fetched 1.0.2 pack produced a draft-only Topic-Risk Inventory with no ATT ids. The shortcut now names C-attacks and requires a Published attack classes table even when the fetched pack is older or topics is empty.
-7. Optional: second industry or WS1–WS4 profile packs as pinned source sets.
-8. Optional: streaming multimodal gold fixture from local `papers/streaming-multimodal-*.md` (gitignored).
+7. Done: v1.0.5. Intake packet uses bracketed examples, lists github-md, and drops cosai_workstreams.
+8. Optional: second industry or WS1–WS4 profile packs as pinned source sets.
+9. Optional: streaming multimodal gold fixture from local `papers/streaming-multimodal-*.md` (gitignored).
 
 ---
 
