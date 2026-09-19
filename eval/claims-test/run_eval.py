@@ -34,6 +34,7 @@ REQUIRED = (
     "claims",
     "screen",
     "foundations",
+    "attacks",
     "inventory",
     "tags",
     "roca",
@@ -119,6 +120,14 @@ def schema_issues(obj: dict) -> list[str]:
         for tag in row.get("ai_tags") or []:
             if tag not in TAGS:
                 issues.append(f"illegal tag {tag} on {row.get('id')}")
+    for row in (obj.get("attacks") or {}).get("items") or []:
+        aid = row.get("id")
+        if not aid or not re.match(r"^ATT-[0-9]+$", str(aid)):
+            issues.append(f"bad attack id {aid}")
+        elif row.get("draft_overlap") not in {"named", "implied", "omitted"}:
+            issues.append(f"{aid} draft_overlap invalid")
+        elif not (row.get("failure_mode") or "").strip():
+            issues.append(f"{aid} missing failure_mode")
     report = (obj.get("report") or {}).get("markdown") or ""
     if not report.strip():
         issues.append("report.markdown empty")
@@ -193,6 +202,10 @@ def reproduction_issues(obj: dict) -> list[str]:
         text = risk.get("failure_mode") or ""
         if REPRO_RE.search(text):
             issues.append(f"{risk.get('id')} failure_mode looks like reproduction guidance")
+    for att in (obj.get("attacks") or {}).get("items") or []:
+        text = att.get("failure_mode") or ""
+        if REPRO_RE.search(text):
+            issues.append(f"{att.get('id')} failure_mode looks like reproduction guidance")
     return issues
 
 
@@ -203,6 +216,10 @@ def report_id_issues(obj: dict, gold: dict) -> list[str]:
         cid = claim["id"]
         if cid not in md:
             issues.append(f"report missing {cid}")
+    for att in (gold.get("attacks") or {}).get("items") or []:
+        aid = att["id"]
+        if aid not in md:
+            issues.append(f"report missing {aid}")
     for item in (obj.get("suggestions") or {}).get("items") or []:
         cid = item.get("claim_id")
         body = (

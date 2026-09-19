@@ -9,7 +9,7 @@ live site unless the owner asks.
 **Workspace:** `/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com`  
 **Live site:** https://aisharedresponsibility.com  
 **Lane:** research and assessment method; not a new CoSAI SRF object  
-**Status:** v1.0.2 at `/assess/claims-test/`; chain ids frozen in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional.
+**Status:** v1.0.3 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional. C-attacks collects published topic attacks before draft-treated inventory.
 
 Related live tools (cousins, not duplicates):
 
@@ -105,7 +105,8 @@ are subsets of supporting infrastructure. Keep stage and layer on the same row.
 | C-claims | Extract claims with anchors | Claim list with stable ids |
 | C-screen | Integrity + draft mechanics | Findings logged; no “AI-written” verdict from style |
 | C-foundations | Axioms, invariables, principles | Each entry cited or marked provisional |
-| C-inventory | Risk/attack classes for the topic | Id + failure mode; no reproduction steps |
+| C-attacks | Published topic attacks from ATLAS, OWASP, BIML, and related papers | Failure mode; draft overlap named, implied, or omitted; no reproduction steps |
+| C-inventory | Draft-treated risks bound to ATT rows | Id + failure mode; omitted ATT rows stay off inventory |
 | C-tag | GenAI / LLM / AI / ML / Agent | AI-surface rows tagged |
 | C-roca | Risk → obligation → control → one owner | Obligation ≠ control; if-conditions on row |
 | C-score | Supported / Partial / Unsupported / Out of scope / Blocked | Every claim scored with one-line reason |
@@ -188,7 +189,7 @@ as Supported without a mechanism and one owner.
 | Artifact | Location | Notes |
 | --- | --- | --- |
 | This handoff | `whitepaper-claims-test-handoff.md` | Design notes; `prompts.json` is the chain source of truth |
-| Prompt pack v1.0.2 | `assess/claims-test/prompts.json` | Chain ids, intake, serializers, pre-flight, zero-shot baseline. Pack load is fetch or attach; citations stay pinned. Chain run replies with markdown. |
+| Prompt pack v1.0.3 | `assess/claims-test/prompts.json` | Chain ids include C-attacks. Pack load is fetch or attach; citations stay pinned. Chain run replies with markdown. |
 | Site page | `/assess/claims-test/` | Owner asked 18 Sep 2026; independently proposed |
 | Gold fixture | `eval/claims-test/gold/agent-identity-draft/` | Seven claims; Docs packets in `expected.json`; GitHub sample beside it |
 | Eval stub | `eval/claims-test/run_eval.py` | Schema, scores, ROCA columns, tags, suggestion coverage |
@@ -248,7 +249,7 @@ profile example** and optional gold fixture, not as the only scope of the pack.
 - [ ] Do not commit gitignored `papers/*` unless asked.
 - [x] Update this handoff when chain ids or intake fields change.
 
-Chain ids: C-intake, C-claims, C-screen, C-foundations, C-inventory, C-tag,
+Chain ids: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag,
 C-roca, C-score, C-srf-join, C-srf-owner, C-srf-coverage, C-vertical-join,
 C-vertical-route, C-qa, C-suggest, C-report, C-export-md, C-export-json.
 Helpers: C-preflight. Baseline: C-zeroshot.

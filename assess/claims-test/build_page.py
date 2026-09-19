@@ -203,6 +203,7 @@ def main() -> None:
         "C-claims",
         "C-screen",
         "C-foundations",
+        "C-attacks",
         "C-inventory",
         "C-tag",
         "C-roca",
@@ -693,8 +694,10 @@ def main() -> None:
       <h2 class="section-label" id="track-a">Track A</h2>
       <p class="section-note">
         Required. Dimension profile swaps topic vocabulary; it does not fork
-        the process. Multi-workstream drafts are allowed. C-qa flags claims
-        outside the declared set as Out of scope or scope creep.
+        the process. C-attacks collects published ATLAS, OWASP, BIML, and
+        related-paper classes for that topic so coverage claims can be scored
+        against omitted rows. Multi-workstream drafts are allowed. C-qa flags
+        claims outside the declared set as Out of scope or scope creep.
       </p>
 {track_a_html}
 

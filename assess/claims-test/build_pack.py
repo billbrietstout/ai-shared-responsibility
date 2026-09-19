@@ -9,7 +9,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.2"
+VERSION = "1.0.3"
 UPDATED = "2026-09-18"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
@@ -39,11 +39,11 @@ Rules:
 - Chain shape: risk to obligation to control to accountable party. One owner per activity. "Shared" is analysis input, not a final answer.
 - Obligation is not a control. If the draft uses one name for both, split them or score Partial.
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
-- Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain. Invented citations are Blocked, not Partial.
+- Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch {PACK_URL}. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
 - Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
-- Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Inventory rows name a failure mode, not how to cause it.
-- Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter inside this object. You may cite a published technique id when the draft or a pinned source already names it.
+- Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
+- Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks collects published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
 - Accountability mapping stays AI SRF. Track B copies persona and layer from injected srf_inputs. Do not guess a persona from training memory.
 - Vertical control schemas are independently proposed extensions to CoSAI SRF v1.0. Track C findings carry that caveat.
@@ -116,12 +116,12 @@ def build() -> dict:
         "description": (
             "Version 1.0 prompts that assess a draft AI security whitepaper in one "
             "non-interactive chain. Track A extracts claims, screens integrity and "
-            "draft mechanics, harvests foundations, inventories topic risks, tags "
-            "AI surfaces, binds risk to obligation to control to one owner, scores "
-            "each claim, and emits Google Docs or GitHub suggestion packets. "
-            "Optional Track B joins injected SRF persona and layer data. Optional "
-            "Track C joins injected vertical obligations. Exports do not re-author "
-            "judgment."
+            "draft mechanics, harvests foundations, collects published topic attacks, "
+            "inventories draft-treated risks, tags AI surfaces, binds risk to "
+            "obligation to control to one owner, scores each claim, and emits Google "
+            "Docs or GitHub suggestion packets. Optional Track B joins injected SRF "
+            "persona and layer data. Optional Track C joins injected vertical "
+            "obligations. Exports do not re-author judgment."
         ),
         "lane": (
             "Independently proposed assessment method. Not a CoSAI SRF object. "
@@ -129,6 +129,7 @@ def build() -> dict:
         ),
         "runtime_defaults": {
             "claim_batch": 20,
+            "attack_row_cap": 40,
             "default_channel": "google-docs",
             "default_mode": "full",
             "default_tracks": ["A"],
@@ -434,7 +435,8 @@ def build() -> dict:
             chain_row("C-intake", "A", "intake", "C-claims", halt_on_fail=True),
             chain_row("C-claims", "A", "claims", "C-screen"),
             chain_row("C-screen", "A", "screen", "C-foundations"),
-            chain_row("C-foundations", "A", "foundations", "C-inventory"),
+            chain_row("C-foundations", "A", "foundations", "C-attacks"),
+            chain_row("C-attacks", "A", "attacks", "C-inventory"),
             chain_row("C-inventory", "A", "inventory", "C-tag"),
             chain_row("C-tag", "A", "tag", "C-roca"),
             chain_row("C-roca", "A", "roca", "C-score"),
@@ -701,16 +703,16 @@ Return JSON:
 """,
             ),
             prompt(
-                "C-inventory",
-                "Inventory topic risks and attack classes",
+                "C-attacks",
+                "Collect published topic attacks from catalogs and papers",
                 "A",
-                "inventory",
-                ["intake", "claims", "foundations", "draft_body"],
-                "inventory",
-                "Each risk has a stable id and a failure mode. No reproduction steps. Claims outside the declared profile are listed as out_of_profile rather than invented risks.",
+                "attacks",
+                ["intake", "claims", "foundations", "draft_body", "pinned_sources"],
+                "attacks",
+                "Each row is a published attack class for the declared topic, with a failure mode and draft_overlap named, implied, or omitted. No reproduction steps. At most 40 rows.",
                 """{{shared_rules}}
 
-Step: C-inventory. List risk and attack classes for the declared topic.
+Step: C-attacks. Collect published attack classes that can test the draft's claims. This list is the coverage fixture, not a rewrite of the draft.
 
 Intake:
 {{intake}}
@@ -718,21 +720,99 @@ Claims:
 {{claims}}
 Foundations:
 {{foundations}}
+Pinned sources:
+{{pinned_sources}}
 Draft body:
 {{draft_body}}
 
-Use dimension_profile.topics and industry_pilot as the subject. If topics is empty, derive candidate topics from headings and mark them derived true so C-qa can flag the gap.
+Subject: dimension_profile.topics plus industry_pilot. If topics is empty, derive from headings and mark topics_derived true.
+
+Sources, in this order:
+1. Attack classes the draft names or implies.
+2. ATLAS, OWASP (including LLM Top 10), and BIML technique ids that match the subject.
+3. Related papers: identifiers the draft prints, identifiers in pinned_sources, and well-known topic papers (arXiv, USENIX, CVE family, or venue plus year).
+
+Do not fetch PDFs or catalog URLs. Do not write how to carry out the attack. Do not add payloads. Do not mint a new taxonomy letter. family is a short topic label (identity, parser, supply-chain), not a catalog.
+
+Each row:
+- id ATT-01 ...
+- name: short label
+- failure_mode: what breaks, for whom, under what condition
+- family: short topic label
+- taxonomy_ref: ATLAS, OWASP, or BIML id, or null
+- paper_ref: arXiv id, DOI, CVE family, or venue plus year, or null
+- evidence: draft | pinned | catalog | training_memory
+- citation_status: resolved_draft | resolved_pinned | catalog | unresolved_unpinned
+- draft_overlap: named (draft states the class), implied (draft describes the failure without naming it), omitted (published for this topic, draft is silent)
+- stage: a label from stage_vocabulary when it fits; otherwise null
+
+Prefer 8 to 25 rows. Never more than 40. Prefer rows that can falsify a coverage claim (fully addresses, all risks, complete). Include omitted classes when a credible catalog or paper describes them for this topic.
+
+A training_memory paper_ref stays unresolved_unpinned. Catalog ids may be used without a paper_ref.
+
+Return JSON:
+{
+  "attacks": {
+    "topics_used": [],
+    "topics_derived": false,
+    "items": [
+      {
+        "id": "ATT-01",
+        "name": "",
+        "failure_mode": "",
+        "family": "",
+        "taxonomy_ref": null,
+        "paper_ref": null,
+        "evidence": "draft|pinned|catalog|training_memory",
+        "citation_status": "resolved_draft|resolved_pinned|catalog|unresolved_unpinned",
+        "draft_overlap": "named|implied|omitted",
+        "stage": null
+      }
+    ]
+  }
+}
+""",
+            ),
+            prompt(
+                "C-inventory",
+                "Bind draft-treated risks to collected attacks",
+                "A",
+                "inventory",
+                ["intake", "claims", "attacks", "foundations", "draft_body"],
+                "inventory",
+                "Each named or implied ATT row has a RSK row. Omitted ATT rows stay off inventory. No reproduction steps.",
+                """{{shared_rules}}
+
+Step: C-inventory. Bind draft-treated risks to C-attacks. Omitted published attacks stay on the attacks object; they are the coverage test, not extra draft risks.
+
+Intake:
+{{intake}}
+Claims:
+{{claims}}
+Attacks:
+{{attacks}}
+Foundations:
+{{foundations}}
+Draft body:
+{{draft_body}}
+
+Use dimension_profile.topics and industry_pilot as the subject. If topics is empty, copy topics_derived from C-attacks.
+
+Each named or implied ATT row becomes one RSK row. Copy failure_mode, taxonomy_ref, and stage when they still match the draft. Set attack_ids to that ATT id. source is the draft heading.
+
+Draft-only failure modes that C-attacks missed still get an RSK row with attack_ids [].
+
+Do not create RSK rows for omitted ATT items. Do not write how to carry out the attack. Do not add payload examples. Do not mint a new taxonomy letter.
 
 Each row:
 - id RSK-01 ...
 - name: short label
 - failure_mode: what breaks, for whom, under what condition
 - source: draft heading or pinned source id
-- taxonomy_ref: ATLAS, OWASP, or BIML id only when the draft or a pinned source already names it; otherwise null
+- attack_ids: ATT ids this risk covers, or []
+- taxonomy_ref: copy from the linked ATT row, or null
 - stage: a label from stage_vocabulary when it fits; otherwise null
 - layer: L1-L5 only when the draft names a layer or a Track B input later binds it; otherwise null
-
-Do not write how to carry out the attack. Do not add payload examples. Do not mint a new taxonomy letter.
 
 Return JSON:
 {
@@ -745,6 +825,7 @@ Return JSON:
         "name": "",
         "failure_mode": "",
         "source": "",
+        "attack_ids": ["ATT-01"],
         "taxonomy_ref": null,
         "stage": null,
         "layer": null
@@ -800,7 +881,7 @@ Return JSON:
                 "Bind risk, obligation, control, and one owner",
                 "A",
                 "roca",
-                ["intake", "claims", "inventory", "tags", "foundations", "draft_body"],
+                ["intake", "claims", "inventory", "tags", "foundations", "attacks", "draft_body"],
                 "roca",
                 "Each in-scope claim has a ROCA row. Obligation is not the control. Accountable party is one job title or SRF persona. Shared is not a final owner. If-conditions are recorded on the row.",
                 """{{shared_rules}}
@@ -813,6 +894,8 @@ Claims:
 {{claims}}
 Inventory:
 {{inventory}}
+Attacks:
+{{attacks}}
 Tags:
 {{tags}}
 Foundations:
@@ -856,7 +939,7 @@ Return JSON:
                 "Score every claim",
                 "A",
                 "score",
-                ["intake", "claims", "screen", "foundations", "roca", "draft_body"],
+                ["intake", "claims", "screen", "foundations", "roca", "attacks", "draft_body"],
                 "scores",
                 "Every claim has exactly one score and a one-line reason. Blocked when a blocking screen finding applies. Out of scope when outside the declared profile.",
                 """{{shared_rules}}
@@ -873,13 +956,15 @@ Foundations:
 {{foundations}}
 ROCA:
 {{roca}}
+Attacks:
+{{attacks}}
 Draft body:
 {{draft_body}}
 
 Scores:
 - Supported: draft text plus ROCA or foundations backs the claim. Risk, obligation, control, and one owner are all present and distinct.
 - Partial: implied; mechanism or owner missing. Includes Shared as the only named party.
-- Unsupported: no named actor, artifact, threshold, or failure mode. Includes "ensures trust" and "addresses the gap" without a mechanism.
+- Unsupported: no named actor, artifact, threshold, or failure mode. Includes "ensures trust" and "addresses the gap" without a mechanism. A coverage claim (fully addresses, all risks) is Unsupported when C-attacks lists omitted rows for that topic.
 - Out of scope: outside declared dimension_profile.topics or cosai_workstreams. If those arrays are empty, do not use Out of scope for subject mismatch; use Unsupported or Partial.
 - Blocked: a C-screen finding with blocks_scoring true applies to this claim (citation or definition defect).
 
@@ -1062,9 +1147,9 @@ Return vertical_context with routing fields and chain_meta.track_c_applied.
                 "Check orphans, tag rules, and absolute coverage language",
                 "A",
                 "qa",
-                ["intake", "claims", "screen", "inventory", "tags", "roca", "scores", "srf_coverage", "vertical_context"],
+                ["intake", "claims", "screen", "inventory", "attacks", "tags", "roca", "scores", "srf_coverage", "vertical_context"],
                 "qa",
-                "Gaps list orphans, illegal tags, Shared as a final owner, obligation/control collisions, claims outside the declared workstream set, and absolute coverage language. report_present is false.",
+                "Gaps list orphans, illegal tags, Shared as a final owner, obligation/control collisions, claims outside the declared workstream set, omitted published attacks against coverage claims, and absolute coverage language. report_present is false.",
                 """{{shared_rules}}
 
 Step: C-qa. Check the assessment before suggestions and the report.
@@ -1077,6 +1162,8 @@ Screen:
 {{screen}}
 Inventory:
 {{inventory}}
+Attacks:
+{{attacks}}
 Tags:
 {{tags}}
 ROCA:
@@ -1097,9 +1184,10 @@ Checks:
 6. orphans: inventory risks never cited by a ROCA row; ROCA risk_ids missing from inventory; screen blocks_scoring findings with no Blocked claim.
 7. scope_creep: claims scored in-scope whose subject sits outside dimension_profile.topics or cosai_workstreams when those arrays were declared.
 8. absolute_coverage: draft language such as "all", "every", "fully addresses", or "100%" without a count method. List the claim ids.
-9. no_reproduction_steps: inventory failure_mode text does not contain exploit, payload, poc, or step-by-step intrusion language.
+9. no_reproduction_steps: inventory and attacks failure_mode text does not contain exploit, payload, poc, or step-by-step intrusion language.
 10. optional tracks: srf_coverage and vertical_context are schema-shaped or null when skipped.
 11. report_present is false.
+12. attack_coverage: list ATT ids with draft_overlap omitted. Named or implied ATT rows without a RSK attack_ids link are orphans. A coverage claim scored Supported while omitted ATT rows exist is a gap.
 
 Put every failure in gaps.
 
@@ -1114,6 +1202,7 @@ Return JSON:
     "scope_creep_ids": [],
     "absolute_coverage_ids": [],
     "orphan_risk_ids": [],
+    "omitted_attack_ids": [],
     "no_reproduction_steps": true,
     "track_b_status": null,
     "track_c_status": null,
@@ -1205,9 +1294,9 @@ Return JSON:
                 "Write the readable assessment",
                 "A",
                 "report",
-                ["intake", "claims", "screen", "foundations", "inventory", "tags", "roca", "scores", "qa", "suggestions", "srf_coverage", "vertical_context"],
+                ["intake", "claims", "screen", "foundations", "attacks", "inventory", "tags", "roca", "scores", "qa", "suggestions", "srf_coverage", "vertical_context"],
                 "report",
-                "report.markdown contains every claim id, every score, and every suggestion packet in full. reviewer is null. Score deltas appear only when prior_assessment_id is set.",
+                "report.markdown contains every claim id, every ATT id, every score, and every suggestion packet in full. reviewer is null. Score deltas appear only when prior_assessment_id is set.",
                 """{{shared_rules}}
 
 Step: C-report. Author the readable assessment once. On a chain run this markdown is the conversation reply. Copy-one-block still returns JSON so C-export-md can copy the stored string.
@@ -1220,6 +1309,8 @@ Screen:
 {{screen}}
 Foundations:
 {{foundations}}
+Attacks:
+{{attacks}}
 Inventory:
 {{inventory}}
 Tags:
@@ -1237,7 +1328,7 @@ SRF coverage:
 Vertical context:
 {{vertical_context}}
 
-report.markdown is the export. A reviewer who never opens JSON must still see every claim id, score, ROCA owner, and every suggestion packet.
+report.markdown is the export. A reviewer who never opens JSON must still see every claim id, every ATT id, score, ROCA owner, and every suggestion packet.
 
 Write in this order:
 1. Title. Metadata table: date, pack version """ + VERSION + """, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
@@ -1245,12 +1336,13 @@ Write in this order:
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
 5. Foundations: axioms, invariables, principles, references. Mark provisional.
-6. Inventory: risk id, failure mode, tags, taxonomy_ref. No reproduction steps.
-7. Screen findings table, or a sentence that screen was skipped.
-8. QA gaps, including absolute coverage language and scope creep.
-9. Suggestion packets: one subsection per item. Include claim or screen id, heading, quoted span or line range, why it fails, and the full suggested replacement (google-docs suggested_text, github-md review_comment plus diff, published errata). Do not defer packets to JSON. If suggestions.status is skipped_map_only, say so in one sentence.
-10. Optional Track B and Track C coverage, or not_applicable.
-11. Open problems the current draft cannot yet answer. Name concrete holes, not generic emerging-tech language.
+6. Published attack classes: ATT id, name, family, draft overlap (named, implied, omitted), catalog or paper. Counts per overlap. No reproduction steps.
+7. Inventory: draft-treated risk id, linked ATT ids, failure mode, tags. No reproduction steps.
+8. Screen findings table, or a sentence that screen was skipped.
+9. QA gaps, including absolute coverage language, omitted attacks, and scope creep.
+10. Suggestion packets: one subsection per item. Include claim or screen id, heading, quoted span or line range, why it fails, and the full suggested replacement (google-docs suggested_text, github-md review_comment plus diff, published errata). Do not defer packets to JSON. If suggestions.status is skipped_map_only, say so in one sentence.
+11. Optional Track B and Track C coverage, or not_applicable.
+12. Open problems the current draft cannot yet answer. Name concrete holes, not generic emerging-tech language.
 
 Key takeaways, if any, must be testable claims a reader could not predict from the heading list.
 
@@ -1277,7 +1369,7 @@ Step: C-export-md. Output report.markdown exactly as stored, starting at its tit
 Completed assessment:
 {{report}}
 
-If report.markdown is missing or empty, stop and say C-report must run first. If any claim id is absent from report.markdown, stop and say C-report must rewrite the projection. Do not reconstruct the document in this export step.
+If report.markdown is missing or empty, stop and say C-report must run first. If any claim id or ATT id is absent from report.markdown, stop and say C-report must rewrite the projection. Do not reconstruct the document in this export step.
 """,
             ),
             prompt(
@@ -1354,7 +1446,7 @@ Dimension profile:
 Draft:
 {{draft_body}}
 
-Return schema-compatible JSON with claims (stable ids and anchors), screen findings, foundations, inventory risks without reproduction steps, ai_tags from GenAI|LLM|AI|ML|Agent, ROCA rows (risk, obligation, control, one owner; Shared is not a final owner), scores (Supported|Partial|Unsupported|Out of scope|Blocked), qa gaps, and suggestion packets for the channel. Do not invent citations. Do not fetch URLs.
+Return schema-compatible JSON with claims (stable ids and anchors), screen findings, foundations, published topic attacks from ATLAS or OWASP or BIML and related papers without reproduction steps, inventory risks, ai_tags from GenAI|LLM|AI|ML|Agent, ROCA rows (risk, obligation, control, one owner; Shared is not a final owner), scores (Supported|Partial|Unsupported|Out of scope|Blocked), qa gaps, and suggestion packets for the channel. Do not invent citations. Do not fetch URLs.
 """,
             }
         ],

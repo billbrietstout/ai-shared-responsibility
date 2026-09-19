@@ -2,13 +2,14 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aisharedresponsibility.com/eval/claims-test/schema.json",
   "title": "Draft whitepaper claims-test assessment v1",
-  "description": "JSON shape written by the claims-test prompt pack. Track A records claims, screen findings, foundations, inventory, tags, ROCA rows, scores, QA, suggestion packets, and a readable report. Optional Track B and Track C add injected SRF and vertical joins.",
+  "description": "JSON shape written by the claims-test prompt pack. Track A records claims, screen findings, foundations, published topic attacks, inventory, tags, ROCA rows, scores, QA, suggestion packets, and a readable report. Optional Track B and Track C add injected SRF and vertical joins.",
   "type": "object",
   "required": [
     "intake",
     "claims",
     "screen",
     "foundations",
+    "attacks",
     "inventory",
     "tags",
     "roca",
@@ -26,6 +27,7 @@
     },
     "screen": { "$ref": "#/$defs/screen" },
     "foundations": { "$ref": "#/$defs/foundations" },
+    "attacks": { "$ref": "#/$defs/attacks" },
     "inventory": { "$ref": "#/$defs/inventory" },
     "tags": { "$ref": "#/$defs/tags" },
     "roca": {
@@ -176,6 +178,44 @@
         "screen_id": { "type": ["string", "null"] }
       }
     },
+    "attacks": {
+      "type": "object",
+      "required": ["items"],
+      "properties": {
+        "topics_used": { "type": "array", "items": { "type": "string" } },
+        "topics_derived": { "type": "boolean" },
+        "items": {
+          "type": "array",
+          "maxItems": 40,
+          "items": { "$ref": "#/$defs/attack" }
+        }
+      }
+    },
+    "attack": {
+      "type": "object",
+      "required": ["id", "name", "failure_mode", "draft_overlap"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^ATT-" },
+        "name": { "type": "string" },
+        "failure_mode": { "type": "string" },
+        "family": { "type": "string" },
+        "taxonomy_ref": { "type": ["string", "null"] },
+        "paper_ref": { "type": ["string", "null"] },
+        "evidence": {
+          "type": "string",
+          "enum": ["draft", "pinned", "catalog", "training_memory"]
+        },
+        "citation_status": {
+          "type": "string",
+          "enum": ["resolved_draft", "resolved_pinned", "catalog", "unresolved_unpinned"]
+        },
+        "draft_overlap": {
+          "type": "string",
+          "enum": ["named", "implied", "omitted"]
+        },
+        "stage": { "type": ["string", "null"] }
+      }
+    },
     "inventory": {
       "type": "object",
       "required": ["risks"],
@@ -196,6 +236,7 @@
         "name": { "type": "string" },
         "failure_mode": { "type": "string" },
         "source": { "type": "string" },
+        "attack_ids": { "type": "array", "items": { "type": "string" } },
         "taxonomy_ref": { "type": ["string", "null"] },
         "stage": { "type": ["string", "null"] },
         "layer": { "type": ["string", "null"] }
@@ -309,6 +350,7 @@
         "scope_creep_ids": { "type": "array", "items": { "type": "string" } },
         "absolute_coverage_ids": { "type": "array", "items": { "type": "string" } },
         "orphan_risk_ids": { "type": "array", "items": { "type": "string" } },
+        "omitted_attack_ids": { "type": "array", "items": { "type": "string" } },
         "no_reproduction_steps": { "type": "boolean" },
         "track_b_status": { "type": ["string", "null"] },
         "track_c_status": { "type": ["string", "null"] },
