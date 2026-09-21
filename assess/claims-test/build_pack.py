@@ -9,7 +9,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.6"
+VERSION = "1.0.7"
 UPDATED = "2026-09-21"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
@@ -44,6 +44,25 @@ INDUSTRY_PILOT_PROSE = (
     "call-center, critical-infrastructure, healthcare, finance, insurance, "
     "manufacturing, defense, public-sector, retail, telecom, aviation, "
     "physical-security, education, or legal."
+)
+
+KNOWN_TOPICS = [
+    "agent-identity",
+    "multimodal",
+    "MCP",
+    "model-signing",
+    "shared-responsibility",
+    "persona-assignment",
+    "oversight-tiers",
+    "supply-chain",
+    "telemetry",
+    "tool-calling",
+]
+KNOWN_TOPICS_PIPE = " | ".join(KNOWN_TOPICS)
+KNOWN_TOPICS_PROSE = (
+    "agent-identity, multimodal, MCP, model-signing, shared-responsibility, "
+    "persona-assignment, oversight-tiers, supply-chain, telemetry, tool-calling. "
+    "Put unfamiliar kebab-case topics in topics_other. Do not use bare accountability."
 )
 
 SHARED_RULES = f"""You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
@@ -93,7 +112,8 @@ authors: [Author Name]
 draft_status: [early | advanced | published]
 industry_pilot: [{INDUSTRY_PILOT_PIPE}]
 dimension_profile:
-  topics: [agent-identity | multimodal | MCP | model-signing]
+  topics: [{KNOWN_TOPICS_PIPE}]
+  topics_other: []
   stage_vocabulary: [design | runtime | revocation]
 
 prior_assessment_id: [null | ct-...]
@@ -105,7 +125,9 @@ draft_body: |
   (paste the draft)
 
 Then: Run the claims-test chain.
-""".replace("[{INDUSTRY_PILOT_PIPE}]", f"[{INDUSTRY_PILOT_PIPE}]")
+""".replace("[{INDUSTRY_PILOT_PIPE}]", f"[{INDUSTRY_PILOT_PIPE}]").replace(
+    "[{KNOWN_TOPICS_PIPE}]", f"[{KNOWN_TOPICS_PIPE}]"
+)
 
 
 def prompt(pid, title, track, stage, inputs, output_key, stop, template, **extra):
@@ -267,10 +289,11 @@ def build() -> dict:
                     "id": "dimension_profile",
                     "default": {
                         "topics": [],
+                        "topics_other": [],
                         "stage_vocabulary": [],
                     },
                     "include_in_first_message": (
-                        "topics (agent-identity, multimodal, MCP, model-signing) and "
+                        "topics (" + KNOWN_TOPICS_PROSE + ") and "
                         "stage_vocabulary (design, runtime, revocation)."
                     ),
                 },
@@ -530,8 +553,9 @@ Draft body follows:
 Anchorable means the body has at least one heading, or at least one contiguous quoted sentence a later step can point at. Empty body, binary garbage, or a shell page is not anchorable.
 
 Rules:
-- Copy operator fields. Do not infer topics or industry from the title. Ignore cosai_workstreams if present.
-- Default mode is full, tracks is [A], draft_status is early, industry_pilot is none, dimension_profile arrays are empty.
+- Copy operator fields. Do not infer topics or industry from the title. Drop cosai_workstreams if present; that field is retired.
+- Default mode is full, tracks is [A], draft_status is early, industry_pilot is none, dimension_profile topics and topics_other and stage_vocabulary are empty.
+- Known topics only in dimension_profile.topics. Put other kebab-case topics in topics_other. Do not use bare accountability as a topic.
 - Include B only when srf_inputs is a non-null object. Include C only when B is included and vertical_source_rows is a non-empty array. Drop an illegal track and record the drop in notes.
 - suggest-only requires prior_scorecard with claims[] and scores[]. If missing, set mode_error and keep mode suggest-only so later steps emit empty packets.
 - map-only is recorded here; C-screen and C-suggest will skip depth.
@@ -550,7 +574,7 @@ Return JSON:
     "industry_pilot": """
                 + f'"{INDUSTRY_PILOT_BAR}"'
                 + """,
-    "dimension_profile": {"topics": [], "stage_vocabulary": []},
+    "dimension_profile": {"topics": [], "topics_other": [], "stage_vocabulary": []},
     "prior_assessment_id": null,
     "prior_scorecard_present": false,
     "pinned_source_ids": [],
@@ -996,7 +1020,7 @@ Scores:
 - Supported: draft text plus ROCA or foundations backs the claim. Risk, obligation, control, and one owner are all present and distinct.
 - Partial: implied; mechanism or owner missing. Includes Shared as the only named party.
 - Unsupported: no named actor, artifact, threshold, or failure mode. Includes "ensures trust" and "addresses the gap" without a mechanism. A coverage claim (fully addresses, all risks) is Unsupported when C-attacks lists omitted rows for that topic.
-- Out of scope: outside declared dimension_profile.topics. If topics is empty, do not use Out of scope for subject mismatch; use Unsupported or Partial.
+- Out of scope: outside declared dimension_profile.topics and topics_other. If both are empty, do not use Out of scope for subject mismatch; use Unsupported or Partial.
 - Blocked: a C-screen finding with blocks_scoring true applies to this claim (citation or definition defect).
 
 If mode is suggest-only, copy scores from prior_scorecard.
@@ -1446,7 +1470,8 @@ authors: [Author Name]
 draft_status: [early | advanced | published]
 industry_pilot: [""" + INDUSTRY_PILOT_PIPE + """]
 dimension_profile:
-  topics: [agent-identity | multimodal | MCP | model-signing]
+  topics: [""" + KNOWN_TOPICS_PIPE + """]
+  topics_other: []
   stage_vocabulary: [design | runtime | revocation]
 
 prior_assessment_id: [null | ct-...]
@@ -1457,7 +1482,7 @@ vertical_source_rows: [none | obligation and control rows]
 draft_body: |
   …
 
-Bracketed values are examples. Pick one option per field, or omit the field to leave it empty. Do not emit cosai_workstreams. Guess topics from headings, not from marketing language. Default industry_pilot to none. Default channel to google-docs for prose without line numbers, github-md when the paste is a .md file with headings, published when the operator supplied a URL of a finished paper.
+Bracketed values are examples. Pick one option per field, or omit the field to leave it empty. Do not emit cosai_workstreams; that field is retired. Guess known topics from headings, not from marketing language. Put unfamiliar kebab-case topics in topics_other. Default industry_pilot to none. Default channel to google-docs for prose without line numbers, github-md when the paste is a .md file with headings, published when the operator supplied a URL of a finished paper.
 
 Do not fetch URLs. Do not assess claims. Do not emit ROCA.
 """,

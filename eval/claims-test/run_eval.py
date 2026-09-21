@@ -22,6 +22,19 @@ GOLD = HERE / "gold"
 SCORES = {"Supported", "Partial", "Unsupported", "Out of scope", "Blocked"}
 TAGS = {"GenAI", "LLM", "AI", "ML", "Agent"}
 CHANNELS = {"google-docs", "github-md", "published"}
+KNOWN_TOPICS = {
+    "agent-identity",
+    "multimodal",
+    "MCP",
+    "model-signing",
+    "shared-responsibility",
+    "persona-assignment",
+    "oversight-tiers",
+    "supply-chain",
+    "telemetry",
+    "tool-calling",
+}
+TOPIC_OTHER_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 REPRO_RE = re.compile(
     r"\b(exploit|payload|poc|proof of concept|fuzz|repro steps?)\b",
     re.I,
@@ -134,10 +147,21 @@ def schema_issues(obj: dict) -> list[str]:
     if (obj.get("report") or {}).get("reviewer") not in (None, ""):
         issues.append("report.reviewer must be null")
     sug = obj.get("suggestions") or {}
-    if sug.get("status") not in {"complete", "skipped_map_only"}:
+    if sug.get("status") not in {"complete", "skipped_map_only", "skipped_suggest_only"}:
         issues.append("suggestions.status invalid")
     if sug.get("channel") not in CHANNELS:
         issues.append("suggestions.channel invalid")
+    profile = (intake.get("dimension_profile") or {})
+    for topic in profile.get("topics") or []:
+        if topic not in KNOWN_TOPICS:
+            issues.append(f"unknown topic {topic} (use topics_other)")
+    for topic in profile.get("topics_other") or []:
+        if not TOPIC_OTHER_RE.match(str(topic)):
+            issues.append(f"topics_other {topic} must be kebab-case")
+        if topic in KNOWN_TOPICS:
+            issues.append(f"topics_other {topic} duplicates a known topic")
+    if "cosai_workstreams" in profile:
+        issues.append("cosai_workstreams is retired; remove it from dimension_profile")
     return issues
 
 
@@ -182,9 +206,11 @@ def roca_issues(obj: dict) -> list[str]:
 
 def suggestion_issues(obj: dict) -> list[str]:
     sug = obj.get("suggestions") or {}
-    if sug.get("status") == "skipped_map_only":
+    status = sug.get("status")
+    if status in {"skipped_map_only", "skipped_suggest_only"}:
         return []
     items = sug.get("items") or []
+    channel = sug.get("channel")
     covered = {i.get("claim_id") for i in items}
     issues = []
     for row in obj.get("scores") or []:
@@ -193,6 +219,28 @@ def suggestion_issues(obj: dict) -> list[str]:
     for finding in (obj.get("screen") or {}).get("findings") or []:
         if finding.get("tier") in P12 and finding.get("id") not in covered:
             issues.append(f"missing suggestion for {finding.get('id')}")
+    for item in items:
+        cid = item.get("claim_id") or "?"
+        anchor = item.get("anchor") or {}
+        if not (anchor.get("heading") or "").strip():
+            issues.append(f"suggestion {cid} missing anchor.heading")
+        if channel == "google-docs":
+            if not (item.get("comment") or "").strip():
+                issues.append(f"suggestion {cid} missing comment")
+            if not (item.get("suggested_text") or "").strip():
+                issues.append(f"suggestion {cid} missing suggested_text")
+            if "review_comment" in item:
+                issues.append(f"suggestion {cid} must not use review_comment on google-docs")
+        elif channel == "github-md":
+            if not (item.get("review_comment") or "").strip():
+                issues.append(f"suggestion {cid} missing review_comment")
+            if "diff" in item and item.get("diff") is not None and not isinstance(item.get("diff"), str):
+                issues.append(f"suggestion {cid} diff must be string or null")
+            if "comment" in item or "suggested_text" in item:
+                issues.append(f"suggestion {cid} must not use Docs fields on github-md")
+        elif channel == "published":
+            if not (item.get("comment") or "").strip():
+                issues.append(f"suggestion {cid} missing comment")
     return issues
 
 

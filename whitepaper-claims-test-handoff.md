@@ -9,7 +9,7 @@ live site unless the owner asks.
 **Workspace:** `/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com`  
 **Live site:** https://aisharedresponsibility.com  
 **Lane:** research and assessment method; not a new CoSAI SRF object  
-**Status:** v1.0.5 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional. C-attacks is required. The Track A shortcut names it and requires a Published attack classes table of ATT-xx rows even when a fetched pack is older or topics is empty. Intake packet values are bracketed examples; `cosai_workstreams` is not an intake field.
+**Status:** v1.0.7 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. Chain run replies with the markdown report; JSON is optional. C-attacks is required. Typed suggestion packets and known `topics` enum live in `eval/claims-test/schema.json`. `cosai_workstreams` is retired.
 
 Related live tools (cousins, not duplicates):
 
@@ -74,7 +74,7 @@ Profile fields:
 
 | Field | Purpose |
 | --- | --- |
-| `topics` | e.g. agent-identity, multimodal, MCP, model-signing |
+| `topics` | Known enum: agent-identity, multimodal, MCP, model-signing, shared-responsibility, persona-assignment, oversight-tiers, supply-chain, telemetry, tool-calling. Extensions go in `topics_other` (kebab-case). Do not use bare accountability. |
 | `stage_vocabulary` | Industry or lifecycle stage labels for inventory rows |
 | `industry_pilot` | Optional. Enum: `none`, `streaming`, `advanced-driver-assistance` (ADAS / autonomous driving), `call-center`, `critical-infrastructure`, `healthcare`, `finance`, `insurance`, `manufacturing`, `defense`, `public-sector`, `retail`, `telecom`, `aviation`, `physical-security`, `education`, `legal`. Prefer site vertical slugs when Track C may join later. |
 | `pinned_sources` | Injected citation or SRF docs only. Pack load is separate: fetch or attach `prompts.json`. Empty pinned_sources does not block the chain. |
@@ -135,7 +135,9 @@ authors: [Author Name]
 draft_status: [early | advanced | published]
 industry_pilot: [none | streaming | advanced-driver-assistance | call-center | critical-infrastructure | healthcare | finance | insurance | manufacturing | defense | public-sector | retail | telecom | aviation | physical-security | education | legal]
 dimension_profile:
-  topics: [agent-identity | multimodal | MCP | model-signing]
+dimension_profile:
+  topics: [agent-identity | multimodal | MCP | model-signing | shared-responsibility | persona-assignment | oversight-tiers | supply-chain | telemetry | tool-calling]
+  topics_other: []
   stage_vocabulary: [design | runtime | revocation]
 
 prior_assessment_id: [null | ct-...]
