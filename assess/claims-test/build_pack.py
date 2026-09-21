@@ -9,13 +9,42 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.5"
-UPDATED = "2026-09-18"
+VERSION = "1.0.6"
+UPDATED = "2026-09-21"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
 SCHEMA = "/eval/claims-test/schema.json"
 COUSIN = "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
 TM_PACK = "https://aisharedresponsibility.com/tools/prompts/threat-model/"
+
+# industry_pilot enum (slug | meaning). advanced-driver-assistance = ADAS / AV.
+INDUSTRY_PILOTS = [
+    "none",
+    "streaming",
+    "advanced-driver-assistance",
+    "call-center",
+    "critical-infrastructure",
+    "healthcare",
+    "finance",
+    "insurance",
+    "manufacturing",
+    "defense",
+    "public-sector",
+    "retail",
+    "telecom",
+    "aviation",
+    "physical-security",
+    "education",
+    "legal",
+]
+INDUSTRY_PILOT_PIPE = " | ".join(INDUSTRY_PILOTS)
+INDUSTRY_PILOT_BAR = "|".join(INDUSTRY_PILOTS)
+INDUSTRY_PILOT_PROSE = (
+    "none, streaming, advanced-driver-assistance (ADAS / autonomous driving), "
+    "call-center, critical-infrastructure, healthcare, finance, insurance, "
+    "manufacturing, defense, public-sector, retail, telecom, aviation, "
+    "physical-security, education, or legal."
+)
 
 SHARED_RULES = f"""You are assessing a draft AI security whitepaper. You extract claims, bind each claim to risk, obligation, control, and one accountable party, then emit channel-native edit suggestions.
 
@@ -62,7 +91,7 @@ tracks: [A]
 draft_title: [title as printed]
 authors: [Author Name]
 draft_status: [early | advanced | published]
-industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
+industry_pilot: [{INDUSTRY_PILOT_PIPE}]
 dimension_profile:
   topics: [agent-identity | multimodal | MCP | model-signing]
   stage_vocabulary: [design | runtime | revocation]
@@ -76,7 +105,7 @@ draft_body: |
   (paste the draft)
 
 Then: Run the claims-test chain.
-"""
+""".replace("[{INDUSTRY_PILOT_PIPE}]", f"[{INDUSTRY_PILOT_PIPE}]")
 
 
 def prompt(pid, title, track, stage, inputs, output_key, stop, template, **extra):
@@ -232,9 +261,7 @@ def build() -> dict:
                 {
                     "id": "industry_pilot",
                     "default": "none",
-                    "include_in_first_message": (
-                        "none, streaming, adas, call-center, or critical-infrastructure."
-                    ),
+                    "include_in_first_message": INDUSTRY_PILOT_PROSE,
                 },
                 {
                     "id": "dimension_profile",
@@ -520,7 +547,9 @@ Return JSON:
     "draft_title": "string or null",
     "authors": [],
     "draft_status": "early|advanced|published",
-    "industry_pilot": "none|streaming|adas|call-center|critical-infrastructure",
+    "industry_pilot": """
+                + f'"{INDUSTRY_PILOT_BAR}"'
+                + """,
     "dimension_profile": {"topics": [], "stage_vocabulary": []},
     "prior_assessment_id": null,
     "prior_scorecard_present": false,
@@ -1415,7 +1444,7 @@ tracks: [A]
 draft_title: [title as printed]
 authors: [Author Name]
 draft_status: [early | advanced | published]
-industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
+industry_pilot: [""" + INDUSTRY_PILOT_PIPE + """]
 dimension_profile:
   topics: [agent-identity | multimodal | MCP | model-signing]
   stage_vocabulary: [design | runtime | revocation]

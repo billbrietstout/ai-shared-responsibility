@@ -76,7 +76,7 @@ Profile fields:
 | --- | --- |
 | `topics` | e.g. agent-identity, multimodal, MCP, model-signing |
 | `stage_vocabulary` | Industry or lifecycle stage labels for inventory rows |
-| `industry_pilot` | Optional: streaming, ADAS, call-center, critical-infrastructure, none |
+| `industry_pilot` | Optional. Enum: `none`, `streaming`, `advanced-driver-assistance` (ADAS / autonomous driving), `call-center`, `critical-infrastructure`, `healthcare`, `finance`, `insurance`, `manufacturing`, `defense`, `public-sector`, `retail`, `telecom`, `aviation`, `physical-security`, `education`, `legal`. Prefer site vertical slugs when Track C may join later. |
 | `pinned_sources` | Injected citation or SRF docs only. Pack load is separate: fetch or attach `prompts.json`. Empty pinned_sources does not block the chain. |
 
 Technology papers (agent identity, multimodal) use the same steps. C-qa flags
@@ -133,7 +133,7 @@ tracks: [A]
 draft_title: [title as printed]
 authors: [Author Name]
 draft_status: [early | advanced | published]
-industry_pilot: [none | streaming | adas | call-center | critical-infrastructure]
+industry_pilot: [none | streaming | advanced-driver-assistance | call-center | critical-infrastructure | healthcare | finance | insurance | manufacturing | defense | public-sector | retail | telecom | aviation | physical-security | education | legal]
 dimension_profile:
   topics: [agent-identity | multimodal | MCP | model-signing]
   stage_vocabulary: [design | runtime | revocation]
