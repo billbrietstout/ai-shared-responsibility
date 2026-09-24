@@ -3,7 +3,9 @@
 ## Guiding constraints
 
 - No build step. No bundler. No framework.
-- No external network requests at runtime (fonts, analytics, CDN scripts).
+- No external network requests at runtime for fonts or CDN libraries.
+  Exception: GoatCounter pageview beacons via `shared/analytics.js`
+  (aggregate counts only; see `/about/`).
 - Pages work without JavaScript. JS adds interactivity progressively.
 - One accountable file per concern. No magic.
 - Coherent design language with `cosai-wizards` — same CSS token names.

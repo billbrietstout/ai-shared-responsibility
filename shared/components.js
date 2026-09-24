@@ -3,7 +3,7 @@
  * <site-nav current="framework"> and <site-footer>
  *
  * No shadow DOM. All styles live in shared/styles.css.
- * No external dependencies. No build step.
+ * No build step. Loads /shared/analytics.js for GoatCounter pageviews.
  * Apache-2.0
  */
 
@@ -133,3 +133,15 @@ class SiteFooter extends HTMLElement {
 
 customElements.define("site-nav", SiteNav);
 customElements.define("site-footer", SiteFooter);
+
+/* --------------------------------------------------------------------------
+   Analytics (GoatCounter) — pages without this file load analytics.js directly
+   -------------------------------------------------------------------------- */
+
+(function loadAnalytics() {
+  if (document.querySelector('script[data-srf-analytics]')) return;
+  const s = document.createElement("script");
+  s.src = "/shared/analytics.js";
+  s.dataset.srfAnalytics = "1";
+  document.head.appendChild(s);
+})();
