@@ -50,6 +50,11 @@ ACCT     = ["srf.concept.accountability", "srf.concept.responsibility-cascade"]
 VENDOR_RISK_ROLES = ["srf.role.model-provider", "srf.role.ai-platform-provider",
                      "srf.role.agentic-platform-provider", "srf.role.application-developer",
                      "srf.role.data-provider", "srf.role.ai-system-governance"]
+# Roles the streaming BSP workbench assigns across content custody, GenAI,
+# consumer AI, and platform families (no agentic-platform-provider on that page).
+STREAMING_BSP_ROLES = ["srf.role.data-provider", "srf.role.application-developer",
+                       "srf.role.ai-platform-provider", "srf.role.model-provider",
+                       "srf.role.ai-system-governance"]
 
 VERTICALS = ["finance", "healthcare", "insurance",
              "public-sector", "defense", "manufacturing"]
@@ -161,6 +166,9 @@ def classify(rel):
                      "srf.concept.persistence-scope",
                      "srf.concept.enforcement-plane"])
             return ("how-to" if leaf == "how-to" else "tool"), vr
+        if "streaming-bsp" in rel:
+            return "tool", (LAYERS + STREAMING_BSP_ROLES
+                            + ["srf.concept.evidence-threshold"])
         if "layer-matrix" in rel:        return "tool", LAYERS + OPMODELS
         if "policy-pyramid" in rel:      return "tool", LAYERS + ["srf.concept.responsibility-cascade"]
         if "srf-stress" in rel:          return "tool", ACCT + LAYERS
