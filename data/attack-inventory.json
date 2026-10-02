@@ -1,6 +1,6 @@
 {
   "$schema": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
-  "inventory_version": "0.2.0",
+  "inventory_version": "0.2.1",
   "updated": "2026-10-01",
   "description": "Inventory of published attack classes against AI and agentic systems, including business processes that agents now run. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk, and to vertical profile controls through vertical_controls.",
   "scope": "Attack classes against AI models, LLM applications, and agentic systems; classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch; and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. The scope field on each entry is ai, agentic, classical-reopened, or business-process.",
@@ -127,7 +127,7 @@
       "version": "0.1.0",
       "date": "2026-10-01",
       "id": "*",
-      "change": "First release. 31 entries seeded from the Published attack classes table of claims-test assessment ct-20261001-telemetry-rfc-v06-r2, plus 6 classical-reopened entries. Every ref was checked against its pinned source on 2026-10-01."
+      "change": "First release. 31 entries seeded from the Published attack classes table of one claims-test assessment, plus 6 classical-reopened entries. Every ref was checked against its pinned source on 2026-10-01."
     },
     {
       "version": "0.1.0",
@@ -284,6 +284,48 @@
       "date": "2026-10-01",
       "id": "atk-display-name-identity-spoofing",
       "change": "related now lists atk-deepfake-approver-impersonation."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Removed references to the seed draft from entry notes and from the 0.1.0 changelog line. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-indirect-prompt-injection",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-training-data-extraction",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-display-name-identity-spoofing",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-deceptive-agent-self-report",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-observability-plane-evasion",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-cross-tenant-leakage",
+      "change": "Notes no longer cite the seed draft. No ref changed."
     }
   ],
   "entries": [
@@ -364,10 +406,10 @@
           "arxiv-api",
           "crosswalk-lookup"
         ],
-        "notes": "The seed row listed EchoLeak (CVE-2025-32711) here. ATLAS case study AML.CS0059 tags the EchoLeak injection step as AML.T0051.002 Triggered, not .001 Indirect, so EchoLeak now sits under atk-zero-click-output-exfiltration. The RFC appendix A.5 row for TA-01 cites .001 and should be rechecked."
+        "notes": "The seed row listed EchoLeak (CVE-2025-32711) here. ATLAS case study AML.CS0059 tags the EchoLeak injection step as AML.T0051.002 Triggered, not .001 Indirect, so EchoLeak now sits under atk-zero-click-output-exfiltration."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.2.0"
+      "last_changed_in": "0.2.1"
     },
     {
       "id": "atk-zero-click-output-exfiltration",
@@ -868,10 +910,10 @@
           "arxiv-api",
           "crosswalk-lookup"
         ],
-        "notes": "The RFC appendix A.5 also tags AML.T0024.000 Infer Training Data Membership for this class. Membership inference tests whether a record was in training and does not reproduce it, so that id is not cited here."
+        "notes": "AML.T0024.000 Infer Training Data Membership is not cited. Membership inference tests whether a record was in training and does not reproduce it."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.1"
     },
     {
       "id": "atk-telemetry-store-disclosure",
@@ -1724,10 +1766,10 @@
           "arxiv-api",
           "crosswalk-lookup"
         ],
-        "notes": "Agents of Chaos is cited for its owner identity spoofing case (AOC-08 in the RFC). The arXiv id, title, and first author were checked; the case text was not reread."
+        "notes": "Agents of Chaos is cited for its owner identity spoofing case. The arXiv id, title, and first author were checked; the case text was not reread."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.2.0"
+      "last_changed_in": "0.2.1"
     },
     {
       "id": "atk-sandbox-escape",
@@ -1990,10 +2032,10 @@
           "owasp-agentic-pdf",
           "arxiv-api"
         ],
-        "notes": "No ATLAS v2026.08 technique describes a false outcome report. The RFC appendix A.5 tag for AOC-01, AML.T0031 Erode AI Model Integrity, describes performance degradation and is not cited here. Agents of Chaos is cited for its AOC-01 case; the case text was not reread."
+        "notes": "No ATLAS v2026.08 technique describes a false outcome report. AML.T0031 Erode AI Model Integrity describes performance degradation and is not cited here. Agents of Chaos is cited for its false self-report case; the case text was not reread."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.2.0"
+      "last_changed_in": "0.2.1"
     },
     {
       "id": "atk-repudiation-log-tampering",
@@ -2094,10 +2136,10 @@
           "atlas-next-release-diff",
           "owasp-agentic-pdf"
         ],
-        "notes": "No paper or catalog entry found that names a starved guardrail or disabled hook whose silence a detection reads as allow. The class comes from the CoSAI AI Telemetry RFC v0.6 draft. AML.T0081 covers the disabled-setting half only."
+        "notes": "No paper or catalog entry found that names a starved guardrail or disabled hook whose silence a detection reads as allow. AML.T0081 covers the disabled-setting half only."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.1"
     },
     {
       "id": "atk-telemetry-borne-injection-into-llm-triage",
@@ -2496,10 +2538,10 @@
           "url-fetch",
           "crosswalk-lookup"
         ],
-        "notes": "LLM08:2025 covers multi-tenant leakage in a shared vector store only, so it is the closest OWASP LLM match. The RFC appendix A.5 notes that no adversary technique applies to the Asana case."
+        "notes": "LLM08:2025 covers multi-tenant leakage in a shared vector store only, so it is the closest OWASP LLM match."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.1"
     },
     {
       "id": "atk-llm-output-os-command-injection",

@@ -248,14 +248,14 @@
           <h2 class="section__title">What checking the seed table changed</h2>
           <p class="section__body">
             31 entries came from the attack table of a claims-test run against
-            the CoSAI AI Telemetry RFC v0.6, where every catalog and paper id
+            a draft paper, where every catalog and paper id
             had been filled from memory. Checking them against their sources
             changed refs on 11 entries.
           </p>
           <ul class="findings">
             <li>All 14 arXiv ids in the seed table resolve, and each first author matches the table.</li>
             <li>All 13 ATLAS ids in the seed table exist at v2026.08 and keep their names in v2026.09. Six seed rows cited a parent technique or a looser fit where ATLAS has a narrower one; zero-click exfiltration, for example, now maps to <code>AML.T0077</code> LLM Response Rendering. Sandbox escape had no ATLAS id and now maps to <code>AML.T0105</code> Escape to Host.</li>
-            <li>ATLAS case study <code>AML.CS0059</code> tags the EchoLeak injection step as <code>AML.T0051.002</code> Triggered. The RFC's attack appendix tags it <code>.001</code> Indirect. EchoLeak now sits under zero-click exfiltration.</li>
+            <li>ATLAS case study <code>AML.CS0059</code> tags the EchoLeak injection step as <code>AML.T0051.002</code> Triggered. The seed table tagged it <code>.001</code> Indirect. EchoLeak now sits under zero-click exfiltration.</li>
             <li>MCP tool poisoning had only a blog post. ATLAS case study <code>AML.CS0054</code> cites that post and gives it a stable id; <code>AML.T0109</code> and CVE-2025-54136 cover tool definitions that change after approval.</li>
             <li>Injection carried by telemetry into LLM-assisted triage was mapped by analogy, with no paper. Three 2026 arXiv papers show log fields acting as attacker-controlled content that an LLM triage tool reads. That is the data-channel case <code>AML.T0051.001</code> Indirect covers, so the ref is now graded exact.</li>
             <li>The OWASP Agentic AI Threats PDF now served is v1.1 (December 2025). It adds T16 and T17; the seed's T1, T3, T7, T8, T9, T10, and T11 keep their titles.</li>
@@ -380,8 +380,8 @@
             <li><code>vertical_controls</code> is filled only on the eight business-process classes. Earlier classes such as excessive agency and approval fatigue likely match finance and insurance controls too, but no one has checked those links.</li>
             <li>Bank payment-system intrusions with no AI step, such as the 2016 Bangladesh Bank theft, have no entry. The US Department of Justice page that would anchor that case returned a bot-check page with no text on 1 October 2026, so it could not be verified.</li>
             <li>BIML LLM24 ids are not mapped. They name risk areas broader than these classes, and choosing between them needs a reviewer.</li>
-            <li>ATLAS v2026.09 is out and adds <code>AML.T0129</code> Triggers in Multimodal Inputs, which may fit multimodal instruction injection more narrowly. The pin stays at v2026.08 because the RFC cites that release.</li>
-            <li>The list started from one telemetry RFC's attack table, six classical weaknesses, and eight business-process classes. ATLAS techniques outside those topics, such as <code>AML.T0015</code> model evasion against classic ML classifiers and <code>AML.T0041</code> physical-environment attacks, have no entry of their own. KYC onboarding fraud with deepfakes (<code>AML.CS0033</code>, <code>AML.CS0034</code>) is also unlisted.</li>
+            <li>ATLAS v2026.09 is out and adds <code>AML.T0129</code> Triggers in Multimodal Inputs, which may fit multimodal instruction injection more narrowly. The pin stays at v2026.08; every cited id keeps its name in v2026.09.</li>
+            <li>The list started from one claims-test attack table, six classical weaknesses, and eight business-process classes. ATLAS techniques outside those topics, such as <code>AML.T0015</code> model evasion against classic ML classifiers and <code>AML.T0041</code> physical-environment attacks, have no entry of their own. KYC onboarding fraud with deepfakes (<code>AML.CS0033</code>, <code>AML.CS0034</code>) is also unlisted.</li>
           </ul>
         </div>
       </section>
