@@ -184,13 +184,15 @@ carrier tag, and `section`/`header` tags stay balanced.
 python3 build/verify_attack_inventory.py            # errors fail; staleness warns
 python3 build/verify_attack_inventory.py --strict   # warnings fail too
 python3 build/export_attack_inventory.py --topics telemetry,MCP --out rows.json
+python3 build/export_attack_inventory.py --topics payment,approval --vertical finance --format md
 ```
 
 `data/attack-inventory.json` is checked against
 `data/attack-inventory.schema.json` when `jsonschema` is installed. Without it,
 the script still runs its own checks: unique `atk-` ids, every ref's
 `catalog_version` equal to the pinned catalog, `related` and `srf_crosswalk` ids
-that resolve, a dated check record behind every `verified` ref, a changelog
+that resolve, `vertical_controls` ids that exist as `srf.control` ids in
+`ids.json`, a dated check record behind every `verified` ref, a changelog
 line for the current `inventory_version`, and no em or en dashes. Staleness
 warnings fire when a newer catalog release has been seen, when an entry was
 checked before a cited catalog's release date, or when a URL ref is older than

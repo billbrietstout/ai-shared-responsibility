@@ -88,6 +88,8 @@
         "owasp-llm-top10",
         "owasp-agentic-threats",
         "owasp-dsgai",
+        "finos-aigf",
+        "mitre-attack",
         "cwe"
       ]
     },
@@ -198,7 +200,7 @@
         "name": { "type": "string", "minLength": 1 },
         "aliases": { "type": "array", "items": { "type": "string" } },
         "family": { "type": "string", "minLength": 1 },
-        "scope": { "enum": ["ai", "agentic", "classical-reopened"] },
+        "scope": { "enum": ["ai", "agentic", "classical-reopened", "business-process"] },
         "topics": {
           "type": "array",
           "uniqueItems": true,
@@ -213,9 +215,22 @@
               "oversight-tiers",
               "supply-chain",
               "telemetry",
-              "tool-calling"
+              "tool-calling",
+              "business-process",
+              "payment",
+              "invoice",
+              "procurement",
+              "approval",
+              "master-data",
+              "workflow"
             ]
           }
+        },
+        "vertical_controls": {
+          "description": "Optional. Canonical srf.control.<vertical>.<control-id> ids from /ids.json whose control addresses this class in a vertical profile. Context only; the entry stays in this single inventory.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^srf\\.control\\.[a-z0-9-]+\\.[A-Za-z0-9-]+$" }
         },
         "failure_mode": { "type": "string", "minLength": 1 },
         "taxonomy_refs": { "type": "array", "items": { "$ref": "#/$defs/taxonomyRef" } },

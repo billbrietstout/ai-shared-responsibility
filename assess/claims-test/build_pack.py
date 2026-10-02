@@ -9,7 +9,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.8"
+VERSION = "1.0.9"
 UPDATED = "2026-10-01"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
@@ -58,11 +58,12 @@ KNOWN_TOPICS = [
     "supply-chain",
     "telemetry",
     "tool-calling",
+    "business-process",
 ]
 KNOWN_TOPICS_PIPE = " | ".join(KNOWN_TOPICS)
 KNOWN_TOPICS_PROSE = (
     "agent-identity, multimodal, MCP, model-signing, shared-responsibility, "
-    "persona-assignment, oversight-tiers, supply-chain, telemetry, tool-calling. "
+    "persona-assignment, oversight-tiers, supply-chain, telemetry, tool-calling, business-process. "
     "Put unfamiliar kebab-case topics in topics_other. Do not use bare accountability."
 )
 
@@ -788,10 +789,10 @@ Subject: dimension_profile.topics plus industry_pilot. If topics is empty, deriv
 This step is not a paraphrase of the draft's own risk list. A list of draft-only failure modes with no ATT ids is a failed stop_condition.
 
 Sources, in this order:
-1. The SRF attack inventory. Use an attached copy or export; otherwise fetch """ + INVENTORY_URL + """ once. It comes in two shapes. An export (pinned_source.id srf-attack-inventory) already holds rows in the shape below; keep them and renumber. The full file holds entries; select those with status active whose topics intersect the subject, then build one row per entry:
+1. The SRF attack inventory. Use an attached copy or export; otherwise fetch """ + INVENTORY_URL + """ once. It comes in two shapes. An export (pinned_source.id srf-attack-inventory) already holds rows in the shape below; keep them and renumber. The full file holds entries; select those with status active whose topics intersect dimension_profile.topics or topics_other (process tags such as payment, invoice, procurement, approval, master-data, and workflow sit in topics_other). When industry_pilot names a vertical, also select entries with a vertical_controls id that starts with srf.control.<industry_pilot>. Then build one row per entry:
    - failure_mode, name, family: copy from the entry.
    - inventory_id: the entry id.
-   - taxonomy_ref: the best verified taxonomy ref. Rank exact before closest before analogy; within a grade, mitre-atlas, owasp-llm-top10, owasp-agentic-threats, owasp-dsgai, cwe. Write OWASP Agentic ids as "OWASP Agentic T7 (v1.1)" with the pinned version.
+   - taxonomy_ref: the best verified taxonomy ref. Rank exact before closest before analogy; within a grade, mitre-atlas, owasp-llm-top10, owasp-agentic-threats, owasp-dsgai, finos-aigf, mitre-attack, cwe. Write OWASP Agentic ids as "OWASP Agentic T7 (v1.1)", FINOS ids as "FINOS AIR-SEC-024 (v2)", and ATT&CK ids as "ATT&CK T1657 (v19.2)", each with the pinned version.
    - paper_ref: the first verified paper ref as arXiv:id or doi:id; else the first CVE or ATLAS case-study id; else null.
    - evidence pinned; citation_status resolved_pinned.
    Judge draft_overlap and stage yourself; the inventory holds neither. Do not change an id copied from the inventory.

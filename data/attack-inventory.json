@@ -1,9 +1,9 @@
 {
   "$schema": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
-  "inventory_version": "0.1.0",
+  "inventory_version": "0.2.0",
   "updated": "2026-10-01",
-  "description": "Inventory of published attack classes against AI and agentic systems. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk.",
-  "scope": "Attack classes against AI models, LLM applications, and agentic systems, plus classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch. The scope field on each entry is ai, agentic, or classical-reopened.",
+  "description": "Inventory of published attack classes against AI and agentic systems, including business processes that agents now run. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk, and to vertical profile controls through vertical_controls.",
+  "scope": "Attack classes against AI models, LLM applications, and agentic systems; classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch; and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. The scope field on each entry is ai, agentic, classical-reopened, or business-process.",
   "rules": [
     "Describe the failure mode only: who loses what, under what condition. No reproduction steps, payloads, or attack procedures.",
     "A ref is verified only after its source was opened and the entry records the date and method. Memory is never verification.",
@@ -13,7 +13,8 @@
     "ATT-nn ids and draft_overlap belong to one assessment and are not stored here.",
     "mapping_quality is exact when the catalog text covers the class without stretching, closest when it covers part of the class or an adjacent class and is the best entry available, and analogy when it describes a different mechanism with a similar effect.",
     "Versioning is semver: patch for ref fixes, minor for added entries, major for removed fields or id changes. Every entry change adds one changelog line naming the id and the reason.",
-    "Recheck triggers: a new ATLAS release, a revision of the OWASP LLM Top 10 or of OWASP Agentic AI Threats and Mitigations, a new incident cited in a CoSAI WS2 draft, or a claims-test run that finds a class missing here."
+    "vertical_controls lists canonical srf.control ids from /ids.json for vertical profile controls that address the class. Verticals are context for an entry. No sector gets a separate inventory.",
+    "Recheck triggers: a new ATLAS release, a revision of the OWASP LLM Top 10 or of OWASP Agentic AI Threats and Mitigations, a new MITRE ATT&CK Enterprise release, a new FINOS AI Governance Framework tag, a new incident cited in a CoSAI WS2 draft, or a claims-test run that finds a class missing here."
   ],
   "catalogs": {
     "mitre-atlas": {
@@ -62,6 +63,27 @@
       "id_form": "DSGAInn",
       "license_note": "CC BY-SA 4.0. This file cites ids and names only."
     },
+    "finos-aigf": {
+      "name": "FINOS AI Governance Framework, risk catalogue",
+      "version": "v2",
+      "released": "2025-10-20",
+      "source_url": "https://github.com/finos/ai-governance-framework/tree/v2/docs/_risks",
+      "source_commit": "71dc7e4793eebd70247dd7cf0b3b0eeab70f5b3b",
+      "retrieved_on": "2026-10-01",
+      "id_form": "AIR-TYPE-nnn, built from the type and sequence fields of each risk file, as docs/_includes/risk-id.html renders it",
+      "license_note": "CC BY 4.0. This file cites ids and titles only."
+    },
+    "mitre-attack": {
+      "name": "MITRE ATT&CK Enterprise",
+      "version": "19.2",
+      "released": "2026-08-05",
+      "source_url": "https://github.com/mitre-attack/attack-stix-data/blob/6cda5ad8462c79e14fbb872f4e09059b18e0cfc4/enterprise-attack/enterprise-attack-19.2.json",
+      "source_commit": "6cda5ad8462c79e14fbb872f4e09059b18e0cfc4",
+      "content_sha256": "dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4",
+      "retrieved_on": "2026-10-01",
+      "id_form": "Tnnnn or Tnnnn.nnn",
+      "title_convention": "Sub-technique titles are recorded as parent name, colon, sub-technique name."
+    },
     "cwe": {
       "name": "Common Weakness Enumeration",
       "version": "4.20",
@@ -82,14 +104,18 @@
     "venue-page": "Fetched the venue's presentation page and matched the title.",
     "cve-services-api": "Queried cveawg.mitre.org/api/cve/<id>, confirmed state PUBLISHED, and matched vendor and product.",
     "url-fetch": "Fetched the URL and confirmed HTTP 200 on the access date. A URL has no stable id, so recheck it on each review.",
-    "crosswalk-lookup": "Confirmed each srf_crosswalk id exists in /data/threats.json. build/verify_attack_inventory.py repeats this check."
+    "crosswalk-lookup": "Confirmed each srf_crosswalk id exists in /data/threats.json. build/verify_attack_inventory.py repeats this check.",
+    "attack-stix-bundle": "Downloaded enterprise-attack-19.2.json from github.com/mitre-attack/attack-stix-data at the pinned commit, recorded its SHA-256, and matched each technique id and name. Each cited technique was confirmed neither revoked nor deprecated.",
+    "finos-aigf-repo": "Fetched each cited docs/_risks/ri-N file at tag v2 of github.com/finos/ai-governance-framework, built the id from its type and sequence fields, matched the title, and read the summary. The same files on main at aabbffbe keep the ids and titles.",
+    "arxiv-abs-page": "Fetched arxiv.org/abs/<id> and matched the citation_title, citation_author, and citation_date meta tags. Used when the arXiv API was rate limited.",
+    "ids-lookup": "Confirmed each vertical_controls id exists in /ids.json and read the control description in the vertical controls file. build/verify_attack_inventory.py repeats the existence check."
   },
   "export_contract": {
     "target": "claims-test C-attacks rows",
-    "pack_version": "1.0.8",
+    "pack_version": "1.0.9",
     "rules": [
       "build/export_attack_inventory.py writes one row per active entry, in inventory order, numbered ATT-01 upward after any --topics, --scope, or --ids filter.",
-      "taxonomy_ref is the best verified ref: exact before closest before analogy, and within one grade ATLAS, then OWASP LLM, OWASP Agentic, DSGAI, and CWE. OWASP Agentic ids print with a catalog prefix and version. It is null when the entry has no taxonomy ref.",
+      "taxonomy_ref is the best verified ref: exact before closest before analogy, and within one grade ATLAS, then OWASP LLM, OWASP Agentic, DSGAI, FINOS, ATT&CK, and CWE. OWASP Agentic, FINOS, and ATT&CK ids print with a catalog prefix and version. It is null when the entry has no taxonomy ref.",
       "paper_ref is the first verified paper as arXiv:<id>, else the first verified CVE or ATLAS case-study id, else null.",
       "evidence is pinned. citation_status is resolved_pinned when every emitted ref is verified and unresolved_unpinned otherwise.",
       "draft_overlap and stage are null in the export. The run judges overlap against its own draft.",
@@ -168,6 +194,96 @@
       "date": "2026-10-01",
       "id": "atk-telemetry-borne-injection-into-llm-triage",
       "change": "The seed row mapped this class by analogy with no paper; refs updated, see verification notes."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Added the business-process scope, seven process topic tags, the optional vertical_controls field, and two pinned catalogs: FINOS AI Governance Framework v2 and MITRE ATT&CK Enterprise 19.2. Export contract moves to claims-test pack 1.0.9."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-payment-process-diversion",
+      "change": "Added. Business-process class: an agent pays an attacker account after reading altered payee details."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-invoice-or-procurement-alteration",
+      "change": "Added. Business-process class: altered invoices or purchase orders read by an agent intake step."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-approval-gate-bypass",
+      "change": "Added. Business-process class: an agent completes a step reserved for a human approver."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-beneficiary-or-master-data-manipulation",
+      "change": "Added. Business-process class: an agent changes vendor or beneficiary records on an unverified request."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-process-logic-injection",
+      "change": "Added. Business-process class: untrusted content enters workflow rules an agent writes."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-deceptive-process-reporting",
+      "change": "Added. Business-process class: an agent reports process status the records do not support."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-supply-chain-process-hijack",
+      "change": "Added. Business-process class: a compromised partner agent drives a buyer's agent-run process."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-deepfake-approver-impersonation",
+      "change": "Added. Business-process class: AI-generated media impersonates a payment approver."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-indirect-prompt-injection",
+      "change": "related now lists atk-payment-process-diversion."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-excessive-agency",
+      "change": "related now lists atk-approval-gate-bypass, atk-payment-process-diversion."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-approval-fatigue",
+      "change": "related now lists atk-approval-gate-bypass."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-deceptive-agent-self-report",
+      "change": "related now lists atk-deceptive-process-reporting."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-confused-deputy-delegation",
+      "change": "related now lists atk-supply-chain-process-hijack."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-display-name-identity-spoofing",
+      "change": "related now lists atk-deepfake-approver-impersonation."
     }
   ],
   "entries": [
@@ -231,7 +347,8 @@
         "atk-zero-click-output-exfiltration",
         "atk-telemetry-borne-injection-into-llm-triage",
         "atk-self-replicating-prompt",
-        "atk-agent-memory-poisoning"
+        "atk-agent-memory-poisoning",
+        "atk-payment-process-diversion"
       ],
       "origin": "seed",
       "status": "active",
@@ -250,7 +367,7 @@
         "notes": "The seed row listed EchoLeak (CVE-2025-32711) here. ATLAS case study AML.CS0059 tags the EchoLeak injection step as AML.T0051.002 Triggered, not .001 Indirect, so EchoLeak now sits under atk-zero-click-output-exfiltration. The RFC appendix A.5 row for TA-01 cites .001 and should be rechecked."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.0"
     },
     {
       "id": "atk-zero-click-output-exfiltration",
@@ -1439,7 +1556,9 @@
       ],
       "related": [
         "atk-confused-deputy-delegation",
-        "atk-sandbox-escape"
+        "atk-sandbox-escape",
+        "atk-approval-gate-bypass",
+        "atk-payment-process-diversion"
       ],
       "origin": "seed",
       "status": "active",
@@ -1458,7 +1577,7 @@
         "notes": ""
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.0"
     },
     {
       "id": "atk-confused-deputy-delegation",
@@ -1521,7 +1640,8 @@
       "related": [
         "atk-excessive-agency",
         "atk-display-name-identity-spoofing",
-        "atk-agent-config-credential-exposure"
+        "atk-agent-config-credential-exposure",
+        "atk-supply-chain-process-hijack"
       ],
       "origin": "seed",
       "status": "active",
@@ -1541,7 +1661,7 @@
         "notes": "CWE-441 is the classical name for this class."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.0"
     },
     {
       "id": "atk-display-name-identity-spoofing",
@@ -1587,7 +1707,8 @@
         "dsgai02"
       ],
       "related": [
-        "atk-confused-deputy-delegation"
+        "atk-confused-deputy-delegation",
+        "atk-deepfake-approver-impersonation"
       ],
       "origin": "seed",
       "status": "active",
@@ -1606,7 +1727,7 @@
         "notes": "Agents of Chaos is cited for its owner identity spoofing case (AOC-08 in the RFC). The arXiv id, title, and first author were checked; the case text was not reread."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.0"
     },
     {
       "id": "atk-sandbox-escape",
@@ -1855,7 +1976,8 @@
       "srf_crosswalk": [],
       "related": [
         "atk-repudiation-log-tampering",
-        "atk-observability-plane-evasion"
+        "atk-observability-plane-evasion",
+        "atk-deceptive-process-reporting"
       ],
       "origin": "seed",
       "status": "active",
@@ -1871,7 +1993,7 @@
         "notes": "No ATLAS v2026.08 technique describes a false outcome report. The RFC appendix A.5 tag for AOC-01, AML.T0031 Erode AI Model Integrity, describes performance degradation and is not cited here. Agents of Chaos is cited for its AOC-01 case; the case text was not reread."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.0"
     },
     {
       "id": "atk-repudiation-log-tampering",
@@ -2079,7 +2201,8 @@
       "incident_refs": [],
       "srf_crosswalk": [],
       "related": [
-        "atk-deceptive-agent-self-report"
+        "atk-deceptive-agent-self-report",
+        "atk-approval-gate-bypass"
       ],
       "origin": "seed",
       "status": "active",
@@ -2094,7 +2217,7 @@
         "notes": "No ATLAS v2026.08 technique describes overloading a human approver."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.0"
     },
     {
       "id": "atk-model-extraction-via-api",
@@ -2789,6 +2912,752 @@
       },
       "added_in": "0.1.0",
       "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-payment-process-diversion",
+      "name": "Agent payment diversion",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "payment",
+        "tool-calling",
+        "oversight-tiers"
+      ],
+      "failure_mode": "An agent that holds payment or transfer tools pays an account the attacker controls after content it reads, such as an email, invoice, or retrieved document, supplies new payee or bank details. The paying organization loses the funds, and its records show the payment as one the agent was authorized to make.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0048.000",
+          "title_in_catalog": "External Harms: Financial Harm",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0053",
+          "title_in_catalog": "AI Agent Tool Invocation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM06:2025",
+          "title_in_catalog": "Excessive Agency",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-SEC-025",
+          "title_in_catalog": "Tool Chain Manipulation and Injection",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1657",
+          "title_in_catalog": "Financial Theft",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2406.13352",
+          "title": "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents",
+          "first_author": "Debenedetti, Edoardo",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0026",
+          "label": "Financial Transaction Hijacking with M365 Copilot as an Insider",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "ic3-i-091124-psa",
+          "label": "FBI IC3 alert I-091124-PSA, Business Email Compromise: The $55 Billion Scam (2024-09-11)",
+          "url": "https://www.ic3.gov/PSA/2024/PSA240911",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "indirectpromptinjection",
+        "dsgai06"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004",
+        "srf.control.finance.SRF-L3-DEV-003"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-excessive-agency",
+        "atk-beneficiary-or-master-data-manipulation",
+        "atk-approval-gate-bypass",
+        "atk-deepfake-approver-impersonation"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "owasp-llm-pages",
+          "finos-aigf-repo",
+          "attack-stix-bundle",
+          "arxiv-abs-page",
+          "url-fetch",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "No pinned catalog has an entry for agent-driven payment diversion, so every taxonomy ref is closest. AML.T0048.000 names the harm, AML.T0053 the tool step, and AIR-SEC-025 the injected parameters. AML.CS0026 employs AML.T0048.000, AML.T0051.001, and AML.T0053 in the v2026.08 relationships block. The AgentDojo abstract lists an e-banking task suite among its injection test environments. The IC3 alert describes the human-run business email compromise pattern and says nothing about AI; it is cited as the baseline loss pattern the agent version repeats."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-invoice-or-procurement-alteration",
+      "name": "Invoice or purchase order alteration in agent intake",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "invoice",
+        "procurement",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent that reads, extracts, or matches invoices and purchase orders records the wrong amounts, line items, or terms because the document it ingests was altered in transit or written to mislead the extraction step. The buyer pays, or commits to, terms that no one approved.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0119",
+          "title_in_catalog": "Exploit Automated Artifact Processing Pipeline",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0051.001",
+          "title_in_catalog": "LLM Prompt Injection: Indirect",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1565.002",
+          "title_in_catalog": "Data Manipulation: Transmitted Data Manipulation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-807",
+          "title_in_catalog": "Reliance on Untrusted Inputs in a Security Decision",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2410.02644",
+          "title": "Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents",
+          "first_author": "Zhang, Hanrong",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "indirectpromptinjection",
+        "dsgai05"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004"
+      ],
+      "related": [
+        "atk-payment-process-diversion",
+        "atk-beneficiary-or-master-data-manipulation",
+        "atk-indirect-prompt-injection",
+        "atk-supply-chain-process-hijack"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "attack-stix-bundle",
+          "cwe-api",
+          "arxiv-abs-page",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "AML.T0119 covers an artifact that triggers an automated processing pipeline; an invoice sent to an AI intake pipeline is one such artifact. AML.T0051.001 applies only when the altered document carries instructions. T1565.002 states that transmitted data manipulation may aim to affect a business process. CWE-807 is graded analogy because it describes a security decision; the decision here is a payment. The Agent Security Bench abstract lists e-commerce and finance among its ten scenarios."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-approval-gate-bypass",
+      "name": "Approval gate bypass by an agent",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "approval",
+        "workflow",
+        "oversight-tiers",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent completes a step that the business process reserves for a named human approver, because the gate exists only in the prompt or in agent logic and the system of record does not check for it. The action takes effect without the approval that policy requires, and the record can show it as approved.",
+      "taxonomy_refs": [
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-SEC-024",
+          "title_in_catalog": "Agent Action Authorization Bypass",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-841",
+          "title_in_catalog": "Improper Enforcement of Behavioral Workflow",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM06:2025",
+          "title_in_catalog": "Excessive Agency",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T3",
+          "title_in_catalog": "Privilege Compromise",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-863",
+          "title_in_catalog": "Incorrect Authorization",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004",
+        "srf.control.finance.SRF-L3-DEV-003",
+        "srf.control.finance.SRF-L3-MON-003",
+        "srf.control.insurance.SRF-L3-DEV-002",
+        "srf.control.insurance.SRF-L3-VAL-002"
+      ],
+      "related": [
+        "atk-approval-fatigue",
+        "atk-excessive-agency",
+        "atk-confused-deputy-delegation",
+        "atk-payment-process-diversion"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "finos-aigf-repo",
+          "cwe-api",
+          "owasp-llm-pages",
+          "owasp-agentic-pdf",
+          "ids-lookup"
+        ],
+        "notes": "AIR-SEC-024 names agents that bypass authorization controls to execute unauthorized financial transactions or violate business logic constraints. CWE-841 (usage Allowed in CWE 4.20) covers a workflow whose required sequence of behaviors is not enforced. No ATLAS v2026.08 technique describes skipping a business approval step. No /data/threats.json row covers it either: rows are keyed by OWASP AI Exchange or DSGAI ids, and the file has no L1 row for approval processes. The two insurance controls require the gate to be a technical control in the workflow. Finance SRF-L1-DEV-004 requires a written policy naming which actions need human approval and the accountable business owner, SRF-L3-DEV-003 requires a confirmation gate for irreversible or high-consequence tool calls, and SRF-L3-MON-003 monitors attempts to call tools outside the allow-list."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-beneficiary-or-master-data-manipulation",
+      "name": "Beneficiary or vendor master data change through an agent",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "master-data",
+        "payment",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent with write access to vendor, customer, or beneficiary records changes bank details, addresses, or limits on the strength of a request or document whose origin it cannot verify. Later payments and approvals that read those records go to the wrong party, and no single payment looks abnormal.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0099",
+          "title_in_catalog": "AI Agent Tool Data Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM06:2025",
+          "title_in_catalog": "Excessive Agency",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1565.001",
+          "title_in_catalog": "Data Manipulation: Stored Data Manipulation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-346",
+          "title_in_catalog": "Origin Validation Error",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai05"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004"
+      ],
+      "related": [
+        "atk-payment-process-diversion",
+        "atk-invoice-or-procurement-alteration",
+        "atk-excessive-agency"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "owasp-llm-pages",
+          "attack-stix-bundle",
+          "cwe-api",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "AML.T0099 covers manipulated data in a trusted source that an agent tool reads, which is the downstream half of this class: a changed master record that a payment agent later reads. T1565.001 states that stored data manipulation may aim to affect a business process. The record lives under L2 data governance (dsgai05); the decision to accept the change belongs to the business process owner at L1."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-process-logic-injection",
+      "name": "Process logic injection through agent-written workflow rules",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "workflow",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent that writes or edits workflow rules, routing conditions, or automation scripts carries untrusted content into the rule it produces, and the workflow engine then applies that rule to every later case. One input changes how the process treats all cases that follow, beyond the transaction that carried it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T11",
+          "title_in_catalog": "Unexpected RCE and Code Attacks",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-94",
+          "title_in_catalog": "Improper Control of Generation of Code ('Code Injection')",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L3-DEV-003"
+      ],
+      "related": [
+        "atk-llm-output-os-command-injection",
+        "atk-indirect-prompt-injection",
+        "atk-approval-gate-bypass"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-llm-pages",
+          "owasp-agentic-pdf",
+          "cwe-api",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "Each ref covers model output that a downstream engine executes; none names business rules or workflow definitions, so all are closest. CWE-94 has usage Allowed-with-Review in CWE 4.20. No ATLAS v2026.08 technique covers agent-authored workflow rules. SRF-L3-DEV-003 requires a confirmation gate for high-consequence tool calls, which includes publishing a rule that changes later cases."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-deceptive-process-reporting",
+      "name": "False process status reporting by an agent",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "workflow",
+        "oversight-tiers"
+      ],
+      "failure_mode": "An agent reports a business step as complete, reconciled, or approved when it is not, or reports figures the underlying records do not support. Managers and auditors who rely on the report sign off on work that did not happen or on balances that are wrong.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T7",
+          "title_in_catalog": "Misaligned & Deceptive Behaviors",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM09:2025",
+          "title_in_catalog": "Misinformation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-OP-004",
+          "title_in_catalog": "Hallucination and Inaccurate Outputs",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T8",
+          "title_in_catalog": "Repudiation & Untraceability",
+          "mapping_quality": "analogy",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1565.003",
+          "title_in_catalog": "Data Manipulation: Runtime Data Manipulation",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2602.20021",
+          "title": "Agents of Chaos",
+          "first_author": "Shapira",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "vertical_controls": [
+        "srf.control.insurance.SRF-L4-MON-002"
+      ],
+      "related": [
+        "atk-deceptive-agent-self-report",
+        "atk-repudiation-log-tampering",
+        "atk-approval-gate-bypass"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-agentic-pdf",
+          "owasp-llm-pages",
+          "finos-aigf-repo",
+          "attack-stix-bundle",
+          "arxiv-api",
+          "ids-lookup"
+        ],
+        "notes": "This class covers the report a business owner reads; atk-deceptive-agent-self-report covers the agent's account of its own actions. T7 covers deliberate deception and AIR-OP-004 covers error; a false report can come from either, so both are closest. T8 and T1565.003 are analogies: T8 describes untraceable actions and T1565.003 an outside adversary altering displayed data. The insurance audit log control requires a tamper-evident record of each AI-assisted decision, which gives a reviewer a source to check the report against."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-supply-chain-process-hijack",
+      "name": "Partner agent hijack of a shared business process",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "procurement",
+        "supply-chain",
+        "agent-identity",
+        "workflow"
+      ],
+      "failure_mode": "A supplier or partner agent, once compromised, sends orders, confirmations, or change requests into a buyer's agent-run process, and the buyer's agent acts on them because the partner channel is trusted. The buyer ships, pays, or changes terms on instructions the partner never issued.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T12",
+          "title_in_catalog": "Agent Communication Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T14",
+          "title_in_catalog": "Human Attacks on Multi-Agent Systems",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-OP-028",
+          "title_in_catalog": "Multi-Agent Trust Boundary Violations",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1199",
+          "title_in_catalog": "Trusted Relationship",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-346",
+          "title_in_catalog": "Origin Validation Error",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T17",
+          "title_in_catalog": "Supply Chain Compromise",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-005",
+        "srf.control.manufacturing.SRF-L1-DES-006"
+      ],
+      "related": [
+        "atk-confused-deputy-delegation",
+        "atk-display-name-identity-spoofing",
+        "atk-invoice-or-procurement-alteration"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-agentic-pdf",
+          "finos-aigf-repo",
+          "attack-stix-bundle",
+          "cwe-api",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "AIR-OP-028 describes compromise spreading between agents through shared channels and names business processes as the affected scope; it is graded closest because its text concerns agents inside one system, and this class crosses an organization boundary. T14 names abuse of trust relationships and workflow dependencies. T1199 is the network-access form of the same trust. T17 is an analogy because it covers compromised components; a partner process is not a component. The finance vendor register names an accountable officer for each AI vendor; the manufacturing procurement policy requires a supply chain AI risk assessment and contract terms for each supplier."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-deepfake-approver-impersonation",
+      "name": "Deepfake impersonation of a payment approver",
+      "aliases": [
+        "deepfake CEO fraud"
+      ],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "approval",
+        "payment",
+        "multimodal"
+      ],
+      "failure_mode": "An employee approves or releases a payment after a video call, voice call, or message that uses AI-generated media to impersonate an executive or other approver. The approval step runs as designed but confirms the wrong person, and the organization loses the funds.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0052.001",
+          "title_in_catalog": "Phishing: Deepfake-Assisted Phishing",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0088",
+          "title_in_catalog": "Generate Deepfakes",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0073",
+          "title_in_catalog": "Impersonation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1684.001",
+          "title_in_catalog": "Social Engineering: Impersonation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-290",
+          "title_in_catalog": "Authentication Bypass by Spoofing",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "arup-deepfake-2024-cnn",
+          "label": "CNN, Arup revealed as victim of $25 million deepfake scam involving Hong Kong employee (2024-05-16)",
+          "url": "https://edition.cnn.com/2024/05/16/tech/arup-deepfake-scam-loss-hong-kong-intl-hnk/index.html",
+          "accessed": "2026-10-01",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "arup-deepfake-2024-guardian",
+          "label": "The Guardian, UK engineering firm Arup falls victim to £20m deepfake scam (2024-05-17)",
+          "url": "https://www.theguardian.com/technology/article/2024/may/17/uk-engineering-arup-deepfake-scam-hong-kong-ai-video",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-payment-process-diversion",
+        "atk-display-name-identity-spoofing",
+        "atk-approval-gate-bypass"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "attack-stix-bundle",
+          "cwe-api",
+          "url-fetch"
+        ],
+        "notes": "AML.T0052.001 names deepfakes used to impersonate executives in phishing. ATT&CK 19.x revoked T1656 Impersonation in favor of T1684.001, but ATLAS v2026.08 AML.T0073 still cross-references T1656; cite T1684.001. CWE-290 is an analogy because it describes software authentication, and the spoofed check here is a person. AML.CS0033 and AML.CS0034 use the same techniques against KYC onboarding and are not cited, because onboarding is a different process. No vertical control checks approver identity, so vertical_controls is empty."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
     }
   ]
 }

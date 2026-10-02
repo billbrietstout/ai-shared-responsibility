@@ -163,7 +163,7 @@
   "@type": "Dataset",
   "name": "Published AI attack class inventory",
   "url": "https://aisharedresponsibility.com/framework/attack-inventory/",
-  "description": "Published attack classes against AI models, LLM applications, and agentic systems, with MITRE ATLAS, OWASP, CWE, arXiv, and CVE identifiers checked against pinned catalog versions.",
+  "description": "Published attack classes against AI models, LLM applications, agentic systems, and the business processes agents run, with MITRE ATLAS, MITRE ATT&CK, OWASP, FINOS, CWE, arXiv, and CVE identifiers checked against pinned catalog versions.",
   "distribution": [
     {
       "@type": "DataDownload",
@@ -195,12 +195,14 @@
         <span class="page-hero__eyebrow">Framework in practice</span>
         <h1 class="page-hero__title">Attack inventory</h1>
         <p class="page-hero__lede">
-          37 published attack classes against AI models, LLM applications, and
-          agents. Each class states a failure mode and lists MITRE ATLAS, OWASP,
-          CWE, arXiv, and CVE ids. Every id was checked against a pinned catalog
+          45 published attack classes against AI models, LLM applications,
+          agents, and the business processes agents run. Each class states a
+          failure mode and lists MITRE ATLAS, MITRE ATT&amp;CK, OWASP, FINOS, CWE,
+          arXiv, and CVE ids. Every id was checked against a pinned catalog
           version or its source record on 1 October 2026. The file assigns no
-          owners: 29 classes link to the SRF threat crosswalk, which names the
-          accountable persona, and 8 have no crosswalk row yet.
+          owners: 34 classes link to the SRF threat crosswalk, which names the
+          accountable persona, and 11 have no crosswalk row yet. Seven
+          business-process classes also link to vertical profile controls.
         </p>
       </div>
     </header>
@@ -213,12 +215,15 @@
           <h2 class="section__title">Cite checked ids instead of recalled ones</h2>
           <p class="section__body">
             The <a href="/assess/claims-test/">claims test</a> builds a table of
-            published attack classes in its C-attacks step. Pack 1.0.8 reads
+            published attack classes in its C-attacks step. Pack 1.0.9 reads
             this inventory by default and builds rows from it first, so those
             rows carry ids resolved against ATLAS v2026.08, OWASP LLM Top 10
             2025, OWASP Agentic AI Threats and Mitigations v1.1, OWASP GenAI
-            Data Security 1.0, or CWE 4.20. Classes the inventory lacks still
+            Data Security 1.0, FINOS AI Governance Framework v2, ATT&amp;CK
+            Enterprise 19.2, or CWE 4.20. Classes the inventory lacks still
             get ids from model memory, marked <code>unresolved_unpinned</code>.
+            When a run names an industry pilot, the pack also selects classes
+            whose <code>vertical_controls</code> cite that vertical.
           </p>
           <p class="section__body">
             A threat model or red-team scope can start from the same list, then
@@ -229,10 +234,10 @@
             under what condition.
           </p>
           <div class="stats" aria-label="Inventory counts">
-            <div class="stat"><div class="stat__num">37</div><div class="stat__label">classes: 19 AI, 12 agentic, 6 classical weaknesses that agents reopen</div></div>
-            <div class="stat"><div class="stat__num">142</div><div class="stat__label">refs: 102 catalog, 23 paper, 17 incident, all checked</div></div>
-            <div class="stat"><div class="stat__num">63 / 38 / 1</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
-            <div class="stat"><div class="stat__num">3</div><div class="stat__label">classes with no exact catalog entry</div></div>
+            <div class="stat"><div class="stat__num">45</div><div class="stat__label">classes: 19 AI, 12 agentic, 8 business process, 6 classical weaknesses that agents reopen</div></div>
+            <div class="stat"><div class="stat__num">186</div><div class="stat__label">refs: 139 catalog, 26 paper, 21 incident, all checked</div></div>
+            <div class="stat"><div class="stat__num">66 / 67 / 6</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
+            <div class="stat"><div class="stat__num">9</div><div class="stat__label">classes with no exact catalog entry, 6 of them business process</div></div>
           </div>
         </div>
       </section>
@@ -258,7 +263,29 @@
         </div>
       </section>
 
-      <section class="section" id="inventory" data-llm="inventory">
+      <section class="section" id="business-process" data-llm="business-process">
+        <div class="section__inner">
+          <span class="section__label">Business process</span>
+          <h2 class="section__title">What the process classes in 0.2.0 found</h2>
+          <p class="section__body">
+            Version 0.2.0 adds eight classes in which an AI system or agent
+            moves money, changes a vendor or beneficiary record, or passes an
+            approval step: payment diversion, invoice or purchase order
+            alteration, approval gate bypass, master data change, workflow rule
+            injection, false status reporting, partner agent hijack, and
+            deepfake approver impersonation.
+          </p>
+          <ul class="findings">
+            <li>Two of the eight have an exact catalog entry. Approval gate bypass matches FINOS <code>AIR-SEC-024</code> Agent Action Authorization Bypass and <code>CWE-841</code> Improper Enforcement of Behavioral Workflow. Deepfake approver impersonation matches <code>AML.T0052.001</code> Deepfake-Assisted Phishing. For the other six, closest is the best grade available.</li>
+            <li>ATLAS v2026.08 names the harm (<code>AML.T0048.000</code> Financial Harm) and the tool step (<code>AML.T0053</code> AI Agent Tool Invocation). It has no technique for changing a business process. ATT&amp;CK <code>T1565</code> Data Manipulation and its three sub-techniques say the adversary may aim to affect a business process, so ATT&amp;CK Enterprise 19.2 is now pinned for those refs.</li>
+            <li>ATT&amp;CK 19.x revoked <code>T1656</code> Impersonation and moved it to <code>T1684.001</code>. ATLAS v2026.08 <code>AML.T0073</code> Impersonation still links to <code>T1656</code>, so a ref recalled from memory or copied from ATLAS would cite the revoked id.</li>
+            <li>Three process classes have no row in <a href="/data/threats.json">/data/threats.json</a>: approval gate bypass, false status reporting, and deepfake approver impersonation. That file keys rows by OWASP AI Exchange or DSGAI ids and has no L1 row for approvals. Approval gate bypass reaches L1 through <code>vertical_controls</code> instead: finance <code>SRF-L1-DEV-004</code> requires a named human business owner for each process an agent acts in. No vertical control checks who an approver is, so the deepfake class has none.</li>
+            <li>Vendor master data and invoices are L2 records, so those two classes cross-walk to DSGAI05 Data Integrity &amp; Validation Failures. The decision to accept a changed record still belongs to the L1 process owner.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section section--alt" id="inventory" data-llm="inventory">
         <div class="section__inner">
           <span class="section__label">Live data</span>
           <h2 class="section__title">Inventory</h2>
@@ -280,9 +307,10 @@
                 <option value="ai">AI</option>
                 <option value="agentic">Agentic</option>
                 <option value="classical-reopened">Classical, reopened</option>
+                <option value="business-process">Business process</option>
               </select>
             </label>
-            <label>Claims-test topic
+            <label>Topic
               <select id="f-topic"><option value="">All</option></select>
             </label>
             <label>Search
@@ -299,7 +327,7 @@
                   <th scope="col">Failure mode</th>
                   <th scope="col">Catalog refs</th>
                   <th scope="col">Papers and incidents</th>
-                  <th scope="col">SRF crosswalk</th>
+                  <th scope="col">SRF crosswalk and vertical controls</th>
                 </tr>
               </thead>
               <tbody id="inv-body">
@@ -313,7 +341,7 @@
         </div>
       </section>
 
-      <section class="section section--alt" id="catalogs" data-llm="catalogs">
+      <section class="section" id="catalogs" data-llm="catalogs">
         <div class="section__inner">
           <span class="section__label">Pins</span>
           <h2 class="section__title">Catalog versions</h2>
@@ -340,23 +368,25 @@
         </div>
       </section>
 
-      <section class="section" id="limits" data-llm="limits">
+      <section class="section section--alt" id="limits" data-llm="limits">
         <div class="section__inner">
           <span class="section__label">Known limits</span>
           <h2 class="section__title">What this version cannot answer</h2>
           <ul class="findings">
-            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 37 entries until a person confirms them.</li>
-            <li>A verified paper ref means the arXiv id resolves and the title and first author match. Only the three telemetry-triage papers had their abstracts read. The Agents of Chaos cases cited for display-name spoofing and false self-reports were not reread.</li>
-            <li>Three classes have no exact catalog entry: deceptive agent self-report (OWASP Agentic T7 is the closest), observability-plane evasion (<code>AML.T0081</code> covers a disabled setting, not a starved guardrail), and the token-length side channel (no ATLAS, OWASP LLM, or OWASP Agentic entry).</li>
-            <li>Eight classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, and the token-length side channel.</li>
+            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 45 entries until a person confirms them.</li>
+            <li>A verified paper ref means the arXiv id resolves and the title and first author match. Abstracts were read for the three telemetry-triage papers, AgentDojo, and Agent Security Bench. The Agents of Chaos cases cited for display-name spoofing and false self-reports were not reread.</li>
+            <li>Nine classes have no exact catalog entry. Three predate 0.2.0: deceptive agent self-report (OWASP Agentic T7 is the closest), observability-plane evasion (<code>AML.T0081</code> covers a disabled setting, not a starved guardrail), and the token-length side channel (no ATLAS, OWASP LLM, or OWASP Agentic entry). The other six are business-process classes; the section above names them.</li>
+            <li>Eleven classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them from that file: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, the token-length side channel, approval gate bypass, false process status reporting, and deepfake approver impersonation. Adding an L1 row for approval processes would need a source catalog id, because that file mints none of its own.</li>
+            <li><code>vertical_controls</code> is filled only on the eight business-process classes. Earlier classes such as excessive agency and approval fatigue likely match finance and insurance controls too, but no one has checked those links.</li>
+            <li>Bank payment-system intrusions with no AI step, such as the 2016 Bangladesh Bank theft, have no entry. The US Department of Justice page that would anchor that case returned a bot-check page with no text on 1 October 2026, so it could not be verified.</li>
             <li>BIML LLM24 ids are not mapped. They name risk areas broader than these classes, and choosing between them needs a reviewer.</li>
             <li>ATLAS v2026.09 is out and adds <code>AML.T0129</code> Triggers in Multimodal Inputs, which may fit multimodal instruction injection more narrowly. The pin stays at v2026.08 because the RFC cites that release.</li>
-            <li>The list started from one telemetry RFC's attack table plus six classical weaknesses. ATLAS techniques outside that topic, such as <code>AML.T0015</code> model evasion against classic ML classifiers, <code>AML.T0041</code> physical-environment attacks, and <code>AML.T0052.001</code> deepfake-assisted phishing, have no entry of their own.</li>
+            <li>The list started from one telemetry RFC's attack table, six classical weaknesses, and eight business-process classes. ATLAS techniques outside those topics, such as <code>AML.T0015</code> model evasion against classic ML classifiers and <code>AML.T0041</code> physical-environment attacks, have no entry of their own. KYC onboarding fraud with deepfakes (<code>AML.CS0033</code>, <code>AML.CS0034</code>) is also unlisted.</li>
           </ul>
         </div>
       </section>
 
-      <section class="section section--alt" id="maintain" data-llm="maintain">
+      <section class="section" id="maintain" data-llm="maintain">
         <div class="section__inner">
           <span class="section__label">Maintain</span>
           <h2 class="section__title">Change, verify, export</h2>
@@ -365,8 +395,9 @@
             fix, minor for a new entry, major for a removed field or changed id),
             and add one changelog line naming the id and the reason. Then run the
             verifier. It fails on a dangling id, a ref whose catalog version
-            differs from the pin, a verified ref with no check date or method,
-            or an em dash in any text field. It warns when a newer catalog
+            differs from the pin, a vertical control id missing from
+            <a href="/ids.json">/ids.json</a>, a verified ref with no check date
+            or method, or an em dash in any text field. It warns when a newer catalog
             release has been seen or a URL ref is more than 180 days old.
           </p>
           <pre class="cmd"><code>python3 build/verify_attack_inventory.py</code></pre>
@@ -377,12 +408,14 @@
             overlap stays null for the run to judge.
           </p>
           <pre class="cmd"><code>python3 build/export_attack_inventory.py --topics telemetry,MCP --format md
-python3 build/export_attack_inventory.py --scope agentic --out attacks.json</code></pre>
+python3 build/export_attack_inventory.py --scope agentic --out attacks.json
+python3 build/export_attack_inventory.py --topics payment,approval --vertical finance</code></pre>
           <p class="section__body">
-            Recheck the inventory when ATLAS publishes a release, when OWASP
-            revises the LLM Top 10 or the Agentic AI Threats document, when a
-            CoSAI WS2 draft cites a new incident, or when a claims-test run finds
-            a class missing here.
+            Recheck the inventory when ATLAS or ATT&amp;CK Enterprise publishes a
+            release, when FINOS tags a new AI Governance Framework version, when
+            OWASP revises the LLM Top 10 or the Agentic AI Threats document, when
+            a CoSAI WS2 draft cites a new incident, or when a claims-test run
+            finds a class missing here.
           </p>
         </div>
       </section>
@@ -395,17 +428,26 @@ python3 build/export_attack_inventory.py --scope agentic --out attacks.json</cod
       const esc = (s) =>
         String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-      const SCOPE_LABEL = { ai: "AI", agentic: "Agentic", "classical-reopened": "Classical, reopened" };
+      const SCOPE_LABEL = {
+        ai: "AI",
+        agentic: "Agentic",
+        "classical-reopened": "Classical, reopened",
+        "business-process": "Business process",
+      };
       const CATALOG_SHORT = {
         "mitre-atlas": "ATLAS",
         "owasp-llm-top10": "OWASP LLM",
         "owasp-agentic-threats": "OWASP Agentic",
         "owasp-dsgai": "OWASP DSGAI",
+        "finos-aigf": "FINOS AIGF",
+        "mitre-attack": "ATT&CK",
         cwe: "CWE",
       };
+      const ID_PREFIX = { "owasp-agentic-threats": "Agentic ", "mitre-attack": "ATT&CK " };
 
       function taxLink(r, catalogs) {
         if (r.catalog === "mitre-atlas") return "https://atlas.mitre.org/techniques/" + r.id;
+        if (r.catalog === "mitre-attack") return "https://attack.mitre.org/techniques/" + r.id.replace(".", "/") + "/";
         if (r.catalog === "cwe") return "https://cwe.mitre.org/data/definitions/" + r.id.replace("CWE-", "") + ".html";
         return (catalogs[r.catalog] || {}).source_url || "#";
       }
@@ -419,7 +461,7 @@ python3 build/export_attack_inventory.py --scope agentic --out attacks.json</cod
       function renderTax(e, catalogs) {
         if (!e.taxonomy_refs.length) return '<span class="inv__none">No catalog entry</span>';
         return "<ul class=\"inv__refs\">" + e.taxonomy_refs.map((r) => {
-          const label = r.catalog === "owasp-agentic-threats" ? "Agentic " + r.id : r.id;
+          const label = (ID_PREFIX[r.catalog] || "") + r.id;
           return "<li><a href=\"" + esc(taxLink(r, catalogs)) + "\">" + esc(label) + "</a>" +
             "<span class=\"q q--" + esc(r.mapping_quality) + "\">" + esc(r.mapping_quality) + "</span>" +
             "<span class=\"inv__title\">" + esc(CATALOG_SHORT[r.catalog] || r.catalog) + " " +
@@ -443,14 +485,24 @@ python3 build/export_attack_inventory.py --scope agentic --out attacks.json</cod
         return items.length ? "<ul class=\"inv__refs\">" + items.join("") + "</ul>" : '<span class="inv__none">None pinned</span>';
       }
 
+      function renderVertical(e) {
+        return (e.vertical_controls || []).map((id) => {
+          const [, , vertical, control] = id.split(".");
+          const name = vertical.charAt(0).toUpperCase() + vertical.slice(1).replace("-", " ");
+          return "<span class=\"inv__xw\"><a href=\"/" + esc(vertical) + "/controls/#" + esc(control) + "\">" +
+            esc(name) + " " + esc(control) + "</a></span>";
+        }).join("");
+      }
+
       function renderCrosswalk(e, threats) {
-        if (!e.srf_crosswalk.length) return '<span class="inv__none">No crosswalk row</span>';
+        const vertical = renderVertical(e);
+        if (!e.srf_crosswalk.length) return '<span class="inv__none">No crosswalk row</span>' + vertical;
         return e.srf_crosswalk.map((id) => {
           const t = threats[id];
           if (!t) return "<span class=\"inv__xw\">" + esc(id) + "</span>";
           return "<span class=\"inv__xw\"><span class=\"layer-pill layer-pill--" + esc(t.srf_layer.toLowerCase()) +
             "\"><span class=\"layer-pill__dot\"></span>" + esc(t.srf_layer) + "</span> " + esc(t.name) + "</span>";
-        }).join("");
+        }).join("") + vertical;
       }
 
       function row(e, catalogs, threats) {
@@ -470,7 +522,8 @@ python3 build/export_attack_inventory.py --scope agentic --out attacks.json</cod
         return [e.id, e.name, e.family, ...e.aliases,
           ...e.taxonomy_refs.map((r) => r.id + " " + r.title_in_catalog),
           ...e.paper_refs.map((p) => p.id + " " + p.title + " " + p.first_author),
-          ...e.incident_refs.map((x) => x.id + " " + x.label)].join(" ").toLowerCase();
+          ...e.incident_refs.map((x) => x.id + " " + x.label),
+          ...(e.vertical_controls || [])].join(" ").toLowerCase();
       }
 
       (async () => {

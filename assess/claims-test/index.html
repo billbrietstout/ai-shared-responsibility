@@ -253,7 +253,7 @@
 
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
-        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.8</span>
+        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.9</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
           Paste a draft once. The pack extracts claims, collects published
@@ -342,7 +342,7 @@ If a fetched pack version is older than this shortcut, still obey this shortcut,
 For C-attacks, also read the attack inventory: use an attached copy or export, else fetch https://aisharedresponsibility.com/data/attack-inventory.json once. Build attack rows from it first and keep its ids. If it cannot be read, note that in the report QA section and continue.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.8, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version 1.0.9, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -378,7 +378,7 @@ If a fetched pack version is older than this shortcut, still obey this shortcut,
 For C-attacks, also read the attack inventory: use an attached copy or export, else fetch https://aisharedresponsibility.com/data/attack-inventory.json once. Build attack rows from it first and keep its ids. If it cannot be read, note that in the report QA section and continue.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.8, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.9, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -414,7 +414,7 @@ If a fetched pack version is older than this shortcut, still obey this shortcut,
 For C-attacks, also read the attack inventory: use an attached copy or export, else fetch https://aisharedresponsibility.com/data/attack-inventory.json once. Build attack rows from it first and keep its ids. If it cannot be read, note that in the report QA section and continue.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.8, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.9, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -453,7 +453,7 @@ authors: [Author Name]
 draft_status: [early | advanced | published]
 industry_pilot: [none | streaming | advanced-driver-assistance | call-center | critical-infrastructure | healthcare | finance | insurance | manufacturing | defense | public-sector | retail | telecom | aviation | physical-security | education | legal]
 dimension_profile:
-  topics: [agent-identity | multimodal | MCP | model-signing | shared-responsibility | persona-assignment | oversight-tiers | supply-chain | telemetry | tool-calling]
+  topics: [agent-identity | multimodal | MCP | model-signing | shared-responsibility | persona-assignment | oversight-tiers | supply-chain | telemetry | tool-calling | business-process]
   topics_other: []
   stage_vocabulary: [design | runtime | revocation]
 
@@ -548,7 +548,7 @@ authors: [Author Name]
 draft_status: [early | advanced | published]
 industry_pilot: [none | streaming | advanced-driver-assistance | call-center | critical-infrastructure | healthcare | finance | insurance | manufacturing | defense | public-sector | retail | telecom | aviation | physical-security | education | legal]
 dimension_profile:
-  topics: [agent-identity | multimodal | MCP | model-signing | shared-responsibility | persona-assignment | oversight-tiers | supply-chain | telemetry | tool-calling]
+  topics: [agent-identity | multimodal | MCP | model-signing | shared-responsibility | persona-assignment | oversight-tiers | supply-chain | telemetry | tool-calling | business-process]
   topics_other: []
   stage_vocabulary: [design | runtime | revocation]
 
@@ -1052,10 +1052,10 @@ Subject: dimension_profile.topics plus industry_pilot. If topics is empty, deriv
 This step is not a paraphrase of the draft's own risk list. A list of draft-only failure modes with no ATT ids is a failed stop_condition.
 
 Sources, in this order:
-1. The SRF attack inventory. Use an attached copy or export; otherwise fetch https://aisharedresponsibility.com/data/attack-inventory.json once. It comes in two shapes. An export (pinned_source.id srf-attack-inventory) already holds rows in the shape below; keep them and renumber. The full file holds entries; select those with status active whose topics intersect the subject, then build one row per entry:
+1. The SRF attack inventory. Use an attached copy or export; otherwise fetch https://aisharedresponsibility.com/data/attack-inventory.json once. It comes in two shapes. An export (pinned_source.id srf-attack-inventory) already holds rows in the shape below; keep them and renumber. The full file holds entries; select those with status active whose topics intersect dimension_profile.topics or topics_other (process tags such as payment, invoice, procurement, approval, master-data, and workflow sit in topics_other). When industry_pilot names a vertical, also select entries with a vertical_controls id that starts with srf.control.&lt;industry_pilot&gt;. Then build one row per entry:
    - failure_mode, name, family: copy from the entry.
    - inventory_id: the entry id.
-   - taxonomy_ref: the best verified taxonomy ref. Rank exact before closest before analogy; within a grade, mitre-atlas, owasp-llm-top10, owasp-agentic-threats, owasp-dsgai, cwe. Write OWASP Agentic ids as "OWASP Agentic T7 (v1.1)" with the pinned version.
+   - taxonomy_ref: the best verified taxonomy ref. Rank exact before closest before analogy; within a grade, mitre-atlas, owasp-llm-top10, owasp-agentic-threats, owasp-dsgai, finos-aigf, mitre-attack, cwe. Write OWASP Agentic ids as "OWASP Agentic T7 (v1.1)", FINOS ids as "FINOS AIR-SEC-024 (v2)", and ATT&amp;CK ids as "ATT&amp;CK T1657 (v19.2)", each with the pinned version.
    - paper_ref: the first verified paper ref as arXiv:id or doi:id; else the first CVE or ATLAS case-study id; else null.
    - evidence pinned; citation_status resolved_pinned.
    Judge draft_overlap and stage yourself; the inventory holds neither. Do not change an id copied from the inventory.
@@ -1782,7 +1782,7 @@ Vertical context:
 report.markdown is the export. A reviewer who never opens JSON must still see every claim id, every ATT id, score, ROCA owner, and every suggestion packet.
 
 Write in this order:
-1. Title. Metadata table: date, pack version 1.0.8, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
+1. Title. Metadata table: date, pack version 1.0.9, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
 2. Scorecard table: claim id, score, one-line reason, roca_id. Counts per score.
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
@@ -1800,7 +1800,7 @@ Key takeaways, if any, must be testable claims a reader could not predict from t
 Set qa.report_present true. Leave reviewer null.
 
 Copy-one-block return the accumulated object plus:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0.8", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
+{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0.9", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
 </pre>
       </div>
 

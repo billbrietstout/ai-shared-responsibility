@@ -9,7 +9,7 @@ live site unless the owner asks.
 **Workspace:** `/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com`  
 **Live site:** https://aisharedresponsibility.com  
 **Lane:** research and assessment method; not a new CoSAI SRF object  
-**Status:** v1.0.8 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. C-attacks reads `/data/attack-inventory.json` by default and builds rows from it before adding catalog or training-memory rows. Chain run replies with the markdown report; JSON is optional. C-attacks is required. Typed suggestion packets and known `topics` enum live in `eval/claims-test/schema.json`. `cosai_workstreams` is retired.
+**Status:** v1.0.9 at `/assess/claims-test/`; chain ids in `prompts.json`. Pack load is fetch of canonical `prompts.json` or an attached copy; citation URLs stay pinned. C-attacks reads `/data/attack-inventory.json` by default and builds rows from it before adding catalog or training-memory rows. It selects entries by `topics` and `topics_other`, and by `vertical_controls` when `industry_pilot` names a vertical. `business-process` is a known topic as of 1.0.9. Chain run replies with the markdown report; JSON is optional. C-attacks is required. Typed suggestion packets and known `topics` enum live in `eval/claims-test/schema.json`. `cosai_workstreams` is retired.
 
 Related live tools (cousins, not duplicates):
 

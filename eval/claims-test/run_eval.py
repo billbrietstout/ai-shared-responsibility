@@ -33,6 +33,7 @@ KNOWN_TOPICS = {
     "supply-chain",
     "telemetry",
     "tool-calling",
+    "business-process",
 }
 TOPIC_OTHER_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 REPRO_RE = re.compile(

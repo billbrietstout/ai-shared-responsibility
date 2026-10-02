@@ -8,7 +8,8 @@ Four layers, strongest available first:
 2. Structural checks that run without jsonschema: unique atk- ids, enums,
    every ref's catalog pinned in the catalogs block at the same version.
 3. Referential integrity: related and merged_into ids resolve, srf_crosswalk
-   ids exist in data/threats.json, verification methods are defined, a
+   ids exist in data/threats.json, vertical_controls ids exist in ids.json
+   as srf.control ids, verification methods are defined, a
    verified ref sits on an entry with a check date and method, changelog ids
    resolve, no entry claims a version newer than the inventory.
 4. Staleness (warnings): an entry checked before the release date of a
@@ -33,7 +34,7 @@ import sys
 ID_RE = re.compile(r"^atk-[a-z0-9]+(-[a-z0-9]+)*$")
 SEMVER_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)$")
 QUALITY = {"exact", "closest", "analogy"}
-SCOPES = {"ai", "agentic", "classical-reopened"}
+SCOPES = {"ai", "agentic", "classical-reopened", "business-process"}
 STATUSES = {"active", "merged", "withdrawn"}
 URL_STALE_DAYS = 180
 DASHES = ("\u2014", "\u2013")
@@ -89,7 +90,7 @@ def walk_strings(obj, path=""):
         yield path, obj
 
 
-def check(doc, threats_ids, today):
+def check(doc, threats_ids, control_ids, today):
     catalogs = doc.get("catalogs", {})
     methods = set(doc.get("verification_methods", {}))
     inv_ver = semver(doc.get("inventory_version"))
@@ -130,6 +131,10 @@ def check(doc, threats_ids, today):
         for x in e.get("srf_crosswalk", []):
             if x not in threats_ids:
                 err(f"{eid}: srf_crosswalk id {x} not in data/threats.json")
+
+        for x in e.get("vertical_controls", []):
+            if x not in control_ids:
+                err(f"{eid}: vertical_controls id {x} is not an srf.control id in ids.json")
 
         refs = []
         for t in e.get("taxonomy_refs", []):
@@ -221,10 +226,12 @@ def main():
     doc = json.loads(inv_path.read_text())
     threats = json.loads((a.root / "data" / "threats.json").read_text())
     threats_ids = {t["id"] for t in threats.get("threats", [])}
+    registry = json.loads((a.root / "ids.json").read_text())
+    control_ids = {x["id"] for x in registry.get("ids", []) if x.get("id", "").startswith("srf.control.")}
     today = parse_date(a.today) if a.today else dt.date.today()
 
     schema_layer(doc, a.root / "data" / "attack-inventory.schema.json")
-    check(doc, threats_ids, today)
+    check(doc, threats_ids, control_ids, today)
 
     entries = doc.get("entries", [])
     n_refs = sum(len(e["taxonomy_refs"]) + len(e["paper_refs"]) + len(e["incident_refs"]) for e in entries)

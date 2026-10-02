@@ -3,18 +3,20 @@
 
 The output is a pinned source for one claims-test run. It carries the
 inventory version and catalog pins so the run can cite them, and one row per
-selected entry in the C-attacks row shape (pack 1.0.8). draft_overlap and
+selected entry in the C-attacks row shape (pack 1.0.9). draft_overlap and
 stage stay null: the run judges overlap against its own draft.
 
 Selection:
   --topics a,b       entries whose topics intersect the list
   --include-general  with --topics, also keep entries that have no topics
-  --scope s1,s2      ai, agentic, classical-reopened
+  --scope s1,s2      ai, agentic, classical-reopened, business-process
+  --vertical v       also keep entries whose vertical_controls cite srf.control.<v>
   --ids id1,id2      explicit atk- ids, in the order given
 
 Usage:
   python3 build/export_attack_inventory.py --topics telemetry,MCP --format md
   python3 build/export_attack_inventory.py --scope agentic --out /tmp/attacks.json
+  python3 build/export_attack_inventory.py --topics payment,approval --vertical finance
 """
 
 import argparse
@@ -23,13 +25,16 @@ import pathlib
 import sys
 
 QUALITY_RANK = {"exact": 0, "closest": 1, "analogy": 2}
-CATALOG_RANK = {"mitre-atlas": 0, "owasp-llm-top10": 1, "owasp-agentic-threats": 2, "owasp-dsgai": 3, "cwe": 4}
+CATALOG_RANK = {"mitre-atlas": 0, "owasp-llm-top10": 1, "owasp-agentic-threats": 2, "owasp-dsgai": 3,
+                "finos-aigf": 4, "mitre-attack": 5, "cwe": 6}
+PREFIXED = {"owasp-agentic-threats": ("OWASP Agentic", "v"), "finos-aigf": ("FINOS", ""), "mitre-attack": ("ATT&CK", "v")}
 SITE = "https://aisharedresponsibility.com"
 
 
 def format_taxonomy(ref, catalogs):
-    if ref["catalog"] == "owasp-agentic-threats":
-        return f"OWASP Agentic {ref['id']} (v{catalogs['owasp-agentic-threats']['version']})"
+    if ref["catalog"] in PREFIXED:
+        label, v = PREFIXED[ref["catalog"]]
+        return f"{label} {ref['id']} ({v}{catalogs[ref['catalog']]['version']})"
     return ref["id"]
 
 
@@ -74,7 +79,11 @@ def to_row(n, entry, catalogs):
     }
 
 
-def select(entries, topics, include_general, scopes, ids):
+def cites_vertical(entry, vertical):
+    return any(c.startswith(f"srf.control.{vertical}.") for c in entry.get("vertical_controls", []))
+
+
+def select(entries, topics, include_general, scopes, ids, vertical):
     active = [e for e in entries if e["status"] == "active"]
     if ids:
         by_id = {e["id"]: e for e in active}
@@ -84,8 +93,11 @@ def select(entries, topics, include_general, scopes, ids):
         active = [by_id[i] for i in ids]
     if scopes:
         active = [e for e in active if e["scope"] in scopes]
-    if topics:
-        active = [e for e in active if set(e["topics"]) & topics or (include_general and not e["topics"])]
+    if topics or vertical:
+        active = [e for e in active
+                  if set(e["topics"]) & topics
+                  or (include_general and not e["topics"])
+                  or (vertical and cites_vertical(e, vertical))]
     return active
 
 
@@ -109,6 +121,7 @@ def main():
     ap.add_argument("--topics", default="")
     ap.add_argument("--include-general", action="store_true")
     ap.add_argument("--scope", default="")
+    ap.add_argument("--vertical", default="")
     ap.add_argument("--ids", default="")
     ap.add_argument("--format", choices=("json", "md"), default="json")
     ap.add_argument("--out")
@@ -117,7 +130,8 @@ def main():
     doc = json.loads((a.root / "data" / "attack-inventory.json").read_text())
     split = lambda s: [x.strip() for x in s.split(",") if x.strip()]
     topics = set(split(a.topics))
-    entries = select(doc["entries"], topics, a.include_general, set(split(a.scope)), split(a.ids))
+    entries = select(doc["entries"], topics, a.include_general, set(split(a.scope)), split(a.ids),
+                     a.vertical.strip())
     if len(entries) > 40:
         print(f"warning: {len(entries)} rows exceeds the C-attacks cap of 40; narrow the selection",
               file=sys.stderr)
