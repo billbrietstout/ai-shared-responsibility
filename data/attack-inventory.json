@@ -1,7 +1,7 @@
 {
   "$schema": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
-  "inventory_version": "0.4.0",
-  "updated": "2026-10-01",
+  "inventory_version": "0.5.0",
+  "updated": "2026-10-02",
   "description": "Inventory of published attack classes against AI and agentic systems, including business processes that agents now run. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk, and to vertical profile controls through vertical_controls.",
   "scope": "Attack classes against AI models, LLM applications, and agentic systems; classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch; and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. The scope field on each entry is ai, agentic, classical-reopened, or business-process.",
   "rules": [
@@ -506,6 +506,48 @@
       "date": "2026-10-01",
       "id": "atk-cross-tenant-leakage",
       "change": "related now lists atk-reasoning-block-replay. No ref changed."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "*",
+      "change": "Added 2 telemetry-related entries and ATT&CK 19.2 refs on 2 existing telemetry entries. OWASP LLM Top 10 2026 was checked on 2026-10-02 and is at release candidate 1, not released; the 2025 pin stays."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-feedback-loop-poisoning",
+      "change": "Added. Split from atk-training-data-poisoning."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-llm-output-control-sequence-injection",
+      "change": "Added."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-observability-plane-evasion",
+      "change": "Added ATT&CK refs T1685 and T1685.002, which replace the revoked T1562."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-repudiation-log-tampering",
+      "change": "Added ATT&CK ref T1070 Indicator Removal."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-training-data-poisoning",
+      "change": "related now lists atk-feedback-loop-poisoning. No ref changed."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-llm-output-cross-site-scripting",
+      "change": "related now lists atk-llm-output-control-sequence-injection. No ref changed."
     }
   ],
   "entries": [
@@ -1425,7 +1467,8 @@
         "datapoison"
       ],
       "related": [
-        "atk-backdoored-model-trigger"
+        "atk-backdoored-model-trigger",
+        "atk-feedback-loop-poisoning"
       ],
       "origin": "seed",
       "status": "active",
@@ -1445,7 +1488,7 @@
         "notes": ""
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.5.0"
     },
     {
       "id": "atk-backdoored-model-trigger",
@@ -2338,6 +2381,14 @@
           "title_in_catalog": "Manipulate User LLM Chat History",
           "mapping_quality": "closest",
           "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1070",
+          "title_in_catalog": "Indicator Removal",
+          "mapping_quality": "exact",
+          "verified": true
         }
       ],
       "paper_refs": [],
@@ -2351,18 +2402,19 @@
       "status": "active",
       "merged_into": null,
       "verification": {
-        "checked_on": "2026-10-01",
-        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
         "reviewed_by": null,
         "methods": [
           "atlas-release-yaml",
           "atlas-next-release-diff",
-          "owasp-agentic-pdf"
+          "owasp-agentic-pdf",
+          "attack-stix-bundle"
         ],
-        "notes": ""
+        "notes": "ATT&CK 19.2 T1070 covers selective deletion or change of log entries to hide activity."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.5.0"
     },
     {
       "id": "atk-observability-plane-evasion",
@@ -2390,6 +2442,22 @@
           "title_in_catalog": "Repudiation & Untraceability",
           "mapping_quality": "closest",
           "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1685",
+          "title_in_catalog": "Disable or Modify Tools",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1685.002",
+          "title_in_catalog": "Disable or Modify Cloud Log",
+          "mapping_quality": "closest",
+          "verified": true
         }
       ],
       "paper_refs": [],
@@ -2403,18 +2471,19 @@
       "status": "active",
       "merged_into": null,
       "verification": {
-        "checked_on": "2026-10-01",
-        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
         "reviewed_by": null,
         "methods": [
           "atlas-release-yaml",
           "atlas-next-release-diff",
-          "owasp-agentic-pdf"
+          "owasp-agentic-pdf",
+          "attack-stix-bundle"
         ],
-        "notes": "No paper or catalog entry found that names a starved guardrail or disabled hook whose silence a detection reads as allow. AML.T0081 covers the disabled-setting half only."
+        "notes": "No paper or catalog entry found that names a starved guardrail or disabled hook whose silence a detection reads as allow. AML.T0081 covers the disabled-setting half only. ATT&CK 19.2 T1685 and T1685.002 also cover the disabled-hook half. ATT&CK 19.x revoked T1562 Impair Defenses in favor of T1685, so a ref recalled from memory would cite the old id."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.2.1"
+      "last_changed_in": "0.5.0"
     },
     {
       "id": "atk-telemetry-borne-injection-into-llm-triage",
@@ -2959,7 +3028,8 @@
         "outputcontainsconventionalinjection"
       ],
       "related": [
-        "atk-zero-click-output-exfiltration"
+        "atk-zero-click-output-exfiltration",
+        "atk-llm-output-control-sequence-injection"
       ],
       "origin": "added",
       "status": "active",
@@ -2976,7 +3046,7 @@
         "notes": ""
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.5.0"
     },
     {
       "id": "atk-nl-to-query-sql-injection",
@@ -4794,6 +4864,187 @@
       },
       "added_in": "0.4.0",
       "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-feedback-loop-poisoning",
+      "name": "Feedback-loop poisoning by ordinary users",
+      "aliases": [
+        "feedback poisoning",
+        "preference poisoning"
+      ],
+      "family": "poisoning",
+      "scope": "ai",
+      "topics": [
+        "telemetry"
+      ],
+      "failure_mode": "Ordinary users submit prompts and ratings that a provider feeds back into tuning or ranking, and the next model version carries behavior the attackers chose to every user.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0020",
+          "title_in_catalog": "Training Data Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0031",
+          "title_in_catalog": "Erode AI Model Integrity",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM04:2025",
+          "title_in_catalog": "Data and Model Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2507.02850",
+          "title": "LLM Hypnosis: Exploiting User Feedback for Unauthorized Knowledge Injection to All Users",
+          "first_author": "Hilel",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2409.00787",
+          "title": "The Dark Side of Human Feedback: Poisoning Large Language Models via User Inputs",
+          "first_author": "Chen",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0009",
+          "label": "Tay Poisoning",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "datapoison"
+      ],
+      "related": [
+        "atk-training-data-poisoning",
+        "atk-backdoored-model-trigger",
+        "atk-agent-memory-poisoning"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-abs-page",
+          "crosswalk-lookup"
+        ],
+        "notes": "Split from atk-training-data-poisoning, which assumes access to training or fine-tuning data. Here the attacker uses only the prompts and rating buttons any user has, and the provider's own pipeline carries the result into the next model. AML.T0020 names manipulated feedback and data-collection processes. AML.CS0009 employs AML.T0020 and AML.T0031: Tay learned from user conversations in 2016. Paper 2507.02850 reports a single unprivileged user planting false facts and insecure code patterns that persist under both DPO and KTO tuning. The srf_crosswalk row is shared with training data poisoning."
+      },
+      "added_in": "0.5.0",
+      "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-llm-output-control-sequence-injection",
+      "name": "Control sequences in model output reaching terminals and logs",
+      "aliases": [
+        "ANSI escape injection",
+        "Terminal DiLLMa",
+        "log forging"
+      ],
+      "family": "injection",
+      "scope": "classical-reopened",
+      "topics": [
+        "telemetry",
+        "tool-calling"
+      ],
+      "failure_mode": "Model output carries escape or control sequences that a terminal or log viewer interprets, so the output can change what a user or analyst sees, write to the clipboard, send data out, or forge log lines.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-150",
+          "title_in_catalog": "Improper Neutralization of Escape, Meta, or Control Sequences",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-117",
+          "title_in_catalog": "Improper Output Neutralization for Logs",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/",
+          "label": "Embrace The Red, Terminal DiLLMa, December 2024",
+          "url": "https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/",
+          "accessed": "2026-10-02",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/",
+          "label": "Embrace The Red, DNS exfiltration through macOS Terminal escape codes, July 2026",
+          "url": "https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/",
+          "accessed": "2026-10-02",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "related": [
+        "atk-llm-output-cross-site-scripting",
+        "atk-telemetry-borne-injection-into-llm-triage",
+        "atk-repudiation-log-tampering"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "owasp-llm-pages",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "atk-telemetry-borne-injection-into-llm-triage covers text that instructs an LLM reading logs. Here the receiver is a terminal or log viewer that acts on control codes without any model reading them. CWE-117 covers the log-forging half only. LLM05:2025 names shells, browsers, and databases as sinks but not terminals; the OWASP LLM Top 10 2026 release candidate adds terminal and log sinks. Apple fixed the macOS Terminal DNS behavior in macOS Tahoe 26.1 (2025-11-03); no CVE is cited in the post."
+      },
+      "added_in": "0.5.0",
+      "last_changed_in": "0.5.0"
     }
   ]
 }

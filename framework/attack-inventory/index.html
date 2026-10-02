@@ -195,12 +195,12 @@
         <span class="page-hero__eyebrow">Framework in practice</span>
         <h1 class="page-hero__title">Attack inventory</h1>
         <p class="page-hero__lede">
-          53 published attack classes against AI models, LLM applications,
+          55 published attack classes against AI models, LLM applications,
           agents, and the business processes agents run. Each class states a
           failure mode and lists MITRE ATLAS, MITRE ATT&amp;CK, OWASP, FINOS, CWE,
           arXiv, and CVE ids. Every id was checked against a pinned catalog
           version or its source record on 1 October 2026. The file assigns no
-          owners: 40 classes link to the SRF threat crosswalk, which names the
+          owners: 42 classes link to the SRF threat crosswalk, which names the
           accountable persona, and 13 have no crosswalk row yet. Seven
           business-process classes also link to vertical profile controls.
         </p>
@@ -234,9 +234,9 @@
             under what condition.
           </p>
           <div class="stats" aria-label="Inventory counts">
-            <div class="stat"><div class="stat__num">53</div><div class="stat__label">classes: 20 AI, 17 agentic, 8 business process, 8 classical weaknesses that agents reopen</div></div>
-            <div class="stat"><div class="stat__num">254</div><div class="stat__label">refs: 173 catalog, 30 paper, 51 incident, all checked</div></div>
-            <div class="stat"><div class="stat__num">75 / 92 / 6</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
+            <div class="stat"><div class="stat__num">55</div><div class="stat__label">classes: 21 AI, 17 agentic, 8 business process, 9 classical weaknesses that agents reopen</div></div>
+            <div class="stat"><div class="stat__num">268</div><div class="stat__label">refs: 182 catalog, 32 paper, 54 incident, all checked</div></div>
+            <div class="stat"><div class="stat__num">78 / 98 / 6</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
             <div class="stat"><div class="stat__num">10</div><div class="stat__label">classes with no exact catalog entry, 6 of them business process</div></div>
           </div>
         </div>
@@ -287,11 +287,12 @@
 
       <section class="section" id="splits" data-llm="splits">
         <div class="section__inner">
-          <span class="section__label">Versions 0.3.0 and 0.4.0</span>
+          <span class="section__label">Versions 0.3.0 to 0.5.0</span>
           <h2 class="section__title">Where the new classes split from their neighbors</h2>
           <p class="section__body">
-            Versions 0.3.0 and 0.4.0 add eight classes from failure modes that
-            the AITBM use-case pages describe. Where a class splits from a
+            Versions 0.3.0 to 0.5.0 add ten classes. Eight come from failure
+            modes that the AITBM use-case pages describe, and two (0.5.0) fill
+            gaps in the telemetry entries. Where a class splits from a
             neighboring entry, the split follows a difference in what a defender
             has to check.
           </p>
@@ -302,6 +303,8 @@
             <li>Agent session smuggling and the malicious LLM API router split from no entry. DSGAI06 names inter-agent context smuggling, but ATLAS v2026.08 has no technique for a victim agent that receives hidden turns. The router class rests on one measurement paper, cites no incident, and has no <code>threats.json</code> row.</li>
             <li>Encoded input guardrail evasion covers a classifier that sees an encoded form and misjudges it. In the multi-agent covert channel (0.4.0) the monitor's tokenizer deletes the hidden characters before the monitor reads anything, so a better monitor prompt cannot help; the cited report measured 0% recovery even when the monitor held the decoding key. The fix sits before the monitor: strip tag, private-use, and format characters from the text it checks.</li>
             <li>Computer-use action on a stale screen (0.4.0) is separate from indirect prompt injection because the agent decides correctly and the screen changes before the click. The defender's check is a fresh look at the screen just before each action, which prompt-injection filters do not perform.</li>
+            <li>Feedback-loop poisoning (0.5.0) splits from training data poisoning, which assumes access to training data. Here the attacker uses only the prompts and rating buttons any user has, and the provider's own tuning pipeline carries the result into the next model. ATLAS <code>AML.T0020</code> names manipulated feedback processes, and <code>AML.CS0009</code> (Tay, 2016) is the incident.</li>
+            <li>Control sequences in model output (0.5.0) sit next to telemetry-borne injection into LLM triage. That entry needs a model to read the logs; here a terminal or log viewer acts on escape codes with no model involved, so the fix is encoding control characters before output reaches the terminal or log file.</li>
             <li>Replay of encrypted reasoning blocks (0.4.0) sits next to model extraction and cross-tenant leakage. The provider must bind each block to the user, session, and model that produced it; the customer decides whether agent logs that hold blocks get published.</li>
           </ul>
         </div>
@@ -395,7 +398,7 @@
           <span class="section__label">Known limits</span>
           <h2 class="section__title">What this version cannot answer</h2>
           <ul class="findings">
-            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 53 entries until a person confirms them.</li>
+            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 55 entries until a person confirms them.</li>
             <li>A verified paper ref means the arXiv id resolves and the title and first author match. Abstracts were read for the three telemetry-triage papers, AgentDojo, and Agent Security Bench. The Agents of Chaos cases cited for display-name spoofing and false self-reports were not reread.</li>
             <li>Ten classes have no exact catalog entry. Three predate 0.2.0: deceptive agent self-report (OWASP Agentic T7 is the closest), observability-plane evasion (<code>AML.T0081</code> covers a disabled setting, not a starved guardrail), and the token-length side channel (no ATLAS, OWASP LLM, or OWASP Agentic entry). Replay of encrypted reasoning blocks has only closest refs, because <code>CWE-294</code> assumes captured network traffic and the blocks came from published logs. The other six are business-process classes; the section above names them.</li>
             <li>Thirteen classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them from that file: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, the token-length side channel, approval gate bypass, false process status reporting, deepfake approver impersonation, the malicious LLM API router, and computer-use action on a stale screen. Adding an L1 row for approval processes would need a source catalog id, because that file mints none of its own.</li>
@@ -405,9 +408,10 @@
             <li>ATLAS v2026.09 is out and adds <code>AML.T0129</code> Triggers in Multimodal Inputs, which may fit multimodal instruction injection more narrowly. The pin stays at v2026.08; every cited id keeps its name in v2026.09.</li>
             <li>The list started from one claims-test attack table, six classical weaknesses, and eight business-process classes. ATLAS techniques outside those topics, such as <code>AML.T0015</code> model evasion against classic ML classifiers and <code>AML.T0041</code> physical-environment attacks, have no entry of their own. KYC onboarding fraud with deepfakes (<code>AML.CS0033</code>, <code>AML.CS0034</code>) is also unlisted.</li>
             <li>The multi-agent covert channel rests on one self-published report. Its author did not notify vendors first, and no use in the wild is reported. The ref is pinned to commit <code>acb93a9</code> so later edits to the report do not change the cited text.</li>
+            <li>The OWASP LLM Top 10 2026 is at release candidate 1 and was not released when checked on 2 October 2026, so the pin stays at 2025. The candidate renumbers Improper Output Handling from LLM05 to LLM10 and adds terminal and log sinks; every <code>LLM05:2025</code> ref needs a recheck when 2026 ships.</li>
             <li>The reasoning-block replay paper states that its main results were no longer reproducible as of August 2026, after providers deployed fixes. The entry stays active because any provider that returns unbound blocks would repeat the failure.</li>
             <li>Agent session smuggling has only a proof of concept; Unit 42 reports no use in the wild.</li>
-            <li>Eighteen incident refs are URLs to news, vendor, or researcher reports with no CVE or case-study id, so each needs a fresh fetch at every review. The macOS.Gaslight ref shows an implant aimed at an LLM triage tool, but its authors did not test an LLM, so it shows intent and not a working bypass.</li>
+            <li>Twenty incident refs are URLs to news, vendor, or researcher reports with no CVE or case-study id, so each needs a fresh fetch at every review. The macOS.Gaslight ref shows an implant aimed at an LLM triage tool, but its authors did not test an LLM, so it shows intent and not a working bypass.</li>
           </ul>
         </div>
       </section>
