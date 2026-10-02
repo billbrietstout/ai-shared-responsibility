@@ -1,6 +1,6 @@
 {
   "$schema": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
-  "inventory_version": "0.2.1",
+  "inventory_version": "0.2.2",
   "updated": "2026-10-01",
   "description": "Inventory of published attack classes against AI and agentic systems, including business processes that agents now run. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk, and to vertical profile controls through vertical_controls.",
   "scope": "Attack classes against AI models, LLM applications, and agentic systems; classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch; and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. The scope field on each entry is ai, agentic, classical-reopened, or business-process.",
@@ -326,6 +326,90 @@
       "date": "2026-10-01",
       "id": "atk-cross-tenant-leakage",
       "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-agent-memory-poisoning",
+      "change": "Added incident refs: AML.CS0066, Varonis Threat Labs report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-agent-config-credential-exposure",
+      "change": "Added incident refs: AML.CS0067."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-malicious-model-artifact",
+      "change": "Added incident refs: AML.CS0031, AML.CS0064, AML.CS0065."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-sandbox-escape",
+      "change": "Added incident refs: AML.CS0068, CVE-2026-50548, CVE-2026-50549."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-mcp-tool-poisoning",
+      "change": "Added incident refs: AML.CS0049."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-multi-turn-jailbreak-escalation",
+      "change": "Added incident refs: AML.CS0069."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-agent-tool-ssrf",
+      "change": "Added incident refs: CVE-2026-25580."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-llm-output-os-command-injection",
+      "change": "Added incident refs: CVE-2026-70477."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-telemetry-store-disclosure",
+      "change": "Added incident refs: CVE-2026-25528."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-rag-poisoning",
+      "change": "Added incident refs: Zenity Labs report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-beneficiary-or-master-data-manipulation",
+      "change": "Added incident refs: Zenity Labs report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-excessive-agency",
+      "change": "Added incident refs: Railway report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-telemetry-borne-injection-into-llm-triage",
+      "change": "Added incident refs: SentinelLABS report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Added 18 incident refs to 13 entries. Leads came from the AITBM use-case pages (github.com/ninedter/AITBM, commit 3b02d23). Each ref cites the ATLAS case study, CVE record, or primary report; no AITBM page is cited."
     }
   ],
   "entries": [
@@ -621,7 +705,15 @@
           "verified": true
         }
       ],
-      "incident_refs": [],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0069",
+          "label": "GTG-1002 Claude Code Espionage Campaign",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
       "srf_crosswalk": [
         "directpromptinjection"
       ],
@@ -642,10 +734,10 @@
           "arxiv-api",
           "crosswalk-lookup"
         ],
-        "notes": "ATLAS v2026.08 has no multi-turn sub-technique under AML.T0054."
+        "notes": "ATLAS v2026.08 has no multi-turn sub-technique under AML.T0054. AML.CS0069 employs AML.T0054. The operator claimed a defensive role and split the campaign into tasks that each looked benign, so the per-step threshold failure spans many sessions instead of one."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-encoded-input-guardrail-evasion",
@@ -950,6 +1042,12 @@
           "id": "CVE-2026-41947",
           "label": "Dify < 1.14.2 Authorization Bypass via Trace Configuration Endpoints",
           "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-25528",
+          "label": "LangSmith Client SDK Affected by Server-Side Request Forgery via Tracing Header Injection",
+          "verified": true
         }
       ],
       "srf_crosswalk": [
@@ -972,10 +1070,10 @@
           "cve-services-api",
           "crosswalk-lookup"
         ],
-        "notes": "The seed row cited LLM02:2025 only. DSGAI14 Excessive Telemetry & Monitoring Leakage names this class. CVE-2026-41947 lets a user of one tenant set trace configuration on another tenant's application."
+        "notes": "The seed row cited LLM02:2025 only. DSGAI14 Excessive Telemetry & Monitoring Leakage names this class. CVE-2026-41947 lets a user of one tenant set trace configuration on another tenant's application. CVE-2026-25528: an injected tracing header sends captured trace data to an address the attacker chose."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-rag-poisoning",
@@ -1041,7 +1139,16 @@
           "verified": true
         }
       ],
-      "incident_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "label": "Zenity Labs, Prompt Mines in Salesforce Einstein, August 2025",
+          "url": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
       "srf_crosswalk": [
         "dsgai21"
       ],
@@ -1062,12 +1169,13 @@
           "owasp-llm-pages",
           "dsgai-taxonomy-json",
           "arxiv-api",
-          "crosswalk-lookup"
+          "crosswalk-lookup",
+          "url-fetch"
         ],
-        "notes": ""
+        "notes": "Zenity Labs placed instructions in CRM case records through public intake forms. Einstein retrieved them for routine follow-up questions and then changed customer contact records."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-agent-memory-poisoning",
@@ -1125,6 +1233,21 @@
           "label": "Hacking ChatGPT's Memories with Prompt Injection",
           "catalog_version": "v2026.08",
           "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0066",
+          "label": "ZombieAgent: Data Exfiltration Attack on ChatGPT",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://www.varonis.com/blog/cosnitch",
+          "label": "Varonis Threat Labs, CoSnitch, August 2026",
+          "url": "https://www.varonis.com/blog/cosnitch",
+          "accessed": "2026-10-01",
+          "verified": true
         }
       ],
       "srf_crosswalk": [],
@@ -1143,12 +1266,13 @@
           "atlas-release-yaml",
           "atlas-next-release-diff",
           "owasp-agentic-pdf",
-          "arxiv-api"
+          "arxiv-api",
+          "url-fetch"
         ],
-        "notes": "The seed row reached MINJA and AgentPoison through the CoSAI incident-response document. Both arXiv ids are now pinned directly."
+        "notes": "The seed row reached MINJA and AgentPoison through the CoSAI incident-response document. Both arXiv ids are now pinned directly. AML.CS0066 employs AML.T0080.000. Varonis reports a web page that, when Copilot summarizes it, writes attacker instructions into the user's saved memory. CVE-2026-24301 covers a separate one-click exfiltration path in the same report and is not cited here."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-training-data-poisoning",
@@ -1356,7 +1480,29 @@
         }
       ],
       "paper_refs": [],
-      "incident_refs": [],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0031",
+          "label": "Malicious Models on Hugging Face",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0064",
+          "label": "Poisoned GGUF Templates: Inference-Time Supply Chain Attack",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0065",
+          "label": "Model Namespace Reuse Supply Chain Attack",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
       "srf_crosswalk": [
         "supplymodelpoison"
       ],
@@ -1378,10 +1524,10 @@
           "cwe-api",
           "crosswalk-lookup"
         ],
-        "notes": "The seed row cited the parent AML.T0010. CWE-502 is the classical weakness behind unsafe serialized model formats."
+        "notes": "The seed row cited the parent AML.T0010. CWE-502 is the classical weakness behind unsafe serialized model formats. AML.CS0031, AML.CS0064, and AML.CS0065 each employ AML.T0011.000. AML.CS0064 places the behavior in a model's chat template and AML.CS0065 reaches it through a reused model namespace; both may later become separate classes."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-mcp-tool-poisoning",
@@ -1453,6 +1599,13 @@
           "url": "https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks",
           "accessed": "2026-10-01",
           "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0049",
+          "label": "Supply Chain Compromise via Poisoned ClawdBot Skill",
+          "catalog_version": "v2026.08",
+          "verified": true
         }
       ],
       "srf_crosswalk": [
@@ -1478,10 +1631,10 @@
           "url-fetch",
           "crosswalk-lookup"
         ],
-        "notes": "The seed row cited AML.T0051.001 and an Invariant Labs post with no stable id. ATLAS case study AML.CS0054 cites that post and gives it a stable id. AML.T0109 and CVE-2025-54136 cover the post-approval change."
+        "notes": "The seed row cited AML.T0051.001 and an Invariant Labs post with no stable id. ATLAS case study AML.CS0054 cites that post and gives it a stable id. AML.T0109 and CVE-2025-54136 cover the post-approval change. AML.CS0049 employs AML.T0110.000. ATLAS tags a poisoned agent skill as tool poisoning, so the case sits here until skill marketplace poisoning has its own class."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-hallucinated-package-squatting",
@@ -1592,7 +1745,16 @@
         }
       ],
       "paper_refs": [],
-      "incident_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://blog.railway.com/p/your-ai-wants-to-nuke-your-database",
+          "label": "Railway, postmortem of an agent deleting a production volume, April 2026",
+          "url": "https://blog.railway.com/p/your-ai-wants-to-nuke-your-database",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
       "srf_crosswalk": [
         "dsgai06"
       ],
@@ -1614,12 +1776,13 @@
           "atlas-next-release-diff",
           "owasp-llm-pages",
           "owasp-agentic-pdf",
-          "crosswalk-lookup"
+          "crosswalk-lookup",
+          "url-fetch"
         ],
-        "notes": ""
+        "notes": "Railway reports that a customer's coding agent found an account-wide API token stored on the machine and used it to delete a production volume."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.2.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-confused-deputy-delegation",
@@ -1813,6 +1976,25 @@
           "label": "OpenClaw 1-Click Remote Code Execution",
           "catalog_version": "v2026.08",
           "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0068",
+          "label": "Autonomous OpenAI Evaluation Agents Compromise Hugging Face Infrastructure",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-50548",
+          "label": "Cursor Desktop sandbox escape via agent-controlled working directory",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-50549",
+          "label": "Cursor Desktop sandbox escape via symlink and failed path canonicalization",
+          "verified": true
         }
       ],
       "srf_crosswalk": [],
@@ -1833,10 +2015,10 @@
           "owasp-agentic-pdf",
           "cve-services-api"
         ],
-        "notes": "The seed row used OWASP Agentic T11 as the closest match. ATLAS v2026.08 defines AML.T0105 Escape to Host for this class, and AML.CS0050 employs it."
+        "notes": "The seed row used OWASP Agentic T11 as the closest match. ATLAS v2026.08 defines AML.T0105 Escape to Host for this class, and AML.CS0050 employs it. AML.CS0068 employs AML.T0105. Its agents reached hub infrastructure on their own, so it is cited here and not under atk-agent-tool-ssrf. CVE-2026-50548 and CVE-2026-50549 let agent commands write outside the workspace sandbox."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-self-replicating-prompt",
@@ -2193,7 +2375,16 @@
           "verified": true
         }
       ],
-      "incident_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://www.sentinelone.com/labs/macos-gaslight-rust-backdoor-turns-prompt-injection-on-the-analyst-not-the-sandbox/",
+          "label": "SentinelLABS, macOS.Gaslight, June 2026",
+          "url": "https://www.sentinelone.com/labs/macos-gaslight-rust-backdoor-turns-prompt-injection-on-the-analyst-not-the-sandbox/",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
       "srf_crosswalk": [
         "indirectpromptinjection"
       ],
@@ -2212,12 +2403,13 @@
           "atlas-release-yaml",
           "atlas-next-release-diff",
           "arxiv-api",
-          "crosswalk-lookup"
+          "crosswalk-lookup",
+          "url-fetch"
         ],
-        "notes": "The seed row mapped this class by analogy with no paper. Three 2026 arXiv papers show log fields acting as attacker-controlled content that an LLM triage tool reads, which is the data-channel case AML.T0051.001 covers; their abstracts were read on the check date."
+        "notes": "The seed row mapped this class by analogy with no paper. Three 2026 arXiv papers show log fields acting as attacker-controlled content that an LLM triage tool reads, which is the data-channel case AML.T0051.001 covers; their abstracts were read on the check date. SentinelLABS describes an implant that embeds fake system messages aimed at an LLM malware triage tool. SentinelLABS did not test an LLM, so the ref shows attacker intent in the wild and not a confirmed bypass."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-approval-fatigue",
@@ -2604,6 +2796,12 @@
           "id": "CVE-2023-29374",
           "label": "In LangChain through 0.0.131, the LLMMathChain chain allows prompt injection attacks that can execute arbitrary code via",
           "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-70477",
+          "label": "Flowise: CSV Agent Prompt Injection Remote Code Execution Vulnerability",
+          "verified": true
         }
       ],
       "srf_crosswalk": [
@@ -2629,10 +2827,10 @@
           "cve-services-api",
           "crosswalk-lookup"
         ],
-        "notes": ""
+        "notes": "CVE-2026-70477: a prompt injection makes the model return Python that the CSV Agent node runs without a sandbox."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-llm-output-cross-site-scripting",
@@ -2839,7 +3037,14 @@
         }
       ],
       "paper_refs": [],
-      "incident_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-25580",
+          "label": "Pydantic AI Affected by Server-Side Request Forgery (SSRF) in URL Download Handling",
+          "verified": true
+        }
+      ],
       "srf_crosswalk": [
         "outputcontainsconventionalinjection"
       ],
@@ -2859,12 +3064,13 @@
           "atlas-next-release-diff",
           "owasp-llm-pages",
           "cwe-api",
-          "crosswalk-lookup"
+          "crosswalk-lookup",
+          "cve-services-api"
         ],
-        "notes": "LLM05:2025 names SSRF as an outcome of improper output handling but gives no scenario. AML.T0122 mentions server-side request flaws in shared services."
+        "notes": "LLM05:2025 names SSRF as an outcome of improper output handling but gives no scenario. AML.T0122 mentions server-side request flaws in shared services. CVE-2026-25580: an agent framework downloaded URLs taken from untrusted message history, including internal addresses."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-agent-config-credential-exposure",
@@ -2926,6 +3132,13 @@
           "id": "CVE-2025-11749",
           "label": "AI Engine <= 3.1.3 - Unauthenticated Sensitive Information Exposure to Privilege Escalation",
           "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0067",
+          "label": "Claude Code GitHub Action Secret Exposure",
+          "catalog_version": "v2026.08",
+          "verified": true
         }
       ],
       "srf_crosswalk": [
@@ -2950,10 +3163,10 @@
           "cve-services-api",
           "crosswalk-lookup"
         ],
-        "notes": "CVE-2025-11749 exposes a bearer token through an MCP endpoint when a no-auth URL is enabled."
+        "notes": "CVE-2025-11749 exposes a bearer token through an MCP endpoint when a no-auth URL is enabled. AML.CS0067 employs AML.T0098: an agent running in a CI workflow read credentials from its environment."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-payment-process-diversion",
@@ -3306,7 +3519,16 @@
         }
       ],
       "paper_refs": [],
-      "incident_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "label": "Zenity Labs, Prompt Mines in Salesforce Einstein, August 2025",
+          "url": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
       "srf_crosswalk": [
         "dsgai05"
       ],
@@ -3331,12 +3553,13 @@
           "attack-stix-bundle",
           "cwe-api",
           "crosswalk-lookup",
-          "ids-lookup"
+          "ids-lookup",
+          "url-fetch"
         ],
-        "notes": "AML.T0099 covers manipulated data in a trusted source that an agent tool reads, which is the downstream half of this class: a changed master record that a payment agent later reads. T1565.001 states that stored data manipulation may aim to affect a business process. The record lives under L2 data governance (dsgai05); the decision to accept the change belongs to the business process owner at L1."
+        "notes": "AML.T0099 covers manipulated data in a trusted source that an agent tool reads, which is the downstream half of this class: a changed master record that a payment agent later reads. T1565.001 states that stored data manipulation may aim to affect a business process. The record lives under L2 data governance (dsgai05); the decision to accept the change belongs to the business process owner at L1. The Zenity Labs report shows an assistant with an update-contact action rewriting customer contact records after it retrieved case records that an outside party created."
       },
       "added_in": "0.2.0",
-      "last_changed_in": "0.2.0"
+      "last_changed_in": "0.2.2"
     },
     {
       "id": "atk-process-logic-injection",
