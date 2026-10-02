@@ -195,13 +195,13 @@
         <span class="page-hero__eyebrow">Framework in practice</span>
         <h1 class="page-hero__title">Attack inventory</h1>
         <p class="page-hero__lede">
-          45 published attack classes against AI models, LLM applications,
+          50 published attack classes against AI models, LLM applications,
           agents, and the business processes agents run. Each class states a
           failure mode and lists MITRE ATLAS, MITRE ATT&amp;CK, OWASP, FINOS, CWE,
           arXiv, and CVE ids. Every id was checked against a pinned catalog
           version or its source record on 1 October 2026. The file assigns no
-          owners: 34 classes link to the SRF threat crosswalk, which names the
-          accountable persona, and 11 have no crosswalk row yet. Seven
+          owners: 38 classes link to the SRF threat crosswalk, which names the
+          accountable persona, and 12 have no crosswalk row yet. Seven
           business-process classes also link to vertical profile controls.
         </p>
       </div>
@@ -234,9 +234,9 @@
             under what condition.
           </p>
           <div class="stats" aria-label="Inventory counts">
-            <div class="stat"><div class="stat__num">45</div><div class="stat__label">classes: 19 AI, 12 agentic, 8 business process, 6 classical weaknesses that agents reopen</div></div>
-            <div class="stat"><div class="stat__num">204</div><div class="stat__label">refs: 139 catalog, 26 paper, 39 incident, all checked</div></div>
-            <div class="stat"><div class="stat__num">66 / 67 / 6</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
+            <div class="stat"><div class="stat__num">50</div><div class="stat__label">classes: 19 AI, 16 agentic, 8 business process, 7 classical weaknesses that agents reopen</div></div>
+            <div class="stat"><div class="stat__num">237</div><div class="stat__label">refs: 162 catalog, 27 paper, 48 incident, all checked</div></div>
+            <div class="stat"><div class="stat__num">73 / 83 / 6</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
             <div class="stat"><div class="stat__num">9</div><div class="stat__label">classes with no exact catalog entry, 6 of them business process</div></div>
           </div>
         </div>
@@ -281,6 +281,25 @@
             <li>ATT&amp;CK 19.x revoked <code>T1656</code> Impersonation and moved it to <code>T1684.001</code>. ATLAS v2026.08 <code>AML.T0073</code> Impersonation still links to <code>T1656</code>, so a ref recalled from memory or copied from ATLAS would cite the revoked id.</li>
             <li>Three process classes have no row in <a href="/data/threats.json">/data/threats.json</a>: approval gate bypass, false status reporting, and deepfake approver impersonation. That file keys rows by OWASP AI Exchange or DSGAI ids and has no L1 row for approvals. Approval gate bypass reaches L1 through <code>vertical_controls</code> instead: finance <code>SRF-L1-DEV-004</code> requires a named human business owner for each process an agent acts in. No vertical control checks who an approver is, so the deepfake class has none.</li>
             <li>Vendor master data and invoices are L2 records, so those two classes cross-walk to DSGAI05 Data Integrity &amp; Validation Failures. The decision to accept a changed record still belongs to the L1 process owner.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="splits" data-llm="splits">
+        <div class="section__inner">
+          <span class="section__label">Version 0.3.0</span>
+          <h2 class="section__title">Where the new classes split from their neighbors</h2>
+          <p class="section__body">
+            Version 0.3.0 adds five classes from failure modes that the AITBM
+            use-case pages describe. Three of them split from an existing
+            entry, and each split follows a difference in what a defender has
+            to check.
+          </p>
+          <ul class="findings">
+            <li>MCP tool poisoning covers a tool definition that a connected server serves, or changes after approval. Agent skill poisoning covers a package of instructions and code that a user installs from a registry, where install counts and look-alike names decide what gets installed. ATLAS uses <code>AML.T0110.000</code> for both, so a claims-test run may select both entries for one claim. <code>AML.CS0049</code> moved from MCP tool poisoning to skill poisoning.</li>
+            <li>Indirect prompt injection covers content an agent reads while it works on a task. A coding agent's rules or configuration file loads when the project opens and applies to every later task; CVE-2026-12957 ran commands from project configuration before the developer typed anything. Both entries cross-walk to the same <code>threats.json</code> row, because one application team decides what the agent accepts as instructions.</li>
+            <li>Agent config credential exposure is about secrets stored in readable files. An exposed control interface hands over the agent's tools even when no secret is stored in plain text. <code>AML.CS0048</code> shows both on the same hosts; it is cited under the control interface because ATLAS records the entry point as <code>AML.T0049</code> Exploit Public-Facing Application.</li>
+            <li>Agent session smuggling and the malicious LLM API router split from no entry. DSGAI06 names inter-agent context smuggling, but ATLAS v2026.08 has no technique for a victim agent that receives hidden turns. The router class rests on one measurement paper, cites no incident, and has no <code>threats.json</code> row.</li>
           </ul>
         </div>
       </section>
@@ -373,17 +392,18 @@
           <span class="section__label">Known limits</span>
           <h2 class="section__title">What this version cannot answer</h2>
           <ul class="findings">
-            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 45 entries until a person confirms them.</li>
+            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 50 entries until a person confirms them.</li>
             <li>A verified paper ref means the arXiv id resolves and the title and first author match. Abstracts were read for the three telemetry-triage papers, AgentDojo, and Agent Security Bench. The Agents of Chaos cases cited for display-name spoofing and false self-reports were not reread.</li>
             <li>Nine classes have no exact catalog entry. Three predate 0.2.0: deceptive agent self-report (OWASP Agentic T7 is the closest), observability-plane evasion (<code>AML.T0081</code> covers a disabled setting, not a starved guardrail), and the token-length side channel (no ATLAS, OWASP LLM, or OWASP Agentic entry). The other six are business-process classes; the section above names them.</li>
-            <li>Eleven classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them from that file: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, the token-length side channel, approval gate bypass, false process status reporting, and deepfake approver impersonation. Adding an L1 row for approval processes would need a source catalog id, because that file mints none of its own.</li>
+            <li>Twelve classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them from that file: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, the token-length side channel, approval gate bypass, false process status reporting, deepfake approver impersonation, and the malicious LLM API router. Adding an L1 row for approval processes would need a source catalog id, because that file mints none of its own.</li>
             <li><code>vertical_controls</code> is filled only on the eight business-process classes. Earlier classes such as excessive agency and approval fatigue likely match finance and insurance controls too, but no one has checked those links.</li>
             <li>Bank payment-system intrusions with no AI step, such as the 2016 Bangladesh Bank theft, have no entry. The US Department of Justice page that would anchor that case returned a bot-check page with no text on 1 October 2026, so it could not be verified.</li>
             <li>BIML LLM24 ids are not mapped. They name risk areas broader than these classes, and choosing between them needs a reviewer.</li>
             <li>ATLAS v2026.09 is out and adds <code>AML.T0129</code> Triggers in Multimodal Inputs, which may fit multimodal instruction injection more narrowly. The pin stays at v2026.08; every cited id keeps its name in v2026.09.</li>
             <li>The list started from one claims-test attack table, six classical weaknesses, and eight business-process classes. ATLAS techniques outside those topics, such as <code>AML.T0015</code> model evasion against classic ML classifiers and <code>AML.T0041</code> physical-environment attacks, have no entry of their own. KYC onboarding fraud with deepfakes (<code>AML.CS0033</code>, <code>AML.CS0034</code>) is also unlisted.</li>
-            <li>The AITBM use-case pages describe failure modes with no class here yet: poisoned skills in agent skill marketplaces, rules and configuration files that steer coding agents (<code>AML.CS0041</code>), exposed local agent control interfaces (<code>AML.CS0048</code>), session smuggling between partner agents, and LLM API routers that rewrite traffic. Their incidents were not filed under nearby classes, except <code>AML.CS0049</code>, which ATLAS tags as tool poisoning.</li>
-            <li>Five incident refs are vendor or researcher reports with no CVE or case-study id. The macOS.Gaslight ref shows an implant aimed at an LLM triage tool, but its authors did not test an LLM, so it shows intent and not a working bypass.</li>
+            <li>Three AITBM use-case pages describe failure modes that still have no entry: a computer-use agent that clicks a screen position after the page has replaced the control it chose, a safety monitor whose tokenizer drops characters that the main model reads, and opaque reasoning blocks that another user can replay to recover hidden reasoning. Their primary sources have not been opened.</li>
+            <li>Agent session smuggling has only a proof of concept; Unit 42 reports no use in the wild.</li>
+            <li>Fifteen incident refs are URLs to news, vendor, or researcher reports with no CVE or case-study id, so each needs a fresh fetch at every review. The macOS.Gaslight ref shows an implant aimed at an LLM triage tool, but its authors did not test an LLM, so it shows intent and not a working bypass.</li>
           </ul>
         </div>
       </section>
