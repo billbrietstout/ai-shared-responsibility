@@ -17,13 +17,15 @@ def esc(s: str) -> str:
 
 
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
+INVENTORY_URL = "https://aisharedresponsibility.com/data/attack-inventory.json"
 
 
 def pack_load_block() -> str:
     return f"""Load the claims-test pack.
 If this message already contains prompts.json (paste or attachment), use that copy and ignore an older fetched file.
-Else fetch {PACK_URL}. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Else fetch {PACK_URL}. That fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
 If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
+For C-attacks, also read the attack inventory: use an attached copy or export, else fetch {INVENTORY_URL} once. Build attack rows from it first and keep its ids. If it cannot be read, note that in the report QA section and continue.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message."""
 
 
@@ -580,6 +582,17 @@ def main() -> None:
         <p>
           Default path. <code>draft_body</code> and <code>channel</code> are
           enough. Default mode is <code>full</code>.
+        </p>
+        <p>
+          C-attacks reads the
+          <a href="/framework/attack-inventory/">attack inventory</a> by
+          default and builds rows from it first, keeping catalog and paper ids
+          that were checked against pinned catalog versions. The run judges
+          draft overlap and stage, and adds <code>training_memory</code> rows
+          only for classes the inventory lacks. The report names the inventory
+          version it read. To narrow the inventory to the draft's topics,
+          attach an export:
+          <code>python3 build/export_attack_inventory.py --topics telemetry,MCP</code>.
         </p>
 {shortcut_paste("shortcut-text-a", shortcut_text_a(pack), label="Copy shortcut", aria_label="Copy Track A one-chat shortcut")}
         <details class="shortcut-more" id="shortcut-b">

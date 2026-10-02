@@ -253,7 +253,7 @@
 
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner">
-        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.7</span>
+        <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.8</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
           Paste a draft once. The pack extracts claims, collects published
@@ -321,16 +321,28 @@
           Default path. <code>draft_body</code> and <code>channel</code> are
           enough. Default mode is <code>full</code>.
         </p>
+        <p>
+          C-attacks reads the
+          <a href="/framework/attack-inventory/">attack inventory</a> by
+          default and builds rows from it first, keeping catalog and paper ids
+          that were checked against pinned catalog versions. The run judges
+          draft overlap and stage, and adds <code>training_memory</code> rows
+          only for classes the inventory lacks. The report names the inventory
+          version it read. To narrow the inventory to the draft's topics,
+          attach an export:
+          <code>python3 build/export_attack_inventory.py --topics telemetry,MCP</code>.
+        </p>
         <div class="shortcut-paste">
           <button type="button" data-shortcut-target="shortcut-text-a" data-copy-label="Copy shortcut" aria-label="Copy Track A one-chat shortcut">Copy shortcut</button>
           <pre id="shortcut-text-a">Paste the draft body in this message.
 Load the claims-test pack.
 If this message already contains prompts.json (paste or attachment), use that copy and ignore an older fetched file.
-Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
 If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
+For C-attacks, also read the attack inventory: use an attached copy or export, else fetch https://aisharedresponsibility.com/data/attack-inventory.json once. Build attack rows from it first and keep its ids. If it cannot be read, note that in the report QA section and continue.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.7, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version 1.0.8, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -361,11 +373,12 @@ Do not merge this run with the whitepaper-assessment catalog grader. Do not writ
           <pre id="shortcut-text-b">Paste the draft body in this message.
 Load the claims-test pack.
 If this message already contains prompts.json (paste or attachment), use that copy and ignore an older fetched file.
-Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
 If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
+For C-attacks, also read the attack inventory: use an attached copy or export, else fetch https://aisharedresponsibility.com/data/attack-inventory.json once. Build attack rows from it first and keep its ids. If it cannot be read, note that in the report QA section and continue.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.7, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.8, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -396,11 +409,12 @@ Do not merge this run with the whitepaper-assessment catalog grader. Do not writ
           <pre id="shortcut-text-c">Paste the draft body in this message.
 Load the claims-test pack.
 If this message already contains prompts.json (paste or attachment), use that copy and ignore an older fetched file.
-Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That one fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
+Else fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. That fetch is required. The pack is not a pinned_source. Empty pinned_sources does not block the chain.
 If a fetched pack version is older than this shortcut, still obey this shortcut, including C-attacks.
+For C-attacks, also read the attack inventory: use an attached copy or export, else fetch https://aisharedresponsibility.com/data/attack-inventory.json once. Build attack rows from it first and keep its ids. If it cannot be read, note that in the report QA section and continue.
 Do not fetch any other URL. Citation, catalog, and SRF URLs stay unread unless they appear in pinned_sources in this message.
 
-Use pack version 1.0.7, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version 1.0.8, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 Execute every required step internally. Do not print intermediate JSON or prompt-id headings.
 Reply with the markdown report only. Start at the title heading. No JSON wrapper. No fences around the document.
@@ -625,7 +639,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -729,7 +744,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -826,7 +842,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -925,7 +942,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1002,7 +1020,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1033,11 +1052,20 @@ Subject: dimension_profile.topics plus industry_pilot. If topics is empty, deriv
 This step is not a paraphrase of the draft's own risk list. A list of draft-only failure modes with no ATT ids is a failed stop_condition.
 
 Sources, in this order:
-1. Attack classes the draft names or implies.
-2. ATLAS, OWASP (including LLM Top 10), and BIML technique ids that match the subject.
-3. Related papers: identifiers the draft prints, identifiers in pinned_sources, and well-known topic papers (arXiv, USENIX, CVE family, or venue plus year).
+1. The SRF attack inventory. Use an attached copy or export; otherwise fetch https://aisharedresponsibility.com/data/attack-inventory.json once. It comes in two shapes. An export (pinned_source.id srf-attack-inventory) already holds rows in the shape below; keep them and renumber. The full file holds entries; select those with status active whose topics intersect the subject, then build one row per entry:
+   - failure_mode, name, family: copy from the entry.
+   - inventory_id: the entry id.
+   - taxonomy_ref: the best verified taxonomy ref. Rank exact before closest before analogy; within a grade, mitre-atlas, owasp-llm-top10, owasp-agentic-threats, owasp-dsgai, cwe. Write OWASP Agentic ids as "OWASP Agentic T7 (v1.1)" with the pinned version.
+   - paper_ref: the first verified paper ref as arXiv:id or doi:id; else the first CVE or ATLAS case-study id; else null.
+   - evidence pinned; citation_status resolved_pinned.
+   Judge draft_overlap and stage yourself; the inventory holds neither. Do not change an id copied from the inventory.
+2. Attack classes the draft names or implies that the inventory lacks.
+3. ATLAS, OWASP (including LLM Top 10), and BIML technique ids that match the subject and that the inventory lacks.
+4. Related papers: identifiers the draft prints, identifiers in pinned_sources, and well-known topic papers (arXiv, USENIX, CVE family, or venue plus year).
 
-Do not fetch PDFs or catalog URLs. Do not write how to carry out the attack. Do not add payloads. Do not mint a new taxonomy letter. family is a short topic label (identity, parser, supply-chain), not a catalog.
+Rows from sources 2 to 4 carry inventory_id null and keep the evidence and citation rules below. If the inventory could not be read, set inventory_version null, record the gap, and build every row from sources 2 to 4. If more than 40 rows qualify, keep inventory rows the draft names or implies first, then rows that can falsify a coverage claim.
+
+Do not fetch PDFs or catalog URLs; the inventory in source 1 is the one exception. Do not write how to carry out the attack. Do not add payloads. Do not mint a new taxonomy letter. family is a short topic label (identity, parser, supply-chain), not a catalog.
 
 Each row:
 - id ATT-01 ...
@@ -1050,6 +1078,7 @@ Each row:
 - citation_status: resolved_draft | resolved_pinned | catalog | unresolved_unpinned
 - draft_overlap: named (draft states the class), implied (draft describes the failure without naming it), omitted (published for this topic, draft is silent)
 - stage: a label from stage_vocabulary when it fits; otherwise null
+- inventory_id: atk- id from source 1, or null
 
 Prefer 8 to 25 rows. Never more than 40. Floor: 8 rows and at least 2 omitted catalog or paper classes when title or headings contain attack, threat, taxonomy, multimodal, or agentic; otherwise 5 rows. Prefer rows that can falsify a coverage claim (fully addresses, all risks, complete). Include omitted classes when a credible catalog or paper describes them for this topic.
 
@@ -1060,6 +1089,7 @@ Return JSON:
   "attacks": {
     "topics_used": [],
     "topics_derived": false,
+    "inventory_version": null,
     "items": [
       {
         "id": "ATT-01",
@@ -1071,7 +1101,8 @@ Return JSON:
         "evidence": "draft|pinned|catalog|training_memory",
         "citation_status": "resolved_draft|resolved_pinned|catalog|unresolved_unpinned",
         "draft_overlap": "named|implied|omitted",
-        "stage": null
+        "stage": null,
+        "inventory_id": null
       }
     ]
   }
@@ -1112,7 +1143,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1213,7 +1245,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1291,7 +1324,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1386,7 +1420,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1478,7 +1513,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1585,7 +1621,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1699,7 +1736,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1744,12 +1782,12 @@ Vertical context:
 report.markdown is the export. A reviewer who never opens JSON must still see every claim id, every ATT id, score, ROCA owner, and every suggestion packet.
 
 Write in this order:
-1. Title. Metadata table: date, pack version 1.0.7, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
+1. Title. Metadata table: date, pack version 1.0.8, channel, mode, tracks, draft_status, empty reviewer. State that this method is independently proposed and not part of CoSAI SRF v1.0. One line: save this reply as claims-test-{draft-slug}.md.
 2. Scorecard table: claim id, score, one-line reason, roca_id. Counts per score.
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
 5. Foundations: axioms, invariables, principles, references. Mark provisional.
-6. Published attack classes: heading exactly that phrase. Table of ATT id, name, family, draft overlap (named, implied, omitted), catalog or paper. Counts per overlap. If attacks.items is empty, stop and rerun C-attacks; do not substitute a draft-only risk list. No reproduction steps.
+6. Published attack classes: heading exactly that phrase. One line above the table: the attack inventory version read and how many rows came from it, or that the inventory could not be read. Table of ATT id, name, family, draft overlap (named, implied, omitted), catalog or paper. Counts per overlap. If attacks.items is empty, stop and rerun C-attacks; do not substitute a draft-only risk list. No reproduction steps.
 7. Inventory: draft-treated risk id, linked ATT ids, failure mode, tags. No reproduction steps.
 8. Screen findings table, or a sentence that screen was skipped.
 9. QA gaps, including absolute coverage language, omitted attacks, and scope creep.
@@ -1762,7 +1800,7 @@ Key takeaways, if any, must be testable claims a reader could not predict from t
 Set qa.report_present true. Leave reviewer null.
 
 Copy-one-block return the accumulated object plus:
-{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0.7", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
+{"report": {"title": "", "markdown": "full document", "reviewer": null}, "qa": {"report_present": true}, "chain_meta": {"prompt_pack_version": "1.0.8", "date": "", "reviewer": null, "track_b_applied": false, "track_c_applied": false, "assessment_id": "ct-..."}}
 </pre>
       </div>
 
@@ -1806,7 +1844,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1874,7 +1913,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -1938,7 +1978,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -2019,7 +2060,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -2088,7 +2130,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -2159,7 +2202,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -2216,7 +2260,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch https://aisharedresponsibility.com/assess/claims-test/prompts.json. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at https://aisharedresponsibility.com/data/attack-inventory.json is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.

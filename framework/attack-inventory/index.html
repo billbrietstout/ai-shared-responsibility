@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Attack inventory · AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="37 published attack classes against AI models, LLM applications, and agents. Each class states a failure mode and carries MITRE ATLAS, OWASP, CWE, arXiv, and CVE ids checked against pinned catalog versions, with a join to the SRF threat-to-accountability crosswalk."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .section__body + .section__body { margin-top: var(--space-4, 1rem); }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--sp-4);
+        margin-top: var(--sp-5);
+      }
+      .stat {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        padding: var(--sp-4) var(--sp-5);
+      }
+      .stat__num {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        letter-spacing: -0.02em;
+      }
+      .stat__label {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+
+      .findings { margin: var(--sp-4) 0 0; padding-left: var(--sp-5); }
+      .findings li {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-3);
+      }
+      .findings code, .inv code, .cmd code { font-family: var(--font-mono); font-size: 0.92em; }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        align-items: end;
+        margin: var(--sp-5) 0 var(--sp-3);
+      }
+      .filters label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+      }
+      .filters select, .filters input {
+        font: inherit;
+        font-size: var(--text-sm);
+        text-transform: none;
+        letter-spacing: normal;
+        font-weight: 400;
+        color: var(--slate-800);
+        padding: 6px 10px;
+        border: 1px solid var(--slate-300);
+        border-radius: var(--radius);
+        background: #fff;
+        min-width: 180px;
+      }
+      .filters__count { font-size: var(--text-sm); color: var(--slate-500); margin-left: auto; }
+
+      .inv {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+      }
+      .inv th, .inv td {
+        text-align: left;
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: top;
+      }
+      .inv th {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .inv__name { font-weight: 700; color: var(--slate-900); }
+      .inv__id { display: block; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--slate-500); margin-top: 2px; }
+      .inv__scope { display: block; font-size: var(--text-xs); color: var(--slate-500); margin-top: 4px; }
+      .inv__note { display: block; font-size: var(--text-xs); color: var(--slate-500); margin-top: var(--sp-2); line-height: var(--leading-normal); }
+      .inv__refs { list-style: none; margin: 0; padding: 0; }
+      .inv__refs li { margin-bottom: 6px; line-height: 1.35; }
+      .inv__refs a { font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600; }
+      .inv__title { display: block; font-size: var(--text-xs); color: var(--slate-600); }
+      .q {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0 6px;
+        border-radius: 999px;
+        margin-left: 4px;
+        vertical-align: 1px;
+      }
+      .q--exact   { background: var(--status-good-bg); color: var(--status-good); }
+      .q--closest { background: var(--status-warn-bg); color: var(--status-warn); }
+      .q--analogy { background: var(--status-bad-bg);  color: var(--status-bad); }
+      .inv__xw { display: block; margin-bottom: 6px; font-size: var(--text-xs); color: var(--slate-700); }
+      .inv__none { color: var(--slate-400); font-size: var(--text-xs); }
+
+      .cat-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+      .cat-table th, .cat-table td {
+        text-align: left;
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: top;
+      }
+      .cat-table th {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .cat-table td:first-child { font-weight: 600; color: var(--slate-900); }
+      .cat-table .mono { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--slate-600); word-break: break-all; }
+
+      .cmd {
+        background: var(--slate-900);
+        color: var(--slate-100);
+        border-radius: var(--radius);
+        padding: var(--sp-4);
+        font-size: var(--text-sm);
+        overflow-x: auto;
+        margin: var(--sp-3) 0 var(--sp-5);
+      }
+      .cmd code { white-space: pre; color: inherit; }
+
+      .table-scroll { overflow-x: auto; }
+
+      @media (max-width: 760px) {
+        .stats { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Published AI attack class inventory",
+  "url": "https://aisharedresponsibility.com/framework/attack-inventory/",
+  "description": "Published attack classes against AI models, LLM applications, and agentic systems, with MITRE ATLAS, OWASP, CWE, arXiv, and CVE identifiers checked against pinned catalog versions.",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://aisharedresponsibility.com/data/attack-inventory.json"
+    }
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://aisharedresponsibility.com/",
+    "name": "AI Shared Responsibility"
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="reference" />
+    <meta name="llm:canonical-id" content="srf.page.framework-attack-inventory" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.data.attack-inventory, srf.data.threats" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="framework"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Framework in practice</span>
+        <h1 class="page-hero__title">Attack inventory</h1>
+        <p class="page-hero__lede">
+          37 published attack classes against AI models, LLM applications, and
+          agents. Each class states a failure mode and lists MITRE ATLAS, OWASP,
+          CWE, arXiv, and CVE ids. Every id was checked against a pinned catalog
+          version or its source record on 1 October 2026. The file assigns no
+          owners: 29 classes link to the SRF threat crosswalk, which names the
+          accountable persona, and 8 have no crosswalk row yet.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="attack-inventory">
+
+      <section class="section" data-llm="use">
+        <div class="section__inner">
+          <span class="section__label">Use</span>
+          <h2 class="section__title">Cite checked ids instead of recalled ones</h2>
+          <p class="section__body">
+            The <a href="/assess/claims-test/">claims test</a> builds a table of
+            published attack classes in its C-attacks step. Pack 1.0.8 reads
+            this inventory by default and builds rows from it first, so those
+            rows carry ids resolved against ATLAS v2026.08, OWASP LLM Top 10
+            2025, OWASP Agentic AI Threats and Mitigations v1.1, OWASP GenAI
+            Data Security 1.0, or CWE 4.20. Classes the inventory lacks still
+            get ids from model memory, marked <code>unresolved_unpinned</code>.
+          </p>
+          <p class="section__body">
+            A threat model or red-team scope can start from the same list, then
+            follow a class's <code>srf_crosswalk</code> ids, where present, into
+            <a href="/data/threats.json">/data/threats.json</a> for the SRF layer
+            and the accountable persona per operating model. The inventory sets
+            no severity and holds no procedures: each entry says who loses what,
+            under what condition.
+          </p>
+          <div class="stats" aria-label="Inventory counts">
+            <div class="stat"><div class="stat__num">37</div><div class="stat__label">classes: 19 AI, 12 agentic, 6 classical weaknesses that agents reopen</div></div>
+            <div class="stat"><div class="stat__num">142</div><div class="stat__label">refs: 102 catalog, 23 paper, 17 incident, all checked</div></div>
+            <div class="stat"><div class="stat__num">63 / 38 / 1</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
+            <div class="stat"><div class="stat__num">3</div><div class="stat__label">classes with no exact catalog entry</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--alt" data-llm="findings">
+        <div class="section__inner">
+          <span class="section__label">Seed check</span>
+          <h2 class="section__title">What checking the seed table changed</h2>
+          <p class="section__body">
+            31 entries came from the attack table of a claims-test run against
+            the CoSAI AI Telemetry RFC v0.6, where every catalog and paper id
+            had been filled from memory. Checking them against their sources
+            changed refs on 11 entries.
+          </p>
+          <ul class="findings">
+            <li>All 14 arXiv ids in the seed table resolve, and each first author matches the table.</li>
+            <li>All 13 ATLAS ids in the seed table exist at v2026.08 and keep their names in v2026.09. Six seed rows cited a parent technique or a looser fit where ATLAS has a narrower one; zero-click exfiltration, for example, now maps to <code>AML.T0077</code> LLM Response Rendering. Sandbox escape had no ATLAS id and now maps to <code>AML.T0105</code> Escape to Host.</li>
+            <li>ATLAS case study <code>AML.CS0059</code> tags the EchoLeak injection step as <code>AML.T0051.002</code> Triggered. The RFC's attack appendix tags it <code>.001</code> Indirect. EchoLeak now sits under zero-click exfiltration.</li>
+            <li>MCP tool poisoning had only a blog post. ATLAS case study <code>AML.CS0054</code> cites that post and gives it a stable id; <code>AML.T0109</code> and CVE-2025-54136 cover tool definitions that change after approval.</li>
+            <li>Injection carried by telemetry into LLM-assisted triage was mapped by analogy, with no paper. Three 2026 arXiv papers show log fields acting as attacker-controlled content that an LLM triage tool reads. That is the data-channel case <code>AML.T0051.001</code> Indirect covers, so the ref is now graded exact.</li>
+            <li>The OWASP Agentic AI Threats PDF now served is v1.1 (December 2025). It adds T16 and T17; the seed's T1, T3, T7, T8, T9, T10, and T11 keep their titles.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="inventory" data-llm="inventory">
+        <div class="section__inner">
+          <span class="section__label">Live data</span>
+          <h2 class="section__title">Inventory</h2>
+          <p class="section__body">
+            Grades: <span class="q q--exact">exact</span> the catalog text covers
+            the class without stretching; <span class="q q--closest">closest</span>
+            it covers part of the class or a neighbor and is the best entry
+            available; <span class="q q--analogy">analogy</span> it describes a
+            different mechanism with a similar effect. The source file is
+            <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>,
+            with its schema at
+            <a href="/data/attack-inventory.schema.json">/data/attack-inventory.schema.json</a>.
+          </p>
+
+          <div class="filters" role="search">
+            <label>Scope
+              <select id="f-scope">
+                <option value="">All</option>
+                <option value="ai">AI</option>
+                <option value="agentic">Agentic</option>
+                <option value="classical-reopened">Classical, reopened</option>
+              </select>
+            </label>
+            <label>Claims-test topic
+              <select id="f-topic"><option value="">All</option></select>
+            </label>
+            <label>Search
+              <input id="f-text" type="search" placeholder="name, id, or ref" />
+            </label>
+            <span class="filters__count" id="f-count" aria-live="polite"></span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="inv">
+              <thead>
+                <tr>
+                  <th scope="col">Class</th>
+                  <th scope="col">Failure mode</th>
+                  <th scope="col">Catalog refs</th>
+                  <th scope="col">Papers and incidents</th>
+                  <th scope="col">SRF crosswalk</th>
+                </tr>
+              </thead>
+              <tbody id="inv-body">
+                <tr><td colspan="5" class="inv__none">
+                  The inventory loads from
+                  <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>.
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--alt" id="catalogs" data-llm="catalogs">
+        <div class="section__inner">
+          <span class="section__label">Pins</span>
+          <h2 class="section__title">Catalog versions</h2>
+          <p class="section__body">
+            Each catalog ref records the version below. Where a file was
+            downloaded, the SHA-256 or commit lets a reviewer confirm the same
+            bytes were read.
+          </p>
+          <div class="table-scroll">
+            <table class="cat-table">
+              <thead>
+                <tr>
+                  <th scope="col">Catalog</th>
+                  <th scope="col">Version</th>
+                  <th scope="col">Released</th>
+                  <th scope="col">Pin</th>
+                </tr>
+              </thead>
+              <tbody id="cat-body">
+                <tr><td colspan="4" class="inv__none">Catalog pins load from the same file.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="limits" data-llm="limits">
+        <div class="section__inner">
+          <span class="section__label">Known limits</span>
+          <h2 class="section__title">What this version cannot answer</h2>
+          <ul class="findings">
+            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 37 entries until a person confirms them.</li>
+            <li>A verified paper ref means the arXiv id resolves and the title and first author match. Only the three telemetry-triage papers had their abstracts read. The Agents of Chaos cases cited for display-name spoofing and false self-reports were not reread.</li>
+            <li>Three classes have no exact catalog entry: deceptive agent self-report (OWASP Agentic T7 is the closest), observability-plane evasion (<code>AML.T0081</code> covers a disabled setting, not a starved guardrail), and the token-length side channel (no ATLAS, OWASP LLM, or OWASP Agentic entry).</li>
+            <li>Eight classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, and the token-length side channel.</li>
+            <li>BIML LLM24 ids are not mapped. They name risk areas broader than these classes, and choosing between them needs a reviewer.</li>
+            <li>ATLAS v2026.09 is out and adds <code>AML.T0129</code> Triggers in Multimodal Inputs, which may fit multimodal instruction injection more narrowly. The pin stays at v2026.08 because the RFC cites that release.</li>
+            <li>The list started from one telemetry RFC's attack table plus six classical weaknesses. ATLAS techniques outside that topic, such as <code>AML.T0015</code> model evasion against classic ML classifiers, <code>AML.T0041</code> physical-environment attacks, and <code>AML.T0052.001</code> deepfake-assisted phishing, have no entry of their own.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section section--alt" id="maintain" data-llm="maintain">
+        <div class="section__inner">
+          <span class="section__label">Maintain</span>
+          <h2 class="section__title">Change, verify, export</h2>
+          <p class="section__body">
+            Edit the JSON, bump <code>inventory_version</code> (patch for a ref
+            fix, minor for a new entry, major for a removed field or changed id),
+            and add one changelog line naming the id and the reason. Then run the
+            verifier. It fails on a dangling id, a ref whose catalog version
+            differs from the pin, a verified ref with no check date or method,
+            or an em dash in any text field. It warns when a newer catalog
+            release has been seen or a URL ref is more than 180 days old.
+          </p>
+          <pre class="cmd"><code>python3 build/verify_attack_inventory.py</code></pre>
+          <p class="section__body">
+            A claims-test run reads the whole file unless it is given an
+            export. To limit a run to the draft's topics, export them and attach
+            the result. Rows are numbered ATT-01 upward after the filter; draft
+            overlap stays null for the run to judge.
+          </p>
+          <pre class="cmd"><code>python3 build/export_attack_inventory.py --topics telemetry,MCP --format md
+python3 build/export_attack_inventory.py --scope agentic --out attacks.json</code></pre>
+          <p class="section__body">
+            Recheck the inventory when ATLAS publishes a release, when OWASP
+            revises the LLM Top 10 or the Agentic AI Threats document, when a
+            CoSAI WS2 draft cites a new incident, or when a claims-test run finds
+            a class missing here.
+          </p>
+        </div>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script type="module">
+      const esc = (s) =>
+        String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+      const SCOPE_LABEL = { ai: "AI", agentic: "Agentic", "classical-reopened": "Classical, reopened" };
+      const CATALOG_SHORT = {
+        "mitre-atlas": "ATLAS",
+        "owasp-llm-top10": "OWASP LLM",
+        "owasp-agentic-threats": "OWASP Agentic",
+        "owasp-dsgai": "OWASP DSGAI",
+        cwe: "CWE",
+      };
+
+      function taxLink(r, catalogs) {
+        if (r.catalog === "mitre-atlas") return "https://atlas.mitre.org/techniques/" + r.id;
+        if (r.catalog === "cwe") return "https://cwe.mitre.org/data/definitions/" + r.id.replace("CWE-", "") + ".html";
+        return (catalogs[r.catalog] || {}).source_url || "#";
+      }
+
+      function incidentLink(x) {
+        if (x.type === "cve") return "https://www.cve.org/CVERecord?id=" + x.id;
+        if (x.type === "atlas-case-study") return "https://atlas.mitre.org/studies/" + x.id;
+        return x.url;
+      }
+
+      function renderTax(e, catalogs) {
+        if (!e.taxonomy_refs.length) return '<span class="inv__none">No catalog entry</span>';
+        return "<ul class=\"inv__refs\">" + e.taxonomy_refs.map((r) => {
+          const label = r.catalog === "owasp-agentic-threats" ? "Agentic " + r.id : r.id;
+          return "<li><a href=\"" + esc(taxLink(r, catalogs)) + "\">" + esc(label) + "</a>" +
+            "<span class=\"q q--" + esc(r.mapping_quality) + "\">" + esc(r.mapping_quality) + "</span>" +
+            "<span class=\"inv__title\">" + esc(CATALOG_SHORT[r.catalog] || r.catalog) + " " +
+            esc(r.catalog_version) + ": " + esc(r.title_in_catalog) + "</span></li>";
+        }).join("") + "</ul>";
+      }
+
+      function renderSources(e) {
+        const items = [];
+        for (const p of e.paper_refs) {
+          const href = p.type === "arxiv" ? "https://arxiv.org/abs/" + p.id : "https://doi.org/" + p.id;
+          items.push("<li><a href=\"" + esc(href) + "\">" + (p.type === "arxiv" ? "arXiv:" : "doi:") + esc(p.id) + "</a>" +
+            "<span class=\"inv__title\">" + esc(p.first_author) + " " + esc(p.year) +
+            (p.venue ? ", " + esc(p.venue) : "") + ": " + esc(p.title) + "</span></li>");
+        }
+        for (const x of e.incident_refs) {
+          const shown = x.type === "url" ? "Web source" : x.id;
+          items.push("<li><a href=\"" + esc(incidentLink(x)) + "\">" + esc(shown) + "</a>" +
+            "<span class=\"inv__title\">" + esc(x.label) + (x.accessed ? " (accessed " + esc(x.accessed) + ")" : "") + "</span></li>");
+        }
+        return items.length ? "<ul class=\"inv__refs\">" + items.join("") + "</ul>" : '<span class="inv__none">None pinned</span>';
+      }
+
+      function renderCrosswalk(e, threats) {
+        if (!e.srf_crosswalk.length) return '<span class="inv__none">No crosswalk row</span>';
+        return e.srf_crosswalk.map((id) => {
+          const t = threats[id];
+          if (!t) return "<span class=\"inv__xw\">" + esc(id) + "</span>";
+          return "<span class=\"inv__xw\"><span class=\"layer-pill layer-pill--" + esc(t.srf_layer.toLowerCase()) +
+            "\"><span class=\"layer-pill__dot\"></span>" + esc(t.srf_layer) + "</span> " + esc(t.name) + "</span>";
+        }).join("");
+      }
+
+      function row(e, catalogs, threats) {
+        return "<tr>" +
+          "<td><span class=\"inv__name\">" + esc(e.name) + "</span>" +
+          "<span class=\"inv__id\">" + esc(e.id) + "</span>" +
+          "<span class=\"inv__scope\">" + esc(SCOPE_LABEL[e.scope] || e.scope) + " · " + esc(e.family) + "</span></td>" +
+          "<td>" + esc(e.failure_mode) +
+          (e.verification.notes ? "<span class=\"inv__note\">" + esc(e.verification.notes) + "</span>" : "") + "</td>" +
+          "<td>" + renderTax(e, catalogs) + "</td>" +
+          "<td>" + renderSources(e) + "</td>" +
+          "<td>" + renderCrosswalk(e, threats) + "</td>" +
+          "</tr>";
+      }
+
+      function haystack(e) {
+        return [e.id, e.name, e.family, ...e.aliases,
+          ...e.taxonomy_refs.map((r) => r.id + " " + r.title_in_catalog),
+          ...e.paper_refs.map((p) => p.id + " " + p.title + " " + p.first_author),
+          ...e.incident_refs.map((x) => x.id + " " + x.label)].join(" ").toLowerCase();
+      }
+
+      (async () => {
+        const body = document.getElementById("inv-body");
+        const count = document.getElementById("f-count");
+        const fScope = document.getElementById("f-scope");
+        const fTopic = document.getElementById("f-topic");
+        const fText = document.getElementById("f-text");
+        try {
+          const [invRes, thrRes] = await Promise.all([
+            fetch("/data/attack-inventory.json"),
+            fetch("/data/threats.json"),
+          ]);
+          if (!invRes.ok) throw new Error("inventory fetch failed");
+          const inv = await invRes.json();
+          const threats = thrRes.ok
+            ? Object.fromEntries(((await thrRes.json()).threats || []).map((t) => [t.id, t]))
+            : {};
+          const entries = inv.entries.filter((e) => e.status === "active");
+
+          const topics = [...new Set(entries.flatMap((e) => e.topics))].sort((a, b) => a.localeCompare(b));
+          fTopic.insertAdjacentHTML("beforeend", topics.map((t) => "<option value=\"" + esc(t) + "\">" + esc(t) + "</option>").join(""));
+
+          const draw = () => {
+            const s = fScope.value, t = fTopic.value, q = fText.value.trim().toLowerCase();
+            const shown = entries.filter((e) =>
+              (!s || e.scope === s) && (!t || e.topics.includes(t)) && (!q || haystack(e).includes(q)));
+            body.innerHTML = shown.length
+              ? shown.map((e) => row(e, inv.catalogs, threats)).join("")
+              : '<tr><td colspan="5" class="inv__none">No class matches these filters.</td></tr>';
+            count.textContent = "Showing " + shown.length + " of " + entries.length + " · version " + inv.inventory_version;
+          };
+          [fScope, fTopic].forEach((el) => el.addEventListener("change", draw));
+          fText.addEventListener("input", draw);
+          draw();
+
+          document.getElementById("cat-body").innerHTML = Object.entries(inv.catalogs).map(([key, c]) => {
+            const pin = c.content_sha256 ? "sha256 " + c.content_sha256 : c.source_commit ? "commit " + c.source_commit : "page retrieved " + c.retrieved_on;
+            const newer = c.newer_release_seen ? "<br />Newer release seen: " + esc(c.newer_release_seen.version) + ", " +
+              esc(c.newer_release_seen.cited_ids_changed) + " cited ids changed." : "";
+            return "<tr><td><a href=\"" + esc(c.source_url) + "\">" + esc(c.name) + "</a></td>" +
+              "<td>" + esc(c.version) + "</td><td>" + esc(c.released) + "</td>" +
+              "<td><span class=\"mono\">" + esc(pin) + "</span>" + newer + "</td></tr>";
+          }).join("");
+        } catch (err) {
+          body.innerHTML = '<tr><td colspan="5" class="inv__none">The inventory is available at <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>.</td></tr>';
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -9,10 +9,11 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "prompts.json"
 
-VERSION = "1.0.7"
-UPDATED = "2026-09-21"
+VERSION = "1.0.8"
+UPDATED = "2026-10-01"
 CANONICAL = "https://aisharedresponsibility.com/assess/claims-test/"
 PACK_URL = "https://aisharedresponsibility.com/assess/claims-test/prompts.json"
+INVENTORY_URL = "https://aisharedresponsibility.com/data/attack-inventory.json"
 SCHEMA = "/eval/claims-test/schema.json"
 COUSIN = "https://aisharedresponsibility.com/assess/whitepaper-assessment/"
 TM_PACK = "https://aisharedresponsibility.com/tools/prompts/threat-model/"
@@ -89,7 +90,8 @@ Rules:
 - Do not treat "ensures trust," "addresses the gap," or "shared responsibility" as Supported without a mechanism and one owner.
 - Do not invent identifiers, DOIs, regulations, NIST control ids, SRF persona ids, or URLs. Use only what the draft or pinned_sources contain, except C-attacks may name published ATLAS, OWASP, or BIML technique ids and well-known topic papers. Invented citations outside those catalogs or papers are Blocked, not Partial.
 - Pack load is required and is not a pinned source. Read prompts.json from this message (paste or attachment) or fetch {PACK_URL}. If both exist, use the attached copy. If a fetched pack is older than this shortcut, still obey this shortcut, including C-attacks and the Published attack classes table. Empty pinned_sources does not block the chain. Do not invent chain ids or templates.
-- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. An unpinned draft citation stays unresolved_unpinned.
+- Do not fetch citation, catalog, principle, or SRF URLs unless they appear in pinned_sources. The attack inventory below is the one standing exception. An unpinned draft citation stays unresolved_unpinned.
+- The SRF attack inventory at {INVENTORY_URL} is a standing pinned source for C-attacks, whether or not pinned_sources lists it. Use an attached copy or export when present; otherwise fetch it once. If it cannot be read, record the gap in the QA section and continue with catalog and training_memory rows.
 - Do not write reproduction steps, exploit PoCs, payloads, or fuzzing playbooks. Attack and inventory rows name a failure mode, not how to cause it.
 - Threat taxonomies stay ATLAS / OWASP / BIML. Do not mint a competing taxonomy letter. C-attacks is required. Collect published attack classes for the declared topic from those catalogs and from related papers (draft, pinned, or well-known). Empty topics does not skip C-attacks; derive topics from title and headings. Mark evidence draft, pinned, catalog, or training_memory. training_memory paper ids stay unresolved_unpinned. Those rows test coverage. They cannot alone make a claim Supported. Cap 40 rows.
 - If the draft discusses agent telemetry, treat AITF as the baseline. Propose only binding gaps (persona, layer, oversight tier, erasure-compatible evidence, feedback spans, actuation). Do not re-propose AITF namespaces.
@@ -233,7 +235,9 @@ def build() -> dict:
                 "this shortcut, still run C-attacks and still print Published attack "
                 "classes. The pack is not a pinned_source. Empty pinned_sources does "
                 "not block the chain. Do not invent templates. Do not fetch citation, "
-                "catalog, principle, or SRF URLs unless they appear in pinned_sources."
+                "catalog, principle, or SRF URLs unless they appear in pinned_sources. "
+                f"One exception: fetch the attack inventory at {INVENTORY_URL} once "
+                "for C-attacks unless this message attaches a copy or an export."
             ),
         },
         "operator_initial_inputs": {
@@ -316,7 +320,10 @@ def build() -> dict:
                     "include_in_first_message": (
                         "Injected citation or SRF documents only. The pack at "
                         f"{PACK_URL} "
-                        "is loaded separately and is not a pinned source."
+                        "is loaded separately and is not a pinned source. The attack "
+                        f"inventory at {INVENTORY_URL} is read for C-attacks without "
+                        "being listed. To narrow it, attach an export from "
+                        "build/export_attack_inventory.py --topics."
                     ),
                 },
                 {
@@ -760,7 +767,7 @@ Return JSON:
                 "attacks",
                 ["intake", "claims", "foundations", "draft_body", "pinned_sources"],
                 "attacks",
-                "Each row is a published attack class for the declared topic, with a failure mode and draft_overlap named, implied, or omitted. Empty topics does not skip this step. Floor 8 rows when title or headings mention attack, threat, taxonomy, multimodal, or agentic; otherwise floor 5. At most 40 rows. No reproduction steps.",
+                "Each row is a published attack class for the declared topic, with a failure mode and draft_overlap named, implied, or omitted. Empty topics does not skip this step. Floor 8 rows when title or headings mention attack, threat, taxonomy, multimodal, or agentic; otherwise floor 5. At most 40 rows. Rows from the attack inventory keep its ids unchanged and carry inventory_id. No reproduction steps.",
                 """{{shared_rules}}
 
 Step: C-attacks. Collect published attack classes that can test the draft's claims. This list is the coverage fixture, not a rewrite of the draft.
@@ -781,11 +788,20 @@ Subject: dimension_profile.topics plus industry_pilot. If topics is empty, deriv
 This step is not a paraphrase of the draft's own risk list. A list of draft-only failure modes with no ATT ids is a failed stop_condition.
 
 Sources, in this order:
-1. Attack classes the draft names or implies.
-2. ATLAS, OWASP (including LLM Top 10), and BIML technique ids that match the subject.
-3. Related papers: identifiers the draft prints, identifiers in pinned_sources, and well-known topic papers (arXiv, USENIX, CVE family, or venue plus year).
+1. The SRF attack inventory. Use an attached copy or export; otherwise fetch """ + INVENTORY_URL + """ once. It comes in two shapes. An export (pinned_source.id srf-attack-inventory) already holds rows in the shape below; keep them and renumber. The full file holds entries; select those with status active whose topics intersect the subject, then build one row per entry:
+   - failure_mode, name, family: copy from the entry.
+   - inventory_id: the entry id.
+   - taxonomy_ref: the best verified taxonomy ref. Rank exact before closest before analogy; within a grade, mitre-atlas, owasp-llm-top10, owasp-agentic-threats, owasp-dsgai, cwe. Write OWASP Agentic ids as "OWASP Agentic T7 (v1.1)" with the pinned version.
+   - paper_ref: the first verified paper ref as arXiv:id or doi:id; else the first CVE or ATLAS case-study id; else null.
+   - evidence pinned; citation_status resolved_pinned.
+   Judge draft_overlap and stage yourself; the inventory holds neither. Do not change an id copied from the inventory.
+2. Attack classes the draft names or implies that the inventory lacks.
+3. ATLAS, OWASP (including LLM Top 10), and BIML technique ids that match the subject and that the inventory lacks.
+4. Related papers: identifiers the draft prints, identifiers in pinned_sources, and well-known topic papers (arXiv, USENIX, CVE family, or venue plus year).
 
-Do not fetch PDFs or catalog URLs. Do not write how to carry out the attack. Do not add payloads. Do not mint a new taxonomy letter. family is a short topic label (identity, parser, supply-chain), not a catalog.
+Rows from sources 2 to 4 carry inventory_id null and keep the evidence and citation rules below. If the inventory could not be read, set inventory_version null, record the gap, and build every row from sources 2 to 4. If more than 40 rows qualify, keep inventory rows the draft names or implies first, then rows that can falsify a coverage claim.
+
+Do not fetch PDFs or catalog URLs; the inventory in source 1 is the one exception. Do not write how to carry out the attack. Do not add payloads. Do not mint a new taxonomy letter. family is a short topic label (identity, parser, supply-chain), not a catalog.
 
 Each row:
 - id ATT-01 ...
@@ -798,6 +814,7 @@ Each row:
 - citation_status: resolved_draft | resolved_pinned | catalog | unresolved_unpinned
 - draft_overlap: named (draft states the class), implied (draft describes the failure without naming it), omitted (published for this topic, draft is silent)
 - stage: a label from stage_vocabulary when it fits; otherwise null
+- inventory_id: atk- id from source 1, or null
 
 Prefer 8 to 25 rows. Never more than 40. Floor: 8 rows and at least 2 omitted catalog or paper classes when title or headings contain attack, threat, taxonomy, multimodal, or agentic; otherwise 5 rows. Prefer rows that can falsify a coverage claim (fully addresses, all risks, complete). Include omitted classes when a credible catalog or paper describes them for this topic.
 
@@ -808,6 +825,7 @@ Return JSON:
   "attacks": {
     "topics_used": [],
     "topics_derived": false,
+    "inventory_version": null,
     "items": [
       {
         "id": "ATT-01",
@@ -819,7 +837,8 @@ Return JSON:
         "evidence": "draft|pinned|catalog|training_memory",
         "citation_status": "resolved_draft|resolved_pinned|catalog|unresolved_unpinned",
         "draft_overlap": "named|implied|omitted",
-        "stage": null
+        "stage": null,
+        "inventory_id": null
       }
     ]
   }
@@ -1391,7 +1410,7 @@ Write in this order:
 3. If prior_assessment_id is set, a delta table (claim id, prior score, current score, delta). If no prior scorecard, say so in one sentence.
 4. ROCA table: claim id, risk, obligation, control, owner, if_condition. Empty cells stay empty; do not write Shared as owner.
 5. Foundations: axioms, invariables, principles, references. Mark provisional.
-6. Published attack classes: heading exactly that phrase. Table of ATT id, name, family, draft overlap (named, implied, omitted), catalog or paper. Counts per overlap. If attacks.items is empty, stop and rerun C-attacks; do not substitute a draft-only risk list. No reproduction steps.
+6. Published attack classes: heading exactly that phrase. One line above the table: the attack inventory version read and how many rows came from it, or that the inventory could not be read. Table of ATT id, name, family, draft overlap (named, implied, omitted), catalog or paper. Counts per overlap. If attacks.items is empty, stop and rerun C-attacks; do not substitute a draft-only risk list. No reproduction steps.
 7. Inventory: draft-treated risk id, linked ATT ids, failure mode, tags. No reproduction steps.
 8. Screen findings table, or a sentence that screen was skipped.
 9. QA gaps, including absolute coverage language, omitted attacks, and scope creep.
