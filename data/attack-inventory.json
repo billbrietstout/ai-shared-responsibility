@@ -1,6 +1,6 @@
 {
   "$schema": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
-  "inventory_version": "0.3.0",
+  "inventory_version": "0.4.0",
   "updated": "2026-10-01",
   "description": "Inventory of published attack classes against AI and agentic systems, including business processes that agents now run. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk, and to vertical profile controls through vertical_controls.",
   "scope": "Attack classes against AI models, LLM applications, and agentic systems; classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch; and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. The scope field on each entry is ai, agentic, classical-reopened, or business-process.",
@@ -464,6 +464,48 @@
       "date": "2026-10-01",
       "id": "atk-agent-config-credential-exposure",
       "change": "related now lists atk-exposed-agent-control-interface. No ref changed."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Added 3 entries for the failure modes the 0.3.0 Known Limits listed as uncovered. Each ref was checked against its pinned catalog or primary source."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-computer-use-stale-action",
+      "change": "Added."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-reasoning-block-replay",
+      "change": "Added."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-multi-agent-covert-channel",
+      "change": "Added. Kept separate from atk-encoded-input-guardrail-evasion."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-encoded-input-guardrail-evasion",
+      "change": "related now lists atk-multi-agent-covert-channel. No ref changed."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-model-extraction-via-api",
+      "change": "related now lists atk-reasoning-block-replay. No ref changed."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-cross-tenant-leakage",
+      "change": "related now lists atk-reasoning-block-replay. No ref changed."
     }
   ],
   "entries": [
@@ -835,7 +877,8 @@
         "directpromptinjection"
       ],
       "related": [
-        "atk-multimodal-instruction-injection"
+        "atk-multimodal-instruction-injection",
+        "atk-multi-agent-covert-channel"
       ],
       "origin": "seed",
       "status": "active",
@@ -853,7 +896,7 @@
         "notes": "The seed row cited AML.T0015 only. AML.T0068 LLM Prompt Obfuscation names base64 and rot13 encoding that bypasses guardrails. LLM01:2025 Scenario 9 covers encoded and multilingual input."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.4.0"
     },
     {
       "id": "atk-multimodal-instruction-injection",
@@ -2561,7 +2604,8 @@
         "modelexfiltration"
       ],
       "related": [
-        "atk-training-data-extraction"
+        "atk-training-data-extraction",
+        "atk-reasoning-block-replay"
       ],
       "origin": "seed",
       "status": "active",
@@ -2581,7 +2625,7 @@
         "notes": "LLM10:2025 lists Model Extraction via API under unbounded consumption."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.4.0"
     },
     {
       "id": "atk-embedding-inversion",
@@ -2762,7 +2806,8 @@
       ],
       "related": [
         "atk-embedding-inversion",
-        "atk-telemetry-store-disclosure"
+        "atk-telemetry-store-disclosure",
+        "atk-reasoning-block-replay"
       ],
       "origin": "seed",
       "status": "active",
@@ -2783,7 +2828,7 @@
         "notes": "LLM08:2025 covers multi-tenant leakage in a shared vector store only, so it is the closest OWASP LLM match."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.2.1"
+      "last_changed_in": "0.4.0"
     },
     {
       "id": "atk-llm-output-os-command-injection",
@@ -4473,6 +4518,282 @@
       },
       "added_in": "0.3.0",
       "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-computer-use-stale-action",
+      "name": "Computer-use action on a stale screen",
+      "aliases": [
+        "computer-use TOCTOU",
+        "visual atomicity violation"
+      ],
+      "family": "race condition",
+      "scope": "classical-reopened",
+      "topics": [
+        "tool-calling",
+        "multimodal"
+      ],
+      "failure_mode": "A computer-use agent picks a target from a screenshot, and the screen changes before the click or keystroke lands, so the action hits a control the agent never chose, under the user's session.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-367",
+          "title_in_catalog": "Time-of-check Time-of-use (TOCTOU) Race Condition",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2604.18860",
+          "title": "Temporal UI State Inconsistency in Desktop GUI Agents: Formalizing and Defending Against TOCTOU Attacks on Computer-Use Agents",
+          "first_author": "Xu",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2603.00476",
+          "title": "Atomicity for Agents: Exposing, Exploiting, and Mitigating TOCTOU Vulnerabilities in Browser-Use Agents",
+          "first_author": "Jiang",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://github.com/google/security-research/security/advisories/GHSA-mp56-7vrw-qxvf",
+          "label": "Google Security Research GHSA-mp56-7vrw-qxvf, OpenAI Operator click on arbitrary origin, disclosed 2025-08-18",
+          "url": "https://github.com/google/security-research/security/advisories/GHSA-mp56-7vrw-qxvf",
+          "accessed": "2026-10-01",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/",
+          "label": "Embrace The Red, computer-use and TOCTOU, 2026",
+          "url": "https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-excessive-agency",
+        "atk-multimodal-instruction-injection"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "arxiv-abs-page",
+          "url-fetch"
+        ],
+        "notes": "Indirect prompt injection steers what the agent decides; here the agent decides correctly and the screen moves before the action. ATLAS v2026.08 has no technique for this race, and no threats.json row covers it. The Operator advisory records no CVE; OpenAI fixed it on 2025-07-17. Embrace The Red reports that Anthropic now checks that pixels have not changed before an action. Paper 2604.18860 finds that a pre-action check misses page changes that leave no visible trace."
+      },
+      "added_in": "0.4.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-reasoning-block-replay",
+      "name": "Replay of encrypted reasoning blocks",
+      "aliases": [
+        "reasoning trace extraction",
+        "stolen thoughts"
+      ],
+      "family": "disclosure",
+      "scope": "ai",
+      "topics": [
+        "shared-responsibility"
+      ],
+      "failure_mode": "A provider returns encrypted reasoning blocks that are not bound to the user, session, or model that produced them, so anyone who obtains a block, for example from a published agent log, can replay it into another model and recover the hidden reasoning and any secrets in it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-294",
+          "title_in_catalog": "Authentication Bypass by Capture-replay",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0057",
+          "title_in_catalog": "LLM Data Leakage",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0024.002",
+          "title_in_catalog": "Exfiltration via AI Inference API: Extract AI Model",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI11",
+          "title_in_catalog": "Cross-Context & Multi-User Conversation Bleed",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM02:2025",
+          "title_in_catalog": "Sensitive Information Disclosure",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2608.09867",
+          "title": "Stealing Reasoning Traces from Proprietary LLM APIs",
+          "first_author": "Panfilov",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai11"
+      ],
+      "related": [
+        "atk-model-extraction-via-api",
+        "atk-cross-tenant-leakage",
+        "atk-system-prompt-extraction"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "dsgai-taxonomy-json",
+          "owasp-llm-pages",
+          "arxiv-abs-page",
+          "crosswalk-lookup"
+        ],
+        "notes": "No catalog entry is exact. CWE-294 assumes captured network traffic; here the blocks came from agent logs that developers published. The paper decoded 315,320 blocks from public logs and recovered 367 personal data items and 182 credentials. It states that its main results were no longer reproducible as of August 2026 because providers deployed fixes. The provider must bind each block to its context; the customer decides whether logs that hold blocks are published."
+      },
+      "added_in": "0.4.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-multi-agent-covert-channel",
+      "name": "Multi-agent covert channel past a monitor model",
+      "aliases": [
+        "tokenizer blind spot",
+        "cross-model covert channel"
+      ],
+      "family": "oversight",
+      "scope": "agentic",
+      "topics": [
+        "oversight-tiers"
+      ],
+      "failure_mode": "A monitor model checks messages between agents, or input bound for another model, but its tokenizer deletes invisible characters that the other model keeps, so content reaches the receiver that the monitor never saw.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-514",
+          "title_in_catalog": "Covert Channel",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-176",
+          "title_in_catalog": "Improper Handling of Unicode Encoding",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0068",
+          "title_in_catalog": "LLM Prompt Obfuscation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T13",
+          "title_in_catalog": "Rogue Agents in Multi-Agent Systems",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI06",
+          "title_in_catalog": "Tool, Plugin & Agent Data Exchange Risks",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://github.com/elder-plinius/GLOSSOPETRAE/blob/acb93a95aaff264fe5facea35394ee8f48fa4cf8/PAPER.md",
+          "label": "Lingua Ex Machina, self-published technical report, GLOSSOPETRAE repository, June 2026",
+          "url": "https://github.com/elder-plinius/GLOSSOPETRAE/blob/acb93a95aaff264fe5facea35394ee8f48fa4cf8/PAPER.md",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "related": [
+        "atk-encoded-input-guardrail-evasion",
+        "atk-observability-plane-evasion",
+        "atk-agent-session-smuggling"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "dsgai-taxonomy-json",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "In atk-encoded-input-guardrail-evasion the classifier sees an encoded form and misjudges it. Here the monitor never receives the hidden characters, so a better prompt does not help: the report measured 0% monitor recovery even when the monitor held the decoding key. The ref is pinned to commit acb93a9. The author states it is self-published and that vendors were not notified first; no use in the wild is reported. Stripping tag, private-use, and format characters before the monitor reads the text closes the tokenizer channel; the same report finds that monitors also miss payloads hidden in word choice, which this entry does not cover."
+      },
+      "added_in": "0.4.0",
+      "last_changed_in": "0.4.0"
     }
   ]
 }
