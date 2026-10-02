@@ -1,6 +1,6 @@
 {
   "$schema": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
-  "inventory_version": "0.5.0",
+  "inventory_version": "0.6.0",
   "updated": "2026-10-02",
   "description": "Inventory of published attack classes against AI and agentic systems, including business processes that agents now run. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk, and to vertical profile controls through vertical_controls.",
   "scope": "Attack classes against AI models, LLM applications, and agentic systems; classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch; and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. The scope field on each entry is ai, agentic, classical-reopened, or business-process.",
@@ -108,7 +108,8 @@
     "attack-stix-bundle": "Downloaded enterprise-attack-19.2.json from github.com/mitre-attack/attack-stix-data at the pinned commit, recorded its SHA-256, and matched each technique id and name. Each cited technique was confirmed neither revoked nor deprecated.",
     "finos-aigf-repo": "Fetched each cited docs/_risks/ri-N file at tag v2 of github.com/finos/ai-governance-framework, built the id from its type and sequence fields, matched the title, and read the summary. The same files on main at aabbffbe keep the ids and titles.",
     "arxiv-abs-page": "Fetched arxiv.org/abs/<id> and matched the citation_title, citation_author, and citation_date meta tags. Used when the arXiv API was rate limited.",
-    "ids-lookup": "Confirmed each vertical_controls id exists in /ids.json and read the control description in the vertical controls file. build/verify_attack_inventory.py repeats the existence check."
+    "ids-lookup": "Confirmed each vertical_controls id exists in /ids.json and read the control description in the vertical controls file. build/verify_attack_inventory.py repeats the existence check.",
+    "osv-api": "Queried api.osv.dev/v1/query for the package and read the GitHub advisory summary and details. Used for advisory text that the CVE record shortens."
   },
   "export_contract": {
     "target": "claims-test C-attacks rows",
@@ -548,6 +549,42 @@
       "date": "2026-10-02",
       "id": "atk-llm-output-cross-site-scripting",
       "change": "related now lists atk-llm-output-control-sequence-injection. No ref changed."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "*",
+      "change": "Added 3 multimodal entries after reviewing a streaming-media attack inventory shared for review on 2026-10-02. Its other rows cover DRM, watermarking, HDMI output, and media parsers in players with no model or agent in the path, so they are out of scope. Added verification method osv-api."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-media-preprocessing-blind-spot",
+      "change": "Added. Merges rows A3 and A16 and widens them to preprocessing differentials."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-adversarial-perturbation-of-media-input",
+      "change": "Added. Widens row A17 to any perception model."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-untrusted-media-decode-in-model-server",
+      "change": "Added as classical-reopened."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-multimodal-instruction-injection",
+      "change": "Added alias typographic prompt injection and papers 2503.11519 and 2603.29418 from row A4."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-unbounded-consumption",
+      "change": "related now lists atk-untrusted-media-decode-in-model-server. No ref changed."
     }
   ],
   "entries": [
@@ -943,7 +980,9 @@
     {
       "id": "atk-multimodal-instruction-injection",
       "name": "Multimodal instruction injection",
-      "aliases": [],
+      "aliases": [
+        "typographic prompt injection"
+      ],
       "family": "multimodal",
       "scope": "ai",
       "topics": [
@@ -985,6 +1024,24 @@
           "year": 2023,
           "venue": null,
           "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2503.11519",
+          "title": "Exploring Typographic Visual Prompts Injection Threats in Cross-Modality Generation Models",
+          "first_author": "Cheng",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2603.29418",
+          "title": "Covert Visual Prompt Injection against Commercial Multimodal Large Language Models",
+          "first_author": "Ding",
+          "year": 2026,
+          "venue": null,
+          "verified": true
         }
       ],
       "incident_refs": [],
@@ -993,14 +1050,15 @@
       ],
       "related": [
         "atk-indirect-prompt-injection",
-        "atk-encoded-input-guardrail-evasion"
+        "atk-encoded-input-guardrail-evasion",
+        "atk-media-preprocessing-blind-spot"
       ],
       "origin": "seed",
       "status": "active",
       "merged_into": null,
       "verification": {
-        "checked_on": "2026-10-01",
-        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
         "reviewed_by": null,
         "methods": [
           "atlas-release-yaml",
@@ -1009,10 +1067,10 @@
           "arxiv-api",
           "crosswalk-lookup"
         ],
-        "notes": "ATLAS v2026.09 adds AML.T0129 Triggers in Multimodal Inputs. Review it as a narrower ref when the ATLAS pin moves past v2026.08."
+        "notes": "ATLAS v2026.09 adds AML.T0129 Triggers in Multimodal Inputs. Review it as a narrower ref when the ATLAS pin moves past v2026.08. Row A4 of a streaming-media attack inventory shared for review on 2026-10-02 describes text burned into video frames; that is the same class, so it adds the alias and papers 2503.11519 and 2603.29418."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.6.0"
     },
     {
       "id": "atk-system-prompt-extraction",
@@ -2280,7 +2338,9 @@
       "srf_crosswalk": [
         "airesourceexhaustion"
       ],
-      "related": [],
+      "related": [
+        "atk-untrusted-media-decode-in-model-server"
+      ],
       "origin": "seed",
       "status": "active",
       "merged_into": null,
@@ -2298,7 +2358,7 @@
         "notes": "The seed row cited the parent AML.T0034. Sub-technique .002 Agentic Resource Consumption is the narrower fit."
       },
       "added_in": "0.1.0",
-      "last_changed_in": "0.1.0"
+      "last_changed_in": "0.6.0"
     },
     {
       "id": "atk-deceptive-agent-self-report",
@@ -5045,6 +5105,319 @@
       },
       "added_in": "0.5.0",
       "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-media-preprocessing-blind-spot",
+      "name": "Media preprocessing hides content from a model reviewer",
+      "aliases": [
+        "frame sampling evasion",
+        "observation-level attack",
+        "processing differential"
+      ],
+      "family": "evasion",
+      "scope": "ai",
+      "topics": [
+        "multimodal"
+      ],
+      "failure_mode": "A model that reviews or moderates video, images, or audio receives a reduced or differently decoded copy, such as a sample of frames, the first frame of an animation, or a mix of audio channels that playback ignores, so the model reviews something other than what people will see or hear and reports the media as clean.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0015",
+          "title_in_catalog": "Evade AI Model",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-436",
+          "title_in_catalog": "Interpretation Conflict",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2508.10974",
+          "title": "Failures to Surface Harmful Contents in Video Large Language Models",
+          "first_author": "Cao",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2509.20851",
+          "title": "Poisoning Prompt-Guided Sampling in Video Large Language Models",
+          "first_author": "Cao",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2609.08331",
+          "title": "Do Input-Level Defenses Transfer to Observation-Level Attacks on VideoLLMs?",
+          "first_author": "Zhu",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-12491",
+          "label": "vLLM, image orientation and transparency not normalized before the model reads the image",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-34760",
+          "label": "vLLM, audio downmix differs from consumer playback, moderation bypass for audio models",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "evasion"
+      ],
+      "related": [
+        "atk-adversarial-perturbation-of-media-input",
+        "atk-multimodal-instruction-injection",
+        "atk-observability-plane-evasion"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "cwe-api",
+          "arxiv-api",
+          "cve-services-api",
+          "osv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "From rows A3 and A16 of a streaming-media attack inventory shared for review on 2026-10-02, widened from frame sampling to any preprocessing step that changes what the model receives. The attacker needs no adversarial perturbation, which separates this class from atk-adversarial-perturbation-of-media-input. AML.T0015 covers evading a model's reading of content but describes crafted adversarial data or deepfakes. CWE-436 covers two components that read the same input differently. The GitHub advisory for CVE-2026-12491 (GHSA-8jr5-v98p-w75m) also reports that only the first frame of an APNG or GIF reaches the model. The advisory for CVE-2026-34760 (GHSA-6c4r-fmh3-7rh8) reports that consumer playback drops the LFE channel while the model's mono downmix includes it. The srf_crosswalk row is evasion, whose layer rationale names model robustness; here the gap sits in input handling before the model."
+      },
+      "added_in": "0.6.0",
+      "last_changed_in": "0.6.0"
+    },
+    {
+      "id": "atk-adversarial-perturbation-of-media-input",
+      "name": "Adversarial perturbation of audio, image, or video input",
+      "aliases": [
+        "adversarial examples",
+        "audio adversarial examples",
+        "perception evasion"
+      ],
+      "family": "evasion",
+      "scope": "ai",
+      "topics": [
+        "multimodal"
+      ],
+      "failure_mode": "Small changes to audio, images, or video that a person does not notice make a perception model transcribe, classify, or detect something else, so a speech-to-text, moderation, or recognition step acts on the wrong reading.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0015",
+          "title_in_catalog": "Evade AI Model",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0043",
+          "title_in_catalog": "Craft Adversarial Data",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-1039",
+          "title_in_catalog": "Inadequate Detection or Handling of Adversarial Input Perturbations in Automated Recognition Mechanism",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "1801.01944",
+          "title": "Audio Adversarial Examples: Targeted Attacks on Speech-to-Text",
+          "first_author": "Carlini",
+          "year": 2018,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2502.11858",
+          "title": "Rethinking Audio-Visual Adversarial Vulnerability from Temporal and Modality Perspectives",
+          "first_author": "Zhang",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0012",
+          "label": "Face Identification System Evasion via Physical Countermeasures",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "evasion"
+      ],
+      "related": [
+        "atk-media-preprocessing-blind-spot",
+        "atk-encoded-input-guardrail-evasion",
+        "atk-adversarial-suffix-jailbreak"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "cwe-api",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "From row A17 of a streaming-media attack inventory shared for review on 2026-10-02, widened from audio against caption checks to any perception model. atk-adversarial-suffix-jailbreak covers optimized text against an LLM's safety training, and atk-encoded-input-guardrail-evasion covers text a classifier cannot read. This class covers models that read media. AML.CS0012 employs AML.T0015 and AML.T0043.000, a sub-technique of AML.T0043. Paper 1801.01944 reports targeted perturbations that make a speech-to-text model output a phrase the attacker chose."
+      },
+      "added_in": "0.6.0",
+      "last_changed_in": "0.6.0"
+    },
+    {
+      "id": "atk-untrusted-media-decode-in-model-server",
+      "name": "Untrusted media decoded inside a model server",
+      "aliases": [
+        "multimodal decoder exploit",
+        "media decompression bomb"
+      ],
+      "family": "media parsing",
+      "scope": "classical-reopened",
+      "topics": [
+        "multimodal"
+      ],
+      "failure_mode": "A multimodal model server decodes images, audio, or video that a caller sends or links to inside the serving process, so a decoder bug or a decode with no output limit lets an unauthenticated caller run code on the server or exhaust its memory.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-122",
+          "title_in_catalog": "Heap-based Buffer Overflow",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-409",
+          "title_in_catalog": "Improper Handling of Highly Compressed Data (Data Amplification)",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-770",
+          "title_in_catalog": "Allocation of Resources Without Limits or Throttling",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM10:2025",
+          "title_in_catalog": "Unbounded Consumption",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0029",
+          "title_in_catalog": "Denial of AI Service",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0049",
+          "title_in_catalog": "Exploit Public-Facing Application",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-22778",
+          "label": "vLLM, heap address leak from the multimodal endpoint; the record says it chains with a JPEG2000 heap overflow in OpenCV/FFmpeg to reach code execution",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-54233",
+          "label": "vLLM, audio decompression bomb on the transcription endpoint",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-34755",
+          "label": "vLLM, unbounded frame count in video/jpeg data URLs",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "airesourceexhaustion"
+      ],
+      "related": [
+        "atk-unbounded-consumption",
+        "atk-agent-tool-ssrf",
+        "atk-media-preprocessing-blind-spot"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "cwe-api",
+          "owasp-llm-pages",
+          "cve-services-api",
+          "osv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "Prompted by the media-parser rows of a streaming-media attack inventory shared for review on 2026-10-02 (A6, A10 to A15, A18, A24 to A26), which describe transcode farms and set-top players. The AI path is a model server that fetches and decodes caller media before any model runs, often with no authentication on the route. Each catalog ref covers one half: CWE-122 and AML.T0049 the code execution, CWE-409, CWE-770, LLM10:2025, and AML.T0029 the memory exhaustion. The GitHub advisory for CVE-2026-22778 (GHSA-4r2x-xpjr-7cvv) reports the chain reaches code execution through a video URL sent to a server running a video model. CVE-2026-5497 describes the same bug as CVE-2026-34755. The srf_crosswalk row covers the memory exhaustion only; code execution in the serving process has no row."
+      },
+      "added_in": "0.6.0",
+      "last_changed_in": "0.6.0"
     }
   ]
 }
