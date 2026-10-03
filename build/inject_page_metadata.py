@@ -50,6 +50,11 @@ ACCT     = ["srf.concept.accountability", "srf.concept.responsibility-cascade"]
 VENDOR_RISK_ROLES = ["srf.role.model-provider", "srf.role.ai-platform-provider",
                      "srf.role.agentic-platform-provider", "srf.role.application-developer",
                      "srf.role.data-provider", "srf.role.ai-system-governance"]
+# Roles the streaming BSP workbench assigns across content custody, GenAI,
+# consumer AI, and platform families (no agentic-platform-provider on that page).
+STREAMING_BSP_ROLES = ["srf.role.data-provider", "srf.role.application-developer",
+                       "srf.role.ai-platform-provider", "srf.role.model-provider",
+                       "srf.role.ai-system-governance"]
 
 VERTICALS = ["finance", "healthcare", "insurance",
              "public-sector", "defense", "manufacturing"]
@@ -80,6 +85,8 @@ def classify(rel):
         return "framework", LAYERS + ACCT + ["srf.concept.operating-model", "srf.concept.persona"]
     if rel == "framework/security-lifecycle":
         return "reference", ["srf.framework.cosai-srf"] + LAYERS + ["srf.data.threats"]
+    if rel == "framework/attack-inventory":
+        return "reference", ["srf.framework.cosai-srf", "srf.data.attack-inventory", "srf.data.threats"]
     if rel == "framework/nice-mapping":
         return "mapping", ROLES8 + ["srf.framework.cosai-srf"]
     if top == "operating-models":
@@ -161,6 +168,9 @@ def classify(rel):
                      "srf.concept.persistence-scope",
                      "srf.concept.enforcement-plane"])
             return ("how-to" if leaf == "how-to" else "tool"), vr
+        if "streaming-bsp" in rel:
+            return "tool", (LAYERS + STREAMING_BSP_ROLES
+                            + ["srf.concept.evidence-threshold"])
         if "layer-matrix" in rel:        return "tool", LAYERS + OPMODELS
         if "policy-pyramid" in rel:      return "tool", LAYERS + ["srf.concept.responsibility-cascade"]
         if "srf-stress" in rel:          return "tool", ACCT + LAYERS
@@ -174,6 +184,8 @@ def classify(rel):
             if rel.rstrip("/").endswith("changes"):
                 return "reference", concepts
             return "tool", concepts
+        if "claims-test" in rel:
+            return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS
         if rel.startswith("tools/prompts/threat-model"):
             return "tool", ["srf.framework.cosai-srf"] + ACCT + LAYERS + [
                 "srf.data.threats",

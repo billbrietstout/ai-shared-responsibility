@@ -96,6 +96,134 @@
         </p>
       </div>
 
+      <!-- October 2026 -->
+      <div class="rel">
+        <div class="rel__meta">
+          <div class="rel__date">October 2026</div>
+          <span class="rel__tag rel__tag--update">Update</span>
+        </div>
+        <div class="rel__body">
+          <div class="rel__entry">
+            <h2 class="rel__title">Source links repaired</h2>
+            <p class="rel__desc">
+              CoSAI moved four papers into new folders in its GitHub
+              repositories, and the old links returned 404. The agentic
+              security source table, its llms-full.txt copy, and
+              ai-agentic-principles.json now point to the new paths for the AI
+              supply chain risks paper, Signing ML Artifacts, the AI Incident
+              Response Framework, and MCP Security. The OWASP AISVS entry in
+              principle-candidates.json now links to the AISVS 1.0 PDF; the
+              v1.0 release tag it cited does not exist. No principle text
+              changed.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Multimodal classes in the attack inventory</h2>
+            <p class="rel__desc">
+              Attack inventory 0.6.0 adds three classes after a review of a
+              streaming-media attack inventory: adversarial perturbation of
+              audio, image, or video input; media preprocessing that hides
+              content from a model reviewer; and untrusted media decoded inside
+              a model server, which cites vLLM CVE-2026-22778. Multimodal
+              instruction injection gains the alias typographic prompt
+              injection and two papers. The streaming rows on DRM, watermarks,
+              HDMI output, and player parsers have no model or agent in the
+              path and were not added.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Telemetry classes in the attack inventory</h2>
+            <p class="rel__desc">
+              Attack inventory 0.5.0 adds feedback-loop poisoning, where
+              ordinary users steer the next model version through prompts and
+              ratings, and control sequences in model output that a terminal or
+              log viewer acts on. Observability-plane evasion and log tampering
+              now cite ATT&amp;CK 19.2 <code>T1685</code>,
+              <code>T1685.002</code>, and <code>T1070</code>; 19.x revoked the
+              older <code>T1562</code> Impair Defenses. The OWASP LLM Top 10
+              2026 is still a release candidate, so the inventory keeps the
+              2025 pin.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Three more attack inventory classes</h2>
+            <p class="rel__desc">
+              Attack inventory 0.4.0 adds computer-use action on a stale
+              screen, replay of encrypted reasoning blocks, and a multi-agent
+              covert channel past a monitor model. They cover the three AITBM
+              failure modes that 0.3.0 listed as uncovered. The covert channel
+              stays separate from encoded input guardrail evasion because the
+              monitor's tokenizer deletes the hidden text before the monitor
+              reads it. Its only source is a self-published report, and the
+              reasoning-block paper reports that providers fixed the tested
+              APIs by August 2026; the
+              <a href="/framework/attack-inventory/#limits">known limits</a>
+              say both.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Five new attack inventory classes</h2>
+            <p class="rel__desc">
+              Attack inventory 0.3.0 adds agent skill poisoning, coding agent
+              rules file poisoning, exposed agent control interfaces, agent
+              session smuggling, and malicious LLM API routers. The first three
+              split from MCP tool poisoning, indirect prompt injection, and
+              agent config credential exposure, and the
+              <a href="/framework/attack-inventory/#splits">attack inventory</a>
+              page states the check that separates each pair.
+              <code>AML.CS0049</code> moves to skill poisoning. The router class
+              has no threat crosswalk row, so 12 of 50 classes now lack one.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Incident refs in the attack inventory</h2>
+            <p class="rel__desc">
+              Attack inventory 0.2.2 adds 18 incident refs to 13 classes:
+              8 ATLAS case studies, 5 CVE records, and 5 vendor or researcher
+              reports. Seven classes that had no incident now have one, among
+              them RAG poisoning, excessive agency, agent tool SSRF, and
+              malicious model artifacts. The leads came from the AITBM
+              use-case pages; each ref cites the case study, CVE record, or
+              original report instead.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Business-process classes in the attack inventory</h2>
+            <p class="rel__desc">
+              Attack inventory 0.2.0 adds eight classes in which an AI system
+              or agent moves money, changes a vendor or beneficiary record, or
+              passes an approval step, from agent payment diversion to deepfake
+              impersonation of a payment approver. Their refs cite two newly
+              pinned catalogs, FINOS AI Governance Framework v2 and ATT&amp;CK
+              Enterprise 19.2, because ATLAS has no technique for changing a
+              business process. Seven of the eight link to finance, insurance,
+              or manufacturing controls through a new
+              <code>vertical_controls</code> field. Three have no threat
+              crosswalk row, since that file has no L1 row for approvals.
+              <a href="/assess/claims-test/">Claims-test</a> pack 1.0.9 adds
+              the <code>business-process</code> topic and selects inventory
+              classes by industry pilot.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Attack inventory with checked ids</h2>
+            <p class="rel__desc">
+              The <a href="/framework/attack-inventory/">attack inventory</a>
+              lists 37 published attack classes against AI models, LLM
+              applications, and agents. Its 142 ATLAS, OWASP, CWE, arXiv, and
+              CVE refs were checked against pinned catalog versions on
+              1 October 2026. <a href="/assess/claims-test/">Claims-test</a>
+              pack 1.0.8 reads <a href="/data/attack-inventory.json">the file</a>
+              by default and builds its attack table from it first, so those
+              rows cite checked ids; classes the inventory lacks still get ids
+              from model memory, marked unresolved. Checking the 31 seed
+              rows changed refs on 11 of them, including EchoLeak, which ATLAS
+              tags as triggered injection.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <!-- September 2026 -->
       <div class="rel">
         <div class="rel__meta">
@@ -103,6 +231,22 @@
           <span class="rel__tag rel__tag--update">Update</span>
         </div>
         <div class="rel__body">
+          <div class="rel__entry">
+            <h2 class="rel__title">Deck says step, not hop</h2>
+            <p class="rel__desc">
+              The
+              <a href="/presentation/unprompted-oct2026/">OpenAI / Hugging Face deck</a>
+              opens on the path out of the sandbox. A step is one point where the agents acted, and the next point they reached from there. The word hop is gone from the spoken slides.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">OpenAI / Hugging Face deck retimed around the path</h2>
+            <p class="rel__desc">
+              The
+              <a href="/presentation/unprompted-oct2026/">practitioner deck</a>
+              now opens on the claim, puts the path on its own slide, and speaks three rows. The other five rows, the record hedges, and the OASIS map sit after the close for questions. Artifactory is described as a permitted path. The declaration row uses the 27 June port-sweep and the 20 July notification.
+            </p>
+          </div>
           <div class="rel__entry">
             <h2 class="rel__title">Companion agentic extensions (not a CoSAI v1.0 revision)</h2>
             <p class="rel__desc">
@@ -115,6 +259,27 @@
               are independently proposed companion material. Register:
               <a href="/papers/srf-vnext-agentic-extensions/">proposed next-version asks</a>.
               Not part of CoSAI SRF v1.0.
+            </p>
+          </div>
+          <div class="rel__entry">
+            <h2 class="rel__title">Draft claims-test prompt pack v1.0.5</h2>
+            <p class="rel__desc">
+              Non-interactive chain at
+              <a href="/assess/claims-test/">/assess/claims-test/</a>
+              scores draft AI security claims on risk, obligation, control,
+              and one accountable party, then replies with a markdown report
+              that includes Google Docs or GitHub suggestion packets.
+              Independently proposed; not part of CoSAI SRF v1.0. Cousin of
+              the whitepaper assessment catalog grader, not a merge. v1.0.1:
+              chain run may fetch or attach <code>prompts.json</code>. v1.0.2:
+              chain run prints the markdown report, not intermediate JSON.
+              v1.0.3: C-attacks collects published topic attacks from ATLAS,
+              OWASP, BIML, and related papers before draft-treated inventory.
+              v1.0.4: Track A shortcut names C-attacks and requires a Published
+              attack classes table of ATT-xx rows even when a fetched pack is
+              older or topics is empty. v1.0.5: intake packet uses bracketed
+              examples, lists <code>github-md</code>, and drops
+              <code>cosai_workstreams</code>.
             </p>
           </div>
           <div class="rel__entry">

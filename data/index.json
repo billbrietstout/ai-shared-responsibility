@@ -1,7 +1,7 @@
 {
  "description": "Machine-readable data index for aisharedresponsibility.com. All files are static JSON served from /data/. Framework concepts (layers, personas, operating models) are defined in the CoSAI AI Shared Responsibility Framework v1.0.",
  "framework_reference": "https://aisharedresponsibility.com/framework/",
- "updated": "2026-09-09",
+ "updated": "2026-10-03",
  "files": [
   {
    "file": "layers.json",
@@ -284,6 +284,36 @@
    "record_count": 31,
    "srf_version": "1.0",
    "related_page": "https://aisharedresponsibility.com/framework/security-lifecycle/"
+  },
+  {
+   "file": "attack-inventory.json",
+   "url": "https://aisharedresponsibility.com/data/attack-inventory.json",
+   "schema_url": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
+   "description": "Published attack classes against AI models, LLM applications, and agents, plus classical weaknesses (CWE) that return when model output or agent tool calls reach a shell, browser, database, file system, or network fetch, and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. Each entry states a failure mode and carries MITRE ATLAS, OWASP LLM Top 10, OWASP Agentic AI Threats, OWASP DSGAI, FINOS AI Governance Framework, MITRE ATT&CK Enterprise, and CWE ids with an exact, closest, or analogy grade, plus arXiv, CVE, and ATLAS case-study ids. Every ref records its pinned catalog version and a verified flag; each entry records the check date and method. srf_crosswalk joins a class to threats.json for layer and accountable persona; optional vertical_controls lists canonical srf.control ids from vertical profiles. Holds no ATT-nn ids or draft overlap: build/export_attack_inventory.py converts entries into claims-test C-attacks rows for one run.",
+   "schema_keys": [
+    "inventory_version",
+    "catalogs",
+    "verification_methods",
+    "export_contract",
+    "changelog",
+    "entries",
+    "id",
+    "name",
+    "family",
+    "scope",
+    "topics",
+    "failure_mode",
+    "taxonomy_refs",
+    "paper_refs",
+    "incident_refs",
+    "srf_crosswalk",
+    "vertical_controls",
+    "related",
+    "status",
+    "verification"
+   ],
+   "record_count": 58,
+   "related_page": "https://aisharedresponsibility.com/framework/attack-inventory/"
   },
   {
    "file": "threat-sources.json",

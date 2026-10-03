@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Attack inventory · AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="37 published attack classes against AI models, LLM applications, and agents. Each class states a failure mode and carries MITRE ATLAS, OWASP, CWE, arXiv, and CVE ids checked against pinned catalog versions, with a join to the SRF threat-to-accountability crosswalk."
+    />
+    <meta name="color-scheme" content="light" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <style>
+      .section__body + .section__body { margin-top: var(--space-4, 1rem); }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--sp-4);
+        margin-top: var(--sp-5);
+      }
+      .stat {
+        border: 1px solid var(--slate-200);
+        border-radius: var(--radius-lg);
+        background: #fff;
+        padding: var(--sp-4) var(--sp-5);
+      }
+      .stat__num {
+        font-size: var(--text-2xl);
+        font-weight: 700;
+        color: var(--cosai-navy);
+        letter-spacing: -0.02em;
+      }
+      .stat__label {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+      }
+
+      .findings { margin: var(--sp-4) 0 0; padding-left: var(--sp-5); }
+      .findings li {
+        font-size: var(--text-sm);
+        color: var(--slate-700);
+        line-height: var(--leading-normal);
+        margin-bottom: var(--sp-3);
+      }
+      .findings code, .inv code, .cmd code { font-family: var(--font-mono); font-size: 0.92em; }
+
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--sp-3);
+        align-items: end;
+        margin: var(--sp-5) 0 var(--sp-3);
+      }
+      .filters label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+      }
+      .filters select, .filters input {
+        font: inherit;
+        font-size: var(--text-sm);
+        text-transform: none;
+        letter-spacing: normal;
+        font-weight: 400;
+        color: var(--slate-800);
+        padding: 6px 10px;
+        border: 1px solid var(--slate-300);
+        border-radius: var(--radius);
+        background: #fff;
+        min-width: 180px;
+      }
+      .filters__count { font-size: var(--text-sm); color: var(--slate-500); margin-left: auto; }
+
+      .inv {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+      }
+      .inv th, .inv td {
+        text-align: left;
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: top;
+      }
+      .inv th {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .inv__name { font-weight: 700; color: var(--slate-900); }
+      .inv__id { display: block; font-family: var(--font-mono); font-size: var(--text-xs); color: var(--slate-500); margin-top: 2px; }
+      .inv__scope { display: block; font-size: var(--text-xs); color: var(--slate-500); margin-top: 4px; }
+      .inv__note { display: block; font-size: var(--text-xs); color: var(--slate-500); margin-top: var(--sp-2); line-height: var(--leading-normal); }
+      .inv__refs { list-style: none; margin: 0; padding: 0; }
+      .inv__refs li { margin-bottom: 6px; line-height: 1.35; }
+      .inv__refs a { font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600; }
+      .inv__title { display: block; font-size: var(--text-xs); color: var(--slate-600); }
+      .q {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0 6px;
+        border-radius: 999px;
+        margin-left: 4px;
+        vertical-align: 1px;
+      }
+      .q--exact   { background: var(--status-good-bg); color: var(--status-good); }
+      .q--closest { background: var(--status-warn-bg); color: var(--status-warn); }
+      .q--analogy { background: var(--status-bad-bg);  color: var(--status-bad); }
+      .inv__xw { display: block; margin-bottom: 6px; font-size: var(--text-xs); color: var(--slate-700); }
+      .inv__none { color: var(--slate-400); font-size: var(--text-xs); }
+
+      .cat-table { width: 100%; border-collapse: collapse; font-size: var(--text-sm); }
+      .cat-table th, .cat-table td {
+        text-align: left;
+        padding: var(--sp-3);
+        border-bottom: 1px solid var(--slate-100);
+        vertical-align: top;
+      }
+      .cat-table th {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .cat-table td:first-child { font-weight: 600; color: var(--slate-900); }
+      .cat-table .mono { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--slate-600); word-break: break-all; }
+
+      .cmd {
+        background: var(--slate-900);
+        color: var(--slate-100);
+        border-radius: var(--radius);
+        padding: var(--sp-4);
+        font-size: var(--text-sm);
+        overflow-x: auto;
+        margin: var(--sp-3) 0 var(--sp-5);
+      }
+      .cmd code { white-space: pre; color: inherit; }
+
+      .table-scroll { overflow-x: auto; }
+
+      @media (max-width: 760px) {
+        .stats { grid-template-columns: repeat(2, 1fr); }
+      }
+    </style>
+
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Published AI attack class inventory",
+  "url": "https://aisharedresponsibility.com/framework/attack-inventory/",
+  "description": "Published attack classes against AI models, LLM applications, agentic systems, and the business processes agents run, with MITRE ATLAS, MITRE ATT&CK, OWASP, FINOS, CWE, arXiv, and CVE identifiers checked against pinned catalog versions.",
+  "distribution": [
+    {
+      "@type": "DataDownload",
+      "encodingFormat": "application/json",
+      "contentUrl": "https://aisharedresponsibility.com/data/attack-inventory.json"
+    }
+  ],
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "isPartOf": {
+    "@type": "WebSite",
+    "url": "https://aisharedresponsibility.com/",
+    "name": "AI Shared Responsibility"
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="reference" />
+    <meta name="llm:canonical-id" content="srf.page.framework-attack-inventory" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.data.attack-inventory, srf.data.threats" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="framework"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Framework in practice</span>
+        <h1 class="page-hero__title">Attack inventory</h1>
+        <p class="page-hero__lede">
+          58 published attack classes against AI models, LLM applications,
+          agents, and the business processes agents run. Each class states a
+          failure mode and lists MITRE ATLAS, MITRE ATT&amp;CK, OWASP, FINOS, CWE,
+          arXiv, and CVE ids. Every id was checked against a pinned catalog
+          version or its source record on 1 or 2 October 2026. The file assigns no
+          owners: 45 classes link to the SRF threat crosswalk, which names the
+          accountable persona, and 13 have no crosswalk row yet. Seven
+          business-process classes also link to vertical profile controls.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="page-body" data-llm="attack-inventory">
+
+      <section class="section" data-llm="use">
+        <div class="section__inner">
+          <span class="section__label">Use</span>
+          <h2 class="section__title">Cite checked ids instead of recalled ones</h2>
+          <p class="section__body">
+            The <a href="/assess/claims-test/">claims test</a> builds a table of
+            published attack classes in its C-attacks step. Pack 1.0.9 reads
+            this inventory by default and builds rows from it first, so those
+            rows carry ids resolved against ATLAS v2026.08, OWASP LLM Top 10
+            2025, OWASP Agentic AI Threats and Mitigations v1.1, OWASP GenAI
+            Data Security 1.0, FINOS AI Governance Framework v2, ATT&amp;CK
+            Enterprise 19.2, or CWE 4.20. Classes the inventory lacks still
+            get ids from model memory, marked <code>unresolved_unpinned</code>.
+            When a run names an industry pilot, the pack also selects classes
+            whose <code>vertical_controls</code> cite that vertical.
+          </p>
+          <p class="section__body">
+            A threat model or red-team scope can start from the same list, then
+            follow a class's <code>srf_crosswalk</code> ids, where present, into
+            <a href="/data/threats.json">/data/threats.json</a> for the SRF layer
+            and the accountable persona per operating model. The inventory sets
+            no severity and holds no procedures: each entry says who loses what,
+            under what condition.
+          </p>
+          <div class="stats" aria-label="Inventory counts">
+            <div class="stat"><div class="stat__num">58</div><div class="stat__label">classes: 23 AI, 17 agentic, 8 business process, 10 classical weaknesses that agents reopen</div></div>
+            <div class="stat"><div class="stat__num">292</div><div class="stat__label">refs: 193 catalog, 39 paper, 60 incident, all checked</div></div>
+            <div class="stat"><div class="stat__num">81 / 106 / 6</div><div class="stat__label">catalog refs graded exact, closest, and analogy</div></div>
+            <div class="stat"><div class="stat__num">12</div><div class="stat__label">classes with no exact catalog entry, 6 of them business process</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--alt" data-llm="findings">
+        <div class="section__inner">
+          <span class="section__label">Seed check</span>
+          <h2 class="section__title">What checking the seed table changed</h2>
+          <p class="section__body">
+            31 entries came from the attack table of a claims-test run against
+            a draft paper, where every catalog and paper id
+            had been filled from memory. Checking them against their sources
+            changed refs on 11 entries.
+          </p>
+          <ul class="findings">
+            <li>All 14 arXiv ids in the seed table resolve, and each first author matches the table.</li>
+            <li>All 13 ATLAS ids in the seed table exist at v2026.08 and keep their names in v2026.09. Six seed rows cited a parent technique or a looser fit where ATLAS has a narrower one; zero-click exfiltration, for example, now maps to <code>AML.T0077</code> LLM Response Rendering. Sandbox escape had no ATLAS id and now maps to <code>AML.T0105</code> Escape to Host.</li>
+            <li>ATLAS case study <code>AML.CS0059</code> tags the EchoLeak injection step as <code>AML.T0051.002</code> Triggered. The seed table tagged it <code>.001</code> Indirect. EchoLeak now sits under zero-click exfiltration.</li>
+            <li>MCP tool poisoning had only a blog post. ATLAS case study <code>AML.CS0054</code> cites that post and gives it a stable id; <code>AML.T0109</code> and CVE-2025-54136 cover tool definitions that change after approval.</li>
+            <li>Injection carried by telemetry into LLM-assisted triage was mapped by analogy, with no paper. Three 2026 arXiv papers show log fields acting as attacker-controlled content that an LLM triage tool reads. That is the data-channel case <code>AML.T0051.001</code> Indirect covers, so the ref is now graded exact.</li>
+            <li>The OWASP Agentic AI Threats PDF now served is v1.1 (December 2025). It adds T16 and T17; the seed's T1, T3, T7, T8, T9, T10, and T11 keep their titles.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="business-process" data-llm="business-process">
+        <div class="section__inner">
+          <span class="section__label">Business process</span>
+          <h2 class="section__title">What the process classes in 0.2.0 found</h2>
+          <p class="section__body">
+            Version 0.2.0 adds eight classes in which an AI system or agent
+            moves money, changes a vendor or beneficiary record, or passes an
+            approval step: payment diversion, invoice or purchase order
+            alteration, approval gate bypass, master data change, workflow rule
+            injection, false status reporting, partner agent hijack, and
+            deepfake approver impersonation.
+          </p>
+          <ul class="findings">
+            <li>Two of the eight have an exact catalog entry. Approval gate bypass matches FINOS <code>AIR-SEC-024</code> Agent Action Authorization Bypass and <code>CWE-841</code> Improper Enforcement of Behavioral Workflow. Deepfake approver impersonation matches <code>AML.T0052.001</code> Deepfake-Assisted Phishing. For the other six, closest is the best grade available.</li>
+            <li>ATLAS v2026.08 names the harm (<code>AML.T0048.000</code> Financial Harm) and the tool step (<code>AML.T0053</code> AI Agent Tool Invocation). It has no technique for changing a business process. ATT&amp;CK <code>T1565</code> Data Manipulation and its three sub-techniques say the adversary may aim to affect a business process, so ATT&amp;CK Enterprise 19.2 is now pinned for those refs.</li>
+            <li>ATT&amp;CK 19.x revoked <code>T1656</code> Impersonation and moved it to <code>T1684.001</code>. ATLAS v2026.08 <code>AML.T0073</code> Impersonation still links to <code>T1656</code>, so a ref recalled from memory or copied from ATLAS would cite the revoked id.</li>
+            <li>Three process classes have no row in <a href="/data/threats.json">/data/threats.json</a>: approval gate bypass, false status reporting, and deepfake approver impersonation. That file keys rows by OWASP AI Exchange or DSGAI ids and has no L1 row for approvals. Approval gate bypass reaches L1 through <code>vertical_controls</code> instead: finance <code>SRF-L1-DEV-004</code> requires a named human business owner for each process an agent acts in. No vertical control checks who an approver is, so the deepfake class has none.</li>
+            <li>Vendor master data and invoices are L2 records, so those two classes cross-walk to DSGAI05 Data Integrity &amp; Validation Failures. The decision to accept a changed record still belongs to the L1 process owner.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="splits" data-llm="splits">
+        <div class="section__inner">
+          <span class="section__label">Versions 0.3.0 to 0.6.0</span>
+          <h2 class="section__title">Where the new classes split from their neighbors</h2>
+          <p class="section__body">
+            Versions 0.3.0 to 0.6.0 add thirteen classes. Eight come from
+            failure modes that the AITBM use-case pages describe, two (0.5.0)
+            fill gaps in the telemetry entries, and three (0.6.0) come from a
+            review of a streaming-media attack inventory. Where a class splits from a
+            neighboring entry, the split follows a difference in what a defender
+            has to check.
+          </p>
+          <ul class="findings">
+            <li>MCP tool poisoning covers a tool definition that a connected server serves, or changes after approval. Agent skill poisoning covers a package of instructions and code that a user installs from a registry, where install counts and look-alike names decide what gets installed. ATLAS uses <code>AML.T0110.000</code> for both, so a claims-test run may select both entries for one claim. <code>AML.CS0049</code> moved from MCP tool poisoning to skill poisoning.</li>
+            <li>Indirect prompt injection covers content an agent reads while it works on a task. A coding agent's rules or configuration file loads when the project opens and applies to every later task; CVE-2026-12957 ran commands from project configuration before the developer typed anything. Both entries cross-walk to the same <code>threats.json</code> row, because one application team decides what the agent accepts as instructions.</li>
+            <li>Agent config credential exposure is about secrets stored in readable files. An exposed control interface hands over the agent's tools even when no secret is stored in plain text. <code>AML.CS0048</code> shows both on the same hosts; it is cited under the control interface because ATLAS records the entry point as <code>AML.T0049</code> Exploit Public-Facing Application.</li>
+            <li>Agent session smuggling and the malicious LLM API router split from no entry. DSGAI06 names inter-agent context smuggling, but ATLAS v2026.08 has no technique for a victim agent that receives hidden turns. The router class rests on one measurement paper, cites no incident, and has no <code>threats.json</code> row.</li>
+            <li>Encoded input guardrail evasion covers a classifier that sees an encoded form and misjudges it. In the multi-agent covert channel (0.4.0) the monitor's tokenizer deletes the hidden characters before the monitor reads anything, so a better monitor prompt cannot help; the cited report measured 0% recovery even when the monitor held the decoding key. The fix sits before the monitor: strip tag, private-use, and format characters from the text it checks.</li>
+            <li>Computer-use action on a stale screen (0.4.0) is separate from indirect prompt injection because the agent decides correctly and the screen changes before the click. The defender's check is a fresh look at the screen just before each action, which prompt-injection filters do not perform.</li>
+            <li>Feedback-loop poisoning (0.5.0) splits from training data poisoning, which assumes access to training data. Here the attacker uses only the prompts and rating buttons any user has, and the provider's own tuning pipeline carries the result into the next model. ATLAS <code>AML.T0020</code> names manipulated feedback processes, and <code>AML.CS0009</code> (Tay, 2016) is the incident.</li>
+            <li>Control sequences in model output (0.5.0) sit next to telemetry-borne injection into LLM triage. That entry needs a model to read the logs; here a terminal or log viewer acts on escape codes with no model involved, so the fix is encoding control characters before output reaches the terminal or log file.</li>
+            <li>Adversarial perturbation of media input (0.6.0) splits from encoded input guardrail evasion and adversarial suffix jailbreaks, which both work on text. Media preprocessing that hides content from a model reviewer (0.6.0) splits from adversarial perturbation because the attacker changes nothing the model reads: the hidden content sits in frames the sampler skips, in animation frames after the first, or in an audio channel that playback drops. Robustness testing finds the first class; comparing what the model received with what a viewer gets finds the second.</li>
+            <li>Untrusted media decoded inside a model server (0.6.0) is a classical parser weakness that multimodal serving reopens: the server fetches and decodes caller media before any model runs, often on a route with no authentication. CVE-2026-22778 and its advisory show that path reaching code execution on a server running a video model.</li>
+            <li>Replay of encrypted reasoning blocks (0.4.0) sits next to model extraction and cross-tenant leakage. The provider must bind each block to the user, session, and model that produced it; the customer decides whether agent logs that hold blocks get published.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section section--alt" id="inventory" data-llm="inventory">
+        <div class="section__inner">
+          <span class="section__label">Live data</span>
+          <h2 class="section__title">Inventory</h2>
+          <p class="section__body">
+            Grades: <span class="q q--exact">exact</span> the catalog text covers
+            the class without stretching; <span class="q q--closest">closest</span>
+            it covers part of the class or a neighbor and is the best entry
+            available; <span class="q q--analogy">analogy</span> it describes a
+            different mechanism with a similar effect. The source file is
+            <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>,
+            with its schema at
+            <a href="/data/attack-inventory.schema.json">/data/attack-inventory.schema.json</a>.
+          </p>
+
+          <div class="filters" role="search">
+            <label>Scope
+              <select id="f-scope">
+                <option value="">All</option>
+                <option value="ai">AI</option>
+                <option value="agentic">Agentic</option>
+                <option value="classical-reopened">Classical, reopened</option>
+                <option value="business-process">Business process</option>
+              </select>
+            </label>
+            <label>Topic
+              <select id="f-topic"><option value="">All</option></select>
+            </label>
+            <label>Search
+              <input id="f-text" type="search" placeholder="name, id, or ref" />
+            </label>
+            <span class="filters__count" id="f-count" aria-live="polite"></span>
+          </div>
+
+          <div class="table-scroll">
+            <table class="inv">
+              <thead>
+                <tr>
+                  <th scope="col">Class</th>
+                  <th scope="col">Failure mode</th>
+                  <th scope="col">Catalog refs</th>
+                  <th scope="col">Papers and incidents</th>
+                  <th scope="col">SRF crosswalk and vertical controls</th>
+                </tr>
+              </thead>
+              <tbody id="inv-body">
+                <tr><td colspan="5" class="inv__none">
+                  The inventory loads from
+                  <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>.
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="catalogs" data-llm="catalogs">
+        <div class="section__inner">
+          <span class="section__label">Pins</span>
+          <h2 class="section__title">Catalog versions</h2>
+          <p class="section__body">
+            Each catalog ref records the version below. Where a file was
+            downloaded, the SHA-256 or commit lets a reviewer confirm the same
+            bytes were read.
+          </p>
+          <div class="table-scroll">
+            <table class="cat-table">
+              <thead>
+                <tr>
+                  <th scope="col">Catalog</th>
+                  <th scope="col">Version</th>
+                  <th scope="col">Released</th>
+                  <th scope="col">Pin</th>
+                </tr>
+              </thead>
+              <tbody id="cat-body">
+                <tr><td colspan="4" class="inv__none">Catalog pins load from the same file.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--alt" id="limits" data-llm="limits">
+        <div class="section__inner">
+          <span class="section__label">Known limits</span>
+          <h2 class="section__title">What this version cannot answer</h2>
+          <ul class="findings">
+            <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 58 entries until a person confirms them.</li>
+            <li>A verified paper ref means the arXiv id resolves and the title and first author match. Abstracts were read for the three telemetry-triage papers, AgentDojo, and Agent Security Bench. The Agents of Chaos cases cited for display-name spoofing and false self-reports were not reread.</li>
+            <li>Twelve classes have no exact catalog entry. Three predate 0.2.0: deceptive agent self-report (OWASP Agentic T7 is the closest), observability-plane evasion (<code>AML.T0081</code> covers a disabled setting, not a starved guardrail), and the token-length side channel (no ATLAS, OWASP LLM, or OWASP Agentic entry). Replay of encrypted reasoning blocks has only closest refs, because <code>CWE-294</code> assumes captured network traffic and the blocks came from published logs. Media preprocessing that hides content has only closest refs: <code>AML.T0015</code> describes crafted adversarial data, and <code>CWE-436</code> names two readers of one input without naming a model. Untrusted media decoded in a model server has six closest refs, each covering either the code execution or the memory exhaustion. The other six are business-process classes; the section above names them.</li>
+            <li>Thirteen classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them from that file: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, the token-length side channel, approval gate bypass, false process status reporting, deepfake approver impersonation, the malicious LLM API router, and computer-use action on a stale screen. Adding an L1 row for approval processes would need a source catalog id, because that file mints none of its own.</li>
+            <li><code>vertical_controls</code> is filled only on the eight business-process classes. Earlier classes such as excessive agency and approval fatigue likely match finance and insurance controls too, but no one has checked those links.</li>
+            <li>Bank payment-system intrusions with no AI step, such as the 2016 Bangladesh Bank theft, have no entry. The US Department of Justice page that would anchor that case returned a bot-check page with no text on 1 October 2026, so it could not be verified.</li>
+            <li>BIML LLM24 ids are not mapped. They name risk areas broader than these classes, and choosing between them needs a reviewer.</li>
+            <li>ATLAS v2026.09 is out and adds <code>AML.T0129</code> Triggers in Multimodal Inputs, which may fit multimodal instruction injection more narrowly. The pin stays at v2026.08; every cited id keeps its name in v2026.09.</li>
+            <li>The list started from one claims-test attack table, six classical weaknesses, and eight business-process classes. ATLAS techniques outside those topics, such as <code>AML.T0041</code> physical-environment attacks, have no entry of their own; <code>AML.T0015</code> model evasion got one in 0.6.0. KYC onboarding fraud with deepfakes (<code>AML.CS0033</code>, <code>AML.CS0034</code>) is also unlisted.</li>
+            <li>The multi-agent covert channel rests on one self-published report. Its author did not notify vendors first, and no use in the wild is reported. The ref is pinned to commit <code>acb93a9</code> so later edits to the report do not change the cited text.</li>
+            <li>The OWASP LLM Top 10 2026 is at release candidate 1 and was not released when checked on 2 October 2026, so the pin stays at 2025. The candidate renumbers Improper Output Handling from LLM05 to LLM10 and adds terminal and log sinks; every <code>LLM05:2025</code> ref needs a recheck when 2026 ships.</li>
+            <li>The reasoning-block replay paper states that its main results were no longer reproducible as of August 2026, after providers deployed fixes. The entry stays active because any provider that returns unbound blocks would repeat the failure.</li>
+            <li>The streaming-media inventory reviewed for 0.6.0 has 30 rows. The rows on DRM, forensic watermarks, HDMI output, and media parsers in players and set-top boxes have no model or agent in the path, so they have no entry. Rows on synthetic talent sold as owned assets and on lip-sync substitution cite deepfake detection papers that do not show either attack against a review pipeline, so they have no entry until a source does.</li>
+            <li>All five CVEs on the two 0.6.0 media-handling classes are in vLLM. The advisory search covered vLLM, SGLang, Transformers, llama-cpp-python, and Ollama; the others had no media-decoding advisory, so the classes do not yet show a second serving stack.</li>
+            <li>Agent session smuggling has only a proof of concept; Unit 42 reports no use in the wild.</li>
+            <li>Twenty incident refs are URLs to news, vendor, or researcher reports with no CVE or case-study id, so each needs a fresh fetch at every review. The macOS.Gaslight ref shows an implant aimed at an LLM triage tool, but its authors did not test an LLM, so it shows intent and not a working bypass.</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="section" id="maintain" data-llm="maintain">
+        <div class="section__inner">
+          <span class="section__label">Maintain</span>
+          <h2 class="section__title">Change, verify, export</h2>
+          <p class="section__body">
+            Edit the JSON, bump <code>inventory_version</code> (patch for a ref
+            fix, minor for a new entry, major for a removed field or changed id),
+            and add one changelog line naming the id and the reason. Then run the
+            verifier. It fails on a dangling id, a ref whose catalog version
+            differs from the pin, a vertical control id missing from
+            <a href="/ids.json">/ids.json</a>, a verified ref with no check date
+            or method, or an em dash in any text field. It warns when a newer catalog
+            release has been seen or a URL ref is more than 180 days old.
+          </p>
+          <pre class="cmd"><code>python3 build/verify_attack_inventory.py</code></pre>
+          <p class="section__body">
+            A claims-test run reads the whole file unless it is given an
+            export. To limit a run to the draft's topics, export them and attach
+            the result. Rows are numbered ATT-01 upward after the filter; draft
+            overlap stays null for the run to judge.
+          </p>
+          <pre class="cmd"><code>python3 build/export_attack_inventory.py --topics telemetry,MCP --format md
+python3 build/export_attack_inventory.py --scope agentic --out attacks.json
+python3 build/export_attack_inventory.py --topics payment,approval --vertical finance</code></pre>
+          <p class="section__body">
+            Recheck the inventory when ATLAS or ATT&amp;CK Enterprise publishes a
+            release, when FINOS tags a new AI Governance Framework version, when
+            OWASP revises the LLM Top 10 or the Agentic AI Threats document, when
+            a CoSAI WS2 draft cites a new incident, or when a claims-test run
+            finds a class missing here.
+          </p>
+        </div>
+      </section>
+
+    </main>
+
+    <site-footer></site-footer>
+
+    <script type="module">
+      const esc = (s) =>
+        String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+      const SCOPE_LABEL = {
+        ai: "AI",
+        agentic: "Agentic",
+        "classical-reopened": "Classical, reopened",
+        "business-process": "Business process",
+      };
+      const CATALOG_SHORT = {
+        "mitre-atlas": "ATLAS",
+        "owasp-llm-top10": "OWASP LLM",
+        "owasp-agentic-threats": "OWASP Agentic",
+        "owasp-dsgai": "OWASP DSGAI",
+        "finos-aigf": "FINOS AIGF",
+        "mitre-attack": "ATT&CK",
+        cwe: "CWE",
+      };
+      const ID_PREFIX = { "owasp-agentic-threats": "Agentic ", "mitre-attack": "ATT&CK " };
+
+      function taxLink(r, catalogs) {
+        if (r.catalog === "mitre-atlas") return "https://atlas.mitre.org/techniques/" + r.id;
+        if (r.catalog === "mitre-attack") return "https://attack.mitre.org/techniques/" + r.id.replace(".", "/") + "/";
+        if (r.catalog === "cwe") return "https://cwe.mitre.org/data/definitions/" + r.id.replace("CWE-", "") + ".html";
+        return (catalogs[r.catalog] || {}).source_url || "#";
+      }
+
+      function incidentLink(x) {
+        if (x.type === "cve") return "https://www.cve.org/CVERecord?id=" + x.id;
+        if (x.type === "atlas-case-study") return "https://atlas.mitre.org/studies/" + x.id;
+        return x.url;
+      }
+
+      function renderTax(e, catalogs) {
+        if (!e.taxonomy_refs.length) return '<span class="inv__none">No catalog entry</span>';
+        return "<ul class=\"inv__refs\">" + e.taxonomy_refs.map((r) => {
+          const label = (ID_PREFIX[r.catalog] || "") + r.id;
+          return "<li><a href=\"" + esc(taxLink(r, catalogs)) + "\">" + esc(label) + "</a>" +
+            "<span class=\"q q--" + esc(r.mapping_quality) + "\">" + esc(r.mapping_quality) + "</span>" +
+            "<span class=\"inv__title\">" + esc(CATALOG_SHORT[r.catalog] || r.catalog) + " " +
+            esc(r.catalog_version) + ": " + esc(r.title_in_catalog) + "</span></li>";
+        }).join("") + "</ul>";
+      }
+
+      function renderSources(e) {
+        const items = [];
+        for (const p of e.paper_refs) {
+          const href = p.type === "arxiv" ? "https://arxiv.org/abs/" + p.id : "https://doi.org/" + p.id;
+          items.push("<li><a href=\"" + esc(href) + "\">" + (p.type === "arxiv" ? "arXiv:" : "doi:") + esc(p.id) + "</a>" +
+            "<span class=\"inv__title\">" + esc(p.first_author) + " " + esc(p.year) +
+            (p.venue ? ", " + esc(p.venue) : "") + ": " + esc(p.title) + "</span></li>");
+        }
+        for (const x of e.incident_refs) {
+          const shown = x.type === "url" ? "Web source" : x.id;
+          items.push("<li><a href=\"" + esc(incidentLink(x)) + "\">" + esc(shown) + "</a>" +
+            "<span class=\"inv__title\">" + esc(x.label) + (x.accessed ? " (accessed " + esc(x.accessed) + ")" : "") + "</span></li>");
+        }
+        return items.length ? "<ul class=\"inv__refs\">" + items.join("") + "</ul>" : '<span class="inv__none">None pinned</span>';
+      }
+
+      function renderVertical(e) {
+        return (e.vertical_controls || []).map((id) => {
+          const [, , vertical, control] = id.split(".");
+          const name = vertical.charAt(0).toUpperCase() + vertical.slice(1).replace("-", " ");
+          return "<span class=\"inv__xw\"><a href=\"/" + esc(vertical) + "/controls/#" + esc(control) + "\">" +
+            esc(name) + " " + esc(control) + "</a></span>";
+        }).join("");
+      }
+
+      function renderCrosswalk(e, threats) {
+        const vertical = renderVertical(e);
+        if (!e.srf_crosswalk.length) return '<span class="inv__none">No crosswalk row</span>' + vertical;
+        return e.srf_crosswalk.map((id) => {
+          const t = threats[id];
+          if (!t) return "<span class=\"inv__xw\">" + esc(id) + "</span>";
+          return "<span class=\"inv__xw\"><span class=\"layer-pill layer-pill--" + esc(t.srf_layer.toLowerCase()) +
+            "\"><span class=\"layer-pill__dot\"></span>" + esc(t.srf_layer) + "</span> " + esc(t.name) + "</span>";
+        }).join("") + vertical;
+      }
+
+      function row(e, catalogs, threats) {
+        return "<tr>" +
+          "<td><span class=\"inv__name\">" + esc(e.name) + "</span>" +
+          "<span class=\"inv__id\">" + esc(e.id) + "</span>" +
+          "<span class=\"inv__scope\">" + esc(SCOPE_LABEL[e.scope] || e.scope) + " · " + esc(e.family) + "</span></td>" +
+          "<td>" + esc(e.failure_mode) +
+          (e.verification.notes ? "<span class=\"inv__note\">" + esc(e.verification.notes) + "</span>" : "") + "</td>" +
+          "<td>" + renderTax(e, catalogs) + "</td>" +
+          "<td>" + renderSources(e) + "</td>" +
+          "<td>" + renderCrosswalk(e, threats) + "</td>" +
+          "</tr>";
+      }
+
+      function haystack(e) {
+        return [e.id, e.name, e.family, ...e.aliases,
+          ...e.taxonomy_refs.map((r) => r.id + " " + r.title_in_catalog),
+          ...e.paper_refs.map((p) => p.id + " " + p.title + " " + p.first_author),
+          ...e.incident_refs.map((x) => x.id + " " + x.label),
+          ...(e.vertical_controls || [])].join(" ").toLowerCase();
+      }
+
+      (async () => {
+        const body = document.getElementById("inv-body");
+        const count = document.getElementById("f-count");
+        const fScope = document.getElementById("f-scope");
+        const fTopic = document.getElementById("f-topic");
+        const fText = document.getElementById("f-text");
+        try {
+          const [invRes, thrRes] = await Promise.all([
+            fetch("/data/attack-inventory.json"),
+            fetch("/data/threats.json"),
+          ]);
+          if (!invRes.ok) throw new Error("inventory fetch failed");
+          const inv = await invRes.json();
+          const threats = thrRes.ok
+            ? Object.fromEntries(((await thrRes.json()).threats || []).map((t) => [t.id, t]))
+            : {};
+          const entries = inv.entries.filter((e) => e.status === "active");
+
+          const topics = [...new Set(entries.flatMap((e) => e.topics))].sort((a, b) => a.localeCompare(b));
+          fTopic.insertAdjacentHTML("beforeend", topics.map((t) => "<option value=\"" + esc(t) + "\">" + esc(t) + "</option>").join(""));
+
+          const draw = () => {
+            const s = fScope.value, t = fTopic.value, q = fText.value.trim().toLowerCase();
+            const shown = entries.filter((e) =>
+              (!s || e.scope === s) && (!t || e.topics.includes(t)) && (!q || haystack(e).includes(q)));
+            body.innerHTML = shown.length
+              ? shown.map((e) => row(e, inv.catalogs, threats)).join("")
+              : '<tr><td colspan="5" class="inv__none">No class matches these filters.</td></tr>';
+            count.textContent = "Showing " + shown.length + " of " + entries.length + " · version " + inv.inventory_version;
+          };
+          [fScope, fTopic].forEach((el) => el.addEventListener("change", draw));
+          fText.addEventListener("input", draw);
+          draw();
+
+          document.getElementById("cat-body").innerHTML = Object.entries(inv.catalogs).map(([key, c]) => {
+            const pin = c.content_sha256 ? "sha256 " + c.content_sha256 : c.source_commit ? "commit " + c.source_commit : "page retrieved " + c.retrieved_on;
+            const newer = c.newer_release_seen ? "<br />Newer release seen: " + esc(c.newer_release_seen.version) + ", " +
+              esc(c.newer_release_seen.cited_ids_changed) + " cited ids changed." : "";
+            return "<tr><td><a href=\"" + esc(c.source_url) + "\">" + esc(c.name) + "</a></td>" +
+              "<td>" + esc(c.version) + "</td><td>" + esc(c.released) + "</td>" +
+              "<td><span class=\"mono\">" + esc(pin) + "</span>" + newer + "</td></tr>";
+          }).join("");
+        } catch (err) {
+          body.innerHTML = '<tr><td colspan="5" class="inv__none">The inventory is available at <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>.</td></tr>';
+        }
+      })();
+    </script>
+  </body>
+</html>

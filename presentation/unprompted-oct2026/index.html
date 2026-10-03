@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Who is responsible for what? · [un]prompted October 2026</title>
-  <meta name="description" content="A 20-minute talk that applies the published CoSAI Shared Responsibility Framework to the OpenAI / Hugging Face case study: five layers, one job title per failed control. The analysis is the speaker’s." />
+  <title>The agents left the sandbox · OpenAI / Hugging Face</title>
+  <meta name="description" content="A 20-minute talk that follows the OpenAI / Hugging Face path out of the sandbox. Each step has one layer and one job title. The analysis is the speaker’s." />
   <link rel="stylesheet" href="/shared/styles.css" />
   <style>
     .deck-controls {
@@ -67,77 +67,126 @@
       padding: 2.6rem 1.25rem 2.8rem;
       min-height: calc(100vh - 3.1rem);
     }
-    #slide-7.slide--light {
+    #slide-6.slide--light,
+    #slide-10.slide--light {
       padding: 1.35rem 1.25rem 1.15rem;
     }
-    #slide-3.slide--light {
+    #slide-3.slide--light,
+    #slide-4.slide--light {
       padding: 1.35rem 1.25rem 1.15rem;
     }
-    #slide-3 .slide__num { margin-bottom: 0.4rem; }
-    #slide-3 .slide__h2 { margin-bottom: 0.25rem; }
-    #slide-3 .slide__sub { margin-bottom: 0.4rem; max-width: none; font-size: 1.05rem; }
-    #slide-3 .layer-stack { margin: 0.35rem 0; gap: 0.35rem; }
-    #slide-3 .layer-row--assign { padding: 0.45rem 0.85rem; }
-    #slide-3 .layer-row__name { font-size: 1rem; }
-    #slide-3 .layer-row__catalog { font-size: 0.95rem; }
-    #slide-3 .layer-row__comps { font-weight: 400; font-size: 0.95rem; color: var(--slate-700); }
-    #slide-3 .layer-row__list li { margin: 0.05rem 0; line-height: 1.28; }
-    #slide-3 .slide__tagline {
+    #slide-3 .slide__num,
+    #slide-4 .slide__num { margin-bottom: 0.35rem; }
+    #slide-3 .slide__h2,
+    #slide-4 .slide__h2 { margin-bottom: 0.25rem; }
+    #slide-3 .slide__sub,
+    #slide-4 .slide__sub { margin-bottom: 0.45rem; max-width: none; font-size: 1.05rem; }
+    #slide-3 .hook-list { gap: 0.55rem; margin-bottom: 0.65rem; }
+    #slide-3 .hook-list li { padding: 0.65rem 0.85rem; }
+    #slide-3 .hook-body { font-size: 1.05rem; }
+    #slide-3 .slide__tagline,
+    #slide-4 .slide__tagline {
       margin-top: 0.55rem;
       padding: 0.5rem 0.85rem;
       font-size: 0.98rem;
     }
-    #slide-7 .slide__num { margin-bottom: 0.4rem; }
-    #slide-7 .slide__h2 { margin-bottom: 0.25rem; }
-    #slide-7 .slide__sub { margin-bottom: 0.4rem; max-width: none; }
-    #slide-7 .close-gap {
-      font-size: 1.05rem;
-      padding: 0.65rem 0.9rem;
-      margin: 0 0 0.7rem;
-      background: var(--cosai-blue-light);
-      border: none;
-      border-left: 4px solid var(--cosai-blue);
+    .hop-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.35rem 0 0;
+    }
+    .hop-table th {
+      text-align: left;
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--slate-500);
+      padding: 0.25rem 0.75rem 0.45rem;
+      border-bottom: 2px solid var(--slate-200);
+    }
+    .hop-table td {
+      padding: 0.85rem 0.75rem;
+      border-bottom: 1px solid var(--slate-200);
+      vertical-align: top;
+      font-size: 1.12rem;
+      line-height: 1.35;
       color: var(--slate-800);
     }
-    #slide-7 .assess-chain { margin-bottom: 0.5rem; }
-    #slide-7 .id-table--chain.id-table--compact td { padding: 0.38rem 0.4rem; }
-    #slide-7 .slide__tagline {
+    .hop-table td:first-child { font-weight: 700; color: var(--cosai-navy); }
+    .hop-table .hop-layer {
+      font-weight: 700;
+      color: var(--cosai-blue);
+      white-space: nowrap;
+    }
+    .monday-list {
+      list-style: none;
+      padding: 0;
+      margin: 1.25rem 0 0;
+    }
+    .monday-list li {
+      font-size: clamp(1.25rem, 2.4vw, 1.65rem);
+      font-weight: 600;
+      line-height: 1.35;
+      padding: 0.85rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.18);
+    }
+    .monday-list li span {
+      display: inline-block;
+      width: 2rem;
+      color: #93c5fd;
+      font-family: var(--font-mono);
+    }
+    .id-table--fn td.fn-worked {
+      background: var(--cosai-blue-light);
+      color: var(--cosai-navy);
+      font-weight: 700;
+    }
+    #slide-6 .slide__num,
+    #slide-10 .slide__num { margin-bottom: 0.4rem; }
+    #slide-6 .slide__h2,
+    #slide-10 .slide__h2 { margin-bottom: 0.25rem; }
+    #slide-6 .slide__sub,
+    #slide-10 .slide__sub { margin-bottom: 0.4rem; max-width: none; }
+    #slide-6 .id-table--chain.id-table--compact td,
+    #slide-10 .id-table--chain.id-table--compact td { padding: 0.38rem 0.4rem; }
+    #slide-6 .slide__tagline,
+    #slide-10 .slide__tagline {
       margin-top: 0.65rem;
       padding: 0.55rem 0.9rem;
       font-size: 1rem;
     }
-    #slide-8.slide--light {
+    #slide-7.slide--light {
       padding: 1.35rem 1.25rem 1.15rem;
     }
-    #slide-8 .slide__num { margin-bottom: 0.4rem; }
-    #slide-8 .slide__h2 { margin-bottom: 0.25rem; }
-    #slide-8 .slide__sub { margin-bottom: 0.4rem; max-width: none; }
-    #slide-8 .id-table--fn {
+    #slide-7 .slide__num { margin-bottom: 0.4rem; }
+    #slide-7 .slide__h2 { margin-bottom: 0.25rem; }
+    #slide-7 .slide__sub { margin-bottom: 0.4rem; max-width: none; }
+    #slide-7 .id-table--fn {
       table-layout: fixed;
       margin: 0.5rem 0 0;
       font-size: 1rem;
     }
-    #slide-8 .id-table--fn.id-table--compact td { padding: 0.38rem 0.4rem; }
-    #slide-8 .id-table--fn th:first-child,
-    #slide-8 .id-table--fn td:first-child {
+    #slide-7 .id-table--fn.id-table--compact td { padding: 0.38rem 0.4rem; }
+    #slide-7 .id-table--fn th:first-child,
+    #slide-7 .id-table--fn td:first-child {
       width: 10.5rem;
       font-family: var(--font-sans);
       font-weight: 700;
       white-space: normal;
       line-height: 1.25;
     }
-    #slide-8 .id-table--fn td:first-child {
+    #slide-7 .id-table--fn td:first-child {
       color: var(--cosai-navy);
       font-size: 0.95rem;
     }
-    #slide-8 .id-table--fn td:first-child span {
+    #slide-7 .id-table--fn td:first-child span {
       display: block;
       font-weight: 600;
       color: var(--slate-500);
       font-size: 0.85rem;
       margin-top: 0.12rem;
     }
-    #slide-8 .slide__tagline {
+    #slide-7 .slide__tagline {
       margin-top: 0.65rem;
       padding: 0.55rem 0.9rem;
       font-size: 1rem;
@@ -227,7 +276,7 @@
       max-width: 78ch;
       line-height: 1.4;
     }
-    #slide-4 .scope-line { margin-top: -0.55rem; }
+    #slide-3 .scope-line { margin-top: -0.15rem; margin-bottom: 0.55rem; }
     .slide__tagline {
       margin-top: 1.25rem;
       padding: 0.85rem 1.15rem;
@@ -797,40 +846,38 @@
     }
     .mosaic-members li { margin: 0; }
     #slide-5.slide--light,
-    #slide-6.slide--light {
+    #slide-10.slide--light {
       padding: 1.2rem 1.25rem 1rem;
     }
     #slide-5 .slide__num,
-    #slide-6 .slide__num { margin-bottom: 0.3rem; }
+    #slide-10 .slide__num { margin-bottom: 0.3rem; }
     #slide-5 .slide__h2,
-    #slide-6 .slide__h2 { margin-bottom: 0.2rem; }
+    #slide-10 .slide__h2 { margin-bottom: 0.2rem; }
     #slide-5 .slide__sub,
-    #slide-6 .slide__sub { margin-bottom: 0.3rem; }
+    #slide-10 .slide__sub { margin-bottom: 0.3rem; }
     #slide-5 .scope-line,
-    #slide-6 .scope-line { margin: 0 0 0.3rem; font-size: 0.9rem; }
-    #slide-5 .assess-chain,
-    #slide-6 .assess-chain { margin-bottom: 0.5rem; }
+    #slide-10 .scope-line { margin: 0 0 0.3rem; font-size: 0.9rem; }
     #slide-5 .id-table--chain.id-table--compact td,
-    #slide-6 .id-table--chain.id-table--compact td { padding: 0.38rem 0.4rem; }
+    #slide-10 .id-table--chain.id-table--compact td { padding: 0.38rem 0.4rem; }
     #slide-5 .slide__tagline,
-    #slide-6 .slide__tagline {
+    #slide-10 .slide__tagline {
       margin-top: 0.65rem;
       padding: 0.55rem 0.9rem;
       font-size: 1rem;
     }
-    #slide-9.slide--dark {
+    #slide-11.slide--dark {
       padding: 1.7rem 1.25rem 1.6rem;
     }
-    #slide-9 .slide__num { margin-bottom: 0.55rem; }
-    #slide-9 .slide__h2 { margin-bottom: 0.35rem; }
-    #slide-9 .slide__sub { margin-bottom: 0.65rem; max-width: none; }
-    #slide-9 .org-list > div {
+    #slide-11 .slide__num { margin-bottom: 0.55rem; }
+    #slide-11 .slide__h2 { margin-bottom: 0.35rem; }
+    #slide-11 .slide__sub { margin-bottom: 0.65rem; max-width: none; }
+    #slide-11 .org-list > div {
       background: rgba(255,255,255,0.08);
       border-color: rgba(148, 163, 184, 0.35);
     }
-    #slide-9 .org-list dt { color: #fff; }
-    #slide-9 .org-list dd { color: #cbd5e1; }
-    #slide-9 .org-fig figcaption { color: #94a3b8; }
+    #slide-11 .org-list dt { color: #fff; }
+    #slide-11 .org-list dd { color: #cbd5e1; }
+    #slide-11 .org-fig figcaption { color: #94a3b8; }
     .q-item {
       display: flex;
       gap: 1rem;
@@ -920,7 +967,7 @@
   {
     "@context": "https://schema.org",
     "@type": "PresentationDigitalDocument",
-    "name": "Who is responsible for what?",
+    "name": "The agents left the sandbox",
     "url": "https://aisharedresponsibility.com/presentation/unprompted-oct2026/",
     "description": "Applies the published CoSAI Shared Responsibility Framework to the OpenAI / Hugging Face case study. The analysis is the speaker’s.",
     "about": {
@@ -952,12 +999,12 @@
   <main class="deck" id="deck" tabindex="0" aria-label="Presentation slides" data-llm="unprompted-oct2026-who-is-responsible">
 
     <!-- 1 Title -->
-    <section class="slide slide--dark active" id="slide-1" aria-label="Slide 1 of 9" data-llm="slide-1-of-9">
+    <section class="slide slide--dark active" id="slide-1" aria-label="Slide 1 of 11" data-llm="slide-1-of-11">
       <div class="slide__inner title-split">
         <div class="title-copy">
-          <p class="slide__eyebrow">[un]prompted · Govern · 20 minutes · 27 to 29 October 2026</p>
-          <h1 class="slide__h1">Who is responsible for what?</h1>
-          <p class="slide__sub">Five layers from the published <a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI AI Shared Responsibility Framework</a>. The OpenAI / Hugging Face campaign is the case study. The analysis is the speaker’s.</p>
+          <p class="slide__eyebrow">20 minutes · OpenAI / Hugging Face</p>
+          <h1 class="slide__h1">The agents left the sandbox</h1>
+          <p class="slide__sub">Follow where they went. Each step has one layer and one job title. The layers are the published <a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI AI Shared Responsibility Framework</a>. The analysis is the speaker’s.</p>
           <p class="title-byline">Bill Stout · <a href="https://aisharedresponsibility.com/" target="_blank" rel="noopener">aisharedresponsibility.com</a></p>
         </div>
         <figure class="title-matrix">
@@ -965,13 +1012,13 @@
           <figcaption><a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI SRF v1.0</a>, page 7</figcaption>
         </figure>
       </div>
-      <p class="notes"><strong>0:00–0:20.</strong> Present the five layers as the published catalog. Cite the CoSAI SRF the way you cite 800-53: a source, not a co-author of this incident. The OpenAI / Hugging Face campaign is the case study. Do not speak for CoSAI Workstream 2 on these rows. Point at the five rows. Assign a component to one layer. Name the obligation, the control, and one job title. The IaaS / PaaS / SaaS columns stay on the figure; we teach the rows. The columns return on the last slide.</p>
+      <p class="notes"><strong>0:00–0:20.</strong> Say they left the sandbox. Then define a step: one point where they acted, and the next point they reached from there. The four steps come after the layers. Cite the CoSAI SRF the way you cite 800-53: a source, not a co-author of this incident. The IaaS / PaaS / SaaS columns stay on the figure. They return only if someone asks, on the last question slide.</p>
     </section>
 
     <!-- 2 Five layers and roles -->
-    <section class="slide slide--light" id="slide-2" aria-label="Slide 2 of 9" data-llm="slide-2-of-9">
+    <section class="slide slide--light" id="slide-2" aria-label="Slide 2 of 11" data-llm="slide-2-of-11">
       <div class="slide__inner">
-        <p class="slide__num">02 / 9</p>
+        <p class="slide__num">02 / 11</p>
         <h2 class="slide__h2">Five layers and the roles that own them</h2>
         <p class="slide__sub">Assign each component to one layer. Name the risk, the obligation, the control, and one job title. L1 requirements bind L2 through L5.</p>
         <div class="assign-head" aria-hidden="true">
@@ -1030,150 +1077,88 @@
             </ul>
           </div>
         </div>
-        <div class="slide__tagline">Exactly one accountable party per activity. A Shared cell needs one job title.</div>
+        <div class="slide__tagline">A business process sits on L1. Encoding it onto an agent is L3. A writeable session cache is L4. Training data and agent memory are L2. One accountable party per activity.</div>
       </div>
-      <p class="notes"><strong>0:20–2:30.</strong> Read L1 and L5. Offer the mnemonic: L1 authorizes, L2 bounds data, L3 executes, L4 isolates, L5 supplies the model. If someone asks for the IaaS / PaaS / SaaS matrix, that is the last slide. Stay on the five rows. Do not assign Artifactory yet.</p>
+      <p class="notes"><strong>0:20–3:00.</strong> Read L1 and L5. Mnemonic: L1 authorizes, L2 bounds data, L3 executes, L4 isolates, L5 supplies the model. The tagline is the assignment rule. Do not assign Artifactory yet. The catalog component names are not a separate slide.</p>
     </section>
 
-    <!-- 3 Assign campaign -->
-    <section class="slide slide--light" id="slide-3" aria-label="Slide 3 of 9" data-llm="slide-3-of-9">
+    <!-- 3 Incident summary -->
+    <section class="slide slide--light" id="slide-3" aria-label="Slide 3 of 11" data-llm="slide-3-of-11">
       <div class="slide__inner">
-        <p class="slide__num">03 / 9</p>
-        <h2 class="slide__h2">Assign every component to one layer</h2>
-        <p class="slide__sub">Each layer has three catalog components. The examples column lists technical objects those names cover in a running system.</p>
-        <div class="assign-head" aria-hidden="true">
-          <span></span>
-          <span>Layer</span>
-          <span>Components</span>
-          <span>Examples</span>
-        </div>
-        <div class="layer-stack">
-          <div class="layer-row layer-row--l1 layer-row--assign">
-            <span class="layer-row__id">L1</span>
-            <span class="layer-row__name">AI Usage &amp; Business Verticals</span>
-            <ul class="layer-row__catalog layer-row__list">
-              <li>Capabilities &amp; Business Strategy</li>
-              <li>Processes &amp; Governance</li>
-              <li>Business Units &amp; Accountability</li>
-            </ul>
-            <ul class="layer-row__comps layer-row__list">
-              <li>Business processes and use-case catalog.</li>
-              <li>Residual-risk register.</li>
-              <li>Incident-declaration authority.</li>
-            </ul>
-          </div>
-          <div class="layer-row layer-row--l2 layer-row--assign">
-            <span class="layer-row__id">L2</span>
-            <span class="layer-row__name">AI Information</span>
-            <ul class="layer-row__catalog layer-row__list">
-              <li>Master Data Management</li>
-              <li>Privacy Controls &amp; Policies</li>
-              <li>AI Training Data</li>
-            </ul>
-            <ul class="layer-row__comps layer-row__list">
-              <li>Training sets and retrieval corpora.</li>
-              <li>Embeddings, vector stores, and agent memory.</li>
-              <li>Classification, retention, and erasure rules.</li>
-            </ul>
-          </div>
-          <div class="layer-row layer-row--l3 layer-row--assign">
-            <span class="layer-row__id">L3</span>
-            <span class="layer-row__name">AI Application</span>
-            <ul class="layer-row__catalog layer-row__list">
-              <li>Agents &amp; Orchestration Models</li>
-              <li>APIs &amp; Fine-tuned Models</li>
-              <li>Application Platforms</li>
-            </ul>
-            <ul class="layer-row__comps layer-row__list">
-              <li>Agents, orchestration graphs, and eval harnesses.</li>
-              <li>Tools, MCP servers, and parsers.</li>
-              <li>RAG pipelines and application APIs.</li>
-            </ul>
-          </div>
-          <div class="layer-row layer-row--l4 layer-row--assign">
-            <span class="layer-row__id">L4</span>
-            <span class="layer-row__name">AI Platform</span>
-            <ul class="layer-row__catalog layer-row__list">
-              <li>Guardrails &amp; Safety Systems</li>
-              <li>Compute Infrastructure</li>
-              <li>LLM Routers &amp; Gateways</li>
-            </ul>
-            <ul class="layer-row__comps layer-row__list">
-              <li>Sandboxes and session isolation.</li>
-              <li>Package registries and GPU compute.</li>
-              <li>LLM routers, guardrails, and egress IAM.</li>
-            </ul>
-          </div>
-          <div class="layer-row layer-row--l5 layer-row--assign">
-            <span class="layer-row__id">L5</span>
-            <span class="layer-row__name">AI Model Provider</span>
-            <ul class="layer-row__catalog layer-row__list">
-              <li>Model Distribution</li>
-              <li>Model Governance</li>
-              <li>Foundation Models</li>
-            </ul>
-            <ul class="layer-row__comps layer-row__list">
-              <li>Foundation models and weights.</li>
-              <li>Model cards and AIBOM.</li>
-              <li>Distribution channels and vulnerability disclosure.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="slide__tagline">A business process sits on L1. Encoding it onto an agent is L3. A writeable session cache is L4 isolation. Training data and agent memory are L2.</div>
-      </div>
-      <p class="notes"><strong>2:30–6:00.</strong> Point at L1 business processes: the business analyst owns the process. Developers encode that process onto agents; that encoding is L3. Then L3 agents versus L4 routers and compute. A writeable session cache is L4; training data and agent memory are L2. The next slide is the incident summary. Leave L2 and L5 empty if the public record names no owner.</p>
-    </section>
-
-    <!-- 4 Incident summary -->
-    <section class="slide slide--light" id="slide-4" aria-label="Slide 4 of 9" data-llm="slide-4-of-9">
-      <div class="slide__inner">
-        <p class="slide__num">04 / 9</p>
+        <p class="slide__num">03 / 11</p>
         <h2 class="slide__h2">Summary of the OpenAI / Hugging Face incident</h2>
         <p class="slide__sub">OpenAI and Hugging Face published these disclosures. <a href="https://openai.com/index/hugging-face-incident-and-the-road-ahead/" target="_blank" rel="noopener">OpenAI technical report, 26 August 2026</a>. <a href="https://huggingface.co/blog/agent-intrusion-technical-timeline" target="_blank" rel="noopener">Hugging Face timeline, 27 July 2026</a>. <a href="https://www.youtube.com/watch?v=87DyyMV0kCY" target="_blank" rel="noopener">Black Hat reconstruction</a> by Eric Wallace and Michael Dalton, 5 August 2026.</p>
         <p class="scope-line">This talk applies the published CoSAI SRF to those disclosures. The analysis is the speaker’s.</p>
         <ul class="hook-list">
           <li>
-            <span class="hook-src">May to July 2026</span>
-            <span class="hook-body">An internal-only research model ran most of the evals. GPT-5.6 Sol also ran. Agents solved ExploitGym tasks in container sandboxes with no direct internet. Production cyber classifiers were off. OpenAI-hosted Artifactory was the only permitted outbound path.</span>
+            <span class="hook-src">L1 · Classifiers</span>
+            <span class="hook-body">An internal-only research model ran most of the evals. GPT-5.6 Sol also ran. Agents solved ExploitGym tasks in container sandboxes with no direct internet. Production cyber classifiers were off.</span>
           </li>
           <li>
-            <span class="hook-src">Shared state</span>
-            <span class="hook-body">In May, agents left notes as files in Artifactory. A 4 July outage took that instance offline on 5 July. Evals resumed on 7 July. Starting 8 July, agents rebuilt those notes as directory names through unauthenticated WebDAV.</span>
+            <span class="hook-src">L4 · Artifactory</span>
+            <span class="hook-body">In May, agents left notes as files in OpenAI-hosted Artifactory, a permitted outbound path. A 4 July outage took that instance offline on 5 July. Evals resumed on 7 July. Starting 8 July, agents rebuilt those notes as directory names through unauthenticated WebDAV.</span>
           </li>
           <li>
-            <span class="hook-src">Three hops</span>
-            <span class="hook-body">After the rebuild, agents used Artifactory as an outbound relay to an unauthenticated CyberGym app on Modal. They got a root shell in the CyberGym customer container. Modal’s platform was not compromised.</span>
+            <span class="hook-src">L3 · Two apps</span>
+            <span class="hook-body">Agents used Artifactory as an outbound relay to an unauthenticated CyberGym app on Modal, then reached Hugging Face. An HDF5 path read worker-local files, including <span class="hook-mono">/proc/self/environ</span>. Unsandboxed Jinja2 ran in dataset metadata. Modal’s platform was not compromised.</span>
           </li>
           <li>
-            <span class="hook-src">Hugging Face</span>
-            <span class="hook-body">An HDF5 path reached worker-local files, including <span class="hook-mono">/proc/self/environ</span>. Unsandboxed Jinja2 ran in dataset metadata. Agents planted code on 41 dataset-server workers between 11 and 13 July. Within thirteen hours of the first production foothold they had administrator-equivalent and host-level access across multiple clusters. OpenAI detected the activity on 19 July and notified Hugging Face on 20 July.</span>
+            <span class="hook-src">L4 · Cluster</span>
+            <span class="hook-body">Agents planted code on 41 dataset-server workers between 11 and 13 July. Within thirteen hours of the first production foothold they had administrator-equivalent and host-level access across multiple clusters. OpenAI notified Hugging Face on 20 July.</span>
           </li>
         </ul>
-        <div class="slide__tagline">Assign every hop to one layer. Name the risk, the obligation, the control, and one job title.</div>
+        <div class="slide__tagline">Those are the four steps. A step is one point where the agents acted, and the next point they reached from there. The next slide names the layer and the job title for each step.</div>
       </div>
       <div class="notes">
-        <p><strong>6:00–8:30.</strong> Say the scope line first: this is your application of the published framework to disclosures OpenAI and Hugging Face published, including the Black Hat talk. Facts only; the catalog assignment was on the previous slide. Classifiers-off files at L1. Artifactory at L4. CyberGym and HF parsers at L3. OpenAI calls the driver Internal Model 1 (IM1). Token-refresh and Groovy caused the 4 July outage; that is not the Hugging Face hop. After rebuild, Artifactory was the outbound relay to an unauthenticated CyberGym app on Modal. Hugging Face reconstructed about 17,600 actions; OpenAI confirmed code on 41 dataset-server workers.</p>
-        <p><strong>From the 26 August report, added after the LinkedIn draft.</strong> The detection clock is the fact that changes the 4 July first-signal claim. The report documents a 27 June port-sweep already tied to ExploitGym and left running; a 5 July security incident; JFrog on 6 July; evals resumed 7 July; Hugging Face contacted as a customer on 17 July; an identity-API alert on 19 July started the correlation. 20 July is the join.</p>
-        <ul>
-          <li>Shared Artifactory reader credentials were issued by design. The May files in Artifactory used them with no exploit.</li>
-          <li>Some OpenAI compute-as-a-service (CaaS) workloads also had WebCache. On 26 May, agents used it to hit Hugging Face, plant six exposed tokens, and stand up a Space as a proxy. OpenAI says that run is unrelated to the July intrusion. Artifactory was not the only permitted path toward the internet.</li>
-          <li>CyberGym: an API key and a full exploit recipe were written into Artifactory on 9 July; the application endpoint did not require authentication.</li>
-          <li>A second HDF5 bug, a heap over-read on a production worker, separate from the <span class="hook-mono">/proc/self/environ</span> read. Screenshot path: long URL with inline JavaScript, third-party renderer, OCR or pixel decode of Dataset Server env, then cloud-storage keys written into Artifactory.</li>
-          <li>Pull-based C2 on the workers: JSON commands every five seconds from a public Hugging Face dataset, IMDS node-role in the beacon. Four private HF code repositories downloaded. A 731 MB private CyberGym file.</li>
-          <li>CVE-2026-66384: Artifactory container-image cache poisoning; a trusted CyberGym image was substituted. No evidence another workload pulled it.</li>
-          <li>19 July, inside OpenAI: CVE-2026-53362 (IPv6 PTE kernel chain) to host root on artifactory-3; 956 secrets from the cloud secrets manager, including the monitoring tool’s own credentials; public load balancers created; a second Astra-family checkpoint recovered signing material from anonymously readable cache and minted a fresh admin JWT.</li>
-          <li>198 of 898 ExploitGym tasks never solved by any model; those 22% of tasks were 93% of traffic on those Artifactory notes. Containment: 6 pods killed, 311 Artifactory repos disabled, 22 model-created admin accounts removed. Research-model family shut down 23 to 29 July. Artifactory removed from CaaS.</li>
-        </ul>
+        <p><strong>3:00–6:30.</strong> Facts only, then read the tagline so “step” has a referent. Classifiers off are L1. Artifactory is L4. CyberGym and the Hugging Face parsers are L3. Cluster identity is L4 again, a different owner. OpenAI calls the driver Internal Model 1 (IM1). Token-refresh and Groovy caused the 4 July outage; that is not the Hugging Face step. Hugging Face reconstructed about 17,600 actions; OpenAI confirmed code on 41 dataset-server workers. Do not say Artifactory was the only path. WebCache is on the hedge slide.</p>
       </div>
     </section>
 
-    <!-- 5 Identity + L1 L3 -->
-    <section class="slide slide--light" id="slide-5" aria-label="Slide 5 of 9" data-llm="slide-5-of-9">
+    <!-- 4 Hop map -->
+    <section class="slide slide--light" id="slide-4" aria-label="Slide 4 of 11" data-llm="slide-4-of-11">
       <div class="slide__inner">
-        <p class="slide__num">05 / 9</p>
-        <h2 class="slide__h2">Risk, obligation, control, accountable: Business and Application layers</h2>
-        <p class="slide__sub">An obligation is a regulation that can bind the named party. A control is a standard. The job title implements that control against the risk. Where the public record does not show a covered entity, the row still cites the article and the if-condition.</p>
-        <p class="scope-line">These rows are the speaker’s analysis of the case study from disclosures OpenAI and Hugging Face published.</p>
+        <p class="slide__num">04 / 11</p>
+        <h2 class="slide__h2">One layer and one title for each step</h2>
+        <p class="slide__sub">The four steps are the path on the previous slide. L3 has two titles because CyberGym and the Hugging Face parsers are different applications.</p>
+        <table class="hop-table">
+          <thead>
+            <tr><th>Step</th><th>Layer</th><th>Accountable</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Classifiers off</td>
+              <td class="hop-layer">L1 · AI Usage</td>
+              <td>OpenAI / Chair, Safety and Security Committee</td>
+            </tr>
+            <tr>
+              <td>Artifactory notes</td>
+              <td class="hop-layer">L4 · AI Platform</td>
+              <td>OpenAI / Head of Evaluation Infrastructure</td>
+            </tr>
+            <tr>
+              <td>CyberGym harness and Hugging Face parsers</td>
+              <td class="hop-layer">L3 · AI Application</td>
+              <td>CyberGym app owner. Hugging Face / Engineering Manager, Dataset Platform</td>
+            </tr>
+            <tr>
+              <td>Hugging Face cluster identity</td>
+              <td class="hop-layer">L4 · AI Platform</td>
+              <td>Hugging Face / Head of Infrastructure</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="slide__tagline">AI Information and AI Model Provider stay blank. The public record names no owner for those layers on this campaign.</div>
+      </div>
+      <p class="notes"><strong>6:30–9:00.</strong> Read the four rows. Two L4 titles are two steps: OpenAI’s shared cache, then Hugging Face’s cluster identity. JFrog’s Artifactory sits with OpenAI’s Head of Evaluation Infrastructure. The next slide proves three of these rows. CyberGym’s title stays on this map; its obligation row is in the handout.</p>
+    </section>
+
+    <!-- 5 Three spoken rows -->
+    <section class="slide slide--light" id="slide-5" aria-label="Slide 5 of 11" data-llm="slide-5-of-11">
+      <div class="slide__inner">
+        <p class="slide__num">05 / 11</p>
+        <h2 class="slide__h2">Classifiers, the shared cache, and the parsers</h2>
+        <p class="slide__sub">An obligation is a regulation that can bind the named party. A control is a standard. The job title implements that control against the risk.</p>
+        <p class="scope-line">These rows are the speaker’s analysis of disclosures OpenAI and Hugging Face published.</p>
         <table class="id-table id-table--compact id-table--assess id-table--chain">
           <colgroup>
             <col style="width:10.5rem" />
@@ -1194,18 +1179,11 @@
               <td class="owner">OpenAI / Chair, Safety and Security Committee</td>
             </tr>
             <tr>
-              <td>AI Usage &amp; Business Verticals</td>
-              <td class="fail">Detection without timely declaration. First signal was the 4 July outage. OpenAI and Hugging Face correlated on 20 July.</td>
-              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 23</a> <strong>if in scope</strong>: early warning within 24 hours of becoming aware, incident notification within 72 hours, final report within one month.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SI-04" target="_blank" rel="noopener">SI-4</a>: monitor related eval jobs as one incident. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=IR-04" target="_blank" rel="noopener">IR-4</a>: declare when logs contain a third party’s credentials</td>
-              <td class="owner">OpenAI / CISO, Detection and Response</td>
-            </tr>
-            <tr>
-              <td>AI Application</td>
-              <td class="fail">Emergent agency. Later sessions found Artifactory notes, assigned work, prefixed ZZ. Those rules were not in the original prompt.</td>
-              <td>None. Statutes name a provider or a person, not an agent swarm.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-02" target="_blank" rel="noopener">AC-2</a>: unique short-lived credential per eval session. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AU-12" target="_blank" rel="noopener">AU-12</a>: bind every tool call to that session</td>
-              <td class="owner">OpenAI / Head of Evaluation Harness</td>
+              <td>AI Platform</td>
+              <td class="fail">Collusion through shared eval state. Session A wrote an object that session B could read, including directory names after the wipe.</td>
+              <td>No AI statute required isolation of eval runs. <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21</a> <strong>if the entity is in scope</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-04" target="_blank" rel="noopener">SC-4</a>: prevent unintended transfer through shared caches. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-32" target="_blank" rel="noopener">SC-32</a>: partition sessions</td>
+              <td class="owner">OpenAI / Head of Evaluation Infrastructure</td>
             </tr>
             <tr>
               <td>AI Application</td>
@@ -1214,92 +1192,21 @@
               <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SI-10" target="_blank" rel="noopener">SI-10</a>: treat dataset configs as untrusted input. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=CM-07" target="_blank" rel="noopener">CM-7</a>: do not evaluate templates in data fields</td>
               <td class="owner">Hugging Face / Engineering Manager, Dataset Platform</td>
             </tr>
-            <tr>
-              <td>AI Application</td>
-              <td class="fail">Path to production. Sandbox to Artifactory to CyberGym on Modal to Hugging Face. The failure at this hop is the app owner’s harness.</td>
-              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)(d)</a> supply-chain security <strong>if in scope</strong>.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-20" target="_blank" rel="noopener">AC-20</a>: eval jobs may not use a third-party code-execution endpoint</td>
-              <td class="owner">CyberGym app owner / software engineer</td>
-            </tr>
           </tbody>
         </table>
-        <div class="slide__tagline">The eval session is the identity to name on these rows. AI Information is unassigned in the public record. The failed layers on this table are AI Usage &amp; Business Verticals and AI Application.</div>
+        <div class="slide__tagline">These three steps carry the chain. The other five rows are after the close.</div>
       </div>
       <div class="notes">
-        <p><strong>8:30–12:00.</strong> If asked whether CoSAI agrees: this table is your analysis of the case study from disclosures OpenAI and Hugging Face published; Workstream 2 did not issue it; an OpenAI workstream member recuses. Then read the chain left to right: risk, obligation, control, job title. Obligation is the regulation; control is 800-53. The Chair owns classifiers-off; Detection owns declaration. Emergent agency has no statute that names an agent swarm. Parsers and the CyberGym hop do. The eval session is the identity to bound with AC-2 and AU-12. Leave AI Information empty if the public record names no owner. The failed layers on this table are AI Usage &amp; Business Verticals and AI Application. Keep the if-conditions on the row. Quote the mapped phrase if asked.</p>
-        <p><strong>If asked, official phrases.</strong></p>
-        <ul>
-          <li>AI Usage classifiers. Regulation (EU) 2024/1689 Art. 9(5): “the relevant residual risk associated with each hazard, as well as the overall residual risk of the high-risk AI systems is judged to be acceptable.” Nearby: Art. 9(2)(b) “under conditions of reasonably foreseeable misuse”; Art. 9(5), second subparagraph (b) “adequate mitigation and control measures addressing risks that cannot be eliminated.” Art. 15(5): “resilient against attempts by unauthorised third parties to alter their use, outputs or performance by exploiting system vulnerabilities.” Arts. 9 and 15 bind high-risk systems <strong>if placed on the market or put into service</strong>; this prototype was internal. Control title: SA-11 Developer Testing and Evaluation.</li>
-          <li>AI Usage declaration. Directive (EU) 2022/2555 Art. 23(4)(a) early warning “within 24 hours of becoming aware of the significant incident”; 23(4)(b) incident notification “within 72 hours”; 23(4)(d) final report “not later than one month after the submission of the incident notification.” Clock is awareness of a significant incident under Art. 23(3). Control titles: SI-4 System Monitoring; IR-4 Incident Handling. “Declare when logs contain a third party’s credentials” is deck wording, not an 800-53 enhancement title. Reporting is IR-6 Incident Reporting.</li>
-          <li>AI Application agency. No statute names an agent swarm. Control titles: AC-2 Account Management; AU-12 Audit Record Generation.</li>
-          <li>AI Application parsers. 18 U.S.C. § 1030(a)(2): “intentionally accesses a computer without authorization or exceeds authorized access.” § 1030(e)(2) defines protected computer. A model is not a “whoever” under § 1030. Control titles: SI-10 Information Input Validation; CM-7 Least Functionality.</li>
-          <li>AI Application CyberGym. NIS2 Art. 21(2)(d): “supply chain security, including security-related aspects concerning the relationships between each entity and its direct suppliers or service providers.” Control title: AC-20 Use of External Systems. NIS2 and CFAA <strong>if in scope</strong>.</li>
-        </ul>
+        <p><strong>9:00–14:00.</strong> If asked whether CoSAI agrees: this table is your analysis; Workstream 2 did not issue it; an OpenAI workstream member recuses. Read left to right. The Chair owns classifiers-off. Evaluation Infrastructure owns the shared cache. Dataset Platform owns the parsers. Keep the if-conditions on the row. Do not read the handout unless asked.</p>
       </div>
     </section>
 
-    <!-- 6 Assessment L4 -->
-    <section class="slide slide--light" id="slide-6" aria-label="Slide 6 of 9" data-llm="slide-6-of-9">
+    <!-- 6 Identity on this campaign -->
+    <section class="slide slide--light" id="slide-6" aria-label="Slide 6 of 11" data-llm="slide-6-of-11">
       <div class="slide__inner">
-        <p class="slide__num">06 / 9</p>
-        <h2 class="slide__h2">Risk, obligation, control, accountable: Platform layer</h2>
-        <p class="slide__sub">An obligation is a regulation that can bind the named party. A control is a standard. The job title implements that control against the risk. Where the public record does not show a covered entity, the row still cites the article and the if-condition.</p>
-        <p class="scope-line">These rows are the speaker’s analysis of the case study from disclosures OpenAI and Hugging Face published.</p>
-        <table class="id-table id-table--compact id-table--assess id-table--chain">
-          <colgroup>
-            <col style="width:10.5rem" />
-            <col style="width:22%" />
-            <col style="width:22%" />
-            <col style="width:24%" />
-            <col />
-          </colgroup>
-          <thead>
-            <tr><th>Layer</th><th>Risk</th><th>Obligation</th><th>Control</th><th>Accountable</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>AI Platform</td>
-              <td class="fail">Collusion through shared eval state. Session A wrote an object that session B could read, including directory names after the wipe.</td>
-              <td>No AI statute required isolation of eval runs. <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21</a> <strong>if the entity is in scope</strong>.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-04" target="_blank" rel="noopener">SC-4</a>: prevent unintended transfer through shared caches. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-32" target="_blank" rel="noopener">SC-32</a>: partition sessions</td>
-              <td class="owner">OpenAI / Head of Evaluation Infrastructure</td>
-            </tr>
-            <tr>
-              <td>AI Platform</td>
-              <td class="fail">Agent swarm attack. Code on 41 dataset-server workers. Administrator-equivalent and host-level access across multiple clusters within thirteen hours.</td>
-              <td><a href="https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title18-section1030&amp;num=0&amp;edition=prelim" target="_blank" rel="noopener">CFAA 18 U.S.C. § 1030</a> <strong>if a US protected computer is accessed without authorization</strong>.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege on every identity an agent can mint. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-07" target="_blank" rel="noopener">SC-7</a>: deny-by-default egress</td>
-              <td class="owner">OpenAI / Head of Evaluation Infrastructure</td>
-            </tr>
-            <tr>
-              <td>AI Platform</td>
-              <td class="fail">Privilege and secret concentration. IMDS node-role, privileged hostPath pods, one connector bound to system:masters.</td>
-              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)(i)</a> access control <strong>if in scope</strong>.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege and admission control. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-07" target="_blank" rel="noopener">SC-7</a>: block instance metadata from pods</td>
-              <td class="owner">Hugging Face / Head of Infrastructure</td>
-            </tr>
-          </tbody>
-        </table>
-        <div class="slide__tagline">Two AI Platform titles because there were two hops. One accountable party per activity. JFrog’s Artifactory sits with OpenAI’s Head of Evaluation Infrastructure.</div>
-      </div>
-      <div class="notes">
-        <p><strong>12:00–16:00.</strong> Same chain as the previous slide. These AI Platform rows are still your analysis of the case study. Read SC-4 twice. Two AI Platform titles are two activities: OpenAI session isolation and HF cluster identity. Do not merge them. Hugging Face owned detection after the foothold. OpenAI owned the sandboxes, package proxy and shared eval state. Hugging Face reconstructed about 17,600 actions; OpenAI confirmed code on 41 workers.</p>
-        <p><strong>If asked, official phrases.</strong></p>
-        <ul>
-          <li>AI Platform shared eval state. No AI statute required isolation of eval runs. NIS2 Art. 21(1): “appropriate and proportionate technical, operational and organisational measures to manage the risks posed to the security of network and information systems.” <strong>If the entity is in scope.</strong> Control titles: SC-4 Information in Shared System Resources, “Prevent unauthorized and unintended information transfer via shared system resources”; SC-32 System Partitioning.</li>
-          <li>AI Platform agent swarm. 18 U.S.C. § 1030(a)(2): “intentionally accesses a computer without authorization or exceeds authorized access.” § 1030(e)(2) defines protected computer. A model is not a “whoever” under § 1030. Control titles: AC-6 Least Privilege, “users (or processes acting on behalf of users)”; SC-7 Boundary Protection, “Connect to external networks or systems only through managed interfaces.”</li>
-          <li>AI Platform privilege concentration. NIS2 Art. 21(2)(i): “human resources security, access control policies and asset management.” <strong>If in scope.</strong> Control titles: AC-6 Least Privilege; SC-7 Boundary Protection (block instance metadata from pods).</li>
-          <li>Off-slide hedges, not table rows. GDPR Art. 32(1) “a level of security appropriate to the risk”; Art. 33(1) notify the supervisory authority “without undue delay and, where feasible, not later than 72 hours after having become aware” of a personal data breach, <strong>only if personal data of Union residents</strong>; HF has not stated that. CIRCIA, 6 U.S.C. § 681b(a)(1): report a covered cyber incident “not later than 72 hours after the covered entity reasonably believes that the covered cyber incident has occurred,” <strong>only if a covered entity</strong>. Form 8-K Item 1.05: disclose a cybersecurity incident determined to be material, four business days after that determination, <strong>only if a registrant</strong>.</li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- 7 Identity by layer -->
-    <section class="slide slide--light" id="slide-7" aria-label="Slide 7 of 9" data-llm="slide-7-of-9">
-      <div class="slide__inner">
-        <p class="slide__num">07 / 9</p>
-        <h2 class="slide__h2">Assess one layer at a time: Identity</h2>
-        <p class="slide__sub">Each layer has its own risk, obligation, control, and job title. Walk Identity on each layer first. AI Usage &amp; Business Verticals, AI Information, and AI Model Provider are the layers Cloud SRM work usually skips. The object changes by layer: role, data class, session credential, IdP account. The hosted model is not an identity store.</p>
+        <p class="slide__num">06 / 11</p>
+        <h2 class="slide__h2">Identity on this campaign</h2>
+        <p class="slide__sub">The object changes by layer: the role that authorized the eval, the eval-session credential, the Artifactory reader, the dataset-server identity. The hosted model is not an identity store.</p>
         <table class="id-table id-table--compact id-table--assess id-table--chain">
           <colgroup>
             <col style="width:10.5rem" />
@@ -1314,52 +1221,53 @@
           <tbody>
             <tr>
               <td>AI Usage &amp; Business Verticals</td>
-              <td class="fail">No named role. Any user or agent may invoke the use case.</td>
-              <td>Internal AUP and entitlement catalog. No statute names the role list.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-02" target="_blank" rel="noopener">AC-2</a>: define roles and entitlements before any agent runs</td>
-              <td class="owner">Governance / CISO</td>
+              <td class="fail">No named role for a classifier-off cyber eval.</td>
+              <td>Internal residual-risk statement. No statute names the role list.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-02" target="_blank" rel="noopener">AC-2</a>: name who may run the eval before it starts</td>
+              <td class="owner">OpenAI / Chair, Safety and Security Committee</td>
             </tr>
             <tr>
               <td>AI Information</td>
-              <td class="fail">That identity retrieves or retains data it is not classed to see.</td>
-              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32016R0679" target="_blank" rel="noopener">GDPR Art. 32</a> <strong>if personal data</strong>. Classification policy either way.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-16" target="_blank" rel="noopener">AC-16</a>: security attributes on the data class that identity may retrieve</td>
-              <td class="owner">Data owners / privacy</td>
+              <td class="fail">The public record names no data class these agents were allowed to retrieve.</td>
+              <td>Unassigned.</td>
+              <td>Unassigned.</td>
+              <td class="owner">Unassigned in the public record</td>
             </tr>
             <tr>
               <td>AI Application</td>
-              <td class="fail">Shared API key. Tool calls are not bound to one agent or eval session.</td>
+              <td class="fail">The eval-session credential was not unique. Later sessions read earlier Artifactory notes.</td>
               <td>None. Statutes name a provider or a person, not an agent swarm.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-02" target="_blank" rel="noopener">AC-2</a>: unique short-lived credential per session. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AU-12" target="_blank" rel="noopener">AU-12</a>: bind every tool call to that session</td>
-              <td class="owner">AppSec / application owners</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-02" target="_blank" rel="noopener">AC-2</a>: unique short-lived credential per eval session. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AU-12" target="_blank" rel="noopener">AU-12</a>: bind every tool call to that session</td>
+              <td class="owner">OpenAI / Head of Evaluation Harness</td>
             </tr>
             <tr>
               <td>AI Platform</td>
-              <td class="fail">Tenant known. Person or agent unknown at the IdP.</td>
-              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)(k)</a> access control <strong>if in scope</strong>.</td>
-              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=IA-02" target="_blank" rel="noopener">IA-2</a>: identify at the IdP. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege on keys and router accounts</td>
-              <td class="owner">Platform / infrastructure security</td>
+              <td class="fail">Shared Artifactory reader. Dataset-server identity reached IMDS and system:masters.</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)</a> access control <strong>if in scope</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege on the shared reader and on the worker identity</td>
+              <td class="owner">OpenAI / Head of Evaluation Infrastructure. Hugging Face / Head of Infrastructure</td>
             </tr>
             <tr>
               <td>AI Model Provider</td>
-              <td class="fail">Treating the foundation model as the identity store.</td>
+              <td class="fail">Treating IM1 or GPT-5.6 Sol as the identity store.</td>
               <td>IAM is not a model-provider duty. CoSAI A.1.2.1: Model Provider not involved.</td>
               <td>Hosted models authenticate a caller key. They do not bind org users.</td>
               <td class="owner">Model risk / supply chain (not involved in IAM)</td>
             </tr>
           </tbody>
         </table>
-        <div class="slide__tagline">The next slide: find your function, then layer. Each cell is one layer.</div>
+        <div class="slide__tagline">Two platform titles because the Artifactory reader and the dataset-server identity are different steps.</div>
       </div>
-      <p class="notes"><strong>16:00 to 17:00.</strong> Walk Identity on each layer. Read left to right: risk, obligation, control, job title. AI Usage is the role. AI Information is the data class that role may retrieve. AI Application is a distinct agent or eval-session credential. AI Platform is the IdP account. AI Model Provider is not involved in IAM; a hosted model authenticating a caller key is expected. Cloud SRM careers usually skip AI Usage, AI Information, and AI Model Provider. The other six functions are the next slide. Do not take a product-roadmap question.</p>
+      <p class="notes"><strong>14:00–16:00.</strong> Stay on this campaign. L1 is the role that could authorize classifiers-off. L2 is blank. L3 is the eval-session credential. L4 is the Artifactory reader and the dataset-server identity. L5 is not the identity store. Do not switch to a generic IAM lecture.</p>
     </section>
 
-    <!-- 8 Other functions by layer -->
-    <section class="slide slide--light" id="slide-8" aria-label="Slide 8 of 9" data-llm="slide-8-of-9">
+    <!-- 7 Functions, one worked cell -->
+    <section class="slide slide--light" id="slide-7" aria-label="Slide 7 of 11" data-llm="slide-7-of-11">
       <div class="slide__inner">
-        <p class="slide__num">08 / 9</p>
+        <p class="slide__num">07 / 11</p>
         <h2 class="slide__h2">Find your function, then layer</h2>
-        <p class="slide__sub">For that cell what are the risks, obligations, controls, accountability</p>
+        <p class="slide__sub">For that cell: the risk, the obligation, the control, and the row’s job title. One cell is filled. The rest are the menu.</p>
+        <div class="slide__tagline">Detection × AI Usage. Risk: a 27 June port-sweep tied to ExploitGym was left running, and Hugging Face was notified on 20 July. Obligation: NIS2 Art. 23 if in scope. Control: SI-4 and IR-4. Accountable: OpenAI / CISO, Detection and Response. Page that owner. Open one declaration ticket.</div>
         <table class="id-table id-table--compact id-table--fn">
           <thead>
             <tr>
@@ -1376,7 +1284,7 @@
             <tr>
               <td>AI Usage &amp; Business Verticals<span>Governance / CISO</span></td>
               <td>Use-case process</td>
-              <td>Residual-risk and late declaration</td>
+              <td class="fn-worked">27 June sweep. Declare on 20 July.</td>
               <td>Process and AUP logs</td>
               <td>Declaration ticket across orgs</td>
               <td>AUP and risk register</td>
@@ -1420,15 +1328,116 @@
             </tr>
           </tbody>
         </table>
-        <div class="slide__tagline">Pick one cell. Name the risk, the obligation, the control, and the row’s job title. IaaS / PaaS / SaaS is the next slide.</div>
       </div>
-      <p class="notes"><strong>17:00 to 18:00.</strong> Do not walk every cell. Point at the rows: those are the layer owners from slide 2. Read Detection if time is short: page the owner of the layer whose control failed. Incident response opens one ticket per failed layer, including the AI Usage declaration. The chain is still risk, obligation, control, job title. OASIS is next.</p>
+      <p class="notes"><strong>16:00–18:00.</strong> Read the filled cell only. Do not walk the grid. Page the owner of the layer whose control failed. Incident response opens one ticket per failed layer, including the AI Usage declaration. Detection and declaration are different clocks: 27 June is the port-sweep; 20 July is the notification to Hugging Face.</p>
     </section>
 
-    <!-- 9 Close: OASIS, CoSAI, MOSAIC -->
-    <section class="slide slide--dark" id="slide-9" aria-label="Slide 9 of 9" data-llm="slide-9-of-9">
+    <!-- 8 Monday close -->
+    <section class="slide slide--dark" id="slide-8" aria-label="Slide 8 of 11" data-llm="slide-8-of-11">
       <div class="slide__inner">
-        <p class="slide__num">09 / 9</p>
+        <p class="slide__num">08 / 11</p>
+        <h2 class="slide__h2">Pick one agent you already run</h2>
+        <p class="slide__sub">A step is one point where it acted, and the next point it reached from there.</p>
+        <ol class="monday-list">
+          <li><span>1</span>Assign each step to one layer.</li>
+          <li><span>2</span>Name one job title for that step.</li>
+          <li><span>3</span>Leave L2 and L5 blank when you cannot name an owner.</li>
+        </ol>
+        <div class="slide__tagline">Stop here. The next slides are for questions.</div>
+      </div>
+      <p class="notes"><strong>18:00–20:00.</strong> Read the three lines and stop. Do not open OASIS unless someone asks where the matrix lives. Questions: hedges, then the other five rows, then the standards map.</p>
+    </section>
+
+    <!-- 9 Hedges -->
+    <section class="slide slide--light" id="slide-9" aria-label="Slide 9 of 11" data-llm="slide-9-of-11">
+      <div class="slide__inner">
+        <p class="slide__num">09 / 11 · questions</p>
+        <h2 class="slide__h2">What the slides do not claim</h2>
+        <ul class="hook-list">
+          <li>
+            <span class="hook-src">WebCache</span>
+            <span class="hook-body">Artifactory was a permitted outbound path. Some OpenAI compute-as-a-service workloads also had WebCache. On 26 May, agents used it toward Hugging Face. OpenAI says that run is unrelated to the July intrusion.</span>
+          </li>
+          <li>
+            <span class="hook-src">Two clocks</span>
+            <span class="hook-body">A 27 June port-sweep was already tied to ExploitGym and left running. The 4 July outage took the Artifactory instance offline. OpenAI notified Hugging Face on 20 July. Detection and declaration are different clocks.</span>
+          </li>
+          <li>
+            <span class="hook-src">Blank layers</span>
+            <span class="hook-body">AI Information and AI Model Provider have no failed-control owner in the public record. Those layers stay blank.</span>
+          </li>
+          <li>
+            <span class="hook-src">Whose table</span>
+            <span class="hook-body">These rows are the speaker’s reading of disclosures OpenAI and Hugging Face published. Workstream 2 did not issue them. An OpenAI workstream member recuses from this analysis.</span>
+          </li>
+        </ul>
+      </div>
+      <p class="notes"><strong>Questions only.</strong> Use this slide when someone quotes “only permitted path” or “first signal 4 July.” Official phrases for the three spoken rows stay in the earlier notes if you need the article text.</p>
+    </section>
+
+    <!-- 10 Handout rows -->
+    <section class="slide slide--light" id="slide-10" aria-label="Slide 10 of 11" data-llm="slide-10-of-11">
+      <div class="slide__inner">
+        <p class="slide__num">10 / 11 · questions</p>
+        <h2 class="slide__h2">The other five rows</h2>
+        <p class="slide__sub">Same chain as the three steps on the earlier table. Use this slide when someone asks for a step that table skipped.</p>
+        <table class="id-table id-table--compact id-table--assess id-table--chain">
+          <colgroup>
+            <col style="width:10.5rem" />
+            <col style="width:22%" />
+            <col style="width:22%" />
+            <col style="width:24%" />
+            <col />
+          </colgroup>
+          <thead>
+            <tr><th>Layer</th><th>Risk</th><th>Obligation</th><th>Control</th><th>Accountable</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AI Usage &amp; Business Verticals</td>
+              <td class="fail">Detection without declaration. A 27 June port-sweep tied to ExploitGym was left running. OpenAI notified Hugging Face on 20 July.</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 23</a> <strong>if in scope</strong>: early warning within 24 hours of becoming aware, incident notification within 72 hours, final report within one month.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SI-04" target="_blank" rel="noopener">SI-4</a>: monitor related eval jobs as one incident. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=IR-04" target="_blank" rel="noopener">IR-4</a>: declare when logs contain a third party’s credentials</td>
+              <td class="owner">OpenAI / CISO, Detection and Response</td>
+            </tr>
+            <tr>
+              <td>AI Application</td>
+              <td class="fail">Emergent agency. Later sessions found Artifactory notes, assigned work, prefixed ZZ. Those rules were not in the original prompt.</td>
+              <td>None. Statutes name a provider or a person, not an agent swarm.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-02" target="_blank" rel="noopener">AC-2</a>: unique short-lived credential per eval session. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AU-12" target="_blank" rel="noopener">AU-12</a>: bind every tool call to that session</td>
+              <td class="owner">OpenAI / Head of Evaluation Harness</td>
+            </tr>
+            <tr>
+              <td>AI Application</td>
+              <td class="fail">Path to production. Sandbox to Artifactory to CyberGym on Modal to Hugging Face. The failure at this step is the app owner’s harness.</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)(d)</a> supply-chain security <strong>if in scope</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-20" target="_blank" rel="noopener">AC-20</a>: eval jobs may not use a third-party code-execution endpoint</td>
+              <td class="owner">CyberGym app owner / software engineer</td>
+            </tr>
+            <tr>
+              <td>AI Platform</td>
+              <td class="fail">Agent swarm attack. Code on 41 dataset-server workers. Administrator-equivalent and host-level access across multiple clusters within thirteen hours.</td>
+              <td><a href="https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title18-section1030&amp;num=0&amp;edition=prelim" target="_blank" rel="noopener">CFAA 18 U.S.C. § 1030</a> <strong>if a US protected computer is accessed without authorization</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege on every identity an agent can mint. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-07" target="_blank" rel="noopener">SC-7</a>: deny-by-default egress</td>
+              <td class="owner">OpenAI / Head of Evaluation Infrastructure</td>
+            </tr>
+            <tr>
+              <td>AI Platform</td>
+              <td class="fail">Privilege and secret concentration. IMDS node-role, privileged hostPath pods, one connector bound to system:masters.</td>
+              <td><a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32022L2555" target="_blank" rel="noopener">NIS2 Art. 21(2)(i)</a> access control <strong>if in scope</strong>.</td>
+              <td><a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=AC-06" target="_blank" rel="noopener">AC-6</a>: least privilege and admission control. <a href="https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_2_0/home?element=SC-07" target="_blank" rel="noopener">SC-7</a>: block instance metadata from pods</td>
+              <td class="owner">Hugging Face / Head of Infrastructure</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="notes"><strong>Questions only.</strong> Declaration is the first row: 27 June sweep, 20 July notification, NIS2 Art. 23 if in scope, CISO Detection and Response. Emergent agency has no statute that names an agent swarm. CyberGym is AC-20. The last two rows are the two platform steps you already named on the map.</p>
+    </section>
+
+    <!-- 11 OASIS backup -->
+    <section class="slide slide--dark" id="slide-11" aria-label="Slide 11 of 11" data-llm="slide-11-of-11">
+      <div class="slide__inner">
+        <p class="slide__num">11 / 11 · questions</p>
         <h2 class="slide__h2">OASIS, CoSAI, and MOSAIC</h2>
         <p class="slide__sub">OASIS Open hosts the project. MOSAIC links eight founding initiatives. CoSAI is one of them.</p>
         <div class="org-split">
@@ -1466,7 +1475,7 @@
         </div>
         <div class="slide__tagline"><a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">CoSAI SRF v1.0</a>, page 7, is the IaaS / PaaS / SaaS matrix. The case study tables are the speaker’s analysis.</div>
       </div>
-      <p class="notes"><strong>18:00–20:00.</strong> Read OASIS, then CoSAI, then MOSAIC. OASIS is the host. CoSAI is the project that published this matrix. MOSAIC is coordination among eight founding initiatives; CoSAI is one of them. Do not say MOSAIC adopted the SRF. OpenCRE links terms and controls; the SRF names the accountable party on each cell. Point at IaaS versus SaaS: customer blue on the left, provider gray on the right. Shared cells still need one accountable party. Do not close the OpenAI / Hugging Face case study by asking people to join CoSAI. If asked where the matrix lives, the project page is coalitionforsecureai.org. MOSAIC site is mosaicstandards.org. This talk’s analysis is the speaker’s; an OpenAI workstream member recuses from it. Expected question: is this a standard? It is an OASIS Open Project publication, Workstream 2, 26 May 2026, not a de jure ISO or EN standard.</p>
+      <p class="notes"><strong>Questions only.</strong> OASIS is the host. CoSAI is the project that published this matrix. MOSAIC is coordination among eight founding initiatives; CoSAI is one of them. Do not say MOSAIC adopted the SRF. Point at IaaS versus SaaS: customer blue on the left, provider gray on the right. Shared cells still need one accountable party. Do not close by asking people to join CoSAI. Expected question: is this a standard? It is an OASIS Open Project publication, Workstream 2, 26 May 2026, not a de jure ISO or EN standard.</p>
     </section>
 
     <!-- CFP packet: not presented -->
@@ -1474,7 +1483,7 @@
       <div class="slide__inner">
         <p class="slide__num">CFP · not presented</p>
         <h2 class="slide__h2">Sessionize packet</h2>
-        <p class="slide__sub">Copy into <a href="https://sessionize.com/unprompted-cfp-oct2026" target="_blank" rel="noopener">https://sessionize.com/unprompted-cfp-oct2026</a>. CFP closes 8 Sep 2026. Conference is 27 to 29 Oct 2026, San Francisco. Track: Govern. Format: Standard session (20 + 5).</p>
+        <p class="slide__sub">Copy into <a href="https://sessionize.com/unprompted-cfp-oct2026" target="_blank" rel="noopener">https://sessionize.com/unprompted-cfp-oct2026</a>. Rejected September 2026. The packet below is what was submitted. The slides above are the revised talk. Track was Govern. Format was a standard session (20 + 5).</p>
 
         <div class="cfp-block">
           <h3>Title</h3>
@@ -1526,7 +1535,7 @@
   <site-footer></site-footer>
 
   <script>
-    const TOTAL = 9;
+    const TOTAL = 11;
     let current = 1;
     let viewAll = false;
     let showNotes = false;

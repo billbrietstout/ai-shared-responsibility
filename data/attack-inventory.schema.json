@@ -1,0 +1,272 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
+  "title": "Published AI attack class inventory",
+  "description": "Schema for /data/attack-inventory.json. Each entry is a published attack class with catalog, paper, and incident identifiers, and a per-ref verified flag. Run-scoped fields (ATT-nn ids, draft_overlap) are absent by design; a claims-test run assigns them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "inventory_version",
+    "updated",
+    "description",
+    "scope",
+    "rules",
+    "catalogs",
+    "verification_methods",
+    "export_contract",
+    "changelog",
+    "entries"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "inventory_version": { "$ref": "#/$defs/semver" },
+    "updated": { "$ref": "#/$defs/date" },
+    "description": { "type": "string", "minLength": 1 },
+    "scope": { "type": "string", "minLength": 1 },
+    "rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "catalogs": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": { "$ref": "#/$defs/catalogKey" },
+      "additionalProperties": { "$ref": "#/$defs/catalog" }
+    },
+    "verification_methods": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string", "minLength": 1 }
+    },
+    "export_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "pack_version", "rules"],
+      "properties": {
+        "target": { "type": "string" },
+        "pack_version": { "type": "string" },
+        "rules": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "changelog": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["version", "date", "id", "change"],
+        "properties": {
+          "version": { "$ref": "#/$defs/semver" },
+          "date": { "$ref": "#/$defs/date" },
+          "id": { "type": "string", "pattern": "^(atk-[a-z0-9-]+|\\*)$" },
+          "change": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/entry" }
+    }
+  },
+  "$defs": {
+    "semver": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "date": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+    "nullableDate": {
+      "oneOf": [{ "$ref": "#/$defs/date" }, { "type": "null" }]
+    },
+    "atkId": { "type": "string", "pattern": "^atk-[a-z0-9]+(-[a-z0-9]+)*$" },
+    "catalogKey": {
+      "enum": [
+        "mitre-atlas",
+        "owasp-llm-top10",
+        "owasp-agentic-threats",
+        "owasp-dsgai",
+        "finos-aigf",
+        "mitre-attack",
+        "cwe"
+      ]
+    },
+    "catalog": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "released", "source_url", "retrieved_on", "id_form"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "released": { "type": "string" },
+        "source_url": { "type": "string", "format": "uri" },
+        "source_commit": { "type": "string" },
+        "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "retrieved_on": { "$ref": "#/$defs/date" },
+        "id_form": { "type": "string" },
+        "title_convention": { "type": "string" },
+        "license_note": { "type": "string" },
+        "newer_release_seen": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["version", "checked_on", "cited_ids_changed"],
+          "properties": {
+            "version": { "type": "string" },
+            "checked_on": { "$ref": "#/$defs/date" },
+            "cited_ids_changed": { "type": "integer", "minimum": 0 },
+            "note": { "type": "string" }
+          }
+        }
+      }
+    },
+    "taxonomyRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["catalog", "catalog_version", "id", "title_in_catalog", "mapping_quality", "verified"],
+      "properties": {
+        "catalog": { "$ref": "#/$defs/catalogKey" },
+        "catalog_version": { "type": "string" },
+        "id": { "type": "string", "minLength": 1 },
+        "title_in_catalog": { "type": "string" },
+        "mapping_quality": { "enum": ["exact", "closest", "analogy"] },
+        "verified": { "type": "boolean" }
+      }
+    },
+    "paperRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "title", "first_author", "year", "verified"],
+      "properties": {
+        "type": { "enum": ["arxiv", "doi"] },
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string" },
+        "first_author": { "type": "string" },
+        "year": { "type": "integer", "minimum": 1990 },
+        "venue": { "type": ["string", "null"] },
+        "verified": { "type": "boolean" }
+      }
+    },
+    "incidentRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "id", "label", "verified"],
+      "properties": {
+        "type": { "enum": ["cve", "atlas-case-study", "url"] },
+        "id": { "type": "string", "minLength": 1 },
+        "label": { "type": "string" },
+        "catalog_version": { "type": "string" },
+        "url": { "type": ["string", "null"] },
+        "accessed": { "$ref": "#/$defs/nullableDate" },
+        "verified": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "url" } } },
+          "then": { "required": ["url", "accessed"] }
+        },
+        {
+          "if": { "properties": { "type": { "const": "atlas-case-study" } } },
+          "then": { "required": ["catalog_version"] }
+        }
+      ]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "aliases",
+        "family",
+        "scope",
+        "topics",
+        "failure_mode",
+        "taxonomy_refs",
+        "paper_refs",
+        "incident_refs",
+        "srf_crosswalk",
+        "related",
+        "origin",
+        "status",
+        "merged_into",
+        "verification",
+        "added_in",
+        "last_changed_in"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/atkId" },
+        "name": { "type": "string", "minLength": 1 },
+        "aliases": { "type": "array", "items": { "type": "string" } },
+        "family": { "type": "string", "minLength": 1 },
+        "scope": { "enum": ["ai", "agentic", "classical-reopened", "business-process"] },
+        "topics": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "agent-identity",
+              "multimodal",
+              "MCP",
+              "model-signing",
+              "shared-responsibility",
+              "persona-assignment",
+              "oversight-tiers",
+              "supply-chain",
+              "telemetry",
+              "tool-calling",
+              "business-process",
+              "payment",
+              "invoice",
+              "procurement",
+              "approval",
+              "master-data",
+              "workflow"
+            ]
+          }
+        },
+        "vertical_controls": {
+          "description": "Optional. Canonical srf.control.<vertical>.<control-id> ids from /ids.json whose control addresses this class in a vertical profile. Context only; the entry stays in this single inventory.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^srf\\.control\\.[a-z0-9-]+\\.[A-Za-z0-9-]+$" }
+        },
+        "failure_mode": { "type": "string", "minLength": 1 },
+        "taxonomy_refs": { "type": "array", "items": { "$ref": "#/$defs/taxonomyRef" } },
+        "paper_refs": { "type": "array", "items": { "$ref": "#/$defs/paperRef" } },
+        "incident_refs": { "type": "array", "items": { "$ref": "#/$defs/incidentRef" } },
+        "srf_crosswalk": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "related": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/atkId" } },
+        "origin": { "enum": ["seed", "added"] },
+        "status": { "enum": ["active", "merged", "withdrawn"] },
+        "merged_into": { "oneOf": [{ "$ref": "#/$defs/atkId" }, { "type": "null" }] },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["checked_on", "checked_by", "reviewed_by", "methods", "notes"],
+          "properties": {
+            "checked_on": { "$ref": "#/$defs/nullableDate" },
+            "checked_by": { "type": ["string", "null"] },
+            "reviewed_by": { "type": ["string", "null"] },
+            "methods": { "type": "array", "items": { "type": "string" } },
+            "notes": { "type": "string" }
+          }
+        },
+        "added_in": { "$ref": "#/$defs/semver" },
+        "last_changed_in": { "$ref": "#/$defs/semver" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "merged" } } },
+          "then": { "properties": { "merged_into": { "$ref": "#/$defs/atkId" } } },
+          "else": { "properties": { "merged_into": { "type": "null" } } }
+        }
+      ]
+    }
+  }
+}
