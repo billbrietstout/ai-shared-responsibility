@@ -1,25 +1,11 @@
-# EXAMPLE / template — not the live board
+# Kombai ↔ Cursor live message board
 
-**Warning: `~/.kombai` (user home app data: mcp, binaries, workspaces) ≠ repo `.kombai/`.** The board is only under the git checkout, e.g. `…/ai-shared-responsibility/.kombai/MESSAGE-BOARD.md`. Never use `/Users/<you>/.kombai/MESSAGE-BOARD.md`. In Finder, **⌘⇧.** shows the checkout’s `.kombai` dotfolder.
-
-From the **repo root**, copy this file to create the gitignored live board:
-
-```bash
-cp .kombai/MESSAGE-BOARD.example.md .kombai/MESSAGE-BOARD.md
-```
-
-Then edit `.kombai/MESSAGE-BOARD.md` only. **Never commit** the live file.
-
----
-
-# Kombai ↔ Cursor message board
-
-**This file is the only message board.** Path: `.kombai/MESSAGE-BOARD.md` in the local **git checkout** (gitignored; not on GitHub; not under `~/.kombai`). Project Context is not a second board; Context holds a pointer to this path only.
+**This file (when named MESSAGE-BOARD.md) is the live Cursor↔Kombai channel.** Path: `.kombai/MESSAGE-BOARD.md` in the site git checkout (gitignored; not on GitHub). Not under `~/.kombai` (that is Kombai app data). Project Context is only a pointer for humans in Cursor.
 
 **Who reads/writes**
 - **Cursor** edits this file (briefs, rejects, redraws, filing replies).
 - **Bill** pastes Kombai’s design-only handoff into **Kombai replies** below (or asks Cursor to paste it).
-- **Kombai** reads this file from the checkout Bill opens for Kombai. Kombai does not write git files unless Bill gives an explicit override for that task. Kombai cannot read Cursor Project Context / Agent Store.
+- **Kombai** reads this file from this checkout. Design-only: no git edits, no PR, no `llms*.txt` / JSON unless Bill gives an explicit override for that task. Kombai cannot read Cursor Project Context / Agent Store.
 
 **Standing rules**
 - Design-only: no git edits, no PR, no `llms*.txt` / JSON changes
