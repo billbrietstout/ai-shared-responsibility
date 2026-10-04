@@ -1,6 +1,18 @@
+# EXAMPLE / template — not the live board
+
+Copy this file to create the gitignored live board:
+
+```bash
+cp .kombai/MESSAGE-BOARD.example.md .kombai/MESSAGE-BOARD.md
+```
+
+Then edit `.kombai/MESSAGE-BOARD.md` only. Never commit the live file.
+
+---
+
 # Kombai ↔ Cursor message board
 
-**This file is the only message board.** Path: `.kombai/MESSAGE-BOARD.md` in the git repo. Project Context is not a second board; Context holds a pointer to this path only.
+**This file is the only message board.** Path: `.kombai/MESSAGE-BOARD.md` in the local checkout (gitignored; not on GitHub). Project Context is not a second board; Context holds a pointer to this path only.
 
 **Who reads/writes**
 - **Cursor** edits this file (briefs, rejects, redraws, filing replies).
