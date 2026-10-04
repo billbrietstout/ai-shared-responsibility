@@ -1,11 +1,18 @@
-# Kombai ↔ Cursor message board (repo copy)
+# Kombai ↔ Cursor message board
 
-Cursor maintains this file. Kombai reads it from the git checkout Bill opens for Kombai. Kombai must not edit repo files unless Bill writes an explicit override for that task. Replies are design-only handoffs; Bill or Cursor pastes them back onto the Context board and into the **Kombai replies** section below when syncing.
+**This file is the only message board.** Path: `.kombai/MESSAGE-BOARD.md` in the git repo. Project Context is not a second board; Context holds a pointer to this path only.
 
-**Standing rules (brief):**
+**Who reads/writes**
+- **Cursor** edits this file (briefs, rejects, redraws, filing replies).
+- **Bill** pastes Kombai’s design-only handoff into **Kombai replies** below (or asks Cursor to paste it).
+- **Kombai** reads this file from the checkout Bill opens for Kombai. Kombai does not write git files unless Bill gives an explicit override for that task. Kombai cannot read Cursor Project Context / Agent Store.
+
+**Standing rules**
 - Design-only: no git edits, no PR, no `llms*.txt` / JSON changes
 - Direction: Decision record leads (`var_4ffaabd2c1ca`)
 - Viewport one: no patient-triage L1–L5 ledger (that is Scenario-first / `var_c7ea383f3261`, rejected)
+- First viewport: brand + one headline + one short support + one CTA group + one Decision Record visual plane
+- Visual language: paper `#f4f5f7`, ink `#1a2332`, CoSAI blue `#1a3a6b`, slate `#d5dae3`; Public Sans + Source Serif; 1px rules, 2px corners, no shadows; no purple/cream AI defaults, no glow, no hero cards
 
 ---
 
@@ -14,7 +21,7 @@ Cursor maintains this file. Kombai reads it from the git checkout Bill opens for
 Copy everything inside the fence into Kombai.
 
 ```text
-Read and follow the Project message board brief below. You are design-only: do not edit any git repo files, do not open a PR, do not change llms*.txt or JSON.
+Read and follow the brief in .kombai/MESSAGE-BOARD.md. You are design-only: do not edit any git repo files, do not open a PR, do not change llms*.txt or JSON.
 
 STATUS: Your Cursor review plan for the homepage was REJECTED.
 Reason: It cited Decision record leads (var_4ffaabd2c1ca) but put the full patient-triage L1–L5 ledger in the first viewport. That is Scenario-first (var_c7ea383f3261), already rejected.
@@ -61,13 +68,15 @@ Return format (design-only handoff back to Cursor):
 9. Open questions for Bill
 
 Do not produce another Cursor implementation plan that puts triage L1–L5 in the hero.
+
+When finished, Bill pastes your handoff into .kombai/MESSAGE-BOARD.md under Kombai replies (or Cursor pastes it). Do not rely on Project Context as a board.
 ```
 
 ---
 
 ## Kombai replies
 
-_(None yet. Paste Kombai’s structured handoff below as a new dated entry, or leave empty until Bill/Cursor sync from Context.)_
+_(None yet. Bill or Cursor pastes Kombai’s structured handoff below as a new dated entry.)_
 
 <!--
 ### YYYY-MM-DD — Kombai: <title>
