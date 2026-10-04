@@ -1,33 +1,6 @@
-# DEPRECATED — use `.board-cursor-kombai/` instead
+This is the live channel open brief when copied to open.md.
 
-This single-file board is deprecated. Live near-sync channel: [`.board-cursor-kombai/`](../.board-cursor-kombai/) (`open.md`, `turn.md`, outboxes). See `.board-cursor-kombai/README.md` and repo `BOARD.md`.
-
----
-
-# Kombai ↔ Cursor live message board (legacy seed)
-
-**Legacy path only.** Prefer `.board-cursor-kombai/open.md`. If named `MESSAGE-BOARD.md` under `.kombai/`, it is gitignored and not on GitHub. Not under `~/.kombai` (that is Kombai app data). Project Context is only a pointer for humans in Cursor.
-
-**Who reads/writes**
-- **Cursor** edits this file (briefs, rejects, redraws, filing replies).
-- **Bill** pastes Kombai’s design-only handoff into **Kombai replies** below (or asks Cursor to paste it).
-- **Kombai** reads this file from this checkout. Design-only: no git edits, no PR, no `llms*.txt` / JSON unless Bill gives an explicit override for that task. Kombai cannot read Cursor Project Context / Agent Store.
-
-**Standing rules**
-- Design-only: no git edits, no PR, no `llms*.txt` / JSON changes
-- Direction: Decision record leads (`var_4ffaabd2c1ca`)
-- Viewport one: no patient-triage L1–L5 ledger (that is Scenario-first / `var_c7ea383f3261`, rejected)
-- First viewport: brand + one headline + one short support + one CTA group + one Decision Record visual plane
-- Visual language: paper `#f4f5f7`, ink `#1a2332`, CoSAI blue `#1a3a6b`, slate `#d5dae3`; Public Sans + Source Serif; 1px rules, 2px corners, no shadows; no purple/cream AI defaults, no glow, no hero cards
-
----
-
-## Open for Kombai (paste this)
-
-Copy everything inside the fence into Kombai.
-
-```text
-Read and follow the brief in .kombai/MESSAGE-BOARD.md. You are design-only: do not edit any git repo files, do not open a PR, do not change llms*.txt or JSON.
+Read `turn.md`: only act when it says `kombai`. Reply in `outbox-kombai/`, then set `turn.md` to `cursor`. Do not edit `outbox-cursor/`. Path: `<checkout>/.board-cursor-kombai/`. Design-only: no git edits, no PR, no `llms*.txt` / JSON.
 
 STATUS: Your Cursor review plan for the homepage was REJECTED.
 Reason: It cited Decision record leads (var_4ffaabd2c1ca) but put the full patient-triage L1–L5 ledger in the first viewport. That is Scenario-first (var_c7ea383f3261), already rejected.
@@ -75,21 +48,4 @@ Return format (design-only handoff back to Cursor):
 
 Do not produce another Cursor implementation plan that puts triage L1–L5 in the hero.
 
-When finished, Bill pastes your handoff into .kombai/MESSAGE-BOARD.md under Kombai replies (or Cursor pastes it). Do not rely on Project Context as a board.
-```
-
----
-
-## Kombai replies
-
-_(None yet. Bill or Cursor pastes Kombai’s structured handoff below as a new dated entry.)_
-
-<!--
-### YYYY-MM-DD — Kombai: <title>
-
-- **From:** Kombai
-- **To:** Cursor
-- **Status:** awaiting Cursor review
-
-(paste handoff body)
--->
+When finished: write `outbox-kombai/YYYYMMDD-HHMMSS-<slug>.md` with the handoff, then set `turn.md` to exactly `cursor`. Do not rely on Project Context as a board.
