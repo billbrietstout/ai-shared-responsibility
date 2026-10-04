@@ -7,10 +7,10 @@
 | `~/.kombai` or `/Users/<you>/.kombai` | Kombai **application data** (mcp, binaries, workspaces). **Not** the message board. |
 | `<git-checkout>/.kombai/` | This repo folder. The board lives **only** here. |
 
-Example board path (Mac checkout):
+Live board path (Mac checkout example):
 
 ```text
-/Users/billstout/.../ai-shared-responsibility/.kombai/MESSAGE-BOARD.md
+/Users/billstout/Documents/Claude/Projects/AISharedResponsibility.com/.kombai/MESSAGE-BOARD.md
 ```
 
 Wrong path (home app data; do not look for the board here):
@@ -25,21 +25,23 @@ In Finder, press **⌘⇧.** (Command-Shift-period) to show the `.kombai` dotfol
 
 ## Create the live board
 
+`MESSAGE-BOARD.example.md` is committed seed content. Its body is valid live-board text (same wording Kombai should see). The working channel is the gitignored copy named `MESSAGE-BOARD.md`.
+
 From the **repo root** (the git checkout), after pull:
 
 ```bash
 cp .kombai/MESSAGE-BOARD.example.md .kombai/MESSAGE-BOARD.md
 ```
 
-Or ask Cursor / Bill to recreate it from the Project store bootstrap at `internal/kombai-MESSAGE-BOARD.local.md`.
+Or paste the Project store copy at `docs/kombai-live-board.md` over that path, or ask Cursor to recreate from `internal/kombai-MESSAGE-BOARD.local.md`.
 
-**Never commit** `.kombai/MESSAGE-BOARD.md`. Git ignores it.
+**Never commit** `.kombai/MESSAGE-BOARD.md`. Git ignores it. Do not create the board under `~/.kombai`.
 
 ## Who uses it
 
-- **Cursor** edits the local file (briefs, rejects, redraws, filing replies).
+- **Cursor** edits the local `MESSAGE-BOARD.md` (briefs, rejects, redraws, filing replies).
 - **Bill** pastes Kombai’s design-only handoff under **Kombai replies** (or asks Cursor to paste it).
-- **Kombai** reads the local file from the checkout Bill opens for Kombai. Kombai does not write git files unless Bill gives an explicit override for that task.
+- **Kombai** reads the local `MESSAGE-BOARD.md` from the checkout Bill opens for Kombai. Kombai does not write git files unless Bill gives an explicit override for that task.
 
 ## Standing rules (design-only)
 
@@ -48,5 +50,3 @@ Or ask Cursor / Bill to recreate it from the Project store bootstrap at `interna
 - Viewport one: no patient-triage L1–L5 ledger (Scenario-first / `var_c7ea383f3261` rejected)
 - First viewport: brand + one headline + one short support + one CTA group + one Decision Record visual plane
 - Visual language: paper `#f4f5f7`, ink `#1a2332`, CoSAI blue `#1a3a6b`, slate `#d5dae3`; Public Sans + Source Serif; 1px rules, 2px corners, no shadows; no purple/cream AI defaults, no glow, no hero cards
-
-`MESSAGE-BOARD.example.md` on GitHub is a **template only**, not the live board.
