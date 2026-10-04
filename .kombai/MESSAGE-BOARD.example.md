@@ -1,18 +1,20 @@
 # EXAMPLE / template — not the live board
 
-Copy this file to create the gitignored live board:
+**Warning: `~/.kombai` (user home app data: mcp, binaries, workspaces) ≠ repo `.kombai/`.** The board is only under the git checkout, e.g. `…/ai-shared-responsibility/.kombai/MESSAGE-BOARD.md`. Never use `/Users/<you>/.kombai/MESSAGE-BOARD.md`. In Finder, **⌘⇧.** shows the checkout’s `.kombai` dotfolder.
+
+From the **repo root**, copy this file to create the gitignored live board:
 
 ```bash
 cp .kombai/MESSAGE-BOARD.example.md .kombai/MESSAGE-BOARD.md
 ```
 
-Then edit `.kombai/MESSAGE-BOARD.md` only. Never commit the live file.
+Then edit `.kombai/MESSAGE-BOARD.md` only. **Never commit** the live file.
 
 ---
 
 # Kombai ↔ Cursor message board
 
-**This file is the only message board.** Path: `.kombai/MESSAGE-BOARD.md` in the local checkout (gitignored; not on GitHub). Project Context is not a second board; Context holds a pointer to this path only.
+**This file is the only message board.** Path: `.kombai/MESSAGE-BOARD.md` in the local **git checkout** (gitignored; not on GitHub; not under `~/.kombai`). Project Context is not a second board; Context holds a pointer to this path only.
 
 **Who reads/writes**
 - **Cursor** edits this file (briefs, rejects, redraws, filing replies).

@@ -1,10 +1,31 @@
 # `.kombai`
 
+**Warning: `~/.kombai` (user home app data) is not this folder.**
+
+| Path | What it is |
+|------|------------|
+| `~/.kombai` or `/Users/<you>/.kombai` | Kombai **application data** (mcp, binaries, workspaces). **Not** the message board. |
+| `<git-checkout>/.kombai/` | This repo folder. The board lives **only** here. |
+
+Example board path (Mac checkout):
+
+```text
+/Users/billstout/.../ai-shared-responsibility/.kombai/MESSAGE-BOARD.md
+```
+
+Wrong path (home app data; do not look for the board here):
+
+```text
+/Users/billstout/.kombai/MESSAGE-BOARD.md
+```
+
+In Finder, press **⌘⇧.** (Command-Shift-period) to show the `.kombai` dotfolder inside the git checkout.
+
 `MESSAGE-BOARD.md` is **local-only and gitignored**. It is the sole Cursor↔Kombai channel in a checkout. It is not on GitHub. Project Context is not a second board.
 
 ## Create the live board
 
-After pull:
+From the **repo root** (the git checkout), after pull:
 
 ```bash
 cp .kombai/MESSAGE-BOARD.example.md .kombai/MESSAGE-BOARD.md
