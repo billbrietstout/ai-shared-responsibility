@@ -16,6 +16,8 @@
       "CSA AICM v1.0.3",
       "OWASP Top 10 for LLM Applications 2025",
       "Federal Reserve SR 11-7 (2011)",
+      "NYDFS 23 NYCRR Part 500 and AI cyber risk industry letter (2024)",
+      "EU DORA (Regulation 2022/2554)",
       "FDA AI/ML Software as a Medical Device Action Plan",
       "MITRE ATLAS"
     ]
@@ -243,10 +245,20 @@
       "name": "NY DFS Part 500 (Cybersecurity)",
       "jurisdiction": "US-NY",
       "category": "REGULATION",
-      "why": "Financial-services entities regulated by NY DFS must maintain a cybersecurity programme that increasingly covers AI supply-chain and third-party risk.",
+      "why": "Banks, insurers, and other entities licensed by NY DFS must run a cybersecurity programme under Part 500. DFS's October 2024 AI letter says the risk assessment must cover the entity's own AI, AI used by its vendors, and deepfake-resistant MFA.",
       "primarySRFLayer": "L4",
-      "citations": ["23 NYCRR 500"],
-      "controls": ["DFS_CISO", "DFS_THIRD_PARTY", "DFS_INCIDENT"]
+      "citations": ["23 NYCRR 500", "NYDFS Industry Letter on AI cyber risk, 16 Oct 2024"],
+      "controls": ["DFS_CISO", "DFS_THIRD_PARTY", "DFS_INCIDENT", "DFS_AI_INVENTORY"]
+    },
+    {
+      "code": "DORA",
+      "name": "EU Digital Operational Resilience Act (DORA)",
+      "jurisdiction": "EU",
+      "category": "REGULATION",
+      "why": "EU banks, insurers, investment firms, and crypto-asset service providers must treat model APIs and AI platforms as ICT third-party services: register each contract, include Article 30 terms, and report major ICT incidents.",
+      "primarySRFLayer": "L1",
+      "citations": ["Regulation (EU) 2022/2554 Arts. 17-23, 28, 30"],
+      "controls": ["DORA_ICT_REGISTER", "DORA_CONTRACT_TERMS", "DORA_INCIDENT"]
     },
     {
       "code": "FDA_AI_ML",
@@ -358,6 +370,10 @@
     "DFS_CISO":                  { "title": "CISO reporting & cyber programme (Part 500)",      "layer": "L4" },
     "DFS_THIRD_PARTY":           { "title": "Third-party & AI-vendor risk process",             "layer": "L1" },
     "DFS_INCIDENT":              { "title": "72-hour incident notification",                    "layer": "L4" },
+    "DFS_AI_INVENTORY":          { "title": "Inventory of systems that use or rely on AI",      "layer": "L1" },
+    "DORA_ICT_REGISTER":         { "title": "Register of information for AI/ICT providers",     "layer": "L1" },
+    "DORA_CONTRACT_TERMS":       { "title": "Art. 30 contract terms with model/platform vendor", "layer": "L1" },
+    "DORA_INCIDENT":             { "title": "Major ICT-related incident classification & report", "layer": "L4" },
     "FDA_SAMD":                  { "title": "SaMD classification & submission",                 "layer": "L1" },
     "FDA_PCCP":                  { "title": "Predetermined Change Control Plan",                "layer": "L5" },
     "FDA_GMLP":                  { "title": "Good Machine Learning Practice (GMLP)",            "layer": "L5" },

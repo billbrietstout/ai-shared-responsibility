@@ -539,7 +539,13 @@
       return null;
     },
     NYDFS_PART_500: (i, f) => {
-      if ((i.verticals || []).includes('FINANCIAL_SERVICES') && f.deploysInUS) return 'LIKELY';
+      const v = i.verticals || [];
+      if ((v.includes('FINANCIAL_SERVICES') || v.includes('INSURANCE')) && f.deploysInUS) return 'LIKELY';
+      return null;
+    },
+    DORA: (i, f) => {
+      const v = i.verticals || [];
+      if ((v.includes('FINANCIAL_SERVICES') || v.includes('INSURANCE')) && f.inEUScope) return 'LIKELY';
       return null;
     },
     FDA_AI_ML: (i) => {
