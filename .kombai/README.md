@@ -18,7 +18,8 @@ Repo root pointer: [`BOARD.md`](../BOARD.md).
 |------|------------|
 | `~/.kombai` or `/Users/<you>/.kombai` | Kombai **application data** (mcp, binaries, workspaces). **Not** the message board. |
 | `<git-checkout>/.board-cursor-kombai/` | **Live drop-box channel** (gitignored open/turn/outbox/archive). |
-| `<git-checkout>/.kombai/` | This legacy folder (README + optional old example). |
+| `<git-checkout>/.kombai/` | Legacy folder: README, deprecated example, optional local canvas. |
+| `<git-checkout>/.kombai/canvas/` | Kombai design canvases (local; gitignored). Not the message channel. |
 
 Wrong path (home app data):
 
@@ -26,11 +27,10 @@ Wrong path (home app data):
 /Users/billstout/.kombai/MESSAGE-BOARD.md
 ```
 
-## Optional migration from the old file
-
-If you still have a local `.kombai/MESSAGE-BOARD.md`, copy its open brief into `.board-cursor-kombai/open.md`, then use the drop-box protocol. New seeds:
+## Bootstrap the live drop-box
 
 ```bash
 cp .board-cursor-kombai/open.example.md .board-cursor-kombai/open.md
 cp .board-cursor-kombai/turn.example.md .board-cursor-kombai/turn.md
+# When ready for Kombai: echo kombai > .board-cursor-kombai/turn.md
 ```

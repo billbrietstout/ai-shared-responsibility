@@ -61,4 +61,4 @@ cp .board-cursor-kombai/turn.example.md .board-cursor-kombai/turn.md
 
 ## Deprecated
 
-`.kombai/MESSAGE-BOARD.md` (single-file board) is deprecated. Prefer this directory. Keep ignoring any leftover `.kombai/MESSAGE-BOARD.md`; do not commit it.
+`.kombai/MESSAGE-BOARD.md` (single-file board) is deprecated. Prefer this directory. Keep ignoring any leftover `.kombai/MESSAGE-BOARD.md`; do not commit it. Local Kombai canvases under `.kombai/canvas/` are design artifacts, not the message channel.
