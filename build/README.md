@@ -178,6 +178,35 @@ Checks every page declares `llm:type`, all `llm:concepts` resolve to `ids.json`,
 content pages carry at least one chunk marker, every `data-llm` sits on a real
 carrier tag, and `section`/`header` tags stay balanced.
 
+## Attack inventory
+
+```bash
+python3 build/verify_attack_inventory.py            # errors fail; staleness warns
+python3 build/verify_attack_inventory.py --strict   # warnings fail too
+python3 build/export_attack_inventory.py --topics telemetry,MCP --out rows.json
+python3 build/export_attack_inventory.py --topics payment,approval --vertical finance --format md
+```
+
+`data/attack-inventory.json` is checked against
+`data/attack-inventory.schema.json` when `jsonschema` is installed. Without it,
+the script still runs its own checks: unique `atk-` ids, every ref's
+`catalog_version` equal to the pinned catalog, `related` and `srf_crosswalk` ids
+that resolve, `vertical_controls` ids that exist as `srf.control` ids in
+`ids.json`, a dated check record behind every `verified` ref, a changelog
+line for the current `inventory_version`, and no em or en dashes. Staleness
+warnings fire when a newer catalog release has been seen, when an entry was
+checked before a cited catalog's release date, or when a URL ref is older than
+180 days.
+
+The export script writes claims-test C-attacks rows (`ATT-nn` numbering,
+`draft_overlap` and `stage` left null) for use as a `pinned_sources` attachment.
+`ATT-nn` ids are assigned per export and are never stored in the inventory.
+
+To change an entry: open the source, edit the ref, set
+`verification.checked_on` and `methods`, bump `inventory_version` (patch for a
+ref fix, minor for an added entry, major for a removed field or an id change), add a changelog
+line, and run the verifier.
+
 ## Continuous integration
 
 `.github/workflows/verify.yml` runs on every push to `develop`/`main` and on
@@ -186,7 +215,8 @@ pull requests:
 1. `generate_knowledge_layer.py --check` (structural parse)
 2. `verify_knowledge_layer.py` (JSON integrity)
 3. `verify_pages.py` (metadata, chunk markers, markup)
-4. Drift gate: regenerate the knowledge layer, re-run both injectors, then
+4. `verify_attack_inventory.py` (inventory schema, refs, staleness warnings)
+5. Drift gate: regenerate the knowledge layer, re-run both injectors, then
    `git diff --exit-code`. Fails if committed artifacts or page markers are out
    of date, so stale generated files cannot land.
 

@@ -1,0 +1,5423 @@
+{
+  "$schema": "https://aisharedresponsibility.com/data/attack-inventory.schema.json",
+  "inventory_version": "0.6.0",
+  "updated": "2026-10-02",
+  "description": "Inventory of published attack classes against AI and agentic systems, including business processes that agents now run. Each entry states a failure mode and carries catalog, paper, and incident ids that were checked against a pinned source. A claims-test run can load this file as a pinned source in its C-attacks step instead of recalling ids from memory. Threat definitions belong to their source catalogs; accountability for each class joins to the SRF threat crosswalk at /data/threats.json through srf_crosswalk, and to vertical profile controls through vertical_controls.",
+  "scope": "Attack classes against AI models, LLM applications, and agentic systems; classical weakness classes that return when model output or an agent tool call reaches a shell, browser, database, file system, or network fetch; and business-process classes where an AI system or agent moves money, changes records, or passes an approval step. The scope field on each entry is ai, agentic, classical-reopened, or business-process.",
+  "rules": [
+    "Describe the failure mode only: who loses what, under what condition. No reproduction steps, payloads, or attack procedures.",
+    "A ref is verified only after its source was opened and the entry records the date and method. Memory is never verification.",
+    "verified on a paper ref means the id resolves and the title and first author match. It does not mean the paper was read in full.",
+    "Every taxonomy ref records its catalog version, and the catalogs block pins each version.",
+    "Ids are stable atk- slugs. A retired id is never reused; set status to merged or withdrawn instead.",
+    "ATT-nn ids and draft_overlap belong to one assessment and are not stored here.",
+    "mapping_quality is exact when the catalog text covers the class without stretching, closest when it covers part of the class or an adjacent class and is the best entry available, and analogy when it describes a different mechanism with a similar effect.",
+    "Versioning is semver: patch for ref fixes, minor for added entries, major for removed fields or id changes. Every entry change adds one changelog line naming the id and the reason.",
+    "vertical_controls lists canonical srf.control ids from /ids.json for vertical profile controls that address the class. Verticals are context for an entry. No sector gets a separate inventory.",
+    "Recheck triggers: a new ATLAS release, a revision of the OWASP LLM Top 10 or of OWASP Agentic AI Threats and Mitigations, a new MITRE ATT&CK Enterprise release, a new FINOS AI Governance Framework tag, a new incident cited in a CoSAI WS2 draft, or a claims-test run that finds a class missing here."
+  ],
+  "catalogs": {
+    "mitre-atlas": {
+      "name": "MITRE ATLAS",
+      "version": "v2026.08",
+      "released": "2026-09-01",
+      "source_url": "https://github.com/mitre-atlas/atlas-data/blob/v2026.08/dist/v6/ATLAS-2026.08.yaml",
+      "source_commit": "41d4f5ca4112f0e492ffaa3ebff07dc80a75afa5",
+      "content_sha256": "a8d32f676854cc57721c217ec5b39f07db518076dee4a6c1335df0a7bc8271a2",
+      "retrieved_on": "2026-10-01",
+      "id_form": "AML.Tnnnn or AML.Tnnnn.nnn for techniques; AML.CSnnnn for case studies",
+      "title_convention": "Sub-technique titles are recorded as parent name, colon, sub-technique name.",
+      "newer_release_seen": {
+        "version": "v2026.09",
+        "checked_on": "2026-10-01",
+        "cited_ids_changed": 0,
+        "note": "Every cited technique and case-study id keeps its name in v2026.09. That release adds 11 techniques, including AML.T0129 Triggers in Multimodal Inputs."
+      }
+    },
+    "owasp-llm-top10": {
+      "name": "OWASP Top 10 for LLM Applications",
+      "version": "2025",
+      "released": "2024-11",
+      "source_url": "https://genai.owasp.org/llm-top-10/",
+      "retrieved_on": "2026-10-01",
+      "id_form": "LLMnn:2025"
+    },
+    "owasp-agentic-threats": {
+      "name": "OWASP Agentic AI - Threats and Mitigations",
+      "version": "1.1",
+      "released": "2025-12",
+      "source_url": "https://genai.owasp.org/download/45674/?tmstv=1739819891",
+      "content_sha256": "65e3bd59f99c411b055c6caf2bac96ab361dff8c010e4bef532a593ce10345ff",
+      "retrieved_on": "2026-10-01",
+      "id_form": "Tn, T1 to T17",
+      "license_note": "CC BY-SA 4.0. This file cites ids and titles only."
+    },
+    "owasp-dsgai": {
+      "name": "OWASP GenAI Data Security Risks and Mitigations",
+      "version": "1.0",
+      "released": "2026",
+      "source_url": "https://github.com/GenAI-Security-Project/GenAI-Data-Security-Initiative/blob/b9525a58ec74ef34713f03676bd3bb354c9be426/datasets/_shared/dsgai_taxonomy.json",
+      "source_commit": "b9525a58ec74ef34713f03676bd3bb354c9be426",
+      "content_sha256": "0e0366209cab6f6b91abe60311813a28f169132de636e79b505eeb44429d6598",
+      "retrieved_on": "2026-10-01",
+      "id_form": "DSGAInn",
+      "license_note": "CC BY-SA 4.0. This file cites ids and names only."
+    },
+    "finos-aigf": {
+      "name": "FINOS AI Governance Framework, risk catalogue",
+      "version": "v2",
+      "released": "2025-10-20",
+      "source_url": "https://github.com/finos/ai-governance-framework/tree/v2/docs/_risks",
+      "source_commit": "71dc7e4793eebd70247dd7cf0b3b0eeab70f5b3b",
+      "retrieved_on": "2026-10-01",
+      "id_form": "AIR-TYPE-nnn, built from the type and sequence fields of each risk file, as docs/_includes/risk-id.html renders it",
+      "license_note": "CC BY 4.0. This file cites ids and titles only."
+    },
+    "mitre-attack": {
+      "name": "MITRE ATT&CK Enterprise",
+      "version": "19.2",
+      "released": "2026-08-05",
+      "source_url": "https://github.com/mitre-attack/attack-stix-data/blob/6cda5ad8462c79e14fbb872f4e09059b18e0cfc4/enterprise-attack/enterprise-attack-19.2.json",
+      "source_commit": "6cda5ad8462c79e14fbb872f4e09059b18e0cfc4",
+      "content_sha256": "dc1639caa5501d720e280cf1cbd8fbe009884a0c9b3e6e9ed9d0c25166c3d8f4",
+      "retrieved_on": "2026-10-01",
+      "id_form": "Tnnnn or Tnnnn.nnn",
+      "title_convention": "Sub-technique titles are recorded as parent name, colon, sub-technique name."
+    },
+    "cwe": {
+      "name": "Common Weakness Enumeration",
+      "version": "4.20",
+      "released": "2026-04-30",
+      "source_url": "https://cwe-api.mitre.org/api/v1/cwe/version",
+      "retrieved_on": "2026-10-01",
+      "id_form": "CWE-n"
+    }
+  },
+  "verification_methods": {
+    "atlas-release-yaml": "Downloaded dist/v6/ATLAS-2026.08.yaml at tag v2026.08 from github.com/mitre-atlas/atlas-data, recorded its SHA-256, and looked up each technique and case-study id and its name. Each case-study ref was confirmed to employ the technique named in the entry, using the release's relationships block.",
+    "atlas-next-release-diff": "Downloaded ATLAS-2026.09.yaml at tag v2026.09 and confirmed each cited id keeps its name.",
+    "owasp-llm-pages": "Fetched genai.owasp.org/llm-top-10/ to match each id and title, then read the cited risk page for the passage that supports the mapping.",
+    "owasp-agentic-pdf": "Downloaded the Agentic AI Threats and Mitigations PDF (cover: Version 1.1, December 2025), recorded its SHA-256, and read the threat table row for each cited T id.",
+    "dsgai-taxonomy-json": "Fetched datasets/_shared/dsgai_taxonomy.json at the pinned commit and matched each id, name, and summary.",
+    "cwe-api": "Queried cwe-api.mitre.org for each CWE id and for the content version.",
+    "arxiv-api": "Queried export.arxiv.org/api/query by id_list and matched title, first author, and first-version year.",
+    "venue-page": "Fetched the venue's presentation page and matched the title.",
+    "cve-services-api": "Queried cveawg.mitre.org/api/cve/<id>, confirmed state PUBLISHED, and matched vendor and product.",
+    "url-fetch": "Fetched the URL and confirmed HTTP 200 on the access date. A URL has no stable id, so recheck it on each review.",
+    "crosswalk-lookup": "Confirmed each srf_crosswalk id exists in /data/threats.json. build/verify_attack_inventory.py repeats this check.",
+    "attack-stix-bundle": "Downloaded enterprise-attack-19.2.json from github.com/mitre-attack/attack-stix-data at the pinned commit, recorded its SHA-256, and matched each technique id and name. Each cited technique was confirmed neither revoked nor deprecated.",
+    "finos-aigf-repo": "Fetched each cited docs/_risks/ri-N file at tag v2 of github.com/finos/ai-governance-framework, built the id from its type and sequence fields, matched the title, and read the summary. The same files on main at aabbffbe keep the ids and titles.",
+    "arxiv-abs-page": "Fetched arxiv.org/abs/<id> and matched the citation_title, citation_author, and citation_date meta tags. Used when the arXiv API was rate limited.",
+    "ids-lookup": "Confirmed each vertical_controls id exists in /ids.json and read the control description in the vertical controls file. build/verify_attack_inventory.py repeats the existence check.",
+    "osv-api": "Queried api.osv.dev/v1/query for the package and read the GitHub advisory summary and details. Used for advisory text that the CVE record shortens."
+  },
+  "export_contract": {
+    "target": "claims-test C-attacks rows",
+    "pack_version": "1.0.9",
+    "rules": [
+      "build/export_attack_inventory.py writes one row per active entry, in inventory order, numbered ATT-01 upward after any --topics, --scope, or --ids filter.",
+      "taxonomy_ref is the best verified ref: exact before closest before analogy, and within one grade ATLAS, then OWASP LLM, OWASP Agentic, DSGAI, FINOS, ATT&CK, and CWE. OWASP Agentic, FINOS, and ATT&CK ids print with a catalog prefix and version. It is null when the entry has no taxonomy ref.",
+      "paper_ref is the first verified paper as arXiv:<id>, else the first verified CVE or ATLAS case-study id, else null.",
+      "evidence is pinned. citation_status is resolved_pinned when every emitted ref is verified and unresolved_unpinned otherwise.",
+      "draft_overlap and stage are null in the export. The run judges overlap against its own draft.",
+      "Each row adds inventory_id, the atk- id it came from, so a reviewer can trace the row back to its entry."
+    ]
+  },
+  "changelog": [
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "First release. 31 entries seeded from the Published attack classes table of one claims-test assessment, plus 6 classical-reopened entries. Every ref was checked against its pinned source on 2026-10-01."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-indirect-prompt-injection",
+      "change": "The seed row listed EchoLeak (CVE-2025-32711) here; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-zero-click-output-exfiltration",
+      "change": "The seed row cited AML.T0057 only; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-encoded-input-guardrail-evasion",
+      "change": "The seed row cited AML.T0015 only; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-telemetry-store-disclosure",
+      "change": "The seed row cited LLM02:2025 only; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-agent-memory-poisoning",
+      "change": "The seed row reached MINJA and AgentPoison through the CoSAI incident-response document; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-backdoored-model-trigger",
+      "change": "The seed row cited AML.T0018, which ATLAS v2026.08 titles Manipulate AI Model; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-malicious-model-artifact",
+      "change": "The seed row cited the parent AML.T0010; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-mcp-tool-poisoning",
+      "change": "The seed row cited AML.T0051.001 and an Invariant Labs post with no stable id; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-sandbox-escape",
+      "change": "The seed row used OWASP Agentic T11 as the closest match; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-unbounded-consumption",
+      "change": "The seed row cited the parent AML.T0034; refs updated, see verification notes."
+    },
+    {
+      "version": "0.1.0",
+      "date": "2026-10-01",
+      "id": "atk-telemetry-borne-injection-into-llm-triage",
+      "change": "The seed row mapped this class by analogy with no paper; refs updated, see verification notes."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Added the business-process scope, seven process topic tags, the optional vertical_controls field, and two pinned catalogs: FINOS AI Governance Framework v2 and MITRE ATT&CK Enterprise 19.2. Export contract moves to claims-test pack 1.0.9."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-payment-process-diversion",
+      "change": "Added. Business-process class: an agent pays an attacker account after reading altered payee details."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-invoice-or-procurement-alteration",
+      "change": "Added. Business-process class: altered invoices or purchase orders read by an agent intake step."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-approval-gate-bypass",
+      "change": "Added. Business-process class: an agent completes a step reserved for a human approver."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-beneficiary-or-master-data-manipulation",
+      "change": "Added. Business-process class: an agent changes vendor or beneficiary records on an unverified request."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-process-logic-injection",
+      "change": "Added. Business-process class: untrusted content enters workflow rules an agent writes."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-deceptive-process-reporting",
+      "change": "Added. Business-process class: an agent reports process status the records do not support."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-supply-chain-process-hijack",
+      "change": "Added. Business-process class: a compromised partner agent drives a buyer's agent-run process."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-deepfake-approver-impersonation",
+      "change": "Added. Business-process class: AI-generated media impersonates a payment approver."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-indirect-prompt-injection",
+      "change": "related now lists atk-payment-process-diversion."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-excessive-agency",
+      "change": "related now lists atk-approval-gate-bypass, atk-payment-process-diversion."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-approval-fatigue",
+      "change": "related now lists atk-approval-gate-bypass."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-deceptive-agent-self-report",
+      "change": "related now lists atk-deceptive-process-reporting."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-confused-deputy-delegation",
+      "change": "related now lists atk-supply-chain-process-hijack."
+    },
+    {
+      "version": "0.2.0",
+      "date": "2026-10-01",
+      "id": "atk-display-name-identity-spoofing",
+      "change": "related now lists atk-deepfake-approver-impersonation."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Removed references to the seed draft from entry notes and from the 0.1.0 changelog line. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-indirect-prompt-injection",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-training-data-extraction",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-display-name-identity-spoofing",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-deceptive-agent-self-report",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-observability-plane-evasion",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.1",
+      "date": "2026-10-01",
+      "id": "atk-cross-tenant-leakage",
+      "change": "Notes no longer cite the seed draft. No ref changed."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-agent-memory-poisoning",
+      "change": "Added incident refs: AML.CS0066, Varonis Threat Labs report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-agent-config-credential-exposure",
+      "change": "Added incident refs: AML.CS0067."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-malicious-model-artifact",
+      "change": "Added incident refs: AML.CS0031, AML.CS0064, AML.CS0065."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-sandbox-escape",
+      "change": "Added incident refs: AML.CS0068, CVE-2026-50548, CVE-2026-50549."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-mcp-tool-poisoning",
+      "change": "Added incident refs: AML.CS0049."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-multi-turn-jailbreak-escalation",
+      "change": "Added incident refs: AML.CS0069."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-agent-tool-ssrf",
+      "change": "Added incident refs: CVE-2026-25580."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-llm-output-os-command-injection",
+      "change": "Added incident refs: CVE-2026-70477."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-telemetry-store-disclosure",
+      "change": "Added incident refs: CVE-2026-25528."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-rag-poisoning",
+      "change": "Added incident refs: Zenity Labs report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-beneficiary-or-master-data-manipulation",
+      "change": "Added incident refs: Zenity Labs report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-excessive-agency",
+      "change": "Added incident refs: Railway report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "atk-telemetry-borne-injection-into-llm-triage",
+      "change": "Added incident refs: SentinelLABS report."
+    },
+    {
+      "version": "0.2.2",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Added 18 incident refs to 13 entries. Leads came from the AITBM use-case pages (github.com/ninedter/AITBM, commit 3b02d23). Each ref cites the ATLAS case study, CVE record, or primary report; no AITBM page is cited."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Added 5 entries for failure modes the AITBM use-case pages describe. Each ref was checked against its pinned catalog or primary source."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-agent-skill-poisoning",
+      "change": "Added. Split from atk-mcp-tool-poisoning; AML.CS0049 moves here."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-coding-agent-rules-file-poisoning",
+      "change": "Added. Split from atk-indirect-prompt-injection."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-exposed-agent-control-interface",
+      "change": "Added. Split from atk-agent-config-credential-exposure."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-agent-session-smuggling",
+      "change": "Added."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-malicious-llm-api-router",
+      "change": "Added."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-mcp-tool-poisoning",
+      "change": "Removed incident ref AML.CS0049, now under atk-agent-skill-poisoning; related now lists that entry."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-indirect-prompt-injection",
+      "change": "related now lists atk-coding-agent-rules-file-poisoning and atk-agent-session-smuggling. No ref changed."
+    },
+    {
+      "version": "0.3.0",
+      "date": "2026-10-01",
+      "id": "atk-agent-config-credential-exposure",
+      "change": "related now lists atk-exposed-agent-control-interface. No ref changed."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "*",
+      "change": "Added 3 entries for the failure modes the 0.3.0 Known Limits listed as uncovered. Each ref was checked against its pinned catalog or primary source."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-computer-use-stale-action",
+      "change": "Added."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-reasoning-block-replay",
+      "change": "Added."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-multi-agent-covert-channel",
+      "change": "Added. Kept separate from atk-encoded-input-guardrail-evasion."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-encoded-input-guardrail-evasion",
+      "change": "related now lists atk-multi-agent-covert-channel. No ref changed."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-model-extraction-via-api",
+      "change": "related now lists atk-reasoning-block-replay. No ref changed."
+    },
+    {
+      "version": "0.4.0",
+      "date": "2026-10-01",
+      "id": "atk-cross-tenant-leakage",
+      "change": "related now lists atk-reasoning-block-replay. No ref changed."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "*",
+      "change": "Added 2 telemetry-related entries and ATT&CK 19.2 refs on 2 existing telemetry entries. OWASP LLM Top 10 2026 was checked on 2026-10-02 and is at release candidate 1, not released; the 2025 pin stays."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-feedback-loop-poisoning",
+      "change": "Added. Split from atk-training-data-poisoning."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-llm-output-control-sequence-injection",
+      "change": "Added."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-observability-plane-evasion",
+      "change": "Added ATT&CK refs T1685 and T1685.002, which replace the revoked T1562."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-repudiation-log-tampering",
+      "change": "Added ATT&CK ref T1070 Indicator Removal."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-training-data-poisoning",
+      "change": "related now lists atk-feedback-loop-poisoning. No ref changed."
+    },
+    {
+      "version": "0.5.0",
+      "date": "2026-10-02",
+      "id": "atk-llm-output-cross-site-scripting",
+      "change": "related now lists atk-llm-output-control-sequence-injection. No ref changed."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "*",
+      "change": "Added 3 multimodal entries after reviewing a streaming-media attack inventory shared for review on 2026-10-02. Its other rows cover DRM, watermarking, HDMI output, and media parsers in players with no model or agent in the path, so they are out of scope. Added verification method osv-api."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-media-preprocessing-blind-spot",
+      "change": "Added. Merges rows A3 and A16 and widens them to preprocessing differentials."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-adversarial-perturbation-of-media-input",
+      "change": "Added. Widens row A17 to any perception model."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-untrusted-media-decode-in-model-server",
+      "change": "Added as classical-reopened."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-multimodal-instruction-injection",
+      "change": "Added alias typographic prompt injection and papers 2503.11519 and 2603.29418 from row A4."
+    },
+    {
+      "version": "0.6.0",
+      "date": "2026-10-02",
+      "id": "atk-unbounded-consumption",
+      "change": "related now lists atk-untrusted-media-decode-in-model-server. No ref changed."
+    }
+  ],
+  "entries": [
+    {
+      "id": "atk-indirect-prompt-injection",
+      "name": "Indirect prompt injection",
+      "aliases": [
+        "cross-domain prompt injection",
+        "XPIA"
+      ],
+      "family": "injection",
+      "scope": "ai",
+      "topics": [
+        "tool-calling",
+        "MCP"
+      ],
+      "failure_mode": "Content retrieved as data steers the model to act for the content's author against the user who invoked it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0051.001",
+          "title_in_catalog": "LLM Prompt Injection: Indirect",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM01:2025",
+          "title_in_catalog": "Prompt Injection",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2302.12173",
+          "title": "Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection",
+          "first_author": "Greshake",
+          "year": 2023,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0040",
+          "label": "Hacking ChatGPT's Memories with Prompt Injection",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "indirectpromptinjection"
+      ],
+      "related": [
+        "atk-multimodal-instruction-injection",
+        "atk-zero-click-output-exfiltration",
+        "atk-telemetry-borne-injection-into-llm-triage",
+        "atk-self-replicating-prompt",
+        "atk-agent-memory-poisoning",
+        "atk-payment-process-diversion",
+        "atk-coding-agent-rules-file-poisoning",
+        "atk-agent-session-smuggling"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row listed EchoLeak (CVE-2025-32711) here. ATLAS case study AML.CS0059 tags the EchoLeak injection step as AML.T0051.002 Triggered, not .001 Indirect, so EchoLeak now sits under atk-zero-click-output-exfiltration."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-zero-click-output-exfiltration",
+      "name": "Zero-click exfiltration through output or egress",
+      "aliases": [],
+      "family": "exfiltration",
+      "scope": "ai",
+      "topics": [
+        "tool-calling"
+      ],
+      "failure_mode": "Model output carries internal data to an attacker-chosen destination with no user action.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0077",
+          "title_in_catalog": "LLM Response Rendering",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0057",
+          "title_in_catalog": "LLM Data Leakage",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI01",
+          "title_in_catalog": "Sensitive Data Leakage",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2509.10540",
+          "title": "EchoLeak: The First Real-World Zero-Click Prompt Injection Exploit in a Production LLM System",
+          "first_author": "Reddy",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2025-32711",
+          "label": "EchoLeak, Microsoft 365 Copilot",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0059",
+          "label": "EchoLeak: Zero-Click Prompt Injection Targeting M365 Copilot for Data Exfiltration",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "disclosureinoutput"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-llm-output-cross-site-scripting"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "arxiv-api",
+          "cve-services-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row cited AML.T0057 only. AML.T0077 LLM Response Rendering describes the rendered-output channel, and AML.CS0059 employs it."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-adversarial-suffix-jailbreak",
+      "name": "Optimized adversarial-suffix jailbreak",
+      "aliases": [
+        "GCG"
+      ],
+      "family": "jailbreak",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "Crafted input defeats safety training, and the model produces output its policy forbids.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0054",
+          "title_in_catalog": "LLM Jailbreak",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0043.000",
+          "title_in_catalog": "Craft Adversarial Data: White-Box Optimization",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM01:2025",
+          "title_in_catalog": "Prompt Injection",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2307.15043",
+          "title": "Universal and Transferable Adversarial Attacks on Aligned Language Models",
+          "first_author": "Zou",
+          "year": 2023,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "directpromptinjection"
+      ],
+      "related": [
+        "atk-multi-turn-jailbreak-escalation"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "LLM01:2025 Scenario 8 describes an appended adversarial suffix."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-multi-turn-jailbreak-escalation",
+      "name": "Multi-turn escalation",
+      "aliases": [
+        "Crescendo"
+      ],
+      "family": "jailbreak",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "Each turn stays under per-message thresholds while the session reaches a forbidden output.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0054",
+          "title_in_catalog": "LLM Jailbreak",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM01:2025",
+          "title_in_catalog": "Prompt Injection",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2404.01833",
+          "title": "Great, Now Write an Article About That: The Crescendo Multi-Turn LLM Jailbreak Attack",
+          "first_author": "Russinovich",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0069",
+          "label": "GTG-1002 Claude Code Espionage Campaign",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "directpromptinjection"
+      ],
+      "related": [
+        "atk-adversarial-suffix-jailbreak"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "ATLAS v2026.08 has no multi-turn sub-technique under AML.T0054. AML.CS0069 employs AML.T0054. The operator claimed a defensive role and split the campaign into tasks that each looked benign, so the per-step threshold failure spans many sessions instead of one."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-encoded-input-guardrail-evasion",
+      "name": "Guardrail evasion by encoding or obfuscation",
+      "aliases": [],
+      "family": "evasion",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "The classifier sees an encoded form and passes it; the model decodes and follows it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0068",
+          "title_in_catalog": "LLM Prompt Obfuscation",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0015",
+          "title_in_catalog": "Evade AI Model",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM01:2025",
+          "title_in_catalog": "Prompt Injection",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "directpromptinjection"
+      ],
+      "related": [
+        "atk-multimodal-instruction-injection",
+        "atk-multi-agent-covert-channel"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row cited AML.T0015 only. AML.T0068 LLM Prompt Obfuscation names base64 and rot13 encoding that bypasses guardrails. LLM01:2025 Scenario 9 covers encoded and multilingual input."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-multimodal-instruction-injection",
+      "name": "Multimodal instruction injection",
+      "aliases": [
+        "typographic prompt injection"
+      ],
+      "family": "multimodal",
+      "scope": "ai",
+      "topics": [
+        "multimodal"
+      ],
+      "failure_mode": "Instructions carried in image or audio input pass text-only guardrails.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0051.001",
+          "title_in_catalog": "LLM Prompt Injection: Indirect",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0068",
+          "title_in_catalog": "LLM Prompt Obfuscation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM01:2025",
+          "title_in_catalog": "Prompt Injection",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2307.10490",
+          "title": "Abusing Images and Sounds for Indirect Instruction Injection in Multi-Modal LLMs",
+          "first_author": "Bagdasaryan",
+          "year": 2023,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2503.11519",
+          "title": "Exploring Typographic Visual Prompts Injection Threats in Cross-Modality Generation Models",
+          "first_author": "Cheng",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2603.29418",
+          "title": "Covert Visual Prompt Injection against Commercial Multimodal Large Language Models",
+          "first_author": "Ding",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "indirectpromptinjection"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-encoded-input-guardrail-evasion",
+        "atk-media-preprocessing-blind-spot"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "ATLAS v2026.09 adds AML.T0129 Triggers in Multimodal Inputs. Review it as a narrower ref when the ATLAS pin moves past v2026.08. Row A4 of a streaming-media attack inventory shared for review on 2026-10-02 describes text burned into video frames; that is the same class, so it adds the alias and papers 2503.11519 and 2603.29418."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.6.0"
+    },
+    {
+      "id": "atk-system-prompt-extraction",
+      "name": "System prompt extraction",
+      "aliases": [],
+      "family": "disclosure",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "The instruction configuration, and any secret in it, reaches a user through output.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0056",
+          "title_in_catalog": "Extract LLM System Prompt",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0069.002",
+          "title_in_catalog": "Discover LLM System Information: System Prompt",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM07:2025",
+          "title_in_catalog": "System Prompt Leakage",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "inputdataleak"
+      ],
+      "related": [
+        "atk-agent-config-credential-exposure"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "crosswalk-lookup"
+        ],
+        "notes": ""
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-training-data-extraction",
+      "name": "Training-data extraction and verbatim reproduction",
+      "aliases": [
+        "verbatim reproduction"
+      ],
+      "family": "disclosure",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "The model reproduces memorized data to a requester who should not see it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0057",
+          "title_in_catalog": "LLM Data Leakage",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM02:2025",
+          "title_in_catalog": "Sensitive Information Disclosure",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI18",
+          "title_in_catalog": "Inference & Data Reconstruction",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2311.17035",
+          "title": "Scalable Extraction of Training Data from (Production) Language Models",
+          "first_author": "Nasr",
+          "year": 2023,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "disclosureinoutput"
+      ],
+      "related": [
+        "atk-model-extraction-via-api"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "AML.T0024.000 Infer Training Data Membership is not cited. Membership inference tests whether a record was in training and does not reproduce it."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.1"
+    },
+    {
+      "id": "atk-telemetry-store-disclosure",
+      "name": "Sensitive data disclosure through the telemetry store",
+      "aliases": [],
+      "family": "telemetry plane",
+      "scope": "ai",
+      "topics": [
+        "telemetry"
+      ],
+      "failure_mode": "Prompts, tool arguments, and outputs captured for detection become a readable store of sensitive data.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI14",
+          "title_in_catalog": "Excessive Telemetry & Monitoring Leakage",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM02:2025",
+          "title_in_catalog": "Sensitive Information Disclosure",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-41947",
+          "label": "Dify < 1.14.2 Authorization Bypass via Trace Configuration Endpoints",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-25528",
+          "label": "LangSmith Client SDK Affected by Server-Side Request Forgery via Tracing Header Injection",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai14"
+      ],
+      "related": [
+        "atk-repudiation-log-tampering",
+        "atk-cross-tenant-leakage"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "cve-services-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row cited LLM02:2025 only. DSGAI14 Excessive Telemetry & Monitoring Leakage names this class. CVE-2026-41947 lets a user of one tenant set trace configuration on another tenant's application. CVE-2026-25528: an injected tracing header sends captured trace data to an address the attacker chose."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-rag-poisoning",
+      "name": "RAG and knowledge-base poisoning",
+      "aliases": [
+        "PoisonedRAG"
+      ],
+      "family": "poisoning",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "Planted documents rank high for target queries and steer answers or actions.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0070",
+          "title_in_catalog": "RAG Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0071",
+          "title_in_catalog": "False RAG Entry Injection",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM08:2025",
+          "title_in_catalog": "Vector and Embedding Weaknesses",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI21",
+          "title_in_catalog": "Disinformation & Integrity Attacks via Data Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2402.07867",
+          "title": "PoisonedRAG: Knowledge Corruption Attacks to Retrieval-Augmented Generation of Large Language Models",
+          "first_author": "Zou",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2507.08862",
+          "title": "RAG Safety: Exploring Knowledge Poisoning Attacks to Retrieval-Augmented Generation",
+          "first_author": "Zhao",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "label": "Zenity Labs, Prompt Mines in Salesforce Einstein, August 2025",
+          "url": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai21"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-agent-memory-poisoning"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "arxiv-api",
+          "crosswalk-lookup",
+          "url-fetch"
+        ],
+        "notes": "Zenity Labs placed instructions in CRM case records through public intake forms. Einstein retrieved them for routine follow-up questions and then changed customer contact records."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-agent-memory-poisoning",
+      "name": "Agent memory poisoning",
+      "aliases": [
+        "MINJA",
+        "AgentPoison"
+      ],
+      "family": "poisoning",
+      "scope": "agentic",
+      "topics": [],
+      "failure_mode": "A memory item written from untrusted input shapes later sessions.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0080.000",
+          "title_in_catalog": "AI Agent Context Poisoning: Memory",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T1",
+          "title_in_catalog": "Memory Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2503.03704",
+          "title": "Memory Injection Attacks on LLM Agents via Query-Only Interaction",
+          "first_author": "Dong",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2407.12784",
+          "title": "AgentPoison: Red-teaming LLM Agents via Poisoning Memory or Knowledge Bases",
+          "first_author": "Chen",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0040",
+          "label": "Hacking ChatGPT's Memories with Prompt Injection",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0066",
+          "label": "ZombieAgent: Data Exfiltration Attack on ChatGPT",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://www.varonis.com/blog/cosnitch",
+          "label": "Varonis Threat Labs, CoSnitch, August 2026",
+          "url": "https://www.varonis.com/blog/cosnitch",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-rag-poisoning",
+        "atk-indirect-prompt-injection"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "arxiv-api",
+          "url-fetch"
+        ],
+        "notes": "The seed row reached MINJA and AgentPoison through the CoSAI incident-response document. Both arXiv ids are now pinned directly. AML.CS0066 employs AML.T0080.000. Varonis reports a web page that, when Copilot summarizes it, writes attacker instructions into the user's saved memory. CVE-2026-24301 covers a separate one-click exfiltration path in the same report and is not cited here."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-training-data-poisoning",
+      "name": "Training-data poisoning",
+      "aliases": [],
+      "family": "poisoning",
+      "scope": "ai",
+      "topics": [
+        "supply-chain"
+      ],
+      "failure_mode": "Poisoned training or fine-tuning data plants behavior that no runtime field sees enter.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0020",
+          "title_in_catalog": "Training Data Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM04:2025",
+          "title_in_catalog": "Data and Model Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI04",
+          "title_in_catalog": "Data, Model & Artifact Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2302.10149",
+          "title": "Poisoning Web-Scale Training Datasets is Practical",
+          "first_author": "Carlini",
+          "year": 2023,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "datapoison"
+      ],
+      "related": [
+        "atk-backdoored-model-trigger",
+        "atk-feedback-loop-poisoning"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": ""
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-backdoored-model-trigger",
+      "name": "Backdoored model with trigger behavior",
+      "aliases": [
+        "sleeper agent"
+      ],
+      "family": "supply chain",
+      "scope": "ai",
+      "topics": [
+        "supply-chain",
+        "model-signing"
+      ],
+      "failure_mode": "A model behaves normally until a trigger appears, then acts against the deployer.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0018.000",
+          "title_in_catalog": "Manipulate AI Model: Poison AI Model",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0043.004",
+          "title_in_catalog": "Craft Adversarial Data: Insert Backdoor Trigger",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM04:2025",
+          "title_in_catalog": "Data and Model Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2401.05566",
+          "title": "Sleeper Agents: Training Deceptive LLMs that Persist Through Safety Training",
+          "first_author": "Hubinger",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "devmodelpoison",
+        "supplymodelpoison"
+      ],
+      "related": [
+        "atk-training-data-poisoning",
+        "atk-malicious-model-artifact"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row cited AML.T0018, which ATLAS v2026.08 titles Manipulate AI Model. Sub-technique .000 Poison AI Model is the narrower fit."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-malicious-model-artifact",
+      "name": "Malicious model artifact",
+      "aliases": [],
+      "family": "supply chain",
+      "scope": "ai",
+      "topics": [
+        "supply-chain",
+        "model-signing"
+      ],
+      "failure_mode": "A tampered model file from a hub or registry carries attacker behavior into serving.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0010.003",
+          "title_in_catalog": "AI Supply Chain Compromise: Model",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0018.002",
+          "title_in_catalog": "Manipulate AI Model: Embed Malware",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0011.000",
+          "title_in_catalog": "User Execution: Unsafe AI Artifacts",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM03:2025",
+          "title_in_catalog": "Supply Chain",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-502",
+          "title_in_catalog": "Deserialization of Untrusted Data",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0031",
+          "label": "Malicious Models on Hugging Face",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0064",
+          "label": "Poisoned GGUF Templates: Inference-Time Supply Chain Attack",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0065",
+          "label": "Model Namespace Reuse Supply Chain Attack",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "supplymodelpoison"
+      ],
+      "related": [
+        "atk-backdoored-model-trigger",
+        "atk-mcp-tool-poisoning"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "cwe-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row cited the parent AML.T0010. CWE-502 is the classical weakness behind unsafe serialized model formats. AML.CS0031, AML.CS0064, and AML.CS0065 each employ AML.T0011.000. AML.CS0064 places the behavior in a model's chat template and AML.CS0065 reaches it through a reused model namespace; both may later become separate classes."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-mcp-tool-poisoning",
+      "name": "MCP tool poisoning and post-approval definition change",
+      "aliases": [
+        "tool description injection",
+        "rug pull"
+      ],
+      "family": "tool supply chain",
+      "scope": "agentic",
+      "topics": [
+        "MCP",
+        "tool-calling",
+        "supply-chain"
+      ],
+      "failure_mode": "A tool description carries instructions, or changes after approval, and the agent follows it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0110.000",
+          "title_in_catalog": "AI Agent Tool Poisoning: Definition and Instructions",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0109",
+          "title_in_catalog": "AI Supply Chain Rug Pull",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T16",
+          "title_in_catalog": "Insecure Inter-Agent Protocol Abuse",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0054",
+          "label": "Data Exfiltration via Remote Poisoned MCP Tool",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0053",
+          "label": "Poisoned Postmark MCP Server Email Exfiltration",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2025-54136",
+          "label": "Cursor's Modification of MCP Server Definitions Bypasses Manual Re-approvals",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks",
+          "label": "Invariant Labs, MCP tool poisoning notification, April 2025",
+          "url": "https://invariantlabs.ai/blog/mcp-security-notification-tool-poisoning-attacks",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "related": [
+        "atk-agent-skill-poisoning",
+        "atk-malicious-model-artifact",
+        "atk-indirect-prompt-injection",
+        "atk-confused-deputy-delegation"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "cve-services-api",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row cited AML.T0051.001 and an Invariant Labs post with no stable id. ATLAS case study AML.CS0054 cites that post and gives it a stable id. AML.T0109 and CVE-2025-54136 cover the post-approval change. Skills from a registry are covered by atk-agent-skill-poisoning."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-hallucinated-package-squatting",
+      "name": "Hallucinated package names",
+      "aliases": [
+        "package hallucination"
+      ],
+      "family": "supply chain",
+      "scope": "ai",
+      "topics": [
+        "supply-chain"
+      ],
+      "failure_mode": "An agent installs a model-invented package name that a third party has registered.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0060",
+          "title_in_catalog": "Publish Hallucinated Entities",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0062",
+          "title_in_catalog": "Discover LLM Hallucinations",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM09:2025",
+          "title_in_catalog": "Misinformation",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2406.10279",
+          "title": "We Have a Package for You! A Comprehensive Analysis of Package Hallucinations by Code Generating LLMs",
+          "first_author": "Spracklen",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-malicious-model-artifact"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-api"
+        ],
+        "notes": "LLM09:2025 Scenario 1 describes this class."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-excessive-agency",
+      "name": "Excessive agency",
+      "aliases": [],
+      "family": "tool calling",
+      "scope": "agentic",
+      "topics": [
+        "tool-calling"
+      ],
+      "failure_mode": "An agent holds more tools or permissions than its task needs, so one bad decision has high impact.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM06:2025",
+          "title_in_catalog": "Excessive Agency",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T2",
+          "title_in_catalog": "Tool Misuse",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0053",
+          "title_in_catalog": "AI Agent Tool Invocation",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://blog.railway.com/p/your-ai-wants-to-nuke-your-database",
+          "label": "Railway, postmortem of an agent deleting a production volume, April 2026",
+          "url": "https://blog.railway.com/p/your-ai-wants-to-nuke-your-database",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "related": [
+        "atk-confused-deputy-delegation",
+        "atk-sandbox-escape",
+        "atk-approval-gate-bypass",
+        "atk-payment-process-diversion"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "owasp-agentic-pdf",
+          "crosswalk-lookup",
+          "url-fetch"
+        ],
+        "notes": "Railway reports that a customer's coding agent found an account-wide API token stored on the machine and used it to delete a production volume."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-confused-deputy-delegation",
+      "name": "Confused deputy and delegated-authority escalation",
+      "aliases": [],
+      "family": "identity",
+      "scope": "agentic",
+      "topics": [
+        "agent-identity",
+        "tool-calling",
+        "MCP"
+      ],
+      "failure_mode": "A downstream hop acts with broader authority than the delegating party granted.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T3",
+          "title_in_catalog": "Privilege Compromise",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T14",
+          "title_in_catalog": "Human Attacks on Multi-Agent Systems",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-441",
+          "title_in_catalog": "Unintended Proxy or Intermediary ('Confused Deputy')",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0053",
+          "title_in_catalog": "AI Agent Tool Invocation",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2025-5071",
+          "label": "AI Engine 2.8.0 - 2.8.3 - Authenticated (Subscriber+) Insufficient Authorization to Privilege Escalation via MCP",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai02"
+      ],
+      "related": [
+        "atk-excessive-agency",
+        "atk-display-name-identity-spoofing",
+        "atk-agent-config-credential-exposure",
+        "atk-supply-chain-process-hijack"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "cwe-api",
+          "cve-services-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "CWE-441 is the classical name for this class."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-display-name-identity-spoofing",
+      "name": "Identity spoofing through display names",
+      "aliases": [],
+      "family": "identity",
+      "scope": "agentic",
+      "topics": [
+        "agent-identity"
+      ],
+      "failure_mode": "A spoofable display name, not a verified identifier, authorizes an action.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T9",
+          "title_in_catalog": "Identity Spoofing & Impersonation",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0073",
+          "title_in_catalog": "Impersonation",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2602.20021",
+          "title": "Agents of Chaos",
+          "first_author": "Shapira",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai02"
+      ],
+      "related": [
+        "atk-confused-deputy-delegation",
+        "atk-deepfake-approver-impersonation"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "Agents of Chaos is cited for its owner identity spoofing case. The arXiv id, title, and first author were checked; the case text was not reread."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.1"
+    },
+    {
+      "id": "atk-sandbox-escape",
+      "name": "Sandbox or test-environment escape",
+      "aliases": [],
+      "family": "isolation",
+      "scope": "agentic",
+      "topics": [
+        "tool-calling"
+      ],
+      "failure_mode": "An agent's actions reach systems outside its intended isolation boundary.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0105",
+          "title_in_catalog": "Escape to Host",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T11",
+          "title_in_catalog": "Unexpected RCE and Code Attacks",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-25253",
+          "label": "OpenClaw (aka clawdbot or Moltbot) before 2026.1.29 obtains a gatewayUrl value from a query string and automatically mak",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0050",
+          "label": "OpenClaw 1-Click Remote Code Execution",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0068",
+          "label": "Autonomous OpenAI Evaluation Agents Compromise Hugging Face Infrastructure",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-50548",
+          "label": "Cursor Desktop sandbox escape via agent-controlled working directory",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-50549",
+          "label": "Cursor Desktop sandbox escape via symlink and failed path canonicalization",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-excessive-agency",
+        "atk-llm-output-os-command-injection"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "cve-services-api"
+        ],
+        "notes": "The seed row used OWASP Agentic T11 as the closest match. ATLAS v2026.08 defines AML.T0105 Escape to Host for this class, and AML.CS0050 employs it. AML.CS0068 employs AML.T0105. Its agents reached hub infrastructure on their own, so it is cited here and not under atk-agent-tool-ssrf. CVE-2026-50548 and CVE-2026-50549 let agent commands write outside the workspace sandbox."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-self-replicating-prompt",
+      "name": "Self-replicating prompt across agents",
+      "aliases": [
+        "AI worm",
+        "Morris II"
+      ],
+      "family": "multi-agent",
+      "scope": "agentic",
+      "topics": [],
+      "failure_mode": "An injected instruction copies itself into output that other assistants consume.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0061",
+          "title_in_catalog": "LLM Prompt Self-Replication",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T12",
+          "title_in_catalog": "Agent Communication Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2403.02817",
+          "title": "Here Comes The AI Worm: Unleashing Zero-click Worms that Target GenAI-Powered Applications",
+          "first_author": "Cohen",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0024",
+          "label": "Morris II Worm: RAG-Based Attack",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "indirectpromptinjection"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-rag-poisoning"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": ""
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-unbounded-consumption",
+      "name": "Unbounded consumption and runaway loops",
+      "aliases": [],
+      "family": "resource abuse",
+      "scope": "agentic",
+      "topics": [
+        "tool-calling"
+      ],
+      "failure_mode": "Loops or crafted input consume tokens, compute, or spend past any budget.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM10:2025",
+          "title_in_catalog": "Unbounded Consumption",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0034.002",
+          "title_in_catalog": "Cost Harvesting: Agentic Resource Consumption",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0029",
+          "title_in_catalog": "Denial of AI Service",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T4",
+          "title_in_catalog": "Resource Overload",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "airesourceexhaustion"
+      ],
+      "related": [
+        "atk-untrusted-media-decode-in-model-server"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "owasp-agentic-pdf",
+          "crosswalk-lookup"
+        ],
+        "notes": "The seed row cited the parent AML.T0034. Sub-technique .002 Agentic Resource Consumption is the narrower fit."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.6.0"
+    },
+    {
+      "id": "atk-deceptive-agent-self-report",
+      "name": "Deceptive agent self-report",
+      "aliases": [],
+      "family": "integrity",
+      "scope": "agentic",
+      "topics": [
+        "telemetry",
+        "oversight-tiers"
+      ],
+      "failure_mode": "An agent reports an outcome that did not happen, and a detection trusts the report.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T7",
+          "title_in_catalog": "Misaligned & Deceptive Behaviors",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2602.20021",
+          "title": "Agents of Chaos",
+          "first_author": "Shapira",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-repudiation-log-tampering",
+        "atk-observability-plane-evasion",
+        "atk-deceptive-process-reporting"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-agentic-pdf",
+          "arxiv-api"
+        ],
+        "notes": "No ATLAS v2026.08 technique describes a false outcome report. AML.T0031 Erode AI Model Integrity describes performance degradation and is not cited here. Agents of Chaos is cited for its false self-report case; the case text was not reread."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.1"
+    },
+    {
+      "id": "atk-repudiation-log-tampering",
+      "name": "Repudiation and log tampering",
+      "aliases": [],
+      "family": "telemetry plane",
+      "scope": "agentic",
+      "topics": [
+        "telemetry"
+      ],
+      "failure_mode": "Records are removed, reordered, or altered, so an action cannot be traced to its actor.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T8",
+          "title_in_catalog": "Repudiation & Untraceability",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0092",
+          "title_in_catalog": "Manipulate User LLM Chat History",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1070",
+          "title_in_catalog": "Indicator Removal",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-telemetry-store-disclosure",
+        "atk-observability-plane-evasion"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "attack-stix-bundle"
+        ],
+        "notes": "ATT&CK 19.2 T1070 covers selective deletion or change of log entries to hide activity."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-observability-plane-evasion",
+      "name": "Observability-plane evasion",
+      "aliases": [],
+      "family": "telemetry plane",
+      "scope": "agentic",
+      "topics": [
+        "telemetry"
+      ],
+      "failure_mode": "A starved guardrail or disabled hook produces silence that reads as allow.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0081",
+          "title_in_catalog": "Modify AI Agent Configuration",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T8",
+          "title_in_catalog": "Repudiation & Untraceability",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1685",
+          "title_in_catalog": "Disable or Modify Tools",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1685.002",
+          "title_in_catalog": "Disable or Modify Cloud Log",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-repudiation-log-tampering",
+        "atk-deceptive-agent-self-report"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "attack-stix-bundle"
+        ],
+        "notes": "No paper or catalog entry found that names a starved guardrail or disabled hook whose silence a detection reads as allow. AML.T0081 covers the disabled-setting half only. ATT&CK 19.2 T1685 and T1685.002 also cover the disabled-hook half. ATT&CK 19.x revoked T1562 Impair Defenses in favor of T1685, so a ref recalled from memory would cite the old id."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-telemetry-borne-injection-into-llm-triage",
+      "name": "Injection carried by telemetry into LLM-assisted triage",
+      "aliases": [
+        "log-substrate prompt injection",
+        "passive prompt injection"
+      ],
+      "family": "telemetry plane",
+      "scope": "ai",
+      "topics": [
+        "telemetry"
+      ],
+      "failure_mode": "Attacker text captured in model input or tool call fields instructs an LLM-based analyst tool that reads the telemetry.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0051.001",
+          "title_in_catalog": "LLM Prompt Injection: Indirect",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2605.24421",
+          "title": "Poisoning the Watchtower: Prompt Injection Attacks Against LLM-Augmented Security Operations Through Adversarial Log Content",
+          "first_author": "Pandey",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2607.14493",
+          "title": "Context Contamination in LLM Analysis of Network Security Logs: Poison with Passive Prompt Injection and Mitigation Evaluation",
+          "first_author": "Karanjai",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2607.24174",
+          "title": "Just Testing, Move Along: Evasion of LLM-based System Log Interpretation by Prompt Injection",
+          "first_author": "Landauer",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://www.sentinelone.com/labs/macos-gaslight-rust-backdoor-turns-prompt-injection-on-the-analyst-not-the-sandbox/",
+          "label": "SentinelLABS, macOS.Gaslight, June 2026",
+          "url": "https://www.sentinelone.com/labs/macos-gaslight-rust-backdoor-turns-prompt-injection-on-the-analyst-not-the-sandbox/",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "indirectpromptinjection"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-telemetry-store-disclosure"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "arxiv-api",
+          "crosswalk-lookup",
+          "url-fetch"
+        ],
+        "notes": "The seed row mapped this class by analogy with no paper. Three 2026 arXiv papers show log fields acting as attacker-controlled content that an LLM triage tool reads, which is the data-channel case AML.T0051.001 covers; their abstracts were read on the check date. SentinelLABS describes an implant that embeds fake system messages aimed at an LLM malware triage tool. SentinelLABS did not test an LLM, so the ref shows attacker intent in the wild and not a confirmed bypass."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-approval-fatigue",
+      "name": "Approval fatigue",
+      "aliases": [],
+      "family": "oversight",
+      "scope": "agentic",
+      "topics": [
+        "oversight-tiers"
+      ],
+      "failure_mode": "A flood of approval requests leads a human approver to accept a harmful one.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T10",
+          "title_in_catalog": "Overwhelming Human in the Loop",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-deceptive-agent-self-report",
+        "atk-approval-gate-bypass"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-agentic-pdf"
+        ],
+        "notes": "No ATLAS v2026.08 technique describes overloading a human approver."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-model-extraction-via-api",
+      "name": "Model extraction through the inference API",
+      "aliases": [],
+      "family": "extraction",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "High-volume queries recover model parameters or behavior the provider meant to keep private.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0024.002",
+          "title_in_catalog": "Exfiltration via AI Inference API: Extract AI Model",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0005.001",
+          "title_in_catalog": "Create Proxy AI Model: Train Proxy via Replication",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI20",
+          "title_in_catalog": "Model Exfiltration & IP Replication",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM10:2025",
+          "title_in_catalog": "Unbounded Consumption",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2403.06634",
+          "title": "Stealing Part of a Production Language Model",
+          "first_author": "Carlini",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "modelexfiltration"
+      ],
+      "related": [
+        "atk-training-data-extraction",
+        "atk-reasoning-block-replay"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "LLM10:2025 lists Model Extraction via API under unbounded consumption."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-embedding-inversion",
+      "name": "Embedding inversion",
+      "aliases": [],
+      "family": "disclosure",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "Stored embeddings are inverted to recover the source text.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM08:2025",
+          "title_in_catalog": "Vector and Embedding Weaknesses",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI13",
+          "title_in_catalog": "Vector Store Platform Data Security",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI18",
+          "title_in_catalog": "Inference & Data Reconstruction",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0024.001",
+          "title_in_catalog": "Exfiltration via AI Inference API: Invert AI Model",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2310.06816",
+          "title": "Text Embeddings Reveal (Almost) As Much As Text",
+          "first_author": "Morris",
+          "year": 2023,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai13",
+        "modelinversionandmembership"
+      ],
+      "related": [
+        "atk-cross-tenant-leakage"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "AML.T0024.001 Invert AI Model reconstructs training data from inference-API confidence scores. It does not cover inverting stored vectors, so the mapping is by analogy."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-token-length-side-channel",
+      "name": "Token-length side channel on streamed responses",
+      "aliases": [],
+      "family": "side channel",
+      "scope": "ai",
+      "topics": [],
+      "failure_mode": "Packet sizes in an encrypted response stream reveal content to a network observer.",
+      "taxonomy_refs": [],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2403.09751",
+          "title": "What Was Your Prompt? A Remote Keylogging Attack on AI Assistants",
+          "first_author": "Weiss",
+          "year": 2024,
+          "venue": "USENIX Security 2024",
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "related": [],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "arxiv-api",
+          "venue-page"
+        ],
+        "notes": "No ATLAS v2026.08, OWASP LLM 2025, or OWASP Agentic v1.1 entry covers network side channels on response streams."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-cross-tenant-leakage",
+      "name": "Cross-tenant leakage in shared services",
+      "aliases": [],
+      "family": "multi-tenant",
+      "scope": "ai",
+      "topics": [
+        "shared-responsibility",
+        "MCP"
+      ],
+      "failure_mode": "One tenant's data reaches another through a shared index, cache, or service.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI11",
+          "title_in_catalog": "Cross-Context & Multi-User Conversation Bleed",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM08:2025",
+          "title_in_catalog": "Vector and Embedding Weaknesses",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0057",
+          "title_in_catalog": "LLM Data Leakage",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://www.theregister.com/2025/06/18/asana_mcp_server_bug/",
+          "label": "Asana MCP server cross-tenant data exposure, June 2025 (The Register)",
+          "url": "https://www.theregister.com/2025/06/18/asana_mcp_server_bug/",
+          "accessed": "2026-10-01",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-41947",
+          "label": "Dify < 1.14.2 Authorization Bypass via Trace Configuration Endpoints",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai11"
+      ],
+      "related": [
+        "atk-embedding-inversion",
+        "atk-telemetry-store-disclosure",
+        "atk-reasoning-block-replay"
+      ],
+      "origin": "seed",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "cve-services-api",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "LLM08:2025 covers multi-tenant leakage in a shared vector store only, so it is the closest OWASP LLM match."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-llm-output-os-command-injection",
+      "name": "OS command injection through model output",
+      "aliases": [],
+      "family": "injection",
+      "scope": "classical-reopened",
+      "topics": [
+        "tool-calling"
+      ],
+      "failure_mode": "Model output or tool arguments reach a shell, exec, or eval call, and the host runs commands neither the user nor the deployer chose.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-78",
+          "title_in_catalog": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T11",
+          "title_in_catalog": "Unexpected RCE and Code Attacks",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0050",
+          "title_in_catalog": "Command and Scripting Interpreter",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2309.02926",
+          "title": "Demystifying RCE Vulnerabilities in LLM-Integrated Apps",
+          "first_author": "Liu",
+          "year": 2023,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2023-29374",
+          "label": "In LangChain through 0.0.131, the LLMMathChain chain allows prompt injection attacks that can execute arbitrary code via",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-70477",
+          "label": "Flowise: CSV Agent Prompt Injection Remote Code Execution Vulnerability",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "related": [
+        "atk-sandbox-escape"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "owasp-agentic-pdf",
+          "cwe-api",
+          "arxiv-api",
+          "cve-services-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "CVE-2026-70477: a prompt injection makes the model return Python that the CSV Agent node runs without a sandbox."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-llm-output-cross-site-scripting",
+      "name": "Cross-site scripting through model output",
+      "aliases": [],
+      "family": "injection",
+      "scope": "classical-reopened",
+      "topics": [],
+      "failure_mode": "Script or markup in model output runs in the user's browser with the application's privileges.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-79",
+          "title_in_catalog": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "related": [
+        "atk-zero-click-output-exfiltration",
+        "atk-llm-output-control-sequence-injection"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-llm-pages",
+          "cwe-api",
+          "crosswalk-lookup"
+        ],
+        "notes": ""
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-nl-to-query-sql-injection",
+      "name": "SQL injection through natural-language query generation",
+      "aliases": [],
+      "family": "injection",
+      "scope": "classical-reopened",
+      "topics": [
+        "tool-calling"
+      ],
+      "failure_mode": "A natural-language request becomes a database query that reads or changes rows outside the requesting user's scope.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-89",
+          "title_in_catalog": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI12",
+          "title_in_catalog": "Unsafe Natural-Language Data Gateways",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai12",
+        "outputcontainsconventionalinjection"
+      ],
+      "related": [
+        "atk-excessive-agency"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-llm-pages",
+          "dsgai-taxonomy-json",
+          "cwe-api",
+          "crosswalk-lookup"
+        ],
+        "notes": ""
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-llm-output-path-traversal",
+      "name": "Path traversal through model-built file paths",
+      "aliases": [],
+      "family": "injection",
+      "scope": "classical-reopened",
+      "topics": [
+        "tool-calling"
+      ],
+      "failure_mode": "A file path built from model output resolves outside the directory the tool was meant to touch.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-22",
+          "title_in_catalog": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "related": [
+        "atk-sandbox-escape"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-llm-pages",
+          "cwe-api",
+          "crosswalk-lookup"
+        ],
+        "notes": ""
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.1.0"
+    },
+    {
+      "id": "atk-agent-tool-ssrf",
+      "name": "Server-side request forgery through agent fetch tools",
+      "aliases": [],
+      "family": "injection",
+      "scope": "classical-reopened",
+      "topics": [
+        "tool-calling",
+        "MCP"
+      ],
+      "failure_mode": "An agent's fetch or browse tool requests an internal address for an attacker, so data behind the network boundary reaches the attacker.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-918",
+          "title_in_catalog": "Server-Side Request Forgery (SSRF)",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0122",
+          "title_in_catalog": "Exploitation of Remote Services",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-25580",
+          "label": "Pydantic AI Affected by Server-Side Request Forgery (SSRF) in URL Download Handling",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-excessive-agency"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "cwe-api",
+          "crosswalk-lookup",
+          "cve-services-api"
+        ],
+        "notes": "LLM05:2025 names SSRF as an outcome of improper output handling but gives no scenario. AML.T0122 mentions server-side request flaws in shared services. CVE-2026-25580: an agent framework downloaded URLs taken from untrusted message history, including internal addresses."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-agent-config-credential-exposure",
+      "name": "Credential exposure in agent configuration",
+      "aliases": [],
+      "family": "identity",
+      "scope": "classical-reopened",
+      "topics": [
+        "agent-identity",
+        "MCP"
+      ],
+      "failure_mode": "Keys and tokens an agent needs for its tools sit in readable configuration, so whoever can read the configuration or steer the agent gains the agent's access.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0083",
+          "title_in_catalog": "Credentials from AI Agent Configuration",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0098",
+          "title_in_catalog": "AI Agent Tool Credential Harvesting",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-522",
+          "title_in_catalog": "Insufficiently Protected Credentials",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-312",
+          "title_in_catalog": "Cleartext Storage of Sensitive Information",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI02",
+          "title_in_catalog": "Agent Identity & Credential Exposure",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2025-11749",
+          "label": "AI Engine <= 3.1.3 - Unauthenticated Sensitive Information Exposure to Privilege Escalation",
+          "verified": true
+        },
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0067",
+          "label": "Claude Code GitHub Action Secret Exposure",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai02"
+      ],
+      "related": [
+        "atk-confused-deputy-delegation",
+        "atk-system-prompt-extraction",
+        "atk-exposed-agent-control-interface"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "dsgai-taxonomy-json",
+          "cwe-api",
+          "cve-services-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "CVE-2025-11749 exposes a bearer token through an MCP endpoint when a no-auth URL is enabled. AML.CS0067 employs AML.T0098: an agent running in a CI workflow read credentials from its environment."
+      },
+      "added_in": "0.1.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-payment-process-diversion",
+      "name": "Agent payment diversion",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "payment",
+        "tool-calling",
+        "oversight-tiers"
+      ],
+      "failure_mode": "An agent that holds payment or transfer tools pays an account the attacker controls after content it reads, such as an email, invoice, or retrieved document, supplies new payee or bank details. The paying organization loses the funds, and its records show the payment as one the agent was authorized to make.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0048.000",
+          "title_in_catalog": "External Harms: Financial Harm",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0053",
+          "title_in_catalog": "AI Agent Tool Invocation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM06:2025",
+          "title_in_catalog": "Excessive Agency",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-SEC-025",
+          "title_in_catalog": "Tool Chain Manipulation and Injection",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1657",
+          "title_in_catalog": "Financial Theft",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2406.13352",
+          "title": "AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents",
+          "first_author": "Debenedetti, Edoardo",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0026",
+          "label": "Financial Transaction Hijacking with M365 Copilot as an Insider",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "ic3-i-091124-psa",
+          "label": "FBI IC3 alert I-091124-PSA, Business Email Compromise: The $55 Billion Scam (2024-09-11)",
+          "url": "https://www.ic3.gov/PSA/2024/PSA240911",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "indirectpromptinjection",
+        "dsgai06"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004",
+        "srf.control.finance.SRF-L3-DEV-003"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-excessive-agency",
+        "atk-beneficiary-or-master-data-manipulation",
+        "atk-approval-gate-bypass",
+        "atk-deepfake-approver-impersonation"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "owasp-llm-pages",
+          "finos-aigf-repo",
+          "attack-stix-bundle",
+          "arxiv-abs-page",
+          "url-fetch",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "No pinned catalog has an entry for agent-driven payment diversion, so every taxonomy ref is closest. AML.T0048.000 names the harm, AML.T0053 the tool step, and AIR-SEC-025 the injected parameters. AML.CS0026 employs AML.T0048.000, AML.T0051.001, and AML.T0053 in the v2026.08 relationships block. The AgentDojo abstract lists an e-banking task suite among its injection test environments. The IC3 alert describes the human-run business email compromise pattern and says nothing about AI; it is cited as the baseline loss pattern the agent version repeats."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-invoice-or-procurement-alteration",
+      "name": "Invoice or purchase order alteration in agent intake",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "invoice",
+        "procurement",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent that reads, extracts, or matches invoices and purchase orders records the wrong amounts, line items, or terms because the document it ingests was altered in transit or written to mislead the extraction step. The buyer pays, or commits to, terms that no one approved.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0119",
+          "title_in_catalog": "Exploit Automated Artifact Processing Pipeline",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0051.001",
+          "title_in_catalog": "LLM Prompt Injection: Indirect",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1565.002",
+          "title_in_catalog": "Data Manipulation: Transmitted Data Manipulation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-807",
+          "title_in_catalog": "Reliance on Untrusted Inputs in a Security Decision",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2410.02644",
+          "title": "Agent Security Bench (ASB): Formalizing and Benchmarking Attacks and Defenses in LLM-based Agents",
+          "first_author": "Zhang, Hanrong",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "indirectpromptinjection",
+        "dsgai05"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004"
+      ],
+      "related": [
+        "atk-payment-process-diversion",
+        "atk-beneficiary-or-master-data-manipulation",
+        "atk-indirect-prompt-injection",
+        "atk-supply-chain-process-hijack"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "attack-stix-bundle",
+          "cwe-api",
+          "arxiv-abs-page",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "AML.T0119 covers an artifact that triggers an automated processing pipeline; an invoice sent to an AI intake pipeline is one such artifact. AML.T0051.001 applies only when the altered document carries instructions. T1565.002 states that transmitted data manipulation may aim to affect a business process. CWE-807 is graded analogy because it describes a security decision; the decision here is a payment. The Agent Security Bench abstract lists e-commerce and finance among its ten scenarios."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-approval-gate-bypass",
+      "name": "Approval gate bypass by an agent",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "approval",
+        "workflow",
+        "oversight-tiers",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent completes a step that the business process reserves for a named human approver, because the gate exists only in the prompt or in agent logic and the system of record does not check for it. The action takes effect without the approval that policy requires, and the record can show it as approved.",
+      "taxonomy_refs": [
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-SEC-024",
+          "title_in_catalog": "Agent Action Authorization Bypass",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-841",
+          "title_in_catalog": "Improper Enforcement of Behavioral Workflow",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM06:2025",
+          "title_in_catalog": "Excessive Agency",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T3",
+          "title_in_catalog": "Privilege Compromise",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-863",
+          "title_in_catalog": "Incorrect Authorization",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004",
+        "srf.control.finance.SRF-L3-DEV-003",
+        "srf.control.finance.SRF-L3-MON-003",
+        "srf.control.insurance.SRF-L3-DEV-002",
+        "srf.control.insurance.SRF-L3-VAL-002"
+      ],
+      "related": [
+        "atk-approval-fatigue",
+        "atk-excessive-agency",
+        "atk-confused-deputy-delegation",
+        "atk-payment-process-diversion"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "finos-aigf-repo",
+          "cwe-api",
+          "owasp-llm-pages",
+          "owasp-agentic-pdf",
+          "ids-lookup"
+        ],
+        "notes": "AIR-SEC-024 names agents that bypass authorization controls to execute unauthorized financial transactions or violate business logic constraints. CWE-841 (usage Allowed in CWE 4.20) covers a workflow whose required sequence of behaviors is not enforced. No ATLAS v2026.08 technique describes skipping a business approval step. No /data/threats.json row covers it either: rows are keyed by OWASP AI Exchange or DSGAI ids, and the file has no L1 row for approval processes. The two insurance controls require the gate to be a technical control in the workflow. Finance SRF-L1-DEV-004 requires a written policy naming which actions need human approval and the accountable business owner, SRF-L3-DEV-003 requires a confirmation gate for irreversible or high-consequence tool calls, and SRF-L3-MON-003 monitors attempts to call tools outside the allow-list."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-beneficiary-or-master-data-manipulation",
+      "name": "Beneficiary or vendor master data change through an agent",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "master-data",
+        "payment",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent with write access to vendor, customer, or beneficiary records changes bank details, addresses, or limits on the strength of a request or document whose origin it cannot verify. Later payments and approvals that read those records go to the wrong party, and no single payment looks abnormal.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0099",
+          "title_in_catalog": "AI Agent Tool Data Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM06:2025",
+          "title_in_catalog": "Excessive Agency",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1565.001",
+          "title_in_catalog": "Data Manipulation: Stored Data Manipulation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-346",
+          "title_in_catalog": "Origin Validation Error",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "label": "Zenity Labs, Prompt Mines in Salesforce Einstein, August 2025",
+          "url": "https://labs.zenity.io/p/prompt-mines-0-click-data-corruption-in-salesforce-einstein-1cfb",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai05"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-004"
+      ],
+      "related": [
+        "atk-payment-process-diversion",
+        "atk-invoice-or-procurement-alteration",
+        "atk-excessive-agency"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "owasp-llm-pages",
+          "attack-stix-bundle",
+          "cwe-api",
+          "crosswalk-lookup",
+          "ids-lookup",
+          "url-fetch"
+        ],
+        "notes": "AML.T0099 covers manipulated data in a trusted source that an agent tool reads, which is the downstream half of this class: a changed master record that a payment agent later reads. T1565.001 states that stored data manipulation may aim to affect a business process. The record lives under L2 data governance (dsgai05); the decision to accept the change belongs to the business process owner at L1. The Zenity Labs report shows an assistant with an update-contact action rewriting customer contact records after it retrieved case records that an outside party created."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.2"
+    },
+    {
+      "id": "atk-process-logic-injection",
+      "name": "Process logic injection through agent-written workflow rules",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "workflow",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent that writes or edits workflow rules, routing conditions, or automation scripts carries untrusted content into the rule it produces, and the workflow engine then applies that rule to every later case. One input changes how the process treats all cases that follow, beyond the transaction that carried it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T11",
+          "title_in_catalog": "Unexpected RCE and Code Attacks",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-94",
+          "title_in_catalog": "Improper Control of Generation of Code ('Code Injection')",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L3-DEV-003"
+      ],
+      "related": [
+        "atk-llm-output-os-command-injection",
+        "atk-indirect-prompt-injection",
+        "atk-approval-gate-bypass"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-llm-pages",
+          "owasp-agentic-pdf",
+          "cwe-api",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "Each ref covers model output that a downstream engine executes; none names business rules or workflow definitions, so all are closest. CWE-94 has usage Allowed-with-Review in CWE 4.20. No ATLAS v2026.08 technique covers agent-authored workflow rules. SRF-L3-DEV-003 requires a confirmation gate for high-consequence tool calls, which includes publishing a rule that changes later cases."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-deceptive-process-reporting",
+      "name": "False process status reporting by an agent",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "workflow",
+        "oversight-tiers"
+      ],
+      "failure_mode": "An agent reports a business step as complete, reconciled, or approved when it is not, or reports figures the underlying records do not support. Managers and auditors who rely on the report sign off on work that did not happen or on balances that are wrong.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T7",
+          "title_in_catalog": "Misaligned & Deceptive Behaviors",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM09:2025",
+          "title_in_catalog": "Misinformation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-OP-004",
+          "title_in_catalog": "Hallucination and Inaccurate Outputs",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T8",
+          "title_in_catalog": "Repudiation & Untraceability",
+          "mapping_quality": "analogy",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1565.003",
+          "title_in_catalog": "Data Manipulation: Runtime Data Manipulation",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2602.20021",
+          "title": "Agents of Chaos",
+          "first_author": "Shapira",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "vertical_controls": [
+        "srf.control.insurance.SRF-L4-MON-002"
+      ],
+      "related": [
+        "atk-deceptive-agent-self-report",
+        "atk-repudiation-log-tampering",
+        "atk-approval-gate-bypass"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-agentic-pdf",
+          "owasp-llm-pages",
+          "finos-aigf-repo",
+          "attack-stix-bundle",
+          "arxiv-api",
+          "ids-lookup"
+        ],
+        "notes": "This class covers the report a business owner reads; atk-deceptive-agent-self-report covers the agent's account of its own actions. T7 covers deliberate deception and AIR-OP-004 covers error; a false report can come from either, so both are closest. T8 and T1565.003 are analogies: T8 describes untraceable actions and T1565.003 an outside adversary altering displayed data. The insurance audit log control requires a tamper-evident record of each AI-assisted decision, which gives a reviewer a source to check the report against."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-supply-chain-process-hijack",
+      "name": "Partner agent hijack of a shared business process",
+      "aliases": [],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "procurement",
+        "supply-chain",
+        "agent-identity",
+        "workflow"
+      ],
+      "failure_mode": "A supplier or partner agent, once compromised, sends orders, confirmations, or change requests into a buyer's agent-run process, and the buyer's agent acts on them because the partner channel is trusted. The buyer ships, pays, or changes terms on instructions the partner never issued.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T12",
+          "title_in_catalog": "Agent Communication Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T14",
+          "title_in_catalog": "Human Attacks on Multi-Agent Systems",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "finos-aigf",
+          "catalog_version": "v2",
+          "id": "AIR-OP-028",
+          "title_in_catalog": "Multi-Agent Trust Boundary Violations",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1199",
+          "title_in_catalog": "Trusted Relationship",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-346",
+          "title_in_catalog": "Origin Validation Error",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T17",
+          "title_in_catalog": "Supply Chain Compromise",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "vertical_controls": [
+        "srf.control.finance.SRF-L1-DEV-005",
+        "srf.control.manufacturing.SRF-L1-DES-006"
+      ],
+      "related": [
+        "atk-confused-deputy-delegation",
+        "atk-display-name-identity-spoofing",
+        "atk-invoice-or-procurement-alteration"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "owasp-agentic-pdf",
+          "finos-aigf-repo",
+          "attack-stix-bundle",
+          "cwe-api",
+          "crosswalk-lookup",
+          "ids-lookup"
+        ],
+        "notes": "AIR-OP-028 describes compromise spreading between agents through shared channels and names business processes as the affected scope; it is graded closest because its text concerns agents inside one system, and this class crosses an organization boundary. T14 names abuse of trust relationships and workflow dependencies. T1199 is the network-access form of the same trust. T17 is an analogy because it covers compromised components; a partner process is not a component. The finance vendor register names an accountable officer for each AI vendor; the manufacturing procurement policy requires a supply chain AI risk assessment and contract terms for each supplier."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-deepfake-approver-impersonation",
+      "name": "Deepfake impersonation of a payment approver",
+      "aliases": [
+        "deepfake CEO fraud"
+      ],
+      "family": "business process",
+      "scope": "business-process",
+      "topics": [
+        "business-process",
+        "approval",
+        "payment",
+        "multimodal"
+      ],
+      "failure_mode": "An employee approves or releases a payment after a video call, voice call, or message that uses AI-generated media to impersonate an executive or other approver. The approval step runs as designed but confirms the wrong person, and the organization loses the funds.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0052.001",
+          "title_in_catalog": "Phishing: Deepfake-Assisted Phishing",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0088",
+          "title_in_catalog": "Generate Deepfakes",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0073",
+          "title_in_catalog": "Impersonation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1684.001",
+          "title_in_catalog": "Social Engineering: Impersonation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-290",
+          "title_in_catalog": "Authentication Bypass by Spoofing",
+          "mapping_quality": "analogy",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "arup-deepfake-2024-cnn",
+          "label": "CNN, Arup revealed as victim of $25 million deepfake scam involving Hong Kong employee (2024-05-16)",
+          "url": "https://edition.cnn.com/2024/05/16/tech/arup-deepfake-scam-loss-hong-kong-intl-hnk/index.html",
+          "accessed": "2026-10-01",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "arup-deepfake-2024-guardian",
+          "label": "The Guardian, UK engineering firm Arup falls victim to £20m deepfake scam (2024-05-17)",
+          "url": "https://www.theguardian.com/technology/article/2024/may/17/uk-engineering-arup-deepfake-scam-hong-kong-ai-video",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-payment-process-diversion",
+        "atk-display-name-identity-spoofing",
+        "atk-approval-gate-bypass"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "attack-stix-bundle",
+          "cwe-api",
+          "url-fetch"
+        ],
+        "notes": "AML.T0052.001 names deepfakes used to impersonate executives in phishing. ATT&CK 19.x revoked T1656 Impersonation in favor of T1684.001, but ATLAS v2026.08 AML.T0073 still cross-references T1656; cite T1684.001. CWE-290 is an analogy because it describes software authentication, and the spoofed check here is a person. AML.CS0033 and AML.CS0034 use the same techniques against KYC onboarding and are not cited, because onboarding is a different process. No vertical control checks approver identity, so vertical_controls is empty."
+      },
+      "added_in": "0.2.0",
+      "last_changed_in": "0.2.0"
+    },
+    {
+      "id": "atk-agent-skill-poisoning",
+      "name": "Agent skill marketplace poisoning",
+      "aliases": [
+        "poisoned skill",
+        "skill supply chain attack"
+      ],
+      "family": "tool supply chain",
+      "scope": "agentic",
+      "topics": [
+        "supply-chain",
+        "tool-calling"
+      ],
+      "failure_mode": "A user installs a skill from a shared registry, and the skill's instructions or bundled code act with the agent's access, so data and credentials the agent can reach go to the skill's author.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0010.005",
+          "title_in_catalog": "AI Supply Chain Compromise: AI Agent Tool",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0011.002",
+          "title_in_catalog": "User Execution: Poisoned AI Agent Tool",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0110.000",
+          "title_in_catalog": "AI Agent Tool Poisoning: Definition and Instructions",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0111",
+          "title_in_catalog": "AI Supply Chain Reputation Inflation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T17",
+          "title_in_catalog": "Supply Chain Compromise",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0049",
+          "label": "Supply Chain Compromise via Poisoned ClawdBot Skill",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://labs.zenity.io/post/attackers-target-agents-via-the-skill-supply-chain",
+          "label": "Zenity Labs, typosquatted agent skills on skills.sh, 2026",
+          "url": "https://labs.zenity.io/post/attackers-target-agents-via-the-skill-supply-chain",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "related": [
+        "atk-mcp-tool-poisoning",
+        "atk-coding-agent-rules-file-poisoning",
+        "atk-malicious-model-artifact"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "Split from atk-mcp-tool-poisoning. That entry covers a tool definition served by a connected server; this one covers a package of instructions and code installed from a skill registry, where install counts and look-alike names drive adoption. AML.T0011.002 names skills as one way a poisoned tool arrives. AML.CS0049 employs AML.T0010.005, AML.T0011.002, AML.T0110.000, and AML.T0111. Zenity Labs reports skills that stayed clean while they gathered installs and were changed to steal credentials later."
+      },
+      "added_in": "0.3.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-coding-agent-rules-file-poisoning",
+      "name": "Coding agent rules and configuration file poisoning",
+      "aliases": [
+        "rules file backdoor",
+        "workspace configuration poisoning"
+      ],
+      "family": "supply chain",
+      "scope": "agentic",
+      "topics": [
+        "supply-chain"
+      ],
+      "failure_mode": "A rules or configuration file that ships with a repository or package steers a coding agent, so a developer who opens the project gets code changes or commands they did not ask for.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0081",
+          "title_in_catalog": "Modify AI Agent Configuration",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0010.001",
+          "title_in_catalog": "AI Supply Chain Compromise: AI Software",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T17",
+          "title_in_catalog": "Supply Chain Compromise",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM01:2025",
+          "title_in_catalog": "Prompt Injection",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-15",
+          "title_in_catalog": "External Control of System or Configuration Setting",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0041",
+          "label": "Rules File Backdoor: Supply Chain Attack on AI Coding Assistants",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-12957",
+          "label": "Arbitrary Code Execution in Language Servers for AWS",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://socket.dev/blog/trapdoor-crypto-stealer-npm-pypi-crates",
+          "label": "Socket, TrapDoor packages that plant .cursorrules and CLAUDE.md, May 2026",
+          "url": "https://socket.dev/blog/trapdoor-crypto-stealer-npm-pypi-crates",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "indirectpromptinjection"
+      ],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-agent-skill-poisoning",
+        "atk-mcp-tool-poisoning"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "owasp-llm-pages",
+          "cwe-api",
+          "cve-services-api",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "Split from atk-indirect-prompt-injection. That entry covers content an agent reads during a task; here the file loads as standing configuration when the project opens, so it shapes every later task and can start commands before the developer types a prompt. The srf_crosswalk row is shared with indirect prompt injection because the same application team owns what the agent accepts as instructions. AML.CS0041 employs AML.T0081 and AML.T0010.001. CVE-2026-12957 runs commands from project configuration files when a workspace opens. Socket reports packages that write .cursorrules and CLAUDE.md files on developer machines."
+      },
+      "added_in": "0.3.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-exposed-agent-control-interface",
+      "name": "Exposed agent control interface",
+      "aliases": [
+        "unauthenticated agent gateway",
+        "cross-site WebSocket hijacking of a local agent"
+      ],
+      "family": "exposed interface",
+      "scope": "classical-reopened",
+      "topics": [
+        "agent-identity",
+        "tool-calling"
+      ],
+      "failure_mode": "An agent's control interface or service endpoint accepts requests without strong authentication or origin checks, so anyone who can reach it, including a web page the user visits, can run the agent's tools and read its credentials.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-306",
+          "title_in_catalog": "Missing Authentication for Critical Function",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-1385",
+          "title_in_catalog": "Missing Origin Validation in WebSockets",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0049",
+          "title_in_catalog": "Exploit Public-Facing Application",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1190",
+          "title_in_catalog": "Exploit Public-Facing Application",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI02",
+          "title_in_catalog": "Agent Identity & Credential Exposure",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0048",
+          "label": "Exposed ClawdBot Control Interfaces Leads to Credential Access and Execution",
+          "catalog_version": "v2026.08",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-25253",
+          "label": "OpenClaw sends its gateway token over a WebSocket opened from a query-string URL",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://www.oasis.security/resources/cross-origin-websocket-exploitation-openclaw",
+          "label": "Oasis Security, cross-origin WebSocket exploitation of OpenClaw, March 2026",
+          "url": "https://www.oasis.security/resources/cross-origin-websocket-exploitation-openclaw",
+          "accessed": "2026-10-01",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://www.microsoft.com/en-us/security/blog/2026/05/14/configuration-becomes-vulnerability-exploitable-misconfigurations-ai-apps/",
+          "label": "Microsoft Security, exploitable misconfigurations in AI apps, May 2026",
+          "url": "https://www.microsoft.com/en-us/security/blog/2026/05/14/configuration-becomes-vulnerability-exploitable-misconfigurations-ai-apps/",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai02"
+      ],
+      "related": [
+        "atk-agent-config-credential-exposure",
+        "atk-sandbox-escape",
+        "atk-excessive-agency"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "cwe-api",
+          "attack-stix-bundle",
+          "dsgai-taxonomy-json",
+          "cve-services-api",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "Split from atk-agent-config-credential-exposure. That entry covers secrets stored in readable configuration; this one covers the interface that sends commands to the agent, which grants the agent's tools whether or not any secret is stored in plain text. AML.CS0048 employs AML.T0049. CVE-2026-25253 is also cited under atk-sandbox-escape. Microsoft reports exposed AI services with weak or missing authentication that attackers used in the wild."
+      },
+      "added_in": "0.3.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-agent-session-smuggling",
+      "name": "Agent session smuggling between partner agents",
+      "aliases": [
+        "A2A session smuggling"
+      ],
+      "family": "multi-agent",
+      "scope": "agentic",
+      "topics": [
+        "agent-identity",
+        "tool-calling"
+      ],
+      "failure_mode": "A remote agent in a stateful session adds instructions between turns that the user never sees, and the client agent acts on them, so the user loses data or authority to the remote agent's operator.",
+      "taxonomy_refs": [
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T16",
+          "title_in_catalog": "Insecure Inter-Agent Protocol Abuse",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI06",
+          "title_in_catalog": "Tool, Plugin & Agent Data Exchange Risks",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T12",
+          "title_in_catalog": "Agent Communication Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0051.001",
+          "title_in_catalog": "LLM Prompt Injection: Indirect",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM01:2025",
+          "title_in_catalog": "Prompt Injection",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://unit42.paloaltonetworks.com/agent-session-smuggling-in-agent2agent-systems/",
+          "label": "Unit 42, agent session smuggling in A2A systems, October 2025",
+          "url": "https://unit42.paloaltonetworks.com/agent-session-smuggling-in-agent2agent-systems/",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "related": [
+        "atk-confused-deputy-delegation",
+        "atk-indirect-prompt-injection",
+        "atk-supply-chain-process-hijack"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "dsgai-taxonomy-json",
+          "owasp-llm-pages",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "DSGAI06 names inter-agent context smuggling in its summary. ATLAS v2026.08 has no technique for a victim agent that receives hidden turns from a partner; AML.T0118.001 describes agents an adversary runs. Unit 42 built two proofs of concept and states that it has not seen the attack in the wild."
+      },
+      "added_in": "0.3.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-malicious-llm-api-router",
+      "name": "Malicious LLM API router",
+      "aliases": [
+        "malicious intermediary",
+        "API relay tampering"
+      ],
+      "family": "supply chain",
+      "scope": "agentic",
+      "topics": [
+        "supply-chain",
+        "tool-calling"
+      ],
+      "failure_mode": "A third-party router between an application and its model providers reads or rewrites prompts, responses, and tool calls, so the application owner loses the confidentiality and integrity of every request it relays.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-345",
+          "title_in_catalog": "Insufficient Verification of Data Authenticity",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-attack",
+          "catalog_version": "19.2",
+          "id": "T1557",
+          "title_in_catalog": "Adversary-in-the-Middle",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T17",
+          "title_in_catalog": "Supply Chain Compromise",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2604.08407",
+          "title": "Your Agent Is Mine: Measuring Malicious Intermediary Attacks on the LLM Supply Chain",
+          "first_author": "Liu",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-agent-skill-poisoning",
+        "atk-confused-deputy-delegation",
+        "atk-llm-output-os-command-injection"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "attack-stix-bundle",
+          "owasp-agentic-pdf",
+          "arxiv-abs-page"
+        ],
+        "notes": "The router terminates TLS and holds every request in plain text, and no provider signs responses, so the client cannot tell a rewritten tool call from a real one; CWE-345 names that missing check. T1557 assumes an attacker who inserts themselves; here the application chose the router. No threats.json row covers a model-traffic intermediary, and DSGAI03 fits only when the router is unsanctioned. No incident is cited; the paper reports measurements of live routers."
+      },
+      "added_in": "0.3.0",
+      "last_changed_in": "0.3.0"
+    },
+    {
+      "id": "atk-computer-use-stale-action",
+      "name": "Computer-use action on a stale screen",
+      "aliases": [
+        "computer-use TOCTOU",
+        "visual atomicity violation"
+      ],
+      "family": "race condition",
+      "scope": "classical-reopened",
+      "topics": [
+        "tool-calling",
+        "multimodal"
+      ],
+      "failure_mode": "A computer-use agent picks a target from a screenshot, and the screen changes before the click or keystroke lands, so the action hits a control the agent never chose, under the user's session.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-367",
+          "title_in_catalog": "Time-of-check Time-of-use (TOCTOU) Race Condition",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2604.18860",
+          "title": "Temporal UI State Inconsistency in Desktop GUI Agents: Formalizing and Defending Against TOCTOU Attacks on Computer-Use Agents",
+          "first_author": "Xu",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2603.00476",
+          "title": "Atomicity for Agents: Exposing, Exploiting, and Mitigating TOCTOU Vulnerabilities in Browser-Use Agents",
+          "first_author": "Jiang",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://github.com/google/security-research/security/advisories/GHSA-mp56-7vrw-qxvf",
+          "label": "Google Security Research GHSA-mp56-7vrw-qxvf, OpenAI Operator click on arbitrary origin, disclosed 2025-08-18",
+          "url": "https://github.com/google/security-research/security/advisories/GHSA-mp56-7vrw-qxvf",
+          "accessed": "2026-10-01",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/",
+          "label": "Embrace The Red, computer-use and TOCTOU, 2026",
+          "url": "https://embracethered.com/blog/posts/2026/toctou-agent-what-you-click-is-not-what-you-get/",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [],
+      "related": [
+        "atk-indirect-prompt-injection",
+        "atk-excessive-agency",
+        "atk-multimodal-instruction-injection"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "arxiv-abs-page",
+          "url-fetch"
+        ],
+        "notes": "Indirect prompt injection steers what the agent decides; here the agent decides correctly and the screen moves before the action. ATLAS v2026.08 has no technique for this race, and no threats.json row covers it. The Operator advisory records no CVE; OpenAI fixed it on 2025-07-17. Embrace The Red reports that Anthropic now checks that pixels have not changed before an action. Paper 2604.18860 finds that a pre-action check misses page changes that leave no visible trace."
+      },
+      "added_in": "0.4.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-reasoning-block-replay",
+      "name": "Replay of encrypted reasoning blocks",
+      "aliases": [
+        "reasoning trace extraction",
+        "stolen thoughts"
+      ],
+      "family": "disclosure",
+      "scope": "ai",
+      "topics": [
+        "shared-responsibility"
+      ],
+      "failure_mode": "A provider returns encrypted reasoning blocks that are not bound to the user, session, or model that produced them, so anyone who obtains a block, for example from a published agent log, can replay it into another model and recover the hidden reasoning and any secrets in it.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-294",
+          "title_in_catalog": "Authentication Bypass by Capture-replay",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0057",
+          "title_in_catalog": "LLM Data Leakage",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0024.002",
+          "title_in_catalog": "Exfiltration via AI Inference API: Extract AI Model",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI11",
+          "title_in_catalog": "Cross-Context & Multi-User Conversation Bleed",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM02:2025",
+          "title_in_catalog": "Sensitive Information Disclosure",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2608.09867",
+          "title": "Stealing Reasoning Traces from Proprietary LLM APIs",
+          "first_author": "Panfilov",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [],
+      "srf_crosswalk": [
+        "dsgai11"
+      ],
+      "related": [
+        "atk-model-extraction-via-api",
+        "atk-cross-tenant-leakage",
+        "atk-system-prompt-extraction"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "dsgai-taxonomy-json",
+          "owasp-llm-pages",
+          "arxiv-abs-page",
+          "crosswalk-lookup"
+        ],
+        "notes": "No catalog entry is exact. CWE-294 assumes captured network traffic; here the blocks came from agent logs that developers published. The paper decoded 315,320 blocks from public logs and recovered 367 personal data items and 182 credentials. It states that its main results were no longer reproducible as of August 2026 because providers deployed fixes. The provider must bind each block to its context; the customer decides whether logs that hold blocks are published."
+      },
+      "added_in": "0.4.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-multi-agent-covert-channel",
+      "name": "Multi-agent covert channel past a monitor model",
+      "aliases": [
+        "tokenizer blind spot",
+        "cross-model covert channel"
+      ],
+      "family": "oversight",
+      "scope": "agentic",
+      "topics": [
+        "oversight-tiers"
+      ],
+      "failure_mode": "A monitor model checks messages between agents, or input bound for another model, but its tokenizer deletes invisible characters that the other model keeps, so content reaches the receiver that the monitor never saw.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-514",
+          "title_in_catalog": "Covert Channel",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-176",
+          "title_in_catalog": "Improper Handling of Unicode Encoding",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0068",
+          "title_in_catalog": "LLM Prompt Obfuscation",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-agentic-threats",
+          "catalog_version": "1.1",
+          "id": "T13",
+          "title_in_catalog": "Rogue Agents in Multi-Agent Systems",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-dsgai",
+          "catalog_version": "1.0",
+          "id": "DSGAI06",
+          "title_in_catalog": "Tool, Plugin & Agent Data Exchange Risks",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://github.com/elder-plinius/GLOSSOPETRAE/blob/acb93a95aaff264fe5facea35394ee8f48fa4cf8/PAPER.md",
+          "label": "Lingua Ex Machina, self-published technical report, GLOSSOPETRAE repository, June 2026",
+          "url": "https://github.com/elder-plinius/GLOSSOPETRAE/blob/acb93a95aaff264fe5facea35394ee8f48fa4cf8/PAPER.md",
+          "accessed": "2026-10-01",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "dsgai06"
+      ],
+      "related": [
+        "atk-encoded-input-guardrail-evasion",
+        "atk-observability-plane-evasion",
+        "atk-agent-session-smuggling"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-01",
+        "checked_by": "AI agent in Cursor, session of 2026-10-01",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-agentic-pdf",
+          "dsgai-taxonomy-json",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "In atk-encoded-input-guardrail-evasion the classifier sees an encoded form and misjudges it. Here the monitor never receives the hidden characters, so a better prompt does not help: the report measured 0% monitor recovery even when the monitor held the decoding key. The ref is pinned to commit acb93a9. The author states it is self-published and that vendors were not notified first; no use in the wild is reported. Stripping tag, private-use, and format characters before the monitor reads the text closes the tokenizer channel; the same report finds that monitors also miss payloads hidden in word choice, which this entry does not cover."
+      },
+      "added_in": "0.4.0",
+      "last_changed_in": "0.4.0"
+    },
+    {
+      "id": "atk-feedback-loop-poisoning",
+      "name": "Feedback-loop poisoning by ordinary users",
+      "aliases": [
+        "feedback poisoning",
+        "preference poisoning"
+      ],
+      "family": "poisoning",
+      "scope": "ai",
+      "topics": [
+        "telemetry"
+      ],
+      "failure_mode": "Ordinary users submit prompts and ratings that a provider feeds back into tuning or ranking, and the next model version carries behavior the attackers chose to every user.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0020",
+          "title_in_catalog": "Training Data Poisoning",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0031",
+          "title_in_catalog": "Erode AI Model Integrity",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM04:2025",
+          "title_in_catalog": "Data and Model Poisoning",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2507.02850",
+          "title": "LLM Hypnosis: Exploiting User Feedback for Unauthorized Knowledge Injection to All Users",
+          "first_author": "Hilel",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2409.00787",
+          "title": "The Dark Side of Human Feedback: Poisoning Large Language Models via User Inputs",
+          "first_author": "Chen",
+          "year": 2024,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0009",
+          "label": "Tay Poisoning",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "datapoison"
+      ],
+      "related": [
+        "atk-training-data-poisoning",
+        "atk-backdoored-model-trigger",
+        "atk-agent-memory-poisoning"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "owasp-llm-pages",
+          "arxiv-abs-page",
+          "crosswalk-lookup"
+        ],
+        "notes": "Split from atk-training-data-poisoning, which assumes access to training or fine-tuning data. Here the attacker uses only the prompts and rating buttons any user has, and the provider's own pipeline carries the result into the next model. AML.T0020 names manipulated feedback and data-collection processes. AML.CS0009 employs AML.T0020 and AML.T0031: Tay learned from user conversations in 2016. Paper 2507.02850 reports a single unprivileged user planting false facts and insecure code patterns that persist under both DPO and KTO tuning. The srf_crosswalk row is shared with training data poisoning."
+      },
+      "added_in": "0.5.0",
+      "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-llm-output-control-sequence-injection",
+      "name": "Control sequences in model output reaching terminals and logs",
+      "aliases": [
+        "ANSI escape injection",
+        "Terminal DiLLMa",
+        "log forging"
+      ],
+      "family": "injection",
+      "scope": "classical-reopened",
+      "topics": [
+        "telemetry",
+        "tool-calling"
+      ],
+      "failure_mode": "Model output carries escape or control sequences that a terminal or log viewer interprets, so the output can change what a user or analyst sees, write to the clipboard, send data out, or forge log lines.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-150",
+          "title_in_catalog": "Improper Neutralization of Escape, Meta, or Control Sequences",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-117",
+          "title_in_catalog": "Improper Output Neutralization for Logs",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM05:2025",
+          "title_in_catalog": "Improper Output Handling",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "url",
+          "id": "https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/",
+          "label": "Embrace The Red, Terminal DiLLMa, December 2024",
+          "url": "https://embracethered.com/blog/posts/2024/terminal-dillmas-prompt-injection-ansi-sequences/",
+          "accessed": "2026-10-02",
+          "verified": true
+        },
+        {
+          "type": "url",
+          "id": "https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/",
+          "label": "Embrace The Red, DNS exfiltration through macOS Terminal escape codes, July 2026",
+          "url": "https://embracethered.com/blog/posts/2026/macos-terminal-dillma-dns-exfil-ansi-escape-code-fix/",
+          "accessed": "2026-10-02",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "outputcontainsconventionalinjection"
+      ],
+      "related": [
+        "atk-llm-output-cross-site-scripting",
+        "atk-telemetry-borne-injection-into-llm-triage",
+        "atk-repudiation-log-tampering"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "cwe-api",
+          "owasp-llm-pages",
+          "url-fetch",
+          "crosswalk-lookup"
+        ],
+        "notes": "atk-telemetry-borne-injection-into-llm-triage covers text that instructs an LLM reading logs. Here the receiver is a terminal or log viewer that acts on control codes without any model reading them. CWE-117 covers the log-forging half only. LLM05:2025 names shells, browsers, and databases as sinks but not terminals; the OWASP LLM Top 10 2026 release candidate adds terminal and log sinks. Apple fixed the macOS Terminal DNS behavior in macOS Tahoe 26.1 (2025-11-03); no CVE is cited in the post."
+      },
+      "added_in": "0.5.0",
+      "last_changed_in": "0.5.0"
+    },
+    {
+      "id": "atk-media-preprocessing-blind-spot",
+      "name": "Media preprocessing hides content from a model reviewer",
+      "aliases": [
+        "frame sampling evasion",
+        "observation-level attack",
+        "processing differential"
+      ],
+      "family": "evasion",
+      "scope": "ai",
+      "topics": [
+        "multimodal"
+      ],
+      "failure_mode": "A model that reviews or moderates video, images, or audio receives a reduced or differently decoded copy, such as a sample of frames, the first frame of an animation, or a mix of audio channels that playback ignores, so the model reviews something other than what people will see or hear and reports the media as clean.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0015",
+          "title_in_catalog": "Evade AI Model",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-436",
+          "title_in_catalog": "Interpretation Conflict",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "2508.10974",
+          "title": "Failures to Surface Harmful Contents in Video Large Language Models",
+          "first_author": "Cao",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2509.20851",
+          "title": "Poisoning Prompt-Guided Sampling in Video Large Language Models",
+          "first_author": "Cao",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2609.08331",
+          "title": "Do Input-Level Defenses Transfer to Observation-Level Attacks on VideoLLMs?",
+          "first_author": "Zhu",
+          "year": 2026,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-12491",
+          "label": "vLLM, image orientation and transparency not normalized before the model reads the image",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-34760",
+          "label": "vLLM, audio downmix differs from consumer playback, moderation bypass for audio models",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "evasion"
+      ],
+      "related": [
+        "atk-adversarial-perturbation-of-media-input",
+        "atk-multimodal-instruction-injection",
+        "atk-observability-plane-evasion"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "cwe-api",
+          "arxiv-api",
+          "cve-services-api",
+          "osv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "From rows A3 and A16 of a streaming-media attack inventory shared for review on 2026-10-02, widened from frame sampling to any preprocessing step that changes what the model receives. The attacker needs no adversarial perturbation, which separates this class from atk-adversarial-perturbation-of-media-input. AML.T0015 covers evading a model's reading of content but describes crafted adversarial data or deepfakes. CWE-436 covers two components that read the same input differently. The GitHub advisory for CVE-2026-12491 (GHSA-8jr5-v98p-w75m) also reports that only the first frame of an APNG or GIF reaches the model. The advisory for CVE-2026-34760 (GHSA-6c4r-fmh3-7rh8) reports that consumer playback drops the LFE channel while the model's mono downmix includes it. The srf_crosswalk row is evasion, whose layer rationale names model robustness; here the gap sits in input handling before the model."
+      },
+      "added_in": "0.6.0",
+      "last_changed_in": "0.6.0"
+    },
+    {
+      "id": "atk-adversarial-perturbation-of-media-input",
+      "name": "Adversarial perturbation of audio, image, or video input",
+      "aliases": [
+        "adversarial examples",
+        "audio adversarial examples",
+        "perception evasion"
+      ],
+      "family": "evasion",
+      "scope": "ai",
+      "topics": [
+        "multimodal"
+      ],
+      "failure_mode": "Small changes to audio, images, or video that a person does not notice make a perception model transcribe, classify, or detect something else, so a speech-to-text, moderation, or recognition step acts on the wrong reading.",
+      "taxonomy_refs": [
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0015",
+          "title_in_catalog": "Evade AI Model",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0043",
+          "title_in_catalog": "Craft Adversarial Data",
+          "mapping_quality": "exact",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-1039",
+          "title_in_catalog": "Inadequate Detection or Handling of Adversarial Input Perturbations in Automated Recognition Mechanism",
+          "mapping_quality": "exact",
+          "verified": true
+        }
+      ],
+      "paper_refs": [
+        {
+          "type": "arxiv",
+          "id": "1801.01944",
+          "title": "Audio Adversarial Examples: Targeted Attacks on Speech-to-Text",
+          "first_author": "Carlini",
+          "year": 2018,
+          "venue": null,
+          "verified": true
+        },
+        {
+          "type": "arxiv",
+          "id": "2502.11858",
+          "title": "Rethinking Audio-Visual Adversarial Vulnerability from Temporal and Modality Perspectives",
+          "first_author": "Zhang",
+          "year": 2025,
+          "venue": null,
+          "verified": true
+        }
+      ],
+      "incident_refs": [
+        {
+          "type": "atlas-case-study",
+          "id": "AML.CS0012",
+          "label": "Face Identification System Evasion via Physical Countermeasures",
+          "catalog_version": "v2026.08",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "evasion"
+      ],
+      "related": [
+        "atk-media-preprocessing-blind-spot",
+        "atk-encoded-input-guardrail-evasion",
+        "atk-adversarial-suffix-jailbreak"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "cwe-api",
+          "arxiv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "From row A17 of a streaming-media attack inventory shared for review on 2026-10-02, widened from audio against caption checks to any perception model. atk-adversarial-suffix-jailbreak covers optimized text against an LLM's safety training, and atk-encoded-input-guardrail-evasion covers text a classifier cannot read. This class covers models that read media. AML.CS0012 employs AML.T0015 and AML.T0043.000, a sub-technique of AML.T0043. Paper 1801.01944 reports targeted perturbations that make a speech-to-text model output a phrase the attacker chose."
+      },
+      "added_in": "0.6.0",
+      "last_changed_in": "0.6.0"
+    },
+    {
+      "id": "atk-untrusted-media-decode-in-model-server",
+      "name": "Untrusted media decoded inside a model server",
+      "aliases": [
+        "multimodal decoder exploit",
+        "media decompression bomb"
+      ],
+      "family": "media parsing",
+      "scope": "classical-reopened",
+      "topics": [
+        "multimodal"
+      ],
+      "failure_mode": "A multimodal model server decodes images, audio, or video that a caller sends or links to inside the serving process, so a decoder bug or a decode with no output limit lets an unauthenticated caller run code on the server or exhaust its memory.",
+      "taxonomy_refs": [
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-122",
+          "title_in_catalog": "Heap-based Buffer Overflow",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-409",
+          "title_in_catalog": "Improper Handling of Highly Compressed Data (Data Amplification)",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "cwe",
+          "catalog_version": "4.20",
+          "id": "CWE-770",
+          "title_in_catalog": "Allocation of Resources Without Limits or Throttling",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "owasp-llm-top10",
+          "catalog_version": "2025",
+          "id": "LLM10:2025",
+          "title_in_catalog": "Unbounded Consumption",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0029",
+          "title_in_catalog": "Denial of AI Service",
+          "mapping_quality": "closest",
+          "verified": true
+        },
+        {
+          "catalog": "mitre-atlas",
+          "catalog_version": "v2026.08",
+          "id": "AML.T0049",
+          "title_in_catalog": "Exploit Public-Facing Application",
+          "mapping_quality": "closest",
+          "verified": true
+        }
+      ],
+      "paper_refs": [],
+      "incident_refs": [
+        {
+          "type": "cve",
+          "id": "CVE-2026-22778",
+          "label": "vLLM, heap address leak from the multimodal endpoint; the record says it chains with a JPEG2000 heap overflow in OpenCV/FFmpeg to reach code execution",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-54233",
+          "label": "vLLM, audio decompression bomb on the transcription endpoint",
+          "verified": true
+        },
+        {
+          "type": "cve",
+          "id": "CVE-2026-34755",
+          "label": "vLLM, unbounded frame count in video/jpeg data URLs",
+          "verified": true
+        }
+      ],
+      "srf_crosswalk": [
+        "airesourceexhaustion"
+      ],
+      "related": [
+        "atk-unbounded-consumption",
+        "atk-agent-tool-ssrf",
+        "atk-media-preprocessing-blind-spot"
+      ],
+      "origin": "added",
+      "status": "active",
+      "merged_into": null,
+      "verification": {
+        "checked_on": "2026-10-02",
+        "checked_by": "AI agent in Cursor, session of 2026-10-02",
+        "reviewed_by": null,
+        "methods": [
+          "atlas-release-yaml",
+          "atlas-next-release-diff",
+          "cwe-api",
+          "owasp-llm-pages",
+          "cve-services-api",
+          "osv-api",
+          "crosswalk-lookup"
+        ],
+        "notes": "Prompted by the media-parser rows of a streaming-media attack inventory shared for review on 2026-10-02 (A6, A10 to A15, A18, A24 to A26), which describe transcode farms and set-top players. The AI path is a model server that fetches and decodes caller media before any model runs, often with no authentication on the route. Each catalog ref covers one half: CWE-122 and AML.T0049 the code execution, CWE-409, CWE-770, LLM10:2025, and AML.T0029 the memory exhaustion. The GitHub advisory for CVE-2026-22778 (GHSA-4r2x-xpjr-7cvv) reports the chain reaches code execution through a video URL sent to a server running a video model. CVE-2026-5497 describes the same bug as CVE-2026-34755. The srf_crosswalk row covers the memory exhaustion only; code execution in the serving process has no row."
+      },
+      "added_in": "0.6.0",
+      "last_changed_in": "0.6.0"
+    }
+  ]
+}

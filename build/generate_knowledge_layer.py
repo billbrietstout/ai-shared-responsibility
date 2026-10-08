@@ -420,6 +420,12 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
         },
         {
+            "id": "srf.data.attack-inventory",
+            "label": "Published AI attack class inventory",
+            "url": f"{SITE}/data/attack-inventory.json",
+            "srf_layers": ["L1", "L2", "L3", "L4", "L5"],
+        },
+        {
             "id": "srf.data.threat-sources",
             "label": "Threat source registry",
             "url": f"{SITE}/data/threat-sources.json",
