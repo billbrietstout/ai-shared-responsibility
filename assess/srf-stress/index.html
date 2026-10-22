@@ -140,6 +140,18 @@
     font-style: italic;
     color: var(--navy-accent);
   }
+  .privacy-note {
+    margin: 0 0 32px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+    background: #fafafa;
+    max-width: 640px;
+  }
+  .privacy-note code { font-size: 12px; }
   .hero p {
     color: var(--muted);
     font-size: 15px;
@@ -579,6 +591,13 @@
     <h1>Is the CoSAI framework<br><em>actually functional?</em></h1>
     <p>Select a real-world AI incident scenario, run it through the five-layer framework, and see where accountability holds and where it breaks down.</p>
   </div>
+
+  <p class="privacy-note" role="note">
+    When you run a test, your scenario text is sent to our Cloudflare Worker
+    (<code>srf-analyze.aisharedresponsibility.workers.dev</code>), which calls
+    GitHub Models (gpt-4o-mini). Do not paste confidential deployment details.
+    Preset cards stay in this page until you run a test.
+  </p>
 
   <div class="section-label">01 — Select a scenario</div>
   <div class="scenario-grid">
