@@ -385,7 +385,7 @@
                <strong>Proposed extension:</strong> ${model.name} is not part of the
                CoSAI release. It is proposed on this site to describe a federation of
                peer institutions, drawing on
-               <a href="${model.extension_source.documents[0]}">Project Tapestry's TAP-010</a>.
+               <a href="#" data-url="${model.extension_source.documents[0]}">Project Tapestry's TAP-010</a>.
                The control set that operationalizes it is at
                <a href="/tapestry/controls/">/tapestry/controls/</a>.
              </div>`
@@ -462,6 +462,11 @@
               <strong>Direction:</strong> The four CoSAI tabs read left to right from most provider-managed (AI-SaaS) to most customer-managed (IaaS). Customer responsibility increases as organizations move toward infrastructure-layer deployments. Federated Consortium does not sit on that line at all, because it has no provider: both columns describe parties that hold their own domain outright.
             </div>
           `;
+
+          root.querySelectorAll("a[data-url]").forEach((a) => {
+            a.setAttribute("href", a.getAttribute("data-url"));
+            a.removeAttribute("data-url");
+          });
 
           root.querySelectorAll(".model-tab").forEach((btn) => {
             btn.addEventListener("click", () => {

@@ -285,7 +285,7 @@
                 <div class="reg-item__layers">${layers}</div>
               </div>
               <div class="reg-item__actions">
-                <a class="reg-item__link" href="${item.url}" target="_blank" rel="noopener">
+                <a class="reg-item__link" href="#" data-url="${item.url}" target="_blank" rel="noopener">
                   Source
                   <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true">
                     <path d="M2 1h7v7M9 1 1 9"/>
@@ -387,6 +387,11 @@
               >Edit on GitHub</a>
             </div>
           `;
+
+          root.querySelectorAll("a[data-url]").forEach((a) => {
+            a.setAttribute("href", a.getAttribute("data-url"));
+            a.removeAttribute("data-url");
+          });
 
           root.querySelectorAll(".tag-btn").forEach((btn) => {
             btn.addEventListener("click", () => {

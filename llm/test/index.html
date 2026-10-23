@@ -212,7 +212,7 @@
         }
         const pct = Math.round(result.confidence * 100);
         const chips = result.json.concept_hits.map(c =>
-          `<span class="lt-chip"><a href="${c.url}">${c.id}</a></span>`).join("");
+          `<span class="lt-chip"><a href="#" data-url="${c.url}">${c.id}</a></span>`).join("");
         const results = result.top.map(r => `
           <div class="lt-result">
             <div class="lt-result__head">
@@ -221,7 +221,7 @@
             </div>
             <div class="lt-result__id">${r.ch.id}</div>
             <p class="lt-result__text">${highlight(r.ch.text.slice(0, 280), result.q)}</p>
-            <a class="lt-result__link" href="${r.ch.url}">${r.ch.url.replace(location.origin, "")}</a>
+            <a class="lt-result__link" href="#" data-url="${r.ch.url}">${r.ch.url.replace(location.origin, "")}</a>
           </div>`).join("");
         out.innerHTML = `
           <div class="lt-meta">
@@ -233,6 +233,10 @@
           <div>${chips || '<span class="lt-note">none</span>'}</div>
           <p class="lt-section-title">Matched chunks</p>
           ${results}`;
+        out.querySelectorAll("a[data-url]").forEach((a) => {
+          a.setAttribute("href", a.getAttribute("data-url"));
+          a.removeAttribute("data-url");
+        });
       }
 
       async function run(query, jsonOnly) {

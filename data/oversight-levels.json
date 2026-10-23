@@ -1,0 +1,109 @@
+{
+  "version": "1.0",
+  "source": "CoSAI Shared Responsibility Framework v1.0, Appendix A.1.3.2 (human intervention table) and A.1.3.3 (autonomy levels)",
+  "canonical_url": "https://aisharedresponsibility.com/data/oversight-levels.json",
+  "updated": "2026-10-23",
+  "direction": {
+    "override_tiers": "T1 weakest (soft guidance) through T5 strongest (emergency shutdown). Matches framework A.1.3.2; T5 is the strongest intervention.",
+    "autonomy_levels": "L0 least autonomous through L5 most autonomous. Matches framework A.1.3.3."
+  },
+  "critical_requirement": "All autonomous agents must have immediate human intervention capability (A.1.3.2).",
+  "autonomy_levels": [
+    {
+      "id": "L0",
+      "name": "No automation",
+      "human_role": "Full execution",
+      "agent_authority": "Information only",
+      "example": "Search, Q.A",
+      "label": "L0 — No automation (information only)"
+    },
+    {
+      "id": "L1",
+      "name": "Human-initiated",
+      "human_role": "Initiates each action",
+      "agent_authority": "Atomic steps only",
+      "example": "Code completion",
+      "label": "L1 — Human-initiated (atomic steps only)"
+    },
+    {
+      "id": "L2",
+      "name": "Human-approved",
+      "human_role": "Reviews/approves plans",
+      "agent_authority": "Execute after approval",
+      "example": "Document drafting",
+      "label": "L2 — Human-approved (execute after approval)"
+    },
+    {
+      "id": "L3",
+      "name": "Human-supervised",
+      "human_role": "Active monitoring",
+      "agent_authority": "Execute within guardrails",
+      "example": "Automated testing",
+      "label": "L3 — Human-supervised (execute within guardrails)"
+    },
+    {
+      "id": "L4",
+      "name": "Human-on-loop",
+      "human_role": "Exception handling only",
+      "agent_authority": "Autonomous in domain",
+      "example": "Scheduled reports",
+      "label": "L4 — Human-on-loop (autonomous in domain, exceptions only)"
+    },
+    {
+      "id": "L5",
+      "name": "Full autonomy",
+      "human_role": "Retrospective only",
+      "agent_authority": "Cross-domain decisions",
+      "example": "Research agents",
+      "label": "L5 — Full autonomy (cross-domain decisions; immediate intervention still required)",
+      "note": "Immediate intervention capability is still required (A.1.3.2). Whether L5 is recommended for production remains open (site decision D2 / OV-8)."
+    }
+  ],
+  "override_tiers": [
+    {
+      "id": "T1",
+      "type": "Soft guidance",
+      "trigger": "Minor threshold breach",
+      "response_time": "Async",
+      "authority": "Automated",
+      "strength": 1,
+      "label": "T1 — Soft guidance (automated, async)"
+    },
+    {
+      "id": "T2",
+      "type": "Active redirect",
+      "trigger": "Approaching boundary",
+      "response_time": "<5 min",
+      "authority": "AI Ops",
+      "strength": 2,
+      "label": "T2 — Active redirect (AI Ops, <5 min)"
+    },
+    {
+      "id": "T3",
+      "type": "Pause & Review",
+      "trigger": "Policy breach",
+      "response_time": "<1 min",
+      "authority": "Senior AI Ops",
+      "strength": 3,
+      "label": "T3 — Pause & Review (Senior AI Ops, <1 min)"
+    },
+    {
+      "id": "T4",
+      "type": "Immediate halt",
+      "trigger": "Safety violation",
+      "response_time": "<10 sec",
+      "authority": "Incident Commander",
+      "strength": 4,
+      "label": "T4 — Immediate halt (Incident Commander, <10 sec)"
+    },
+    {
+      "id": "T5",
+      "type": "Emergency shutdown",
+      "trigger": "Existential risk",
+      "response_time": "Immediate",
+      "authority": "CISO/Executive",
+      "strength": 5,
+      "label": "T5 — Emergency shutdown (CISO/Executive, immediate)"
+    }
+  ]
+}

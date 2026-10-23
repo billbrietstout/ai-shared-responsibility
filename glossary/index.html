@@ -521,11 +521,12 @@
             <h2 class="gloss-section__heading">Agentic Extensions</h2>
             <dl class="gloss-list">
 
+              <!-- TODO(D2): L5 deployability vs CSA / Mitchell; soft stoppable wording applied without changing L5 as deployable. -->
               <dt id="autonomy-level"><a href="#autonomy-level" class="gloss-anchor">#</a> Autonomy Level</dt>
-              <dd>A six-point scale (L0-L5) classifying how independently an AI agent acts. L0 = fully human-controlled; L5 = fully autonomous with no human oversight. Every agentic deployment must declare its autonomy level.</dd>
+              <dd>A six-point scale (L0-L5) classifying how independently an AI agent acts. L0 = fully human-controlled; L5 = autonomous across domains with retrospective human review, while immediate intervention capability is still required (A.1.3.2). Every agentic deployment must declare its autonomy level.</dd>
 
               <dt id="human-override-tier"><a href="#human-override-tier" class="gloss-anchor">#</a> Human Override Tier</dt>
-              <dd>A five-point scale (T1-T5) specifying the required human intervention capability for an agentic system. T1 = immediate human takeover at any step; T5 = retrospective audit only. Must be declared alongside autonomy level.</dd>
+              <dd>A five-point scale (T1-T5) from CoSAI SRF A.1.3.2 for human intervention severity. T1 = soft guidance (automated, async); T5 = emergency shutdown (CISO/executive, immediate). Higher T is stronger. Canonical copy: <a href="/data/oversight-levels.json">/data/oversight-levels.json</a>. Must be declared alongside autonomy level; immediate intervention capability is required at every autonomy level.</dd>
 
               <dt id="agentic-system"><a href="#agentic-system" class="gloss-anchor">#</a> Agentic System</dt>
               <dd>An AI system that can take multi-step actions, use tools, or operate across sessions with limited human supervision. Agentic systems require autonomy level and human override tier declarations in addition to standard SRF layer assignments.</dd>
