@@ -51,7 +51,7 @@ Where sources disagree, or where one organization's position goes further than t
 | NIST-RMF | AI Risk Management Framework (AI RMF 1.0) | National Institute of Standards and Technology | Jan 26, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
 | NIST-PLAYBOOK | AI RMF Playbook | National Institute of Standards and Technology | March 30, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
 | NIST-GAI | AI RMF: Generative Artificial Intelligence Profile (NIST AI 600-1) | National Institute of Standards and Technology | July 26, 2024 | https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf |
-| NIST-ADVML | Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2) | National Institute of Standards and Technology | 2024, updated 2025 | https://nvlpubs.nist.gov/nistpubs/ai/ |
+| NIST-ADVML | Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2) | National Institute of Standards and Technology | 2024, updated 2025 | https://www.nist.gov/itl/ai-risk-management-framework |
 | OWASP-AIEXCHANGE | AI Exchange (owaspai.org): AI Security Overview & Controls Guide | OWASP AI Exchange | Living document, 2022-2026 | https://owaspai.org/ |
 | OWASP-LLMTOP10 | OWASP Top 10 for LLM Applications & Generative AI (2025) | OWASP GenAI Security Project | 2025 | https://genai.owasp.org/llm-top-10/ |
 | OWASP-IR | GenAI Incident Response Guide 1.0 | OWASP GenAI Security Project | July 28, 2025 | https://genai.owasp.org/resource/genai-incident-response-guide-1-0/ |
@@ -247,7 +247,7 @@ COSAI-SBD anticipated a narrower version of the same idea earlier, requiring acc
 
 **OpenCRE crosswalk:** Governance Risk and Compliance, Access Control, Log Management.
 
-**Gap:** COSAI-SRF assigns exactly one accountable party per layer, but none of the sources require that accountability be backed by a written security policy stating what that party is actually supposed to do (NIST SP 800-27's principle of establishing a sound security policy as the foundation for design). Naming who's accountable isn't the same as documenting what they're accountable for.
+**Gap:** COSAI-SRF assigns exactly one accountable party per activity, but none of the sources require that accountability be backed by a written security policy stating what that party is actually supposed to do (NIST SP 800-27's principle of establishing a sound security policy as the foundation for design). Naming who's accountable isn't the same as documenting what they're accountable for.
 
 ## 11. Emerging Risk Models {#emerging-risk-models}
 

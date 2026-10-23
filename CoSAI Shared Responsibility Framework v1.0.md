@@ -399,9 +399,9 @@ Example human intervention table
 | Tier | Type | Trigger | Response Time | Authority |
 | :---- | :---- | :---- | :---- | :---- |
 | T1 | Soft guidance | Minor threshold breach | Async | Automated |
-| T2 | Active redirect | Approaching boundary | .5 min | AI Ops |
-| T3 | Pause & Review | Policy breach | .1 min | Senior AI Ops |
-| T4 | Immediate halt | Safety violation | .10 sec | Incident Commander |
+| T2 | Active redirect | Approaching boundary | <5 min | AI Ops |
+| T3 | Pause & Review | Policy breach | <1 min | Senior AI Ops |
+| T4 | Immediate halt | Safety violation | <10 sec | Incident Commander |
 | T5 | Emergency shutdown | Existential risk | Immediate | CISO/Executive |
 
 #### A.1.3.3 Autonomy levels
@@ -419,7 +419,7 @@ Classifications adapted from SAE J3016 \[[19](#ref-19), [20](#ref-20), [21](#ref
 | L4 | Human-on-loop | Exception handling only | Autonomous in domain | Scheduled reports |
 | L5 | Full autonomy | Retrospective only | Cross-domain decisions | Research agents |
 
-For AI-specific adaptations of this taxonomy, see \[[23](#ref-23), [24](#ref-24)\]; for empirical data on how autonomy is granted in practice, see \[[14](#ref-14)\].  Note the CSA reference \[[24](#ref-24)\] has no specific author.
+For AI-specific adaptations of this taxonomy, see \[[23](#ref-23), [24](#ref-24)\]; for empirical data on how autonomy is granted in practice, see \[[15](#ref-15)\]. Note the CSA autonomy-levels post is \[[14](#ref-14)\].
 
 **Responsibility Shift by Autonomy Level**
 
