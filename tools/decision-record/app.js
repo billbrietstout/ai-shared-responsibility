@@ -22,7 +22,7 @@
     { key: "na", label: "Out of scope" }
   ];
 
-  var DATA = { layers: null, models: null };
+  var DATA = { layers: null, models: null, oversight: null };
   var state = null;
 
   /* ---------- helpers ---------- */
@@ -450,13 +450,33 @@
     });
   }
 
+  function fillSelectFromOversight(selId, rows, emptyLabel) {
+    var sel = $(selId);
+    if (!sel || !rows || !rows.length) return;
+    var keep = sel.value;
+    sel.innerHTML = "";
+    var empty = el("option", null, emptyLabel);
+    empty.value = "";
+    sel.appendChild(empty);
+    rows.forEach(function (row) {
+      var opt = el("option", null, row.label || row.id);
+      opt.value = row.id;
+      sel.appendChild(opt);
+    });
+    if (keep) sel.value = keep;
+  }
+
   function boot() {
     Promise.all([
       fetch("/data/layers.json").then(function (r) { return r.json(); }),
-      fetch("/data/matrix.json").then(function (r) { return r.json(); })
+      fetch("/data/matrix.json").then(function (r) { return r.json(); }),
+      fetch("/data/oversight-levels.json").then(function (r) { return r.json(); })
     ]).then(function (res) {
       DATA.layers = res[0].layers;
       DATA.models = res[1].models;
+      DATA.oversight = res[2];
+      fillSelectFromOversight("#f-autonomy", DATA.oversight.autonomy_levels, "Not agentic / N/A");
+      fillSelectFromOversight("#f-override", DATA.oversight.override_tiers, "N/A");
       state = load();
       rerenderAll();
       wireButtons();

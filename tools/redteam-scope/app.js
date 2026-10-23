@@ -23,7 +23,7 @@
     { key: "na", label: "Not tested" }
   ];
 
-  var DATA = { layers: null, models: null, threats: null };
+  var DATA = { layers: null, models: null, threats: null, oversight: null };
   var state = null;
 
   /* ---------- helpers ---------- */
@@ -509,15 +509,36 @@
     });
   }
 
+  function fillAutonomyFromOversight(rows) {
+    var sel = $("#f-autonomy");
+    if (!sel || !rows || !rows.length) return;
+    var keep = sel.value;
+    sel.innerHTML = "";
+    var empty = document.createElement("option");
+    empty.value = "";
+    empty.textContent = "Not agentic / N/A";
+    sel.appendChild(empty);
+    rows.forEach(function (row) {
+      var opt = document.createElement("option");
+      opt.value = row.id;
+      opt.textContent = row.label || row.id;
+      sel.appendChild(opt);
+    });
+    if (keep) sel.value = keep;
+  }
+
   function boot() {
     Promise.all([
       fetch("/data/layers.json").then(function (r) { return r.json(); }),
       fetch("/data/matrix.json").then(function (r) { return r.json(); }),
-      fetch("/data/threats.json").then(function (r) { return r.json(); }).catch(function () { return { threats: [] }; })
+      fetch("/data/threats.json").then(function (r) { return r.json(); }).catch(function () { return { threats: [] }; }),
+      fetch("/data/oversight-levels.json").then(function (r) { return r.json(); })
     ]).then(function (res) {
       DATA.layers = res[0].layers;
       DATA.models = res[1].models;
       DATA.threats = res[2].threats || [];
+      DATA.oversight = res[3];
+      fillAutonomyFromOversight(DATA.oversight.autonomy_levels);
       state = load();
       rerenderAll();
       wireButtons();
