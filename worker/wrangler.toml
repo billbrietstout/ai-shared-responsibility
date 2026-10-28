@@ -2,11 +2,13 @@ name       = "srf-analyze"
 main       = "index.js"
 compatibility_date = "2024-01-01"
 
+# LLM proxy retired. Stress Test uses browser copy-prompt — no API secrets.
+# Optional redeploy of this stub so leftover clients get HTTP 501 + clear JSON:
+#   npx wrangler deploy
+#
+# Do not set OPENAI_API_KEY or GITHUB_TOKEN for this Worker.
+
 # Routes — update YOUR_ZONE if using a custom domain
 # [[routes]]
 # pattern = "api.aisharedresponsibility.com/analyze"
 # zone_name = "aisharedresponsibility.com"
-
-# Secrets — store with:
-#   wrangler secret put GITHUB_TOKEN
-# Never commit the token value here.
