@@ -152,6 +152,105 @@
     max-width: 640px;
   }
   .privacy-note code { font-size: 12px; }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .prompt-panel {
+    display: none;
+    margin: 28px 0 8px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  .prompt-panel.visible { display: block; }
+  .prompt-panel__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .prompt-panel__title {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .prompt-panel__hint {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+    max-width: 52rem;
+  }
+  #analysisPrompt {
+    width: 100%;
+    min-height: 220px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--text);
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    resize: vertical;
+  }
+  .prompt-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--navy);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+  }
+  .copy-btn:hover { background: #19267a; }
+  .copy-btn.copied { background: var(--l1-accent); }
+  .secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    cursor: pointer;
+  }
+  .secondary-btn:hover { border-color: var(--navy-accent); color: var(--navy); }
+  .copy-status {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .copy-status.ok { color: var(--ok); }
   .hero p {
     color: var(--muted);
     font-size: 15px;
@@ -180,23 +279,26 @@
   }
   .scenario-card {
     border: 1px solid var(--border);
-    border-top: 3px solid transparent;
     border-radius: 10px;
-    padding: 12px 16px 14px;
+    padding: 14px 16px;
     cursor: pointer;
-    transition: border-color 0.15s, border-top-color 0.15s, box-shadow 0.15s;
+    transition: all 0.15s;
     background: var(--surface);
+    position: relative;
+    overflow: hidden;
   }
-  .scenario-card:hover {
-    border-color: var(--border-strong);
-    border-top-color: var(--card-accent, var(--navy-accent));
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  .scenario-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--card-accent, var(--navy-accent));
+    opacity: 0;
+    transition: opacity 0.15s;
   }
-  .scenario-card.active {
-    border-color: var(--border-strong);
-    border-top-color: var(--card-accent, var(--navy-accent));
-    background: #fdfcfb;
-  }
+  .scenario-card:hover { border-color: var(--border-strong); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .scenario-card:hover::before, .scenario-card.active::before { opacity: 1; }
+  .scenario-card.active { border-color: var(--border-strong); background: #fdfcfb; }
   .scenario-card .icon { font-size: 18px; margin-bottom: 8px; }
   .scenario-card .label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
   .scenario-card .desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
@@ -275,33 +377,6 @@
   }
   .run-btn:hover { background: #19267a; }
   .run-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-  .run-btn .spinner {
-    width: 14px; height: 14px;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    display: none;
-  }
-  .run-btn.loading .spinner { display: block; }
-  .run-btn.loading .btn-text { opacity: 0.7; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  .rl-badge {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 11px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    background: var(--surface);
-  }
-  .rl-badge.exhausted {
-    color: var(--gap);
-    border-color: hsl(0 72% 75%);
-    background: var(--gap-bg);
-  }
-
   .error-msg {
     margin-top: 10px;
     font-size: 13px;
@@ -520,7 +595,7 @@
     letter-spacing: 0.06em;
   }
 
-  .offline-note {
+  .sketch-note {
     display: none;
     font-size: 13px;
     color: var(--muted);
@@ -528,7 +603,7 @@
     line-height: 1.45;
     max-width: 52em;
   }
-  .offline-note.visible { display: block; }
+  .sketch-note.visible { display: block; }
 
   @media (max-width: 640px) {
     main { padding: 32px 20px 60px; }
@@ -543,7 +618,7 @@
   "@type": "WebApplication",
   "name": "CoSAI SRF Stress Test",
   "url": "https://aisharedresponsibility.com/assess/srf-stress/",
-  "description": "Accepts a plain-language AI deployment scenario and stress-tests it against CoSAI SRF accountability rules. Identifies unassigned accountability gaps across L1-L5 layers and eight personas.",
+  "description": "Builds a CoSAI SRF accountability analysis prompt from a plain-language AI deployment scenario. Copy the prompt into your own model; optional deterministic local layer sketch runs in the browser only.",
   "applicationCategory": "BusinessApplication",
   "publisher": {
     "@type": "Organization",
@@ -589,14 +664,15 @@
   <div class="hero">
     <div class="hero-eyebrow">COSAI SHARED RESPONSIBILITY FRAMEWORK</div>
     <h1>Is the CoSAI framework<br><em>actually functional?</em></h1>
-    <p>Select a real-world AI incident scenario, run it through the five-layer framework, and see where accountability holds and where it breaks down.</p>
+    <p>Select a real-world AI incident scenario, build a five-layer accountability prompt, and paste it into your own chat or model. The site never calls an LLM for you.</p>
   </div>
 
   <p class="privacy-note" role="note">
-    When you run a test, your scenario text is sent to our Cloudflare Worker
-    (<code>srf-analyze.aisharedresponsibility.workers.dev</code>), which calls
-    GitHub Models (gpt-4o-mini). Do not paste confidential deployment details.
-    Preset cards stay in this page until you run a test.
+    This tool builds an analysis prompt in your browser. Nothing is sent to our
+    servers for model inference. Use <strong>Copy prompt</strong>, then paste into
+    ChatGPT, Claude, or any model you choose (that step uses your account, not ours).
+    Do not paste confidential deployment details into a third-party chat unless your
+    policy allows it. Preset cards stay on this page until you build a prompt.
   </p>
 
   <div class="section-label">01 — Select a scenario</div>
@@ -637,20 +713,35 @@
     </p>
     <textarea id="customScenario" rows="3" maxlength="2000" aria-describedby="customScenario-hint"></textarea>
     <div class="run-row">
-      <button class="run-btn" id="runBtn" onclick="runTest()">
-        <div class="spinner"></div>
-        <span class="btn-text">Run framework test</span>
+      <button type="button" class="run-btn" id="buildBtn" onclick="buildPrompt()">
+        <span class="btn-text">Build analysis prompt</span>
       </button>
-      <span class="rl-badge" id="rlBadge">5/5 runs available</span>
     </div>
     <div class="error-msg" id="errorMsg"></div>
-    <p class="offline-note" id="offlineNote" aria-live="polite"></p>
+  </div>
+
+  <div class="prompt-panel" id="promptPanel" aria-live="polite">
+    <div class="prompt-panel__head">
+      <div class="prompt-panel__title">02b — Analysis prompt</div>
+    </div>
+    <p class="prompt-panel__hint">
+      Copy this prompt and paste it into your own chat or model. The site does not
+      run the model. Optional: show a deterministic local layer sketch (no LLM, no API key).
+    </p>
+    <label for="analysisPrompt" class="visually-hidden">Analysis prompt</label>
+    <textarea id="analysisPrompt" readonly rows="14" spellcheck="false"></textarea>
+    <div class="prompt-actions">
+      <button type="button" class="copy-btn" id="copyBtn" onclick="copyPrompt()">Copy prompt</button>
+      <button type="button" class="secondary-btn" id="sketchBtn" onclick="showLocalSketch()">Show local layer sketch</button>
+      <span class="copy-status" id="copyStatus" aria-live="polite"></span>
+    </div>
+    <p class="sketch-note" id="sketchNote"></p>
   </div>
 
   <div id="results">
-    <div class="section-label">03 — Layer-by-layer analysis</div>
+    <div class="section-label">03 — Local layer sketch</div>
     <div class="results-header">
-      <h2 id="resultsTitle">Analysis complete</h2>
+      <h2 id="resultsTitle">Local sketch (no LLM)</h2>
     </div>
     <div class="layers-grid" id="layersGrid"></div>
 
@@ -690,42 +781,6 @@
 </main>
 
 <script>
-// ── Rate limiting (5 runs / hour via localStorage) ──────────────────────────
-const RL_KEY = 'srf_runs';
-const RL_MAX = 5;
-const RL_WINDOW_MS = 60 * 60 * 1000;
-
-function getRLState() {
-  try { return JSON.parse(localStorage.getItem(RL_KEY) || '{"ts":[]}'); }
-  catch { return { ts: [] }; }
-}
-
-function checkRL() {
-  const now = Date.now();
-  const state = getRLState();
-  state.ts = (state.ts || []).filter(t => now - t < RL_WINDOW_MS);
-  const remaining = Math.max(0, RL_MAX - state.ts.length);
-  return { allowed: remaining > 0, remaining, state };
-}
-
-function consumeRL() {
-  const now = Date.now();
-  const { state } = checkRL();
-  state.ts.push(now);
-  try { localStorage.setItem(RL_KEY, JSON.stringify(state)); } catch {}
-}
-
-function updateRLBadge() {
-  const { remaining } = checkRL();
-  const badge = document.getElementById('rlBadge');
-  badge.textContent = `${remaining}/${RL_MAX} runs available this hour`;
-  if (remaining === 0) {
-    badge.classList.add('exhausted');
-  } else {
-    badge.classList.remove('exhausted');
-  }
-}
-
 // ── Scenario data ────────────────────────────────────────────────────────────
 const SCENARIOS = {
   chatbot_pii: "A prompt injection attack bypasses guardrails in a customer-facing chatbot deployed via Azure OpenAI (PaaS model), exposing PII from a connected CRM database. The foundation model is GPT-4 from OpenAI, the application was built by an in-house dev team, and the deploying organization is a financial services firm subject to GDPR and SR 11-7.",
@@ -736,10 +791,10 @@ const SCENARIOS = {
 };
 
 const ALT_FRAMEWORKS_DEFAULT = [
-  { name: 'NIST AI RMF', origin: 'NIST, 2023', description: 'Govern, Map, Measure, Manage risk functions.', vsCoSAI: 'Defines what risk activities to perform; CoSAI names who performs them per technical layer — the two are designed to be used together.', verdict: 'COMPLEMENTARY' },
-  { name: 'ISO 42001', origin: 'ISO/IEC, 2023', description: 'AI management system standard.', vsCoSAI: 'Adds auditable management-system evidence; CoSAI supplies the per-layer RACI structure ISO 42001 requires but does not define.', verdict: 'COMPLEMENTARY' },
-  { name: 'EU AI Act', origin: 'EU, 2024', description: 'Risk-tiered legal obligations for providers and deployers.', vsCoSAI: 'Assigns legal liability at the legal-entity level — who gets fined. CoSAI assigns operational accountability at the technical-layer level — who must act. They answer different questions; use both.', verdict: 'ADDS ENFORCEMENT' },
-  { name: 'Google SAIF', origin: 'Google, 2023', description: 'Secure AI Framework for AI-specific risks.', vsCoSAI: 'Security control themes map onto L3–L5 technical controls; CoSAI adds the business (L1) and information (L2) layers SAIF omits.', verdict: 'COMPLEMENTARY' }
+  { name: 'NIST AI RMF', origin: 'NIST, 2023', description: 'Govern, Map, Measure, Manage risk functions.', vsCoSAI: 'Lifecycle risk functions complement CoSAI’s actor-layer split for this case.', verdict: 'COMPLEMENTARY' },
+  { name: 'ISO 42001', origin: 'ISO/IEC, 2023', description: 'AI management system standard.', vsCoSAI: 'Adds auditable management-system evidence beyond layer RACI alone.', verdict: 'COMPLEMENTARY' },
+  { name: 'EU AI Act', origin: 'EU, 2024', description: 'Risk-tiered regulatory obligations.', vsCoSAI: 'Deployer/provider duties and high-risk obligations sharpen enforcement paths.', verdict: 'STRONGER HERE' },
+  { name: 'Google SAIF', origin: 'Google, 2023', description: 'Secure AI Framework for AI-specific risks.', vsCoSAI: 'Security control themes map cleanly onto L3–L5 technical measures.', verdict: 'COMPLEMENTARY' }
 ];
 
 const ANALYSIS_PRESETS = {
@@ -763,7 +818,7 @@ const ANALYSIS_PRESETS = {
     verdict: 'GAPS_FOUND',
     verdictSummary: 'Autonomous spend outside limits is exactly where CoSAI needs crisp human-on-loop and authorization boundaries; the framework names layers but under-specifies enforcement.',
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: 'Procurement use case and dollar limits belong here; policy did not bind the agent\'s tools.', status: 'GAP', owner: ' — Finance / procurement' },
+      { layer: 'L1 — AI Business & Usage', finding: 'Procurement use case and dollar limits belong here; policy did not bind the agent’s tools.', status: 'GAP', owner: ' — Finance / procurement' },
       { layer: 'L2 — AI Information', finding: 'Contract metadata sensitivity is clear; who may commit spend was not encoded as data rules.', status: 'WARN', owner: ' — Legal / records' },
       { layer: 'L3 — AI Application', finding: 'LangChain workflow lacked hard stops before PO issuance.', status: 'GAP', owner: ' — Engineering lead' },
       { layer: 'L4 — AI Platform', finding: 'Bedrock and IAM could enforce tool scopes; configuration gap vs policy.', status: 'WARN', owner: ' — Cloud security' },
@@ -825,40 +880,6 @@ const ANALYSIS_PRESETS = {
   }
 };
 
-// Worker URL — set after deploying worker/index.js to Cloudflare.
-// Optional override: window.__COSAI_ANALYZE_URL__ (defaults to WORKER_URL below)
-const WORKER_URL = 'https://srf-analyze.aisharedresponsibility.workers.dev';
-
-function getAnalyzeUrl() {
-  if (typeof window !== 'undefined' && window.__COSAI_ANALYZE_URL__) {
-    return String(window.__COSAI_ANALYZE_URL__);
-  }
-  return WORKER_URL;
-}
-
-function setOfflineNote(active) {
-  const el = document.getElementById('offlineNote');
-  if (!el) return;
-  if (active) {
-    el.textContent = 'Live analysis unavailable — the worker may not be deployed yet. Showing built-in assessment text instead.';
-    el.classList.add('visible');
-  } else {
-    el.textContent = '';
-    el.classList.remove('visible');
-  }
-}
-
-// Parses an OpenAI-format response envelope from GitHub Models.
-// choices[0].message.content holds the JSON string the model returned.
-function parseRemoteAnalyzePayload(data) {
-  const content = data?.choices?.[0]?.message?.content;
-  if (typeof content !== 'string' || content.length === 0) {
-    throw new Error('Unexpected response format from GitHub Models.');
-  }
-  const clean = content.replace(/```json\s*|```/g, '').trim();
-  return JSON.parse(clean);
-}
-
 function shortenScenario(s, max) {
   const t = String(s || '').replace(/\s+/g, ' ').trim();
   if (t.length <= max) return t;
@@ -885,7 +906,7 @@ function localFrameworkAnalysis(scenario, presetId) {
       { layer: 'L1 — AI Business & Usage', finding: `Business context and risk appetite should anchor decisions for: ${sn}`, status: 'WARN', owner: ' — Executive sponsor' },
       { layer: 'L2 — AI Information', finding: 'Data classification, lawful use, and retention for model inputs/outputs need explicit owners.', status: hasLeak ? 'GAP' : 'WARN', owner: ' — Data governance' },
       { layer: 'L3 — AI Application', finding: 'Workflow design, testing, and human oversight for the AI feature sit with the application team.', status: 'WARN', owner: ' — Product / engineering' },
-      { layer: 'L4 — AI Platform', finding: 'Cloud and API guardrails (identity, logging, quotas) must align to the app\'s threat model.', status: 'OK', owner: ' — Platform security' },
+      { layer: 'L4 — AI Platform', finding: 'Cloud and API guardrails (identity, logging, quotas) must align to the app’s threat model.', status: 'OK', owner: ' — Platform security' },
       { layer: 'L5 — AI Model Provider', finding: 'Model capabilities, safety claims, and update channels belong to the model supplier relationship.', status: 'WARN', owner: ' — Vendor management' }
     ],
     scores: {
@@ -903,6 +924,27 @@ function localFrameworkAnalysis(scenario, presetId) {
 }
 
 let selectedId = 'chatbot_pii';
+let lastScenario = '';
+let lastPresetId = null;
+
+function currentScenario() {
+  const customText = document.getElementById('customScenario').value.trim();
+  return {
+    scenario: customText || SCENARIOS[selectedId],
+    presetId: customText ? null : selectedId,
+  };
+}
+
+function buildAnalysisPromptText(scenario) {
+  return `You are an AI governance expert. Evaluate this scenario against the CoSAI 5-Layer AI Shared Responsibility Framework. Be concise — keep all string values under 25 words each.
+
+SCENARIO: ${scenario}
+
+Respond ONLY with a JSON object, no markdown, no backticks, no explanation. Use this exact structure with short string values:
+{"verdict":"FUNCTIONAL","verdictSummary":"One or two sentences max.","layers":[{"layer":"L1 — AI Business & Usage","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L2 — AI Information","finding":"Short finding.","status":"WARN","owner":"Role name"},{"layer":"L3 — AI Application","finding":"Short finding.","status":"GAP","owner":"Role name"},{"layer":"L4 — AI Platform","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L5 — AI Model Provider","finding":"Short finding.","status":"OK","owner":"Role name"}],"scores":{"accountabilityClarity":75,"regulatoryAlignment":60,"incidentResponse":50,"agenticCoverage":40,"practicalEnforceability":55},"strengths":["Strength one.","Strength two.","Strength three."],"gaps":["Gap one.","Gap two.","Gap three."],"recommendations":["Rec one.","Rec two.","Rec three."],"alternativeFrameworks":[{"name":"NIST AI RMF","origin":"NIST, 2023","description":"Govern, Map, Measure, Manage risk functions.","vsCoSAI":"One sentence comparison for this scenario.","verdict":"COMPLEMENTARY"},{"name":"ISO 42001","origin":"ISO/IEC, 2023","description":"AI management system standard.","vsCoSAI":"One sentence comparison.","verdict":"COMPLEMENTARY"},{"name":"EU AI Act","origin":"EU, 2024","description":"Risk-tiered regulatory obligations.","vsCoSAI":"One sentence comparison.","verdict":"STRONGER HERE"},{"name":"Google SAIF","origin":"Google, 2023","description":"Secure AI Framework for AI-specific risks.","vsCoSAI":"One sentence comparison.","verdict":"COMPLEMENTARY"}]}
+
+Fill in real values for this scenario. verdict must be FUNCTIONAL, PARTIAL, or GAPS_FOUND. status must be OK, WARN, or GAP. framework verdict must be COMPLEMENTARY, STRONGER HERE, or WEAKER HERE.`;
+}
 
 function selectScenario(el) {
   document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
@@ -910,107 +952,77 @@ function selectScenario(el) {
   selectedId = el.dataset.id;
   document.getElementById('customScenario').value = '';
   document.getElementById('results').classList.remove('visible');
+  document.getElementById('promptPanel').classList.remove('visible');
+  document.getElementById('copyStatus').textContent = '';
+  document.getElementById('sketchNote').classList.remove('visible');
 }
 
-// ── Main run function ────────────────────────────────────────────────────────
-async function runTest() {
-  const btn = document.getElementById('runBtn');
+function buildPrompt() {
   const errorEl = document.getElementById('errorMsg');
   errorEl.classList.remove('visible');
-  setOfflineNote(false);
-
-  const { allowed } = checkRL();
-  if (!allowed) {
-    showError('Rate limit reached. You can run up to 5 analyses per hour. Please try again later.');
+  const { scenario, presetId } = currentScenario();
+  if (!scenario) {
+    showError('Select a scenario or describe your own before building a prompt.');
     return;
   }
-
-  const customText = document.getElementById('customScenario').value.trim();
-  const scenario = customText || SCENARIOS[selectedId];
-
-  btn.classList.add('loading');
-  btn.disabled = true;
-  btn.querySelector('.btn-text').textContent = 'Analyzing…';
+  lastScenario = scenario;
+  lastPresetId = presetId;
+  const ta = document.getElementById('analysisPrompt');
+  ta.value = buildAnalysisPromptText(scenario);
+  document.getElementById('promptPanel').classList.add('visible');
   document.getElementById('results').classList.remove('visible');
+  document.getElementById('copyStatus').textContent = '';
+  document.getElementById('sketchNote').classList.remove('visible');
+  document.getElementById('promptPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
 
-  const presetId = customText ? null : selectedId;
-
-  const prompt = `You are an AI governance expert. Evaluate this scenario against the CoSAI 5-Layer AI Shared Responsibility Framework. Be concise — keep all string values under 25 words each.
-
-SCENARIO: ${scenario}
-
-KEY DISTINCTION FOR ALTERNATIVE FRAMEWORKS:
-- CoSAI SRF assigns operational accountability at the TECHNICAL LAYER level (who must act at L1–L5).
-- EU AI Act assigns legal LIABILITY at the legal-entity level (who gets fined). These answer different questions — they are complementary, not competing.
-- Use verdict "ADDS ENFORCEMENT" for frameworks that add legal/regulatory enforcement CoSAI intentionally omits.
-- Use verdict "COMPLEMENTARY" for frameworks that add risk management, process, or security dimensions alongside SRF.
-- Use verdict "NARROWER SCOPE" only if a framework covers substantially less than SRF for this scenario.
-
-Respond ONLY with a JSON object, no markdown, no backticks, no explanation. Use this exact structure with short string values:
-{"verdict":"FUNCTIONAL","verdictSummary":"One or two sentences max.","layers":[{"layer":"L1 — AI Business & Usage","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L2 — AI Information","finding":"Short finding.","status":"WARN","owner":"Role name"},{"layer":"L3 — AI Application","finding":"Short finding.","status":"GAP","owner":"Role name"},{"layer":"L4 — AI Platform","finding":"Short finding.","status":"OK","owner":"Role name"},{"layer":"L5 — AI Model Provider","finding":"Short finding.","status":"OK","owner":"Role name"}],"scores":{"accountabilityClarity":75,"regulatoryAlignment":60,"incidentResponse":50,"agenticCoverage":40,"practicalEnforceability":55},"strengths":["Strength one.","Strength two.","Strength three."],"gaps":["Gap one.","Gap two.","Gap three."],"recommendations":["Rec one.","Rec two.","Rec three."],"alternativeFrameworks":[{"name":"NIST AI RMF","origin":"NIST, 2023","description":"Govern, Map, Measure, Manage risk functions.","vsCoSAI":"One sentence on what it adds for this scenario.","verdict":"COMPLEMENTARY"},{"name":"ISO 42001","origin":"ISO/IEC, 2023","description":"AI management system standard.","vsCoSAI":"One sentence on what it adds.","verdict":"COMPLEMENTARY"},{"name":"EU AI Act","origin":"EU, 2024","description":"Risk-tiered legal obligations for providers and deployers.","vsCoSAI":"Adds legal liability at entity level — who gets fined. CoSAI adds operational layer accountability — who must act. Use both.","verdict":"ADDS ENFORCEMENT"},{"name":"Google SAIF","origin":"Google, 2023","description":"Secure AI Framework for AI-specific risks.","vsCoSAI":"One sentence on what it adds.","verdict":"COMPLEMENTARY"}]}
-
-Fill in real values for this scenario. Overall verdict must be FUNCTIONAL, PARTIAL, or GAPS_FOUND. Layer status must be OK, WARN, or GAP. Framework verdict must be COMPLEMENTARY, ADDS ENFORCEMENT, or NARROWER SCOPE.`;
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30000);
-
+async function copyPrompt() {
+  const ta = document.getElementById('analysisPrompt');
+  const status = document.getElementById('copyStatus');
+  const btn = document.getElementById('copyBtn');
+  if (!ta.value.trim()) {
+    buildPrompt();
+  }
+  const text = ta.value;
   try {
-    const analyzeUrl = getAnalyzeUrl();
-    let result = null;
-    let usedOffline = false;
-
-    const tryRemote = async () => {
-      const res = await fetch(analyzeUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }),
-        signal: controller.signal
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return parseRemoteAnalyzePayload(data);
-      }
-      if (res.status === 404 || res.status === 405 || res.status === 501) {
-        return null;
-      }
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error || `Server error ${res.status}`);
-    };
-
-    try {
-      result = await tryRemote();
-    } catch (e1) {
-      if (e1.name === 'AbortError') throw e1;
-      const isNetwork =
-        (typeof TypeError !== 'undefined' && e1 instanceof TypeError) ||
-        /network|failed to fetch|load failed|networkerror/i.test(String(e1 && e1.message));
-      if (isNetwork) {
-        result = null;
-      } else {
-        throw e1;
-      }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
     }
+    status.textContent = 'Copied. Paste into your own chat or model.';
+    status.classList.add('ok');
+    btn.classList.add('copied');
+    btn.textContent = 'Copied';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.textContent = 'Copy prompt';
+    }, 1600);
+  } catch (err) {
+    status.textContent = 'Copy failed — select the prompt text and copy manually.';
+    status.classList.remove('ok');
+    ta.focus();
+    ta.select();
+  }
+}
 
-    if (result === null) {
-      usedOffline = true;
-      result = localFrameworkAnalysis(scenario, presetId);
-    }
-
+function showLocalSketch() {
+  const errorEl = document.getElementById('errorMsg');
+  errorEl.classList.remove('visible');
+  if (!lastScenario) buildPrompt();
+  const { scenario, presetId } = lastScenario
+    ? { scenario: lastScenario, presetId: lastPresetId }
+    : currentScenario();
+  try {
+    const result = localFrameworkAnalysis(scenario, presetId);
     validateAndRender(result);
-    if (usedOffline) setOfflineNote(true);
-    consumeRL();
-    updateRLBadge();
+    const note = document.getElementById('sketchNote');
+    note.textContent = 'Local layer sketch only: deterministic text from this page. Not an LLM response. For model analysis, copy the prompt above into your own chat.';
+    note.classList.add('visible');
   } catch (e) {
-    const msg = e.name === 'AbortError'
-      ? 'Analysis timed out after 30 seconds. Please try again.'
-      : (e.message || 'Analysis failed. Please try again.');
-    showError(msg);
-    console.error(e);
-  } finally {
-    clearTimeout(timeoutId);
-    btn.classList.remove('loading');
-    btn.disabled = false;
-    btn.querySelector('.btn-text').textContent = 'Run framework test';
+    showError(e.message || 'Local sketch failed.');
   }
 }
 
@@ -1054,10 +1066,9 @@ const VERDICT_MAP = {
 };
 
 const MC_COLORS = {
-  'COMPLEMENTARY':    'var(--l2-accent)',   // blue  — adds value alongside SRF
-  'ADDS ENFORCEMENT': '#7c3aed',            // purple — adds legal/regulatory force
-  'STRONGER HERE':    '#7c3aed',            // backward-compat alias → same purple
-  'WEAKER HERE':      'var(--l3-accent)'    // orange — narrower scope
+  'COMPLEMENTARY': 'var(--l2-accent)',
+  'STRONGER HERE': 'var(--l1-accent)',
+  'WEAKER HERE':   'var(--l3-accent)'
 };
 
 function renderResults(r) {
@@ -1128,15 +1139,13 @@ function renderResults(r) {
       <div class="model-origin">${sanitize(m.origin)}</div>
       <div class="model-desc">${sanitize(m.description)}</div>
       <div class="model-vs">${sanitize(m.vsCoSAI)}</div>
-      <div class="model-verdict" style="color:${MC_COLORS[m.verdict] || 'var(--subtle)'}">${sanitize(m.verdict)}</div>
+      <div class="model-verdict">${sanitize(m.verdict)}</div>
     </div>`).join('');
 
   document.getElementById('results').classList.add('visible');
   document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// Init rate limit badge on load
-document.addEventListener('DOMContentLoaded', updateRLBadge);
 </script>
 </body>
 </html>
