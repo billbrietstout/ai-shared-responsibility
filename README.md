@@ -50,6 +50,15 @@ Edit `data/regulations.json`. Update the `last_verified` date for any entry you 
 
 Layer definitions live in `data/layers.json`. Persona definitions live in `data/personas.json`. The operating model matrix lives in `data/matrix.json`. Schemas for all three are documented in `ARCHITECTURE.md`.
 
+### Updating the knowledge layer
+
+Edit order, taxonomy checks for new terms, and competency questions that
+`verify_knowledge_layer.py` enforces are documented in
+[`build/README.md`](build/README.md) under **How the knowledge layer is built**.
+Public pages keep SRF nouns (**persona**, **layer**, **control**,
+**obligation**, **attestation**); do not rename site IA around library-science
+stage labels.
+
 ### Adding a page
 
 1. Create a directory and `index.html` (copy `about/index.html` as a starting point).

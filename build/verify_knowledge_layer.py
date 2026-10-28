@@ -113,6 +113,81 @@ check(not bad_spec,
       f"every sector specialization resolves and specializes a canonical "
       f"persona (bad: {bad_spec})")
 
+# 6b2. Competency questions: one accountable persona per control, bound to
+# personas.json (canonical or declared specialization). Fail if a free-text
+# label invents a parallel persona name. Same bind for threats and
+# finding-routing rows that name an accountable_persona.
+allowed_personas = canonical_personas | {s["id"] for s in specs}
+VERTICALS = ("finance", "healthcare", "insurance",
+             "public-sector", "defense", "manufacturing")
+KNOWN_LAYERS = {f"L{i}" for i in range(1, 6)}
+
+missing_persona = []
+bad_persona = []
+multi_persona = []
+bad_layer = []
+for vertical in VERTICALS:
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        cid = f"{vertical}:{c['id']}"
+        ap = c.get("accountable_persona")
+        if ap is None or (isinstance(ap, str) and not ap.strip()):
+            missing_persona.append(cid)
+        elif isinstance(ap, (list, tuple)):
+            multi_persona.append(cid)
+        elif ap not in allowed_personas:
+            bad_persona.append(f"{cid}:{ap}")
+        layer = c.get("layer")
+        if layer not in KNOWN_LAYERS:
+            bad_layer.append(f"{cid}:{layer}")
+
+check(not missing_persona,
+      f"every vertical control names an accountable_persona "
+      f"(bad: {missing_persona[:5]})")
+check(not multi_persona,
+      f"every vertical control names exactly one accountable_persona "
+      f"(bad: {multi_persona[:5]})")
+check(not bad_persona,
+      f"every accountable_persona resolves in personas.json "
+      f"(bad: {bad_persona[:5]})")
+check(not bad_layer,
+      f"every vertical control layer is L1-L5 (bad: {bad_layer[:5]})")
+
+accountable_edges = {(e["source"], e["target"]) for e in edges["edges"]
+                     if e["rel"] == "accountable_to"}
+missing_edge = []
+for vertical in VERTICALS:
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        ap = c.get("accountable_persona")
+        if not ap or isinstance(ap, (list, tuple)):
+            continue
+        src = f"srf.control.{vertical}.{c['id']}"
+        tgt = f"srf.role.{ap}"
+        if (src, tgt) not in accountable_edges:
+            missing_edge.append(f"{src}->{tgt}")
+check(not missing_edge,
+      f"every vertical control has an accountable_to edge "
+      f"(bad: {missing_edge[:5]})")
+
+def _collect_accountable_personas(obj, out):
+    if isinstance(obj, dict):
+        if "accountable_persona" in obj:
+            out.append(obj["accountable_persona"])
+        for v in obj.values():
+            _collect_accountable_personas(v, out)
+    elif isinstance(obj, list):
+        for v in obj:
+            _collect_accountable_personas(v, out)
+
+for path in ("data/threats.json", "data/finding-routing.json"):
+    found = []
+    _collect_accountable_personas(J(path), found)
+    bad_bind = sorted({p for p in found
+                       if not isinstance(p, str) or p not in allowed_personas})
+    check(not bad_bind,
+          f"{path} accountable_persona values resolve in personas.json "
+          f"(bad: {bad_bind[:5]})")
+    check(len(found) > 0, f"{path} declares accountable_persona values")
+
 # 6c. Moral orientation hierarchy: dimensions, requirements, rollups, implements.
 moral_path = os.path.join(ROOT, "data", "moral-regulatory-hierarchy.json")
 if os.path.exists(moral_path):
