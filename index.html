@@ -6,7 +6,7 @@
     <title>AI Shared Responsibility — CoSAI SRF</title>
     <meta
       name="description"
-      content="Not another AI governance framework. The CoSAI Shared Responsibility Framework complements NIST AI RMF, ISO 42001, and the EU AI Act by naming who is accountable for each AI control, across every vendor, layer, and deployment model."
+      content="The CoSAI Shared Responsibility Framework complements NIST AI RMF, ISO/IEC 42001, and the EU AI Act by naming who is accountable for each AI control, across every vendor, layer, and operating model. Exactly one accountable party per activity."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -88,10 +88,10 @@
         font-size: var(--text-sm);
       }
 
-      /* ── Role entry list ────────────────────────────────────────── */
+      /* ── Role entry list (below Decision Record CTA) ────────────── */
       .role-list {
         list-style: none;
-        margin: 0 0 var(--sp-8);
+        margin: var(--sp-8) 0 0;
         padding: 0;
         border-top: 1px solid var(--slate-200);
       }
@@ -130,7 +130,7 @@
 
       /* ── Decision Record CTA ────────────────────────────────────── */
       .hero__decision {
-        margin-top: var(--sp-4);
+        margin-top: var(--sp-8);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -167,6 +167,24 @@
         border-color: #142c52;
         color: #fff;
         text-decoration: none;
+      }
+
+      /* ── Autonomy / override (below fold) ───────────────────────── */
+      .autonomy-note {
+        padding: var(--sp-8) var(--page-pad);
+        background: var(--paper);
+        border-bottom: 1px solid var(--slate-200);
+      }
+      .autonomy-note__inner {
+        max-width: var(--max-w);
+        margin: 0 auto;
+      }
+      .autonomy-note__text {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        line-height: var(--leading-normal);
+        max-width: 72ch;
+        margin: 0;
       }
 
       /* ── SRF Stress Test (paper catalog entry) ──────────────────── */
@@ -627,18 +645,12 @@
             Maintained by Bill Stout. Content CC BY 4.0; code Apache-2.0.
           </p>
           <h1 class="hero__title">
-            Make <em>responsibility</em> clear before you scale AI.<br>
-            CoSAI SRF maps every obligation and control to an <em>accountable owner.</em>
+            Make <em>responsibility</em> clear before you scale AI.
           </h1>
           <p class="hero__lede">
-            It complements the regulations and standards you already follow (NIST AI RMF,
-            ISO/IEC 42001, the EU AI Act) by answering the one question they leave open:
-            who is accountable. The SRF assigns exactly one accountable party to every
-            activity, across every layer of your AI stack and every operating model you
-            deploy. When a system acts, delegates, or uses tools, that assignment still
-            names one persona. Autonomy level (L0 to L5) and override tier (T1 to T5)
-            describe how independently it may act and how it can be stopped. They do
-            not move the owner.
+            The CoSAI SRF maps every obligation and control to exactly one accountable
+            party per activity, across each layer and operating model. It complements
+            NIST AI RMF, ISO/IEC 42001, and the EU AI Act by naming who is accountable.
           </p>
 
           <div class="hero__release">
@@ -647,41 +659,52 @@
             <a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">Download V1.0 PDF →</a>
           </div>
 
-          <ul class="role-list">
-            <li>
-              <a href="/tools/layer-matrix/">
-                <span class="role-list__role">Deploying AI</span>
-                <p class="role-list__desc">Know what your vendor owes you before an incident, across a multi-vendor stack.</p>
-                <span class="role-list__cta">Map accountability</span>
-              </a>
-            </li>
-            <li>
-              <a href="/tools/layer-matrix/">
-                <span class="role-list__role">Building AI</span>
-                <p class="role-list__desc">Turn your accountability boundary into contract language and commitments customers can verify.</p>
-                <span class="role-list__cta">See obligations</span>
-              </a>
-            </li>
-            <li>
-              <a href="/controls/assessment/">
-                <span class="role-list__role">Governing AI</span>
-                <p class="role-list__desc">Name an owner for every control. Find accountability gaps before they become incidents.</p>
-                <span class="role-list__cta">Start assessment</span>
-              </a>
-            </li>
-          </ul>
-
           <div class="hero__decision">
             <p class="hero__decision-text">
-              However you enter, you finish in the same place: a <strong>signed Accountability
-              Decision Record</strong> that names one accountable party per layer for your
-              deployment, captures the residual gaps, and carries a sign-off.
+              Finish with a signed Accountability Decision Record: name one accountable
+              party (persona) per layer for this deployment, record residual gaps, and
+              capture attestation (sign-off).
             </p>
             <a class="hero__primary" href="/tools/decision-record/">
               Create a Decision Record
               <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
             </a>
           </div>
+
+          <ul class="role-list">
+            <li>
+              <a href="/tools/layer-matrix/">
+                <span class="role-list__role">Deploying AI</span>
+                <p class="role-list__desc">Name which vendor owes which obligation before an incident, across a multi-vendor stack.</p>
+                <span class="role-list__cta">Map accountability</span>
+              </a>
+            </li>
+            <li>
+              <a href="/tools/layer-matrix/">
+                <span class="role-list__role">Building AI</span>
+                <p class="role-list__desc">Turn each layer’s accountable party into contract language customers can verify.</p>
+                <span class="role-list__cta">See obligations</span>
+              </a>
+            </li>
+            <li>
+              <a href="/controls/assessment/">
+                <span class="role-list__role">Governing AI</span>
+                <p class="role-list__desc">Name one accountable party for every control. Find gaps before they become incidents.</p>
+                <span class="role-list__cta">Start assessment</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ── Autonomy / override (below fold; was hero lede) ──────── -->
+      <section class="autonomy-note" aria-label="Autonomy and override" data-llm="autonomy-override-do-not-move-owner">
+        <div class="autonomy-note__inner">
+          <p class="autonomy-note__text">
+            Autonomy level (L0 to L5) and override tier (T1 to T5) say how independently
+            a system may act and how it can be stopped. They do not change the accountable
+            party. That party remains one named persona per activity.
+          </p>
         </div>
       </section>
 
@@ -805,7 +828,7 @@
         <div class="layers__inner">
           <div class="layers__header">
             <h2 id="layers-heading">Five layers. One accountable party per activity.</h2>
-            <p>Governance requirements cascade from L1 downward. Exactly one accountable party per activity, shifting with your operating model. Where a matrix cell is shared, <a href="/tools/decision-record/">create a Decision Record</a> to name the persona (attestation).</p>
+            <p>Governance requirements cascade from L1 downward. Exactly one accountable party must own each activity; that party can change with the operating model. Where a matrix cell is shared, <a href="/tools/decision-record/">create a Decision Record</a> that names the persona. That name is the attestation.</p>
           </div>
           <div class="layer-stack" role="list">
             <a class="layer-row layer-row--l1" href="/framework/#l1" role="listitem">
