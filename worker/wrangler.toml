@@ -2,11 +2,16 @@ name       = "srf-analyze"
 main       = "index.js"
 compatibility_date = "2024-01-01"
 
+# Optional non-secret overrides (safe to commit). Defaults match index.js.
+[vars]
+OPENAI_BASE_URL = "https://api.openai.com/v1"
+OPENAI_MODEL    = "gpt-4o-mini"
+
 # Routes — update YOUR_ZONE if using a custom domain
 # [[routes]]
 # pattern = "api.aisharedresponsibility.com/analyze"
 # zone_name = "aisharedresponsibility.com"
 
 # Secrets — store with:
-#   wrangler secret put GITHUB_TOKEN
-# Never commit the token value here.
+#   npx wrangler secret put OPENAI_API_KEY
+# Never commit the key value here. GITHUB_TOKEN is obsolete (GitHub Models retired).

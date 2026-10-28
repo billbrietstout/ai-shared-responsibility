@@ -598,7 +598,7 @@
   <p class="privacy-note" role="note">
     When you run a test, your scenario text is sent to our Cloudflare Worker
     (<code>srf-analyze.aisharedresponsibility.workers.dev</code>), which calls
-    GitHub Models (gpt-4o-mini). Do not paste confidential deployment details.
+    the OpenAI API (gpt-4o-mini). Do not paste confidential deployment details.
     Preset cards stay in this page until you run a test.
   </p>
 
@@ -847,12 +847,12 @@ function setOfflineNote(active) {
   }
 }
 
-// Parses an OpenAI-format response envelope from GitHub Models.
+// Parses an OpenAI-format response envelope from the analysis Worker.
 // choices[0].message.content holds the JSON string the model returned.
 function parseRemoteAnalyzePayload(data) {
   const content = data?.choices?.[0]?.message?.content;
   if (typeof content !== 'string' || content.length === 0) {
-    throw new Error('Unexpected response format from GitHub Models.');
+    throw new Error('Unexpected response format from the analysis Worker.');
   }
   const clean = content.replace(/```json\s*|```/g, '').trim();
   return JSON.parse(clean);

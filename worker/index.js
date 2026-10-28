@@ -1,11 +1,20 @@
 /**
  * srf-analyze — Cloudflare Worker
  *
- * Proxies SRF Stress wizard requests to GitHub Models (gpt-4o-mini).
- * The GITHUB_TOKEN secret is stored in Cloudflare — never in the browser.
+ * Proxies SRF Stress wizard requests to the OpenAI Chat Completions API
+ * (gpt-4o-mini by default). The OPENAI_API_KEY secret is stored in
+ * Cloudflare — never in the browser.
  *
- * Secrets (set once via wrangler):
- *   wrangler secret put GITHUB_TOKEN
+ * GitHub Models was retired on 2026-07-30. This Worker previously called
+ * models.inference.ai.azure.com with GITHUB_TOKEN; that path now fails
+ * (often HTTP 530) and is no longer used.
+ *
+ * Secrets (set once via wrangler; see README.md):
+ *   wrangler secret put OPENAI_API_KEY
+ *
+ * Optional vars (wrangler.toml [vars] or dashboard):
+ *   OPENAI_BASE_URL  default https://api.openai.com/v1
+ *   OPENAI_MODEL     default gpt-4o-mini
  *
  * Allowed origins (edit ALLOWED_ORIGINS to add staging / localhost):
  *   https://aisharedresponsibility.com
@@ -20,17 +29,10 @@
  *     on this route, or a KV / Durable Object counter if you need custom logic.
  */
 
-const GITHUB_MODELS_URL = "https://models.inference.ai.azure.com/chat/completions";
-// gpt-4o-mini sits in the GitHub Models "low" rate limit tier, which carries the
-// largest free-tier input budget on offer: 8000 tokens in, 4000 out, 150 requests
-// per day. Larger models are not an upgrade here. gpt-5 and the o-series cap input
-// at 4000 tokens with 8 to 12 requests per day and need Copilot Pro; xai/grok-3-mini
-// also caps input at 4000. Any swap should be checked against the current table at
-// https://docs.github.com/en/github-models/use-github-models/prototyping-with-ai-models#rate-limits
-// because the caps below were sized to fit this tier.
-const MODEL             = "gpt-4o-mini";
-const MAX_TOKENS        = 1800;
-const TEMPERATURE       = 0.3;
+const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1";
+const DEFAULT_MODEL           = "gpt-4o-mini";
+const MAX_TOKENS              = 1800;
+const TEMPERATURE             = 0.3;
 
 // ── Abuse / cost limits ──────────────────────────────────────────────────────
 const MAX_BODY_BYTES      = 32 * 1024; // reject oversized request bodies up front
@@ -85,6 +87,16 @@ function json(body, status, origin) {
   });
 }
 
+function resolveUpstream(env) {
+  const base = String(env.OPENAI_BASE_URL || DEFAULT_OPENAI_BASE_URL).replace(/\/+$/, "");
+  const model = String(env.OPENAI_MODEL || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
+  return {
+    url: `${base}/chat/completions`,
+    model,
+    apiKey: env.OPENAI_API_KEY,
+  };
+}
+
 // Validate the client payload. Returns a sanitized messages array or throws an
 // Error whose message is safe to surface to the caller.
 function validateMessages(raw) {
@@ -117,6 +129,15 @@ function validateMessages(raw) {
   return clean;
 }
 
+function upstreamErrorMessage(errBody, status) {
+  const msg =
+    errBody?.error?.message ||
+    errBody?.error ||
+    (typeof errBody?.message === "string" ? errBody.message : null);
+  if (typeof msg === "string" && msg.trim()) return msg.trim();
+  return `OpenAI API returned ${status}`;
+}
+
 // ── Main handler ─────────────────────────────────────────────────────────────
 
 export default {
@@ -142,6 +163,15 @@ export default {
       return json({ error: "Request body too large" }, 413, origin);
     }
 
+    const { url: upstreamUrl, model, apiKey } = resolveUpstream(env);
+    if (!apiKey || typeof apiKey !== "string" || !apiKey.trim()) {
+      return json(
+        { error: "OpenAI API key is not configured on the Worker (OPENAI_API_KEY secret)." },
+        503,
+        origin,
+      );
+    }
+
     // Parse incoming body — expect { messages: [...] }
     let body;
     try {
@@ -162,17 +192,17 @@ export default {
       return json({ error: err.message }, 400, origin);
     }
 
-    // Call GitHub Models
+    // Call OpenAI Chat Completions (OpenAI-compatible envelope for the wizard)
     let upstream;
     try {
-      upstream = await fetch(GITHUB_MODELS_URL, {
+      upstream = await fetch(upstreamUrl, {
         method: "POST",
         headers: {
           "Content-Type":  "application/json",
-          "Authorization": `Bearer ${env.GITHUB_TOKEN}`,
+          "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
-          model:       MODEL,
+          model,
           messages,
           max_tokens:  MAX_TOKENS,
           temperature: TEMPERATURE,
@@ -182,12 +212,12 @@ export default {
       return json({ error: `Upstream fetch failed: ${err.message}` }, 502, origin);
     }
 
-    // Surface upstream errors verbatim so the wizard can display them
+    // Surface upstream errors so the wizard can display them
     if (!upstream.ok) {
       const errBody = await upstream.json().catch(() => ({}));
       return json(
-        { error: errBody?.error?.message ?? `GitHub Models returned ${upstream.status}` },
-        upstream.status,
+        { error: upstreamErrorMessage(errBody, upstream.status) },
+        upstream.status >= 400 && upstream.status < 600 ? upstream.status : 502,
         origin,
       );
     }
