@@ -3399,35 +3399,38 @@
     },
     {
       "id": "WP-0154",
-      "issue": 154,
-      "title": "Agent Privacy Risk Taxonomy V.01 (AILuminate Assessment Standard)",
-      "org": "MLCommons",
-      "url": "https://mlcommons.org/wp-content/uploads/2026/10/ML-Commons-Agent-Privacy-Taxonomy-v01.pdf",
-      "state": "closed",
-      "decision": "Delete candidate",
+      "issue": 161,
+      "title": "Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile (NIST SP 800-218A)",
+      "org": "National Institute of Standards and Technology (NIST)",
+      "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218A.pdf",
+      "state": "open",
+      "decision": "Include",
       "axioms": [
-        "Traditional privacy models such as Solove's taxonomy and the NIST privacy risk model assume deterministic data flows, centralized storage, and clear perimeter boundaries.",
-        "Agents act as dynamic data intermediaries that execute code, keep memory across sessions, and orchestrate external tools and protocols such as MCP.",
-        "Agents favor task completion over data minimization, and MCP lacks field-level access controls that would limit the context shared with external tools.",
-        "Attackers embed hidden payloads such as invisible text, metadata, or system commands in emails, websites, and documents that agents process at run time.",
-        "Upstream agent components such as skill packages, tool descriptions, and MCP servers can be compromised to make an agent leak sensitive data during normal execution.",
-        "A constant stream of runtime permission pop-ups leads users to approve risky actions without reading, which removes the protection of the consent gate.",
-        "No standardized, scalable, privacy-preserving method exists for logging agent interactions across organizations, which slows root-cause analysis after an incident."
+        "AI models and systems inherit most of the same risks as any other software.",
+        "AI blurs the line between system code and system data, and people interact with it in plain language.",
+        "Training data may come from unknown or untrusted sources, and model weights can be tampered with.",
+        "Some models are too complex to inspect fully, which can hide code that runs without detection.",
+        "Crafted user queries can produce harmful output and, if not sanitized, enable injection attacks.",
+        "Model lineage is hard to track because final weights exist only after training and fine-tuning.",
+        "The Profile covers only cybersecurity risk; privacy, intellectual property and bias need other NIST resources."
       ],
       "invariables": [
-        "Intent-based inference of privacy preferences is probabilistic, so it cannot guarantee that an agent infers or follows a user's preferences in a provable way.",
-        "Blocking an agent's access to one file or database does not stop it from reconstructing the restricted information through redundant or secondary sources.",
-        "A manipulated agent with a code execution tool such as a Python REPL or bash shell can bypass LLM-level privacy controls and gain read and write access to the host.",
-        "Regex and heuristic redaction pipelines fail to remove semantic PII and fuzzy quasi-identifiers, which can still re-identify users.",
-        "Static, binary permission gates are structurally incompatible with the open-ended runtime reasoning of autonomous agents.",
-        "A successful attack, agent action, or technical data exposure does not by itself show that downstream harm occurred."
+        "Use this Profile together with SP 800-218 (SSDF 1.1), never on its own.",
+        "Protect all training, testing, fine-tuning and aligning data from unauthorized access and changes (PS.1.2).",
+        "Protect all model weights and configuration parameters from unauthorized access and changes (PS.1.3).",
+        "Check data for poisoning, bias, homogeneity and tampering before using it to train, test, fine-tune or align a model (PW.3.1).",
+        "Evaluate all source code for vulnerabilities before use, whether a person or an AI wrote it.",
+        "Document the parts of a model that secure development practices do not cover."
       ],
       "principles": [
-        "Causal chain assessment: assessors trace each agent privacy risk from deployment condition or threat to failure mechanism, privacy event, affected party, privacy impact, and downstream harm.",
-        "Evidence labeling: the assessor states which stages of the causal chain were directly observed and which remain inferred or uncertain.",
-        "Bounded likelihood: assessors give likelihood as a probability only when observed data has a defined population, denominator, and period; otherwise they rate exposure and failure separately.",
-        "Threat-conditioned failure evidence: assessors label each failure as seen in ordinary use, under a credible threat model with a defined attacker capability and budget, or plausible but unconfirmed.",
-        "Affected-party impact: assessors rate impact by its effect on affected parties, weighing data sensitivity, recipients, persistence, and reversibility, beyond technical compromise alone."
+        "Risk-based adoption: the Profile is a starting point, not a checklist; pick practices by risk, cost, feasibility and fit.",
+        "Shared responsibility: AI model producers, AI system producers and AI system acquirers agree on who does each practice and how they attest to it.",
+        "Secure storage: store models, weights, pipelines and reward models like code, and allow only indirect access to weights.",
+        "Data provenance: track where training data came from and record which data has no known provenance (PW.3.2).",
+        "Adversarial training: include adversarial samples in training and testing data (PW.3.3).",
+        "Integrity information: give acquirers what they need to verify software and model integrity (PS.2.1).",
+        "MLOps integration: build the practices into CI/CD pipelines along with other software assets.",
+        "Ongoing vulnerability response: find, assess and fix vulnerabilities in models after release (RV practices)."
       ]
     },
     {

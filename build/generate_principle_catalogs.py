@@ -552,6 +552,8 @@ def parse_synthesis():
         entry["inventory_status"] = status
         if meta.get("inventory_note"):
             entry["inventory_note"] = meta["inventory_note"]
+        if meta.get("version_note"):
+            entry["version_note"] = meta["version_note"]
         sources[code] = entry
 
     missing = set(wp_map) - set(sources)

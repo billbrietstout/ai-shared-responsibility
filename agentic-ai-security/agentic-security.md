@@ -60,13 +60,13 @@ Where sources disagree, or where one organization's position goes further than t
 | OWASP-DATASEC | OWASP GenAI Data Security Risks & Mitigations 2026 | OWASP GenAI Security Project | March 17, 2026 | https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/ |
 | SANS-CAISG1 | Critical AI Security Guidelines v1.0 | SANS Institute | March 31, 2025 | https://www.sans.org/mlp/critical-ai-security-guidelines |
 | SANS-CAISG11 | Critical AI Security Guidelines v1.1 (draft) | SANS Institute | April 2025 | https://github.com/sans-community/ai-guidelines |
-| SANS-CAISG12 | Critical AI Security Guidelines v1.2 | SANS Institute | 2026 | https://www.aigl.blog/critical-ai-security-guidelines-v1-2/ |
+| SANS-CAISG12 | Critical AI Security Guidelines v1.4 | SANS Institute | March 2026 | https://www.sans.org/mlp/critical-ai-security-guidelines |
 | SANS-BLUEPRINT | Own AI Securely: The SANS Secure AI Blueprint | SANS Institute | 2025 | https://www.sans.org/white-papers/own-ai-securely-sans-secure-ai-blueprint |
 | SANS-CAISG14 | Critical AI Security Guidelines v1.4 | SANS Institute | March 2026 | https://assets.contentstack.io/v3/assets/bltabe50a4554f8e97f/blte964a6eef293d57e/whitepaper-critical-ai-security-guidelines |
 | SANS-MATURITY | SANS AI Security Maturity Model eBook | SANS Institute | May 11, 2026 | https://www.sans.org/white-papers/sans-ai-security-maturity-model-ebook |
 | OWASP-LLMTOP10-2026 | OWASP GenAI LLM Top 10 2026 | OWASP GenAI Security Project | August 3, 2026 | https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/ |
 | OWASP-AST10 | OWASP Agentic Skills Top 10 (AST10) | OWASP GenAI Security Project | 2026 | https://owasp.org/www-project-agentic-skills-top-10/ |
-| NIST-218A | Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile (SP 800-218A) | National Institute of Standards and Technology | July 26, 2024 | https://csrc.nist.gov/pubs/sp/800/218/a/final |
+| NIST-218A | Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile (SP 800-218A) | National Institute of Standards and Technology | July 2024 | https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218A.pdf |
 
 **Peer SDOs and coalitions**
 
