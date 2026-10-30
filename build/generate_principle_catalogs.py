@@ -45,10 +45,11 @@ SITE = "https://aisharedresponsibility.com"
 # Fixed literal, never date.today(): the CI regeneration drift gate diffs
 # generated output against what is committed, so this must be reproducible
 # from committed source. Bump when publishing an update.
-UPDATED = "2026-09-01"
+UPDATED = "2026-10-30"
 
 OSCAL_SRC = "security_principles_reference.oscal.json"
 SYNTH_SRC = "agentic-ai-security/agentic-security.md"
+SOURCE_WP_MAP = "build/source-wp-ids.json"
 
 
 def write_json(relpath, obj):
@@ -519,14 +520,46 @@ SRC_ROW_RE = re.compile(
     r"^\| ([A-Z][A-Z0-9-]+) \| (.+?) \| (.+?) \| (.+?) \| (\S+) \|$", re.M)
 
 
+def load_source_wp_map():
+    """Attach monitor WP- IDs to each site source code.
+
+    build/source-wp-ids.json is the reviewed map. A source may set
+    inventory_status to pending_add when the paper is not yet in the
+    monitor; those entries keep wp_id null and carry inventory_note.
+    """
+    path = os.path.join(ROOT, SOURCE_WP_MAP)
+    if not os.path.exists(path):
+        fail(f"missing {SOURCE_WP_MAP}; run the source-wp map step first")
+    with open(path, encoding="utf-8") as fh:
+        data = json.load(fh)
+    return data.get("sources", {})
+
+
 def parse_synthesis():
     with open(os.path.join(ROOT, SYNTH_SRC), encoding="utf-8") as fh:
         md = fh.read()
 
+    wp_map = load_source_wp_map()
     sources = {}
     for code, title, org, date, link in SRC_ROW_RE.findall(md):
-        sources[code] = {"title": title.strip(), "org": org.strip(),
-                         "date": date.strip(), "url": link.strip()}
+        entry = {"title": title.strip(), "org": org.strip(),
+                 "date": date.strip(), "url": link.strip()}
+        meta = wp_map.get(code)
+        if not meta:
+            fail(f"source {code!r} has no entry in {SOURCE_WP_MAP}")
+        entry["wp_id"] = meta.get("wp_id")
+        status = meta.get("inventory_status", "matched" if meta.get("wp_id") else "pending_add")
+        entry["inventory_status"] = status
+        if meta.get("inventory_note"):
+            entry["inventory_note"] = meta["inventory_note"]
+        if meta.get("version_note"):
+            entry["version_note"] = meta["version_note"]
+        sources[code] = entry
+
+    missing = set(wp_map) - set(sources)
+    if missing:
+        fail(f"{SOURCE_WP_MAP} has unused codes not in the synthesis: "
+             f"{sorted(missing)}")
 
     sections = {}
     order = []

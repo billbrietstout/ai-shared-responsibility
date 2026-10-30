@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aisharedresponsibility.com/schemas/principles.schema.json",
+  "title": "SRF principle catalogs",
+  "description": "Schema for data/ai-agentic-principles.json and data/security-principles.json.",
+  "oneOf": [
+    { "$ref": "#/$defs/agenticCatalog" },
+    { "$ref": "#/$defs/classicCatalog" }
+  ],
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "agenticSource": {
+      "type": "object",
+      "required": ["title", "org", "date", "url", "inventory_status"],
+      "properties": {
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "org": { "$ref": "#/$defs/nonEmptyString" },
+        "date": { "$ref": "#/$defs/nonEmptyString" },
+        "url": { "$ref": "#/$defs/nonEmptyString" },
+        "wp_id": {
+          "type": ["string", "null"],
+          "pattern": "^WP-[0-9]{4}$"
+        },
+        "inventory_status": {
+          "type": "string",
+          "enum": ["matched", "pending_add", "unmatched"]
+        },
+        "inventory_note": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "agenticPrinciple": {
+      "type": "object",
+      "required": ["id", "section", "category", "statement", "src"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyString" },
+        "section": { "$ref": "#/$defs/nonEmptyString" },
+        "category": { "$ref": "#/$defs/nonEmptyString" },
+        "statement": { "$ref": "#/$defs/nonEmptyString" },
+        "src": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "classicSrc": {
+      "type": "object",
+      "required": ["fw", "ref"],
+      "properties": {
+        "fw": { "$ref": "#/$defs/nonEmptyString" },
+        "ref": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": true
+    },
+    "classicPrinciple": {
+      "type": "object",
+      "required": ["id", "statement", "category", "src"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyString" },
+        "statement": { "$ref": "#/$defs/nonEmptyString" },
+        "category": { "$ref": "#/$defs/nonEmptyString" },
+        "src": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/classicSrc" },
+          "minItems": 1
+        },
+        "related": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "subgroup": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "agenticCatalog": {
+      "type": "object",
+      "required": [
+        "$schema_version",
+        "updated",
+        "count",
+        "sources",
+        "sections",
+        "principles"
+      ],
+      "properties": {
+        "$schema_version": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "type": "string" },
+        "updated": { "$ref": "#/$defs/nonEmptyString" },
+        "count": { "type": "integer", "minimum": 0 },
+        "sources": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": { "$ref": "#/$defs/agenticSource" }
+        },
+        "sections": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "principles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/agenticPrinciple" }
+        },
+        "gap_index": { "type": "object" },
+        "excluded_statements": { "type": "array" }
+      },
+      "additionalProperties": true
+    },
+    "classicCatalog": {
+      "type": "object",
+      "required": [
+        "$schema_version",
+        "updated",
+        "count",
+        "frameworks",
+        "principles"
+      ],
+      "properties": {
+        "$schema_version": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "type": "string" },
+        "updated": { "$ref": "#/$defs/nonEmptyString" },
+        "count": { "type": "integer", "minimum": 0 },
+        "frameworks": {
+          "type": "object",
+          "minProperties": 1
+        },
+        "principles": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/classicPrinciple" }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

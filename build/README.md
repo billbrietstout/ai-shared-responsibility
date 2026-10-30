@@ -256,6 +256,26 @@ To change an entry: open the source, edit the ref, set
 ref fix, minor for an added entry, major for a removed field or an id change), add a changelog
 line, and run the verifier.
 
+## Principle catalogs (whitepaper assessment)
+
+`generate_principle_catalogs.py` writes:
+
+| Output | Source of truth |
+|---|---|
+| `data/security-principles.json` (+ `.slim.json`) | `security_principles_reference.oscal.json` |
+| `data/ai-agentic-principles.json` (+ `.slim.json`) | `agentic-ai-security/agentic-security.md` plus `build/source-wp-ids.json` |
+
+Each agentic source row carries a monitor `wp_id` when matched. Sources not yet
+on the inventory sheet use `inventory_status: pending_add`.
+
+```bash
+python3 build/generate_principle_catalogs.py
+python3 scripts/validate_principles.py
+```
+
+Weekly sync from changed WP- IDs: `scripts/site_sync.py` (see root README).
+CI: `.github/workflows/validate-principles.yml`.
+
 ## Continuous integration
 
 `.github/workflows/verify.yml` runs on every push to `develop`/`main` and on
