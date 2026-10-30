@@ -1,0 +1,37 @@
+name: Validate principles
+
+# Runs the principles validator when a pull request changes catalog data,
+# schemas, or the validation scripts.
+
+on:
+  pull_request:
+    paths:
+      - "data/ai-agentic-principles.json"
+      - "data/ai-agentic-principles.slim.json"
+      - "data/security-principles.json"
+      - "data/security-principles.slim.json"
+      - "schemas/principles.schema.json"
+      - "scripts/validate_principles.py"
+      - "scripts/site_sync.py"
+      - "build/source-wp-ids.json"
+      - "build/fixtures/whitepapers.json"
+      - "build/generate_principle_catalogs.py"
+      - "agentic-ai-security/agentic-security.md"
+      - ".github/workflows/validate-principles.yml"
+  workflow_dispatch:
+
+jobs:
+  validate-principles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install jsonschema
+        run: pip install "jsonschema>=4.0"
+
+      - name: Validate principle catalogs
+        run: python3 scripts/validate_principles.py

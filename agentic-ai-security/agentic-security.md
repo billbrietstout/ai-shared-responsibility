@@ -43,15 +43,15 @@ Where sources disagree, or where one organization's position goes further than t
 | CSA-AICM11 | AI Controls Matrix (AICM) v1.1 | Cloud Security Alliance | June 22, 2026 | https://cloudsecurityalliance.org/artifacts/ai-controls-matrix-v1-1 |
 | CSA-STATE | The State of Cloud and AI Security 2025 | Cloud Security Alliance | 2025 | https://cloudsecurityalliance.org/artifacts/the-state-of-cloud-and-ai-security-2025 |
 | CSA-DATA | Data Security within AI Environments | Cloud Security Alliance | 2025/2026 | https://cloudsecurityalliance.org/artifacts/data-security-within-ai-environments |
-| CSA-VULN | AI Vulnerability: Security Program Guide for CISOs | Cloud Security Alliance | Sept/Oct 2025 | https://cloudsecurityalliance.org/artifacts/the-ai-vulnerability-storm |
+| CSA-VULN | AI Vulnerability: Security Program Guide for CISOs | Cloud Security Alliance | Sept/Oct 2025 | https://labs.cloudsecurityalliance.org/mythos-ciso/ |
 | COSAI-SUPPLY | Establish Risks and Controls for the AI Supply Chain | Coalition for Secure AI | 2024 (v1) | https://github.com/cosai-oasis/ws1-supply-chain/blob/main/whitepapers/risks-and-controls-for-the-ai-supply-chain-v1.md |
 | COSAI-SIGN | Signing ML Artifacts: Building Towards Tamper-Proof ML Metadata Records | Coalition for Secure AI | Sept 29, 2025 | https://github.com/cosai-oasis/ws1-supply-chain/blob/main/whitepapers/signing-ml-artifacts.md |
 | COSAI-DEFEND | Preparing Defenders of AI Systems | Coalition for Secure AI | 2024 | https://github.com/cosai-oasis/ws2-defenders/blob/main/preparing-defenders-of-ai-systems.md |
 | COSAI-IR | AI Incident Response Framework | Coalition for Secure AI | Oct 30, 2025 | https://github.com/cosai-oasis/ws2-defenders/blob/main/incident-response/AI-Incident-Response.md |
 | NIST-RMF | AI Risk Management Framework (AI RMF 1.0) | National Institute of Standards and Technology | Jan 26, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
-| NIST-PLAYBOOK | AI RMF Playbook | National Institute of Standards and Technology | March 30, 2023 | https://www.nist.gov/itl/ai-risk-management-framework |
+| NIST-PLAYBOOK | AI RMF Playbook | National Institute of Standards and Technology | March 30, 2023 | https://airc.nist.gov/airmf-resources/playbook/ |
 | NIST-GAI | AI RMF: Generative Artificial Intelligence Profile (NIST AI 600-1) | National Institute of Standards and Technology | July 26, 2024 | https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf |
-| NIST-ADVML | Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2) | National Institute of Standards and Technology | 2024, updated 2025 | https://www.nist.gov/itl/ai-risk-management-framework |
+| NIST-ADVML | Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2) | National Institute of Standards and Technology | 2024, updated 2025 | https://csrc.nist.gov/pubs/ai/100/2/e2025/final |
 | OWASP-AIEXCHANGE | AI Exchange (owaspai.org): AI Security Overview & Controls Guide | OWASP AI Exchange | Living document, 2022-2026 | https://owaspai.org/ |
 | OWASP-LLMTOP10 | OWASP Top 10 for LLM Applications & Generative AI (2025) | OWASP GenAI Security Project | 2025 | https://genai.owasp.org/llm-top-10/ |
 | OWASP-IR | GenAI Incident Response Guide 1.0 | OWASP GenAI Security Project | July 28, 2025 | https://genai.owasp.org/resource/genai-incident-response-guide-1-0/ |

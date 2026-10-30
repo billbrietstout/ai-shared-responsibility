@@ -59,6 +59,47 @@ Public pages keep SRF nouns (**persona**, **layer**, **control**,
 **obligation**, **attestation**); do not rename site IA around library-science
 stage labels.
 
+### Validating and updating whitepaper-derived principles
+
+The whitepaper assessment page loads:
+
+- `data/ai-agentic-principles.json` (and `.slim.json`): 130 agentic principles
+  from 52 papers. Each source row carries a monitor `wp_id` when matched.
+- `data/security-principles.json` (and `.slim.json`): 87 classic axioms from
+  the OSCAL catalog. These cite frameworks, not whitepapers.
+
+Do not hand-edit the generated JSON. Edit
+`agentic-ai-security/agentic-security.md` and `build/source-wp-ids.json`, then
+run `python3 build/generate_principle_catalogs.py`.
+
+**Validate** (fails the PR check on errors; warnings are listed for review):
+
+```bash
+python3 scripts/validate_principles.py
+```
+
+The validator checks schema shape, unique ids, section membership, that every
+`src` code resolves, that every matched source has a `wp_id` found in
+`build/fixtures/whitepapers.json` with decision Include, statement support
+against that paper's axioms/invariables/principles (warning only), unused
+sources, Include-paper gaps, near-duplicates, and duplicate URLs.
+
+**Weekly update** (after Tuesday's monitor run writes changed WP- IDs):
+
+```bash
+python3 scripts/site_sync.py \
+  --whitepapers path/to/whitepapers.json \
+  --changes path/to/whitepapers_changes.json
+python3 scripts/validate_principles.py \
+  --agentic reports/ai-agentic-principles.candidate.json
+```
+
+Review `reports/principles-diff.md`. With approval, copy the candidate into
+`data/`, open a pull request against `develop`, and merge. Never push straight
+to `main`. Sources still missing from the monitor keep
+`inventory_status: pending_add` and an `inventory_note` until Bill adds them
+to the inventory sheet.
+
 ### Adding a page
 
 1. Create a directory and `index.html` (copy `about/index.html` as a starting point).
