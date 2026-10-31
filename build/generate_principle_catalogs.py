@@ -44,8 +44,11 @@ SITE = "https://aisharedresponsibility.com"
 
 # Fixed literal, never date.today(): the CI regeneration drift gate diffs
 # generated output against what is committed, so this must be reproducible
-# from committed source. Bump when publishing an update.
+# from committed source. Bump when publishing an update. The two catalogs
+# carry their own dates so an agentic-only update does not touch the classic
+# catalog's metadata.
 UPDATED = "2026-10-30"
+AGENTIC_UPDATED = "2026-10-31"
 
 OSCAL_SRC = "security_principles_reference.oscal.json"
 SYNTH_SRC = "agentic-ai-security/agentic-security.md"
@@ -317,6 +320,8 @@ CURATION = {
         ("least-privilege-extends-to-decision-layer", "access-control"),
         ("controls-scale-with-capability-and-sensitivity", "risk-management"),
         ("fine-grained-attribute-policy-access-control", "access-control"),
+        ("explain-restrictions-to-agents", "access-control"),
+        ("denied-trust-halts-execution", "access-control"),
     ],
     "delegation-chains": [
         ("delegation-narrows-never-expands", "access-control"),
@@ -333,6 +338,7 @@ CURATION = {
         ("guaranteed-teardown", "design"),
         ("ephemerality-as-containment", "resilience"),
         ("default-deny-egress-bounded-swarm", "resilience"),
+        ("launch-gate-verifies-controls", "design"),
     ],
     "human-oversight": [
         ("intervention-capability-regardless-of-autonomy", "agent-autonomy"),
@@ -341,6 +347,7 @@ CURATION = {
         ("oversight-scales-with-autonomy-and-risk", "agent-autonomy"),
         ("override-authority-explicitly-assigned", "governance"),
         ("continuous-validation-against-purpose", "resilience"),
+        ("human-in-loop-is-not-automatically-safe", "agent-autonomy"),
     ],
     "observability": [
         ("immutable-tamper-evident-logging", "monitoring"),
@@ -349,6 +356,8 @@ CURATION = {
         ("observability-extends-to-goals-and-decisions", "monitoring"),
         ("extend-existing-logging-controls-to-agents", "monitoring"),
         ("agent-component-inventory-covers-full-stack", "monitoring"),
+        ("shadow-before-enforce", "monitoring"),
+        ("honey-tokens-favor-defense", "monitoring"),
     ],
     "untrusted-input": [
         ("treat-tool-descriptions-and-content-as-untrusted", "input-validation"),
@@ -358,6 +367,8 @@ CURATION = {
         ("agents-amplify-not-new-vuln-class", "risk-management"),
         ("deterministic-controls-outside-reasoning-loop", "access-control"),
         ("agent-security-spans-distinct-control-layers", "design"),
+        ("memory-is-attack-surface", "risk-management"),
+        ("use-latest-model-as-defense-layer", "input-validation"),
     ],
     "mcp-security": [
         ("explicit-per-capability-grants", "access-control"),
@@ -431,6 +442,7 @@ CURATION = {
         ("deletion-does-not-guarantee-model-removal", "data-protection"),
         ("each-lifecycle-stage-is-its-own-exposure-point", "data-protection"),
         ("context-window-is-flat-namespace", "data-protection"),
+        ("privacy-preserving-abuse-detection", "data-protection"),
     ],
     "incident-response": [
         ("security-is-a-cross-role-effort", "incident-response"),
@@ -442,6 +454,8 @@ CURATION = {
         ("contributors-accountable-for-ai-assisted-work", "governance"),
         ("blast-radius-containment-via-segmentation", "resilience"),
         ("treat-environments-as-potentially-compromised", "incident-response"),
+        ("variant-analysis-in-remediation", "incident-response"),
+        ("advisories-are-attack-maps", "incident-response"),
     ],
     "red-teaming": [
         ("no-vendor-claims-full-coverage", "red-teaming"),
@@ -451,6 +465,8 @@ CURATION = {
         ("destructive-testing-in-sandbox-only", "red-teaming"),
         ("redteam-vendors-governed-as-privileged-third-party", "governance"),
         ("hazardous-capability-eval-is-a-release-gate", "red-teaming"),
+        ("judge-by-steps-not-answer", "red-teaming"),
+        ("verify-the-verifier", "red-teaming"),
     ],
     "llm-appsec": [
         ("untrusted-content-segregated-and-labeled", "input-validation"),
@@ -460,6 +476,8 @@ CURATION = {
         ("model-wrong-or-manipulated-is-constant-condition", "risk-management"),
         ("agent-controls-depend-on-model-infra-controls", "design"),
         ("assistant-instruction-files-encode-defaults", "design"),
+        ("controls-work-across-frameworks", "design"),
+        ("use-ai-to-build-deterministic-tools", "design"),
     ],
     "enterprise-readiness": [
         ("=", "access-control-never-delegated-to-model"),
@@ -482,6 +500,47 @@ CURATION = {
         ("simpler-architecture-easier-to-operate-correctly", "human-factors"),
         ("x", "No source examines whether friction from its own recommended controls leads operators to disable or route around them."),
     ],
+}
+
+# Extra per-principle fields that cannot be derived from the synthesis text.
+# origin marks items that came from outside the 52-source whitepaper corpus so
+# they can be told apart from it. The catalog schema defines no type field for
+# agentic principles, so when an extraction record types an item as an axiom
+# rather than a principle, that type is carried in a note instead.
+# risks and obligations are optional string arrays. Set them here when a
+# principle is traced to a risk and an obligation. The validator warns while
+# they are empty and errors after the grace date in scripts/validate_principles.py.
+PRINCIPLE_EXTRA = {
+    "human-in-loop-is-not-automatically-safe": {
+        "origin": "unprompted-ii-2026",
+        "note": (
+            "Typed as an axiom in the unprompted-ii-2026 extraction records; "
+            "the catalog schema has no type field, so the type is carried "
+            "here. The other eight unprompted-ii-2026 items are principles."
+        ),
+    },
+    "launch-gate-verifies-controls": {"origin": "unprompted-ii-2026"},
+    "explain-restrictions-to-agents": {"origin": "unprompted-ii-2026"},
+    "judge-by-steps-not-answer": {"origin": "unprompted-ii-2026"},
+    "memory-is-attack-surface": {"origin": "unprompted-ii-2026"},
+    "verify-the-verifier": {"origin": "unprompted-ii-2026"},
+    "variant-analysis-in-remediation": {"origin": "unprompted-ii-2026"},
+    "advisories-are-attack-maps": {"origin": "unprompted-ii-2026"},
+    "controls-work-across-frameworks": {"origin": "unprompted-ii-2026"},
+    "denied-trust-halts-execution": {
+        "origin": "unprompted-i-2026",
+        "note": (
+            "Typed as an invariant in the unprompted-i-2026 extraction "
+            "records; the catalog schema has no type field, so the type is "
+            "carried here. The other five unprompted-i-2026 items are "
+            "principles."
+        ),
+    },
+    "use-ai-to-build-deterministic-tools": {"origin": "unprompted-i-2026"},
+    "shadow-before-enforce": {"origin": "unprompted-i-2026"},
+    "honey-tokens-favor-defense": {"origin": "unprompted-i-2026"},
+    "privacy-preserving-abuse-detection": {"origin": "unprompted-i-2026"},
+    "use-latest-model-as-defense-layer": {"origin": "unprompted-i-2026"},
 }
 
 # Each section's Gap note resolved to the classic-catalog id(s) it points at.
@@ -526,6 +585,8 @@ def load_source_wp_map():
     build/source-wp-ids.json is the reviewed map. A source may set
     inventory_status to pending_add when the paper is not yet in the
     monitor; those entries keep wp_id null and carry inventory_note.
+    monitor_issue, when present, is the GitHub issue number in the
+    monitor repository. This step copies it and does not invent one.
     """
     path = os.path.join(ROOT, SOURCE_WP_MAP)
     if not os.path.exists(path):
@@ -548,12 +609,19 @@ def parse_synthesis():
         if not meta:
             fail(f"source {code!r} has no entry in {SOURCE_WP_MAP}")
         entry["wp_id"] = meta.get("wp_id")
+        if meta.get("monitor_issue") is not None:
+            entry["monitor_issue"] = meta["monitor_issue"]
         status = meta.get("inventory_status", "matched" if meta.get("wp_id") else "pending_add")
         entry["inventory_status"] = status
         if meta.get("inventory_note"):
             entry["inventory_note"] = meta["inventory_note"]
         if meta.get("version_note"):
             entry["version_note"] = meta["version_note"]
+        # Descriptive extras the source table has no column for (conference
+        # talks carry type and speaker this way).
+        for extra_field in ("type", "speaker", "unverified"):
+            if meta.get(extra_field) is not None:
+                entry[extra_field] = meta[extra_field]
         sources[code] = entry
 
     missing = set(wp_map) - set(sources)
@@ -654,6 +722,11 @@ def build_agentic():
             principles[pid] = {"id": pid, "section": anchor,
                                "category": category, "statement": statement,
                                "src": list(codes)}
+
+    for pid, extra in PRINCIPLE_EXTRA.items():
+        if pid not in principles:
+            fail(f"PRINCIPLE_EXTRA names unknown principle id {pid!r}")
+        principles[pid].update(extra)
 
     ordered = sorted(principles.values(),
                      key=lambda p: (sections[p["section"]]["n"], p["id"]))
@@ -806,8 +879,13 @@ def main():
             "ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) organized into 22 topic sections. These are current "
             "industry positions, not settled axioms; weigh disagreement with "
             "an entry here less heavily than disagreement with the classic "
-            "catalog. Companion catalog: security-principles.json."),
-        "updated": UPDATED,
+            "catalog. Six entries from the first [un]prompted conference "
+            "(March 2026) carry origin \"unprompted-i-2026\", and nine "
+            "entries from [un]prompted II (October 2026) carry origin "
+            "\"unprompted-ii-2026\"; both sit outside the 52-source paper "
+            "corpus. "
+            "Companion catalog: security-principles.json."),
+        "updated": AGENTIC_UPDATED,
         "generated_from": SYNTH_SRC,
         "source_document": f"{SITE}/agentic-ai-security/",
         "method": (

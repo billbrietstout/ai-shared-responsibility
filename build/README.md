@@ -265,21 +265,38 @@ line, and run the verifier.
 | `data/security-principles.json` (+ `.slim.json`) | `security_principles_reference.oscal.json` |
 | `data/ai-agentic-principles.json` (+ `.slim.json`) | `agentic-ai-security/agentic-security.md` plus `build/source-wp-ids.json` |
 
-Each agentic source row carries a monitor `wp_id` when matched. Sources not yet
-on the inventory sheet use `inventory_status: pending_add`.
+Each agentic source row carries a monitor `wp_id` when matched, and
+`monitor_issue` when the source map has one. Sources not yet in the monitor
+use `inventory_status: pending_add`. `unmatched` warns through 2026-11-30
+and fails the check starting 2026-12-01.
 
 ```bash
 python3 build/generate_principle_catalogs.py
 python3 scripts/validate_principles.py
+python3 scripts/sync_whitepapers_fixture.py --check
+python3 scripts/sync_whitepapers_fixture.py
 ```
 
+The last command copies `data/whitepapers.json` from the monitor repository's
+`main` branch into `build/fixtures/whitepapers.json`. It does not write the
+fixture when that file is absent.
+
 Weekly sync from changed WP- IDs: `scripts/site_sync.py` (see root README).
+The data flow and the branch protection settings are in
+[`docs/monitor-data-flow.md`](../docs/monitor-data-flow.md).
 CI: `.github/workflows/validate-principles.yml`.
 
 ## Continuous integration
 
 `.github/workflows/verify.yml` runs on every push to `develop`/`main` and on
-pull requests:
+pull requests. `.github/workflows/validate-principles.yml` runs on every push
+and pull request to `develop` and `main`, with no path filter. Its jobs are
+`validate-principles` (catalog rules) and `whitepapers-fixture` (the fixture
+matches the monitor export, and the fixture `updated` date is not more than
+14 days old). Require both jobs, plus `verify`, in branch protection.
+See [`docs/monitor-data-flow.md`](../docs/monitor-data-flow.md).
+
+`verify.yml` runs:
 
 1. `generate_knowledge_layer.py --check` (structural parse)
 2. `verify_knowledge_layer.py` (JSON integrity)
