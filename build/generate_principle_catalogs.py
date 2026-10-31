@@ -105,14 +105,16 @@ def slim_agentic(agentic_out):
         }
         for p in agentic_out["principles"]
     ]
-    gap = {
-        k: {
+    gap = {}
+    for k, v in agentic_out["gap_index"].items():
+        row = {
             "classic_ids": v["classic_ids"],
             "kind": v["kind"],
             "note": v["note"],
         }
-        for k, v in agentic_out["gap_index"].items()
-    }
+        if "editorial_position" in v:
+            row["editorial_position"] = v["editorial_position"]
+        gap[k] = row
     return {
         "$schema_version": "1.0",
         "projection": "slim",
@@ -322,6 +324,7 @@ CURATION = {
         ("fine-grained-attribute-policy-access-control", "access-control"),
         ("explain-restrictions-to-agents", "access-control"),
         ("denied-trust-halts-execution", "access-control"),
+        ("who-asked-until-when-how-far", "access-control"),
     ],
     "delegation-chains": [
         ("delegation-narrows-never-expands", "access-control"),
@@ -541,6 +544,28 @@ PRINCIPLE_EXTRA = {
     "honey-tokens-favor-defense": {"origin": "unprompted-i-2026"},
     "privacy-preserving-abuse-detection": {"origin": "unprompted-i-2026"},
     "use-latest-model-as-defense-layer": {"origin": "unprompted-i-2026"},
+    "who-asked-until-when-how-far": {
+        "note": (
+            "Editorial position of this document, Bill Stout, not a claim "
+            "cited from the source corpus. The src marker editorial-position "
+            "names that editorial position. It is not a source-table code."
+        ),
+        "risks": [
+            "No one can tell which later actions went past the first limit",
+            "After an outage, no one knows which pending actions were still approved",
+            "An investigator can't compare the chain to what the person actually approved",
+            "Each agent sees only the one before it, so it inherits that agent's full access instead of the person's narrower intent",
+            "A request can keep acting at a partner company after the person who approved it cancels it or leaves",
+            "A request queued, retried, scheduled, or saved in agent memory can run weeks or months later. If it carries no expiry, nothing stops it, and no one can trace it to the person who asked",
+            "Each company keeps part of the log, and nothing ties the parts together",
+        ],
+        "obligations": [
+            "Each agent action records who first made the request, when that person's approval runs out, and how much the agent may do on its own, and passes those three facts to the next agent",
+            "Each record links back to the approval that granted it",
+            "An agent in any organization may tighten these limits. It may not loosen or drop them",
+            "If an action arrives without these three facts, the agent refuses it",
+        ],
+    },
 }
 
 # Each section's Gap note resolved to the classic-catalog id(s) it points at.
@@ -574,7 +599,11 @@ GAP_INDEX = {
 
 SECTION_RE = re.compile(r"^## (\d+)\. (.+?) \{#([a-z0-9-]+)\}\s*$")
 CROSSWALK_RE = re.compile(r"^\*\*OpenCRE crosswalk:\*\* (.+?)\.?\s*$")
-GAP_RE = re.compile(r"^\*\*(Gap[^:]*):\*\* (.+?)\s*$")
+GAP_RE = re.compile(r"^\*\*(Gap[^:]*):\*\*\s*(.*?)\s*$")
+# Citation slot for a statement this document asserts on its own.
+# Not a row in the source table and not a paper code.
+EDITORIAL_POSITION = "editorial-position"
+EDITORIAL_CITE = "editorial position"
 SRC_ROW_RE = re.compile(
     r"^\| ([A-Z][A-Z0-9-]+) \| (.+?) \| (.+?) \| (.+?) \| (\S+) \|$", re.M)
 
@@ -594,6 +623,17 @@ def load_source_wp_map():
     with open(path, encoding="utf-8") as fh:
         data = json.load(fh)
     return data.get("sources", {})
+
+
+def clean_note_lines(lines):
+    """Join gap-note lines. Drop leading and trailing blank lines only."""
+    if not lines:
+        return ""
+    while lines and not lines[-1].strip():
+        lines.pop()
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    return "\n".join(lines).strip()
 
 
 def parse_synthesis():
@@ -632,27 +672,92 @@ def parse_synthesis():
     sections = {}
     order = []
     cur = None
+    mode = None
+    bullet_buf = []
+    gap_lines = None
+    editorial_lines = None
+
+    def flush_bullet():
+        nonlocal bullet_buf, mode
+        if bullet_buf and cur:
+            sections[cur]["bullets"].append("\n".join(bullet_buf).strip())
+        bullet_buf = []
+        if mode == "bullet":
+            mode = None
+
+    def finalize_texts():
+        if not cur:
+            return
+        if gap_lines is None:
+            sections[cur]["gap"] = None
+        else:
+            sections[cur]["gap"] = clean_note_lines(gap_lines)
+        if editorial_lines is not None:
+            sections[cur]["editorial_position"] = clean_note_lines(editorial_lines)
+
     for line in md.split("\n"):
         m = SECTION_RE.match(line)
         if m:
+            flush_bullet()
+            finalize_texts()
             cur = m.group(3)
             order.append(cur)
             sections[cur] = {"n": int(m.group(1)), "title": m.group(2),
                              "bullets": [], "opencre_crosswalk": [], "gap": None}
+            mode = None
+            gap_lines = None
+            editorial_lines = None
             continue
         if not cur:
             continue
-        if line.startswith("- "):
-            sections[cur]["bullets"].append(line[2:].strip())
+        m = GAP_RE.match(line)
+        if m:
+            flush_bullet()
+            label = m.group(1)
+            text = m.group(2).strip()
+            if "editorial" in label.lower():
+                if editorial_lines is not None:
+                    fail(f"section {cur!r} has two editorial Gap notes")
+                if gap_lines is None:
+                    # Sections 12 and 18: the editorial heading is the Gap note.
+                    gap_lines = [text] if text else []
+                    mode = "gap"
+                else:
+                    # An added editorial position beside the section's Gap note.
+                    editorial_lines = [text] if text else []
+                    mode = "editorial"
+            else:
+                if gap_lines is not None:
+                    fail(f"section {cur!r} has two Gap notes")
+                gap_lines = [text] if text else []
+                mode = "gap"
             continue
         m = CROSSWALK_RE.match(line)
         if m:
+            flush_bullet()
+            mode = None
             sections[cur]["opencre_crosswalk"] = [
                 s.strip() for s in m.group(1).split(",") if s.strip()]
             continue
-        m = GAP_RE.match(line)
-        if m:
-            sections[cur]["gap"] = m.group(2).strip()
+        if mode == "gap":
+            gap_lines.append(line.rstrip())
+            continue
+        if mode == "editorial":
+            editorial_lines.append(line.rstrip())
+            continue
+        if line.startswith("- "):
+            flush_bullet()
+            bullet_buf = [line[2:].rstrip()]
+            mode = "bullet"
+            continue
+        if mode == "bullet" and (line.startswith(" ") or line.startswith("\t")):
+            if line.strip():
+                bullet_buf.append(line.strip())
+            continue
+        if mode == "bullet":
+            flush_bullet()
+    flush_bullet()
+    finalize_texts()
     return sources, sections, order
 
 
@@ -666,7 +771,9 @@ def split_citation(bullet, known_codes):
     m = re.search(r"\(([^()]*)\)\s*$", bullet)
     if not m:
         return bullet.strip(), []
-    inner = m.group(1)
+    inner = m.group(1).strip()
+    if inner.lower() == EDITORIAL_CITE:
+        return bullet[:m.start()].strip().rstrip(",;"), [EDITORIAL_POSITION]
     codes = [c for c in re.findall(r"[A-Z][A-Z0-9-]+", inner) if c in known_codes]
     if not codes:
         return bullet.strip(), []
@@ -698,7 +805,8 @@ def build_agentic():
         for rule, bullet in zip(rules, sec["bullets"]):
             raw_bullets += 1
             statement, codes = split_citation(bullet, sources)
-            unknown = [c for c in codes if c not in sources]
+            unknown = [c for c in codes
+                       if c not in sources and c != EDITORIAL_POSITION]
             if unknown:
                 fail(f"bullet in {anchor!r} cites unknown source code {unknown}")
             key, value = rule
@@ -741,7 +849,13 @@ def build_agentic():
         note = sections[anchor]["gap"]
         if not note:
             fail(f"section {anchor!r} has no Gap note in the synthesis")
-        gap_out[anchor] = {"classic_ids": ids, "kind": kind, "note": note}
+        entry = {"classic_ids": ids, "kind": kind, "note": note}
+        editorial = sections[anchor].get("editorial_position")
+        if editorial:
+            # Same marking as a section whose only Gap note is editorial:
+            # kind editorial, beside the classic Gap note this section already had.
+            entry["editorial_position"] = {"kind": "editorial", "note": editorial}
+        gap_out[anchor] = entry
 
     return sources, sections_out, gap_out, ordered, excluded, raw_bullets, merged
 
@@ -883,7 +997,9 @@ def main():
             "(March 2026) carry origin \"unprompted-i-2026\", and nine "
             "entries from [un]prompted II (October 2026) carry origin "
             "\"unprompted-ii-2026\"; both sit outside the 52-source paper "
-            "corpus. "
+            "corpus. One entry uses src editorial-position. That entry is "
+            "this document's own editorial position, not a claim from a "
+            "source paper. "
             "Companion catalog: security-principles.json."),
         "updated": AGENTIC_UPDATED,
         "generated_from": SYNTH_SRC,
@@ -904,7 +1020,10 @@ def main():
             "Each section's own Gap note, resolved to the specific principle "
             "id(s) in security-principles.json that the note points at. Treat "
             "this as a known field-wide blind spot list, not a defect in any "
-            "one paper."),
+            "one paper. A note with kind editorial is this document's own "
+            "position. Where a section keeps its classic Gap note and also "
+            "states that position, the position is editorial_position, with "
+            "kind editorial."),
         "sources": agentic_sources,
         "sections": agentic_sections,
         "gap_index": gap_index,

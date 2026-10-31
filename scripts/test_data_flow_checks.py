@@ -182,6 +182,73 @@ class GraceRulesTest(unittest.TestCase):
         self.assertEqual(report.errors, [])
         self.assertFalse(any("wp_id" in msg for msg in report.warnings))
 
+    def test_editorial_position_marker_does_not_weaken_source_checks(self):
+        editorial = principle(
+            pid="who-asked",
+            src=["editorial-position"],
+            statement="Each agent action must record three things",
+            note=(
+                "Editorial position of this document, not a source citation."
+            ),
+            risks=["a request can keep acting after the approver leaves"],
+            obligations=[
+                "the agent refuses an action that arrives without the three facts"
+            ],
+        )
+        data = catalog(
+            {"SRC": source()},
+            [principle(risks=["extraction"], obligations=["log it"]), editorial],
+        )
+        report = run_agentic(data, {"WP-0001": PAPER}, AFTER_GRACE, set())
+        self.assertEqual(report.errors, [])
+        self.assertFalse(
+            any("does not resolve" in msg for msg in report.errors)
+        )
+        self.assertFalse(
+            any("who-asked" in msg and "support" in msg for msg in report.warnings)
+        )
+        self.assertFalse(
+            any("support score 0.00" in msg for msg in report.errors)
+        )
+
+        missing_note = principle(
+            pid="who-asked",
+            src=["editorial-position"],
+            risks=["r"],
+            obligations=["o"],
+        )
+        report = run_agentic(
+            catalog({}, [missing_note]), {}, AFTER_GRACE, set()
+        )
+        self.assertTrue(any("editorial position" in msg for msg in report.errors))
+
+        bad = principle(
+            pid="p9",
+            src=["NOT-A-PAPER"],
+            risks=["r"],
+            obligations=["o"],
+        )
+        report = run_agentic(catalog({}, [bad]), {}, AFTER_GRACE, set())
+        self.assertTrue(any("does not resolve" in msg for msg in report.errors))
+
+        unmatched = source(
+            wp_id=None,
+            inventory_status="unmatched",
+            inventory_note="not in the monitor",
+        )
+        mixed = catalog(
+            {"SRC": unmatched},
+            [
+                principle(src=["SRC"], risks=["r"], obligations=["o"]),
+                editorial,
+            ],
+        )
+        report = run_agentic(mixed, {}, AFTER_GRACE, {"p1", "who-asked"})
+        self.assertTrue(any("SRC" in msg and "unmatched" in msg for msg in report.errors))
+        self.assertFalse(
+            any("editorial-position" in msg and "unmatched" in msg for msg in report.errors)
+        )
+
     def test_pending_add_stays_a_warning_after_grace(self):
         src = source(
             wp_id=None,
@@ -470,6 +537,53 @@ class SchemaAndCatalogTest(unittest.TestCase):
         )
         self.assertEqual(sources, data["sources"])
         self.assertEqual(ordered, data["principles"])
+
+    def test_section_2_editorial_gap_keeps_its_bullet_list(self):
+        path = ROOT / "build" / "generate_principle_catalogs.py"
+        spec = importlib.util.spec_from_file_location("gpc_gap", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        _sources, sections, _order = mod.parse_synthesis()
+        sec = sections["zero-standing-privilege"]
+        self.assertIn("deny by default", sec["gap"])
+        note = sec["editorial_position"]
+        self.assertIn("Approvals outlive their owner.", note)
+        replay = (
+            "Old requests can come back. A request queued, retried, "
+            "scheduled, or saved in agent memory can run weeks or months "
+            "later. If it carries no expiry, nothing stops it, and no one "
+            "can trace it to the person who asked."
+        )
+        self.assertIn(replay, note)
+        self.assertLess(
+            note.index("Approvals outlive their owner."),
+            note.index("Old requests can come back."),
+        )
+        self.assertLess(
+            note.index("Old requests can come back."),
+            note.index("No one holds the full story."),
+        )
+        self.assertTrue(
+            any(
+                b.startswith("Each agent action must record three things")
+                for b in sec["bullets"]
+            )
+        )
+        self.assertFalse(
+            any(b.startswith("You can't undo") for b in sec["bullets"])
+        )
+        self.assertFalse(
+            any(b.startswith("Old requests can come back") for b in sec["bullets"])
+        )
+        intro = (ROOT / "agentic-ai-security" / "agentic-security.md").read_text()
+        self.assertIn(
+            "Three of these Gap notes, in sections 2, 12, and 18,",
+            intro,
+        )
+        self.assertNotIn(
+            "Two of these Gap notes, in sections 12 and 18,",
+            intro,
+        )
 
     def test_current_catalog_passes_on_the_grace_start_date(self):
         proc = subprocess.run(
