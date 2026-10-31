@@ -5,9 +5,14 @@ The monitor repository is the source of truth:
 
   https://github.com/billbrietstout/ai-security-whitepaper-monitor
 
-Published file, main branch:
+Published file, on the repository's default branch:
 
   data/whitepapers.json
+
+The script asks the GitHub API for default_branch and fetches the file
+from that branch. It does not hard-code main or master. Today the API
+returns master. Monitor pull request 173 adds the file. Until that pull
+request merges, a missing file is a warning, not a failure.
 
 Check (used in CI):
 
@@ -15,8 +20,8 @@ Check (used in CI):
 
 The check fails when the fixture JSON differs from that file, or when the
 fixture `updated` date is more than 14 days before the check date. If the
-monitor file is not on main yet, the check prints a warning and does not
-fail for that absence. The age check still runs.
+monitor file is not on the default branch yet, the check prints a warning
+and does not fail for that absence. The age check still runs.
 
 Refresh (writes the fixture only when the monitor file is present and
 different):
@@ -33,6 +38,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -42,10 +48,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_FIXTURE = ROOT / "build" / "fixtures" / "whitepapers.json"
-MONITOR_EXPORT_URL = (
-    "https://raw.githubusercontent.com/billbrietstout/"
-    "ai-security-whitepaper-monitor/main/data/whitepapers.json"
-)
+MONITOR_REPO = "billbrietstout/ai-security-whitepaper-monitor"
+EXPORT_PATH = "data/whitepapers.json"
+_REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
+_BRANCH_RE = re.compile(r"^[A-Za-z0-9._-]+$")
 # Weekly monitor pass, plus a second week before CI fails.
 MAX_FIXTURE_AGE_DAYS = 14
 
@@ -172,8 +178,8 @@ def evaluate(
         warnings.append(
             "monitor export is not published at "
             f"{url} ({fetched.detail}). "
-            "The monitor repository is expected to commit "
-            "data/whitepapers.json on main. "
+            "The file is data/whitepapers.json on the monitor "
+            "repository's default branch. "
             "Fixture content was not compared to the monitor. "
             "The age check above still applies."
         )
@@ -196,11 +202,69 @@ def evaluate(
     return errors, warnings
 
 
-def fetch_export(url: str, timeout: int) -> FetchResult:
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "aisharedresponsibility-fixture-check"},
+def safe_repo(name: str) -> bool:
+    return bool(_REPO_RE.fullmatch(name))
+
+
+def safe_branch(name: str) -> bool:
+    return bool(name) and not name.startswith(("-", ".")) and bool(
+        _BRANCH_RE.fullmatch(name)
     )
+
+
+def default_branch_from_payload(data: object) -> str | None:
+    if not isinstance(data, dict):
+        return None
+    branch = data.get("default_branch")
+    if not isinstance(branch, str) or not safe_branch(branch):
+        return None
+    return branch
+
+
+def export_url(repo: str, branch: str, path: str = EXPORT_PATH) -> str:
+    return f"https://raw.githubusercontent.com/{repo}/{branch}/{path}"
+
+
+def _request_headers(url: str) -> dict[str, str]:
+    headers = {
+        "User-Agent": "aisharedresponsibility-fixture-check",
+        "Accept": "application/vnd.github+json",
+    }
+    # The API call can use the Actions token. The raw file fetch stays
+    # unauthenticated so a custom URL cannot receive the token.
+    if url.startswith("https://api.github.com/"):
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+    return headers
+
+
+def resolve_default_branch(repo: str, timeout: int) -> tuple[str | None, str]:
+    """Return (branch, error). branch is None when the API cannot be used."""
+    if not safe_repo(repo):
+        return None, f"monitor repo {repo!r} is not owner/name"
+    url = f"https://api.github.com/repos/{repo}"
+    req = urllib.request.Request(url, headers=_request_headers(url))
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            body = resp.read()
+    except urllib.error.HTTPError as exc:
+        return None, f"HTTP {exc.code} from {url}"
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
+        reason = getattr(exc, "reason", exc)
+        return None, f"{reason} from {url}"
+    try:
+        payload = json.loads(body.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        return None, f"default-branch response is not JSON: {exc}"
+    branch = default_branch_from_payload(payload)
+    if branch is None:
+        return None, f"no usable default_branch in {url}"
+    return branch, ""
+
+
+def fetch_export(url: str, timeout: int) -> FetchResult:
+    req = urllib.request.Request(url, headers=_request_headers(url))
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return FetchResult("ok", resp.read(), f"HTTP {resp.status}")
@@ -235,7 +299,16 @@ def emit(kind: str, msg: str) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--fixture", type=Path, default=DEFAULT_FIXTURE)
-    ap.add_argument("--url", default=MONITOR_EXPORT_URL)
+    ap.add_argument("--repo", default=MONITOR_REPO)
+    ap.add_argument(
+        "--url",
+        default="",
+        help=(
+            "Raw URL of the export. When omitted, ask the GitHub API "
+            "for the repo default branch and fetch data/whitepapers.json "
+            "from that branch."
+        ),
+    )
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--as-of", type=parse_as_of, default=None)
     ap.add_argument("--max-age", type=int, default=MAX_FIXTURE_AGE_DAYS)
@@ -248,7 +321,21 @@ def main() -> int:
         emit("error", load_err)
         return 1
 
-    fetched = fetch_export(args.url, args.timeout)
+    branch_note = ""
+    if args.url:
+        url = args.url
+    else:
+        branch, branch_err = resolve_default_branch(args.repo, args.timeout)
+        if branch is None:
+            emit(
+                "error",
+                "could not resolve the monitor default branch: " + branch_err,
+            )
+            return 1
+        url = export_url(args.repo, branch)
+        branch_note = f" Monitor default branch: {branch}."
+
+    fetched = fetch_export(url, args.timeout)
 
     if args.check:
         errors, warnings = evaluate(
@@ -256,7 +343,7 @@ def main() -> int:
             fetched,
             today=today,
             max_age_days=args.max_age,
-            url=args.url,
+            url=url,
         )
         for msg in errors:
             emit("error", msg)
@@ -265,6 +352,7 @@ def main() -> int:
         print(
             f"Summary: {len(errors)} error(s), {len(warnings)} warning(s). "
             f"As of {today.isoformat()}. Max age {args.max_age} days."
+            f"{branch_note}"
         )
         return 1 if errors else 0
 
@@ -272,13 +360,13 @@ def main() -> int:
         emit(
             "warning",
             "monitor export is not published at "
-            f"{args.url} ({fetched.detail}). Fixture left unchanged.",
+            f"{url} ({fetched.detail}). Fixture left unchanged.",
         )
         return 1
     if fetched.status != "ok" or fetched.body is None:
         emit(
             "error",
-            f"could not fetch the monitor export at {args.url}: "
+            f"could not fetch the monitor export at {url}: "
             f"{fetched.detail}",
         )
         return 1

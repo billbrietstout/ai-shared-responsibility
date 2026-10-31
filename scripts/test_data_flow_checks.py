@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import unittest
@@ -225,6 +226,46 @@ class FixtureCheckTest(unittest.TestCase):
     def test_max_age_is_14_days(self):
         self.assertEqual(fixture.MAX_FIXTURE_AGE_DAYS, 14)
 
+    def test_default_branch_comes_from_the_api_payload(self):
+        self.assertEqual(
+            fixture.default_branch_from_payload({"default_branch": "master"}),
+            "master",
+        )
+        self.assertEqual(
+            fixture.default_branch_from_payload({"default_branch": "main"}),
+            "main",
+        )
+        self.assertIsNone(
+            fixture.default_branch_from_payload({"default_branch": "main/../x"})
+        )
+        self.assertIsNone(fixture.default_branch_from_payload({}))
+        url = fixture.export_url(fixture.MONITOR_REPO, "master")
+        self.assertEqual(
+            url,
+            "https://raw.githubusercontent.com/billbrietstout/"
+            "ai-security-whitepaper-monitor/master/data/whitepapers.json",
+        )
+        source = Path(fixture.__file__).read_text()
+        self.assertNotIn("/main/data/whitepapers.json", source)
+
+    def test_token_is_sent_only_to_the_github_api(self):
+        old = os.environ.get("GITHUB_TOKEN")
+        os.environ["GITHUB_TOKEN"] = "secret-token"
+        try:
+            api = fixture._request_headers(
+                "https://api.github.com/repos/billbrietstout/ai-security-whitepaper-monitor"
+            )
+            raw = fixture._request_headers(
+                fixture.export_url(fixture.MONITOR_REPO, "master")
+            )
+        finally:
+            if old is None:
+                os.environ.pop("GITHUB_TOKEN", None)
+            else:
+                os.environ["GITHUB_TOKEN"] = old
+        self.assertEqual(api.get("Authorization"), "Bearer secret-token")
+        self.assertNotIn("Authorization", raw)
+
     def local(self, updated="2026-10-30", papers=None):
         return {
             "updated": updated,
@@ -241,17 +282,18 @@ class FixtureCheckTest(unittest.TestCase):
             fetched,
             today=TODAY,
             max_age_days=14,
-            url=fixture.MONITOR_EXPORT_URL,
+            url=fixture.export_url(fixture.MONITOR_REPO, "master"),
         )
         self.assertEqual(errors, [])
         self.assertTrue(any("not published" in msg for msg in warnings))
+        self.assertFalse(any(" on main" in msg for msg in warnings))
 
         errors, warnings = fixture.evaluate(
             self.local(updated="2026-10-01"),
             fetched,
             today=TODAY,
             max_age_days=14,
-            url=fixture.MONITOR_EXPORT_URL,
+            url=fixture.export_url(fixture.MONITOR_REPO, "master"),
         )
         self.assertTrue(any("days old" in msg for msg in errors))
         self.assertTrue(any("not published" in msg for msg in warnings))

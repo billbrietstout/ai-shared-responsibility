@@ -93,9 +93,13 @@ support score prints as 0.00 and a cited paper has extracted text in the
 fixture. A 0.00 score with no extracted text stays a warning.
 
 The fixture check fails when `build/fixtures/whitepapers.json` differs from
-the monitor repository's `data/whitepapers.json` on `main`, or when the
-fixture `updated` date is more than 14 days old. If that monitor file is not
-on `main` yet, the check warns and does not fail for the absence.
+the monitor repository's `data/whitepapers.json` on its default branch, or
+when the fixture `updated` date is more than 14 days old. The script asks
+the GitHub API for that branch. Today it is `master`. If the monitor file
+is not on the default branch yet, the check warns and does not fail for the
+absence. That is the expected result until
+[monitor pull request 173](https://github.com/billbrietstout/ai-security-whitepaper-monitor/pull/173)
+merges.
 
 How the data moves, and the branch protection settings to require these
 checks, are in [`docs/monitor-data-flow.md`](docs/monitor-data-flow.md).
