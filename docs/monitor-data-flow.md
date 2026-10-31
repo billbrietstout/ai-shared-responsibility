@@ -4,13 +4,11 @@ The whitepaper monitor repository is the source of truth for the paper inventory
 
 https://github.com/billbrietstout/ai-security-whitepaper-monitor
 
-The Google Sheet is retired. The record for a paper is a GitHub issue in that repository, then the file `data/whitepapers.json` published on the `main` branch.
+The Google Sheet is retired. The record for a paper is a GitHub issue in that repository, then the file `data/whitepapers.json` on that repository's default branch. The default branch is `master`. The sync script reads `default_branch` from the GitHub API on each run.
 
 ## What moves, and who moves it
 
-1. The monitor repository publishes `data/whitepapers.json` on `main`. Each paper has a `WP-` id and a GitHub issue number. Raw URL:
-
-   https://raw.githubusercontent.com/billbrietstout/ai-security-whitepaper-monitor/main/data/whitepapers.json
+1. The monitor repository publishes `data/whitepapers.json` on its default branch. Each paper has a `WP-` id and a GitHub issue number. The raw URL is `https://raw.githubusercontent.com/billbrietstout/ai-security-whitepaper-monitor/<default-branch>/data/whitepapers.json`. The script fills `<default-branch>` from `https://api.github.com/repos/billbrietstout/ai-security-whitepaper-monitor`.
 
 2. This site stores a copy at `build/fixtures/whitepapers.json`. Replace the copy with:
 
@@ -18,9 +16,9 @@ The Google Sheet is retired. The record for a paper is a GitHub issue in that re
    python3 scripts/sync_whitepapers_fixture.py
    ```
 
-   Commit the updated fixture in a pull request. The command leaves the fixture unchanged when the monitor file is not on `main` yet, and it exits with an error so the missing file is visible.
+   Commit the updated fixture in a pull request. The command leaves the fixture unchanged when the monitor file is not on the default branch yet, and it exits with an error so the missing file is visible.
 
-3. CI fetches that raw URL on every push and pull request to `develop` and `main`. The `whitepapers-fixture` job fails when the committed fixture is not the same JSON, or when the fixture `updated` date is more than 14 days before the run date. Fourteen days covers the weekly monitor pass plus one missed week. If the monitor file is not on `main` yet, the job prints a warning and does not fail for that absence. The age check still runs. A parallel change in the monitor repository is expected to commit the file. Until that file exists, this site cannot prove the fixture matches the monitor.
+3. CI resolves the monitor default branch and fetches that file on every push and pull request to `develop` and `main`. The `whitepapers-fixture` job fails when the committed fixture is not the same JSON, or when the fixture `updated` date is more than 14 days before the run date. Fourteen days covers the weekly monitor pass plus one missed week. If the monitor file is not on the default branch yet, the job prints a warning and does not fail for that absence. The age check still runs. [Monitor pull request 173](https://github.com/billbrietstout/ai-security-whitepaper-monitor/pull/173) adds `data/whitepapers.json` on `master`. Until that pull request merges, the warning is the expected result, and this site cannot prove the fixture matches the monitor.
 
 4. `build/source-wp-ids.json` maps each site source code to a `WP-` id. `build/generate_principle_catalogs.py` writes that id onto the source in `data/ai-agentic-principles.json`. When the map includes `monitor_issue`, the generator copies it. The generator does not invent issue numbers.
 
