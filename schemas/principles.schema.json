@@ -35,7 +35,16 @@
           "type": "string",
           "enum": ["matched", "pending_add", "unmatched"]
         },
-        "inventory_note": { "type": "string" }
+        "inventory_note": { "type": "string" },
+        "type": {
+          "description": "conference-talk marks a talk that is exempt from the monitor WP- id and monitor_issue checks. Other values are not exempt.",
+          "type": "string"
+        },
+        "speaker": {
+          "description": "Speaker name. Required by the validator when type is conference-talk.",
+          "type": "string",
+          "minLength": 1
+        }
       },
       "additionalProperties": true
     },

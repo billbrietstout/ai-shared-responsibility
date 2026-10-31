@@ -4,6 +4,9 @@
 Grace date
   Unmatched sources, and agentic principles with empty risks or obligations,
   are warnings through 2026-11-30 and errors starting 2026-12-01.
+  A source with type conference-talk is exempt: unmatched stays allowed,
+  with one info line, and it does not need a WP- id or monitor_issue.
+  It still needs a speaker, a talk title, an event name, a URL, and a note.
 
 Support
   A principle id that is not on the base catalog fails when its support
@@ -51,18 +54,23 @@ GRACE_DATE = date(2026, 11, 30)
 WP_RE = re.compile(r"^WP-\d{4}$")
 SUPPORT_THRESHOLD = 0.34
 NEAR_DUP_THRESHOLD = 0.92
+CONFERENCE_TALK = "conference-talk"
 
 
 class Report:
     def __init__(self) -> None:
         self.errors: list[str] = []
         self.warnings: list[str] = []
+        self.infos: list[str] = []
 
     def err(self, msg: str) -> None:
         self.errors.append(msg)
 
     def warn(self, msg: str) -> None:
         self.warnings.append(msg)
+
+    def info(self, msg: str) -> None:
+        self.infos.append(msg)
 
     def print(self) -> None:
         in_gha = os.environ.get("GITHUB_ACTIONS") == "true"
@@ -72,9 +80,12 @@ class Report:
                 print(f"::error::{_gha_escape(msg)}")
         for msg in self.warnings:
             print(f"WARNING: {msg}")
+        for msg in self.infos:
+            print(f"INFO: {msg}")
         print(
             f"Summary: {len(self.errors)} error(s), "
-            f"{len(self.warnings)} warning(s)"
+            f"{len(self.warnings)} warning(s), "
+            f"{len(self.infos)} info line(s)"
         )
 
 
@@ -190,6 +201,75 @@ def trace_list_state(value: object) -> str:
         if not isinstance(item, str) or not item.strip():
             return "must be an array of non-empty strings"
     return "ok"
+
+
+def filled_text(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def is_conference_talk(src: dict) -> bool:
+    return src.get("type") == CONFERENCE_TALK
+
+
+def check_conference_talk_trace(code: str, src: dict, report: Report) -> None:
+    """A talk stays outside the monitor. It still names who spoke, where, and why."""
+    if not filled_text(src.get("speaker")):
+        report.err(f"source {code}: conference-talk requires a speaker")
+    if not filled_text(src.get("title")):
+        report.err(f"source {code}: conference-talk requires a talk title")
+    if not filled_text(src.get("org")):
+        report.err(
+            f"source {code}: conference-talk requires an event name in org"
+        )
+    if not filled_text(src.get("url")):
+        report.err(f"source {code}: conference-talk requires a URL")
+    if not filled_text(src.get("inventory_note")):
+        report.err(
+            f"source {code}: conference-talk requires inventory_note "
+            "saying why it is outside the monitor"
+        )
+
+
+def check_matched_paper(
+    code: str,
+    wp_id: object,
+    parsed_issue: int | None,
+    papers_by_id: dict[str, dict],
+    report: Report,
+) -> None:
+    if not wp_id or not WP_RE.match(str(wp_id)):
+        report.err(
+            f"source {code}: matched status requires wp_id like WP-0001"
+        )
+        return
+    paper = papers_by_id.get(str(wp_id))
+    if not paper:
+        report.err(
+            f"source {code}: wp_id {wp_id} not found in whitepapers.json"
+        )
+        return
+    decision = paper.get("decision", "")
+    if decision in ("Delete candidate", "Duplicate"):
+        report.err(
+            f"source {code}: paper {wp_id} decision is "
+            f"{decision!r}; must be Include"
+        )
+    elif decision != "Include":
+        report.warn(
+            f"source {code}: paper {wp_id} decision is {decision!r}"
+        )
+    if parsed_issue is not None:
+        paper_issue = paper.get("issue")
+        if paper_issue is None:
+            report.warn(
+                f"source {code}: monitor_issue {parsed_issue} is set, "
+                f"and paper {wp_id} has no issue field in the fixture"
+            )
+        elif paper_issue != parsed_issue:
+            report.err(
+                f"source {code}: monitor_issue {parsed_issue} does not "
+                f"match fixture issue {paper_issue!r} for {wp_id}"
+            )
 
 
 def positive_issue(value: object) -> int | None:
@@ -337,58 +417,45 @@ def validate_agentic(
 
     url_owners: dict[str, list[str]] = defaultdict(list)
     sources_missing_issue: list[str] = []
+    conference_talks: list[str] = []
     for code, src in sources.items():
         status = src.get("inventory_status", "matched")
         wp_id = src.get("wp_id")
         url_owners[norm_url(src.get("url", ""))].append(code)
+        talk = is_conference_talk(src)
 
         raw_issue = src.get("monitor_issue", None)
         parsed_issue = positive_issue(raw_issue)
         if raw_issue is None:
-            sources_missing_issue.append(code)
+            if not talk:
+                sources_missing_issue.append(code)
         elif parsed_issue is None:
             report.err(
                 f"source {code}: monitor_issue must be a positive integer "
                 f"or null, got {raw_issue!r}"
             )
 
+        if talk:
+            conference_talks.append(code)
+            check_conference_talk_trace(code, src, report)
+            if status not in ("matched", "pending_add", "unmatched"):
+                report.err(
+                    f"source {code}: unknown inventory_status {status!r}"
+                )
+            elif status in ("pending_add", "unmatched") and wp_id:
+                report.err(
+                    f"source {code}: {status} sources must leave wp_id null"
+                )
+            elif status == "matched" and wp_id:
+                check_matched_paper(
+                    code, wp_id, parsed_issue, papers_by_id, report
+                )
+            continue
+
         if status == "matched":
-            if not wp_id or not WP_RE.match(str(wp_id)):
-                report.err(
-                    f"source {code}: matched status requires wp_id "
-                    "like WP-0001"
-                )
-                continue
-            paper = papers_by_id.get(wp_id)
-            if not paper:
-                report.err(
-                    f"source {code}: wp_id {wp_id} not found in "
-                    "whitepapers.json"
-                )
-                continue
-            decision = paper.get("decision", "")
-            if decision in ("Delete candidate", "Duplicate"):
-                report.err(
-                    f"source {code}: paper {wp_id} decision is "
-                    f"{decision!r}; must be Include"
-                )
-            elif decision != "Include":
-                report.warn(
-                    f"source {code}: paper {wp_id} decision is "
-                    f"{decision!r}"
-                )
-            if parsed_issue is not None:
-                paper_issue = paper.get("issue")
-                if paper_issue is None:
-                    report.warn(
-                        f"source {code}: monitor_issue {parsed_issue} is set, "
-                        f"and paper {wp_id} has no issue field in the fixture"
-                    )
-                elif paper_issue != parsed_issue:
-                    report.err(
-                        f"source {code}: monitor_issue {parsed_issue} does not "
-                        f"match fixture issue {paper_issue!r} for {wp_id}"
-                    )
+            check_matched_paper(
+                code, wp_id, parsed_issue, papers_by_id, report
+            )
         elif status == "pending_add":
             if wp_id:
                 report.err(
@@ -436,6 +503,12 @@ def validate_agentic(
             f"{len(sources_missing_issue)} source(s) have no monitor_issue. "
             "Set this to the GitHub issue number in "
             "billbrietstout/ai-security-whitepaper-monitor."
+        )
+
+    if conference_talks:
+        report.info(
+            f"{len(conference_talks)} conference-talk source(s) are exempt "
+            "from the monitor check."
         )
 
     for url, codes in url_owners.items():
@@ -633,8 +706,8 @@ def main() -> int:
     print(
         f"As of {today.isoformat()}. "
         f"Grace date {GRACE_DATE.isoformat()} "
-        "(unmatched sources, empty risks, and empty obligations "
-        "become errors the next day)."
+        "(unmatched sources other than conference talks, empty risks, "
+        "and empty obligations become errors the next day)."
     )
     if grandfather_ids is None:
         print(f"New-principle baseline: unavailable ({baseline_label or 'no ref'})")
