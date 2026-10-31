@@ -56,13 +56,45 @@
       <p class="page-hero__eyebrow">Assess</p>
       <h1>Whitepaper assessment changelog</h1>
       <p class="page-hero__lede">
-        Prompt versions 2.2, 2.1, and 2.0. What each version added or demoted, and
-        which older reports stay valid. The live prompt is
+        Prompt versions 2.2, 2.1, and 2.0, plus catalog-data refreshes that
+        affect what those prompts check. The live prompt is
         <a href="/assess/whitepaper-assessment/">v2.2</a>.
       </p>
     </header>
 
     <main id="main" class="page-body">
+      <p class="section-label">Catalog data, 2026-10-30</p>
+      <p class="lede-p">
+        The assessment prompt version stays at 2.2. The catalogs it fetches
+        were refreshed: every agentic source now carries a monitor
+        <code>wp_id</code>, five source URLs or titles were corrected, and
+        validation plus a Tuesday sync path were added in the repo. Slim
+        projections still omit the sources table, so existing 2.2 reports
+        stay valid. Full-catalog <code>src</code> checks now resolve to the
+        corrected links.
+      </p>
+      <div class="table-scroll">
+        <table class="tier-table">
+          <thead>
+            <tr><th>Change</th><th>Detail</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="tier">Source <code>wp_id</code> links</td>
+              <td>All 52 agentic sources in <code>ai-agentic-principles.json</code> map to a monitor WP- ID (for example COSAI-MCP is WP-0020; NIST-218A is WP-0154).</td>
+            </tr>
+            <tr>
+              <td class="tier">URL and title corrections</td>
+              <td>CSA-VULN, NIST-ADVML, NIST-PLAYBOOK, SANS-CAISG12 (now v1.4 on the SANS landing page), and NIST-218A (nvlpubs PDF). Mirrored on the agentic synthesis page and <code>llms-full.txt</code>.</td>
+            </tr>
+            <tr>
+              <td class="tier">Validation and sync</td>
+              <td><code>scripts/validate_principles.py</code>, <code>scripts/site_sync.py</code>, schema, and CI. Catalog counts stay 87 classic and 130 agentic from 52 sources.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <p class="section-label">What changed in 2.2</p>
       <p class="lede-p">
         Eleven steps became nine. Intake now runs before any catalog fetch.
