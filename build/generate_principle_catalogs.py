@@ -321,6 +321,7 @@ CURATION = {
         ("controls-scale-with-capability-and-sensitivity", "risk-management"),
         ("fine-grained-attribute-policy-access-control", "access-control"),
         ("explain-restrictions-to-agents", "access-control"),
+        ("denied-trust-halts-execution", "access-control"),
     ],
     "delegation-chains": [
         ("delegation-narrows-never-expands", "access-control"),
@@ -355,6 +356,8 @@ CURATION = {
         ("observability-extends-to-goals-and-decisions", "monitoring"),
         ("extend-existing-logging-controls-to-agents", "monitoring"),
         ("agent-component-inventory-covers-full-stack", "monitoring"),
+        ("shadow-before-enforce", "monitoring"),
+        ("honey-tokens-favor-defense", "monitoring"),
     ],
     "untrusted-input": [
         ("treat-tool-descriptions-and-content-as-untrusted", "input-validation"),
@@ -365,6 +368,7 @@ CURATION = {
         ("deterministic-controls-outside-reasoning-loop", "access-control"),
         ("agent-security-spans-distinct-control-layers", "design"),
         ("memory-is-attack-surface", "risk-management"),
+        ("use-latest-model-as-defense-layer", "input-validation"),
     ],
     "mcp-security": [
         ("explicit-per-capability-grants", "access-control"),
@@ -438,6 +442,7 @@ CURATION = {
         ("deletion-does-not-guarantee-model-removal", "data-protection"),
         ("each-lifecycle-stage-is-its-own-exposure-point", "data-protection"),
         ("context-window-is-flat-namespace", "data-protection"),
+        ("privacy-preserving-abuse-detection", "data-protection"),
     ],
     "incident-response": [
         ("security-is-a-cross-role-effort", "incident-response"),
@@ -472,6 +477,7 @@ CURATION = {
         ("agent-controls-depend-on-model-infra-controls", "design"),
         ("assistant-instruction-files-encode-defaults", "design"),
         ("controls-work-across-frameworks", "design"),
+        ("use-ai-to-build-deterministic-tools", "design"),
     ],
     "enterprise-readiness": [
         ("=", "access-control-never-delegated-to-model"),
@@ -518,6 +524,20 @@ PRINCIPLE_EXTRA = {
     "variant-analysis-in-remediation": {"origin": "unprompted-ii-2026"},
     "advisories-are-attack-maps": {"origin": "unprompted-ii-2026"},
     "controls-work-across-frameworks": {"origin": "unprompted-ii-2026"},
+    "denied-trust-halts-execution": {
+        "origin": "unprompted-i-2026",
+        "note": (
+            "Typed as an invariant in the unprompted-i-2026 extraction "
+            "records; the catalog schema has no type field, so the type is "
+            "carried here. The other five unprompted-i-2026 items are "
+            "principles."
+        ),
+    },
+    "use-ai-to-build-deterministic-tools": {"origin": "unprompted-i-2026"},
+    "shadow-before-enforce": {"origin": "unprompted-i-2026"},
+    "honey-tokens-favor-defense": {"origin": "unprompted-i-2026"},
+    "privacy-preserving-abuse-detection": {"origin": "unprompted-i-2026"},
+    "use-latest-model-as-defense-layer": {"origin": "unprompted-i-2026"},
 }
 
 # Each section's Gap note resolved to the classic-catalog id(s) it points at.
@@ -852,9 +872,11 @@ def main():
             "ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) organized into 22 topic sections. These are current "
             "industry positions, not settled axioms; weigh disagreement with "
             "an entry here less heavily than disagreement with the classic "
-            "catalog. Nine entries from [un]prompted II conference talks "
-            "(October 2026) sit outside the 52-source paper corpus and carry "
-            "origin \"unprompted-ii-2026\". "
+            "catalog. Six entries from the first [un]prompted conference "
+            "(March 2026) carry origin \"unprompted-i-2026\", and nine "
+            "entries from [un]prompted II (October 2026) carry origin "
+            "\"unprompted-ii-2026\"; both sit outside the 52-source paper "
+            "corpus. "
             "Companion catalog: security-principles.json."),
         "updated": AGENTIC_UPDATED,
         "generated_from": SYNTH_SRC,
