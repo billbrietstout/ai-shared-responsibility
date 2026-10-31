@@ -268,7 +268,9 @@ line, and run the verifier.
 Each agentic source row carries a monitor `wp_id` when matched, and
 `monitor_issue` when the source map has one. Sources not yet in the monitor
 use `inventory_status: pending_add`. `unmatched` warns through 2026-11-30
-and fails the check starting 2026-12-01.
+and fails the check starting 2026-12-01, except a source with
+`type: conference-talk`, which stays allowed and is listed on one info line.
+See [`docs/monitor-data-flow.md`](../docs/monitor-data-flow.md).
 
 ```bash
 python3 build/generate_principle_catalogs.py

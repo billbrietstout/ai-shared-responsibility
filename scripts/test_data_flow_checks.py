@@ -109,6 +109,78 @@ class GraceRulesTest(unittest.TestCase):
         after = run_agentic(data, {"WP-0001": PAPER}, AFTER_GRACE, {"p1"})
         self.assertTrue(any("unmatched" in msg for msg in after.errors))
 
+    def test_conference_talk_unmatched_stays_info_after_grace(self):
+        src = source(
+            wp_id=None,
+            inventory_status="unmatched",
+            inventory_note="Conference talk at [un]prompted II (October 2026).",
+            type="conference-talk",
+            speaker="Ada Speaker",
+            title="Who authorized the agent",
+            org="[un]prompted II",
+            url="https://unpromptedcon.org",
+        )
+        data = catalog(
+            {"UNPROMPTED2-X": src},
+            [
+                principle(
+                    src=["UNPROMPTED2-X"],
+                    risks=["agent acts without a recorded decision"],
+                    obligations=["return the reason when a policy blocks the agent"],
+                )
+            ],
+        )
+        report = run_agentic(data, {}, AFTER_GRACE, {"p1"})
+        self.assertEqual(report.errors, [])
+        self.assertFalse(any("unmatched" in msg for msg in report.warnings))
+        self.assertFalse(any("monitor_issue" in msg for msg in report.warnings))
+        self.assertEqual(len(report.infos), 1)
+        self.assertIn("conference-talk", report.infos[0])
+
+    def test_conference_talk_requires_speaker_and_note(self):
+        src = source(
+            wp_id=None,
+            inventory_status="unmatched",
+            type="conference-talk",
+            title="A talk",
+            org="[un]prompted",
+            url="https://unpromptedcon.org/abstract-march2026/",
+        )
+        src.pop("inventory_note", None)
+        data = catalog(
+            {"UNPROMPTED1-X": src},
+            [
+                principle(
+                    src=["UNPROMPTED1-X"],
+                    risks=["r"],
+                    obligations=["o"],
+                )
+            ],
+        )
+        report = run_agentic(data, {}, AFTER_GRACE, {"p1"})
+        self.assertTrue(any("speaker" in msg for msg in report.errors))
+        self.assertTrue(any("inventory_note" in msg for msg in report.errors))
+        self.assertFalse(any("Grace ended" in msg for msg in report.errors))
+
+    def test_conference_talk_without_wp_id_is_not_a_matched_error(self):
+        src = source(
+            wp_id=None,
+            inventory_status="matched",
+            inventory_note="Talk, recorded outside the monitor.",
+            type="conference-talk",
+            speaker="Ada Speaker",
+            title="A talk",
+            org="[un]prompted",
+            url="https://unpromptedcon.org",
+        )
+        data = catalog(
+            {"UNPROMPTED1-Y": src},
+            [principle(src=["UNPROMPTED1-Y"], risks=["r"], obligations=["o"])],
+        )
+        report = run_agentic(data, {}, TODAY, {"p1"})
+        self.assertEqual(report.errors, [])
+        self.assertFalse(any("wp_id" in msg for msg in report.warnings))
+
     def test_pending_add_stays_a_warning_after_grace(self):
         src = source(
             wp_id=None,
@@ -378,6 +450,9 @@ class SchemaAndCatalogTest(unittest.TestCase):
             proc.stdout[-2000:] + proc.stderr[-2000:],
         )
         self.assertIn("0 error(s)", proc.stdout)
+        self.assertIn("conference-talk source(s) are exempt", proc.stdout)
+        self.assertNotIn("UNPROMPTED1-MCCARTHY: unmatched", proc.stdout)
+        self.assertNotIn("UNPROMPTED2-EVRON: unmatched", proc.stdout)
 
     def test_head_catalog_is_readable_as_a_baseline(self):
         ids = vp.principle_ids_from_git(

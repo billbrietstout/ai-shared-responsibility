@@ -86,11 +86,13 @@ ids, section membership, that every `src` code resolves, that every matched
 source has a `wp_id` found in `build/fixtures/whitepapers.json` with decision
 Include, `monitor_issue` when it is set, statement support against that
 paper's axioms, invariables, and principles, unused sources, Include-paper
-gaps, near-duplicates, and duplicate URLs. Unmatched sources, and empty
-`risks` or `obligations`, warn through 2026-11-30 and fail starting
-2026-12-01. A principle id that is not on the base branch fails when its
-support score prints as 0.00 and a cited paper has extracted text in the
-fixture. A 0.00 score with no extracted text stays a warning.
+gaps, near-duplicates, and duplicate URLs. Unmatched sources other than
+`type: conference-talk`, and empty `risks` or `obligations`, warn through
+2026-11-30 and fail starting 2026-12-01. A conference talk stays unmatched
+without a monitor id. The check may print one info line for those talks.
+A principle id that is not on the base branch fails when its support score
+prints as 0.00 and a cited paper has extracted text in the fixture. A 0.00
+score with no extracted text stays a warning.
 
 The fixture check fails when `build/fixtures/whitepapers.json` differs from
 the monitor repository's `data/whitepapers.json` on `main`, or when the
