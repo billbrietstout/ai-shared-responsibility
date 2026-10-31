@@ -507,6 +507,9 @@ CURATION = {
 # they can be told apart from it. The catalog schema defines no type field for
 # agentic principles, so when an extraction record types an item as an axiom
 # rather than a principle, that type is carried in a note instead.
+# risks and obligations are optional string arrays. Set them here when a
+# principle is traced to a risk and an obligation. The validator warns while
+# they are empty and errors after the grace date in scripts/validate_principles.py.
 PRINCIPLE_EXTRA = {
     "human-in-loop-is-not-automatically-safe": {
         "origin": "unprompted-ii-2026",
@@ -582,6 +585,8 @@ def load_source_wp_map():
     build/source-wp-ids.json is the reviewed map. A source may set
     inventory_status to pending_add when the paper is not yet in the
     monitor; those entries keep wp_id null and carry inventory_note.
+    monitor_issue, when present, is the GitHub issue number in the
+    monitor repository. This step copies it and does not invent one.
     """
     path = os.path.join(ROOT, SOURCE_WP_MAP)
     if not os.path.exists(path):
@@ -604,6 +609,8 @@ def parse_synthesis():
         if not meta:
             fail(f"source {code!r} has no entry in {SOURCE_WP_MAP}")
         entry["wp_id"] = meta.get("wp_id")
+        if meta.get("monitor_issue") is not None:
+            entry["monitor_issue"] = meta["monitor_issue"]
         status = meta.get("inventory_status", "matched" if meta.get("wp_id") else "pending_add")
         entry["inventory_status"] = status
         if meta.get("inventory_note"):

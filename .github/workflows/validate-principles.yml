@@ -1,23 +1,15 @@
 name: Validate principles
 
-# Runs the principles validator when a pull request changes catalog data,
-# schemas, or the validation scripts.
+# Catalog rules and the whitepaper fixture check.
+# Runs on every push and pull request to develop and main.
+# No path filter: a change that does not touch the catalog still runs
+# these jobs once branch protection requires them.
 
 on:
+  push:
+    branches: [develop, main]
   pull_request:
-    paths:
-      - "data/ai-agentic-principles.json"
-      - "data/ai-agentic-principles.slim.json"
-      - "data/security-principles.json"
-      - "data/security-principles.slim.json"
-      - "schemas/principles.schema.json"
-      - "scripts/validate_principles.py"
-      - "scripts/site_sync.py"
-      - "build/source-wp-ids.json"
-      - "build/fixtures/whitepapers.json"
-      - "build/generate_principle_catalogs.py"
-      - "agentic-ai-security/agentic-security.md"
-      - ".github/workflows/validate-principles.yml"
+    branches: [develop, main]
   workflow_dispatch:
 
 jobs:
@@ -25,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -33,5 +27,42 @@ jobs:
       - name: Install jsonschema
         run: pip install "jsonschema>=4.0"
 
+      - name: Data-flow unit tests
+        run: python3 scripts/test_data_flow_checks.py
+
+      - name: Point the new-principle check at the base catalog
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags origin "${{ github.base_ref }}"
+            REF="origin/${{ github.base_ref }}"
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            BEFORE="${{ github.event.before }}"
+            if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              REF="HEAD"
+            else
+              if ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+                git fetch --no-tags origin "$BEFORE"
+              fi
+              REF="$BEFORE"
+            fi
+          else
+            REF="HEAD"
+          fi
+          git rev-parse --verify "${REF}^{commit}"
+          echo "PRINCIPLES_BASE_REF=$REF" >> "$GITHUB_ENV"
+
       - name: Validate principle catalogs
         run: python3 scripts/validate_principles.py
+
+  whitepapers-fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compare fixture to the monitor export
+        run: python3 scripts/sync_whitepapers_fixture.py --check

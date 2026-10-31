@@ -152,6 +152,7 @@ def main() -> int:
                 "title": src.get("title"),
                 "url": src.get("url"),
                 "wp_id": src.get("wp_id"),
+                "monitor_issue": src.get("monitor_issue"),
             }
             if paper.get("title"):
                 src["title"] = paper["title"]
@@ -160,10 +161,14 @@ def main() -> int:
             src["wp_id"] = wp_id
             src["inventory_status"] = "matched"
             src.pop("inventory_note", None)
+            issue = paper.get("issue")
+            if isinstance(issue, int) and not isinstance(issue, bool) and issue >= 1:
+                src["monitor_issue"] = issue
             after = {
                 "title": src.get("title"),
                 "url": src.get("url"),
                 "wp_id": src.get("wp_id"),
+                "monitor_issue": src.get("monitor_issue"),
             }
             changed_items.append(
                 {
@@ -264,7 +269,10 @@ def main() -> int:
             "`data/ai-agentic-principles.json` and regenerate the slim file "
             "with `python3 build/generate_principle_catalogs.py`, or copy "
             "both candidate files.",
-            "4. Open a pull request. Do not push to main.",
+            "4. Open a pull request. Do not push to develop or main.",
+            "5. If the monitor export changed, refresh "
+            "`build/fixtures/whitepapers.json` with "
+            "`python3 scripts/sync_whitepapers_fixture.py`.",
             "",
         ]
     )
