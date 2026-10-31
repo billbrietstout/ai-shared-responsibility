@@ -4,7 +4,7 @@
   "full_catalog": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
   "description": "Slim projection of ai-agentic-principles.json for assessment mapping: id, section, category, statement, and gap_index. Fetch the full catalog for src citations and the sources table.",
   "updated": "2026-10-31",
-  "count": 139,
+  "count": 145,
   "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper.",
   "gap_index": {
     "agent-identity": {
@@ -213,6 +213,12 @@
       "statement": "Controls scale with an agent's actual capability and the sensitivity of what it touches, rather than applying uniformly to every agent"
     },
     {
+      "id": "denied-trust-halts-execution",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "When a user denies trust, anything already started must actually stop; a denial that leaves processes running is not a control"
+    },
+    {
       "id": "explain-restrictions-to-agents",
       "section": "zero-standing-privilege",
       "category": "access-control",
@@ -375,6 +381,12 @@
       "statement": "Existing CIS Controls v8.1 logging requirements are extended to agent actions rather than replaced with a new control set"
     },
     {
+      "id": "honey-tokens-favor-defense",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Deception such as honey tokens favors defenders against AI-driven attackers and is underused"
+    },
+    {
       "id": "immutable-tamper-evident-logging",
       "section": "observability",
       "category": "monitoring",
@@ -385,6 +397,12 @@
       "section": "observability",
       "category": "monitoring",
       "statement": "Observability extends to agent goals and decision paths, not only the actions ultimately taken"
+    },
+    {
+      "id": "shadow-before-enforce",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Run new AI detection rules in shadow production for a period before enforcing, because real feeds behave differently"
     },
     {
       "id": "telemetry-covers-full-decision-path",
@@ -433,6 +451,12 @@
       "section": "untrusted-input",
       "category": "input-validation",
       "statement": "All tool descriptions, retrieved content, inter-agent messages, tool outputs that re-enter the reasoning loop, and content written to persistent memory are treated as untrusted input, never trusted by default"
+    },
+    {
+      "id": "use-latest-model-as-defense-layer",
+      "section": "untrusted-input",
+      "category": "input-validation",
+      "statement": "Using the latest, most robust model for an agent is itself a layer of prompt injection defense"
     },
     {
       "id": "validate-at-every-trust-boundary",
@@ -759,6 +783,12 @@
       "statement": "Non-human identities interacting with data are rotated periodically, with no standing exemption"
     },
     {
+      "id": "privacy-preserving-abuse-detection",
+      "section": "data-security",
+      "category": "data-protection",
+      "statement": "Detect abuse across services and customers without reading or training on their raw prompt data"
+    },
+    {
       "id": "sensitive-data-encrypted-always",
       "section": "data-security",
       "category": "data-protection",
@@ -931,6 +961,12 @@
       "section": "llm-appsec",
       "category": "input-validation",
       "statement": "Untrusted external content is segregated and labeled apart from trusted instructions, never trusted by default"
+    },
+    {
+      "id": "use-ai-to-build-deterministic-tools",
+      "section": "llm-appsec",
+      "category": "design",
+      "statement": "Use AI to generate deterministic scripts and signatures for scale and repeatability, and keep existing deterministic methods rather than replacing them"
     },
     {
       "id": "blocking-ai-use-is-not-a-viable-control",

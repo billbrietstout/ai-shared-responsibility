@@ -1,6 +1,6 @@
 # AI and Agent Security: A Cross-Framework Synthesis
 
-> A topic-organized synthesis of the axioms, invariant rules, and principles that recur across fifty-two published whitepapers, guides, and frameworks on AI and agentic AI security, drawn from BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, ETSI, ENISA, the Frontier Model Forum, OpenSSF, and AI Verify. Nine claims from seven talks at the [un]prompted II conference (October 2026) were added later and carry UNPROMPTED2- source codes.
+> A topic-organized synthesis of the axioms, invariant rules, and principles that recur across fifty-two published whitepapers, guides, and frameworks on AI and agentic AI security, drawn from BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, ETSI, ENISA, the Frontier Model Forum, OpenSSF, and AI Verify. Six claims from seven talks at the first [un]prompted conference (March 2026) carry UNPROMPTED1- source codes, and nine claims from seven talks at [un]prompted II (October 2026) carry UNPROMPTED2- source codes.
 >
 > Canonical HTML: https://aisharedresponsibility.com/agentic-ai-security/
 > Topic index: https://aisharedresponsibility.com/agentic-ai-security/llms.txt
@@ -13,7 +13,7 @@ Rather than summarizing each paper on its own, the document groups the recurring
 
 Where sources disagree, or where one organization's position goes further than the rest, that difference is called out rather than smoothed into a false consensus. Several sections note where a rule first appeared in an older, narrower paper and was later restated in stronger form by a newer one; where that happens, both are cited, since the earlier paper is often more specific about the mechanism even when the newer one states the principle more forcefully.
 
-In October 2026, nine claims from seven talks at the [un]prompted II conference were added to six sections, cited with the UNPROMPTED2- codes in the source table below. The talks are conference material rather than papers, so the fifty-two count is unchanged: every generalization and Gap note that names the fifty-two sources still describes the paper corpus alone, and a talk citation asserts only what the named speaker said in that session.
+In March 2026, six claims from seven talks at the first [un]prompted conference were added, cited with the UNPROMPTED1- codes in the source table below. In October 2026, nine claims from seven talks at [un]prompted II were added, cited with the UNPROMPTED2- codes. The talks are conference material rather than papers, so the fifty-two count is unchanged: every generalization and Gap note that names the fifty-two sources still describes the paper corpus alone, and a talk citation asserts only what the named speaker said in that session.
 
 ## Source Documents
 **Agentic security (Sections 1-11)**
@@ -87,6 +87,13 @@ In October 2026, nine claims from seven talks at the [un]prompted II conference 
 
 | Code | Title | Organization | Date | Link |
 |---|---|---|---|---|
+| UNPROMPTED1-RYCIAK | Vibe Check: Security Failures in AI-Assisted IDEs (Piotr Ryciak) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
+| UNPROMPTED1-MCCARTHY | Zeal of the Convert: Taming Shai-Hulud with AI (Rami McCarthy) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
+| UNPROMPTED1-NABEEL | Detecting GenAI Threats at Scale with YARA-Like Semantic Rules (Mohamed Nabeel) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
+| UNPROMPTED1-EPP | 8 Minutes to Admin. We Caught It in the Wild. Welcome to VibeHacking (Sergej Epp) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
+| UNPROMPTED1-RITTINGHOUSE-HUANG | 1.8M Prompts, 30 Alerts: Hunting Abuse in a User-Defined Agent Ecosystem (Matt Rittinghouse, Millie Huang) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
+| UNPROMPTED1-ISAK-GILL | Developing & Deploying AI Fingerprints for Advanced Threat Detection (Natalie Isak, Waris Gill) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
+| UNPROMPTED1-POLLEY | Training BrowseSafe: Lessons from Detecting Prompt Injection in Production Browser Agents (Kyle Polley) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
 | UNPROMPTED2-EVRON | Opening Words Wednesday (Gadi Evron) | [un]prompted II | October 2026 | https://unpromptedcon.org |
 | UNPROMPTED2-BARANOVSKYI | Who Authorized the Agent Making the AI Harness an Enforceable Compliance Boundary (Oleksii Baranovskyi) | [un]prompted II | October 2026 | https://unpromptedcon.org |
 | UNPROMPTED2-NAJEEB | Metrics for Agentic Systems What Good Looks Like for a Security Agent (Shahanas Najeeb) | [un]prompted II | October 2026 | https://unpromptedcon.org |
@@ -122,6 +129,7 @@ OWASP-TOP10 extends the idea past access into behavior, coining "Least-Agency" f
 - Controls scale with an agent's actual capability and the sensitivity of what it touches, rather than applying uniformly to every agent (COSAI-IAM)
 - Access control uses fine-grained, attribute- and policy-based models rather than coarse role-based grants (CSA-IAM)
 - When a policy blocks an agent, return an explanation so the agent can adapt instead of looping or working around it (UNPROMPTED2-BARANOVSKYI)
+- When a user denies trust, anything already started must actually stop; a denial that leaves processes running is not a control (UNPROMPTED1-RYCIAK)
 
 **OpenCRE crosswalk:** Access Control, Authentication, Authorization, Configuration Management.
 
@@ -188,6 +196,8 @@ CIS-AGENTS and CIS-MCP both extend existing CIS Controls v8.1 logging requiremen
 - Observability extends to agent goals and decision paths, not only the actions ultimately taken (OWASP-TOP10)
 - Existing CIS Controls v8.1 logging requirements are extended to agent actions rather than replaced with a new control set (CIS-AGENTS, CIS-MCP)
 - An agent's security-relevant components, meaning model, instructions, memory, planning, tools, protocols, access controls, guardrails, approvals, and logging, are each in scope for inventory and controls (AIVERIFY-MAGF)
+- Run new AI detection rules in shadow production for a period before enforcing, because real feeds behave differently (UNPROMPTED1-NABEEL)
+- Deception such as honey tokens favors defenders against AI-driven attackers and is underused (UNPROMPTED1-EPP)
 
 **OpenCRE crosswalk:** Log Management, Error Handling, Governance Risk and Compliance.
 
@@ -206,6 +216,7 @@ Since the underlying flaw resists a permanent fix, the sources converge instead 
 - Tool, filesystem, egress, and credential limits are enforced in the harness, outside the model's reasoning loop; probabilistic model defenses are not treated as the control (FMF-AGENTS)
 - Agent security spans the model, system guardrails, harness orchestration, and tool access; each layer has its own controls (FMF-AGENTS)
 - Agent memory is an attack surface: test over long trajectories after injection, and inspect memory writes and reads alongside actions (UNPROMPTED2-SEVERI-YANG)
+- Using the latest, most robust model for an agent is itself a layer of prompt injection defense (UNPROMPTED1-POLLEY)
 
 **OpenCRE crosswalk:** Input Validation, Injection Prevention, Data Protection, Threat Modeling.
 
@@ -349,6 +360,7 @@ CSA-DATA applies the CIA triad across the full AI data lifecycle, meaning collec
 - Deleting source data does not guarantee removal from a trained model's weights or embeddings (OWASP-DATASEC, BIML-LLM24)
 - Each stage of the AI data lifecycle, from collection through monitoring, is treated as its own exposure point rather than covered by a single perimeter control (CSA-DATA)
 - The LLM context window is treated as a flat namespace with no internal access control between the trust domains it merges, a risk category traditional software security did not previously need to address (OWASP-DATASEC)
+- Detect abuse across services and customers without reading or training on their raw prompt data (UNPROMPTED1-RITTINGHOUSE-HUANG, UNPROMPTED1-ISAK-GILL)
 
 **OpenCRE crosswalk:** Access Control, Cryptography, Data Protection, Secrets Management, Log Management, Supply Chain, Secure Product Design.
 
@@ -407,6 +419,7 @@ CIS-LLM requires a strict separation between system prompts, user input, and ret
 - Agent-level security controls are only meaningful once the underlying model and infrastructure security they depend on is already in place (OWASP-SOLUTIONS)
 - Project instruction files for AI code assistants encode validation, secrets handling, and least-privilege defaults; they do not replace ASVS, SCVS, or AISVS verification (OPENSSF-ASSIST)
 - Agent security controls must work out of the box across many fast-changing agent frameworks (UNPROMPTED2-CHENNABASAPPA-PUDERBAUGH)
+- Use AI to generate deterministic scripts and signatures for scale and repeatability, and keep existing deterministic methods rather than replacing them (UNPROMPTED1-MCCARTHY)
 
 **OpenCRE crosswalk:** Access Control, Input Validation, Injection Prevention, Secure Product Design, Log Management, Supply Chain.
 

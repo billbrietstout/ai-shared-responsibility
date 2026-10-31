@@ -63,8 +63,8 @@ stage labels.
 
 The whitepaper assessment page loads:
 
-- `data/ai-agentic-principles.json` (and `.slim.json`): 139 agentic principles
-  from 52 papers and 7 conference talks. Each source row carries a monitor
+- `data/ai-agentic-principles.json` (and `.slim.json`): 145 agentic principles
+  from 52 papers and 14 conference talks. Each source row carries a monitor
   `wp_id` when matched.
 - `data/security-principles.json` (and `.slim.json`): 87 classic axioms from
   the OSCAL catalog. These cite frameworks, not whitepapers.
