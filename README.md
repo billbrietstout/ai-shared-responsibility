@@ -73,19 +73,34 @@ Do not hand-edit the generated JSON. Edit
 `agentic-ai-security/agentic-security.md` and `build/source-wp-ids.json`, then
 run `python3 build/generate_principle_catalogs.py`.
 
-**Validate** (fails the PR check on errors; warnings are listed for review):
+**Validate** (fails the check on errors; warnings are listed for review):
 
 ```bash
 python3 scripts/validate_principles.py
+python3 scripts/sync_whitepapers_fixture.py --check
 ```
 
-The validator checks schema shape, unique ids, section membership, that every
-`src` code resolves, that every matched source has a `wp_id` found in
-`build/fixtures/whitepapers.json` with decision Include, statement support
-against that paper's axioms/invariables/principles (warning only), unused
-sources, Include-paper gaps, near-duplicates, and duplicate URLs.
+`validate-principles` and `whitepapers-fixture` run on every push and pull
+request to `develop` and `main`. The validator checks schema shape, unique
+ids, section membership, that every `src` code resolves, that every matched
+source has a `wp_id` found in `build/fixtures/whitepapers.json` with decision
+Include, `monitor_issue` when it is set, statement support against that
+paper's axioms, invariables, and principles, unused sources, Include-paper
+gaps, near-duplicates, and duplicate URLs. Unmatched sources, and empty
+`risks` or `obligations`, warn through 2026-11-30 and fail starting
+2026-12-01. A principle id that is not on the base branch fails when its
+support score prints as 0.00 and a cited paper has extracted text in the
+fixture. A 0.00 score with no extracted text stays a warning.
 
-**Weekly update** (after Tuesday's monitor run writes changed WP- IDs):
+The fixture check fails when `build/fixtures/whitepapers.json` differs from
+the monitor repository's `data/whitepapers.json` on `main`, or when the
+fixture `updated` date is more than 14 days old. If that monitor file is not
+on `main` yet, the check warns and does not fail for the absence.
+
+How the data moves, and the branch protection settings to require these
+checks, are in [`docs/monitor-data-flow.md`](docs/monitor-data-flow.md).
+
+**Weekly update** (after the monitor publishes changed WP- IDs):
 
 ```bash
 python3 scripts/site_sync.py \
@@ -96,10 +111,17 @@ python3 scripts/validate_principles.py \
 ```
 
 Review `reports/principles-diff.md`. With approval, copy the candidate into
-`data/`, open a pull request against `develop`, and merge. Never push straight
-to `main`. Sources still missing from the monitor keep
-`inventory_status: pending_add` and an `inventory_note` until Bill adds them
-to the inventory sheet.
+`data/`, open a pull request against `develop`, and merge. Do not push
+straight to `develop` or `main`. Refresh the fixture when the monitor export
+changes:
+
+```bash
+python3 scripts/sync_whitepapers_fixture.py
+```
+
+Sources still missing from the monitor keep `inventory_status: pending_add`
+and an `inventory_note` until they have a `WP-` id. `unmatched` is a warning
+through 2026-11-30 and an error starting 2026-12-01.
 
 ### Adding a page
 

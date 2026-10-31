@@ -24,6 +24,13 @@
           "type": ["string", "null"],
           "pattern": "^WP-[0-9]{4}$"
         },
+        "monitor_issue": {
+          "description": "GitHub issue number in billbrietstout/ai-security-whitepaper-monitor for this source. Null until the source is filed there.",
+          "anyOf": [
+            { "type": "integer", "minimum": 1 },
+            { "type": "null" }
+          ]
+        },
         "inventory_status": {
           "type": "string",
           "enum": ["matched", "pending_add", "unmatched"]
@@ -44,6 +51,16 @@
           "type": "array",
           "items": { "$ref": "#/$defs/nonEmptyString" },
           "minItems": 1
+        },
+        "risks": {
+          "description": "Risks this principle is meant to reduce. Empty until the trace is filled in. The validator warns through 2026-11-30 and errors starting 2026-12-01.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "obligations": {
+          "description": "Obligations this principle assigns. Empty until the trace is filled in. The validator warns through 2026-11-30 and errors starting 2026-12-01.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/nonEmptyString" }
         }
       },
       "additionalProperties": true
