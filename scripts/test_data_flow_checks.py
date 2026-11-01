@@ -310,6 +310,35 @@ class GraceRulesTest(unittest.TestCase):
         self.assertEqual(report.errors, [])
         self.assertFalse(any("no monitor_issue" in msg for msg in report.warnings))
 
+    def test_monitor_schema_fields_are_accepted(self):
+        paper = {
+            "wp_id": "WP-0001",
+            "issue_number": 7,
+            "source_org": "Org",
+            "decision": "include",
+            "title": "Paper",
+            "axioms": ["training data must be signed before use"],
+            "invariables": [],
+            "principles": [],
+        }
+        ok = catalog(
+            {"SRC": source(monitor_issue=7)},
+            [principle(risks=["extraction"], obligations=["log it"])],
+        )
+        report = run_agentic(ok, {"WP-0001": paper}, TODAY, {"p1"})
+        self.assertEqual(report.errors, [])
+
+        retired = dict(paper)
+        retired["decision"] = "delete_candidate"
+        report = run_agentic(ok, {"WP-0001": retired}, TODAY, {"p1"})
+        self.assertTrue(any("must be include" in msg for msg in report.errors))
+
+        loaded = vp.load_papers(ROOT / "build" / "fixtures" / "whitepapers.json")
+        self.assertIn("WP-0001", loaded)
+        self.assertTrue(
+            loaded["WP-0001"].get("wp_id") or loaded["WP-0001"].get("id")
+        )
+
     def test_missing_monitor_issue_is_a_summary_warning(self):
         data = catalog({"SRC": source()}, [principle()])
         report = run_agentic(data, {"WP-0001": PAPER}, TODAY, {"p1"})
