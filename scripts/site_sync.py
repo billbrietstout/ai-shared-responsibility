@@ -26,6 +26,8 @@ from datetime import date
 from pathlib import Path
 from urllib.parse import urlsplit
 
+import validate_principles as vp
+
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_AGENTIC = ROOT / "data" / "ai-agentic-principles.json"
 DEFAULT_WP = ROOT / "build" / "fixtures" / "whitepapers.json"
@@ -91,12 +93,7 @@ def main() -> int:
     args = ap.parse_args()
 
     agentic = load_json(args.agentic)
-    papers_doc = load_json(args.whitepapers)
-    papers = {
-        p["id"]: p
-        for p in (papers_doc.get("papers") if isinstance(papers_doc, dict) else papers_doc)
-        if p.get("id")
-    }
+    papers = vp.load_papers(args.whitepapers)
     changes = load_json(args.changes)
     changed_ids = list(changes.get("changed") or [])
     stamp = changes.get("updated") or date.today().isoformat()
@@ -130,7 +127,10 @@ def main() -> int:
     for wp_id in changed_ids:
         paper = papers.get(wp_id)
         code = code_by_wp.get(wp_id)
-        if paper and paper.get("decision") in ("Delete candidate", "Duplicate"):
+        if paper and vp.normalized_decision(paper.get("decision")) in (
+            "delete_candidate",
+            "duplicate",
+        ):
             if code:
                 retired_items.append(
                     {
@@ -147,25 +147,30 @@ def main() -> int:
             continue
         if code and paper:
             src = sources[code]
-            # Refresh title/org/url from monitor when present.
+            # Refresh title, organization, and URL from the monitor when present.
             before = {
                 "title": src.get("title"),
+                "org": src.get("org"),
                 "url": src.get("url"),
                 "wp_id": src.get("wp_id"),
                 "monitor_issue": src.get("monitor_issue"),
             }
             if paper.get("title"):
                 src["title"] = paper["title"]
+            org = paper.get("source_org") or paper.get("org")
+            if org:
+                src["org"] = org
             if paper.get("url"):
                 src["url"] = paper["url"]
             src["wp_id"] = wp_id
             src["inventory_status"] = "matched"
             src.pop("inventory_note", None)
-            issue = paper.get("issue")
-            if isinstance(issue, int) and not isinstance(issue, bool) and issue >= 1:
+            issue = vp.paper_issue_number(paper)
+            if issue is not None:
                 src["monitor_issue"] = issue
             after = {
                 "title": src.get("title"),
+                "org": src.get("org"),
                 "url": src.get("url"),
                 "wp_id": src.get("wp_id"),
                 "monitor_issue": src.get("monitor_issue"),

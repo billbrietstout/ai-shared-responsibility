@@ -84,9 +84,10 @@ python3 scripts/sync_whitepapers_fixture.py --check
 request to `develop` and `main`. The validator checks schema shape, unique
 ids, section membership, that every `src` code resolves, that every matched
 source has a `wp_id` found in `build/fixtures/whitepapers.json` with decision
-Include, `monitor_issue` when it is set, statement support against that
-paper's axioms, invariables, and principles, unused sources, Include-paper
-gaps, near-duplicates, and duplicate URLs. Unmatched sources other than
+`include` (`Include` on an older copy is accepted), `monitor_issue` when it
+is set, statement support against that paper's axioms, invariables, and
+principles, unused sources, include-paper gaps, near-duplicates, and
+duplicate URLs. Unmatched sources other than
 `type: conference-talk`, and empty `risks` or `obligations`, warn through
 2026-11-30 and fail starting 2026-12-01. A conference talk stays unmatched
 without a monitor id. The check may print one info line for those talks.

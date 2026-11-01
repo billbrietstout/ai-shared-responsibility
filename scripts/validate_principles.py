@@ -236,6 +236,36 @@ def check_conference_talk_trace(code: str, src: dict, report: Report) -> None:
         )
 
 
+def paper_wp_id(paper: dict) -> str | None:
+    """Monitor records use wp_id. Older fixture copies used id."""
+    for key in ("wp_id", "id"):
+        value = paper.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
+def paper_issue_number(paper: dict) -> int | None:
+    """Monitor records use issue_number. Older fixture copies used issue."""
+    for key in ("issue_number", "issue"):
+        value = paper.get(key)
+        if isinstance(value, bool):
+            continue
+        if isinstance(value, int) and value >= 1:
+            return value
+    return None
+
+
+def normalized_decision(value: object) -> str:
+    """Monitor decisions are include, delete_candidate, and duplicate.
+
+    Older copies used Include, Delete candidate, and Duplicate.
+    """
+    if not isinstance(value, str):
+        return ""
+    return value.strip().lower().replace(" ", "_")
+
+
 def check_matched_paper(
     code: str,
     wp_id: object,
@@ -254,18 +284,19 @@ def check_matched_paper(
             f"source {code}: wp_id {wp_id} not found in whitepapers.json"
         )
         return
-    decision = paper.get("decision", "")
-    if decision in ("Delete candidate", "Duplicate"):
+    raw_decision = paper.get("decision", "")
+    decision = normalized_decision(raw_decision)
+    if decision in ("delete_candidate", "duplicate"):
         report.err(
             f"source {code}: paper {wp_id} decision is "
-            f"{decision!r}; must be Include"
+            f"{raw_decision!r}; must be include"
         )
-    elif decision != "Include":
+    elif decision != "include":
         report.warn(
-            f"source {code}: paper {wp_id} decision is {decision!r}"
+            f"source {code}: paper {wp_id} decision is {raw_decision!r}"
         )
     if parsed_issue is not None:
-        paper_issue = paper.get("issue")
+        paper_issue = paper_issue_number(paper)
         if paper_issue is None:
             report.warn(
                 f"source {code}: monitor_issue {parsed_issue} is set, "
@@ -556,13 +587,13 @@ def validate_agentic(
         if sources.get(c, {}).get("wp_id")
     }
     for wp_id, paper in papers_by_id.items():
-        if paper.get("decision") != "Include":
+        if normalized_decision(paper.get("decision")) != "include":
             continue
         if not paper_corpus(paper):
             continue
         if wp_id not in used_wp:
             report.warn(
-                f"gap: Include paper {wp_id} "
+                f"gap: include paper {wp_id} "
                 f"({paper.get('title', '')[:80]}) is unused by site principles"
             )
 
@@ -664,7 +695,9 @@ def load_papers(path: Path) -> dict[str, dict]:
     papers = data.get("papers") if isinstance(data, dict) else data
     out = {}
     for p in papers or []:
-        pid = p.get("id")
+        if not isinstance(p, dict):
+            continue
+        pid = paper_wp_id(p)
         if pid:
             out[pid] = p
     return out
