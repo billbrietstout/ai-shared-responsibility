@@ -487,6 +487,65 @@ class FixtureCheckTest(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual(warnings, [])
 
+    def test_wp_id_counts_as_a_paper(self):
+        local = self.local()
+        remote = {
+            "updated": "2026-10-30",
+            "papers": [{"wp_id": "WP-0001", "issue_number": 1, "title": "A"}],
+        }
+        fetched = fixture.FetchResult(
+            "ok", json.dumps(remote).encode(), "HTTP 200"
+        )
+        errors, warnings = fixture.evaluate(
+            local,
+            fetched,
+            today=TODAY,
+            max_age_days=14,
+            url="http://example.test/whitepapers.json",
+        )
+        self.assertEqual(warnings, [])
+        self.assertTrue(any("fixture differs" in msg for msg in errors))
+        self.assertTrue(any("Monitor papers: 1" in msg for msg in errors))
+        self.assertFalse(any("Monitor papers: 0" in msg for msg in errors))
+
+    def test_zero_paper_records_are_not_a_content_diff(self):
+        remote = {"updated": "2026-10-30", "papers": []}
+        fetched = fixture.FetchResult(
+            "ok", json.dumps(remote).encode(), "HTTP 200"
+        )
+        errors, warnings = fixture.evaluate(
+            self.local(),
+            fetched,
+            today=TODAY,
+            max_age_days=14,
+            url="http://example.test/whitepapers.json",
+        )
+        self.assertEqual(warnings, [])
+        self.assertTrue(any("no usable paper ids" in msg for msg in errors))
+        self.assertTrue(any("Paper records: 0" in msg for msg in errors))
+        self.assertFalse(any("fixture differs" in msg for msg in errors))
+
+    def test_records_without_an_id_are_not_a_content_diff(self):
+        remote = {
+            "updated": "2026-10-30",
+            "papers": [{"title": "A", "url": "https://example.test/a"}],
+        }
+        fetched = fixture.FetchResult(
+            "ok", json.dumps(remote).encode(), "HTTP 200"
+        )
+        errors, _ = fixture.evaluate(
+            self.local(),
+            fetched,
+            today=TODAY,
+            max_age_days=14,
+            url="http://example.test/whitepapers.json",
+        )
+        self.assertTrue(any("no usable paper ids" in msg for msg in errors))
+        self.assertTrue(any("Paper records: 1" in msg for msg in errors))
+        self.assertTrue(any("title" in msg for msg in errors))
+        self.assertFalse(any("fixture differs" in msg for msg in errors))
+        self.assertFalse(any("In the fixture only" in msg for msg in errors))
+
     def test_fetch_error_fails_the_check(self):
         fetched = fixture.FetchResult("error", None, "timed out")
         errors, _ = fixture.evaluate(

@@ -99,9 +99,12 @@ the monitor repository's `data/whitepapers.json` on its default branch, or
 when the fixture `updated` date is more than 14 days old. The script asks
 the GitHub API for that branch. Today it is `master`. If the monitor file
 is not on the default branch yet, the check warns and does not fail for the
-absence. That is the expected result until
-[monitor pull request 173](https://github.com/billbrietstout/ai-security-whitepaper-monitor/pull/173)
-merges.
+absence.
+[Monitor pull request 173](https://github.com/billbrietstout/ai-security-whitepaper-monitor/pull/173)
+merged on 2026-11-01. Each paper in that export uses `wp_id`, not `id`.
+The check counts either key. A parsed export with no `id` and no `wp_id`
+is an error, not a content diff, and the refresh command does not write
+the fixture.
 
 How the data moves, and the branch protection settings to require these
 checks, are in [`docs/monitor-data-flow.md`](docs/monitor-data-flow.md).
