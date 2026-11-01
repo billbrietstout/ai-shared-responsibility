@@ -115,7 +115,9 @@ OWASP-TOP10 names the gap that results when this isn't done: most current archit
 
 **OpenCRE crosswalk:** Access Control, Authentication, Identity Management, Secrets Management, Session Management.
 
-**Gap:** none of the sources discuss the strength of the human credential used to approve or provision a new agent identity in the first place (Microsoft's Immutable Law 5, weak passwords). All the rigor in this section is spent on the agent's own credential once it exists; a cryptographically airtight non-human identity is still bootstrapped by a human step that can be defeated by a weak or reused password.
+**Gap:** None of the 52 sources require the approver's authenticator strength to be recorded with the agent identity it created (Microsoft's Immutable Law 5, weak passwords). Identity standards outside this corpus define that strength: NIST SP 800-63B and FIDO2 (unverified). A strong agent credential can still be created by a person using a weak or reused password.
+
+**Research status:** arXiv work covers part of this gap. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2608.04292](https://arxiv.org/abs/2608.04292) is tagged tested (a lab prototype). [arXiv:2501.09674](https://arxiv.org/abs/2501.09674) is tagged theoretical (a proposal only).
 
 ## 2. Zero Standing Privilege and Continuous Authorization {#zero-standing-privilege}
 
@@ -138,7 +140,9 @@ OWASP-TOP10 extends the idea past access into behavior, coining "Least-Agency" f
 
 **OpenCRE crosswalk:** Access Control, Authentication, Authorization, Configuration Management.
 
-**Gap:** none of the sources state "deny by default when a decision is ambiguous or a control fails" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.
+**Gap:** NIST-GAI says a system can fail safely. None of the sources state "deny by default when a decision is ambiguous or a control fails" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.
+
+**Research status:** Tested arXiv work addresses a fail-closed default. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.28679](https://arxiv.org/abs/2606.28679) is tagged tested (a lab proof of concept). [arXiv:2606.26057](https://arxiv.org/abs/2606.26057) is tagged theoretical (a proposal only).
 
 **Gap and editorial position:** None of the sources require agent actions to carry these three facts. None require them to survive when a request moves between agents run by different organizations. We think they should.
 
@@ -169,7 +173,9 @@ OWASP-MCP-DEV names the specific failure this design prevents: passing a raw ups
 
 **OpenCRE crosswalk:** Access Control, Authentication, Session Management, Authorization.
 
-**Gap:** none of the sources ask whether two agents in the same delegation chain, each individually scoped correctly on its own, can still jointly reconstruct information neither was authorized to hold alone (NIST SP 800-27's principle of addressing overlapping information domains). Scope narrowing is checked hop by hop; nothing here checks what two properly narrowed hops can do when combined.
+**Gap:** COSAI-IAM names agent collusion, but none of the sources say how to test two correctly scoped agents for combined leakage (NIST SP 800-27's principle of addressing overlapping information domains). Research shows the combined leak happens ([arXiv:2509.14284](https://arxiv.org/abs/2509.14284), unverified).
+
+**Research status:** Tested arXiv work shows combined leakage across agents. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2509.14284](https://arxiv.org/abs/2509.14284), [arXiv:2603.05520](https://arxiv.org/abs/2603.05520), and [arXiv:2602.11510](https://arxiv.org/abs/2602.11510) are tagged tested (lab, benchmark, or simulation).
 
 ## 4. Ephemeral Execution and Ephemeral Compute {#ephemeral-execution}
 
@@ -186,7 +192,9 @@ The underlying logic connects back to the untrusted-input problem covered in [Un
 
 **OpenCRE crosswalk:** Secure Product Design, Configuration Management, Access Control.
 
-**Gap:** ephemeral execution solves persistence risk, not reach, and none of the sources discuss bounding which mission-critical backend systems an ephemeral agent is still permitted to touch while it runs (NIST SP 800-27's principle of isolating public-access systems from mission-critical resources). An environment that's guaranteed to be destroyed after use can still do real damage to whatever it was allowed to reach during that one run.
+**Gap:** COSAI-FUTURE and COSAI-MCP require default-deny egress, but none tie an ephemeral agent's allowlist to the criticality of the backend systems it can reach (NIST SP 800-27's principle of isolating public-access systems from mission-critical resources). An environment that is destroyed after one run can still damage a critical system it was allowed to reach during that run.
+
+**Research status:** Deployed arXiv work bounds which systems an agent can reach. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2607.05743](https://arxiv.org/abs/2607.05743) is tagged theoretical (a survey, with no experiment of its own). [arXiv:2603.17419](https://arxiv.org/abs/2603.17419) is tagged deployed (nine production agents).
 
 ## 5. Human Oversight, Kill Switches, and Autonomy Tiers {#human-oversight}
 
@@ -204,7 +212,9 @@ COSAI-SBD requires agentic systems to stay under meaningful human control, with 
 
 **OpenCRE crosswalk:** Access Control, Governance Risk and Compliance, Log Management.
 
-**Gap:** none of the sources weigh what a human approval gate costs an organization in decision latency against the risk it prevents (NIST SP 800-27's principle of identifying trade-offs between risk reduction and operational effectiveness). An escalation tier that's well designed on paper but too slow to use in a live incident gets bypassed in practice, which is the same failure mode named directly in [Human Factors and the Limits of Technical Controls](#human-factors), just not yet connected back to this section's specific oversight tiers.
+**Gap:** COSAI-MCP names approval fatigue, but none of the sources weigh an approval gate's latency against the risk it prevents (NIST SP 800-27's principle of identifying trade-offs between risk reduction and operational effectiveness). An escalation tier that's well designed on paper but too slow to use in a live incident gets bypassed in practice, which is the same failure mode named directly in [Human Factors and the Limits of Technical Controls](#human-factors), just not yet connected back to this section's specific oversight tiers.
+
+**Research status:** Tested arXiv work measures oversight cost and approval fatigue. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.08919](https://arxiv.org/abs/2606.08919), [arXiv:2603.24582](https://arxiv.org/abs/2603.24582), [arXiv:2604.04918](https://arxiv.org/abs/2604.04918), and [arXiv:2610.22987](https://arxiv.org/abs/2610.22987) are tagged tested (lab, benchmark, or simulation).
 
 ## 6. Observability, Audit Trails, and Traceability {#observability}
 
@@ -224,6 +234,8 @@ CIS-AGENTS and CIS-MCP both extend existing CIS Controls v8.1 logging requiremen
 **OpenCRE crosswalk:** Log Management, Error Handling, Governance Risk and Compliance.
 
 **Gap:** every source here treats logging as a purely technical control, and none discuss whether the people expected to review an audit trail are actually trained to recognize what they're looking at (NIST SP 800-27's requirement that developers, and by extension operators, be trained to work securely). An immutable log nobody knows how to read produces the same outcome as no log at all.
+
+**Research status:** No arXiv work was found. This gap is open in the 52 sources and open on arXiv.
 
 ## 7. Untrusted Input and the Prompt Injection Problem {#untrusted-input}
 
@@ -245,6 +257,8 @@ Since the underlying flaw resists a permanent fix, the sources converge instead 
 
 **Gap:** since no source claims prompt injection can be fully prevented, the practical question shifts from "how do we stop this" to "where do we spend finite defensive effort first," and none of the 52 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once).
 
+**Research status:** arXiv work measures injection vectors. It does not rank them for where to spend defense first, so this gap stays open on that point. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2506.09956](https://arxiv.org/abs/2506.09956) is tagged tested (a public challenge). [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) is tagged theoretical (a survey, with no experiment of its own).
+
 ## 8. MCP Protocol Security {#mcp-security}
 
 Five of the sources in this corpus address the Model Context Protocol specifically, since MCP has become the default way agents discover and invoke tools. COSAI-MCP and CIS-MCP both treat MCP as a distinct third layer, separate from the model and the agent, carrying its own risk profile, and COSAI-MCP is explicit that existing risk frameworks such as MITRE ATLAS, NIST AI RMF, and MAESTRO were built assuming predictable component behavior and don't fully address MCP's specific failure modes. It cites three real incidents, at Asana, WordPress AI Engine, and Supabase, as evidence that MCP threats are active rather than theoretical, and states flatly that containers alone are not a strong security boundary for MCP execution, since a container isolates the process but not the trust decisions the process makes on the model's behalf.
@@ -261,7 +275,9 @@ OWASP-MCP-DEV requires OAuth 2.1 or OIDC for every remote MCP server, with issue
 
 **OpenCRE crosswalk:** Access Control, Authentication, Input Validation, Secure Communication, Supply Chain, Log Management.
 
-**Gap:** the sources require OAuth 2.1/OIDC and TLS for MCP transport, but none discuss where or how the key material and secrets underneath those protocols are themselves stored, rotated, or protected (Microsoft's law that encrypted data is only as secure as its decryption key, and its related risk law that encryption alone isn't a data protection solution). A correctly configured OAuth flow is still only as strong as the keys backing it.
+**Gap:** CSA-DATA names a vault with KMS or HSM keys for data tokenization, not for MCP. The sources require OAuth 2.1/OIDC and TLS for MCP transport, but none say where the keys behind those protocols are stored, rotated, or protected (Microsoft's law that encrypted data is only as secure as its decryption key, and its related risk law that encryption alone isn't a data protection solution). A correctly configured OAuth flow is still only as strong as the keys backing it.
+
+**Research status:** arXiv work covers part of MCP key handling. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2609.22573](https://arxiv.org/abs/2609.22573) is tagged tested (lab, benchmark, or simulation). [arXiv:2608.10760](https://arxiv.org/abs/2608.10760) is tagged deployed (an industry deployment).
 
 ## 9. Supply Chain and Provenance for Agentic Components {#supply-chain}
 
@@ -278,6 +294,8 @@ The deeper treatment in [Data and Model Provenance Across the AI Supply Chain](#
 **OpenCRE crosswalk:** Supply Chain, Cryptography, Secure Product Design.
 
 **Gap:** signing and provenance protect an artifact's chain of custody once it exists in digital form, but none of the sources discuss physical access controls over the systems that actually build or store that artifact (NIST SP 800-27's and Microsoft's shared principle that physical access defeats software-level guarantees). A signed model manifest doesn't help if the build server that produced it was physically accessible to anyone who walked up to it.
+
+**Research status:** No arXiv work was found. This gap is open in the 52 sources and open on arXiv. Physical access to a build server is a general security control, and these AI papers do not cover it.
 
 ## 10. Shared Responsibility and Layered Accountability {#shared-responsibility}
 
@@ -296,6 +314,8 @@ COSAI-SBD anticipated a narrower version of the same idea earlier, requiring acc
 
 **Gap:** COSAI-SRF assigns exactly one accountable party per activity, but none of the sources require that accountability be backed by a written security policy stating what that party is actually supposed to do (NIST SP 800-27's principle of establishing a sound security policy as the foundation for design). Naming who's accountable isn't the same as documenting what they're accountable for.
 
+**Research status:** arXiv work on written runtime policy is only a proposal. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2510.24383](https://arxiv.org/abs/2510.24383) and [arXiv:2603.16586](https://arxiv.org/abs/2603.16586) are tagged theoretical (a proposal only).
+
 ## 11. Emerging Risk Models {#emerging-risk-models}
 
 Two named concepts recur without a settled mitigation yet. OWASP-STATE states that every organization already has agents running that haven't been discovered or governed, calling this Shadow AI, and treats it as a present condition rather than a future risk, on the same logic that shadow IT was never a hypothetical problem organizations could choose to prepare for on their own timeline. OWASP-TOP10 names the attribution gap, meaning the absence of a distinct, governed agent identity discussed in [Agent Identity and Non-Human Principals](#agent-identity), as a structural problem across current architectures rather than an oversight specific to any one deployment, which is the same underlying gap driving Shadow AI: an organization can't govern what it can't attribute to a specific, accountable agent identity in the first place.
@@ -308,7 +328,9 @@ OWASP-STATE also names deployment-layer safety and security as functions that ca
 
 **OpenCRE crosswalk:** Threat Modeling, Access Control, Governance Risk and Compliance.
 
-**Gap:** Shadow AI and the attribution gap both describe agents nobody is tracking; none of the sources map the sharper failure mode of a single compromised agent identity, once discovered, cascading through everything it was ever delegated into (the cloud architecture corollary that identity compromise cascades through an entire environment). The attribution gap is a visibility problem; the cascade is what happens after visibility fails.
+**Gap:** OWASP's ASI08 and COSAI-IAM's revocation cascade name the risk, but none map how far one compromised identity's delegations reach once it is discovered (the cloud architecture corollary that identity compromise cascades through an entire environment).
+
+**Research status:** Tested arXiv work shows a compromised agent cascading through other agents. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2604.07775](https://arxiv.org/abs/2604.07775), [arXiv:2605.19240](https://arxiv.org/abs/2605.19240), and [arXiv:2402.08567](https://arxiv.org/abs/2402.08567) are tagged tested (lab, benchmark, or simulation).
 
 ## 12. AI/ML Architectural Risk and the Limits of Security Metrics {#architectural-risk}
 
@@ -329,6 +351,8 @@ BIML-LLM24 and BIML-23RISKS extend this to foundation models specifically: a fou
 
 **Gap and editorial position:** Kerckhoffs's open-design principle holds that security should never depend on secrecy of design. The corpus's general acceptance of closed, black-box foundation models is not a competing security principle of equal standing, it is an industry-accepted risk being tolerated for commercial and safety reasons, and this document takes that position explicitly rather than treating the two as a neutral disagreement. BIML-LLM24 and BIML-23RISKS argue for regulating the black box (requiring disclosure of training data, evaluation criteria, and results) rather than accepting its opacity as sufficient, which is the same underlying preference for openness, just aimed at the model rather than at the surrounding system.
 
+**Research status:** A counter-view is on arXiv. [arXiv:2610.35199](https://arxiv.org/abs/2610.35199), "Can Open Be Too Open?", argues that more transparency does not by itself produce more security. The tag is theoretical (a proposal only). The tag is provisional because it comes from the abstract only, and the paper is unverified. This editorial position is unchanged.
+
 ## 13. Data and Model Provenance Across the AI Supply Chain {#supply-chain-provenance}
 
 CoSAI's original workstream on supply chain security treats the AI supply chain as four interdependent dimensions, data, model, application, and infrastructure, where a vulnerability introduced at any one stage propagates through the rest, and explicitly rejects the assumption that an internally developed or internally stored model is inherently safer than a third-party one simply by virtue of being kept in-house (COSAI-SUPPLY). Its companion paper on artifact signing gets specific about what a fix looks like: every model artifact carries a signature tying a producer's identity to its exact contents, a single manifest has to cover the full collection of files so nothing drifts out of sync between what was signed and what actually ships, and a consumer authenticates the signer's identity against its own deployment policy rather than trusting a central authority to make that call on its behalf (COSAI-SIGN). COSAI-SIGN also describes a progressive maturity model running from basic integrity checks through signature chaining to fully structured attestations, which gives organizations a staged path rather than requiring the most rigorous form of verification on day one.
@@ -348,6 +372,8 @@ NIST-ADVML and the SANS guidelines converge on the same underlying concern from 
 
 **Gap:** signing every artifact and manifest is specified here in exacting detail, but none of the sources address whether this is achievable in practice across an organization running thousands of models and constantly retrained checkpoints, only that it should happen (CIS's own design principle that every safeguard must be specific and feasible to implement, not just correct in theory).
 
+**Research status:** Tested arXiv work measures whether signatures and model bills of materials can be checked across public repositories. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2610.19498](https://arxiv.org/abs/2610.19498) and [arXiv:2607.17242](https://arxiv.org/abs/2607.17242) are tagged tested (a measurement of public model files).
+
 ## 14. Adversarial Machine Learning and Attack Taxonomies {#adversarial-ml}
 
 NIST-ADVML gives this its most rigorous treatment, mapping every adversarial attack's objective to exactly one of three violations: an availability breakdown, an integrity violation, or a privacy compromise, and requiring that any attack classification specify the learning stage, the attacker's goals, capabilities, and knowledge together, rather than describing an attack only by the technique used. It insists that mitigations be evaluated against strong, adaptive, worst-case adversaries rather than weak or static ones, and is explicit that a robustness-accuracy trade-off is inherent to current mitigation techniques: no defense offers an absolute guarantee against a future, evolved attack, and a system tuned for maximum robustness against known attacks will typically sacrifice some accuracy on clean, non-adversarial input as the cost of that robustness. It also draws a distinction the rest of the corpus mostly treats as one problem: predictive AI (PredAI) and generative AI (GenAI) require related but distinct taxonomies, since the attack surface of a classifier making a discrete prediction differs meaningfully from that of a generative model producing open-ended output.
@@ -364,6 +390,8 @@ OWASP-REDTEAM makes a related point from the testing side rather than the taxono
 **OpenCRE crosswalk:** Threat Modeling, Data Protection, Supply Chain, Vulnerability Management, Secure Product Design, Training and Awareness.
 
 **Gap:** extraction and query-flooding attacks against a model often show up first as an unusual pattern at the network layer, and none of the sources tie NIST-ADVML's attack taxonomy back to network infrastructure monitoring as a detection point before an attack reaches the model itself (CIS Control 12, Network Infrastructure Management). The taxonomy classifies what happened; nothing here says where to watch for it happening.
+
+**Research status:** Tested arXiv work detects model extraction from query or API traffic. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.05725](https://arxiv.org/abs/2606.05725), [arXiv:1805.02628](https://arxiv.org/abs/1805.02628), and [arXiv:2201.09243](https://arxiv.org/abs/2201.09243) are tagged tested (lab, benchmark, or simulation).
 
 ## 15. AI Risk Governance Frameworks {#risk-governance}
 
@@ -382,6 +410,8 @@ CSA-AICM11 exists to fill a gap it says NIST AI RMF and the EU AI Act leave open
 
 **Gap:** none of the governance frameworks require their own risk categories to be revised based on real, observed attacker behavior rather than a static, predefined taxonomy of AI risks (CIS's own design principle that offense informs defense). NIST AI RMF and the AI Controls Matrix both describe what to manage; neither describes a feedback loop from live incidents back into the framework itself.
 
+**Research status:** arXiv work built from real incident reports revises a risk taxonomy. The tag is provisional because it comes from the abstract only, and the paper is unverified. [arXiv:2603.04259](https://arxiv.org/abs/2603.04259) is tagged deployed (real incident data).
+
 ## 16. Data Security Within AI Environments {#data-security}
 
 CSA-DATA applies the CIA triad across the full AI data lifecycle, meaning collection, annotation, storage, processing, training, deployment, and monitoring, and treats each stage as its own exposure point rather than assuming a single perimeter control covers all of them, which is a meaningfully different posture than traditional data security, where a smaller number of well-defined storage and transit points usually cover most of the exposure surface. OWASP-DATASEC identifies a genuinely new failure mode inside that lifecycle: the context window fuses multiple trust domains into one flat namespace with no internal access control, which is a risk traditional software security never had to account for, since a conventional application can enforce access boundaries between different data sources at the code level in a way an LLM's context window structurally cannot once everything has been concatenated into a single prompt. It also echoes a point BIML-LLM24 makes about foundation models generally: machine unlearning is technically limited, so data an organization believes it deleted can persist indefinitely inside model weights or embeddings, which means a data deletion request can be satisfied at the storage layer while remaining technically unsatisfied at the model layer, a distinction most data governance policies weren't written with in mind.
@@ -397,6 +427,8 @@ CSA-DATA applies the CIA triad across the full AI data lifecycle, meaning collec
 **OpenCRE crosswalk:** Access Control, Cryptography, Data Protection, Secrets Management, Log Management, Supply Chain, Secure Product Design.
 
 **Gap:** data minimization and classification propagation are covered in depth here, but none of the sources caution that anonymization or de-identification of training or inference data is never a complete guarantee (Microsoft's law that absolute anonymity isn't practically achievable, online or offline). That caveat matters directly given this section's own point that deleted data can persist inside model weights regardless of what the deletion request assumed.
+
+**Research status:** Tested arXiv work shows anonymized text can be re-identified. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2610.05586](https://arxiv.org/abs/2610.05586) and [arXiv:2602.12806](https://arxiv.org/abs/2602.12806) are tagged tested (lab, benchmark, or simulation).
 
 ## 17. AI Incident Response and Vulnerability Operations {#incident-response}
 
@@ -418,7 +450,9 @@ OWASP-IR adds a governance detail COSAI-IR doesn't specify: every critical AI sy
 
 **OpenCRE crosswalk:** Log Management, Access Control, Data Protection, Vulnerability Management, Secrets Management, Threat Modeling.
 
-**Gap:** none of the sources describe verifying that a quarantined agent or session is actually inert during containment, rather than just unreachable (Microsoft's cybersecurity risk law that isolated networks aren't automatically secure). Cutting an agent off from the network is not the same as confirming it has stopped acting.
+**Gap:** COSAI-IR measures containment effectiveness in general, but none require confirming that a quarantined agent has actually stopped acting (Microsoft's cybersecurity risk law that isolated networks aren't automatically secure). Research shows framework stop controls often fail to do that ([arXiv:2607.14166](https://arxiv.org/abs/2607.14166), unverified).
+
+**Research status:** Tested arXiv work shows a stop or quarantine command often fails to halt side effects. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2607.14166](https://arxiv.org/abs/2607.14166), [arXiv:2610.35486](https://arxiv.org/abs/2610.35486), and [arXiv:2602.11749](https://arxiv.org/abs/2602.11749) are tagged tested (lab, benchmark, or simulation).
 
 ## 18. Red Teaming, Testing, and Vendor Evaluation {#red-teaming}
 
@@ -440,6 +474,8 @@ OWASP-REDTEAM also requires that engagements be explicitly authorized, scoped, a
 
 **Gap and editorial position:** BIML-NOMETER's claim that no benchmark can certify a system as secure is not, and should not be read as, an argument against red-teaming's value. Read together with OWASP-REDTEAM's insistence on rigorous, reproducible, human-verified testing, the corpus's own position amounts to testing to the fullest extent practical, in full knowledge that no test suite will find every vulnerability, rather than treating incompleteness as a reason not to test. CIS's design principle that every control be measurable and BIML's rejection of a security "meter" are only in tension if measurability is mistaken for certification; used instead as an incomplete but necessary check, both positions hold at once.
 
+**Research status:** arXiv work is consistent with this position. [arXiv:2503.16431](https://arxiv.org/abs/2503.16431) reports OpenAI external red teaming in practice. The tag is deployed (a practice report). The tag is provisional because it comes from the abstract only, and the paper is unverified. The position above is unchanged.
+
 ## 19. General LLM and GenAI Application Security {#llm-appsec}
 
 OWASP-LLMTOP10 restates the core untrusted-input problem in application terms: since an LLM cannot reliably distinguish trusted instructions from untrusted content, untrusted external content is always segregated and labeled apart from trusted instructions rather than trusted by default, and authorization decisions are always enforced downstream rather than left to the model to police itself. It also names the enabling condition behind most of the OWASP Top 10 risks directly: LLM-based systems are commonly granted agency, meaning function calls, extensions, and tools, by their developers, and it's this grant of agency, not the underlying language model itself, that turns a text-generation risk into an action-taking one. OWASP-AIEXCHANGE states the same access-control rule as a flat prohibition rather than a best practice: access control is never delegated to the GenAI model or agent itself, which it frames as a specific instance of a more general axiom: an AI model can always be wrong or manipulated, and that has to be treated as a constant condition to design around, not an edge case to handle separately when it comes up.
@@ -459,6 +495,8 @@ CIS-LLM requires a strict separation between system prompts, user input, and ret
 **OpenCRE crosswalk:** Access Control, Input Validation, Injection Prevention, Secure Product Design, Log Management, Supply Chain.
 
 **Gap:** a growing share of LLM applications are embedded inside browser extensions or email-integrated assistants, and none of the sources discuss that delivery surface specifically, as distinct from the API-level application security the rest of this section covers (CIS Control 9, Email and Web Browser Protections). The OWASP Top 10 for LLM applications addresses what the model does once invoked; none of the sources address the browser or mail client as the thing that invoked it.
+
+**Research status:** arXiv work covers browser-extension and email delivery, including one real incident. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2509.10540](https://arxiv.org/abs/2509.10540) (EchoLeak) is tagged deployed (a real incident). [arXiv:2511.20597](https://arxiv.org/abs/2511.20597) and [arXiv:2507.05307](https://arxiv.org/abs/2507.05307) are tagged tested (lab, benchmark, or simulation).
 
 ## 20. Enterprise AI Security Programs and Organizational Readiness {#enterprise-readiness}
 
@@ -480,19 +518,23 @@ SANS-BLUEPRINT treats model registries as non-negotiable for production AI gover
 
 **Gap:** enterprise-readiness guidance here measures governance maturity and control completeness, but none of the sources frame program success in terms of the economic cost imposed on an attacker (Microsoft's cybersecurity risk law that security success means ruining the attacker's ROI). A fully governed AI program and an expensive-to-attack one are not automatically the same thing.
 
+**Research status:** arXiv work covers part of attacker cost. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2605.06713](https://arxiv.org/abs/2605.06713) is tagged theoretical (a proposal only). [arXiv:2201.09243](https://arxiv.org/abs/2201.09243) is tagged tested (lab, benchmark, or simulation).
+
 ## 21. System Decommissioning and Availability {#decommissioning-availability}
 
-The underlying corpus is thin here, and that thinness is itself worth stating plainly rather than padding over. Only a few sources address it directly. NIST-GAI requires that a mechanism always exist to deactivate or decommission a GAI system found to pose unacceptable risk, treating shutdown as a designed capability rather than something improvised after the fact once a system is already flagged as dangerous. ETSI-304223 Principle 13 requires proper data and model disposal at end of life. CSA-AICM1 names Denial of Service as its own explicit threat category within the AI Controls Matrix, alongside model manipulation and data poisoning, rather than folding availability risk into a generic "resilience" catch-all the way several other sources in this corpus tend to.
+NIST-GAI requires that a mechanism always exist to deactivate or decommission a GAI system found to pose unacceptable risk, treating shutdown as a designed capability rather than something improvised after the fact once a system is already flagged as dangerous. ETSI-304223 Principle 13 requires proper data and model disposal at end of life. CSA-AICM1 names Denial of Service as its own explicit threat category within the AI Controls Matrix, alongside model manipulation and data poisoning, rather than folding availability risk into a generic "resilience" catch-all the way several other sources in this corpus tend to.
 
-None of them go further than that. No paper in this corpus discusses disaster recovery, business continuity planning, or backup and failover specifically for AI systems, the way CIS Control 11 (Data Recovery) or NIST SP 800-27's contingency-planning principle require for traditional IT. That silence runs across all fifty-two sources, not just a couple of them, which makes it a gap in the field's current literature, not a gap this synthesis introduced by summarizing selectively.
+COSAI-IR covers backups of models and embeddings, restoration testing, business continuity, and recovery-time objectives. None of the sources set how fast an AI system must be deactivated once that deactivation is triggered. CIS Control 11 (Data Recovery) and NIST SP 800-27's contingency-planning principle ask for recovery-time and recovery-point targets. This corpus still does not set those targets for AI shutdown.
 
 - A deactivation or decommissioning mechanism is a designed system capability, not an improvised response built after a system is already flagged as unacceptably risky (NIST-GAI, ETSI-304223)
 - Denial of Service is treated as its own named threat category for AI systems, not folded into a generic resilience catch-all (CSA-AICM1)
-- Disaster recovery, business continuity, and failover planning specific to AI systems have no dedicated treatment anywhere in this corpus, a silence spanning all fifty-two sources rather than an oversight in a handful of them
+- COSAI-IR covers backups, restoration testing, business continuity, and recovery-time objectives. None of the sources set how fast an AI system must be deactivated once that is triggered
 
 **OpenCRE crosswalk:** Governance Risk and Compliance, Secure Product Design, Vulnerability Management.
 
-**Gap:** NIST-GAI requires the capability to deactivate a system found to pose unacceptable risk, but nothing in the corpus specifies how quickly that deactivation needs to happen once triggered, the recovery-time and recovery-point figures an incident responder would actually need (CIS Control 11, Data Recovery, and NIST SP 800-27's contingency-planning principle, both still otherwise unaddressed per the note above). A documented capability to shut a system down is not the same as a documented target for how fast that shutdown has to complete.
+**Gap:** COSAI-IR covers backups, restoration testing, and recovery-time objectives, but none of the sources set how fast an AI system must be deactivated once that is triggered (CIS Control 11, Data Recovery, and NIST SP 800-27's contingency-planning principle, as noted at the start of this section).
+
+**Research status:** arXiv work here is only a proposal about risk left after decommissioning, not a required shutdown time. The tag is provisional because it comes from the abstract only, and the paper is unverified. [arXiv:2606.12432](https://arxiv.org/abs/2606.12432) is tagged theoretical (a proposal only).
 
 ## 22. Human Factors and the Limits of Technical Controls {#human-factors}
 
@@ -507,4 +549,6 @@ The rest of the corpus is silent on the question. Zero Standing Privilege, conti
 **OpenCRE crosswalk:** Training and Awareness, Governance Risk and Compliance.
 
 **Gap:** this document names control-adoption friction as a blind spot in the field, but none of the 52 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented.
+
+**Research status:** Tested arXiv work measures reviewer fatigue and approval settings in production systems. It does not define time-to-bypass, help-desk volume, or review abandonment. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) and [arXiv:2606.08919](https://arxiv.org/abs/2606.08919) are tagged tested (lab, benchmark, or simulation).
 
