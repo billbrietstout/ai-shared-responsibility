@@ -8,9 +8,11 @@ Run from the repo root:
 
 from __future__ import annotations
 
+import html
 import importlib.util
 import json
 import os
+import re
 import subprocess
 import sys
 import unittest
@@ -704,6 +706,167 @@ class SchemaAndCatalogTest(unittest.TestCase):
         )
         self.assertIsNotNone(ids)
         self.assertGreater(len(ids), 0)
+
+
+class TalkClaimsColumnTest(unittest.TestCase):
+    """The conference-talk Claims column repeats catalog statements.
+
+    A talk with no citing principle shows Not yet recorded. The column is
+    not a second copy stored on the source row, and it does not change the
+    monitor exemption.
+    """
+
+    def catalog_module(self):
+        path = ROOT / "build" / "generate_principle_catalogs.py"
+        spec = importlib.util.spec_from_file_location("gpc_claims", path)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    def test_empty_citation_uses_placeholder(self):
+        mod = self.catalog_module()
+        self.assertEqual(mod.MISSING_TALK_CLAIM, "Not yet recorded")
+        self.assertNotIn("\u2014", mod.MISSING_TALK_CLAIM)
+        self.assertNotIn("\u2013", mod.MISSING_TALK_CLAIM)
+        principles = [
+            {"statement": "A real claim", "src": ["OTHER"]},
+            {"statement": "  Keep\n the   words. ", "src": ["TALK"]},
+        ]
+        self.assertEqual(mod.claims_cited_by(principles, "ABSENT"), [])
+        self.assertEqual(
+            mod.talk_claims_cell(principles, "ABSENT"), "Not yet recorded"
+        )
+        self.assertEqual(
+            mod.claims_cited_by(principles, "TALK"), ["Keep the words."]
+        )
+
+    def test_claims_column_does_not_change_source_parse(self):
+        mod = self.catalog_module()
+        with_claim = (
+            "| UNPROMPTED2-X | Title | Event name | October 2026 | "
+            "https://unpromptedcon.org | left | right |"
+        )
+        parsed = mod.SRC_ROW_RE.match(with_claim)
+        self.assertIsNotNone(parsed)
+        self.assertEqual(parsed.group(1), "UNPROMPTED2-X")
+        self.assertEqual(parsed.group(3), "Event name")
+        self.assertEqual(parsed.group(5), "https://unpromptedcon.org")
+        plain = (
+            "| CIS-AGENTS | Title | Org | April 20, 2026 | "
+            "https://example.com/a |"
+        )
+        parsed = mod.SRC_ROW_RE.match(plain)
+        self.assertEqual(parsed.group(5), "https://example.com/a")
+
+    def test_published_tables_repeat_recorded_claims_only(self):
+        mod = self.catalog_module()
+        data = json.loads(
+            (ROOT / "data" / "ai-agentic-principles.json").read_text()
+        )
+        sources, _sections, _gap, ordered, _ex, _raw, _merged = mod.build_agentic()
+        self.assertEqual(sources, data["sources"])
+        talks = {
+            code: src
+            for code, src in sources.items()
+            if src.get("type") == "conference-talk"
+        }
+        self.assertGreater(len(talks), 0)
+        for code, src in talks.items():
+            self.assertEqual(src.get("type"), "conference-talk")
+            self.assertTrue(src.get("speaker"))
+            self.assertTrue(src.get("title"))
+            self.assertTrue(src.get("org"))
+            self.assertTrue(src.get("url"))
+            self.assertTrue(src.get("inventory_note"))
+            self.assertIsNone(src.get("wp_id"))
+
+        expected = {
+            code: mod.claims_cited_by(ordered, code) for code in talks
+        }
+        html_order, html_claims = self.html_claims()
+        md_claims = self.markdown_claims(
+            (ROOT / "agentic-ai-security" / "agentic-security.md").read_text(),
+            mod,
+        )
+        full_claims = self.markdown_claims(
+            (ROOT / "agentic-ai-security" / "llms-full.txt").read_text(),
+            mod,
+        )
+        self.assertEqual(html_claims.keys(), talks.keys())
+        self.assertEqual(list(html_order), list(md_claims))
+        self.assertEqual(html_claims, expected)
+        self.assertEqual(md_claims, expected)
+        self.assertEqual(full_claims, expected)
+        page = (ROOT / "agentic-ai-security" / "index.html").read_text()
+        talk_html = page[
+            page.find("<p><strong>Conference talks</strong>"):page.find(
+                'id="agent-identity"'
+            )
+        ]
+        self.assertIn("Not yet recorded", talk_html)
+        self.assertNotIn("\u2014", talk_html)
+        self.assertNotIn("\u2013", talk_html)
+        self.assertEqual(html_order, list(talks))
+
+    def html_claims(self):
+        page = (ROOT / "agentic-ai-security" / "index.html").read_text()
+        table = re.search(
+            r'<table class="src-table src-table--talks">(.*?)</table>',
+            page,
+            re.S,
+        )
+        self.assertIsNotNone(table)
+        body = re.search(r"<tbody>(.*)</tbody>", table.group(1), re.S).group(1)
+        order = []
+        claims = {}
+        for row in re.findall(r"<tr>(.*?)</tr>", body, re.S):
+            cells = re.findall(r"<td([^>]*)>(.*?)</td>", row, re.S)
+            self.assertEqual(len(cells), 6, row[:80])
+            code = re.sub(r"<[^>]+>", "", cells[0][1]).strip()
+            attrs, inner = cells[5]
+            self.assertIn('data-label="Claims"', attrs)
+            if "<li>" in inner:
+                self.assertNotIn("claim-missing", attrs)
+                items = []
+                for li in re.findall(r"<li>(.*?)</li>", inner, re.S):
+                    text = html.unescape(re.sub(r"<[^>]+>", "", li))
+                    items.append(" ".join(text.split()))
+            else:
+                text = " ".join(
+                    html.unescape(re.sub(r"<[^>]+>", "", inner)).split()
+                )
+                self.assertEqual(text, "Not yet recorded")
+                self.assertIn("claim-missing", attrs)
+                items = []
+            order.append(code)
+            claims[code] = items
+        self.assertEqual(len(order), len(set(order)))
+        return order, claims
+
+    def markdown_claims(self, text, mod):
+        start = text.find("**Conference talks**")
+        end = text.find("\n## ", start)
+        self.assertGreater(start, -1)
+        claims = {}
+        order = []
+        for line in text[start:end].splitlines():
+            parsed = mod.SRC_ROW_RE.match(line)
+            if not parsed:
+                continue
+            parts = [part.strip() for part in line.strip().strip("|").split("|")]
+            self.assertGreaterEqual(len(parts), 6, line)
+            code = parts[0]
+            self.assertEqual(parsed.group(5), parts[4])
+            cell = parts[5]
+            if cell == mod.MISSING_TALK_CLAIM:
+                items = []
+            else:
+                items = [" ".join(piece.split()) for piece in cell.split("<br>")]
+                self.assertNotIn(mod.MISSING_TALK_CLAIM, items)
+            order.append(code)
+            claims[code] = items
+        self.assertEqual(len(order), len(claims))
+        return claims
 
 
 if __name__ == "__main__":
