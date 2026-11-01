@@ -4,8 +4,8 @@
   "full_catalog": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
   "description": "Slim projection of ai-agentic-principles.json for assessment mapping: id, section, category, statement, and gap_index. Fetch the full catalog for src citations and the sources table.",
   "updated": "2026-10-31",
-  "count": 145,
-  "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper.",
+  "count": 146,
+  "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper. A note with kind editorial is this document's own position. Where a section keeps its classic Gap note and also states that position, the position is editorial_position, with kind editorial.",
   "gap_index": {
     "agent-identity": {
       "classic_ids": [
@@ -19,7 +19,11 @@
         "sch-2"
       ],
       "kind": "gap",
-      "note": "none of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable."
+      "note": "none of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.",
+      "editorial_position": {
+        "kind": "editorial",
+        "note": "None of the sources require agent actions to carry these three facts. None require them to survive when a request moves between agents run by different organizations. We think they should.\n\nDatabases solved this long ago. They can undo, redo, and replay work because every logged change records its transaction details. When agent chains lack those details, here is what goes wrong:\n- You can't undo. No one can tell which later actions went past the first limit.\n- You can't redo. After an outage, no one knows which pending actions were still approved.\n- You can't replay. An investigator can't compare the chain to what the person actually approved.\n- Power grows with each step. Each agent sees only the one before it, so it inherits that agent's full access instead of the person's narrower intent.\n- Approvals outlive their owner. A request can keep acting at a partner company after the person who approved it cancels it or leaves.\n- Old requests can come back. A request queued, retried, scheduled, or saved in agent memory can run weeks or months later. If it carries no expiry, nothing stops it, and no one can trace it to the person who asked.\n- No one holds the full story. Each company keeps part of the log, and nothing ties the parts together.\n\nSome tools exist outside the AI sources. OAuth token exchange (RFC 8693) can record a chain of agents acting for someone. OpenID Connect can record how the approver signed in. Neither sets a limit on what an agent may do alone, and the AI guidance requires neither."
+      }
     },
     "delegation-chains": {
       "classic_ids": [
@@ -241,6 +245,12 @@
       "section": "zero-standing-privilege",
       "category": "access-control",
       "statement": "Credentials and permissions are short-lived, scoped, and automatically revocable"
+    },
+    {
+      "id": "who-asked-until-when-how-far",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "Each agent action must record three things and pass them to the next agent:\n- who first made the request,\n- when that person's approval runs out, and\n- how much the agent may do on its own.\nEach record links back to the approval that granted it. An agent in any organization may tighten these limits. It may not loosen or drop them. If an action arrives without them, the agent refuses it."
     },
     {
       "id": "delegation-narrows-never-expands",

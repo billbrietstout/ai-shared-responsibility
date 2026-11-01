@@ -7,6 +7,9 @@ Grace date
   A source with type conference-talk is exempt: unmatched stays allowed,
   with one info line, and it does not need a WP- id or monitor_issue.
   It still needs a speaker, a talk title, an event name, a URL, and a note.
+  The src marker editorial-position is not a source row. It still needs a
+  note that calls the statement an editorial position. Every other src
+  code must resolve to a source, and unmatched sources stay on the grace rule.
 
 Support
   A principle id that is not on the base catalog fails when its support
@@ -55,6 +58,9 @@ WP_RE = re.compile(r"^WP-\d{4}$")
 SUPPORT_THRESHOLD = 0.34
 NEAR_DUP_THRESHOLD = 0.92
 CONFERENCE_TALK = "conference-talk"
+# Statement this document asserts on its own. Not a source-table row.
+# Any other src code must still resolve to a source.
+EDITORIAL_POSITION = "editorial-position"
 
 
 class Report:
@@ -403,6 +409,8 @@ def validate_agentic(
     cited: set[str] = set()
     for p in principles:
         for code in p.get("src", []):
+            if code == EDITORIAL_POSITION:
+                continue
             if code not in sources:
                 report.err(
                     f"principle {p.get('id')}: src code {code!r} "
@@ -410,6 +418,30 @@ def validate_agentic(
                 )
             else:
                 cited.add(code)
+        if EDITORIAL_POSITION in (p.get("src") or []):
+            note = p.get("note") if isinstance(p.get("note"), str) else ""
+            if "editorial position" not in note.lower():
+                report.err(
+                    f"principle {p.get('id')}: src {EDITORIAL_POSITION!r} "
+                    "requires a note stating it is an editorial position, "
+                    "not a source citation"
+                )
+
+    for anchor, gap in (data.get("gap_index") or {}).items():
+        if not isinstance(gap, dict):
+            continue
+        extra = gap.get("editorial_position")
+        if extra is None:
+            continue
+        if not isinstance(extra, dict) or extra.get("kind") != "editorial":
+            report.err(
+                f"gap_index {anchor}: editorial_position must be marked "
+                "kind editorial, the same marking as the editorial Gap notes"
+            )
+        elif not filled_text(extra.get("note")):
+            report.err(
+                f"gap_index {anchor}: editorial_position note is empty"
+            )
 
     for code in sources:
         if code not in cited:
@@ -568,8 +600,15 @@ def validate_agentic(
                 "from old ones"
             )
         for p in principles:
+            src_codes = list(p.get("src") or [])
+            # No cited paper. Scoring it against the monitor would only
+            # punish the marker. Other src codes are still scored.
+            if src_codes and all(c == EDITORIAL_POSITION for c in src_codes):
+                continue
             corpus: list[str] = []
-            for code in p.get("src", []):
+            for code in src_codes:
+                if code == EDITORIAL_POSITION:
+                    continue
                 src = sources.get(code) or {}
                 wp_id = src.get("wp_id")
                 if not wp_id:

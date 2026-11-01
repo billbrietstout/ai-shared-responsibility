@@ -6,7 +6,7 @@
 
 This document draws from fifty-two publicly available papers. Forty-one are the original MOSAIC-member corpus (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS). Eleven were added in September 2026 from the same members' later publications and from ETSI, ENISA, the Frontier Model Forum, OpenSSF, and AI Verify. Sections 1 through 11 cover agent-specific security: identity, delegation, autonomy, and the Model Context Protocol. Sections 12 through 20 cover the broader supply-chain, data, governance, and application-security material that agentic systems sit on top of without being specific to agents themselves. Sections 21 and 22 were added after checking this document against a separate, independently compiled catalog of classic security engineering principles (Saltzer and Schroeder, NIST SP 800-27, ISO 27001, CIS's own design principles, and Microsoft's immutable laws of security); both name places where that older, broader body of principles asks a question this AI-security corpus does not yet answer, rather than restating material the first twenty sections already cover. The two halves are meant to be read together, since almost every agent-specific rule in the first half assumes a foundation from the second half is already in place; an organization that has solved delegation-chain narrowing but not model provenance has only secured half the stack.
 
-Rather than summarizing each paper on its own, the document groups the recurring axioms, invariant rules, and principles by topic, so a single idea can be cited once even when three or four different organizations independently arrived at it. Each claim below names the source or sources it came from, using the short codes defined in the [Source Documents](#sources) table directly below, placed here rather than at the end so a code is defined before the first time it's used, not after. Each section closes with two things: an OpenCRE crosswalk line, naming the OpenCRE topic categories the section's sources map to, so the material can be cross-referenced against OpenCRE's own taxonomy rather than treated as a closed, self-contained vocabulary; and a Gap note, checking that section's specific topic against a separate, independently compiled catalog of classic security engineering principles (Saltzer and Schroeder, NIST SP 800-27, ISO 27001, CIS's own design principles, and Microsoft's immutable laws of security) and naming what that older body of principles asks about this exact topic that the AI-specific corpus does not yet answer. Two of these Gap notes, in sections 12 and 18, go further and state an editorial position where this document takes a side rather than reporting a neutral disagreement.
+Rather than summarizing each paper on its own, the document groups the recurring axioms, invariant rules, and principles by topic, so a single idea can be cited once even when three or four different organizations independently arrived at it. Each claim below names the source or sources it came from, using the short codes defined in the [Source Documents](#sources) table directly below, placed here rather than at the end so a code is defined before the first time it's used, not after. Each section closes with two things: an OpenCRE crosswalk line, naming the OpenCRE topic categories the section's sources map to, so the material can be cross-referenced against OpenCRE's own taxonomy rather than treated as a closed, self-contained vocabulary; and a Gap note, checking that section's specific topic against a separate, independently compiled catalog of classic security engineering principles (Saltzer and Schroeder, NIST SP 800-27, ISO 27001, CIS's own design principles, and Microsoft's immutable laws of security) and naming what that older body of principles asks about this exact topic that the AI-specific corpus does not yet answer. Three of these Gap notes, in sections 2, 12, and 18, go further and state an editorial position where this document takes a side rather than reporting a neutral disagreement.
 
 Where sources disagree, or where one organization's position goes further than the rest, that difference is called out rather than smoothed into a false consensus. Several sections note where a rule first appeared in an older, narrower paper and was later restated in stronger form by a newer one; where that happens, both are cited, since the earlier paper is often more specific about the mechanism even when the newer one states the principle more forcefully.
 
@@ -130,10 +130,28 @@ OWASP-TOP10 extends the idea past access into behavior, coining "Least-Agency" f
 - Access control uses fine-grained, attribute- and policy-based models rather than coarse role-based grants (CSA-IAM)
 - When a policy blocks an agent, return an explanation so the agent can adapt instead of looping or working around it (UNPROMPTED2-BARANOVSKYI)
 - When a user denies trust, anything already started must actually stop; a denial that leaves processes running is not a control (UNPROMPTED1-RYCIAK)
+- Each agent action must record three things and pass them to the next agent:
+  - who first made the request,
+  - when that person's approval runs out, and
+  - how much the agent may do on its own.
+  Each record links back to the approval that granted it. An agent in any organization may tighten these limits. It may not loosen or drop them. If an action arrives without them, the agent refuses it. (editorial position)
 
 **OpenCRE crosswalk:** Access Control, Authentication, Authorization, Configuration Management.
 
 **Gap:** none of the sources state "deny by default when a decision is ambiguous or a control fails" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.
+
+**Gap and editorial position:** None of the sources require agent actions to carry these three facts. None require them to survive when a request moves between agents run by different organizations. We think they should.
+
+Databases solved this long ago. They can undo, redo, and replay work because every logged change records its transaction details. When agent chains lack those details, here is what goes wrong:
+- You can't undo. No one can tell which later actions went past the first limit.
+- You can't redo. After an outage, no one knows which pending actions were still approved.
+- You can't replay. An investigator can't compare the chain to what the person actually approved.
+- Power grows with each step. Each agent sees only the one before it, so it inherits that agent's full access instead of the person's narrower intent.
+- Approvals outlive their owner. A request can keep acting at a partner company after the person who approved it cancels it or leaves.
+- Old requests can come back. A request queued, retried, scheduled, or saved in agent memory can run weeks or months later. If it carries no expiry, nothing stops it, and no one can trace it to the person who asked.
+- No one holds the full story. Each company keeps part of the log, and nothing ties the parts together.
+
+Some tools exist outside the AI sources. OAuth token exchange (RFC 8693) can record a chain of agents acting for someone. OpenID Connect can record how the approver signed in. Neither sets a limit on what an agent may do alone, and the AI guidance requires neither.
 
 ## 3. Delegation Chains and Scope Narrowing {#delegation-chains}
 

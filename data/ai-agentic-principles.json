@@ -1,15 +1,15 @@
 {
   "$schema_version": "1.0",
-  "description": "Contemporary AI and agentic security principles, normalized from a 52-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) organized into 22 topic sections. These are current industry positions, not settled axioms; weigh disagreement with an entry here less heavily than disagreement with the classic catalog. Six entries from the first [un]prompted conference (March 2026) carry origin \"unprompted-i-2026\", and nine entries from [un]prompted II (October 2026) carry origin \"unprompted-ii-2026\"; both sit outside the 52-source paper corpus. Companion catalog: security-principles.json.",
+  "description": "Contemporary AI and agentic security principles, normalized from a 52-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) organized into 22 topic sections. These are current industry positions, not settled axioms; weigh disagreement with an entry here less heavily than disagreement with the classic catalog. Six entries from the first [un]prompted conference (March 2026) carry origin \"unprompted-i-2026\", and nine entries from [un]prompted II (October 2026) carry origin \"unprompted-ii-2026\"; both sit outside the 52-source paper corpus. One entry uses src editorial-position. That entry is this document's own editorial position, not a claim from a source paper. Companion catalog: security-principles.json.",
   "updated": "2026-10-31",
   "generated_from": "agentic-ai-security/agentic-security.md",
   "source_document": "https://aisharedresponsibility.com/agentic-ai-security/",
   "method": "Bulleted claims transcribed per section with their original citations. Bullets the synthesis itself calls restatements of an earlier claim were merged, contributing only their sources. Sentences describing an absence of coverage in the corpus, rather than a claim any source makes, were excluded from the principle list and are carried in `gap_index` instead, so a statement about what nobody said is not represented as if somebody said it.",
-  "raw_bullet_count": 150,
+  "raw_bullet_count": 151,
   "merged_restatements": 2,
   "excluded_absence_statements": 3,
-  "count": 145,
-  "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper.",
+  "count": 146,
+  "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper. A note with kind editorial is this document's own position. Where a section keeps its classic Gap note and also states that position, the position is editorial_position, with kind editorial.",
   "sources": {
     "CIS-AGENTS": {
       "title": "Artificial Intelligence (AI) Agents Companion Guide (CIS Controls v8.1)",
@@ -831,7 +831,11 @@
         "sch-2"
       ],
       "kind": "gap",
-      "note": "none of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable."
+      "note": "none of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.",
+      "editorial_position": {
+        "kind": "editorial",
+        "note": "None of the sources require agent actions to carry these three facts. None require them to survive when a request moves between agents run by different organizations. We think they should.\n\nDatabases solved this long ago. They can undo, redo, and replay work because every logged change records its transaction details. When agent chains lack those details, here is what goes wrong:\n- You can't undo. No one can tell which later actions went past the first limit.\n- You can't redo. After an outage, no one knows which pending actions were still approved.\n- You can't replay. An investigator can't compare the chain to what the person actually approved.\n- Power grows with each step. Each agent sees only the one before it, so it inherits that agent's full access instead of the person's narrower intent.\n- Approvals outlive their owner. A request can keep acting at a partner company after the person who approved it cancels it or leaves.\n- Old requests can come back. A request queued, retried, scheduled, or saved in agent memory can run weeks or months later. If it carries no expiry, nothing stops it, and no one can trace it to the person who asked.\n- No one holds the full story. Each company keeps part of the log, and nothing ties the parts together.\n\nSome tools exist outside the AI sources. OAuth token exchange (RFC 8693) can record a chain of agents acting for someone. OpenID Connect can record how the approver signed in. Neither sets a limit on what an agent may do alone, and the AI guidance requires neither."
+      }
     },
     "delegation-chains": {
       "classic_ids": [
@@ -1125,6 +1129,31 @@
         "OWASP-TOP10",
         "OWASP-STATE",
         "OWASP-MCP-CHEAT"
+      ]
+    },
+    {
+      "id": "who-asked-until-when-how-far",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "Each agent action must record three things and pass them to the next agent:\n- who first made the request,\n- when that person's approval runs out, and\n- how much the agent may do on its own.\nEach record links back to the approval that granted it. An agent in any organization may tighten these limits. It may not loosen or drop them. If an action arrives without them, the agent refuses it.",
+      "src": [
+        "editorial-position"
+      ],
+      "note": "Editorial position of this document, Bill Stout, not a claim cited from the source corpus. The src marker editorial-position names that editorial position. It is not a source-table code.",
+      "risks": [
+        "No one can tell which later actions went past the first limit",
+        "After an outage, no one knows which pending actions were still approved",
+        "An investigator can't compare the chain to what the person actually approved",
+        "Each agent sees only the one before it, so it inherits that agent's full access instead of the person's narrower intent",
+        "A request can keep acting at a partner company after the person who approved it cancels it or leaves",
+        "A request queued, retried, scheduled, or saved in agent memory can run weeks or months later. If it carries no expiry, nothing stops it, and no one can trace it to the person who asked",
+        "Each company keeps part of the log, and nothing ties the parts together"
+      ],
+      "obligations": [
+        "Each agent action records who first made the request, when that person's approval runs out, and how much the agent may do on its own, and passes those three facts to the next agent",
+        "Each record links back to the approval that granted it",
+        "An agent in any organization may tighten these limits. It may not loosen or drop them",
+        "If an action arrives without these three facts, the agent refuses it"
       ]
     },
     {
