@@ -3,7 +3,7 @@
   "projection": "slim",
   "full_catalog": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
   "description": "Slim projection of ai-agentic-principles.json for assessment mapping: id, section, category, statement, and gap_index. Fetch the full catalog for src citations and the sources table.",
-  "updated": "2026-10-31",
+  "updated": "2026-11-01",
   "count": 146,
   "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper. A note with kind editorial is this document's own position. Where a section keeps its classic Gap note and also states that position, the position is editorial_position, with kind editorial.",
   "gap_index": {
@@ -12,14 +12,14 @@
         "ms-immutable-5"
       ],
       "kind": "gap",
-      "note": "none of the sources discuss the strength of the human credential used to approve or provision a new agent identity in the first place (Microsoft's Immutable Law 5, weak passwords). All the rigor in this section is spent on the agent's own credential once it exists; a cryptographically airtight non-human identity is still bootstrapped by a human step that can be defeated by a weak or reused password."
+      "note": "None of the 52 sources require the approver's authenticator strength to be recorded with the agent identity it created (Microsoft's Immutable Law 5, weak passwords). Identity standards outside this corpus define that strength: NIST SP 800-63B and FIDO2 (unverified). A strong agent credential can still be created by a person using a weak or reused password.\n\n**Research status:** arXiv work covers part of this gap. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2608.04292](https://arxiv.org/abs/2608.04292) is tagged tested (a lab prototype). [arXiv:2501.09674](https://arxiv.org/abs/2501.09674) is tagged theoretical (a proposal only)."
     },
     "zero-standing-privilege": {
       "classic_ids": [
         "sch-2"
       ],
       "kind": "gap",
-      "note": "none of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.",
+      "note": "NIST-GAI says a system can fail safely. None of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.\n\n**Research status:** Tested arXiv work addresses a fail-closed default. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.28679](https://arxiv.org/abs/2606.28679) is tagged tested (a lab proof of concept). [arXiv:2606.26057](https://arxiv.org/abs/2606.26057) is tagged theoretical (a proposal only).",
       "editorial_position": {
         "kind": "editorial",
         "note": "None of the sources require agent actions to carry these three facts. None require them to survive when a request moves between agents run by different organizations. We think they should.\n\nDatabases solved this long ago. They can undo, redo, and replay work because every logged change records its transaction details. When agent chains lack those details, here is what goes wrong:\n- You can't undo. No one can tell which later actions went past the first limit.\n- You can't redo. After an outage, no one knows which pending actions were still approved.\n- You can't replay. An investigator can't compare the chain to what the person actually approved.\n- Power grows with each step. Each agent sees only the one before it, so it inherits that agent's full access instead of the person's narrower intent.\n- Approvals outlive their owner. A request can keep acting at a partner company after the person who approved it cancels it or leaves.\n- Old requests can come back. A request queued, retried, scheduled, or saved in agent memory can run weeks or months later. If it carries no expiry, nothing stops it, and no one can trace it to the person who asked.\n- No one holds the full story. Each company keeps part of the log, and nothing ties the parts together.\n\nSome tools exist outside the AI sources. OAuth token exchange (RFC 8693) can record a chain of agents acting for someone. OpenID Connect can record how the approver signed in. Neither sets a limit on what an agent may do alone, and the AI guidance requires neither."
@@ -30,126 +30,126 @@
         "nist-p31"
       ],
       "kind": "gap",
-      "note": "none of the sources ask whether two agents in the same delegation chain, each individually scoped correctly on its own, can still jointly reconstruct information neither was authorized to hold alone (NIST SP 800-27's principle of addressing overlapping information domains). Scope narrowing is checked hop by hop; nothing here checks what two properly narrowed hops can do when combined."
+      "note": "COSAI-IAM names agent collusion, but none of the sources say how to test two correctly scoped agents for combined leakage (NIST SP 800-27's principle of addressing overlapping information domains). Research shows the combined leak happens ([arXiv:2509.14284](https://arxiv.org/abs/2509.14284), unverified).\n\n**Research status:** Tested arXiv work shows combined leakage across agents. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2509.14284](https://arxiv.org/abs/2509.14284), [arXiv:2603.05520](https://arxiv.org/abs/2603.05520), and [arXiv:2602.11510](https://arxiv.org/abs/2602.11510) are tagged tested (lab, benchmark, or simulation)."
     },
     "ephemeral-execution": {
       "classic_ids": [
         "nist-p20"
       ],
       "kind": "gap",
-      "note": "ephemeral execution solves persistence risk, not reach, and none of the sources discuss bounding which mission-critical backend systems an ephemeral agent is still permitted to touch while it runs (NIST SP 800-27's principle of isolating public-access systems from mission-critical resources). An environment that's guaranteed to be destroyed after use can still do real damage to whatever it was allowed to reach during that one run."
+      "note": "COSAI-FUTURE and COSAI-MCP require default-deny egress, but none tie an ephemeral agent's allowlist to the criticality of the backend systems it can reach (NIST SP 800-27's principle of isolating public-access systems from mission-critical resources). An environment that is destroyed after one run can still damage a critical system it was allowed to reach during that run.\n\n**Research status:** Deployed arXiv work bounds which systems an agent can reach. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2607.05743](https://arxiv.org/abs/2607.05743) is tagged theoretical (a survey, with no experiment of its own). [arXiv:2603.17419](https://arxiv.org/abs/2603.17419) is tagged deployed (nine production agents)."
     },
     "human-oversight": {
       "classic_ids": [
         "nist-p7"
       ],
       "kind": "gap",
-      "note": "none of the sources weigh what a human approval gate costs an organization in decision latency against the risk it prevents (NIST SP 800-27's principle of identifying trade-offs between risk reduction and operational effectiveness). An escalation tier that's well designed on paper but too slow to use in a live incident gets bypassed in practice, which is the same failure mode named directly in [Human Factors and the Limits of Technical Controls](#human-factors), just not yet connected back to this section's specific oversight tiers."
+      "note": "COSAI-MCP names approval fatigue, but none of the sources weigh an approval gate's latency against the risk it prevents (NIST SP 800-27's principle of identifying trade-offs between risk reduction and operational effectiveness). An escalation tier that's well designed on paper but too slow to use in a live incident gets bypassed in practice, which is the same failure mode named directly in [Human Factors and the Limits of Technical Controls](#human-factors), just not yet connected back to this section's specific oversight tiers.\n\n**Research status:** Tested arXiv work measures oversight cost and approval fatigue. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.08919](https://arxiv.org/abs/2606.08919), [arXiv:2603.24582](https://arxiv.org/abs/2603.24582), [arXiv:2604.04918](https://arxiv.org/abs/2604.04918), and [arXiv:2610.22987](https://arxiv.org/abs/2610.22987) are tagged tested (lab, benchmark, or simulation)."
     },
     "observability": {
       "classic_ids": [
         "nist-p4"
       ],
       "kind": "gap",
-      "note": "every source here treats logging as a purely technical control, and none discuss whether the people expected to review an audit trail are actually trained to recognize what they're looking at (NIST SP 800-27's requirement that developers, and by extension operators, be trained to work securely). An immutable log nobody knows how to read produces the same outcome as no log at all."
+      "note": "every source here treats logging as a purely technical control, and none discuss whether the people expected to review an audit trail are actually trained to recognize what they're looking at (NIST SP 800-27's requirement that developers, and by extension operators, be trained to work securely). An immutable log nobody knows how to read produces the same outcome as no log at all.\n\n**Research status:** No arXiv work was found. This gap is open in the 52 sources and open on arXiv."
     },
     "untrusted-input": {
       "classic_ids": [
         "cis-design-2"
       ],
       "kind": "gap",
-      "note": "since no source claims prompt injection can be fully prevented, the practical question shifts from \"how do we stop this\" to \"where do we spend finite defensive effort first,\" and none of the 52 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once)."
+      "note": "since no source claims prompt injection can be fully prevented, the practical question shifts from \"how do we stop this\" to \"where do we spend finite defensive effort first,\" and none of the 52 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once).\n\n**Research status:** arXiv work measures injection vectors. It does not rank them for where to spend defense first, so this gap stays open on that point. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2506.09956](https://arxiv.org/abs/2506.09956) is tagged tested (a public challenge). [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) is tagged theoretical (a survey, with no experiment of its own)."
     },
     "mcp-security": {
       "classic_ids": [
         "encryption-is-not-sufficient"
       ],
       "kind": "gap",
-      "note": "the sources require OAuth 2.1/OIDC and TLS for MCP transport, but none discuss where or how the key material and secrets underneath those protocols are themselves stored, rotated, or protected (Microsoft's law that encrypted data is only as secure as its decryption key, and its related risk law that encryption alone isn't a data protection solution). A correctly configured OAuth flow is still only as strong as the keys backing it."
+      "note": "CSA-DATA names a vault with KMS or HSM keys for data tokenization, not for MCP. The sources require OAuth 2.1/OIDC and TLS for MCP transport, but none say where the keys behind those protocols are stored, rotated, or protected (Microsoft's law that encrypted data is only as secure as its decryption key, and its related risk law that encryption alone isn't a data protection solution). A correctly configured OAuth flow is still only as strong as the keys backing it.\n\n**Research status:** arXiv work covers part of MCP key handling. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2609.22573](https://arxiv.org/abs/2609.22573) is tagged tested (lab, benchmark, or simulation). [arXiv:2608.10760](https://arxiv.org/abs/2608.10760) is tagged deployed (an industry deployment)."
     },
     "supply-chain": {
       "classic_ids": [
         "ms-immutable-3"
       ],
       "kind": "gap",
-      "note": "signing and provenance protect an artifact's chain of custody once it exists in digital form, but none of the sources discuss physical access controls over the systems that actually build or store that artifact (NIST SP 800-27's and Microsoft's shared principle that physical access defeats software-level guarantees). A signed model manifest doesn't help if the build server that produced it was physically accessible to anyone who walked up to it."
+      "note": "signing and provenance protect an artifact's chain of custody once it exists in digital form, but none of the sources discuss physical access controls over the systems that actually build or store that artifact (NIST SP 800-27's and Microsoft's shared principle that physical access defeats software-level guarantees). A signed model manifest doesn't help if the build server that produced it was physically accessible to anyone who walked up to it.\n\n**Research status:** No arXiv work was found. This gap is open in the 52 sources and open on arXiv. Physical access to a build server is a general security control, and these AI papers do not cover it."
     },
     "shared-responsibility": {
       "classic_ids": [
         "nist-p1"
       ],
       "kind": "gap",
-      "note": "COSAI-SRF assigns exactly one accountable party per activity, but none of the sources require that accountability be backed by a written security policy stating what that party is actually supposed to do (NIST SP 800-27's principle of establishing a sound security policy as the foundation for design). Naming who's accountable isn't the same as documenting what they're accountable for."
+      "note": "COSAI-SRF assigns exactly one accountable party per activity, but none of the sources require that accountability be backed by a written security policy stating what that party is actually supposed to do (NIST SP 800-27's principle of establishing a sound security policy as the foundation for design). Naming who's accountable isn't the same as documenting what they're accountable for.\n\n**Research status:** arXiv work on written runtime policy is only a proposal. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2510.24383](https://arxiv.org/abs/2510.24383) and [arXiv:2603.16586](https://arxiv.org/abs/2603.16586) are tagged theoretical (a proposal only)."
     },
     "emerging-risk-models": {
       "classic_ids": [
         "corollary-2"
       ],
       "kind": "gap",
-      "note": "Shadow AI and the attribution gap both describe agents nobody is tracking; none of the sources map the sharper failure mode of a single compromised agent identity, once discovered, cascading through everything it was ever delegated into (the cloud architecture corollary that identity compromise cascades through an entire environment). The attribution gap is a visibility problem; the cascade is what happens after visibility fails."
+      "note": "OWASP's ASI08 and COSAI-IAM's revocation cascade name the risk, but none map how far one compromised identity's delegations reach once it is discovered (the cloud architecture corollary that identity compromise cascades through an entire environment).\n\n**Research status:** Tested arXiv work shows a compromised agent cascading through other agents. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2604.07775](https://arxiv.org/abs/2604.07775), [arXiv:2605.19240](https://arxiv.org/abs/2605.19240), and [arXiv:2402.08567](https://arxiv.org/abs/2402.08567) are tagged tested (lab, benchmark, or simulation)."
     },
     "architectural-risk": {
       "classic_ids": [
         "sch-5"
       ],
       "kind": "editorial",
-      "note": "Kerckhoffs's open-design principle holds that security should never depend on secrecy of design. The corpus's general acceptance of closed, black-box foundation models is not a competing security principle of equal standing, it is an industry-accepted risk being tolerated for commercial and safety reasons, and this document takes that position explicitly rather than treating the two as a neutral disagreement. BIML-LLM24 and BIML-23RISKS argue for regulating the black box (requiring disclosure of training data, evaluation criteria, and results) rather than accepting its opacity as sufficient, which is the same underlying preference for openness, just aimed at the model rather than at the surrounding system."
+      "note": "Kerckhoffs's open-design principle holds that security should never depend on secrecy of design. The corpus's general acceptance of closed, black-box foundation models is not a competing security principle of equal standing, it is an industry-accepted risk being tolerated for commercial and safety reasons, and this document takes that position explicitly rather than treating the two as a neutral disagreement. BIML-LLM24 and BIML-23RISKS argue for regulating the black box (requiring disclosure of training data, evaluation criteria, and results) rather than accepting its opacity as sufficient, which is the same underlying preference for openness, just aimed at the model rather than at the surrounding system.\n\n**Research status:** A counter-view is on arXiv. [arXiv:2610.35199](https://arxiv.org/abs/2610.35199), \"Can Open Be Too Open?\", argues that more transparency does not by itself produce more security. The tag is theoretical (a proposal only). The tag is provisional because it comes from the abstract only, and the paper is unverified. This editorial position is unchanged."
     },
     "supply-chain-provenance": {
       "classic_ids": [
         "cis-design-3"
       ],
       "kind": "gap",
-      "note": "signing every artifact and manifest is specified here in exacting detail, but none of the sources address whether this is achievable in practice across an organization running thousands of models and constantly retrained checkpoints, only that it should happen (CIS's own design principle that every safeguard must be specific and feasible to implement, not just correct in theory)."
+      "note": "signing every artifact and manifest is specified here in exacting detail, but none of the sources address whether this is achievable in practice across an organization running thousands of models and constantly retrained checkpoints, only that it should happen (CIS's own design principle that every safeguard must be specific and feasible to implement, not just correct in theory).\n\n**Research status:** Tested arXiv work measures whether signatures and model bills of materials can be checked across public repositories. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2610.19498](https://arxiv.org/abs/2610.19498) and [arXiv:2607.17242](https://arxiv.org/abs/2607.17242) are tagged tested (a measurement of public model files)."
     },
     "adversarial-ml": {
       "classic_ids": [
         "cis18-12"
       ],
       "kind": "gap",
-      "note": "extraction and query-flooding attacks against a model often show up first as an unusual pattern at the network layer, and none of the sources tie NIST-ADVML's attack taxonomy back to network infrastructure monitoring as a detection point before an attack reaches the model itself (CIS Control 12, Network Infrastructure Management). The taxonomy classifies what happened; nothing here says where to watch for it happening."
+      "note": "extraction and query-flooding attacks against a model often show up first as an unusual pattern at the network layer, and none of the sources tie NIST-ADVML's attack taxonomy back to network infrastructure monitoring as a detection point before an attack reaches the model itself (CIS Control 12, Network Infrastructure Management). The taxonomy classifies what happened; nothing here says where to watch for it happening.\n\n**Research status:** Tested arXiv work detects model extraction from query or API traffic. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.05725](https://arxiv.org/abs/2606.05725), [arXiv:1805.02628](https://arxiv.org/abs/1805.02628), and [arXiv:2201.09243](https://arxiv.org/abs/2201.09243) are tagged tested (lab, benchmark, or simulation)."
     },
     "risk-governance": {
       "classic_ids": [
         "cis-design-1"
       ],
       "kind": "gap",
-      "note": "none of the governance frameworks require their own risk categories to be revised based on real, observed attacker behavior rather than a static, predefined taxonomy of AI risks (CIS's own design principle that offense informs defense). NIST AI RMF and the AI Controls Matrix both describe what to manage; neither describes a feedback loop from live incidents back into the framework itself."
+      "note": "none of the governance frameworks require their own risk categories to be revised based on real, observed attacker behavior rather than a static, predefined taxonomy of AI risks (CIS's own design principle that offense informs defense). NIST AI RMF and the AI Controls Matrix both describe what to manage; neither describes a feedback loop from live incidents back into the framework itself.\n\n**Research status:** arXiv work built from real incident reports revises a risk taxonomy. The tag is provisional because it comes from the abstract only, and the paper is unverified. [arXiv:2603.04259](https://arxiv.org/abs/2603.04259) is tagged deployed (real incident data)."
     },
     "data-security": {
       "classic_ids": [
         "ms-immutable-9"
       ],
       "kind": "gap",
-      "note": "data minimization and classification propagation are covered in depth here, but none of the sources caution that anonymization or de-identification of training or inference data is never a complete guarantee (Microsoft's law that absolute anonymity isn't practically achievable, online or offline). That caveat matters directly given this section's own point that deleted data can persist inside model weights regardless of what the deletion request assumed."
+      "note": "data minimization and classification propagation are covered in depth here, but none of the sources caution that anonymization or de-identification of training or inference data is never a complete guarantee (Microsoft's law that absolute anonymity isn't practically achievable, online or offline). That caveat matters directly given this section's own point that deleted data can persist inside model weights regardless of what the deletion request assumed.\n\n**Research status:** Tested arXiv work shows anonymized text can be re-identified. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2610.05586](https://arxiv.org/abs/2610.05586) and [arXiv:2602.12806](https://arxiv.org/abs/2602.12806) are tagged tested (lab, benchmark, or simulation)."
     },
     "incident-response": {
       "classic_ids": [
         "ms-risk-8"
       ],
       "kind": "gap",
-      "note": "none of the sources describe verifying that a quarantined agent or session is actually inert during containment, rather than just unreachable (Microsoft's cybersecurity risk law that isolated networks aren't automatically secure). Cutting an agent off from the network is not the same as confirming it has stopped acting."
+      "note": "COSAI-IR measures containment effectiveness in general, but none require confirming that a quarantined agent has actually stopped acting (Microsoft's cybersecurity risk law that isolated networks aren't automatically secure). Research shows framework stop controls often fail to do that ([arXiv:2607.14166](https://arxiv.org/abs/2607.14166), unverified).\n\n**Research status:** Tested arXiv work shows a stop or quarantine command often fails to halt side effects. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2607.14166](https://arxiv.org/abs/2607.14166), [arXiv:2610.35486](https://arxiv.org/abs/2610.35486), and [arXiv:2602.11749](https://arxiv.org/abs/2602.11749) are tagged tested (lab, benchmark, or simulation)."
     },
     "red-teaming": {
       "classic_ids": [
         "cis-design-4"
       ],
       "kind": "editorial",
-      "note": "BIML-NOMETER's claim that no benchmark can certify a system as secure is not, and should not be read as, an argument against red-teaming's value. Read together with OWASP-REDTEAM's insistence on rigorous, reproducible, human-verified testing, the corpus's own position amounts to testing to the fullest extent practical, in full knowledge that no test suite will find every vulnerability, rather than treating incompleteness as a reason not to test. CIS's design principle that every control be measurable and BIML's rejection of a security \"meter\" are only in tension if measurability is mistaken for certification; used instead as an incomplete but necessary check, both positions hold at once."
+      "note": "BIML-NOMETER's claim that no benchmark can certify a system as secure is not, and should not be read as, an argument against red-teaming's value. Read together with OWASP-REDTEAM's insistence on rigorous, reproducible, human-verified testing, the corpus's own position amounts to testing to the fullest extent practical, in full knowledge that no test suite will find every vulnerability, rather than treating incompleteness as a reason not to test. CIS's design principle that every control be measurable and BIML's rejection of a security \"meter\" are only in tension if measurability is mistaken for certification; used instead as an incomplete but necessary check, both positions hold at once.\n\n**Research status:** arXiv work is consistent with this position. [arXiv:2503.16431](https://arxiv.org/abs/2503.16431) reports OpenAI external red teaming in practice. The tag is deployed (a practice report). The tag is provisional because it comes from the abstract only, and the paper is unverified. The position above is unchanged."
     },
     "llm-appsec": {
       "classic_ids": [
         "cis18-9"
       ],
       "kind": "gap",
-      "note": "a growing share of LLM applications are embedded inside browser extensions or email-integrated assistants, and none of the sources discuss that delivery surface specifically, as distinct from the API-level application security the rest of this section covers (CIS Control 9, Email and Web Browser Protections). The OWASP Top 10 for LLM applications addresses what the model does once invoked; none of the sources address the browser or mail client as the thing that invoked it."
+      "note": "a growing share of LLM applications are embedded inside browser extensions or email-integrated assistants, and none of the sources discuss that delivery surface specifically, as distinct from the API-level application security the rest of this section covers (CIS Control 9, Email and Web Browser Protections). The OWASP Top 10 for LLM applications addresses what the model does once invoked; none of the sources address the browser or mail client as the thing that invoked it.\n\n**Research status:** arXiv work covers browser-extension and email delivery, including one real incident. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2509.10540](https://arxiv.org/abs/2509.10540) (EchoLeak) is tagged deployed (a real incident). [arXiv:2511.20597](https://arxiv.org/abs/2511.20597) and [arXiv:2507.05307](https://arxiv.org/abs/2507.05307) are tagged tested (lab, benchmark, or simulation)."
     },
     "enterprise-readiness": {
       "classic_ids": [
         "ms-risk-1"
       ],
       "kind": "gap",
-      "note": "enterprise-readiness guidance here measures governance maturity and control completeness, but none of the sources frame program success in terms of the economic cost imposed on an attacker (Microsoft's cybersecurity risk law that security success means ruining the attacker's ROI). A fully governed AI program and an expensive-to-attack one are not automatically the same thing."
+      "note": "enterprise-readiness guidance here measures governance maturity and control completeness, but none of the sources frame program success in terms of the economic cost imposed on an attacker (Microsoft's cybersecurity risk law that security success means ruining the attacker's ROI). A fully governed AI program and an expensive-to-attack one are not automatically the same thing.\n\n**Research status:** arXiv work covers part of attacker cost. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2605.06713](https://arxiv.org/abs/2605.06713) is tagged theoretical (a proposal only). [arXiv:2201.09243](https://arxiv.org/abs/2201.09243) is tagged tested (lab, benchmark, or simulation)."
     },
     "decommissioning-availability": {
       "classic_ids": [
@@ -157,14 +157,14 @@
         "nist-p23"
       ],
       "kind": "unaddressed-in-corpus",
-      "note": "NIST-GAI requires the capability to deactivate a system found to pose unacceptable risk, but nothing in the corpus specifies how quickly that deactivation needs to happen once triggered, the recovery-time and recovery-point figures an incident responder would actually need (CIS Control 11, Data Recovery, and NIST SP 800-27's contingency-planning principle, both still otherwise unaddressed per the note above). A documented capability to shut a system down is not the same as a documented target for how fast that shutdown has to complete."
+      "note": "COSAI-IR covers backups, restoration testing, and recovery-time objectives, but none of the sources set how fast an AI system must be deactivated once that is triggered (CIS Control 11, Data Recovery, and NIST SP 800-27's contingency-planning principle, as noted at the start of this section).\n\n**Research status:** arXiv work here is only a proposal about risk left after decommissioning, not a required shutdown time. The tag is provisional because it comes from the abstract only, and the paper is unverified. [arXiv:2606.12432](https://arxiv.org/abs/2606.12432) is tagged theoretical (a proposal only)."
     },
     "human-factors": {
       "classic_ids": [
         "psychological-acceptability"
       ],
       "kind": "unaddressed-in-corpus",
-      "note": "this document names control-adoption friction as a blind spot in the field, but none of the 52 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented."
+      "note": "this document names control-adoption friction as a blind spot in the field, but none of the 52 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented.\n\n**Research status:** Tested arXiv work measures reviewer fatigue and approval settings in production systems. It does not define time-to-bypass, help-desk volume, or review abandonment. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) and [arXiv:2606.08919](https://arxiv.org/abs/2606.08919) are tagged tested (lab, benchmark, or simulation)."
     }
   },
   "principles": [

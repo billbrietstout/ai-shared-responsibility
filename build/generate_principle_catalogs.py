@@ -48,7 +48,7 @@ SITE = "https://aisharedresponsibility.com"
 # carry their own dates so an agentic-only update does not touch the classic
 # catalog's metadata.
 UPDATED = "2026-10-30"
-AGENTIC_UPDATED = "2026-10-31"
+AGENTIC_UPDATED = "2026-11-01"
 
 OSCAL_SRC = "security_principles_reference.oscal.json"
 SYNTH_SRC = "agentic-ai-security/agentic-security.md"
@@ -496,7 +496,7 @@ CURATION = {
     "decommissioning-availability": [
         ("decommissioning-is-a-designed-capability", "resilience"),
         ("dos-is-its-own-threat-category", "resilience"),
-        ("x", "No source addresses AI-specific disaster recovery, business continuity, or failover. The silence spans all 52 sources."),
+        ("x", "COSAI-IR covers backups, restoration testing, and recovery-time objectives. No source sets how fast an AI system must be deactivated once that is triggered."),
     ],
     "human-factors": [
         ("x", "Classic security engineering treats control usability as inseparable from effectiveness. The AI-specific corpus does not engage with that warning."),
