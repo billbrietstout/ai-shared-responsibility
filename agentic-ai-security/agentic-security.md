@@ -83,22 +83,22 @@ In March 2026, six claims from seven talks at the first [un]prompted conference 
 
 **Conference talks**
 
-| Code | Title | Organization | Date | Link |
-|---|---|---|---|---|
-| UNPROMPTED1-RYCIAK | Vibe Check: Security Failures in AI-Assisted IDEs (Piotr Ryciak) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
-| UNPROMPTED1-MCCARTHY | Zeal of the Convert: Taming Shai-Hulud with AI (Rami McCarthy) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
-| UNPROMPTED1-NABEEL | Detecting GenAI Threats at Scale with YARA-Like Semantic Rules (Mohamed Nabeel) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
-| UNPROMPTED1-EPP | 8 Minutes to Admin. We Caught It in the Wild. Welcome to VibeHacking (Sergej Epp) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
-| UNPROMPTED1-RITTINGHOUSE-HUANG | 1.8M Prompts, 30 Alerts: Hunting Abuse in a User-Defined Agent Ecosystem (Matt Rittinghouse, Millie Huang) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
-| UNPROMPTED1-ISAK-GILL | Developing & Deploying AI Fingerprints for Advanced Threat Detection (Natalie Isak, Waris Gill) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
-| UNPROMPTED1-POLLEY | Training BrowseSafe: Lessons from Detecting Prompt Injection in Production Browser Agents (Kyle Polley) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ |
-| UNPROMPTED2-EVRON | Opening Words Wednesday (Gadi Evron) | [un]prompted II | October 2026 | https://unpromptedcon.org |
-| UNPROMPTED2-BARANOVSKYI | Who Authorized the Agent Making the AI Harness an Enforceable Compliance Boundary (Oleksii Baranovskyi) | [un]prompted II | October 2026 | https://unpromptedcon.org |
-| UNPROMPTED2-NAJEEB | Metrics for Agentic Systems What Good Looks Like for a Security Agent (Shahanas Najeeb) | [un]prompted II | October 2026 | https://unpromptedcon.org |
-| UNPROMPTED2-SEVERI-YANG | Memory Is the New Attack Surface Benchmarking Poisoning Through Agent Memory (Giorgio Severi, David Yang) | [un]prompted II | October 2026 | https://unpromptedcon.org |
-| UNPROMPTED2-BROSSARD-AUMASSON | Hacking Truth Forged Lean Proofs and the Risk of Verifier Bugs (Jonathan Brossard, Jean-Philippe Aumasson) | [un]prompted II | October 2026 | https://unpromptedcon.org |
-| UNPROMPTED2-NEJAD | Opened Is Not Fixed The Last Mile of AI Vulnerability Remediation (Shayaun Nejad) | [un]prompted II | October 2026 | https://unpromptedcon.org |
-| UNPROMPTED2-CHENNABASAPPA-PUDERBAUGH | Permission Fatigue Is a Security Bug Dynamic Guardrails for Coding Agents (Sahana Chennabasappa, Chris Puderbaugh) | [un]prompted II | October 2026 | https://unpromptedcon.org |
+| Code | Title | Organization | Date | Link | Claims |
+|---|---|---|---|---|---|
+| UNPROMPTED1-RYCIAK | Vibe Check: Security Failures in AI-Assisted IDEs (Piotr Ryciak) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ | When a user denies trust, anything already started must actually stop; a denial that leaves processes running is not a control |
+| UNPROMPTED1-MCCARTHY | Zeal of the Convert: Taming Shai-Hulud with AI (Rami McCarthy) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ | Use AI to generate deterministic scripts and signatures for scale and repeatability, and keep existing deterministic methods rather than replacing them |
+| UNPROMPTED1-NABEEL | Detecting GenAI Threats at Scale with YARA-Like Semantic Rules (Mohamed Nabeel) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ | Run new AI detection rules in shadow production for a period before enforcing, because real feeds behave differently |
+| UNPROMPTED1-EPP | 8 Minutes to Admin. We Caught It in the Wild. Welcome to VibeHacking (Sergej Epp) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ | Deception such as honey tokens favors defenders against AI-driven attackers and is underused |
+| UNPROMPTED1-RITTINGHOUSE-HUANG | 1.8M Prompts, 30 Alerts: Hunting Abuse in a User-Defined Agent Ecosystem (Matt Rittinghouse, Millie Huang) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ | Detect abuse across services and customers without reading or training on their raw prompt data |
+| UNPROMPTED1-ISAK-GILL | Developing & Deploying AI Fingerprints for Advanced Threat Detection (Natalie Isak, Waris Gill) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ | Detect abuse across services and customers without reading or training on their raw prompt data |
+| UNPROMPTED1-POLLEY | Training BrowseSafe: Lessons from Detecting Prompt Injection in Production Browser Agents (Kyle Polley) | [un]prompted | March 2026 | https://unpromptedcon.org/abstract-march2026/ | Using the latest, most robust model for an agent is itself a layer of prompt injection defense |
+| UNPROMPTED2-EVRON | Opening Words Wednesday (Gadi Evron) | [un]prompted II | October 2026 | https://unpromptedcon.org | Putting a human in the loop is not by itself a meaningful control at agent speed and scale |
+| UNPROMPTED2-BARANOVSKYI | Who Authorized the Agent Making the AI Harness an Enforceable Compliance Boundary (Oleksii Baranovskyi) | [un]prompted II | October 2026 | https://unpromptedcon.org | When a policy blocks an agent, return an explanation so the agent can adapt instead of looping or working around it<br>Before an agent harness starts, a launch gate verifies that all required controls are in place and working, and agents run under compiled default policies |
+| UNPROMPTED2-NAJEEB | Metrics for Agentic Systems What Good Looks Like for a Security Agent (Shahanas Najeeb) | [un]prompted II | October 2026 | https://unpromptedcon.org | When using an LLM to judge agent work, check that specific investigation steps were followed rather than asking whether the output is right; beware lucky runs |
+| UNPROMPTED2-SEVERI-YANG | Memory Is the New Attack Surface Benchmarking Poisoning Through Agent Memory (Giorgio Severi, David Yang) | [un]prompted II | October 2026 | https://unpromptedcon.org | Agent memory is an attack surface: test over long trajectories after injection, and inspect memory writes and reads alongside actions |
+| UNPROMPTED2-BROSSARD-AUMASSON | Hacking Truth Forged Lean Proofs and the Risk of Verifier Bugs (Jonathan Brossard, Jean-Philippe Aumasson) | [un]prompted II | October 2026 | https://unpromptedcon.org | Do not blindly trust automated verifiers (proof checkers, scanners); soundness bugs in verifiers are security issues |
+| UNPROMPTED2-NEJAD | Opened Is Not Fixed The Last Mile of AI Vulnerability Remediation (Shayaun Nejad) | [un]prompted II | October 2026 | https://unpromptedcon.org | Security advisories give adversarial AI a map of how to attack you; be careful what you disclose<br>Build variant analysis into hunting and patching pipelines; an opened fix is not a finished fix |
+| UNPROMPTED2-CHENNABASAPPA-PUDERBAUGH | Permission Fatigue Is a Security Bug Dynamic Guardrails for Coding Agents (Sahana Chennabasappa, Chris Puderbaugh) | [un]prompted II | October 2026 | https://unpromptedcon.org | Agent security controls must work out of the box across many fast-changing agent frameworks |
 
 ## 1. Agent Identity and Non-Human Principals {#agent-identity}
 

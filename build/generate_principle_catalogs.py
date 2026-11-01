@@ -604,8 +604,45 @@ GAP_RE = re.compile(r"^\*\*(Gap[^:]*):\*\*\s*(.*?)\s*$")
 # Not a row in the source table and not a paper code.
 EDITORIAL_POSITION = "editorial-position"
 EDITORIAL_CITE = "editorial position"
+# A source row is Code, Title, Organization, Date, Link.
+# Conference talk rows may add a Claims cell after the link. That cell repeats
+# principle statements that cite the talk. It is not parsed into the catalog,
+# so the statements stay the only copy. A talk with no citing statement shows
+# MISSING_TALK_CLAIM in the cell. The trailing .* lets that cell hold pipes.
 SRC_ROW_RE = re.compile(
-    r"^\| ([A-Z][A-Z0-9-]+) \| (.+?) \| (.+?) \| (.+?) \| (\S+) \|$", re.M)
+    r"^\| ([A-Z][A-Z0-9-]+) \| (.+?) \| (.+?) \| (.+?) \| (\S+) \|.*$", re.M)
+
+# Claims column text when no principle cites the talk. Do not invent a claim.
+MISSING_TALK_CLAIM = "Not yet recorded"
+
+
+def claims_cited_by(principles, code):
+    """Return claim statements that cite code, in catalog order.
+
+    Each statement is the principle text with whitespace collapsed to single
+    spaces. The list is empty when the catalog has no claim for that code.
+    """
+    out = []
+    for principle in principles:
+        src = principle.get("src") or []
+        if code not in src:
+            continue
+        statement = principle.get("statement") or ""
+        collapsed = " ".join(str(statement).split())
+        if collapsed:
+            out.append(collapsed)
+    return out
+
+
+def talk_claims_cell(principles, code):
+    """Plain Claims cell. MISSING_TALK_CLAIM when none are recorded.
+
+    Several claims stay in one markdown table row, separated by <br>.
+    """
+    claims = claims_cited_by(principles, code)
+    if not claims:
+        return MISSING_TALK_CLAIM
+    return "<br>".join(claims)
 
 
 def load_source_wp_map():
