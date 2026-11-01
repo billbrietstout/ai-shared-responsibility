@@ -11,8 +11,11 @@ Published file, on the repository's default branch:
 
 The script asks the GitHub API for default_branch and fetches the file
 from that branch. It does not hard-code main or master. Today the API
-returns master. Monitor pull request 173 adds the file. Until that pull
-request merges, a missing file is a warning, not a failure.
+returns master. Monitor pull request 173 merged on 2026-11-01. That
+export identifies each paper with wp_id, not id. A missing file is still
+a warning, not a failure. A parsed export with no id and no wp_id is an
+error. The script does not call that a content diff and does not write
+the fixture.
 
 Check (used in CI):
 
@@ -90,6 +93,17 @@ def parse_updated(value: object) -> date | None:
         return None
 
 
+def paper_id(paper: object) -> str | None:
+    """Id the checker can count. The monitor export uses wp_id."""
+    if not isinstance(paper, dict):
+        return None
+    for key in ("id", "wp_id"):
+        value = paper.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    return None
+
+
 def paper_map(data: object) -> dict[str, dict] | None:
     if not isinstance(data, dict):
         return None
@@ -98,9 +112,44 @@ def paper_map(data: object) -> dict[str, dict] | None:
         return None
     out: dict[str, dict] = {}
     for paper in papers:
-        if isinstance(paper, dict) and isinstance(paper.get("id"), str):
-            out[paper["id"]] = paper
+        pid = paper_id(paper)
+        if pid and isinstance(paper, dict):
+            out[pid] = paper
     return out
+
+
+def unusable_export_reason(data: object) -> str | None:
+    """Why this parsed export must not be compared or written.
+
+    None means the export has a papers array and every record has id or
+    wp_id, so a content diff is meaningful. A string means the fetch
+    returned JSON that cannot support that claim. An empty papers array
+    and a non-empty array whose records use neither key both land here.
+    """
+    if not isinstance(data, dict) or not isinstance(data.get("papers"), list):
+        return (
+            "monitor export JSON has no papers array. "
+            "Refusing to treat this as a content diff. "
+            "The fixture was not changed."
+        )
+    papers = data["papers"]
+    identified = sum(1 for paper in papers if paper_id(paper))
+    if papers and identified == len(papers):
+        return None
+    keys: list[str] = []
+    for paper in papers:
+        if isinstance(paper, dict):
+            keys = sorted(paper)[:12]
+            break
+    key_note = f" Keys on the first record: {', '.join(keys)}." if keys else ""
+    return (
+        "monitor export parsed but contains no usable paper ids "
+        "(expected id or wp_id on every record). "
+        f"Paper records: {len(papers)}. "
+        f"Records with an id: {identified}.{key_note} "
+        "Refusing to treat this as a content diff. "
+        "The fixture was not changed."
+    )
 
 
 def clip(ids: list[str], limit: int = 12) -> str:
@@ -193,6 +242,10 @@ def evaluate(
         remote = json.loads(fetched.body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         errors.append(f"monitor export is not JSON: {exc}")
+        return errors, warnings
+    unusable = unusable_export_reason(remote)
+    if unusable:
+        errors.append(unusable)
         return errors, warnings
     if canonical(local) != canonical(remote):
         errors.append(
@@ -374,6 +427,10 @@ def main() -> int:
         remote = json.loads(fetched.body.decode("utf-8"))
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         emit("error", f"monitor export is not JSON: {exc}")
+        return 1
+    unusable = unusable_export_reason(remote)
+    if unusable:
+        emit("error", unusable)
         return 1
     if local is not None and canonical(local) == canonical(remote):
         print(f"Fixture already matches the monitor export: {args.fixture}")

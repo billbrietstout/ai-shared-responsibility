@@ -282,9 +282,11 @@ python3 scripts/sync_whitepapers_fixture.py
 The last command asks the GitHub API for the monitor repository's default
 branch and copies `data/whitepapers.json` from that branch into
 `build/fixtures/whitepapers.json`. It does not write the fixture when the
-file is absent. Absence stays a CI warning until
-[monitor pull request 173](https://github.com/billbrietstout/ai-security-whitepaper-monitor/pull/173)
-merges the file onto the default branch (`master`).
+file is absent, or when the parsed export has no `id` and no `wp_id`.
+Absence of the file stays a CI warning.
+[Monitor pull request 173](https://github.com/billbrietstout/ai-security-whitepaper-monitor/pull/173)
+merged that file onto `master` on 2026-11-01. The export's paper key is
+`wp_id`.
 
 Weekly sync from changed WP- IDs: `scripts/site_sync.py` (see root README).
 The data flow and the branch protection settings are in
