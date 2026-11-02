@@ -820,6 +820,11 @@ class TalkClaimsColumnTest(unittest.TestCase):
             "A short statement this page records and cites with a short code",
             page,
         )
+        self.assertEqual(talk_html.count('<details class="claim-details">'), 14)
+        self.assertNotIn("<details class=\"claim-details\" open", talk_html)
+        self.assertIn("Show the claim", talk_html)
+        self.assertIn("Show the claims", talk_html)
+        self.assertIn("claim text stays closed until you open it", talk_html)
         for copy in (
             (ROOT / "agentic-ai-security" / "agentic-security.md").read_text(),
             (ROOT / "agentic-ai-security" / "llms-full.txt").read_text(),
