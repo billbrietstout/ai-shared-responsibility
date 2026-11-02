@@ -10,7 +10,7 @@ Rather than summarizing each paper on its own, the document groups the recurring
 
 Where sources disagree, or where one organization's position goes further than the rest, that difference is called out rather than smoothed into a false consensus. Several sections note where a rule first appeared in an older, narrower paper and was later restated in stronger form by a newer one; where that happens, both are cited, since the earlier paper is often more specific about the mechanism even when the newer one states the principle more forcefully.
 
-In March 2026, six claims from seven talks at the first [un]prompted conference were added, cited with the UNPROMPTED1- codes in the source table below. In October 2026, nine claims from seven talks at [un]prompted II were added, cited with the UNPROMPTED2- codes. The talks are conference material rather than papers, so the fifty-two count is unchanged: every generalization and Gap note that names the fifty-two sources still describes the paper corpus alone, and a talk citation asserts only what the named speaker said in that session.
+In March 2026, six claims from seven talks at the first [un]prompted conference were added, cited with the UNPROMPTED1- codes in the source table below. In October 2026, nine claims from seven talks at [un]prompted II were added, cited with the UNPROMPTED2- codes. The talks are conference material rather than papers, so the fifty-two count is unchanged: every generalization and Gap note that names the fifty-two sources still describes the paper corpus alone. A talk citation records our paraphrased takeaway from that session. It is not a direct quote from the speaker, and it may include our own conclusions.
 
 ## Source Documents {#sources}
 
@@ -82,6 +82,8 @@ In March 2026, six claims from seven talks at the first [un]prompted conference 
 | AIVERIFY-MAGF | Model AI Governance Framework for Agentic AI v1.5 | AI Verify Foundation | May 20, 2026 | https://www.imda.gov.sg/assets/63438074-73f6-4dcc-a281-030f42642cf4.pdf |
 
 **Conference talks**
+
+The Claims column lists paraphrased takeaways drawn from each talk. The text repeats the principle statements that cite the talk. These are not direct quotes from the speaker, and they may include our own conclusions. If no statement cites the talk, the cell says Not yet recorded.
 
 | Code | Title | Organization | Date | Link | Claims |
 |---|---|---|---|---|---|

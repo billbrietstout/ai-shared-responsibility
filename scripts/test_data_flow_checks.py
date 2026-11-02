@@ -804,9 +804,33 @@ class TalkClaimsColumnTest(unittest.TestCase):
             )
         ]
         self.assertIn("Not yet recorded", talk_html)
+        self.assertIn(
+            "paraphrased takeaways we drew from each talk", talk_html
+        )
+        self.assertIn(
+            "not direct quotes from the speaker", talk_html
+        )
+        self.assertIn("our own conclusions", talk_html)
+        self.assertNotIn("asserts only what the named speaker said", page)
         self.assertNotIn("\u2014", talk_html)
         self.assertNotIn("\u2013", talk_html)
         self.assertEqual(html_order, list(talks))
+        self.assertIn('id="claim"', page)
+        self.assertIn(
+            "A short statement this page records and cites with a short code",
+            page,
+        )
+        for copy in (
+            (ROOT / "agentic-ai-security" / "agentic-security.md").read_text(),
+            (ROOT / "agentic-ai-security" / "llms-full.txt").read_text(),
+        ):
+            self.assertIn(
+                "paraphrased takeaways drawn from each talk", copy
+            )
+            self.assertIn("not direct quotes from the speaker", copy)
+            self.assertNotIn(
+                "asserts only what the named speaker said", copy
+            )
 
     def html_claims(self):
         page = (ROOT / "agentic-ai-security" / "index.html").read_text()
