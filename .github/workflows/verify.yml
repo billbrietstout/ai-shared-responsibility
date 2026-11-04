@@ -36,6 +36,7 @@ jobs:
       - name: Regeneration drift gate
         run: |
           python3 build/generate_knowledge_layer.py
+          python3 build/generate_whitepaper_inventory.py
           python3 build/inject_page_metadata.py
           python3 build/inject_chunk_markers.py
           if ! git diff --quiet; then

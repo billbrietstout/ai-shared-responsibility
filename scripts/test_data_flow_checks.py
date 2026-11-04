@@ -1148,6 +1148,8 @@ class MonitorSyncTest(unittest.TestCase):
             "`data/ai-agentic-principles.slim.json` unchanged",
             body,
         )
+        self.assertIn("data/whitepaper-inventory.slim.json", body)
+        self.assertIn("The principle catalogs stay unchanged.", body)
         self.assertIn("does not enable auto-merge", body)
         self.assertIn("Approve workflows to run", body)
         self.assertNotIn("\u2014", body)

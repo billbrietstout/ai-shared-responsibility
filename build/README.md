@@ -274,10 +274,17 @@ See [`docs/monitor-data-flow.md`](../docs/monitor-data-flow.md).
 
 ```bash
 python3 build/generate_principle_catalogs.py
+python3 build/generate_whitepaper_inventory.py
 python3 scripts/validate_principles.py
 python3 scripts/sync_whitepapers_fixture.py --check
 python3 scripts/sync_whitepapers_fixture.py
 ```
+
+`generate_whitepaper_inventory.py` writes `data/whitepaper-inventory.slim.json`
+and stamps the scope counts on the agentic AI security page and the
+whitepaper assessment page. It reads the fixture and the agentic catalog.
+It does not write either principle catalog. Run it after a fixture refresh
+so the drift gate stays clean.
 
 The last command asks the GitHub API for the monitor repository's default
 branch and copies `data/whitepapers.json` from that branch into
@@ -312,9 +319,11 @@ See [`docs/monitor-data-flow.md`](../docs/monitor-data-flow.md).
 2. `verify_knowledge_layer.py` (JSON integrity)
 3. `verify_pages.py` (metadata, chunk markers, markup)
 4. `verify_attack_inventory.py` (inventory schema, refs, staleness warnings)
-5. Drift gate: regenerate the knowledge layer, re-run both injectors, then
-   `git diff --exit-code`. Fails if committed artifacts or page markers are out
-   of date, so stale generated files cannot land.
+5. Drift gate: regenerate the knowledge layer, regenerate
+   `data/whitepaper-inventory.slim.json` and the scope counts on the
+   agentic AI security and whitepaper assessment pages, re-run both
+   injectors, then `git diff --exit-code`. Fails if committed artifacts
+   or page markers are out of date, so stale generated files cannot land.
 
 The drift gate is why the generators must stay idempotent. If you change the
 glossary page, a `/data` file, or add a page, run the three build scripts and

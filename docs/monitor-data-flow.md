@@ -26,6 +26,8 @@ The Google Sheet is retired. The record for a paper is a GitHub issue in that re
 
 6. The pages read `data/ai-agentic-principles.json`. `scripts/validate_principles.py` checks that file. The `validate-principles` job runs on every push and pull request to `develop` and `main`. There is no path filter.
 
+7. `build/generate_whitepaper_inventory.py` reads the fixture and the agentic catalog, then writes `data/whitepaper-inventory.slim.json`. The agentic AI security page and the whitepaper assessment page use that file for the scope control. The default scope is the papers the catalog cites. Cited research is a separate count and is not part of that default. A metadata-only row, a duplicate, or a row marked for removal is not a source of principles. The script does not write the principle catalogs. The weekly draft regenerates the slim file when it refreshes the fixture. `verify.yml` regenerates it again and fails if the committed file differs.
+
 ## Weekly draft pull request
 
 `.github/workflows/monitor-fixture-sync.yml` runs `scripts/monitor_sync_pr.py`. The workflow name in the Actions tab is "Refresh the whitepaper fixture".
