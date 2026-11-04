@@ -390,9 +390,9 @@ def render_controls(counts: dict) -> str:
         return str(count_value(counts, key))
 
     # The numbers inside the spans are stamped again after insertion.
-    return f"""<p class="inv-count-note">Included organization papers: <span data-inv-count="org">{n("org")}</span>. Cited research: <span data-inv-count="research">{n("research")}</span>. The two counts do not overlap. Cited research is not part of the default list.</p>
-<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">{n("org-metadata")}</span>. Cited research records with extracted principles: <span data-inv-count="research-extracted">{n("research-extracted")}</span>. A metadata only record is not a source of principles.</p>
-<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">{n("org-arxiv")}</span> arXiv records that are not in the cited research count. The evidence filter appears for a list that contains an arXiv record.</p>
+    return f"""<p class="inv-count-note">Organization papers: <span data-inv-count="org">{n("org")}</span>. Cited research: <span data-inv-count="research">{n("research")}</span>. These counts do not overlap. Cited research is not in the default list.</p>
+<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">{n("org-metadata")}</span>. Cited research records with extracted principles: <span data-inv-count="research-extracted">{n("research-extracted")}</span>. A metadata-only record is not a source of principles.</p>
+<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">{n("org-arxiv")}</span> arXiv records outside the cited research count. The evidence filter opens when the selected list contains an arXiv record.</p>
 <fieldset class="inv-options" id="inventory-scope-set">
   <legend>Which records to list</legend>
   <label class="inv-option">
@@ -414,7 +414,7 @@ def render_controls(counts: dict) -> str:
 </fieldset>
 <fieldset class="inv-options" id="inventory-evidence-set" hidden>
   <legend>Evidence level</legend>
-  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotations from the papers. Counts on the buttons match the list you selected. All levels is the default.</p>
+  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotes from the papers. Button counts match the list you selected. All levels is the default.</p>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="all" checked>
     <span>All levels</span>
@@ -456,7 +456,7 @@ def render_controls(counts: dict) -> str:
   <input id="inventory-find" type="search" autocomplete="off">
 </label>
 <p id="inventory-status" role="status" aria-live="polite"></p>
-<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. The page does not load the full monitor export.</p>"""
+<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. This page does not load the full monitor export.</p>"""
 
 
 def apply_page(html: str, counts: dict) -> str:

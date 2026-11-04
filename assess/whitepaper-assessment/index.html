@@ -230,10 +230,9 @@
         <p class="page-hero__lede">
           A copy-ready prompt that checks a paper against <span data-inv-count="classic">87</span> classic security
           engineering principles, <span data-inv-count="principles">170</span> AI and agentic security principles, and the
-          SRF accountability and regulatory data, then reviews a working draft for
-          the mechanical defects that survive ordinary review. Paste the prompt,
-          add the paper, and your assistant fetches slim catalogs itself after it
-          confirms the read. No file uploads.
+          SRF accountability and regulatory data. It also checks a working draft for
+          defects that ordinary review often misses. Paste the prompt, add the paper, and
+          your assistant fetches the slim catalogs after it confirms the read. No file uploads.
         </p>
       </div>
     </header>
@@ -251,14 +250,14 @@
           can fetch URLs.
         </li>
         <li>
-          Paste the text, attach a file, or share a URL, for example a PDF or
-          webpage link, the assistant can fetch.
+          Paste the text, attach a file, or share a URL the assistant can fetch,
+          such as a PDF or webpage link.
         </li>
         <li>
           The assistant reports what it managed to read before it assesses
-          anything. If the read is whole, it fetches both slim principle
-          catalogs and, when the paper makes threat-specific or regulatory
-          claims, the SRF data behind those claims.
+          anything. If it read the full paper, it fetches both slim principle
+          catalogs. When the paper makes threat-specific or regulatory claims, it
+          also fetches the SRF data for those claims.
         </li>
         <li>
           Say <code>map-only</code> in the same message to skip the citation
@@ -266,25 +265,24 @@
           coverage, known gaps, and the P1/P2 caps still run.
         </li>
         <li>
-          Beyond catalog matching, the prompt runs an integrity screen on the
-          submission itself, grounds any regulatory or accountability claims in
-          live data, and checks draft mechanics and machine readability when
-          you're reviewing a working draft rather than a finished paper.
+          Beyond catalog matching, the prompt screens the submission for integrity
+          problems, checks regulatory or accountability claims against the current
+          SRF data files, and checks draft mechanics and machine readability when
+          you review a working draft rather than a finished paper.
         </li>
         <li>
-          Output arrives as a ranked findings table plus prose blocks for the
-          checks that are not principle matching. Matched statements are a
-          count and a list of catalog ids, not one row each.
+          You get a ranked findings table plus short prose for checks that are not
+          principle matching. Matched statements appear as a count and a list of
+          catalog ids, not one row each.
         </li>
       </ol>
 
       <h2 class="section-label">What it checks against</h2>
       <p class="section-note">
-        These three sources back the principle-matching steps below. The prompt
-        fetches slim projections of the two principle catalogs after intake
-        passes. The intake check, submission screen, regulatory grounding, and
-        draft-mechanics checks described after the cards run independently of
-        them, not against a catalog.
+        Principle matching uses these three sources. After intake passes, the prompt
+        fetches slim versions of the two principle catalogs. Intake, the submission
+        screen, regulatory checks, and draft-mechanics checks do not use a principle
+        catalog.
       </p>
       <div class="catalog-grid">
         <div class="catalog-card">
@@ -293,7 +291,7 @@
           <p class="catalog-card__desc">
             Saltzer and Schroeder, NIST SP 800-27, ISO 27001, CIS Controls
             v8/v8.1, Microsoft's two law sets, and cloud architecture
-            corollaries. Settled engineering axioms, most of them decades old.
+            corollaries. Settled engineering rules, most of them decades old.
           </p>
           <a class="catalog-card__url" href="/data/security-principles.slim.json"
             >/data/security-principles.slim.json</a
@@ -309,11 +307,11 @@
           <div class="catalog-card__count"><span data-inv-count="principles">170</span></div>
           <p class="catalog-card__name">AI and agentic security principles</p>
           <p class="catalog-card__desc">
-            Normalized from the
-            <a href="/agentic-ai-security/"><span data-inv-count="cited">68</span>-source synthesis</a> across <span data-inv-count="sections">22</span>
-            topic sections, with a gap index tying each section's blind spot back
-            to the classic principle it misses. These entries record current
-            industry positions and have not settled into axioms.
+            Built from the
+            <a href="/agentic-ai-security/"><span data-inv-count="cited">68</span>-paper synthesis</a> across <span data-inv-count="sections">22</span>
+            topic sections. A gap index lists topics those papers leave open and
+            links each to a classic principle. These entries record current
+            industry positions; they are not settled axioms.
           </p>
           <a class="catalog-card__url" href="/data/ai-agentic-principles.slim.json"
             >/data/ai-agentic-principles.slim.json</a
@@ -330,8 +328,8 @@
           <p class="catalog-card__name">Threat-to-accountability crosswalk</p>
           <p class="catalog-card__desc">
             Each OWASP AI Exchange threat mapped to the SRF layer that owns the
-            control point. Catches a paper that assigns a fix to the wrong layer,
-            which is a category error rather than a difference of opinion.
+            control point. Catches a paper that assigns a fix to a layer that
+            cannot apply the control.
           </p>
           <a class="catalog-card__url" href="/data/threats.json"
             >/data/threats.json</a
@@ -343,35 +341,22 @@
       <h2 class="section-label" id="monitor-inventory">Monitor inventory</h2>
       <div data-inventory data-inventory-mode="render">
         <p>
-          The copy-ready prompt matches a paper to the two principle catalogs.
-          Widening this list does not add entries to those catalogs. Cited in
-          principles is the default. It is the papers the agentic catalog cites.
+          The prompt matches a paper to the two principle catalogs. Changing the
+          list below does not add entries to those catalogs. The default list is
+          Cited in principles: the papers the agentic catalog cites.
         </p>
         <p>
-          Included organization papers are a separate count from cited research.
-          Cited research is the arXiv papers the monitor added because a
-          monitored paper cites them. Cited research is not part of the default.
-        </p>
-        <p>
-          On this page, a source of principles means the agentic catalog cites
-          the paper. Metadata only means the monitor has a title, an
-          organization, a link, and sometimes an evidence level, and it has not
-          extracted principles. A metadata only record is not a source of
-          principles. A duplicate, or a record marked for removal, is not a
-          source of principles.
-        </p>
-        <p>
-          Conference talks are cited in the catalog. They are not monitor
-          papers, so they are not in this list. Evidence level is a tag the
-          monitor stored from an automated read. When the selected list
-          contains an arXiv record, the filter below opens. Its definitions
-          paraphrase the monitor's tags. An evidence tag is not an extracted
-          principle.
+          Organization papers and cited research are separate counts. Cited
+          research means arXiv papers the monitor added because a monitored paper
+          cites them. Conference talks can appear in the catalog, but they are not
+          monitor papers, so they are not in this list. When the selected list
+          includes an arXiv record, the evidence filter opens. Its definitions
+          paraphrase the monitor's tags.
         </p>
         <!-- inventory-controls:start -->
-<p class="inv-count-note">Included organization papers: <span data-inv-count="org">105</span>. Cited research: <span data-inv-count="research">400</span>. The two counts do not overlap. Cited research is not part of the default list.</p>
-<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">3</span>. Cited research records with extracted principles: <span data-inv-count="research-extracted">0</span>. A metadata only record is not a source of principles.</p>
-<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">2</span> arXiv records that are not in the cited research count. The evidence filter appears for a list that contains an arXiv record.</p>
+<p class="inv-count-note">Organization papers: <span data-inv-count="org">105</span>. Cited research: <span data-inv-count="research">400</span>. These counts do not overlap. Cited research is not in the default list.</p>
+<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">3</span>. Cited research records with extracted principles: <span data-inv-count="research-extracted">0</span>. A metadata-only record is not a source of principles.</p>
+<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">2</span> arXiv records outside the cited research count. The evidence filter opens when the selected list contains an arXiv record.</p>
 <fieldset class="inv-options" id="inventory-scope-set">
   <legend>Which records to list</legend>
   <label class="inv-option">
@@ -393,7 +378,7 @@
 </fieldset>
 <fieldset class="inv-options" id="inventory-evidence-set" hidden>
   <legend>Evidence level</legend>
-  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotations from the papers. Counts on the buttons match the list you selected. All levels is the default.</p>
+  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotes from the papers. Button counts match the list you selected. All levels is the default.</p>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="all" checked>
     <span>All levels</span>
@@ -435,7 +420,7 @@
   <input id="inventory-find" type="search" autocomplete="off">
 </label>
 <p id="inventory-status" role="status" aria-live="polite"></p>
-<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. The page does not load the full monitor export.</p>
+<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. This page does not load the full monitor export.</p>
 <!-- inventory-controls:end -->
         <div id="inventory-mount"></div>
         <noscript>
@@ -456,23 +441,23 @@
           <tbody>
             <tr>
               <td class="tier">0 Intake</td>
-              <td>Extraction method, section and page count, and a list of what could not be read, including images, tables that lost structure, and appendices. A broken heading tree, or a section count that disagrees with the paper's own table of contents, stops the review.</td>
-              <td>A confident list of topics the paper "does not address" after a truncated PDF, a two-column extract that interleaved its columns, or a JavaScript page that returned a shell.</td>
+              <td>How the text was extracted, the section and page counts, and what could not be read (images, broken tables, appendices). A broken heading tree, or a section count that disagrees with the paper's table of contents, stops the review.</td>
+              <td>A list of topics the paper "does not address" drawn from a truncated PDF, a two-column extract that mixed its columns, or a JavaScript page that returned only a shell.</td>
             </tr>
             <tr>
               <td class="tier">1 Submission screen</td>
-              <td>Citation identifiers resolved against registries; unpinned package or repo recommendations; text aimed at the reviewing system; unsourced figures; recommendations naming no version or setting; experience claims with no environment; the newest dated reference next to the publication date; leftover production artifacts. Each is reported as itself, not as evidence of who wrote the text. A paper can match both catalogs and still fail this screen.</td>
-              <td>A fake DOI, an unpinned install that can be poisoned after publication, or a statistic nobody can re-count, sitting next to a clean principle-mapping table.</td>
+              <td>Whether citation identifiers resolve; whether package or repo recommendations are pinned; whether text targets the reviewing system; whether figures lack sources; whether recommendations name a version or setting; whether experience claims name an environment; whether the newest reference date fits the publication date; and whether leftover production artifacts remain. Each item is reported as itself, not as proof of who wrote the text. A paper can match both catalogs and still fail this screen.</td>
+              <td>A fake DOI. An unpinned install that can change after publication. A statistic nobody can re-count next to a clean principle-mapping table.</td>
             </tr>
             <tr>
               <td class="tier">5 Live grounding</td>
               <td>When the paper names a threat, a regulation, or who owns a control, fetch the matching SRF data instead of answering from memory. Report the <code>last_verified</code> date on every regulatory finding. Skip papers that stay at general engineering principle, and say so.</td>
-              <td>A threat assigned to a layer that cannot reach the control point, or a regulation cited from recollection rather than from <code>regulations.json</code>.</td>
+              <td>A threat assigned to a layer that cannot reach the control point. A regulation cited from memory rather than from <code>regulations.json</code>.</td>
             </tr>
             <tr>
               <td class="tier">6 Draft mechanics</td>
-              <td>On a working draft: typos, inconsistent defined terms, topics scattered across non-adjacent sections, near-duplicate statements, links that resolve to the wrong document, stable heading anchors, a heading tree a parser can walk, and sections that still make sense once chunked. Skip a published paper, and say so.</td>
-              <td>Defects that cost an afternoon to fix before publication and a lot afterward, because ordinary review reads past them.</td>
+              <td>On a working draft: typos, inconsistent defined terms, topics split across distant sections, near-duplicate statements, links that open the wrong document, stable heading anchors, a heading tree a parser can walk, and sections that still make sense when chunked. Skip a published paper, and say so.</td>
+              <td>Defects that take little time to fix before publication and much more afterward. Ordinary review often misses them.</td>
             </tr>
           </tbody>
         </table>
@@ -480,18 +465,18 @@
       <p class="section-note section-note--loose">
         Disclosure under step 1 stays an observation: which conclusions favor a
         named vendor, and whether a funding or employment statement appears.
-        Asserting an undisclosed relationship means asserting something that is
-        not in evidence. Prose rhythm, vocabulary, and punctuation habits carry
-        no integrity verdict at any volume. House style guides, standards-body
-        templates, single authors, and non-native English writers produce those
-        patterns at least as often as a model does.
+        Do not assert an undisclosed relationship that is not in the evidence.
+        Prose rhythm, vocabulary, and punctuation habits are not integrity
+        evidence. House style guides, standards-body templates, single authors,
+        and non-native English writers produce those patterns at least as often
+        as a model does.
       </p>
 
       <h2 class="section-label">How findings are ranked</h2>
       <p class="section-note">
-        One scale covers every step, so a reader can see at a glance which
-        findings are integrity-shaped and which are housekeeping. Mixing them in
-        a single list invites an author to dismiss the whole report as pedantry.
+        One scale covers every step, so a reader can see which findings are about
+        evidence quality and which are about draft mechanics. Mixing them in one
+        list makes it easy to treat every finding as minor.
       </p>
       <div class="table-scroll">
         <table class="tier-table">
@@ -507,50 +492,48 @@
             <tr>
               <td class="tier">P2</td>
               <td>Integrity</td>
-              <td>An identifier naming no document, a citation saying something other than what the paper claims, instructions aimed at the reviewer, or an unpinned dependency the paper tells readers to install.</td>
+              <td>An identifier that names no document, a citation that does not match what the paper claims, instructions aimed at the reviewer, or an unpinned dependency the paper tells readers to install.</td>
             </tr>
             <tr>
               <td class="tier">P3</td>
-              <td>Substantive gaps and softer conflicts</td>
-              <td>Coverage holes in scope for the paper, contradiction with a still-forming industry position, a regulatory mapping past its staleness threshold.</td>
+              <td>Coverage gaps and conflicts with the agentic catalog</td>
+              <td>Topics in the paper's stated scope that neither catalog covers, conflict with an agentic catalog entry, or a regulation past the <code>stale_threshold_days</code> value in <code>regulations.json</code>.</td>
             </tr>
             <tr>
               <td class="tier">P4</td>
               <td>Mechanics</td>
-              <td>Typos, link rot, heading structure, machine readability. Batch-fixable, and changes nothing about whether the paper's argument holds.</td>
+              <td>Typos, broken links, heading structure, machine readability. You can find these with automated checks. They do not decide whether the paper's argument holds.</td>
             </tr>
           </tbody>
         </table>
       </div>
       <p class="section-note section-note--tight">
-        A second rule caps each finding by how it was reached, and the cap is
-        structural rather than a request for a softer tone. A finding checked
+        A second rule caps each finding by how it was reached. A finding checked
         against a fetched catalog entry, a resolved URL, or a registry record can
-        sit at any tier. A finding inferred from the paper's own unambiguous text
-        stops at P3. A stylometric, statistical, or intent-based finding stops at
-        P4 and is phrased as an observation. Uniform sentence rhythm is produced
-        by house style guides, standards-body templates, single authors, and
-        non-native English writers at least as often as by a model, so it cannot
-        carry an integrity verdict.
+        sit at any tier. A finding drawn only from the paper's own clear text
+        stops at P3. A finding based on writing style, statistics about the text,
+        or guessed intent stops at P4 and is phrased as an observation. Uniform
+        sentence rhythm is common in house styles, standards templates, single-author
+        drafts, and non-native English writing, so it cannot support an integrity
+        finding.
       </p>
       <p class="section-note section-note--tight">
-        Severity escalates on recurrence rather than on any single instance. One
-        unpinned dependency is a P2 line item. The same shape appearing three or
-        more times is a process defect, reported once. Three or more P2s of that
-        shape become one P1. Three or more P3s become one P2. Three or more P4s
-        become one P3. P1 stays P1.
+        Severity rises when the same kind of finding repeats. One unpinned
+        dependency is a P2 line item. The same kind of finding three or more times
+        is a process defect, reported once. Three or more P2s of that kind become
+        one P1. Three or more P3s become one P2. Three or more P4s become one P3.
+        P1 stays P1.
       </p>
       <p class="section-note section-note--loose">
-        Step 1 asks for resolved identifiers rather than a judgment by eye. A
-        list of 15 or more entries runs a pinned reference audit tool; a shorter
-        list resolves each identifier against one registry of record (Crossref
-        for DOIs, arXiv for arXiv IDs). A second registry is fetched only when
-        the first misses or the title does not match.
+        Step 1 requires resolved identifiers, not a judgment by eye. A list of 15
+        or more entries runs a pinned reference audit tool. A shorter list
+        resolves each identifier against one registry of record (Crossref for
+        DOIs, arXiv for arXiv IDs). A second registry is fetched only when the
+        first misses or the title does not match.
         <a href="https://github.com/isaaccorley/skills/tree/main/plugins/bib-audit">bib-audit</a>
         reports a dead DOI separately from a DOI that resolves to a different
-        paper, which are different findings. Pin it to a release or commit
-        before wiring it into anything automated, on the same reasoning the
-        prompt applies to every other dependency a paper recommends.
+        paper. Those are different findings. Pin bib-audit to a release or commit
+        before you automate it, as the prompt requires for other dependencies.
       </p>
 
       <h2 class="section-label">The prompt</h2>
@@ -679,48 +662,54 @@ Write in prose and tables, no nested bullet trees. Keep the verdict direct: stat
       <p class="section-note section-note--loose">
         Prompt v2.2, September 2026.
         <a href="/assess/whitepaper-assessment/changes/">What changed in 2.2, 2.1, and 2.0</a>.
-        A 2.1 report stays valid; it fetched full catalogs, emitted every
-        Matched row, and packaged Novel rows for catalog addition. A 2.0
-        report stays valid; it screened less of the submission. A 1.0
-        report stays valid on principle mapping; re-read its integrity findings.
+        A 2.1 report stays valid; it fetched full catalogs, listed every Matched
+        row, and packaged Novel rows for catalog addition. A 2.0 report stays
+        valid; it screened less of the submission. A 1.0 report stays valid on
+        principle mapping; re-read its integrity findings.
       </p>
       <p class="section-note section-note--loose">
-        Draft claims that need risk, obligation, control, and one owner, plus
-        Google Docs or GitHub suggestion packets, use the separate
+        For draft claims that need risk, obligation, control, and one owner, plus
+        Google Docs or GitHub suggestion packets, use the
         <a href="/assess/claims-test/">draft claims test</a>. That pack is
-        independently proposed and is not a merge with this catalog grader.
+        independently proposed. It is not part of this catalog grader.
       </p>
 
       <h2 class="section-label">What a Novel finding means</h2>
       <p class="section-note">
         A Novel finding means the paper asserted something neither catalog
         covers. The table Note names the closest ids checked so you can
-        disagree with the miss. It is a coverage observation about this paper
-        against these two catalogs, at P3 at most unless the advice also
+        disagree with the miss. It is a coverage note about this paper against
+        these two catalogs. It stays at P3 or lower unless the advice also
         contradicts a catalog entry.
       </p>
       <p class="section-note section-note--loose">
-        It is not a request to add anything to a catalog. Catalog edits are
-        made by changing the OSCAL source or the synthesis document, then
-        regenerating. That work is not part of this prompt.
+        It is not a request to add anything to a catalog. Catalog edits require
+        changing the OSCAL source or the synthesis document, then regenerating.
+        That work is not part of this prompt.
       </p>
 
       <h2 class="section-label">Notes on the catalogs</h2>
+      <p class="section-note">
+        Both catalogs are generated, not edited by hand.
+      </p>
+      <p class="section-note">
+        The classic catalog comes from a 93-control OSCAL source. When different
+        frameworks restate the same principle, those entries merge into one row
+        that cites every source. Each original control id stays available in
+        <code>src</code>.
+      </p>
+      <p class="section-note">
+        The AI-agentic catalog is parsed from the
+        <a href="/agentic-ai-security/">synthesis document</a>. Bullets the
+        synthesis calls restatements were merged. Three sentences that describe a
+        missing claim, rather than a claim any source makes, moved into
+        <code>gap_index</code> so an absence is not stored as if someone asserted
+        it.
+      </p>
       <p class="section-note section-note--end">
-        Both catalogs are generated, not hand-maintained. The classic catalog is
-        normalized from a 93-control OSCAL source; five sets of entries that
-        different frameworks state as literal restatements of one principle were
-        merged into a single entry citing every source, and every original
-        control id stays traceable through <code>src</code>. The AI-agentic
-        catalog is parsed from the
-        <a href="/agentic-ai-security/">synthesis document</a>; bullets the
-        synthesis itself calls restatements were merged, and three sentences
-        describing an absence of coverage rather than a claim any source makes
-        were moved into <code>gap_index</code> so a statement about what nobody
-        said is not represented as if somebody said it. The assessment prompt
-        fetches slim projections of both files. Regenerate all four with
-        <code>python3 build/generate_principle_catalogs.py</code> after editing
-        either source.
+        The assessment prompt fetches slim versions of both files. After you edit
+        either source, regenerate all four files with
+        <code>python3 build/generate_principle_catalogs.py</code>.
       </p>
     </main>
 
