@@ -158,6 +158,52 @@ def clip(ids: list[str], limit: int = 12) -> str:
     return ", ".join(ids[:limit]) + f", and {len(ids) - limit} more"
 
 
+def classify_paper_changes(local: object, remote: object) -> dict:
+    """Split two exports into added, modified, and removed paper ids.
+
+    Comparison uses the same canonical JSON as the fixture check, so key
+    order alone is not a modification. `changed` is added plus modified.
+    That is the list `scripts/site_sync.py` reads when it is not given
+    separate added and modified lists. `fixture_changed` is true when any
+    byte of canonical JSON differs, including a top-level field.
+    `metadata_only` means the paper ids and paper bodies match and some
+    other field does not.
+
+    Raises ValueError when either document has no usable paper id. The
+    caller must not treat that as an empty inventory.
+    """
+    local_reason = unusable_export_reason(local)
+    remote_reason = unusable_export_reason(remote)
+    if local_reason or remote_reason:
+        raise ValueError(local_reason or remote_reason)
+    left = paper_map(local)
+    right = paper_map(remote)
+    if left is None or right is None:
+        raise ValueError("monitor export has no papers array")
+    added = sorted(set(right) - set(left))
+    removed = sorted(set(left) - set(right))
+    modified = sorted(
+        pid
+        for pid in set(left) & set(right)
+        if canonical(left[pid]) != canonical(right[pid])
+    )
+    updated = ""
+    if isinstance(remote, dict) and isinstance(remote.get("updated"), str):
+        updated = remote["updated"].strip()[:10]
+    same_papers = not added and not modified and not removed
+    return {
+        "updated": updated,
+        "added": added,
+        "modified": modified,
+        "removed": removed,
+        "changed": added + modified,
+        "baseline_count": len(left),
+        "monitor_count": len(right),
+        "fixture_changed": canonical(local) != canonical(remote),
+        "metadata_only": same_papers and canonical(local) != canonical(remote),
+    }
+
+
 def summarize_diff(local: object, remote: object) -> str:
     left = paper_map(local)
     right = paper_map(remote)

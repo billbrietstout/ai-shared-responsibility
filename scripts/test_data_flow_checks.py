@@ -13,8 +13,10 @@ import importlib.util
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
+import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
@@ -23,6 +25,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import monitor_sync_pr as mspr  # noqa: E402
 import sync_whitepapers_fixture as fixture  # noqa: E402
 import validate_principles as vp  # noqa: E402
 
@@ -896,6 +899,733 @@ class TalkClaimsColumnTest(unittest.TestCase):
             claims[code] = items
         self.assertEqual(len(order), len(claims))
         return claims
+
+
+FAKE_GH = r'''#!/usr/bin/env python3
+import json, os, sys
+from pathlib import Path
+
+state_path = Path(os.environ["GH_FAKE_STATE"])
+log_path = Path(os.environ["GH_FAKE_LOG"])
+state = json.loads(state_path.read_text())
+args = sys.argv[1:]
+with log_path.open("a", encoding="utf-8") as handle:
+    handle.write(json.dumps(args) + "\n")
+
+VALUE_FLAGS = {
+    "--head", "--base", "--state", "--limit", "--json", "--repo",
+    "--title", "--body-file", "--comment",
+}
+
+def fail(msg):
+    print(msg, file=sys.stderr)
+    raise SystemExit(2)
+
+flags = {}
+positionals = []
+index = 0
+while index < len(args):
+    arg = args[index]
+    if arg == "--draft":
+        flags[arg] = True
+        index += 1
+        continue
+    if arg in VALUE_FLAGS:
+        if index + 1 >= len(args):
+            fail("missing value for " + arg)
+        flags[arg] = args[index + 1]
+        index += 2
+        continue
+    if arg.startswith("-"):
+        fail("unexpected flag " + arg)
+    positionals.append(arg)
+    index += 1
+
+def save():
+    state_path.write_text(json.dumps(state))
+
+if positionals[:2] == ["pr", "list"]:
+    rows = []
+    for pr in state["prs"]:
+        if flags.get("--head") and pr["head"] != flags["--head"]:
+            continue
+        if flags.get("--base") and pr["base"] != flags["--base"]:
+            continue
+        wanted = flags.get("--state", "open")
+        if wanted != "all" and pr["state"] != wanted:
+            continue
+        rows.append({
+            "number": pr["number"],
+            "url": pr["url"],
+            "isDraft": pr["isDraft"],
+        })
+    print(json.dumps(rows))
+    raise SystemExit(0)
+
+if positionals[:2] == ["pr", "create"]:
+    if not flags.get("--draft"):
+        fail("draft flag required")
+    number = state["next"]
+    state["next"] = number + 1
+    body = Path(flags["--body-file"]).read_text()
+    pr = {
+        "number": number,
+        "url": "https://example.test/pull/" + str(number),
+        "isDraft": True,
+        "state": "open",
+        "head": flags["--head"],
+        "base": flags["--base"],
+        "title": flags.get("--title", ""),
+        "body": body,
+    }
+    state["prs"].append(pr)
+    save()
+    print(pr["url"])
+    raise SystemExit(0)
+
+if positionals[:2] == ["pr", "edit"]:
+    number = int(positionals[2])
+    body = Path(flags["--body-file"]).read_text()
+    for pr in state["prs"]:
+        if pr["number"] == number:
+            pr["body"] = body
+            save()
+            print(pr["url"])
+            raise SystemExit(0)
+    fail("missing pr " + str(number))
+
+if positionals[:2] == ["pr", "close"]:
+    number = int(positionals[2])
+    for pr in state["prs"]:
+        if pr["number"] == number:
+            pr["state"] = "closed"
+            pr["comment"] = flags.get("--comment", "")
+            save()
+            raise SystemExit(0)
+    fail("missing pr " + str(number))
+
+fail("unexpected command " + " ".join(positionals))
+'''
+
+
+def paper_row(wp_id, title, issue):
+    return {
+        "wp_id": wp_id,
+        "issue_number": issue,
+        "title": title,
+        "decision": "include",
+        "source_org": "Org",
+        "url": "https://example.com/" + wp_id,
+    }
+
+
+def export_doc(updated, papers):
+    return {"updated": updated, "count": len(papers), "papers": papers}
+
+
+class MonitorSyncTest(unittest.TestCase):
+    def test_classify_splits_added_modified_and_removed(self):
+        local = export_doc(
+            "2026-10-31",
+            [
+                paper_row("WP-0001", "Old", 1),
+                paper_row("WP-0003", "Gone", 3),
+            ],
+        )
+        remote = export_doc(
+            "2026-11-03",
+            [
+                paper_row("WP-0001", "New", 1),
+                paper_row("WP-0002", "Added", 2),
+            ],
+        )
+        summary = fixture.classify_paper_changes(local, remote)
+        self.assertEqual(summary["added"], ["WP-0002"])
+        self.assertEqual(summary["modified"], ["WP-0001"])
+        self.assertEqual(summary["removed"], ["WP-0003"])
+        self.assertEqual(summary["changed"], ["WP-0002", "WP-0001"])
+        self.assertTrue(summary["fixture_changed"])
+        self.assertFalse(summary["metadata_only"])
+        self.assertEqual(summary["baseline_count"], 2)
+        self.assertEqual(summary["monitor_count"], 2)
+        self.assertEqual(summary["updated"], "2026-11-03")
+
+    def test_key_order_is_not_a_paper_change(self):
+        local = {
+            "updated": "2026-11-03",
+            "papers": [{"wp_id": "WP-0001", "title": "Same"}],
+        }
+        remote = {
+            "papers": [{"title": "Same", "wp_id": "WP-0001"}],
+            "updated": "2026-11-03",
+        }
+        summary = fixture.classify_paper_changes(local, remote)
+        self.assertFalse(summary["fixture_changed"])
+        self.assertEqual(summary["changed"], [])
+
+    def test_top_level_field_is_metadata_only(self):
+        papers = [paper_row("WP-0001", "Same", 1)]
+        local = export_doc("2026-10-31", papers)
+        remote = export_doc("2026-11-03", papers)
+        remote["source"] = "github-issues"
+        summary = fixture.classify_paper_changes(local, remote)
+        self.assertTrue(summary["fixture_changed"])
+        self.assertTrue(summary["metadata_only"])
+        self.assertEqual(summary["added"], [])
+        self.assertEqual(summary["modified"], [])
+        self.assertEqual(summary["removed"], [])
+
+    def test_unusable_export_is_not_an_empty_diff(self):
+        local = export_doc("2026-10-31", [paper_row("WP-0001", "A", 1)])
+        remote = {"updated": "2026-11-03", "papers": [{"title": "no id"}]}
+        with self.assertRaises(ValueError):
+            fixture.classify_paper_changes(local, remote)
+
+    def test_push_ref_rejects_protected_branches(self):
+        self.assertEqual(
+            mspr.destination_ref(mspr.BOT_BRANCH),
+            "refs/heads/automation/monitor-fixture-sync",
+        )
+        for branch in (
+            "develop",
+            "main",
+            "master",
+            "automation/develop",
+            "automation/../develop",
+            "automation/monitor-fixture-sync/../../main",
+        ):
+            with self.assertRaises(SystemExit):
+                mspr.destination_ref(branch)
+
+    def test_unexpected_paths_are_refused(self):
+        with self.assertRaises(SystemExit):
+            mspr.assert_paths_allowed(["data/ai-agentic-principles.json"])
+        with self.assertRaises(SystemExit):
+            mspr.assert_paths_allowed(["README.md"])
+        mspr.assert_paths_allowed([])
+        mspr.assert_paths_allowed(list(mspr.PUBLISHED_PATHS))
+
+    def test_plan_reuses_one_pull_request(self):
+        def prs(*numbers):
+            return [{"number": number} for number in numbers]
+
+        self.assertEqual(
+            mspr.plan_pull_request([], False).action, "skip"
+        )
+        closed = mspr.plan_pull_request(prs(4, 2), False)
+        self.assertEqual(closed.action, "close")
+        self.assertEqual(closed.close, [2, 4])
+        created = mspr.plan_pull_request([], True)
+        self.assertEqual(created.action, "create")
+        updated = mspr.plan_pull_request(prs(9, 3), True)
+        self.assertEqual(updated.action, "update")
+        self.assertEqual(updated.keep, 3)
+        self.assertEqual(updated.close, [9])
+
+    def test_pull_request_body_names_ids_and_leaves_the_catalog(self):
+        summary = {
+            "updated": "2026-11-03",
+            "added": ["WP-0002"],
+            "modified": ["WP-0001"],
+            "removed": ["WP-0003"],
+            "baseline_count": 2,
+            "monitor_count": 2,
+            "metadata_only": False,
+        }
+        body = mspr.render_pull_request_body(
+            summary,
+            monitor_repo=fixture.MONITOR_REPO,
+            monitor_branch="master",
+            checked_on="2026-11-04",
+            sources_changed=["SRC"],
+        )
+        self.assertIn("`WP-0002`", body)
+        self.assertIn("`WP-0001`", body)
+        self.assertIn("`WP-0003`", body)
+        self.assertIn("`SRC`", body)
+        self.assertIn(
+            "leaves `data/ai-agentic-principles.json` and "
+            "`data/ai-agentic-principles.slim.json` unchanged",
+            body,
+        )
+        self.assertIn("does not enable auto-merge", body)
+        self.assertIn("Approve workflows to run", body)
+        self.assertNotIn("\u2014", body)
+        self.assertNotIn("\u2013", body)
+
+    def test_redact_strips_tokens(self):
+        text = mspr.redact(
+            "https://x-access-token:secret@github.com/a ghp_abc123"
+        )
+        self.assertNotIn("secret", text)
+        self.assertNotIn("ghp_abc123", text)
+        self.assertIn("REDACTED", text)
+
+    def test_workflow_is_least_privilege_and_scheduled(self):
+        workflow = (
+            ROOT / ".github" / "workflows" / "monitor-fixture-sync.yml"
+        ).read_text()
+        doc = (ROOT / "docs" / "monitor-data-flow.md").read_text()
+        source = Path(mspr.__file__).read_text()
+        self.assertIn(f'cron: "{mspr.CRON}"', workflow)
+        self.assertIn(mspr.CRON, doc)
+        self.assertIn(mspr.BOT_BRANCH, doc)
+        self.assertIn("workflow_dispatch:", workflow)
+        self.assertIn("contents: write", workflow)
+        self.assertIn("pull-requests: write", workflow)
+        self.assertNotIn("id-token:", workflow)
+        self.assertNotIn("packages:", workflow)
+        self.assertNotIn("secrets.", workflow)
+        self.assertNotIn("pull_request_target", workflow)
+        self.assertIn("ref: develop", workflow)
+        self.assertIn("monitor_sync_pr.py --push", workflow)
+        self.assertIn("monitor_sync_pr.py --dry-run", workflow)
+        self.assertNotIn("git push", workflow)
+        self.assertNotIn("pr merge", workflow)
+        self.assertNotIn("--force", source)
+        self.assertNotIn("pr merge", source)
+        self.assertIn('"--draft"', source)
+        self.assertIn('"-f"', source)
+        self.assertIn(
+            "Allow GitHub Actions to create and approve pull requests", doc
+        )
+        self.assertIn("03:00 UTC", doc)
+        self.assertNotIn("\u2014", doc)
+        self.assertNotIn("\u2013", doc)
+        self.assertNotIn("\u2014", workflow)
+        self.assertNotIn("\u2013", workflow)
+
+    def test_refuses_to_target_main_or_to_push_without_a_flag(self):
+        with self.assertRaises(SystemExit):
+            mspr.run(mspr.parse_args(["--dry-run", "--base", "main"]))
+        with self.assertRaises(SystemExit):
+            mspr.run(mspr.parse_args(["--dry-run", "--push"]))
+        with self.assertRaises(SystemExit):
+            mspr.run(mspr.parse_args([]))
+
+    def test_site_sync_reports_removals_and_does_not_write_data(self):
+        catalog_path = ROOT / "data" / "ai-agentic-principles.json"
+        slim_path = ROOT / "data" / "ai-agentic-principles.slim.json"
+        before = catalog_path.read_bytes()
+        slim_before = slim_path.read_bytes()
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            agentic = {
+                "$schema_version": "1.0",
+                "updated": "2026-10-31",
+                "count": 1,
+                "sources": {
+                    "SRC": {
+                        "title": "Old",
+                        "org": "Org",
+                        "url": "https://example.com/WP-0001",
+                        "wp_id": "WP-0001",
+                    },
+                    "GONE": {
+                        "title": "Gone",
+                        "org": "Org",
+                        "url": "https://example.com/WP-0003",
+                        "wp_id": "WP-0003",
+                    },
+                },
+                "gap_index": {},
+                "principles": [
+                    {
+                        "id": "p1",
+                        "section": "s",
+                        "category": "c",
+                        "statement": "keep the record",
+                        "src": ["SRC"],
+                    }
+                ],
+            }
+            agentic_path = tmp / "agentic.json"
+            agentic_path.write_text(json.dumps(agentic), encoding="utf-8")
+            papers = export_doc(
+                "2026-11-03",
+                [
+                    paper_row("WP-0001", "New", 1),
+                    paper_row("WP-0002", "Added", 2),
+                    paper_row("WP-0004", "Edited", 4),
+                ],
+            )
+            papers_path = tmp / "papers.json"
+            papers_path.write_text(json.dumps(papers), encoding="utf-8")
+            changes = {
+                "updated": "2026-11-03",
+                "added": ["WP-0002"],
+                "modified": ["WP-0001", "WP-0004"],
+                "removed": ["WP-0003"],
+                "changed": ["WP-0002", "WP-0001", "WP-0004"],
+            }
+            changes_path = tmp / "changes.json"
+            changes_path.write_text(json.dumps(changes), encoding="utf-8")
+            out = tmp / "out"
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "site_sync.py"),
+                    "--whitepapers",
+                    str(papers_path),
+                    "--changes",
+                    str(changes_path),
+                    "--agentic",
+                    str(agentic_path),
+                    "--out-dir",
+                    str(out),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            diff = (out / "principles-diff.md").read_text()
+            self.assertIn("## New monitor papers", diff)
+            self.assertIn("`WP-0002`", diff)
+            self.assertIn("## Modified papers with no site source", diff)
+            self.assertIn("`WP-0004`", diff)
+            self.assertIn("## Removed from the monitor export", diff)
+            self.assertIn("`WP-0003` / `GONE`", diff)
+            self.assertIn("Do not auto-delete.", diff)
+            candidate = json.loads(
+                (out / "ai-agentic-principles.candidate.json").read_text()
+            )
+            self.assertEqual(set(candidate["sources"]), {"SRC", "GONE"})
+            self.assertEqual(candidate["sources"]["SRC"]["title"], "New")
+            self.assertEqual(candidate["sources"]["GONE"]["title"], "Gone")
+            self.assertEqual(
+                agentic_path.read_text(), json.dumps(agentic)
+            )
+        self.assertEqual(catalog_path.read_bytes(), before)
+        self.assertEqual(slim_path.read_bytes(), slim_before)
+
+    def test_legacy_changes_list_still_marks_a_new_paper(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            agentic = {
+                "$schema_version": "1.0",
+                "updated": "2026-10-31",
+                "count": 0,
+                "sources": {},
+                "principles": [],
+            }
+            agentic_path = tmp / "agentic.json"
+            agentic_path.write_text(json.dumps(agentic), encoding="utf-8")
+            papers_path = tmp / "papers.json"
+            papers_path.write_text(
+                json.dumps(export_doc("2026-11-03", [paper_row("WP-0002", "Added", 2)])),
+                encoding="utf-8",
+            )
+            changes_path = tmp / "changes.json"
+            changes_path.write_text(
+                json.dumps({"changed": ["WP-0002"], "updated": "2026-11-03"}),
+                encoding="utf-8",
+            )
+            out = tmp / "out"
+            proc = subprocess.run(
+                [
+                    sys.executable,
+                    str(ROOT / "scripts" / "site_sync.py"),
+                    "--whitepapers",
+                    str(papers_path),
+                    "--changes",
+                    str(changes_path),
+                    "--agentic",
+                    str(agentic_path),
+                    "--out-dir",
+                    str(out),
+                ],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(proc.returncode, 0, proc.stderr)
+            diff = (out / "principles-diff.md").read_text()
+            self.assertIn("`WP-0002`", diff.split("## Modified papers")[0])
+            self.assertIn("Removed WP- IDs: (none)", diff)
+            self.assertIn("## Unknown WP- IDs\nNone.", diff)
+
+    def test_one_draft_is_reused_and_develop_is_not_pushed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            work, baseline, monitor = self.make_repo(tmp)
+            develop_sha = self.git(work, "rev-parse", "develop").stdout.strip()
+            state = tmp / "gh-state.json"
+            log = tmp / "gh.log"
+            state.write_text(json.dumps({"next": 1, "prs": []}), encoding="utf-8")
+            first = self.invoke(work, baseline, monitor, state, log)
+            self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+            second = self.invoke(work, baseline, monitor, state, log)
+            self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
+
+            self.assertEqual(
+                self.git(work, "rev-parse", "develop").stdout.strip(),
+                develop_sha,
+            )
+            bare = tmp / "origin.git"
+            refs = self.git(bare, "show-ref").stdout
+            self.assertIn("refs/heads/develop", refs)
+            self.assertIn("refs/heads/" + mspr.BOT_BRANCH, refs)
+            self.assertNotIn("refs/heads/main", refs)
+            self.assertEqual(
+                self.git(bare, "rev-parse", "refs/heads/develop").stdout.strip(),
+                develop_sha,
+            )
+            names = self.git(
+                work,
+                "diff",
+                "--name-only",
+                "origin/develop",
+                mspr.BOT_BRANCH,
+            ).stdout.split()
+            self.assertTrue(names)
+            self.assertTrue(set(names) <= set(mspr.PUBLISHED_PATHS))
+            self.assertIn("build/fixtures/whitepapers.json", names)
+            self.assertNotIn("data/ai-agentic-principles.json", names)
+            catalog = self.git(
+                work, "show", f"{mspr.BOT_BRANCH}:data/ai-agentic-principles.json"
+            ).stdout
+            self.assertIn('"title": "Old"', catalog)
+            candidate = self.git(
+                work,
+                "show",
+                f"{mspr.BOT_BRANCH}:reports/ai-agentic-principles.candidate.json",
+            ).stdout
+            self.assertIn('"title": "New"', candidate)
+            diff = self.git(
+                work, "show", f"{mspr.BOT_BRANCH}:reports/principles-diff.md"
+            ).stdout
+            self.assertIn("WP-0002", diff)
+            self.assertIn("WP-0003", diff)
+
+            calls = [
+                json.loads(line)
+                for line in log.read_text().splitlines()
+                if line.strip()
+            ]
+            creates = [call for call in calls if call[:2] == ["pr", "create"]]
+            edits = [call for call in calls if call[:2] == ["pr", "edit"]]
+            self.assertEqual(len(creates), 1)
+            self.assertIn("--draft", creates[0])
+            self.assertGreaterEqual(len(edits), 1)
+            saved = json.loads(state.read_text())
+            open_prs = [pr for pr in saved["prs"] if pr["state"] == "open"]
+            self.assertEqual(len(open_prs), 1)
+            self.assertTrue(open_prs[0]["isDraft"])
+            self.assertIn("WP-0002", open_prs[0]["body"])
+            self.assertIn("leaves `data/ai-agentic-principles.json`", open_prs[0]["body"])
+
+    def test_matching_export_closes_the_draft_without_pushing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            work, baseline, _monitor = self.make_repo(tmp)
+            develop_sha = self.git(bare := tmp / "origin.git", "rev-parse", "HEAD").stdout.strip()
+            state = tmp / "gh-state.json"
+            log = tmp / "gh.log"
+            state.write_text(
+                json.dumps(
+                    {
+                        "next": 2,
+                        "prs": [
+                            {
+                                "number": 7,
+                                "url": "https://example.test/pull/7",
+                                "isDraft": True,
+                                "state": "open",
+                                "head": mspr.BOT_BRANCH,
+                                "base": "develop",
+                                "title": "old",
+                                "body": "old",
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            proc = self.invoke(work, baseline, baseline, state, log)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            saved = json.loads(state.read_text())
+            self.assertEqual(saved["prs"][0]["state"], "closed")
+            self.assertIn("without merging", saved["prs"][0]["comment"])
+            refs = self.git(bare, "show-ref").stdout
+            self.assertNotIn("refs/heads/" + mspr.BOT_BRANCH, refs)
+            self.assertEqual(
+                self.git(bare, "rev-parse", "HEAD").stdout.strip(),
+                develop_sha,
+            )
+            calls = [json.loads(line) for line in log.read_text().splitlines()]
+            self.assertFalse(any(call[:2] == ["pr", "create"] for call in calls))
+
+    def test_extra_open_drafts_are_closed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            work, baseline, monitor = self.make_repo(tmp)
+            state = tmp / "gh-state.json"
+            log = tmp / "gh.log"
+            state.write_text(
+                json.dumps(
+                    {
+                        "next": 3,
+                        "prs": [
+                            self.seed_pr(1),
+                            self.seed_pr(2),
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            proc = self.invoke(work, baseline, monitor, state, log)
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            saved = json.loads(state.read_text())
+            by_number = {pr["number"]: pr for pr in saved["prs"]}
+            self.assertEqual(by_number[1]["state"], "open")
+            self.assertIn("WP-0001", by_number[1]["body"])
+            self.assertEqual(by_number[2]["state"], "closed")
+            self.assertIn("#1", by_number[2]["comment"])
+            calls = [json.loads(line) for line in log.read_text().splitlines()]
+            self.assertFalse(any(call[:2] == ["pr", "create"] for call in calls))
+
+    def seed_pr(self, number):
+        return {
+            "number": number,
+            "url": f"https://example.test/pull/{number}",
+            "isDraft": True,
+            "state": "open",
+            "head": mspr.BOT_BRANCH,
+            "base": "develop",
+            "title": "old",
+            "body": "old",
+        }
+
+    def make_repo(self, tmp: Path):
+        bare = tmp / "origin.git"
+        work = tmp / "work"
+        subprocess.check_call(
+            ["git", "init", "--bare", "-b", "develop", str(bare)],
+            stdout=subprocess.DEVNULL,
+        )
+        subprocess.check_call(
+            ["git", "init", "-b", "develop", str(work)],
+            stdout=subprocess.DEVNULL,
+        )
+        self.git(work, "config", "user.email", "test@example.com")
+        self.git(work, "config", "user.name", "Test")
+        self.git(work, "config", "commit.gpgsign", "false")
+        fixture_dir = work / "build" / "fixtures"
+        fixture_dir.mkdir(parents=True)
+        data_dir = work / "data"
+        data_dir.mkdir()
+        (work / "reports").mkdir()
+        (work / ".gitignore").write_text(
+            "reports/*.candidate.json\nreports/principles-diff.md\n",
+            encoding="utf-8",
+        )
+        baseline = export_doc(
+            "2026-10-31",
+            [
+                paper_row("WP-0001", "Old", 1),
+                paper_row("WP-0003", "Gone", 3),
+            ],
+        )
+        monitor = export_doc(
+            "2026-11-03",
+            [
+                paper_row("WP-0001", "New", 1),
+                paper_row("WP-0002", "Added", 2),
+            ],
+        )
+        catalog = {
+            "$schema_version": "1.0",
+            "updated": "2026-10-31",
+            "count": 1,
+            "sources": {
+                "SRC": {
+                    "title": "Old",
+                    "org": "Org",
+                    "url": "https://example.com/WP-0001",
+                    "wp_id": "WP-0001",
+                }
+            },
+            "gap_index": {},
+            "principles": [
+                {
+                    "id": "p1",
+                    "section": "s",
+                    "category": "c",
+                    "statement": "keep the record",
+                    "src": ["SRC"],
+                }
+            ],
+        }
+        fixture_path = fixture_dir / "whitepapers.json"
+        fixture_path.write_text(
+            json.dumps(baseline, indent=2) + "\n", encoding="utf-8"
+        )
+        (data_dir / "ai-agentic-principles.json").write_text(
+            json.dumps(catalog, indent=2) + "\n", encoding="utf-8"
+        )
+        inputs = tmp / "inputs"
+        inputs.mkdir()
+        baseline_file = inputs / "baseline.json"
+        monitor_file = inputs / "monitor.json"
+        baseline_file.write_text(
+            json.dumps(baseline, indent=2) + "\n", encoding="utf-8"
+        )
+        monitor_file.write_text(
+            json.dumps(monitor, indent=2) + "\n", encoding="utf-8"
+        )
+        self.git(work, "add", ".")
+        self.git(work, "commit", "-m", "base")
+        self.git(work, "remote", "add", "origin", str(bare))
+        self.git(work, "push", "-u", "origin", "develop")
+        return work, baseline_file, monitor_file
+
+    def invoke(self, work, baseline, monitor, state, log):
+        bin_dir = work.parent / "bin"
+        bin_dir.mkdir(exist_ok=True)
+        fake = bin_dir / "gh"
+        fake.write_text(FAKE_GH, encoding="utf-8")
+        fake.chmod(fake.stat().st_mode | stat.S_IEXEC)
+        env = os.environ.copy()
+        env["PATH"] = str(bin_dir) + os.pathsep + env.get("PATH", "")
+        env["GH_FAKE_STATE"] = str(state)
+        env["GH_FAKE_LOG"] = str(log)
+        for key in ("GH_TOKEN", "GITHUB_TOKEN", "GITHUB_REPOSITORY"):
+            env.pop(key, None)
+        return subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "monitor_sync_pr.py"),
+                "--push",
+                "--repo-root",
+                str(work),
+                "--baseline-file",
+                str(baseline),
+                "--monitor-file",
+                str(monitor),
+                "--monitor-branch",
+                "master",
+            ],
+            env=env,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+
+    def git(self, repo, *args):
+        proc = subprocess.run(
+            ["git", "-C", str(repo), *args],
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(
+            proc.returncode,
+            0,
+            f"git {' '.join(args)} failed\n{proc.stdout}\n{proc.stderr}",
+        )
+        return proc
 
 
 if __name__ == "__main__":

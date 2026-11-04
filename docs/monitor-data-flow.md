@@ -16,15 +16,84 @@ The Google Sheet is retired. The record for a paper is a GitHub issue in that re
    python3 scripts/sync_whitepapers_fixture.py
    ```
 
-   Commit the updated fixture in a pull request. The command leaves the fixture unchanged when the monitor file is not on the default branch yet, and it exits with an error so the missing file is visible.
+   Commit the updated fixture in a pull request. The weekly job in the next section runs this command and commits the fixture on `automation/monitor-fixture-sync`. A person can still run the command locally. The command leaves the fixture unchanged when the monitor file is not on the default branch yet, and it exits with an error so the missing file is visible.
 
 3. CI resolves the monitor default branch and fetches that file on every push and pull request to `develop` and `main`. The `whitepapers-fixture` job fails when the committed fixture is not the same JSON, or when the fixture `updated` date is more than 14 days before the run date. Fourteen days covers the weekly monitor pass plus one missed week. If the monitor file is not on the default branch yet, the job prints a warning and does not fail for that absence. The age check still runs. [Monitor pull request 173](https://github.com/billbrietstout/ai-security-whitepaper-monitor/pull/173) merged on 2026-11-01 and published `data/whitepapers.json` on `master`. Each paper uses `wp_id`, `issue_number`, `source_org`, and a lowercase decision (`include`, `delete_candidate`, or `duplicate`). The site fixture is a copy of that file. Readers also accept the older names `id`, `issue`, `org`, and `Include`. The check counts `id` or `wp_id`. A parsed export with neither key is an error, not a content diff, and the refresh command does not write the fixture.
 
 4. `build/source-wp-ids.json` maps each site source code to a `WP-` id. `build/generate_principle_catalogs.py` writes that id onto the source in `data/ai-agentic-principles.json`. When the map includes `monitor_issue`, the generator copies it. The generator does not invent issue numbers.
 
-5. `scripts/site_sync.py` reads a monitor change list and writes a proposed catalog under `reports/`. It does not write `data/`. When the monitor paper has an issue number, the proposal sets `monitor_issue` on that source. A person reviews `reports/principles-diff.md` and, if they accept it, copies the candidate into `data/` in a pull request.
+5. `scripts/site_sync.py` reads a monitor change list and writes a proposed catalog under `reports/`. It does not write `data/`. When the monitor paper has an issue number, the proposal sets `monitor_issue` on that source. A person reviews `reports/principles-diff.md` and, if they accept it, copies the candidate into `data/` in a pull request. The weekly job commits that proposal on the same draft as the fixture. The copy into `data/` stays a separate pull request.
 
 6. The pages read `data/ai-agentic-principles.json`. `scripts/validate_principles.py` checks that file. The `validate-principles` job runs on every push and pull request to `develop` and `main`. There is no path filter.
+
+## Weekly draft pull request
+
+`.github/workflows/monitor-fixture-sync.yml` runs `scripts/monitor_sync_pr.py`. The workflow name in the Actions tab is "Refresh the whitepaper fixture".
+
+The schedule is `0 3 * * 3`, which is 03:00 UTC on Wednesday. That clock time is 7:00 PM Pacific Standard Time on Tuesday, and 8:00 PM Pacific Daylight Time on Tuesday. GitHub starts the job from the default branch, `develop`, and the job can start later than the schedule.
+
+The monitor weekly pass writes `data/whitepapers.json` on `master`. The pass dated November 3, 2026 committed that file at 00:20 UTC on November 4, which is 4:20 PM Pacific Standard Time. The site job is later than that commit, and later than a 9:00 AM Pacific start. If a pass lands after the job has already read the export, run the workflow by hand. The next scheduled run would otherwise read the previous export.
+
+The raw export is public. A request with no token returns HTTP 200 for `https://raw.githubusercontent.com/billbrietstout/ai-security-whitepaper-monitor/master/data/whitepapers.json`. The job uses the built-in `GITHUB_TOKEN` and no other secret. The token is sent only to `api.github.com`, for the default-branch lookup. The raw download does not receive the token. `scripts/sync_whitepapers_fixture.py` already works that way.
+
+The job does four things:
+
+1. It resolves the monitor default branch and runs `python3 scripts/sync_whitepapers_fixture.py`.
+2. It compares that export to the fixture on `develop` and writes `reports/whitepapers-changes.json` with the added, modified, and removed `WP-` ids.
+3. It runs `python3 scripts/site_sync.py`. That writes `reports/principles-diff.md`, `reports/ai-agentic-principles.candidate.json`, and `reports/ai-agentic-principles.slim.candidate.json`.
+4. It commits those files on `automation/monitor-fixture-sync` and pushes `HEAD:refs/heads/automation/monitor-fixture-sync`. The script refuses a destination of `develop`, `main`, or `master`. The push is a normal push. The script has no force-push flag.
+
+`.gitignore` still lists the three `site_sync.py` outputs, so a normal `git add` leaves them out. The job stages them with `git add -f`. That is how the proposal gets onto the draft. A local `site_sync.py` run still stays out of a normal commit.
+
+The pull request targets `develop` and is created as a draft. If that draft is already open, the job updates its body and pushes new commits onto the same branch. It keeps one open pull request. Extra open pull requests from that branch are closed with a pointer to the one that remains. The job does not mark the draft ready, does not merge, and does not enable auto-merge.
+
+The draft body lists the added, modified, and removed `WP-` ids. The full lists are in `reports/whitepapers-changes.json`.
+
+The job leaves `data/ai-agentic-principles.json` and `data/ai-agentic-principles.slim.json` unchanged. `scripts/site_sync.py` writes under `reports/` and stops there. The copy into `data/` stays a review step: a person reads the diff and, to accept a source change, copies the candidate in a separate pull request. A paper that has no site source code is listed in the diff. The candidate changes a source row only when that `WP-` id is already a source on the site.
+
+If the export matches the fixture on `develop`, the job opens nothing. If a draft is already open and the export now matches, the job closes that draft and does not merge it.
+
+The token for this job is:
+
+```yaml
+permissions:
+  contents: write
+  pull-requests: write
+```
+
+No other scope is granted on this job. The other workflows keep their own permissions.
+
+A person with admin rights on `billbrietstout/ai-shared-responsibility` has to save one setting. The workflow cannot turn it on. Personal repositories start with the box unchecked.
+
+1. Open Settings, then Actions, then General.
+2. Under Workflow permissions, check Allow GitHub Actions to create and approve pull requests.
+3. Save.
+
+GitHub puts create and approve on that one checkbox. This job creates a pull request. It does not submit a review, and it does not merge. On a personal repository, the `permissions` block above is the write grant for this job. You can leave the default token for other workflows on read-only contents and packages. If a push returns HTTP 403 because an organization policy caps every token at read-only, an organization owner has to allow a workflow to request write.
+
+Leave `automation/monitor-fixture-sync` off the protected-branch list, so `github-actions[bot]` can push it. Do not require the job `open-draft` as a status check. The checks to require stay `validate-principles`, `whitepapers-fixture`, and `verify`.
+
+### How to run it by hand
+
+The workflow file has to be on `develop` before the schedule or a manual run can use it. `develop` is the default branch.
+
+1. Open the Actions tab.
+2. Choose "Refresh the whitepaper fixture".
+3. Choose Run workflow.
+4. Leave the branch set to `develop`. The job checks out `develop` for the fixture it compares. The workflow file that runs is the file on the branch you select in that menu.
+5. Leave "Write the proposal and print the plan" off to open or update the draft. Turn it on to print the summary and skip the push. That input calls `python3 scripts/monitor_sync_pr.py --dry-run`.
+
+A local checkout can print the same plan without pushing:
+
+```bash
+python3 scripts/monitor_sync_pr.py --dry-run
+```
+
+### Checks on the draft
+
+A pull request opened with `GITHUB_TOKEN` does not start `pull_request` workflows on its own. GitHub creates those runs in an approval-required state. A person with write access selects Approve workflows to run on the pull request. That click starts `validate-principles`, `whitepapers-fixture`, and `verify`. The job does not bypass those checks. Merge the draft after they pass.
+
+The fixture check on `develop` keeps failing until that draft is merged. The committed fixture is the 2026-10-31 export. The monitor file has moved since that date, so the content check fails before the age rule does. With `updated` still set to 2026-10-31, the age rule fails starting 2026-11-15, because the limit is more than 14 days.
 
 ## What each source and principle must carry
 

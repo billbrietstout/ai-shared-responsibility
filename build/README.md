@@ -289,9 +289,12 @@ merged that file onto `master` on 2026-11-01. The export's paper key is
 `wp_id`.
 
 Weekly sync from changed WP- IDs: `scripts/site_sync.py` (see root README).
+`.github/workflows/monitor-fixture-sync.yml` runs that script and
+`scripts/sync_whitepapers_fixture.py`, then opens one draft pull request.
 The data flow and the branch protection settings are in
 [`docs/monitor-data-flow.md`](../docs/monitor-data-flow.md).
-CI: `.github/workflows/validate-principles.yml`.
+CI: `.github/workflows/validate-principles.yml` and
+`.github/workflows/monitor-fixture-sync.yml`.
 
 ## Continuous integration
 

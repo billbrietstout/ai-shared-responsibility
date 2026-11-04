@@ -7,14 +7,25 @@ Usage:
     --changes path/to/whitepapers_changes.json
 
 whitepapers_changes.json shape:
-  { "changed": ["WP-0007", "WP-0020"], "updated": "2026-10-30" }
+  {
+    "changed": ["WP-0007", "WP-0020"],
+    "updated": "2026-10-30"
+  }
+
+Optional lists, written by the weekly fixture job:
+  "added", "modified", and "removed"
+
+When "added" or "modified" is present, the report uses those lists.
+Otherwise it uses "changed". "removed" is optional either way.
 
 Writes:
   reports/principles-diff.md
   reports/ai-agentic-principles.candidate.json
+  reports/ai-agentic-principles.slim.candidate.json
 
-Never removes a principle on its own. Retirements are proposed in the diff
-only. Does not write data/ until a human copies the candidate after review.
+Never removes a principle or a source on its own. Retirements and papers
+that left the export are proposed in the diff only. Does not write data/
+until a human copies the candidate after review.
 """
 
 from __future__ import annotations
@@ -95,8 +106,37 @@ def main() -> int:
     agentic = load_json(args.agentic)
     papers = vp.load_papers(args.whitepapers)
     changes = load_json(args.changes)
-    changed_ids = list(changes.get("changed") or [])
     stamp = changes.get("updated") or date.today().isoformat()
+
+    def id_list(key: str) -> list[str]:
+        values = changes.get(key) or []
+        if not isinstance(values, list):
+            return []
+        out = []
+        for item in values:
+            if isinstance(item, str) and item.strip():
+                out.append(item.strip())
+        return out
+
+    removed_ids = id_list("removed")
+    removed_set = set(removed_ids)
+    added_ids = id_list("added")
+    modified_ids = id_list("modified")
+    use_split = "added" in changes or "modified" in changes
+    if use_split:
+        changed_ids = []
+        seen: set[str] = set()
+        for wp_id in added_ids + modified_ids:
+            if wp_id in removed_set or wp_id in seen:
+                continue
+            seen.add(wp_id)
+            changed_ids.append(wp_id)
+        added_set = set(added_ids)
+    else:
+        changed_ids = [
+            wp_id for wp_id in id_list("changed") if wp_id not in removed_set
+        ]
+        added_set = None
 
     sources = agentic.get("sources", {})
     code_by_wp = {
@@ -123,6 +163,7 @@ def main() -> int:
     new_items = []
     changed_items = []
     retired_items = []
+    modified_without_source = []
 
     for wp_id in changed_ids:
         paper = papers.get(wp_id)
@@ -189,18 +230,36 @@ def main() -> int:
                 }
             )
         elif paper and not code:
-            new_items.append(
-                {
-                    "wp_id": wp_id,
-                    "title": paper.get("title"),
-                    "url": paper.get("url"),
-                    "decision": paper.get("decision"),
-                    "action": (
-                        "No site source code cites this paper yet. "
-                        "Add a source row and principles only after review."
-                    ),
-                }
+            item = {
+                "wp_id": wp_id,
+                "title": paper.get("title"),
+                "url": paper.get("url"),
+                "decision": paper.get("decision"),
+                "action": (
+                    "No site source code cites this paper yet. "
+                    "Add a source row and principles only after review."
+                ),
+            }
+            if added_set is not None and wp_id not in added_set:
+                modified_without_source.append(item)
+            else:
+                new_items.append(item)
+
+    removed_items = []
+    for wp_id in removed_ids:
+        code = code_by_wp.get(wp_id)
+        if code:
+            action = (
+                "This WP- id is not in the new monitor export. "
+                f"Propose retiring site principles that cite only {code}. "
+                "Do not auto-delete."
             )
+        else:
+            action = (
+                "This WP- id is not in the new monitor export. "
+                "No site source cites it."
+            )
+        removed_items.append({"wp_id": wp_id, "code": code, "action": action})
 
     agentic["updated"] = stamp
     agentic["count"] = len(agentic.get("principles", []))
@@ -222,6 +281,7 @@ def main() -> int:
         "",
         f"Updated: {stamp}",
         f"Changed WP- IDs: {', '.join(changed_ids) or '(none)'}",
+        f"Removed WP- IDs: {', '.join(removed_ids) or '(none)'}",
         "",
         "## Changed sources",
     ]
@@ -245,6 +305,15 @@ def main() -> int:
             f"({item.get('decision')}): {item['action']}"
         )
 
+    lines.extend(["", "## Modified papers with no site source"])
+    if not modified_without_source:
+        lines.append("None.")
+    for item in modified_without_source:
+        lines.append(
+            f"- `{item['wp_id']}` {item.get('title')} "
+            f"({item.get('decision')}): {item['action']}"
+        )
+
     lines.extend(["", "## Proposed retirements"])
     if not retired_items:
         lines.append("None.")
@@ -254,14 +323,30 @@ def main() -> int:
             f"({item['decision']}): {item['action']}"
         )
 
+    lines.extend(["", "## Removed from the monitor export"])
+    if not removed_items:
+        lines.append("None.")
+    for item in removed_items:
+        code = item.get("code")
+        label = f"`{item['wp_id']}` / `{code}`" if code else f"`{item['wp_id']}`"
+        lines.append(f"- {label}: {item['action']}")
+
+    reported = {
+        item["wp_id"]
+        for item in (
+            new_items + modified_without_source + changed_items + retired_items
+        )
+    }
     lines.extend(["", "## Unknown WP- IDs"])
-    if not unknown:
+    unknown_lines = []
+    for wp_id in unknown:
+        if wp_id in code_by_wp or wp_id in reported or wp_id in removed_set:
+            continue
+        unknown_lines.append(f"- `{wp_id}` not linked to a site source code.")
+    if not unknown_lines:
         lines.append("None.")
     else:
-        for wp_id in unknown:
-            if wp_id in code_by_wp:
-                continue
-            lines.append(f"- `{wp_id}` not linked to a site source code.")
+        lines.extend(unknown_lines)
 
     lines.extend(
         [

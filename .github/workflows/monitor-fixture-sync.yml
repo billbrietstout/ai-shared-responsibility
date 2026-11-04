@@ -1,0 +1,55 @@
+name: Refresh the whitepaper fixture
+
+# Copies the public monitor export onto automation/monitor-fixture-sync
+# and opens or updates one draft pull request into develop.
+# This job is not a required status check. The required checks stay
+# validate-principles, whitepapers-fixture, and verify.
+# Schedule: 03:00 UTC Wednesday, which is 7:00 PM Pacific Standard Time
+# Tuesday and 8:00 PM Pacific Daylight Time Tuesday. See
+# docs/monitor-data-flow.md.
+
+on:
+  schedule:
+    - cron: "0 3 * * 3"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Write the proposal and print the plan. Do not push or edit a pull request."
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: monitor-fixture-sync
+  cancel-in-progress: false
+
+jobs:
+  open-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Refresh the fixture and open or update the draft pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python3 scripts/monitor_sync_pr.py --dry-run
+          else
+            python3 scripts/monitor_sync_pr.py --push
+          fi
