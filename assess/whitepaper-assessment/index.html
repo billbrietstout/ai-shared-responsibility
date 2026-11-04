@@ -228,12 +228,15 @@
         <span class="page-hero__eyebrow">Assess</span>
         <h1 class="page-hero__title">Assess an AI security whitepaper</h1>
         <p class="page-hero__lede">
-          A copy-ready prompt that checks a paper against <span data-inv-count="classic">87</span> classic security
-          engineering principles, <span data-inv-count="principles">170</span> AI and agentic security principles, and the
-          SRF accountability and regulatory data, then reviews a working draft for
-          the mechanical defects that survive ordinary review. Paste the prompt,
-          add the paper, and your assistant fetches slim catalogs itself after it
-          confirms the read. No file uploads.
+          A copy-ready prompt that checks a paper against three catalogs, then reviews a draft for mechanical defects.
+        </p>
+        <ul class="page-hero__lede" style="margin-top:0;max-width:42rem;">
+          <li><span data-inv-count="classic">87</span> classic security engineering principles</li>
+          <li><span data-inv-count="principles">170</span> AI and agentic security principles</li>
+          <li>SRF accountability and regulatory data</li>
+        </ul>
+        <p class="page-hero__lede">
+          Paste the prompt and add the paper. After the assistant confirms the read, it fetches the slim catalogs. No file uploads.
         </p>
       </div>
     </header>
@@ -266,10 +269,12 @@
           coverage, known gaps, and the P1/P2 caps still run.
         </li>
         <li>
-          Beyond catalog matching, the prompt runs an integrity screen on the
-          submission itself, grounds any regulatory or accountability claims in
-          live data, and checks draft mechanics and machine readability when
-          you're reviewing a working draft rather than a finished paper.
+          Beyond catalog matching, the prompt also:
+          <ul>
+            <li>Runs an integrity screen on the submission.</li>
+            <li>Grounds regulatory or accountability claims in live data.</li>
+            <li>Checks draft mechanics and machine readability on a working draft.</li>
+          </ul>
         </li>
         <li>
           Output arrives as a ranked findings table plus prose blocks for the
@@ -348,9 +353,18 @@
           principles is the default. It is the papers the agentic catalog cites.
         </p>
         <p>
-          Included organization papers are a separate count from cited research.
-          Cited research is the arXiv papers the monitor added because a
-          monitored paper cites them. Cited research is not part of the default.
+          Included organization papers are a separate count from research the
+          monitor found. Research the monitor found is the arXiv set the monitor
+          added because a monitored paper cites them. That research list is not part of the default.
+        </p>
+        <p>
+          Terms on this page: <strong>Cited in principles</strong> means the
+          agentic catalog cites the paper as a source of principles.
+          <strong>Research the monitor found</strong> means an arXiv row the
+          monitor stored because another paper cites it.
+          <strong>Included</strong> on a scope button means the monitor decided
+          to keep that organization paper in the inventory.
+          <strong>In this list</strong> means the rows the filter currently shows.
         </p>
         <p>
           On this page, a source of principles means the agentic catalog cites
@@ -369,9 +383,9 @@
           principle.
         </p>
         <!-- inventory-controls:start -->
-<p class="inv-count-note">Included organization papers: <span data-inv-count="org">105</span>. Cited research: <span data-inv-count="research">400</span>. The two counts do not overlap. Cited research is not part of the default list.</p>
-<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">3</span>. Cited research records with extracted principles: <span data-inv-count="research-extracted">0</span>. A metadata only record is not a source of principles.</p>
-<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">2</span> arXiv records that are not in the cited research count. The evidence filter appears for a list that contains an arXiv record.</p>
+<p class="inv-count-note">Organization papers: <span data-inv-count="org">105</span>. Research the monitor found: <span data-inv-count="research">400</span>. These counts do not overlap. Research the monitor found is not part of the default list.</p>
+<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">3</span>. Research records with extracted principles: <span data-inv-count="research-extracted">0</span>. A metadata-only record is not a source of principles.</p>
+<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">2</span> arXiv records outside the research-monitor count. The evidence filter opens when the selected list contains an arXiv record.</p>
 <fieldset class="inv-options" id="inventory-scope-set">
   <legend>Which records to list</legend>
   <label class="inv-option">
@@ -384,31 +398,31 @@
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="research">
-    <span>Cited research (<span data-inv-count="research">400</span>)</span>
+    <span>Research the monitor found (<span data-inv-count="research">400</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="all">
-    <span>All papers, including cited research (<span data-inv-count="all">579</span>)</span>
+    <span>All papers, including research the monitor found (<span data-inv-count="all">579</span>)</span>
   </label>
 </fieldset>
 <fieldset class="inv-options" id="inventory-evidence-set" hidden>
   <legend>Evidence level</legend>
-  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotations from the papers. Counts on the buttons match the list you selected. All levels is the default.</p>
+  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotes from the papers. Button counts match the list you selected. Seed counts below are for research the monitor found. All levels is the default.</p>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="all" checked>
     <span>All levels</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="theoretical">
-    <span>Theoretical (<span data-ev-count="theoretical">0</span>)</span>
+    <span>Theoretical (<span data-ev-count="theoretical">78</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="tested">
-    <span>Tested (<span data-ev-count="tested">0</span>)</span>
+    <span>Tested (<span data-ev-count="tested">220</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="possibly_deployed">
-    <span>Tested, possibly deployed, needs review (<span data-ev-count="possibly_deployed">0</span>)</span>
+    <span>Tested, possibly deployed (needs review) (<span data-ev-count="possibly_deployed">102</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="deployed">
@@ -450,8 +464,9 @@
       </p>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>Checks outside principle matching</caption>
           <thead>
-            <tr><th>Step</th><th>What it asks</th><th>What a miss produces</th></tr>
+            <tr><th scope="col">Step</th><th scope="col">What it asks</th><th scope="col">What a miss produces</th></tr>
           </thead>
           <tbody>
             <tr>
@@ -495,8 +510,9 @@
       </p>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>Finding priority tiers</caption>
           <thead>
-            <tr><th>Tier</th><th>What it means</th><th>Why it ranks here</th></tr>
+            <tr><th scope="col">Tier</th><th scope="col">What it means</th><th scope="col">Why it ranks here</th></tr>
           </thead>
           <tbody>
             <tr>

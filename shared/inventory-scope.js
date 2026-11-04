@@ -19,8 +19,8 @@
   var SCOPE_LABEL = {
     cited: "Cited in principles",
     org: "All included organization papers",
-    research: "Cited research",
-    all: "All papers, including cited research"
+    research: "Research the monitor found",
+    all: "All papers, including research the monitor found"
   };
 
   var EVIDENCE_LABEL = {
@@ -32,10 +32,17 @@
     untagged: "Not yet tagged"
   };
 
+  var EVIDENCE_ALIASES = {
+    "possibly-deployed": "possibly_deployed",
+    possiblydeployed: "possibly_deployed"
+  };
+
+  var unknownEvidence = false;
+
   var CAPTION = {
     cited: "Papers the principles catalog cites. These are sources of the principles on this site.",
     org: "Included organization papers. Metadata only means principles have not been extracted. That row is not a source of principles.",
-    research: "Cited arXiv research. Metadata only and duplicate rows are not sources of principles.",
+    research: "Research the monitor found. Metadata only and duplicate rows are not sources of principles.",
     all: "Every monitor record. Metadata only, duplicate, and marked for removal are not sources of principles."
   };
 
@@ -245,7 +252,7 @@
       var empty = document.createElement("tr");
       var td = document.createElement("td");
       td.colSpan = headers.length;
-      td.textContent = "No records match this filter.";
+      td.textContent = emptyMessage(scope, showEvidence);
       empty.appendChild(td);
       tbody.appendChild(empty);
     }
@@ -276,6 +283,32 @@
     mount.appendChild(scroll);
   }
 
+  function untaggedCount(list) {
+    var n = 0;
+    list.forEach(function (paper) {
+      if (!paper.ev) n += 1;
+    });
+    return n;
+  }
+
+  function emptyMessage(scope, evidenceOn) {
+    var msg = "No records match this filter.";
+    if (!evidenceOn) return msg;
+    var evidence = selected("inventory-evidence") || "all";
+    if (evidence === "all") return msg;
+    var group = scopeList(scope);
+    var untagged = untaggedCount(group);
+    if (untagged > 0) {
+      msg +=
+        " " +
+        untagged +
+        " of " +
+        group.length +
+        " records in this list are not tagged yet.";
+    }
+    return msg;
+  }
+
   function describe(scope, total, shown, evidenceOn, evidence) {
     var text =
       (SCOPE_LABEL[scope] || "Records") +
@@ -284,10 +317,34 @@
       " of " +
       total +
       ".";
-    if (evidenceOn && evidence && evidence !== "all") {
+    if (unknownEvidence) {
+      text += " Unknown evidence filter. Showing all levels.";
+    } else if (evidenceOn && evidence && evidence !== "all") {
       text += " Evidence filter: " + (EVIDENCE_LABEL[evidence] || evidence) + ".";
+      if (shown === 0) {
+        var untagged = untaggedCount(scopeList(scope));
+        if (untagged > 0) {
+          text +=
+            " " +
+            untagged +
+            " of " +
+            total +
+            " records in this list are not tagged yet.";
+        }
+      }
     } else if (evidenceOn) {
       text += " Evidence filter: all levels.";
+      if (scope === "org" || scope === "cited") {
+        var pending = untaggedCount(scopeList(scope));
+        if (pending > 0) {
+          text +=
+            " " +
+            pending +
+            " of " +
+            total +
+            " are not tagged yet.";
+        }
+      }
     }
     if (scope === "cited" && citedBox) {
       text +=
@@ -354,6 +411,7 @@
     var scope = params.get("scope");
     var evidence = params.get("evidence");
     var query = params.get("q");
+    unknownEvidence = false;
     if (scope) {
       var scopeInput = root.querySelector(
         'input[name="inventory-scope"][value="' + CSS.escape(scope) + '"]'
@@ -361,10 +419,21 @@
       if (scopeInput) scopeInput.checked = true;
     }
     if (evidence) {
+      var normalized = EVIDENCE_ALIASES[evidence] || evidence;
       var evidenceInput = root.querySelector(
-        'input[name="inventory-evidence"][value="' + CSS.escape(evidence) + '"]'
+        'input[name="inventory-evidence"][value="' +
+          CSS.escape(normalized) +
+          '"]'
       );
-      if (evidenceInput) evidenceInput.checked = true;
+      if (evidenceInput) {
+        evidenceInput.checked = true;
+      } else {
+        unknownEvidence = true;
+        var allEvidence = root.querySelector(
+          'input[name="inventory-evidence"][value="all"]'
+        );
+        if (allEvidence) allEvidence.checked = true;
+      }
     }
     if (query && findInput) findInput.value = query;
   }
