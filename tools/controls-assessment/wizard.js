@@ -43,7 +43,7 @@
       .then((data) => {
         DATA = data;
         STORAGE_KEY = data.meta.storageKey;
-        document.title = data.meta.title + ' — CoSAI Wizards';
+        document.title = data.meta.title + ': CoSAI Wizards';
         populateTitles();
         renderContextFields();
         renderControls();
@@ -150,7 +150,7 @@
                 ${answerButton(layer, c.id, 'yes', 'Implemented', '✅')}
                 ${answerButton(layer, c.id, 'partial', 'Partial', '⚠️')}
                 ${answerButton(layer, c.id, 'no', 'Not done', '❌')}
-                ${answerButton(layer, c.id, 'na', 'N/A', '—')}
+                ${answerButton(layer, c.id, 'na', 'N/A', ':')}
               </div>
             </div>`;
         })
@@ -650,7 +650,7 @@
       }
     } else {
       if (ringFg) ringFg.style.strokeDashoffset = circumference;
-      if (ringVal) ringVal.textContent = '—';
+      if (ringVal) ringVal.textContent = ':';
       if (interp) { interp.textContent = 'Not started'; interp.className = 'score-interp'; }
     }
 
@@ -664,7 +664,7 @@
           pct.textContent = s.pct + '%';
         } else {
           bar.style.width = '0%';
-          pct.textContent = '—';
+          pct.textContent = ':';
         }
       }
     });
@@ -701,7 +701,7 @@
               <div class="layer-result-bar-fill" style="width:${pct}%;background:${scoreColor}"></div>
             </div>
           </div>
-          <div class="layer-result-score" style="color:${scoreColor}">${s.pct !== null ? s.pct + '%' : '—'}</div>
+          <div class="layer-result-score" style="color:${scoreColor}">${s.pct !== null ? s.pct + '%' : ':'}</div>
         </div>`;
     }).join('');
 
@@ -733,7 +733,7 @@
       .map((r) => {
         const val = state.owasp[r.id];
         const cls = val ? 'oi-' + val : 'oi-none';
-        const statusText = val === 'yes' ? '✅ Addressed' : val === 'partial' ? '⚠️ Partial' : val === 'no' ? '❌ Open' : '— Not assessed';
+        const statusText = val === 'yes' ? '✅ Addressed' : val === 'partial' ? '⚠️ Partial' : val === 'no' ? '❌ Open' : ': Not assessed';
         const statusCls = val === 'yes' ? 's-yes' : val === 'partial' ? 's-partial' : val === 'no' ? 's-no' : 's-none';
         return `
           <div class="owasp-result-item ${cls}">
@@ -770,7 +770,7 @@
 
         ${gapItems.length > 0 ? `
           <h4 class="results-subhead">
-            Priority Gaps${gapItems.filter((g) => g.severity === 'critical').length > 0 ? ' — ' + gapItems.filter((g) => g.severity === 'critical').length + ' critical' : ''}
+            Priority Gaps${gapItems.filter((g) => g.severity === 'critical').length > 0 ? ': ' + gapItems.filter((g) => g.severity === 'critical').length + ' critical' : ''}
           </h4>
           <div class="gaps-section">${gapsHtml}</div>` : ''}
 
@@ -786,9 +786,9 @@
         </button>
 
         <div class="disclaimer">
-          <strong>Privacy notice:</strong> This assessment runs entirely in your browser. No data is transmitted to any server. Results exist only in this session or in your browser's localStorage — use Export JSON to retain a copy.
+          <strong>Privacy notice:</strong> This assessment runs entirely in your browser. No data is transmitted to any server. Results exist only in this session or in your browser's localStorage: use Export JSON to retain a copy.
           <br /><br />
-          <strong>About this tool:</strong> Controls derived from ${DATA.meta.sources.join(', ')}. This is a self-assessment tool — findings should be validated with qualified security professionals.
+          <strong>About this tool:</strong> Controls derived from ${DATA.meta.sources.join(', ')}. This is a self-assessment tool: findings should be validated with qualified security professionals.
         </div>
       </section>`;
 
@@ -801,7 +801,7 @@
     return String(str)
       .replace(/≤/g, '<=')
       .replace(/≥/g, '>=')
-      .replace(/[–—]/g, '-')
+      .replace(/[–:]/g, '-')
       .replace(/[‘’]/g, "'")
       .replace(/[“”]/g, '"')
       .replace(/…/g, '...')

@@ -10,7 +10,7 @@
   // Friendly labels for the framework's per-layer/operating-model default value.
   var DEFAULT_LABEL = {
     "customer-owned": "Customer-owned",
-    "shared": "Shared — must be resolved",
+    "shared": "Shared: must be resolved",
     "model-evaluation": "Provider-built, customer-evaluated",
     "N/A": "Not in scope for this model"
   };
@@ -188,7 +188,7 @@
   function metaRow(label, value) {
     var r = el("div", "rec-meta__row");
     r.appendChild(el("span", "rec-meta__k", label));
-    r.appendChild(el("span", "rec-meta__v", value || "—"));
+    r.appendChild(el("span", "rec-meta__v", value || ":"));
     return r;
   }
 
@@ -349,7 +349,7 @@
 
     var m = DATA.models.filter(function (x) { return x.id === state.model; })[0];
     var metaPairs = [
-      ["Accountable org", state.org], ["Provider", state.vendor || "—"],
+      ["Accountable org", state.org], ["Provider", state.vendor || ":"],
       ["Operating model", m ? m.name : state.model],
       ["Industry", state.vertical ? verticalLabel(state.vertical) : "General"]
     ];
@@ -358,7 +358,7 @@
     setF(9, "normal", slate);
     metaPairs.forEach(function (p) {
       setF(9, "bold", slate); text(p[0] + ":", M, y);
-      setF(9, "normal", navy); text(p[1] || "—", M + 96, y);
+      setF(9, "normal", navy); text(p[1] || ":", M + 96, y);
       y += 14;
     });
     y += 8;
