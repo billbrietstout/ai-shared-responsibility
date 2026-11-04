@@ -110,7 +110,7 @@ the fixture.
 How the data moves, and the branch protection settings to require these
 checks, are in [`docs/monitor-data-flow.md`](docs/monitor-data-flow.md).
 
-**Weekly update** (after the monitor publishes changed WP- IDs):
+**Weekly update.** `.github/workflows/monitor-fixture-sync.yml` refreshes the fixture and opens one draft pull request against `develop` with the proposal under `reports/`. It does not copy the candidate into `data/`. The schedule, the token, and the manual run are in [`docs/monitor-data-flow.md`](docs/monitor-data-flow.md). The same commands, run by hand:
 
 ```bash
 python3 scripts/site_sync.py \
