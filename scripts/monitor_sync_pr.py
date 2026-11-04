@@ -6,7 +6,8 @@ into build/fixtures/whitepapers.json, writes the site_sync proposal under
 reports/, and pushes branch automation/monitor-fixture-sync. The pull
 request targets develop and stays a draft.
 
-The script does not edit data/ai-agentic-principles.json. It does not push
+The script does not edit data/ai-agentic-principles.json. It regenerates
+data/whitepaper-inventory.slim.json from the fixture. It does not push
 develop, main, or master. It does not force-push. It does not merge.
 
   python3 scripts/monitor_sync_pr.py --dry-run
@@ -46,8 +47,12 @@ PUBLISHED_PATHS = (
     "reports/principles-diff.md",
     "reports/ai-agentic-principles.candidate.json",
     "reports/ai-agentic-principles.slim.candidate.json",
+    "data/whitepaper-inventory.slim.json",
+    "agentic-ai-security/index.html",
+    "assess/whitepaper-assessment/index.html",
 )
 CATALOG_PATH = "data/ai-agentic-principles.json"
+INVENTORY_PATH = "data/whitepaper-inventory.slim.json"
 _SEGMENT = re.compile(r"[A-Za-z0-9._-]+$")
 _TOKEN = re.compile(r"(ghp_|github_pat_|gho_)[A-Za-z0-9_]+")
 
@@ -139,6 +144,11 @@ def render_pull_request_body(
         "This draft refreshes `build/fixtures/whitepapers.json` from the "
         "public monitor export and commits the catalog proposal under "
         "`reports/`.",
+        "",
+        "It also regenerates `data/whitepaper-inventory.slim.json` from "
+        "that fixture, and refreshes the scope counts on the agentic AI "
+        "security page and the whitepaper assessment page when those "
+        "pages are present. The principle catalogs stay unchanged.",
         "",
         "This pull request leaves `data/ai-agentic-principles.json` and "
         "`data/ai-agentic-principles.slim.json` unchanged. To accept a "
@@ -350,6 +360,18 @@ def run_site_sync(
         raise SystemExit(redact(proc.stdout + "\n" + proc.stderr))
 
 
+def regenerate_inventory(repo: Path) -> None:
+    """Rebuild the slim index from the fixture just copied into repo."""
+    script = Path(__file__).resolve().parents[1] / "build" / "generate_whitepaper_inventory.py"
+    proc = subprocess.run(
+        [sys.executable, str(script), "--root", str(repo)],
+        text=True,
+        capture_output=True,
+    )
+    if proc.returncode != 0:
+        raise SystemExit(redact(proc.stdout + "\n" + proc.stderr))
+
+
 def place_proposal(
     repo: Path, fixture_path: Path, changes_path: Path, out_dir: Path
 ) -> None:
@@ -413,7 +435,9 @@ def sync_git_branch(
     else:
         git(repo, ["checkout", "-B", branch, f"origin/{base}"])
     place_proposal(repo, fixture_path, changes_path, out_dir)
-    git(repo, ["add", "-f", "--", *PUBLISHED_PATHS])
+    regenerate_inventory(repo)
+    existing = [path for path in PUBLISHED_PATHS if (repo / path).is_file()]
+    git(repo, ["add", "-f", "--", *existing])
     staged = [
         line
         for line in git(repo, ["diff", "--cached", "--name-only"]).stdout.splitlines()
@@ -435,8 +459,12 @@ def sync_git_branch(
         if line
     ]
     assert_paths_allowed(changed_tree)
-    if any(path == CATALOG_PATH or path.startswith("data/") for path in changed_tree):
-        raise SystemExit("refusing to publish a data/ change")
+    if any(
+        path == CATALOG_PATH
+        or (path.startswith("data/") and path != INVENTORY_PATH)
+        for path in changed_tree
+    ):
+        raise SystemExit("refusing to publish a catalog or other data/ change")
     head = git(repo, ["rev-parse", "--abbrev-ref", "HEAD"]).stdout.strip()
     if head != branch:
         raise SystemExit(f"refusing to push from {head}")
