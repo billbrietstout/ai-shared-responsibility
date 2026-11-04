@@ -551,11 +551,12 @@ def main() -> None:
         <strong>Cousin, not a merge.</strong>
         <a href="/assess/whitepaper-assessment/">Whitepaper assessment</a>
         grades a paper against the principle catalogs. This pack scores draft
-        claims on ROCA and writes suggestion packets. Keep them as two prompts.
+        claims on <a href="#roca">ROCA</a> and writes suggestion packets. Keep them as two prompts.
       </div>
 
       <h2 class="section-label">On this page</h2>
       <ul class="q-list">
+        <li><a href="#roca">What ROCA means</a></li>
         <li><a href="#shortcut">Start here</a> (<a href="#shortcut-a">Track A</a>, <a href="#shortcut-b">Track B</a>, <a href="#shortcut-c">Track C</a>)</li>
         <li><a href="#intake">Intake packet</a></li>
         <li><a href="#preflight">Pre-flight helper</a></li>
@@ -565,6 +566,24 @@ def main() -> None:
         <li><a href="#track-c">Track C (optional)</a></li>
         <li><a href="#export-report">Export the report</a></li>
       </ul>
+
+      <h2 class="section-label" id="roca">What ROCA means</h2>
+      <p class="section-note">
+        ROCA is the chain this pack uses to test a draft claim:
+        <strong>Risk → Obligation → Control → Accountable</strong>.
+        Step <code>C-roca</code> builds that binding for each claim. Later
+        scoring asks whether the draft text plus that chain backs the claim.
+      </p>
+      <ol class="q-list">
+        <li><strong>Risk</strong>: a named risk or attack class (what can go wrong).</li>
+        <li><strong>Obligation</strong>: a statute, regulation, or contract duty that responds to that risk.</li>
+        <li><strong>Control</strong>: a concrete control that implements the obligation (prefer NIST SP 800-53).</li>
+        <li><strong>Accountable</strong>: one owner (job title or SRF persona).</li>
+      </ol>
+      <p class="section-note">
+        One owner per activity. &quot;Shared&quot; is analysis input, not a final
+        owner. Obligation is not a control.
+      </p>
 
       <div class="deliverable" id="shortcut">
         <h2 class="deliverable__title">Start here: one chat</h2>
@@ -657,11 +676,8 @@ def main() -> None:
 
       <h2 class="section-label">What a testable claim needs</h2>
       <p class="section-note">
-        A claim is testable when the reader can point to a named risk or
-        attack class, an obligation (statute, regulation, or contract), a
-        control that implements the obligation (prefer NIST SP 800-53), and
-        one accountable party (job title or SRF persona). Shared is analysis
-        input, not a final owner. Obligation is not a control.
+        A claim is testable when the reader can point to each link in the
+        <a href="#roca">ROCA</a> chain. The score meanings below use that chain.
       </p>
       <div class="table-scroll">
         <table class="tier-table">
