@@ -430,6 +430,8 @@
               class="model-tab${m.id === activeModel ? " model-tab--active" : ""}"
               role="tab"
               aria-selected="${m.id === activeModel}"
+              aria-controls="model-panel"
+              id="tab-${m.id}"
               data-model="${m.id}"
             >${m.short}${m.provenance === "proposed-extension"
                 ? '<span class="model-tab__ext">Ext</span>' : ""}</button>
@@ -437,9 +439,24 @@
         </div>`;
       }
 
+      function modelFromLocation(data) {
+        const params = new URLSearchParams(location.search);
+        const fromQuery = params.get("model");
+        const hash = (location.hash || "").replace(/^#/, "");
+        const candidate = fromQuery || hash || data.models[0].id;
+        if (data.models.find((m) => m.id === candidate)) return candidate;
+        return data.models[0].id;
+      }
+
+      function setLocation(modelId) {
+        const url = new URL(location.href);
+        url.searchParams.set("model", modelId);
+        url.hash = modelId;
+        history.replaceState(null, "", url);
+      }
+
       async function init() {
         const root = document.getElementById("root");
-        const params = new URLSearchParams(location.search);
 
         let data;
         try {
@@ -450,14 +467,16 @@
           return;
         }
 
-        let active = params.get("model") || data.models[0].id;
-        if (!data.models.find((m) => m.id === active)) active = data.models[0].id;
+        let active = modelFromLocation(data);
 
         function render() {
           root.innerHTML = `
             ${tabs(data.models, active)}
-            ${matrixTable(data, active)}
-            ${legend(data, active)}
+            <div id="model-panel" role="tabpanel" aria-labelledby="tab-${active}">
+              <div id="${active}"></div>
+              ${matrixTable(data, active)}
+              ${legend(data, active)}
+            </div>
             <div class="callout">
               <strong>Direction:</strong> The four CoSAI tabs read left to right from most provider-managed (AI-SaaS) to most customer-managed (IaaS). Customer responsibility increases as organizations move toward infrastructure-layer deployments. Federated Consortium does not sit on that line at all, because it has no provider: both columns describe parties that hold their own domain outright.
             </div>
@@ -471,14 +490,21 @@
           root.querySelectorAll(".model-tab").forEach((btn) => {
             btn.addEventListener("click", () => {
               active = btn.dataset.model;
-              const url = new URL(location.href);
-              url.searchParams.set("model", active);
-              history.replaceState(null, "", url);
+              setLocation(active);
               render();
             });
           });
         }
 
+        window.addEventListener("hashchange", () => {
+          const next = modelFromLocation(data);
+          if (next !== active) {
+            active = next;
+            render();
+          }
+        });
+
+        setLocation(active);
         render();
       }
 

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoSAI Framework Stress Test</title>
+<link rel="canonical" href="https://aisharedresponsibility.com/tools/srf-stress/" />
 <link rel="stylesheet" href="/shared/styles.css">
 <style>
   :root {
@@ -302,6 +303,18 @@
   .scenario-card .icon { font-size: 18px; margin-bottom: 8px; }
   .scenario-card .label { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
   .scenario-card .desc { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
+  .scenario-card {
+    text-align: left;
+    font: inherit;
+    width: 100%;
+    cursor: pointer;
+  }
+  .scenario-card:focus-visible {
+    outline: 2px solid var(--navy-accent);
+    outline-offset: 2px;
+  }
+
 
   /* ── INPUT AREA ── */
   .input-box {
@@ -637,33 +650,20 @@
     </script>
     <!-- llm:meta -->
     <meta name="llm:type" content="tool" />
-    <meta name="llm:canonical-id" content="srf.page.tools-srf-stress" />
+    <meta name="llm:canonical-id" content="srf.page.assess-srf-stress" />
     <meta name="llm:concepts" content="srf.concept.accountability, srf.concept.responsibility-cascade, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5" />
     <!-- /llm:meta -->
     <script src="/shared/analytics.js"></script>
   </head>
 <body>
-
 <a class="skip-link" href="#main">Skip to content</a>
-
-<header>
-  <div class="header-inner">
-    <a href="/tools/" class="header-wordmark">CoSAI Wizards</a>
-    <div class="header-sep"></div>
-    <div class="header-tool">CoSAI Stress Test</div>
-    <a href="/tools/" class="header-back">
-      <svg fill="none" viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 9L4.5 6l3-3"/>
-      </svg>
-      Back to wizards
-    </a>
-  </div>
-</header>
+<script type="module" src="/shared/components.js"></script>
+<site-nav current="tools"></site-nav>
 
 <main id="main" data-llm="cosai-framework-stress-test">
   <div class="hero">
     <div class="hero-eyebrow">COSAI SHARED RESPONSIBILITY FRAMEWORK</div>
-    <h1>Is the CoSAI framework<br><em>actually functional?</em></h1>
+    <h1>Test whether the CoSAI framework covers your scenario</h1>
     <p>Select a real-world AI incident scenario, build a five-layer accountability prompt, and paste it into your own chat or model. The site never calls an LLM for you.</p>
   </div>
 
@@ -675,37 +675,37 @@
     policy allows it. Preset cards stay on this page until you build a prompt.
   </p>
 
-  <div class="section-label">01 — Select a scenario</div>
-  <div class="scenario-grid">
-    <div class="scenario-card active" style="--card-accent:var(--l1-accent)" data-id="chatbot_pii" onclick="selectScenario(this)">
-      <div class="icon">💬</div>
-      <div class="label">Chatbot PII leak</div>
-      <div class="desc">Customer service bot exposes user data via prompt injection</div>
-    </div>
-    <div class="scenario-card" style="--card-accent:var(--l4-accent)" data-id="agentic_financial" onclick="selectScenario(this)">
-      <div class="icon">🤖</div>
-      <div class="label">Autonomous agent</div>
-      <div class="desc">L4 agent makes unauthorized financial transactions</div>
-    </div>
-    <div class="scenario-card" style="--card-accent:var(--l3-accent)" data-id="model_bias" onclick="selectScenario(this)">
-      <div class="icon">⚖️</div>
-      <div class="label">Model bias in hiring</div>
-      <div class="desc">AI screening tool produces discriminatory outcomes</div>
-    </div>
-    <div class="scenario-card" style="--card-accent:var(--l2-accent)" data-id="shadow_ai" onclick="selectScenario(this)">
-      <div class="icon">👤</div>
-      <div class="label">Shadow AI</div>
-      <div class="desc">Employees use unapproved AI tools with sensitive data</div>
-    </div>
-    <div class="scenario-card" style="--card-accent:var(--l5-accent)" data-id="supply_chain" onclick="selectScenario(this)">
-      <div class="icon">⛓️</div>
-      <div class="label">Supply chain attack</div>
-      <div class="desc">Compromised foundation model affects downstream apps</div>
-    </div>
+  <div class="section-label">Step 1: Select a scenario</div>
+  <div class="scenario-grid" role="group" aria-label="Scenario presets">
+    <button type="button" class="scenario-card active" style="--card-accent:var(--l1-accent)" data-id="chatbot_pii" aria-pressed="true" onclick="selectScenario(this)">
+      <span class="icon" aria-hidden="true">💬</span>
+      <span class="label">Chatbot PII leak</span>
+      <span class="desc">Customer service bot exposes user data via prompt injection</span>
+    </button>
+    <button type="button" class="scenario-card" style="--card-accent:var(--l4-accent)" data-id="agentic_financial" aria-pressed="false" onclick="selectScenario(this)">
+      <span class="icon" aria-hidden="true">🤖</span>
+      <span class="label">Autonomous agent</span>
+      <span class="desc">L4 agent makes unauthorized financial transactions</span>
+    </button>
+    <button type="button" class="scenario-card" style="--card-accent:var(--l3-accent)" data-id="model_bias" aria-pressed="false" onclick="selectScenario(this)">
+      <span class="icon" aria-hidden="true">⚖️</span>
+      <span class="label">Model bias in hiring</span>
+      <span class="desc">AI screening tool produces discriminatory outcomes</span>
+    </button>
+    <button type="button" class="scenario-card" style="--card-accent:var(--l2-accent)" data-id="shadow_ai" aria-pressed="false" onclick="selectScenario(this)">
+      <span class="icon" aria-hidden="true">👤</span>
+      <span class="label">Shadow AI</span>
+      <span class="desc">Employees use unapproved AI tools with sensitive data</span>
+    </button>
+    <button type="button" class="scenario-card" style="--card-accent:var(--l5-accent)" data-id="supply_chain" aria-pressed="false" onclick="selectScenario(this)">
+      <span class="icon" aria-hidden="true">⛓️</span>
+      <span class="label">Supply chain attack</span>
+      <span class="desc">Compromised foundation model affects downstream apps</span>
+    </button>
   </div>
 
   <div class="input-box">
-    <label for="customScenario">02 — Or describe your own scenario</label>
+    <label for="customScenario">Step 2: Or describe your own scenario</label>
     <p id="customScenario-hint" class="input-hint">
       Example: A generative AI medical diagnosis tool running on Azure gives a patient an incorrect
       treatment recommendation due to hallucination. The hospital, the platform provider, and the model
@@ -722,7 +722,7 @@
 
   <div class="prompt-panel" id="promptPanel" aria-live="polite">
     <div class="prompt-panel__head">
-      <div class="prompt-panel__title">02b — Analysis prompt</div>
+      <div class="prompt-panel__title">Step 2b: Analysis prompt</div>
     </div>
     <p class="prompt-panel__hint">
       Copy this prompt and paste it into your own chat or model. The site does not
@@ -739,13 +739,13 @@
   </div>
 
   <div id="results">
-    <div class="section-label">03 — Local layer sketch</div>
+    <div class="section-label">Step 3: Local layer sketch</div>
     <div class="results-header">
       <h2 id="resultsTitle">Local sketch (no LLM)</h2>
     </div>
     <div class="layers-grid" id="layersGrid"></div>
 
-    <div class="section-label">04 — Framework scorecard</div>
+    <div class="section-label">Step 4: Framework scorecard</div>
     <div class="score-section" id="scoreSection"></div>
 
     <div class="three-col">
@@ -769,8 +769,12 @@
     </div>
 
     <div class="alt-models">
-      <div class="section-label">05 — Alternative frameworks</div>
-      <h2>Is there a better model?</h2>
+      <div class="section-label">Step 5: How other frameworks compare</div>
+      <h2>Where other frameworks fit</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:18px;max-width:66ch;line-height:1.6;font-weight:300;">
+        Editorial: In our review, the CoSAI SRF is the only framework we found that assigns accountability at each technical layer: model providers, platforms, applications, data governance, and business use (unverified against all frameworks).
+        Frameworks marked <strong style="color:#7c3aed">ADDS ENFORCEMENT</strong> provide legal liability at the legal-entity level (who gets fined); they work alongside SRF, not instead of it.
+      </p>
       <div class="model-cards" id="modelCards"></div>
     </div>
   </div>
@@ -798,11 +802,11 @@ const ANALYSIS_PRESETS = {
     verdict: 'PARTIAL',
     verdictSummary: 'CoSAI spans the actors, but prompt-injection plus CRM data paths blur who must enforce segregation at L3 versus guardrails at L4–L5.',
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: 'Financial services context with GDPR and SR 11-7 sets clear business risk appetite.', status: 'WARN', owner: ' — Business owner' },
-      { layer: 'L2 — AI Information', finding: 'PII in CRM connected to the bot raises classification and lawful-basis duties.', status: 'WARN', owner: ' — Data governance lead' },
-      { layer: 'L3 — AI Application', finding: 'Injection bypassed app-level controls; tool-use and retrieval boundaries were insufficient.', status: 'GAP', owner: ' — Application security' },
-      { layer: 'L4 — AI Platform', finding: 'Azure OpenAI PaaS provides baseline controls; tenant misconfiguration still enabled exfiltration.', status: 'WARN', owner: ' — Cloud platform owner' },
-      { layer: 'L5 — AI Model Provider', finding: 'GPT-4 vendor publishes safety guidance; it does not cover your CRM connector policy.', status: 'OK', owner: ' — Model vendor relations' }
+      { layer: 'L1: AI Business and Usage', finding: 'Financial services context with GDPR and SR 11-7 sets clear business risk appetite.', status: 'WARN', owner: 'Business owner' },
+      { layer: 'L2: AI Information', finding: 'PII in CRM connected to the bot raises classification and lawful-basis duties.', status: 'WARN', owner: 'Data governance lead' },
+      { layer: 'L3: AI Application', finding: 'Injection bypassed app-level controls; tool-use and retrieval boundaries were insufficient.', status: 'GAP', owner: 'Application security' },
+      { layer: 'L4: AI Platform', finding: 'Azure OpenAI PaaS provides baseline controls; tenant misconfiguration still enabled exfiltration.', status: 'WARN', owner: 'Cloud platform owner' },
+      { layer: 'L5: AI Model Provider', finding: 'GPT-4 vendor publishes safety guidance; it does not cover your CRM connector policy.', status: 'OK', owner: 'Model vendor relations' }
     ],
     scores: { accountabilityClarity: 58, regulatoryAlignment: 72, incidentResponse: 48, agenticCoverage: 62, practicalEnforceability: 55 },
     strengths: ['Clear multi-vendor stack (app, cloud, model) maps to layers.', 'Regulatory hooks (GDPR, SR 11-7) anchor L1–L2 duties.', 'Good language for post-incident RACI workshops.'],
@@ -814,11 +818,11 @@ const ANALYSIS_PRESETS = {
     verdict: 'GAPS_FOUND',
     verdictSummary: 'Autonomous spend outside limits is exactly where CoSAI needs crisp human-on-loop and authorization boundaries; the framework names layers but under-specifies enforcement.',
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: 'Procurement use case and dollar limits belong here; policy did not bind the agent’s tools.', status: 'GAP', owner: ' — Finance / procurement' },
-      { layer: 'L2 — AI Information', finding: 'Contract metadata sensitivity is clear; who may commit spend was not encoded as data rules.', status: 'WARN', owner: ' — Legal / records' },
-      { layer: 'L3 — AI Application', finding: 'LangChain workflow lacked hard stops before PO issuance.', status: 'GAP', owner: ' — Engineering lead' },
-      { layer: 'L4 — AI Platform', finding: 'Bedrock and IAM could enforce tool scopes; configuration gap vs policy.', status: 'WARN', owner: ' — Cloud security' },
-      { layer: 'L5 — AI Model Provider', finding: 'Model did not “authorize” spend; still cited as black box by business stakeholders.', status: 'WARN', owner: ' — Vendor management' }
+      { layer: 'L1: AI Business and Usage', finding: 'Procurement use case and dollar limits belong here; policy did not bind the agent’s tools.', status: 'GAP', owner: 'Finance / procurement' },
+      { layer: 'L2: AI Information', finding: 'Contract metadata sensitivity is clear; who may commit spend was not encoded as data rules.', status: 'WARN', owner: 'Legal / records' },
+      { layer: 'L3: AI Application', finding: 'LangChain workflow lacked hard stops before PO issuance.', status: 'GAP', owner: 'Engineering lead' },
+      { layer: 'L4: AI Platform', finding: 'Bedrock and IAM could enforce tool scopes; configuration gap vs policy.', status: 'WARN', owner: 'Cloud security' },
+      { layer: 'L5: AI Model Provider', finding: 'Model did not “authorize” spend; still cited as black box by business stakeholders.', status: 'WARN', owner: 'Vendor management' }
     ],
     scores: { accountabilityClarity: 42, regulatoryAlignment: 55, incidentResponse: 50, agenticCoverage: 35, practicalEnforceability: 40 },
     strengths: ['Highlights L3 workflow risk for agentic apps.', 'Forces discussion of cloud vs app ownership for tools.'],
@@ -830,11 +834,11 @@ const ANALYSIS_PRESETS = {
     verdict: 'PARTIAL',
     verdictSummary: 'CoSAI helps separate model, fine-tune, and deployer duties, but bias accountability still fights upstream vs downstream evidence gaps.',
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: 'Hiring context triggers employment-law and fairness duties.', status: 'WARN', owner: ' — HR executive' },
-      { layer: 'L2 — AI Information', finding: 'Training and evaluation datasets need lineage; HR rarely owns that data.', status: 'GAP', owner: ' — People analytics' },
-      { layer: 'L3 — AI Application', finding: 'Threshold tuning without disparate-impact testing is an app defect.', status: 'GAP', owner: ' — Product owner' },
-      { layer: 'L4 — AI Platform', finding: 'IaaS host provides compute isolation; not responsible for model fairness.', status: 'OK', owner: ' — Infrastructure' },
-      { layer: 'L5 — AI Model Provider', finding: 'Base model vendor disclaims fine-tuned behavior; deployer must validate.', status: 'WARN', owner: ' — ML engineering' }
+      { layer: 'L1: AI Business and Usage', finding: 'Hiring context triggers employment-law and fairness duties.', status: 'WARN', owner: 'HR executive' },
+      { layer: 'L2: AI Information', finding: 'Training and evaluation datasets need lineage; HR rarely owns that data.', status: 'GAP', owner: 'People analytics' },
+      { layer: 'L3: AI Application', finding: 'Threshold tuning without disparate-impact testing is an app defect.', status: 'GAP', owner: 'Product owner' },
+      { layer: 'L4: AI Platform', finding: 'IaaS host provides compute isolation; not responsible for model fairness.', status: 'OK', owner: 'Infrastructure' },
+      { layer: 'L5: AI Model Provider', finding: 'Base model vendor disclaims fine-tuned behavior; deployer must validate.', status: 'WARN', owner: 'ML engineering' }
     ],
     scores: { accountabilityClarity: 52, regulatoryAlignment: 68, incidentResponse: 45, agenticCoverage: 70, practicalEnforceability: 48 },
     strengths: ['Useful for arguing deployer validation duty at L3.', 'Separates infrastructure from model behavior cleanly.'],
@@ -846,11 +850,11 @@ const ANALYSIS_PRESETS = {
     verdict: 'GAPS_FOUND',
     verdictSummary: 'Shadow AI is an L1 policy vacuum first; CoSAI layers help after inventory exists, not before employees adopt consumer tools.',
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: 'No acceptable-use policy for generative AI; governance gap at source.', status: 'GAP', owner: ' — CISO / legal' },
-      { layer: 'L2 — AI Information', finding: 'HIPAA processing without BAAs or DPIAs is a direct compliance breach.', status: 'GAP', owner: ' — Privacy office' },
-      { layer: 'L3 — AI Application', finding: 'Consumer chat UIs bypass enterprise DLP and logging.', status: 'GAP', owner: ' — IT operations' },
-      { layer: 'L4 — AI Platform', finding: 'Unmanaged endpoints evade SSO and device posture checks.', status: 'WARN', owner: ' — Identity team' },
-      { layer: 'L5 — AI Model Provider', finding: 'Public model vendors are not HIPAA business associates by default.', status: 'OK', owner: ' — Procurement' }
+      { layer: 'L1: AI Business and Usage', finding: 'No acceptable-use policy for generative AI; governance gap at source.', status: 'GAP', owner: 'CISO / legal' },
+      { layer: 'L2: AI Information', finding: 'HIPAA processing without BAAs or DPIAs does not meet HIPAA requirements.', status: 'GAP', owner: 'Privacy office' },
+      { layer: 'L3: AI Application', finding: 'Consumer chat UIs bypass enterprise DLP and logging.', status: 'GAP', owner: 'IT operations' },
+      { layer: 'L4: AI Platform', finding: 'Unmanaged endpoints evade SSO and device posture checks.', status: 'WARN', owner: 'Identity team' },
+      { layer: 'L5: AI Model Provider', finding: 'Public model vendors are not HIPAA business associates by default.', status: 'OK', owner: 'Procurement' }
     ],
     scores: { accountabilityClarity: 38, regulatoryAlignment: 40, incidentResponse: 35, agenticCoverage: 78, practicalEnforceability: 42 },
     strengths: ['Frames unmanaged tools as cross-layer control debt.', 'Good anchor for an enterprise AI acceptable-use program.'],
@@ -862,11 +866,11 @@ const ANALYSIS_PRESETS = {
     verdict: 'GAPS_FOUND',
     verdictSummary: 'Supply-chain compromise of a foundation model stresses L5 transparency and L3 dependency management; CoSAI lacks supply-chain attestation detail.',
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: 'Downstream orgs rarely track model provenance as a business continuity risk.', status: 'WARN', owner: ' — Risk committee' },
-      { layer: 'L2 — AI Information', finding: 'Model weights as software artifact need integrity metadata.', status: 'GAP', owner: ' — Security architecture' },
-      { layer: 'L3 — AI Application', finding: 'Hundreds of apps inherit the same poisoned weights without SBOM for models.', status: 'GAP', owner: ' — Engineering' },
-      { layer: 'L4 — AI Platform', finding: 'Hosting platform did not introduce the backdoor; still a distribution channel.', status: 'OK', owner: ' — Platform SRE' },
-      { layer: 'L5 — AI Model Provider', finding: 'Training-time compromise is an L5 integrity gap; model cards omitted it.', status: 'GAP', owner: ' — Open-source maintainer / publisher' }
+      { layer: 'L1: AI Business and Usage', finding: 'Downstream orgs rarely track model provenance as a business continuity risk.', status: 'WARN', owner: 'Risk committee' },
+      { layer: 'L2: AI Information', finding: 'Model weights as software artifact need integrity metadata.', status: 'GAP', owner: 'Security architecture' },
+      { layer: 'L3: AI Application', finding: 'Hundreds of apps inherit the same poisoned weights without SBOM for models.', status: 'GAP', owner: 'Engineering' },
+      { layer: 'L4: AI Platform', finding: 'Hosting platform did not introduce the backdoor; still a distribution channel.', status: 'OK', owner: 'Platform SRE' },
+      { layer: 'L5: AI Model Provider', finding: 'Training-time compromise is an L5 integrity gap; model cards omitted it.', status: 'GAP', owner: 'Open-source maintainer / publisher' }
     ],
     scores: { accountabilityClarity: 45, regulatoryAlignment: 50, incidentResponse: 42, agenticCoverage: 80, practicalEnforceability: 38 },
     strengths: ['Clear story for why L5 integrity matters to L3 consumers.', 'Useful for third-party model onboarding checklists.'],
@@ -899,11 +903,11 @@ function localFrameworkAnalysis(scenario, presetId) {
     verdict,
     verdictSummary: `For this scenario (“${sn}”), CoSAI layers help map actors, but accountability clarity still depends on contracts and telemetry not shown in the framework diagram alone.`,
     layers: [
-      { layer: 'L1 — AI Business & Usage', finding: `Business context and risk appetite should anchor decisions for: ${sn}`, status: 'WARN', owner: ' — Executive sponsor' },
-      { layer: 'L2 — AI Information', finding: 'Data classification, lawful use, and retention for model inputs/outputs need explicit owners.', status: hasLeak ? 'GAP' : 'WARN', owner: ' — Data governance' },
-      { layer: 'L3 — AI Application', finding: 'Workflow design, testing, and human oversight for the AI feature sit with the application team.', status: 'WARN', owner: ' — Product / engineering' },
-      { layer: 'L4 — AI Platform', finding: 'Cloud and API guardrails (identity, logging, quotas) must align to the app’s threat model.', status: 'OK', owner: ' — Platform security' },
-      { layer: 'L5 — AI Model Provider', finding: 'Model capabilities, safety claims, and update channels belong to the model supplier relationship.', status: 'WARN', owner: ' — Vendor management' }
+      { layer: 'L1: AI Business and Usage', finding: `Business context and risk appetite should anchor decisions for: ${sn}`, status: 'WARN', owner: 'Executive sponsor' },
+      { layer: 'L2: AI Information', finding: 'Data classification, lawful use, and retention for model inputs/outputs need explicit owners.', status: hasLeak ? 'GAP' : 'WARN', owner: 'Data governance' },
+      { layer: 'L3: AI Application', finding: 'Workflow design, testing, and human oversight for the AI feature sit with the application team.', status: 'WARN', owner: 'Product / engineering' },
+      { layer: 'L4: AI Platform', finding: 'Cloud and API guardrails (identity, logging, quotas) must align to the app’s threat model.', status: 'OK', owner: 'Platform security' },
+      { layer: 'L5: AI Model Provider', finding: 'Model capabilities, safety claims, and update channels belong to the model supplier relationship.', status: 'WARN', owner: 'Vendor management' }
     ],
     scores: {
       accountabilityClarity: ac,
@@ -943,8 +947,12 @@ Fill in real values for this scenario. verdict must be FUNCTIONAL, PARTIAL, or G
 }
 
 function selectScenario(el) {
-  document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.scenario-card').forEach(c => {
+    c.classList.remove('active');
+    c.setAttribute('aria-pressed', 'false');
+  });
   el.classList.add('active');
+  el.setAttribute('aria-pressed', 'true');
   selectedId = el.dataset.id;
   document.getElementById('customScenario').value = '';
   document.getElementById('results').classList.remove('visible');
@@ -997,7 +1005,7 @@ async function copyPrompt() {
       btn.textContent = 'Copy prompt';
     }, 1600);
   } catch (err) {
-    status.textContent = 'Copy failed — select the prompt text and copy manually.';
+    status.textContent = 'Copy failed. Select the prompt text and copy manually.';
     status.classList.remove('ok');
     ta.focus();
     ta.select();
@@ -1086,7 +1094,7 @@ function renderResults(r) {
     const statusClass = { OK: 'status-ok', WARN: 'status-warn', GAP: 'status-gap' }[l.status] || 'status-warn';
     const statusLabel = { OK: '✓ Covered', WARN: '⚠ Partial', GAP: '✗ Gap' }[l.status] || sanitize(l.status);
     return `<div class="layer-row" style="border-left: 3px solid ${lc.border}; background: ${lc.bg}">
-      <div class="layer-name"><strong>${sanitize(l.layer)}</strong>${sanitize(l.owner || '')}</div>
+      <div class="layer-name"><strong>${sanitize(l.layer)}</strong>${l.owner ? ' | ' + sanitize(l.owner) : ''}</div>
       <div class="layer-finding">${sanitize(l.finding)}</div>
       <div class="layer-status ${statusClass}">${statusLabel}</div>
     </div>`;
@@ -1143,5 +1151,6 @@ function renderResults(r) {
 }
 
 </script>
+<site-footer></site-footer>
 </body>
 </html>
