@@ -227,8 +227,9 @@ class InventoryScopeTest(unittest.TestCase):
         for path in PAGES:
             html = path.read_text(encoding="utf-8")
             self.assertIn('value="cited" checked', html)
-            self.assertIn("Cited research", html)
+            self.assertIn("Research the monitor found", html)
             self.assertIn("not part of the default", html)
+            self.assertNotIn("Cited research", html)
             self.assertIn("not a source of principles", html.lower())
             self.assertIn("paraphrase", html.lower())
             self.assertIn('value="possibly_deployed"', html)

@@ -392,7 +392,7 @@ def render_controls(counts: dict) -> str:
     # The numbers inside the spans are stamped again after insertion.
     # Seed evidence button counts from the research list (most tags live there).
     # inventory-scope.js replaces these when the selected list changes.
-    return f"""<p class="inv-count-note">Organization papers: <span data-inv-count="org">{n("org")}</span>. Research the monitor found: <span data-inv-count="research">{n("research")}</span>. These counts do not overlap. Research the monitor found is not in the default list.</p>
+    return f"""<p class="inv-count-note">Organization papers: <span data-inv-count="org">{n("org")}</span>. Research the monitor found: <span data-inv-count="research">{n("research")}</span>. These counts do not overlap. Research the monitor found is not part of the default list.</p>
 <p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">{n("org-metadata")}</span>. Research records with extracted principles: <span data-inv-count="research-extracted">{n("research-extracted")}</span>. A metadata-only record is not a source of principles.</p>
 <p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">{n("org-arxiv")}</span> arXiv records outside the research-monitor count. The evidence filter opens when the selected list contains an arXiv record.</p>
 <fieldset class="inv-options" id="inventory-scope-set">
