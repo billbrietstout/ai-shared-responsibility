@@ -182,10 +182,16 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
+  margin: 0;
   padding: 10px 14px;
+  border: 0;
   background: var(--color-background-secondary);
   cursor: pointer;
   user-select: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
   transition: background 0.12s;
 }
 
@@ -650,14 +656,14 @@ phases.forEach((p, i) => {
   const d = document.createElement('div');
   d.className = 'sc-phase';
   d.innerHTML = `
-    <div class="sc-head" onclick="togglePhase(${i})">
+    <button type="button" class="sc-head" onclick="togglePhase(${i})" aria-expanded="false" aria-controls="sc-body-${i}" id="sc-head-${i}">
       <div class="sc-num" style="background:${p.bg};color:${p.color}">${p.num}</div>
       <div style="flex:1">
         <div class="sc-title">${p.label} <span style="font-weight:400;color:${p.color};margin-left:6px">· ${p.srf}</span></div>
         <div class="sc-sub">${p.sub}</div>
       </div>
-      <div class="sc-chev" id="sc-chev-${i}">▶</div>
-    </div>
+      <div class="sc-chev" id="sc-chev-${i}" aria-hidden="true">▶</div>
+    </button>
     <div class="sc-body" id="sc-body-${i}">
       <div>
         <div class="sc-col-head">SECURITY CONTROLS</div>
@@ -672,8 +678,12 @@ phases.forEach((p, i) => {
 });
 
 function togglePhase(i) {
-  document.getElementById('sc-body-' + i).classList.toggle('open');
-  document.getElementById('sc-chev-' + i).classList.toggle('open');
+  const body = document.getElementById('sc-body-' + i);
+  const chev = document.getElementById('sc-chev-' + i);
+  const head = document.getElementById('sc-head-' + i);
+  body.classList.toggle('open');
+  chev.classList.toggle('open');
+  if (head) head.setAttribute('aria-expanded', body.classList.contains('open') ? 'true' : 'false');
 }
 
 const gapLayerBlocks = [
