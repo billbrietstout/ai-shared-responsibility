@@ -1,13 +1,214 @@
 # Principles sync diff
 
 Updated: 2026-11-04
-Changed WP- IDs: WP-0172, WP-0173, WP-0174, WP-0175, WP-0176, WP-0177, WP-0178, WP-0179, WP-0180, WP-0181, WP-0182, WP-0183, WP-0184, WP-0185, WP-0186, WP-0187, WP-0188, WP-0189, WP-0190, WP-0191, WP-0192, WP-0193, WP-0194, WP-0195, WP-0196, WP-0197, WP-0198, WP-0199, WP-0200, WP-0201, WP-0202, WP-0203, WP-0204, WP-0205, WP-0206, WP-0207, WP-0208, WP-0209, WP-0210, WP-0211, WP-0212, WP-0213, WP-0214, WP-0215, WP-0216, WP-0217, WP-0218, WP-0219, WP-0220, WP-0221, WP-0222, WP-0223, WP-0224, WP-0225, WP-0226, WP-0227, WP-0228, WP-0229, WP-0230, WP-0231, WP-0232, WP-0233, WP-0234, WP-0235, WP-0236, WP-0237, WP-0238, WP-0239, WP-0240, WP-0241, WP-0242, WP-0243, WP-0244, WP-0245, WP-0246, WP-0247, WP-0248, WP-0249, WP-0250, WP-0251, WP-0252, WP-0253, WP-0254, WP-0255, WP-0256, WP-0257, WP-0258, WP-0259, WP-0260, WP-0261, WP-0262, WP-0263, WP-0264, WP-0265, WP-0266, WP-0267, WP-0268, WP-0269, WP-0270, WP-0271, WP-0272, WP-0273, WP-0274, WP-0275, WP-0276, WP-0277, WP-0278, WP-0279, WP-0280, WP-0281, WP-0282, WP-0283, WP-0284, WP-0285, WP-0286, WP-0287, WP-0288, WP-0289, WP-0290, WP-0291, WP-0292, WP-0293, WP-0294, WP-0295, WP-0296, WP-0297, WP-0298, WP-0299, WP-0300, WP-0301, WP-0302, WP-0303, WP-0304, WP-0305, WP-0306, WP-0307, WP-0308, WP-0309, WP-0310, WP-0311, WP-0312, WP-0313, WP-0314, WP-0315, WP-0316, WP-0317, WP-0318, WP-0319, WP-0320, WP-0321, WP-0322, WP-0323, WP-0324, WP-0325, WP-0326, WP-0327, WP-0328, WP-0329, WP-0330, WP-0331, WP-0332, WP-0333, WP-0334, WP-0335, WP-0336, WP-0337, WP-0338, WP-0339, WP-0340, WP-0341, WP-0342, WP-0343, WP-0344, WP-0345, WP-0346, WP-0347, WP-0348, WP-0349, WP-0350, WP-0351, WP-0352, WP-0353, WP-0354, WP-0355, WP-0356, WP-0357, WP-0358, WP-0359, WP-0360, WP-0361, WP-0362, WP-0363, WP-0364, WP-0365, WP-0366, WP-0367, WP-0368, WP-0369, WP-0370, WP-0371, WP-0372, WP-0373, WP-0374, WP-0375, WP-0376, WP-0377, WP-0378, WP-0379, WP-0380, WP-0381, WP-0382, WP-0383, WP-0384, WP-0385, WP-0386, WP-0387, WP-0388, WP-0389, WP-0390, WP-0391, WP-0392, WP-0393, WP-0394, WP-0395, WP-0396, WP-0397, WP-0398, WP-0399, WP-0400, WP-0401, WP-0402, WP-0403, WP-0404, WP-0405, WP-0406, WP-0407, WP-0408, WP-0409, WP-0410, WP-0411, WP-0412, WP-0413, WP-0414, WP-0415, WP-0416, WP-0417, WP-0418, WP-0419, WP-0420, WP-0421, WP-0422, WP-0423, WP-0424, WP-0425, WP-0426, WP-0427, WP-0428, WP-0429, WP-0430, WP-0431, WP-0432, WP-0433, WP-0434, WP-0435, WP-0436, WP-0437, WP-0438, WP-0439, WP-0440, WP-0441, WP-0442, WP-0443, WP-0444, WP-0445, WP-0446, WP-0447, WP-0448, WP-0449, WP-0450, WP-0451, WP-0452, WP-0453, WP-0454, WP-0455, WP-0456, WP-0457, WP-0458, WP-0459, WP-0460, WP-0461, WP-0462, WP-0463, WP-0464, WP-0465, WP-0466, WP-0467, WP-0468, WP-0469, WP-0470, WP-0471, WP-0472, WP-0473, WP-0474, WP-0475, WP-0476, WP-0477, WP-0478, WP-0479, WP-0480, WP-0481, WP-0482, WP-0483, WP-0484, WP-0485, WP-0486, WP-0487, WP-0488, WP-0489, WP-0490, WP-0491, WP-0492, WP-0493, WP-0494, WP-0495, WP-0496, WP-0497, WP-0498, WP-0499, WP-0500, WP-0501, WP-0502, WP-0503, WP-0504, WP-0505, WP-0506, WP-0507, WP-0508, WP-0509, WP-0510, WP-0511, WP-0512, WP-0513, WP-0514, WP-0515, WP-0516, WP-0517, WP-0518, WP-0519, WP-0520, WP-0521, WP-0522, WP-0523, WP-0524, WP-0525, WP-0526, WP-0527, WP-0528, WP-0529, WP-0530, WP-0531, WP-0532, WP-0533, WP-0534, WP-0535, WP-0536, WP-0537, WP-0538, WP-0539, WP-0540, WP-0541, WP-0542, WP-0543, WP-0544, WP-0545, WP-0546, WP-0547, WP-0548, WP-0549, WP-0550, WP-0551, WP-0552, WP-0553, WP-0554, WP-0555, WP-0556, WP-0557, WP-0558, WP-0559, WP-0560, WP-0561, WP-0562, WP-0563, WP-0564, WP-0565, WP-0566, WP-0567, WP-0568, WP-0569, WP-0570, WP-0571, WP-0572, WP-0573, WP-0574, WP-0575, WP-0576, WP-0577, WP-0578, WP-0579, WP-0161, WP-0162, WP-0163, WP-0164, WP-0165, WP-0166, WP-0167, WP-0168, WP-0169, WP-0170, WP-0171
+Changed WP- IDs: WP-0001, WP-0002, WP-0003, WP-0004, WP-0005, WP-0006, WP-0007, WP-0008, WP-0009, WP-0010, WP-0011, WP-0012, WP-0013, WP-0014, WP-0015, WP-0016, WP-0017, WP-0018, WP-0019, WP-0020, WP-0021, WP-0022, WP-0023, WP-0024, WP-0025, WP-0026, WP-0027, WP-0028, WP-0029, WP-0030, WP-0031, WP-0032, WP-0033, WP-0034, WP-0035, WP-0036, WP-0037, WP-0038, WP-0039, WP-0040, WP-0041, WP-0042, WP-0043, WP-0044, WP-0045, WP-0046, WP-0047, WP-0048, WP-0049, WP-0050, WP-0051, WP-0052, WP-0053, WP-0054, WP-0055, WP-0056, WP-0057, WP-0058, WP-0059, WP-0060, WP-0061, WP-0062, WP-0063, WP-0064, WP-0065, WP-0066, WP-0067, WP-0068, WP-0069, WP-0070, WP-0071, WP-0072, WP-0073, WP-0074, WP-0075, WP-0076, WP-0077, WP-0078, WP-0079, WP-0080, WP-0081, WP-0082, WP-0083, WP-0084, WP-0085, WP-0086, WP-0087, WP-0088, WP-0089, WP-0090, WP-0091, WP-0092, WP-0093, WP-0094, WP-0095, WP-0096, WP-0097, WP-0098, WP-0099, WP-0100, WP-0101, WP-0102, WP-0103, WP-0104, WP-0105, WP-0106, WP-0107, WP-0108, WP-0109, WP-0110, WP-0111, WP-0112, WP-0113, WP-0114, WP-0115, WP-0116, WP-0117, WP-0118, WP-0119, WP-0120, WP-0121, WP-0122, WP-0123, WP-0124, WP-0125, WP-0126, WP-0127, WP-0128, WP-0129, WP-0130, WP-0131, WP-0132, WP-0133, WP-0134, WP-0135, WP-0136, WP-0137, WP-0138, WP-0139, WP-0140, WP-0141, WP-0142, WP-0143, WP-0144, WP-0145, WP-0146, WP-0147, WP-0148, WP-0149, WP-0150, WP-0151, WP-0152, WP-0153, WP-0154, WP-0155, WP-0156, WP-0157, WP-0158, WP-0159, WP-0160, WP-0161, WP-0162, WP-0163, WP-0164, WP-0165, WP-0166, WP-0167, WP-0168, WP-0169, WP-0170, WP-0171, WP-0172, WP-0173, WP-0174, WP-0175, WP-0176, WP-0177, WP-0178, WP-0179, WP-0180, WP-0181, WP-0182, WP-0183, WP-0184, WP-0185, WP-0186, WP-0187, WP-0188, WP-0189, WP-0190, WP-0191, WP-0192, WP-0193, WP-0194, WP-0195, WP-0196, WP-0197, WP-0198, WP-0199, WP-0200, WP-0201, WP-0202, WP-0203, WP-0204, WP-0205, WP-0206, WP-0207, WP-0208, WP-0209, WP-0210, WP-0211, WP-0212, WP-0213, WP-0214, WP-0215, WP-0216, WP-0217, WP-0218, WP-0219, WP-0220, WP-0221, WP-0222, WP-0223, WP-0224, WP-0225, WP-0226, WP-0227, WP-0228, WP-0229, WP-0230, WP-0231, WP-0232, WP-0233, WP-0234, WP-0235, WP-0236, WP-0237, WP-0238, WP-0239, WP-0240, WP-0241, WP-0242, WP-0243, WP-0244, WP-0245, WP-0246, WP-0247, WP-0248, WP-0249, WP-0250, WP-0251, WP-0252, WP-0253, WP-0254, WP-0255, WP-0256, WP-0257, WP-0258, WP-0259, WP-0260, WP-0261, WP-0262, WP-0263, WP-0264, WP-0265, WP-0266, WP-0267, WP-0268, WP-0269, WP-0270, WP-0271, WP-0272, WP-0273, WP-0274, WP-0275, WP-0276, WP-0277, WP-0278, WP-0279, WP-0280, WP-0281, WP-0282, WP-0283, WP-0284, WP-0285, WP-0286, WP-0287, WP-0288, WP-0289, WP-0290, WP-0291, WP-0292, WP-0293, WP-0294, WP-0295, WP-0296, WP-0297, WP-0298, WP-0299, WP-0300, WP-0301, WP-0302, WP-0303, WP-0304, WP-0305, WP-0306, WP-0307, WP-0308, WP-0309, WP-0310, WP-0311, WP-0312, WP-0313, WP-0314, WP-0315, WP-0316, WP-0317, WP-0318, WP-0319, WP-0320, WP-0321, WP-0322, WP-0323, WP-0324, WP-0325, WP-0326, WP-0327, WP-0328, WP-0329, WP-0330, WP-0331, WP-0332, WP-0333, WP-0334, WP-0335, WP-0336, WP-0337, WP-0338, WP-0339, WP-0340, WP-0341, WP-0342, WP-0343, WP-0344, WP-0345, WP-0346, WP-0347, WP-0348, WP-0349, WP-0350, WP-0351, WP-0352, WP-0353, WP-0354, WP-0355, WP-0356, WP-0357, WP-0358, WP-0359, WP-0360, WP-0361, WP-0362, WP-0363, WP-0364, WP-0365, WP-0366, WP-0367, WP-0368, WP-0369, WP-0370, WP-0371, WP-0372, WP-0373, WP-0374, WP-0375, WP-0376, WP-0377, WP-0378, WP-0379, WP-0380, WP-0381, WP-0382, WP-0383, WP-0384, WP-0385, WP-0386, WP-0387, WP-0388, WP-0389, WP-0390, WP-0391, WP-0392, WP-0393, WP-0394, WP-0395, WP-0396, WP-0397, WP-0398, WP-0399, WP-0400, WP-0401, WP-0402, WP-0403, WP-0404, WP-0405, WP-0406, WP-0407, WP-0408, WP-0409, WP-0410, WP-0411, WP-0412, WP-0413, WP-0414, WP-0415, WP-0416, WP-0417, WP-0418, WP-0419, WP-0420, WP-0421, WP-0422, WP-0423, WP-0424, WP-0425, WP-0426, WP-0427, WP-0428, WP-0429, WP-0430, WP-0431, WP-0432, WP-0433, WP-0434, WP-0435, WP-0436, WP-0437, WP-0438, WP-0439, WP-0440, WP-0441, WP-0442, WP-0443, WP-0444, WP-0445, WP-0446, WP-0447, WP-0448, WP-0449, WP-0450, WP-0451, WP-0452, WP-0453, WP-0454, WP-0455, WP-0456, WP-0457, WP-0458, WP-0459, WP-0460, WP-0461, WP-0462, WP-0463, WP-0464, WP-0465, WP-0466, WP-0467, WP-0468, WP-0469, WP-0470, WP-0471, WP-0472, WP-0473, WP-0474, WP-0475, WP-0476, WP-0477, WP-0478, WP-0479, WP-0480, WP-0481, WP-0482, WP-0483, WP-0484, WP-0485, WP-0486, WP-0487, WP-0488, WP-0489, WP-0490, WP-0491, WP-0492, WP-0493, WP-0494, WP-0495, WP-0496, WP-0497, WP-0498, WP-0499, WP-0500, WP-0501, WP-0502, WP-0503, WP-0504, WP-0505, WP-0506, WP-0507, WP-0508, WP-0509, WP-0510, WP-0511, WP-0512, WP-0513, WP-0514, WP-0515, WP-0516, WP-0517, WP-0518, WP-0519, WP-0520, WP-0521, WP-0522, WP-0523, WP-0524, WP-0525, WP-0526, WP-0527, WP-0528, WP-0529, WP-0530, WP-0531, WP-0532, WP-0533, WP-0534, WP-0535, WP-0536, WP-0537, WP-0538, WP-0539, WP-0540, WP-0541, WP-0542, WP-0543, WP-0544, WP-0545, WP-0546, WP-0547, WP-0548, WP-0549, WP-0550, WP-0551, WP-0552, WP-0553, WP-0554, WP-0555, WP-0556, WP-0557, WP-0558, WP-0559, WP-0560, WP-0561, WP-0562, WP-0563, WP-0564, WP-0565, WP-0566, WP-0567, WP-0568, WP-0569, WP-0570, WP-0571, WP-0572, WP-0573, WP-0574, WP-0575, WP-0576, WP-0577, WP-0578, WP-0579
 Removed WP- IDs: (none)
 
 ## Changed sources
-None.
+- `WP-0001` / `BIML-SE`: 1 principle(s) cite this source.
+  - before: `{'title': 'Security Engineering for Machine Learning (IEEE Computer)', 'org': 'Berryville Institute of Machine Learning', 'url': 'https://apothecaryshed.files.wordpress.com/2019/08/biml-computer-8.19.pdf', 'wp_id': 'WP-0001', 'monitor_issue': None}`
+  - after: `{'title': 'Security Engineering for Machine Learning (IEEE Computer)', 'org': 'Berryville Institute of Machine Learning (BIML)', 'url': 'https://apothecaryshed.files.wordpress.com/2019/08/biml-computer-8.19.pdf', 'wp_id': 'WP-0001', 'monitor_issue': 1}`
+- `WP-0002` / `BIML-ARA`: 3 principle(s) cite this source.
+  - before: `{'title': 'An Architectural Risk Analysis of Machine Learning Systems (BIML-78)', 'org': 'Berryville Institute of Machine Learning', 'url': 'https://berryvilleiml.com/results/ara.pdf', 'wp_id': 'WP-0002', 'monitor_issue': None}`
+  - after: `{'title': 'An Architectural Risk Analysis of Machine Learning Systems (BIML-78)', 'org': 'Berryville Institute of Machine Learning (BIML)', 'url': 'https://berryvilleiml.com/results/ara.pdf', 'wp_id': 'WP-0002', 'monitor_issue': 2}`
+- `WP-0003` / `BIML-LLM24`: 5 principle(s) cite this source.
+  - before: `{'title': 'An Architectural Risk Analysis of Large Language Models (BIML-LLM24)', 'org': 'Berryville Institute of Machine Learning', 'url': 'https://berryvilleiml.com/results/BIML-LLM24.pdf', 'wp_id': 'WP-0003', 'monitor_issue': None}`
+  - after: `{'title': 'An Architectural Risk Analysis of Large Language Models (BIML-LLM24)', 'org': 'Berryville Institute of Machine Learning (BIML)', 'url': 'https://berryvilleiml.com/results/BIML-LLM24.pdf', 'wp_id': 'WP-0003', 'monitor_issue': 3}`
+- `WP-0004` / `BIML-23RISKS`: 4 principle(s) cite this source.
+  - before: `{'title': '23 Security Risks in Black-Box Large Language Model Foundation Models (IEEE Computer)', 'org': 'Berryville Institute of Machine Learning', 'url': 'https://apothecaryshed.com/wp-content/uploads/2024/05/23_Security_Risks_in_Black-Box_Large_Language_Model_Foundation_Models.pdf', 'wp_id': 'WP-0004', 'monitor_issue': None}`
+  - after: `{'title': '23 Security Risks in Black-Box Large Language Model Foundation Models (IEEE Computer)', 'org': 'Berryville Institute of Machine Learning (BIML)', 'url': 'https://apothecaryshed.com/wp-content/uploads/2024/05/23_Security_Risks_in_Black-Box_Large_Language_Model_Foundation_Models.pdf', 'wp_id': 'WP-0004', 'monitor_issue': 4}`
+- `WP-0005` / `BIML-NOMETER`: 2 principle(s) cite this source.
+  - before: `{'title': 'No Security Meter for AI', 'org': 'Berryville Institute of Machine Learning', 'url': 'https://berryvilleiml.com/results/no-security-meter-ai.pdf', 'wp_id': 'WP-0005', 'monitor_issue': None}`
+  - after: `{'title': 'No Security Meter for AI', 'org': 'Berryville Institute of Machine Learning (BIML)', 'url': 'https://berryvilleiml.com/results/no-security-meter-ai.pdf', 'wp_id': 'WP-0005', 'monitor_issue': 5}`
+- `WP-0006` / `CIS-LLM`: 1 principle(s) cite this source.
+  - before: `{'title': 'Artificial Intelligence and Large Language Models (LLM) Companion Guide (CIS Controls v8.1)', 'org': 'Center for Internet Security', 'url': 'https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-llm-companion-guide', 'wp_id': 'WP-0006', 'monitor_issue': None}`
+  - after: `{'title': 'Artificial Intelligence and Large Language Models (LLM) Companion Guide (CIS Controls v8.1)', 'org': 'Center for Internet Security (CIS)', 'url': 'https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-llm-companion-guide', 'wp_id': 'WP-0006', 'monitor_issue': 6}`
+- `WP-0007` / `CIS-AGENTS`: 2 principle(s) cite this source.
+  - before: `{'title': 'Artificial Intelligence (AI) Agents Companion Guide (CIS Controls v8.1)', 'org': 'Center for Internet Security', 'url': 'https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-agents-companion-guide', 'wp_id': 'WP-0007', 'monitor_issue': None}`
+  - after: `{'title': 'Artificial Intelligence (AI) Agents Companion Guide (CIS Controls v8.1)', 'org': 'Center for Internet Security (CIS)', 'url': 'https://www.cisecurity.org/insights/white-papers/controls-v8-1-ai-agents-companion-guide', 'wp_id': 'WP-0007', 'monitor_issue': 7}`
+- `WP-0008` / `CIS-MCP`: 3 principle(s) cite this source.
+  - before: `{'title': 'Model Context Protocol (MCP) Companion Guide (CIS Controls v8.1)', 'org': 'Center for Internet Security', 'url': 'https://www.cisecurity.org/insights/white-papers/controls-v8-1-model-context-protocol-companion-guide', 'wp_id': 'WP-0008', 'monitor_issue': None}`
+  - after: `{'title': 'Model Context Protocol (MCP) Companion Guide (CIS Controls v8.1)', 'org': 'Center for Internet Security (CIS)', 'url': 'https://www.cisecurity.org/insights/white-papers/controls-v8-1-model-context-protocol-companion-guide', 'wp_id': 'WP-0008', 'monitor_issue': 8}`
+- `WP-0009` / `CSA-AICM1`: 2 principle(s) cite this source.
+  - before: `{'title': 'AI Controls Matrix (AICM) v1', 'org': 'Cloud Security Alliance', 'url': 'https://cloudsecurityalliance.org/artifacts/ai-controls-matrix', 'wp_id': 'WP-0009', 'monitor_issue': None}`
+  - after: `{'title': 'AI Controls Matrix (AICM) v1', 'org': 'Cloud Security Alliance (CSA)', 'url': 'https://cloudsecurityalliance.org/artifacts/ai-controls-matrix', 'wp_id': 'WP-0009', 'monitor_issue': 9}`
+- `WP-0010` / `CSA-AICM11`: 3 principle(s) cite this source.
+  - before: `{'title': 'AI Controls Matrix (AICM) v1.1', 'org': 'Cloud Security Alliance', 'url': 'https://cloudsecurityalliance.org/artifacts/ai-controls-matrix-v1-1', 'wp_id': 'WP-0010', 'monitor_issue': None}`
+  - after: `{'title': 'AI Controls Matrix (AICM) v1.1', 'org': 'Cloud Security Alliance (CSA)', 'url': 'https://cloudsecurityalliance.org/artifacts/ai-controls-matrix-v1-1', 'wp_id': 'WP-0010', 'monitor_issue': 10}`
+- `WP-0011` / `CSA-STATE`: 2 principle(s) cite this source.
+  - before: `{'title': 'The State of Cloud and AI Security 2025', 'org': 'Cloud Security Alliance', 'url': 'https://cloudsecurityalliance.org/artifacts/the-state-of-cloud-and-ai-security-2025', 'wp_id': 'WP-0011', 'monitor_issue': None}`
+  - after: `{'title': 'The State of Cloud and AI Security 2025', 'org': 'Cloud Security Alliance (CSA)', 'url': 'https://cloudsecurityalliance.org/artifacts/the-state-of-cloud-and-ai-security-2025', 'wp_id': 'WP-0011', 'monitor_issue': 11}`
+- `WP-0012` / `CSA-IAM`: 5 principle(s) cite this source.
+  - before: `{'title': 'Agentic AI Identity & Access Management: A New Approach', 'org': 'Cloud Security Alliance', 'url': 'https://cloudsecurityalliance.org/artifacts/agentic-ai-identity-and-access-management-a-new-approach', 'wp_id': 'WP-0012', 'monitor_issue': None}`
+  - after: `{'title': 'Agentic AI Identity & Access Management: A New Approach', 'org': 'Cloud Security Alliance (CSA)', 'url': 'https://cloudsecurityalliance.org/artifacts/agentic-ai-identity-and-access-management-a-new-approach', 'wp_id': 'WP-0012', 'monitor_issue': 12}`
+- `WP-0013` / `CSA-DATA`: 3 principle(s) cite this source.
+  - before: `{'title': 'Data Security within AI Environments', 'org': 'Cloud Security Alliance', 'url': 'https://cloudsecurityalliance.org/artifacts/data-security-within-ai-environments', 'wp_id': 'WP-0013', 'monitor_issue': None}`
+  - after: `{'title': 'Data Security within AI Environments', 'org': 'Cloud Security Alliance (CSA)', 'url': 'https://cloudsecurityalliance.org/artifacts/data-security-within-ai-environments', 'wp_id': 'WP-0013', 'monitor_issue': 13}`
+- `WP-0014` / `CSA-VULN`: 2 principle(s) cite this source.
+  - before: `{'title': 'AI Vulnerability: Security Program Guide for CISOs', 'org': 'Cloud Security Alliance', 'url': 'https://labs.cloudsecurityalliance.org/mythos-ciso/', 'wp_id': 'WP-0014', 'monitor_issue': None}`
+  - after: `{'title': 'AI Vulnerability: Security Program Guide for CISOs', 'org': 'Cloud Security Alliance (CSA)', 'url': 'https://labs.cloudsecurityalliance.org/mythos-ciso/', 'wp_id': 'WP-0014', 'monitor_issue': 14}`
+- `WP-0015` / `COSAI-SUPPLY`: 3 principle(s) cite this source.
+  - before: `{'title': 'Establish Risks and Controls for the AI Supply Chain', 'org': 'Coalition for Secure AI', 'url': 'https://github.com/cosai-oasis/ws1-supply-chain/blob/main/whitepapers/risks-and-controls-for-the-ai-supply-chain-v1.md', 'wp_id': 'WP-0015', 'monitor_issue': None}`
+  - after: `{'title': 'Establish Risks and Controls for the AI Supply Chain', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://github.com/cosai-oasis/ws1-supply-chain/blob/main/whitepapers/risks-and-controls-for-the-ai-supply-chain-v1.md', 'wp_id': 'WP-0015', 'monitor_issue': 15}`
+- `WP-0016` / `COSAI-SIGN`: 2 principle(s) cite this source.
+  - before: `{'title': 'Signing ML Artifacts: Building Towards Tamper-Proof ML Metadata Records', 'org': 'Coalition for Secure AI', 'url': 'https://github.com/cosai-oasis/ws1-supply-chain/blob/main/whitepapers/signing-ml-artifacts.md', 'wp_id': 'WP-0016', 'monitor_issue': None}`
+  - after: `{'title': 'Signing ML Artifacts: Building Towards Tamper-Proof ML Metadata Records', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://github.com/cosai-oasis/ws1-supply-chain/blob/main/whitepapers/signing-ml-artifacts.md', 'wp_id': 'WP-0016', 'monitor_issue': 16}`
+- `WP-0017` / `COSAI-DEFEND`: 2 principle(s) cite this source.
+  - before: `{'title': 'Preparing Defenders of AI Systems', 'org': 'Coalition for Secure AI', 'url': 'https://github.com/cosai-oasis/ws2-defenders/blob/main/preparing-defenders-of-ai-systems.md', 'wp_id': 'WP-0017', 'monitor_issue': None}`
+  - after: `{'title': 'Preparing Defenders of AI Systems', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://github.com/cosai-oasis/ws2-defenders/blob/main/preparing-defenders-of-ai-systems.md', 'wp_id': 'WP-0017', 'monitor_issue': 17}`
+- `WP-0018` / `COSAI-IR`: 3 principle(s) cite this source.
+  - before: `{'title': 'AI Incident Response Framework', 'org': 'Coalition for Secure AI', 'url': 'https://github.com/cosai-oasis/ws2-defenders/blob/main/incident-response/AI-Incident-Response.md', 'wp_id': 'WP-0018', 'monitor_issue': None}`
+  - after: `{'title': 'AI Incident Response Framework', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://github.com/cosai-oasis/ws2-defenders/blob/main/incident-response/AI-Incident-Response.md', 'wp_id': 'WP-0018', 'monitor_issue': 18}`
+- `WP-0019` / `COSAI-SBD`: 5 principle(s) cite this source.
+  - before: `{'title': 'CoSAI Principles for Secure-by-Design Agentic Systems', 'org': 'Coalition for Secure AI', 'url': 'https://github.com/cosai-oasis/cosai-tsc/blob/main/security-principles-for-agentic-systems.md', 'wp_id': 'WP-0019', 'monitor_issue': None}`
+  - after: `{'title': 'CoSAI Principles for Secure-by-Design Agentic Systems', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://github.com/cosai-oasis/cosai-tsc/blob/main/security-principles-for-agentic-systems.md', 'wp_id': 'WP-0019', 'monitor_issue': 19}`
+- `WP-0020` / `COSAI-MCP`: 6 principle(s) cite this source.
+  - before: `{'title': 'Model Context Protocol (MCP) Security', 'org': 'Coalition for Secure AI', 'url': 'https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/main/whitepapers/model-context-protocol-security.md', 'wp_id': 'WP-0020', 'monitor_issue': None}`
+  - after: `{'title': 'Model Context Protocol (MCP) Security', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://github.com/cosai-oasis/ws4-secure-design-agentic-systems/blob/main/whitepapers/model-context-protocol-security.md', 'wp_id': 'WP-0020', 'monitor_issue': 20}`
+- `WP-0021` / `COSAI-FUTURE`: 9 principle(s) cite this source.
+  - before: `{'title': 'The Future of Agentic Security: From Chatbots to Autonomous Swarms', 'org': 'Coalition for Secure AI', 'url': 'https://www.coalitionforsecureai.org/wp-content/uploads/2026/03/the-future-of-agentic-security.pdf', 'wp_id': 'WP-0021', 'monitor_issue': None}`
+  - after: `{'title': 'The Future of Agentic Security: From Chatbots to Autonomous Swarms', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://www.coalitionforsecureai.org/wp-content/uploads/2026/03/the-future-of-agentic-security.pdf', 'wp_id': 'WP-0021', 'monitor_issue': 21}`
+- `WP-0022` / `COSAI-IAM`: 10 principle(s) cite this source.
+  - before: `{'title': 'Agentic Identity and Access Management', 'org': 'Coalition for Secure AI', 'url': 'https://www.coalitionforsecureai.org/wp-content/uploads/2026/04/agentic-identity-and-access-control.pdf', 'wp_id': 'WP-0022', 'monitor_issue': None}`
+  - after: `{'title': 'Agentic Identity and Access Management', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://www.coalitionforsecureai.org/wp-content/uploads/2026/04/agentic-identity-and-access-control.pdf', 'wp_id': 'WP-0022', 'monitor_issue': 22}`
+- `WP-0023` / `NIST-RMF`: 3 principle(s) cite this source.
+  - before: `{'title': 'AI Risk Management Framework (AI RMF 1.0)', 'org': 'National Institute of Standards and Technology', 'url': 'https://www.nist.gov/itl/ai-risk-management-framework', 'wp_id': 'WP-0023', 'monitor_issue': None}`
+  - after: `{'title': 'AI Risk Management Framework (AI RMF 1.0)', 'org': 'National Institute of Standards and Technology (NIST)', 'url': 'https://www.nist.gov/itl/ai-risk-management-framework', 'wp_id': 'WP-0023', 'monitor_issue': 23}`
+- `WP-0024` / `NIST-PLAYBOOK`: 1 principle(s) cite this source.
+  - before: `{'title': 'AI RMF Playbook', 'org': 'National Institute of Standards and Technology', 'url': 'https://airc.nist.gov/airmf-resources/playbook/', 'wp_id': 'WP-0024', 'monitor_issue': None}`
+  - after: `{'title': 'AI RMF Playbook', 'org': 'National Institute of Standards and Technology (NIST)', 'url': 'https://airc.nist.gov/airmf-resources/playbook/', 'wp_id': 'WP-0024', 'monitor_issue': 24}`
+- `WP-0025` / `NIST-GAI`: 2 principle(s) cite this source.
+  - before: `{'title': 'AI RMF: Generative Artificial Intelligence Profile (NIST AI 600-1)', 'org': 'National Institute of Standards and Technology', 'url': 'https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf', 'wp_id': 'WP-0025', 'monitor_issue': None}`
+  - after: `{'title': 'AI RMF: Generative Artificial Intelligence Profile (NIST AI 600-1)', 'org': 'National Institute of Standards and Technology (NIST)', 'url': 'https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.600-1.pdf', 'wp_id': 'WP-0025', 'monitor_issue': 25}`
+- `WP-0026` / `NIST-ADVML`: 7 principle(s) cite this source.
+  - before: `{'title': 'Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2)', 'org': 'National Institute of Standards and Technology', 'url': 'https://csrc.nist.gov/pubs/ai/100/2/e2025/final', 'wp_id': 'WP-0026', 'monitor_issue': None}`
+  - after: `{'title': 'Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations (NIST AI 100-2)', 'org': 'National Institute of Standards and Technology (NIST)', 'url': 'https://csrc.nist.gov/pubs/ai/100/2/e2025/final', 'wp_id': 'WP-0026', 'monitor_issue': 26}`
+- `WP-0027` / `OWASP-AIEXCHANGE`: 2 principle(s) cite this source.
+  - before: `{'title': 'AI Exchange (owaspai.org): AI Security Overview & Controls Guide', 'org': 'OWASP AI Exchange', 'url': 'https://owaspai.org/', 'wp_id': 'WP-0027', 'monitor_issue': None}`
+  - after: `{'title': 'AI Exchange (owaspai.org) ,  AI Security Overview & Controls Guide', 'org': 'OWASP AI Exchange', 'url': 'https://owaspai.org/', 'wp_id': 'WP-0027', 'monitor_issue': 27}`
+- `WP-0028` / `OWASP-LLMTOP10`: 3 principle(s) cite this source.
+  - before: `{'title': 'OWASP Top 10 for LLM Applications & Generative AI (2025)', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/llm-top-10/', 'wp_id': 'WP-0028', 'monitor_issue': None}`
+  - after: `{'title': 'OWASP Top 10 for LLM Applications & Generative AI (2025)', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/llm-top-10/', 'wp_id': 'WP-0028', 'monitor_issue': 28}`
+- `WP-0029` / `OWASP-IR`: 1 principle(s) cite this source.
+  - before: `{'title': 'GenAI Incident Response Guide 1.0', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/genai-incident-response-guide-1-0/', 'wp_id': 'WP-0029', 'monitor_issue': None}`
+  - after: `{'title': 'GenAI Incident Response Guide 1.0', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/genai-incident-response-guide-1-0/', 'wp_id': 'WP-0029', 'monitor_issue': 29}`
+- `WP-0030` / `OWASP-SOLUTIONS`: 1 principle(s) cite this source.
+  - before: `{'title': "Solutions Reference Guide Q2/Q3'25", 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-genai-security-project-solutions-reference-guide-q2_q325/', 'wp_id': 'WP-0030', 'monitor_issue': None}`
+  - after: `{'title': "Solutions Reference Guide Q2/Q3'25", 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-genai-security-project-solutions-reference-guide-q2_q325/', 'wp_id': 'WP-0030', 'monitor_issue': 30}`
+- `WP-0032` / `OWASP-MCP-CHEAT`: 4 principle(s) cite this source.
+  - before: `{'title': 'CheatSheet: A Practical Guide for Securely Using Third-Party MCP Servers 1.0', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/', 'wp_id': 'WP-0032', 'monitor_issue': None}`
+  - after: `{'title': 'CheatSheet - A Practical Guide for Securely Using Third-Party MCP Servers 1.0', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/cheatsheet-a-practical-guide-for-securely-using-third-party-mcp-servers-1-0/', 'wp_id': 'WP-0032', 'monitor_issue': 32}`
+- `WP-0033` / `OWASP-TOP10`: 12 principle(s) cite this source.
+  - before: `{'title': 'OWASP Top 10 for Agentic Applications 2026', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/', 'wp_id': 'WP-0033', 'monitor_issue': None}`
+  - after: `{'title': 'OWASP Top 10 for Agentic Applications 2026', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/', 'wp_id': 'WP-0033', 'monitor_issue': 33}`
+- `WP-0034` / `OWASP-REDTEAM`: 6 principle(s) cite this source.
+  - before: `{'title': 'Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling v1.0', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/', 'wp_id': 'WP-0034', 'monitor_issue': None}`
+  - after: `{'title': 'Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling v1.0', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/', 'wp_id': 'WP-0034', 'monitor_issue': 34}`
+- `WP-0035` / `OWASP-MCP-DEV`: 10 principle(s) cite this source.
+  - before: `{'title': 'A Practical Guide for Secure MCP Server Development', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/', 'wp_id': 'WP-0035', 'monitor_issue': None}`
+  - after: `{'title': 'A Practical Guide for Secure MCP Server Development', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/a-practical-guide-for-secure-mcp-server-development/', 'wp_id': 'WP-0035', 'monitor_issue': 35}`
+- `WP-0036` / `OWASP-DATASEC`: 4 principle(s) cite this source.
+  - before: `{'title': 'OWASP GenAI Data Security Risks & Mitigations 2026', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/', 'wp_id': 'WP-0036', 'monitor_issue': None}`
+  - after: `{'title': 'OWASP GenAI Data Security Risks & Mitigations 2026', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/', 'wp_id': 'WP-0036', 'monitor_issue': 36}`
+- `WP-0037` / `OWASP-STATE`: 15 principle(s) cite this source.
+  - before: `{'title': 'State of Agentic AI Security and Governance 2.01', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/', 'wp_id': 'WP-0037', 'monitor_issue': None}`
+  - after: `{'title': 'State of Agentic AI Security and Governance 2.01', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/state-of-agentic-ai-security-and-governance/', 'wp_id': 'WP-0037', 'monitor_issue': 37}`
+- `WP-0038` / `SANS-CAISG1`: 5 principle(s) cite this source.
+  - before: `{'title': 'Critical AI Security Guidelines v1.0', 'org': 'SANS Institute', 'url': 'https://www.sans.org/mlp/critical-ai-security-guidelines', 'wp_id': 'WP-0038', 'monitor_issue': None}`
+  - after: `{'title': 'Critical AI Security Guidelines v1.0', 'org': 'SANS Institute', 'url': 'https://www.sans.org/mlp/critical-ai-security-guidelines', 'wp_id': 'WP-0038', 'monitor_issue': 38}`
+- `WP-0039` / `SANS-CAISG11`: 1 principle(s) cite this source.
+  - before: `{'title': 'Critical AI Security Guidelines v1.1 (draft)', 'org': 'SANS Institute', 'url': 'https://github.com/sans-community/ai-guidelines', 'wp_id': 'WP-0039', 'monitor_issue': None}`
+  - after: `{'title': 'Critical AI Security Guidelines v1.1 (draft)', 'org': 'SANS Institute', 'url': 'https://github.com/sans-community/ai-guidelines', 'wp_id': 'WP-0039', 'monitor_issue': 39}`
+- `WP-0040` / `SANS-CAISG14`: 3 principle(s) cite this source.
+  - before: `{'title': 'Critical AI Security Guidelines v1.4', 'org': 'SANS Institute', 'url': 'https://assets.contentstack.io/v3/assets/bltabe50a4554f8e97f/blte964a6eef293d57e/whitepaper-critical-ai-security-guidelines', 'wp_id': 'WP-0040', 'monitor_issue': None}`
+  - after: `{'title': 'Critical AI Security Guidelines v1.4', 'org': 'SANS Institute', 'url': 'https://assets.contentstack.io/v3/assets/bltabe50a4554f8e97f/blte964a6eef293d57e/whitepaper-critical-ai-security-guidelines', 'wp_id': 'WP-0040', 'monitor_issue': 40}`
+- `WP-0041` / `SANS-BLUEPRINT`: 4 principle(s) cite this source.
+  - before: `{'title': 'Own AI Securely: The SANS Secure AI Blueprint', 'org': 'SANS Institute', 'url': 'https://www.sans.org/white-papers/own-ai-securely-sans-secure-ai-blueprint', 'wp_id': 'WP-0041', 'monitor_issue': None}`
+  - after: `{'title': 'Own AI Securely: The SANS Secure AI Blueprint', 'org': 'SANS Institute', 'url': 'https://www.sans.org/white-papers/own-ai-securely-sans-secure-ai-blueprint', 'wp_id': 'WP-0041', 'monitor_issue': 41}`
+- `WP-0042` / `COSAI-SRF`: 9 principle(s) cite this source.
+  - before: `{'title': 'AI Shared Responsibility Framework (SRF) v1.0', 'org': 'Coalition for Secure AI', 'url': 'https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf', 'wp_id': 'WP-0042', 'monitor_issue': None}`
+  - after: `{'title': 'AI Shared Responsibility Framework (SRF) v1.0', 'org': 'Coalition for Secure AI (CoSAI)', 'url': 'https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf', 'wp_id': 'WP-0042', 'monitor_issue': 42}`
+- `WP-0043` / `OWASP-LLMTOP10-2026`: 2 principle(s) cite this source.
+  - before: `{'title': 'OWASP GenAI LLM Top 10 2026', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/', 'wp_id': 'WP-0043', 'monitor_issue': None}`
+  - after: `{'title': 'OWASP GenAI LLM Top 10 2026', 'org': 'OWASP GenAI Security Project', 'url': 'https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/', 'wp_id': 'WP-0043', 'monitor_issue': 43}`
+- `WP-0045` / `OWASP-AST10`: 1 principle(s) cite this source.
+  - before: `{'title': 'OWASP Agentic Skills Top 10 (AST10)', 'org': 'OWASP GenAI Security Project', 'url': 'https://owasp.org/www-project-agentic-skills-top-10/', 'wp_id': 'WP-0045', 'monitor_issue': None}`
+  - after: `{'title': 'OWASP Agentic Skills Top 10 (AST10)', 'org': 'OWASP GenAI Security Project', 'url': 'https://owasp.org/www-project-agentic-skills-top-10/', 'wp_id': 'WP-0045', 'monitor_issue': 45}`
+- `WP-0047` / `SANS-MATURITY`: 1 principle(s) cite this source.
+  - before: `{'title': 'SANS AI Security Maturity Model eBook', 'org': 'SANS Institute', 'url': 'https://www.sans.org/white-papers/sans-ai-security-maturity-model-ebook', 'wp_id': 'WP-0047', 'monitor_issue': None}`
+  - after: `{'title': 'SANS AI Security Maturity Model eBook', 'org': 'SANS Institute', 'url': 'https://www.sans.org/white-papers/sans-ai-security-maturity-model-ebook', 'wp_id': 'WP-0047', 'monitor_issue': 47}`
+- `WP-0144` / `ETSI-304223`: 3 principle(s) cite this source.
+  - before: `{'title': 'ETSI EN 304 223 V2.1.1: Baseline Cyber Security Requirements for AI Models and Systems', 'org': 'ETSI', 'url': 'https://www.etsi.org/deliver/etsi_en/304200_304299/304223/02.01.01_60/en_304223v020101p.pdf', 'wp_id': 'WP-0144', 'monitor_issue': None}`
+  - after: `{'title': 'ETSI EN 304 223 V2.1.1 ,  Securing Artificial Intelligence (SAI); Baseline Cyber Security Requirements for AI Models and Systems', 'org': 'ETSI', 'url': 'https://www.etsi.org/deliver/etsi_en/304200_304299/304223/02.01.01_60/en_304223v020101p.pdf', 'wp_id': 'WP-0144', 'monitor_issue': 144}`
+- `WP-0145` / `ENISA-FRONTIER`: 2 principle(s) cite this source.
+  - before: `{'title': "ENISA's view on Cybersecurity in the Frontier AI Era", 'org': 'ENISA', 'url': 'https://www.enisa.europa.eu/publications/enisas-view-on-cybersecurity-in-the-frontier-ai-era', 'wp_id': 'WP-0145', 'monitor_issue': None}`
+  - after: `{'title': "ENISA's view on Cybersecurity in the Frontier AI Era", 'org': 'ENISA', 'url': 'https://www.enisa.europa.eu/publications/enisas-view-on-cybersecurity-in-the-frontier-ai-era', 'wp_id': 'WP-0145', 'monitor_issue': 145}`
+- `WP-0147` / `OPENSSF-ASSIST`: 1 principle(s) cite this source.
+  - before: `{'title': 'Security-Focused Guide for AI Code Assistant Instructions', 'org': 'OpenSSF', 'url': 'https://best.openssf.org/Security-Focused-Guide-for-AI-Code-Assistant-Instructions', 'wp_id': 'WP-0147', 'monitor_issue': None}`
+  - after: `{'title': 'Security-Focused Guide for AI Code Assistant Instructions', 'org': 'OpenSSF', 'url': 'https://best.openssf.org/Security-Focused-Guide-for-AI-Code-Assistant-Instructions', 'wp_id': 'WP-0147', 'monitor_issue': 147}`
+- `WP-0148` / `FMF-AGENTS`: 5 principle(s) cite this source.
+  - before: `{'title': 'Emerging Security Practices for AI Agents', 'org': 'Frontier Model Forum', 'url': 'https://www.frontiermodelforum.org/issue-briefs/emerging-security-practices-for-ai-agents/', 'wp_id': 'WP-0148', 'monitor_issue': None}`
+  - after: `{'title': 'Emerging Security Practices for AI Agents', 'org': 'Frontier Model Forum', 'url': 'https://www.frontiermodelforum.org/issue-briefs/emerging-security-practices-for-ai-agents/', 'wp_id': 'WP-0148', 'monitor_issue': 148}`
+- `WP-0149` / `FMF-CYBER`: 1 principle(s) cite this source.
+  - before: `{'title': 'Managing Advanced Cyber Risks in Frontier AI Frameworks', 'org': 'Frontier Model Forum', 'url': 'https://www.frontiermodelforum.org/technical-reports/managing-advanced-cyber-risks-in-frontier-ai-frameworks/', 'wp_id': 'WP-0149', 'monitor_issue': None}`
+  - after: `{'title': 'Managing Advanced Cyber Risks in Frontier AI Frameworks', 'org': 'Frontier Model Forum', 'url': 'https://www.frontiermodelforum.org/technical-reports/managing-advanced-cyber-risks-in-frontier-ai-frameworks/', 'wp_id': 'WP-0149', 'monitor_issue': 149}`
+- `WP-0152` / `AIVERIFY-MAGF`: 2 principle(s) cite this source.
+  - before: `{'title': 'Model AI Governance Framework for Agentic AI v1.5', 'org': 'AI Verify Foundation', 'url': 'https://www.imda.gov.sg/assets/63438074-73f6-4dcc-a281-030f42642cf4.pdf', 'wp_id': 'WP-0152', 'monitor_issue': None}`
+  - after: `{'title': 'Model AI Governance Framework for Agentic AI v1.5', 'org': 'AI Verify Foundation', 'url': 'https://www.imda.gov.sg/assets/63438074-73f6-4dcc-a281-030f42642cf4.pdf', 'wp_id': 'WP-0152', 'monitor_issue': 152}`
+- `WP-0154` / `NIST-218A`: 1 principle(s) cite this source.
+  - before: `{'title': 'Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile (SP 800-218A)', 'org': 'National Institute of Standards and Technology', 'url': 'https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218A.pdf', 'wp_id': 'WP-0154', 'monitor_issue': None}`
+  - after: `{'title': 'Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile (NIST SP 800-218A)', 'org': 'National Institute of Standards and Technology (NIST)', 'url': 'https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-218A.pdf', 'wp_id': 'WP-0154', 'monitor_issue': 161}`
 
 ## New monitor papers (no site source yet)
+None.
+
+## Modified papers with no site source
+- `WP-0044` OWASP Artificial Intelligence Security Verification Standard (AISVS) 1.0 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0046` CIS Controls v8.1.2 AI Security Guidance Workbook (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0048` AI Security Solutions Landscape for AI and Agentic Red Teaming Q2 2026 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0049` Solutions Landscape - Red Teaming Taxonomy (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0050` Model Context Protocol (MCP) Security V2.0 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0051` Addendum: Post-Quantum Cryptography Considerations for MCP (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0052` Zero Trust for AI Systems (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0055` OWASP GenAI Exploit Round-up Report Q1 2026 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0061` OWASP Gen AI Incident & Exploit Round-up, Q2’25 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0087` Shadow AI Does Not Read Your Org Chart: Rethinking Identity Governance for Autonomous Agents (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0089` A Framework for AI Threat Readiness (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0092` Lessons Learned on Securing Multi-Agent Systems: NIST Agent Security RFI (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0093` Cloud Security 2026: When AI is the Weapon and the Target (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0103` Treat Your Agent Like an Insider Threat: Why AI Sandboxing Can’t Wait (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0109` AIMM: Artifact Integrity Maturity Model for AI/ML Supply Chain Trust and Provenance (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0110` Agent Control Standard (ACS) v0.1.0 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0111` GenAI Security Industry Framework Crosswalk v4.0.0 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0112` Quantifying Agentic Misalignment in Multi-Agent Systems (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0119` GenAI and Agentic AI Exploit Roundup Q3 2026 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0123` Securing Agentic AI with Zero Trust Microsegmentation (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0128` I Love Google’s Agentic AI Security Roadmap: Adding MAESTRO Will Make It More Powerful ,  An Open Letter to Google (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0133` Industrial Scale AI Distillation is a Cloud Security Failure (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0134` GenAI and Agentic AI Exploit Roundup Q2 2026 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0135` MCP Tool Exposure is a Privilege Grant: A Two-Gate Authorization Model for Agentic AI (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0138` GDM AI Control Roadmap (v0.1) (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0139` AA26-251A: China-Based Artificial Intelligence Companies Conducting Industrial-Scale Distillation Campaigns Against U.S. AI Companies (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0140` Zero Trust Microsegmentation Guidance (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0141` Digital Forensics & AI Investigations Framework (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0142` Incident Response & AI Investigations Framework (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0143` MITRE ATLAS (Adversarial Threat Landscape for AI Systems) v2026.09 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0146` ETSI TS 104 275 V1.1.1: Securing Artificial Intelligence (SAI); Application of Baseline Cyber Security Requirements for AI Models and Systems principles to Generative AI; Preventing Harm from Deepfakes (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0150` Guidance for Safe Foundation Model Deployment (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0158` SAF-MCP: Secure Agentic Framework for Model Context Protocol (formerly SAFE-MCP), Framework Model v2 (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0159` Agent Privacy Risk Taxonomy V.01 (AILuminate Assessment Standard) (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0160` Agents for Cyber Defense (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0161` MIT AI Risk Repository (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0162` MAESTRO: Agentic AI Threat Modeling Framework (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0163` NIST COSAIS: Control Overlays for Securing AI Systems (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0164` Google Secure AI Framework (SAIF) (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0165` An Introduction to Google's Approach for Secure AI Agents (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0166` The Agentic AI Security Scoping Matrix (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0167` Taxonomy of Failure Modes in AI Agents (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0168` Agentic AI Security: Threats, Defenses, Evaluation, and Open Challenges (arXiv 2510.23883) (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0169` TRiSM for Agentic AI: A Review of Trust, Risk, and Security Management in LLM-based Agentic Multi-Agent Systems (arXiv 2506.04133) (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0170` MLCommons AILuminate Benchmark (include): No site source code cites this paper yet. Add a source row and principles only after review.
+- `WP-0171` Agentic AI Top 10 Vulnerability (Precize) (include): No site source code cites this paper yet. Add a source row and principles only after review.
 - `WP-0172` OWASP GenAI Red Teaming Manual Version 1.0 (include): No site source code cites this paper yet. Add a source row and principles only after review.
 - `WP-0173` OWASP LLM Exploit Generation Phase 2: Agentic vs. Classic Offensive Approaches (LLM Exploit Generation Guide 2.0) (include): No site source code cites this paper yet. Add a source row and principles only after review.
 - `WP-0174` OWASP GenAI Data Security Best Practices v2, Part 1 (include): No site source code cites this paper yet. Add a source row and principles only after review.
@@ -409,19 +610,6 @@ None.
 - `WP-0578` Every Model Cheats: Prompt-Level Mitigation of Cheating on Offensive Cyber Tasks (arXiv 2607.21763) (include): No site source code cites this paper yet. Add a source row and principles only after review.
 - `WP-0579` Contextual Agent Security: A Policy for Every Purpose (arXiv 2501.17070) (include): No site source code cites this paper yet. Add a source row and principles only after review.
 
-## Modified papers with no site source
-- `WP-0161` MIT AI Risk Repository (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0162` MAESTRO: Agentic AI Threat Modeling Framework (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0163` NIST COSAIS: Control Overlays for Securing AI Systems (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0164` Google Secure AI Framework (SAIF) (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0165` An Introduction to Google's Approach for Secure AI Agents (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0166` The Agentic AI Security Scoping Matrix (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0167` Taxonomy of Failure Modes in AI Agents (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0168` Agentic AI Security: Threats, Defenses, Evaluation, and Open Challenges (arXiv 2510.23883) (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0169` TRiSM for Agentic AI: A Review of Trust, Risk, and Security Management in LLM-based Agentic Multi-Agent Systems (arXiv 2506.04133) (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0170` MLCommons AILuminate Benchmark (include): No site source code cites this paper yet. Add a source row and principles only after review.
-- `WP-0171` Agentic AI Top 10 Vulnerability (Precize) (include): No site source code cites this paper yet. Add a source row and principles only after review.
-
 ## Proposed retirements
 None.
 
@@ -429,6 +617,80 @@ None.
 None.
 
 ## Unknown WP- IDs
+- `WP-0031` not linked to a site source code.
+- `WP-0053` not linked to a site source code.
+- `WP-0054` not linked to a site source code.
+- `WP-0056` not linked to a site source code.
+- `WP-0057` not linked to a site source code.
+- `WP-0058` not linked to a site source code.
+- `WP-0059` not linked to a site source code.
+- `WP-0060` not linked to a site source code.
+- `WP-0062` not linked to a site source code.
+- `WP-0063` not linked to a site source code.
+- `WP-0064` not linked to a site source code.
+- `WP-0065` not linked to a site source code.
+- `WP-0066` not linked to a site source code.
+- `WP-0067` not linked to a site source code.
+- `WP-0068` not linked to a site source code.
+- `WP-0069` not linked to a site source code.
+- `WP-0070` not linked to a site source code.
+- `WP-0071` not linked to a site source code.
+- `WP-0072` not linked to a site source code.
+- `WP-0073` not linked to a site source code.
+- `WP-0074` not linked to a site source code.
+- `WP-0075` not linked to a site source code.
+- `WP-0076` not linked to a site source code.
+- `WP-0077` not linked to a site source code.
+- `WP-0078` not linked to a site source code.
+- `WP-0079` not linked to a site source code.
+- `WP-0080` not linked to a site source code.
+- `WP-0081` not linked to a site source code.
+- `WP-0082` not linked to a site source code.
+- `WP-0083` not linked to a site source code.
+- `WP-0084` not linked to a site source code.
+- `WP-0085` not linked to a site source code.
+- `WP-0086` not linked to a site source code.
+- `WP-0088` not linked to a site source code.
+- `WP-0090` not linked to a site source code.
+- `WP-0091` not linked to a site source code.
+- `WP-0094` not linked to a site source code.
+- `WP-0095` not linked to a site source code.
+- `WP-0096` not linked to a site source code.
+- `WP-0097` not linked to a site source code.
+- `WP-0098` not linked to a site source code.
+- `WP-0099` not linked to a site source code.
+- `WP-0100` not linked to a site source code.
+- `WP-0101` not linked to a site source code.
+- `WP-0102` not linked to a site source code.
+- `WP-0104` not linked to a site source code.
+- `WP-0105` not linked to a site source code.
+- `WP-0106` not linked to a site source code.
+- `WP-0107` not linked to a site source code.
+- `WP-0108` not linked to a site source code.
+- `WP-0113` not linked to a site source code.
+- `WP-0114` not linked to a site source code.
+- `WP-0115` not linked to a site source code.
+- `WP-0116` not linked to a site source code.
+- `WP-0117` not linked to a site source code.
+- `WP-0118` not linked to a site source code.
+- `WP-0120` not linked to a site source code.
+- `WP-0121` not linked to a site source code.
+- `WP-0122` not linked to a site source code.
+- `WP-0124` not linked to a site source code.
+- `WP-0125` not linked to a site source code.
+- `WP-0126` not linked to a site source code.
+- `WP-0127` not linked to a site source code.
+- `WP-0129` not linked to a site source code.
+- `WP-0130` not linked to a site source code.
+- `WP-0131` not linked to a site source code.
+- `WP-0132` not linked to a site source code.
+- `WP-0136` not linked to a site source code.
+- `WP-0137` not linked to a site source code.
+- `WP-0151` not linked to a site source code.
+- `WP-0153` not linked to a site source code.
+- `WP-0155` not linked to a site source code.
+- `WP-0156` not linked to a site source code.
+- `WP-0157` not linked to a site source code.
 - `WP-0350` not linked to a site source code.
 - `WP-0351` not linked to a site source code.
 - `WP-0394` not linked to a site source code.
