@@ -19,8 +19,8 @@
   var SCOPE_LABEL = {
     cited: "Cited in principles",
     org: "All included organization papers",
-    research: "Research the monitor found",
-    all: "All papers, including research the monitor found"
+    research: "Cited research",
+    all: "All papers, including cited research"
   };
 
   var EVIDENCE_LABEL = {
@@ -42,8 +42,8 @@
   var CAPTION = {
     cited: "Papers the principles catalog cites. These are sources of the principles on this site.",
     org: "Included organization papers. Metadata only means principles have not been extracted. That row is not a source of principles.",
-    research: "Research the monitor found. Metadata only and duplicate rows are not sources of principles.",
-    all: "Every monitor record. Metadata only, duplicate, and marked for removal are not sources of principles."
+    research: "Cited research. Metadata only and duplicate rows are not sources of principles.",
+    all: "Every inventory record. Metadata only, duplicate, and marked for removal are not sources of principles."
   };
 
   function selected(name) {
@@ -109,7 +109,7 @@
     }
     if (paper.c) return "Cited in principles.";
     if (paper.x === "extracted") {
-      return "Extracted in the monitor. This page's principle list does not cite it.";
+      return "Principles extracted in the inventory. This page's principle list does not cite it.";
     }
     return "Metadata only. Not a source of principles.";
   }
@@ -463,7 +463,7 @@
   if (findInput) findInput.addEventListener("input", render);
 
   applyUrl();
-  setStatus("Loading the monitor inventory.");
+  setStatus("Loading the whitepaper inventory.");
   fetch("/data/whitepaper-inventory.slim.json", { credentials: "same-origin" })
     .then(function (response) {
       if (!response.ok) throw new Error("HTTP " + response.status);
