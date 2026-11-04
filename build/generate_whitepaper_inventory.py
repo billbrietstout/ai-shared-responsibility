@@ -135,8 +135,8 @@ def catalog_index(catalog: dict) -> tuple[dict, int]:
     sources = catalog.get("sources")
     if not isinstance(sources, dict):
         raise SystemExit("agentic catalog has no sources object")
-    # One monitor paper can back more than one catalog code. SANS-CAISG12
-    # and SANS-CAISG14 both use WP-0040. The cited count is the code count.
+    # One monitor paper can back more than one catalog code when versions
+    # share a WP- id. The cited count is the code count.
     cited: dict[str, list] = {}
     talks = 0
     order = 0

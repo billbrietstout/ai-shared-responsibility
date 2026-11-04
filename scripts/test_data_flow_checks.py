@@ -695,7 +695,7 @@ class SchemaAndCatalogTest(unittest.TestCase):
         spec.loader.exec_module(mod)
         _sources, sections, _order = mod.parse_synthesis()
         sec = sections["zero-standing-privilege"]
-        self.assertIn("deny by default", sec["gap"])
+        self.assertIn("ambiguous or conflicting answer", sec["gap"])
         note = sec["editorial_position"]
         self.assertIn("Approvals outlive their owner.", note)
         replay = (

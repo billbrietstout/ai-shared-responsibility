@@ -7,7 +7,7 @@
     <meta
       name="description"
       data-inv-stamp="assessment-counts"
-      content="Copy-ready prompt for assessing an AI security whitepaper against 87 classic security engineering principles, 146 AI and agentic security principles, and the SRF accountability and regulatory data. Confirms the paper was read in full before fetching slim catalogs, screens the submission for citation integrity, unsupported claims, stale references, and artifacts left in the delivered file, maps every claim to a catalog id, checks threat attribution against the layer that owns the control point, reviews working drafts for typos and misdirected links, and ranks every finding on one P1 to P4 scale with severity capped by evidence quality."
+      content="Copy-ready prompt for assessing an AI security whitepaper against 87 classic security engineering principles, 170 AI and agentic security principles, and the SRF accountability and regulatory data. Confirms the paper was read in full before fetching slim catalogs, screens the submission for citation integrity, unsupported claims, stale references, and artifacts left in the delivered file, maps every claim to a catalog id, checks threat attribution against the layer that owns the control point, reviews working drafts for typos and misdirected links, and ranks every finding on one P1 to P4 scale with severity capped by evidence quality."
     />
     <meta name="color-scheme" content="light" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -198,7 +198,7 @@
       <h1>Assess an AI security whitepaper</h1>
       <p class="page-hero__lede">
         A copy-ready prompt that checks a paper against <span data-inv-count="classic">87</span> classic security
-        engineering principles, <span data-inv-count="principles">146</span> AI and agentic security principles, and the
+        engineering principles, <span data-inv-count="principles">170</span> AI and agentic security principles, and the
         SRF accountability and regulatory data, then reviews a working draft for
         the mechanical defects that survive ordinary review. Paste the prompt,
         add the paper, and your assistant fetches slim catalogs itself after it
@@ -274,11 +274,11 @@
           </p>
         </div>
         <div class="catalog-card">
-          <div class="catalog-card__count"><span data-inv-count="principles">146</span></div>
+          <div class="catalog-card__count"><span data-inv-count="principles">170</span></div>
           <p class="catalog-card__name">AI and agentic security principles</p>
           <p class="catalog-card__desc">
             Normalized from the
-            <a href="/agentic-ai-security/"><span data-inv-count="cited">52</span>-source synthesis</a> across <span data-inv-count="sections">22</span>
+            <a href="/agentic-ai-security/"><span data-inv-count="cited">68</span>-source synthesis</a> across <span data-inv-count="sections">22</span>
             topic sections, with a gap index tying each section's blind spot back
             to the classic principle it misses. These entries record current
             industry positions and have not settled into axioms.
@@ -344,7 +344,7 @@
   <legend>Which records to list</legend>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="cited" checked>
-    <span>Cited in principles (<span data-inv-count="cited">52</span>)</span>
+    <span>Cited in principles (<span data-inv-count="cited">68</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="org">
@@ -563,7 +563,7 @@ GOVERNING RULE: a false accusation costs more than a miss. A missed weak argumen
 
 If intake passed, fetch both slim catalogs:
 https://aisharedresponsibility.com/data/security-principles.slim.json (<span data-inv-count="classic">87</span> classic engineering axioms; settled, most decades old)
-https://aisharedresponsibility.com/data/ai-agentic-principles.slim.json (<span data-inv-count="principles">146</span> contemporary positions from <span data-inv-count="cited">52</span> papers and <span data-inv-count="talks">14</span> conference talks across <span data-inv-count="sections">22</span> sections, plus `gap_index`)
+https://aisharedresponsibility.com/data/ai-agentic-principles.slim.json (<span data-inv-count="principles">170</span> contemporary positions from <span data-inv-count="cited">68</span> papers and <span data-inv-count="talks">14</span> conference talks across <span data-inv-count="sections">22</span> sections, plus `gap_index`)
 Weigh disagreement with the agentic catalog more lightly than disagreement with the classic catalog. Treat `gap_index` as a field-wide blind spot list, never as a defect in this paper. Fetch a full catalog (same names without `.slim`) only when a mapping row needs a `src` check.
 
 1. SCREEN THE SUBMISSION. Skip in map-only. A paper can align with both catalogs and still fail this screen. Check seven things. Several of these checks find the defects a machine-generated draft tends to leave behind, so run them on their own terms: report the unsourced figure, the stale reference, the unactionable recommendation. Never convert a set of them into a claim about how the text was produced.
@@ -589,7 +589,7 @@ Classify each statement as one of:
 
 3. CHECK COVERAGE. From the paper's declared scope, list catalog categories the paper does not address. This is a gap list rather than a criticism. Include any classic axiom the paper's advice would violate even if that category sits outside the declared scope. Do not list unused categories that are simply out of scope. Say which gaps look deliberate.
 
-4. CHECK KNOWN GAPS. Cross-reference against `gap_index`. A paper addressing something a gap note names is a positive finding, since it covers ground most of the <span data-inv-count="cited">52</span>-source corpus does not. A paper that is agent-specific and silent on a gap directly relevant to its own topic gets named specifically rather than folded into step 3.
+4. CHECK KNOWN GAPS. Cross-reference against `gap_index`. A paper addressing something a gap note names is a positive finding, since it covers ground most of the <span data-inv-count="cited">68</span>-source corpus does not. A paper that is agent-specific and silent on a gap directly relevant to its own topic gets named specifically rather than folded into step 3.
 
 5. CHECK ACCOUNTABILITY AND REGULATORY GROUNDING, when the paper names a specific threat, cites a regulation or standard, or asserts who is responsible for a control. Skip in map-only. Skip it for papers that stay at general engineering principle and say you skipped it. Do not answer from memory.
 - Use the paths below. Fetch https://aisharedresponsibility.com/llms.txt only if a later fetch 404s, then retry from that inventory rather than guessing a variant.
