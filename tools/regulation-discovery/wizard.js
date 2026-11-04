@@ -59,7 +59,7 @@
       .then((data) => {
         DATA = data;
         STORAGE_KEY = data.meta.storageKey;
-        document.title = data.meta.title + ' — CoSAI Wizards';
+        document.title = data.meta.title + ': CoSAI Wizards';
         populateOptions();
         populateCopy();
         wireEvents();
@@ -133,7 +133,7 @@
     entSel.innerHTML = '';
     const placeholder = document.createElement('option');
     placeholder.value = '';
-    placeholder.textContent = '— Select —';
+    placeholder.textContent = ': Select :';
     entSel.appendChild(placeholder);
     const notApp = document.createElement('option');
     notApp.value = 'NOT_APPLICABLE';
@@ -153,7 +153,7 @@
     sel.innerHTML = '';
     const placeholder = document.createElement('option');
     placeholder.value = '';
-    placeholder.textContent = '— Select —';
+    placeholder.textContent = ': Select :';
     sel.appendChild(placeholder);
     options.forEach((o) => {
       const opt = document.createElement('option');
@@ -359,7 +359,7 @@
       b.classList.toggle('step-bar--reached', s <= state.maxStep && s !== state.step);
       b.disabled = s > state.maxStep;
     });
-    setText('#step-label', `Step ${state.step} of ${STEP_COUNT} — ${STEP_LABELS[state.step - 1]}`);
+    setText('#step-label', `Step ${state.step} of ${STEP_COUNT}: ${STEP_LABELS[state.step - 1]}`);
 
     // Back button
     document.getElementById('btn-back').disabled = state.step === 1;
@@ -430,15 +430,15 @@
     const i = state.inputs;
     const grid = document.getElementById('summary-grid');
     const rows = [
-      ['Verticals', (i.verticals || []).map(labelFromList(DATA.verticals)).join(', ') || '—'],
-      ['Deployment', labelFromList(DATA.deployments)(i.deployment) || '—'],
-      ['System type', labelFromList(DATA.assetTypes)(i.assetType) || '—'],
-      ['Business function', labelFromList(DATA.businessFunctions)(i.businessFunction) || '—'],
-      ['Operating model', labelFromList(DATA.operatingModels)(i.operatingModel) || '—'],
-      ['Autonomy', labelFromList(DATA.autonomyLevels)(i.autonomyLevel) || '—'],
-      ['Data types', (i.dataTypes || []).map(labelFromList(DATA.dataTypes)).join(', ') || '—'],
-      ['EU residents data', i.euResidentsData || (i.euNotApplicable ? 'N/A (EU not applicable)' : '—')],
-      ['Expected risk', labelFromList(DATA.riskLevels)(i.expectedRiskLevel) || '—'],
+      ['Verticals', (i.verticals || []).map(labelFromList(DATA.verticals)).join(', ') || ':'],
+      ['Deployment', labelFromList(DATA.deployments)(i.deployment) || ':'],
+      ['System type', labelFromList(DATA.assetTypes)(i.assetType) || ':'],
+      ['Business function', labelFromList(DATA.businessFunctions)(i.businessFunction) || ':'],
+      ['Operating model', labelFromList(DATA.operatingModels)(i.operatingModel) || ':'],
+      ['Autonomy', labelFromList(DATA.autonomyLevels)(i.autonomyLevel) || ':'],
+      ['Data types', (i.dataTypes || []).map(labelFromList(DATA.dataTypes)).join(', ') || ':'],
+      ['EU residents data', i.euResidentsData || (i.euNotApplicable ? 'N/A (EU not applicable)' : ':')],
+      ['Expected risk', labelFromList(DATA.riskLevels)(i.expectedRiskLevel) || ':'],
     ];
     grid.innerHTML = rows
       .map(([k, v]) => `<div><dt>${escapeHtml(k)}</dt><dd>${escapeHtml(v)}</dd></div>`)
@@ -774,11 +774,11 @@
   }
 
   function riskInterpretation(score) {
-    if (score >= 80) return 'Critical — expect strict regulatory oversight';
-    if (score >= 60) return 'High — likely high-risk classification';
-    if (score >= 40) return 'Medium — moderate oversight required';
-    if (score >= 20) return 'Low — minimal obligations likely';
-    return 'Very low — baseline hygiene only';
+    if (score >= 80) return 'Critical: expect strict regulatory oversight';
+    if (score >= 60) return 'High: likely high-risk classification';
+    if (score >= 40) return 'Medium: moderate oversight required';
+    if (score >= 20) return 'Low: minimal obligations likely';
+    return 'Very low: baseline hygiene only';
   }
 
   // ─── 6. persistence ──────────────────────────────────────────────────────
@@ -865,7 +865,7 @@
     return String(str == null ? '' : str)
       .replace(/≤/g, '<=')
       .replace(/≥/g, '>=')
-      .replace(/[–—]/g, '-')
+      .replace(/[–:]/g, '-')
       .replace(/[‘’]/g, "'")
       .replace(/[“”]/g, '"')
       .replace(/…/g, '...')

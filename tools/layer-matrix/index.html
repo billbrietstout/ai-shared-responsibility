@@ -489,11 +489,11 @@ body {
     <div id="gaps" class="view">
       <p class="gaps-intro">The <strong>CoSAI AI Shared Responsibility Framework</strong> (V1.0) is an <strong>accountability</strong> model: it names <strong>who owns</strong> each part of the AI stack so obligations from NIST AI RMF, ISO/IEC 42001, the EU AI Act, and your internal control sets can land on <strong>one primary party per concern</strong>. It works as a <strong>governance manual for decomposition</strong>: enterprise layers express invariant dependencies while operating models shift who supplies each layer. The outline below summarizes <strong>what each layer clarifies</strong>; the cards give <strong>illustrative AI concerns</strong> that become <strong>assignable and evidential</strong> once you name that owner.</p>
       <ol class="gaps-srf-outline">
-        <li><strong>L1 — Business &amp; Usage.</strong> <strong>L1 job: set permitted use, risk acceptance, and cascade:</strong> permitted AI use, risk acceptance, regulatory posture, and lifecycle governance decisions, so requirements <strong>cascade</strong> from business intent to the layers below, matching the framework’s “governance from the Business layer.”</li>
-        <li><strong>L2 — Information.</strong> <strong>L2 job: data, provenance, and retrieval boundaries:</strong> provenance, rights, training data, answer-time source stores (including RAG knowledge bases), embeddings, and retrieval boundaries, extending information governance to what models actually ingest and emit.</li>
-        <li><strong>L3 — Application.</strong> <strong>L3 job: apps, agents, prompts, and human override:</strong> how capability meets users and APIs (surfaces, tools, agents, prompts, validation, and human override), where application developers discharge the controls referenced around prompt injection and guardrails in the framework.</li>
-        <li><strong>L4 — Platform.</strong> <strong>L4 job: platform runtime, tenancy, and monitoring:</strong> serving, tenancy, isolation, quotas, monitoring, and operational hardening at scale, including containing blast radius across tenants as in the framework’s layered incident example.</li>
-        <li><strong>L5 — Model provider.</strong> <strong>L5 job: model artifact and supply chain:</strong> training provenance, the shipped model, cards and transparency, third-party and fine-tuned change, so model builders and vendors have a clear lane alongside NIST/ISO <em>what</em> to achieve.</li>
+        <li><strong>L1: Business &amp; Usage.</strong> <strong>L1 job: set permitted use, risk acceptance, and cascade:</strong> permitted AI use, risk acceptance, regulatory posture, and lifecycle governance decisions, so requirements <strong>cascade</strong> from business intent to the layers below, matching the framework’s “governance from the Business layer.”</li>
+        <li><strong>L2: Information.</strong> <strong>L2 job: data, provenance, and retrieval boundaries:</strong> provenance, rights, training data, answer-time source stores (including RAG knowledge bases), embeddings, and retrieval boundaries, extending information governance to what models actually ingest and emit.</li>
+        <li><strong>L3: Application.</strong> <strong>L3 job: apps, agents, prompts, and human override:</strong> how capability meets users and APIs (surfaces, tools, agents, prompts, validation, and human override), where application developers discharge the controls referenced around prompt injection and guardrails in the framework.</li>
+        <li><strong>L4: Platform.</strong> <strong>L4 job: platform runtime, tenancy, and monitoring:</strong> serving, tenancy, isolation, quotas, monitoring, and operational hardening at scale, including containing blast radius across tenants as in the framework’s layered incident example.</li>
+        <li><strong>L5: Model provider.</strong> <strong>L5 job: model artifact and supply chain:</strong> training provenance, the shipped model, cards and transparency, third-party and fine-tuned change, so model builders and vendors have a clear lane alongside NIST/ISO <em>what</em> to achieve.</li>
       </ol>
       <div id="gaps-list"></div>
     </div>
@@ -531,7 +531,7 @@ const components = [
 
 /* cells[layerIdx][componentIdx] = { type: 'pri'|'sec'|'na', sub?: '...' } */
 const cells = [
-  /* L1 — AI Business & Usage */
+  /* L1: AI Business and Usage */
   [
     { type: 'pri', sub: 'AI risk appetite, sector regs (FDA, SR 11-7, EU AI Act); §A.1.1' },
     { type: 'pri', sub: 'AUP, training, shadow-AI detection; §A.1.2.3' },
@@ -543,7 +543,7 @@ const cells = [
     { type: 'na' },
     { type: 'sec', sub: 'Vendor due-diligence cadence' },
   ],
-  /* L2 — AI Information */
+  /* L2: AI Information */
   [
     { type: 'sec', sub: 'Data classification policy issuance' },
     { type: 'sec', sub: 'DLP and tool-data governance' },
@@ -555,7 +555,7 @@ const cells = [
     { type: 'sec', sub: 'Confidential compute per data class' },
     { type: 'na' },
   ],
-  /* L3 — AI Application */
+  /* L3: AI Application */
   [
     { type: 'na' },
     { type: 'sec', sub: 'Surface policy in app UI' },
@@ -567,7 +567,7 @@ const cells = [
     { type: 'sec', sub: 'Inference integration patterns' },
     { type: 'sec', sub: 'Consume model cards in design' },
   ],
-  /* L4 — AI Platform */
+  /* L4: AI Platform */
   [
     { type: 'na' },
     { type: 'na' },
@@ -579,7 +579,7 @@ const cells = [
     { type: 'pri', sub: 'Model serving, GPU / KV-cache isolation, SOC 2; §A.1.4.1' },
     { type: 'sec', sub: 'Hosts attestations & model registry' },
   ],
-  /* L5 — AI Model Provider */
+  /* L5: AI Model Provider */
   [
     { type: 'sec', sub: 'Vendor evidence per §A.7.4' },
     { type: 'na' },
@@ -622,27 +622,27 @@ function renderMatrix() {
 renderMatrix();
 
 const phases = [
-  { num:'01', color:'#185FA5', bg:'#E6F1FB', label:'Business understanding', sub:'Define problem, success metrics, feasibility', srf:'L1 — AI Business & Usage',
+  { num:'01', color:'#185FA5', bg:'#E6F1FB', label:'Business understanding', sub:'Define problem, success metrics, feasibility', srf:'L1: AI Business and Usage',
     security:['AI risk appetite documented','Use case ethics review','Regulatory mapping (GDPR, HIPAA, AI Act, SR 11-7, FDA AI/ML)','Stakeholder data agreements'],
-    frameworks:['CoSAI AI SRF §A.1.1','NIST AI RMF — Govern','ISO/IEC 42001 AI Mgmt','EU AI Act risk tier'] },
-  { num:'02', color:'#0F6E56', bg:'#E1F5EE', label:'Data understanding', sub:'Collect, explore, assess quality', srf:'L2 — AI Information · L5 — AI Model Provider',
+    frameworks:['CoSAI AI SRF §A.1.1','NIST AI RMF: Govern','ISO/IEC 42001 AI Mgmt','EU AI Act risk tier'] },
+  { num:'02', color:'#0F6E56', bg:'#E1F5EE', label:'Data understanding', sub:'Collect, explore, assess quality', srf:'L2: AI Information · L5: AI Model Provider',
     security:['Data provenance & lineage tracked','PII/sensitive field inventory','Training data consent verified','Bias & fairness audit'],
     frameworks:['CoSAI AI SRF §A.1.5.1 (Training Data Governance)','NIST SP 800-53 SI-12','DAMA DMBOK data quality','ISO/IEC 5259 data quality for AI'] },
-  { num:'03', color:'#854F0B', bg:'#FAEEDA', label:'Data preparation', sub:'Clean, transform, feature engineer', srf:'L2 — AI Information · L5 — AI Model Provider',
+  { num:'03', color:'#854F0B', bg:'#FAEEDA', label:'Data preparation', sub:'Clean, transform, feature engineer', srf:'L2: AI Information · L5: AI Model Provider',
     security:['Data poisoning controls','Differential privacy applied','Anonymisation / pseudonymisation','Audit log of transformations'],
-    frameworks:['CoSAI AI SRF §A.1.5.1 (Privacy-Preserving Training)','NIST SP 800-188 de-identification','ISO/IEC 27701 privacy','OWASP ML Top 10 — poisoning'] },
-  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modelling', sub:'Select, train, tune algorithms', srf:'L5 — AI Model Provider',
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Privacy-Preserving Training)','NIST SP 800-188 de-identification','ISO/IEC 27701 privacy','OWASP ML Top 10: poisoning'] },
+  { num:'04', color:'#993C1D', bg:'#FAECE7', label:'Modelling', sub:'Select, train, tune algorithms', srf:'L5: AI Model Provider',
     security:['Model card / transparency doc','Adversarial robustness testing','Hyperparameter access controls','Experiment tracking access logs'],
-    frameworks:['CoSAI AI SRF §A.1.5.1 (Model Development Security)','NIST AI RMF — Map & Measure','MITRE ATLAS adversarial ML','Google Model Cards standard'] },
-  { num:'05', color:'#993556', bg:'#FBEAF0', label:'Evaluation', sub:'Validate performance, fairness, safety', srf:'L5 — AI Model Provider · L3 — AI Application (red team)',
+    frameworks:['CoSAI AI SRF §A.1.5.1 (Model Development Security)','NIST AI RMF: Map & Measure','MITRE ATLAS adversarial ML','Google Model Cards standard'] },
+  { num:'05', color:'#993556', bg:'#FBEAF0', label:'Evaluation', sub:'Validate performance, fairness, safety', srf:'L5: AI Model Provider · L3: AI Application (red team)',
     security:['Red team / adversarial eval','Explainability requirements met','Fairness metrics documented','Approval gate before promotion'],
-    frameworks:['CoSAI AI SRF §A.7 (Evidence — Red Team Reports)','NIST AI RMF — Measure','OWASP LLM Top 10','IEEE 7010 wellbeing impact'] },
-  { num:'06', color:'#3B6D11', bg:'#EAF3DE', label:'Deployment', sub:'Package, release, serve', srf:'L4 — AI Platform · L3 — AI Application',
+    frameworks:['CoSAI AI SRF §A.7 (Evidence: Red Team Reports)','NIST AI RMF: Measure','OWASP LLM Top 10','IEEE 7010 wellbeing impact'] },
+  { num:'06', color:'#3B6D11', bg:'#EAF3DE', label:'Deployment', sub:'Package, release, serve', srf:'L4: AI Platform · L3: AI Application',
     security:['SBOM-ML generated for model + deps (CycloneDX-ML / SPDX)','Container image signed & scanned','Model API auth enforced','Inference environment hardened'],
-    frameworks:['CoSAI AI SRF §A.1.4 (Model Serving)','NIST SSDF SP 800-218','SLSA supply chain levels','CIS Benchmarks — containers'] },
-  { num:'07', color:'#534AB7', bg:'#EEEDFE', label:'Monitoring & maintenance', sub:'Observe drift, retrain, retire', srf:'L4 — AI Platform · L1 — AI Business & Usage (governance review)',
+    frameworks:['CoSAI AI SRF §A.1.4 (Model Serving)','NIST SSDF SP 800-218','SLSA supply chain levels','CIS Benchmarks: containers'] },
+  { num:'07', color:'#534AB7', bg:'#EEEDFE', label:'Monitoring & maintenance', sub:'Observe drift, retrain, retire', srf:'L4: AI Platform · L1: AI Business and Usage (governance review)',
     security:['Data/model drift alerts','Inference anomaly detection (incl. denial-of-wallet)','Retrain trigger access control','Model retirement & deletion policy'],
-    frameworks:['CoSAI AI SRF §A.4.3 (Operational Maturity)','NIST AI RMF — Manage','NIST SP 800-137 continuous monitoring','ISO/IEC 42001 — operation'] }
+    frameworks:['CoSAI AI SRF §A.4.3 (Operational Maturity)','NIST AI RMF: Manage','NIST SP 800-137 continuous monitoring','ISO/IEC 42001: operation'] }
 ];
 
 const scWrap = document.getElementById('sc-phases');
@@ -678,7 +678,7 @@ function togglePhase(i) {
 
 const gapLayerBlocks = [
   {
-    home: 'L1 — AI Business & Usage',
+    home: 'L1: AI Business and Usage',
     color: '#185FA5',
     bg: '#E6F1FB',
     principle:
@@ -697,7 +697,7 @@ const gapLayerBlocks = [
     ],
   },
   {
-    home: 'L2 — AI Information',
+    home: 'L2: AI Information',
     color: '#0F6E56',
     bg: '#E1F5EE',
     principle:
@@ -721,14 +721,14 @@ const gapLayerBlocks = [
     ],
   },
   {
-    home: 'L3 — AI Application',
+    home: 'L3: AI Application',
     color: '#993C1D',
     bg: '#FAECE7',
     principle:
       'Application developers integrate models into products. The framework assigns <strong>guardrails, input validation, output handling, tool use, and human override</strong> here: the layer where <strong>behavior around the model</strong> becomes operational.',
     items: [
       {
-        title: 'Adversarial ML — prompt injection, jailbreaks, poisoning',
+        title: 'Adversarial ML: prompt injection, jailbreaks, poisoning',
         clarity:
           '<strong>L3</strong> names the <strong>application integrator</strong> as owner of chatbot/app guardrails and input paths, while <strong>L4</strong> contains blast radius and <strong>L5</strong> documents model limitations, turning the framework’s prompt-injection walkthrough into <strong>layered</strong>, non-circular accountability.',
       },
@@ -740,7 +740,7 @@ const gapLayerBlocks = [
     ],
   },
   {
-    home: 'L4 — AI Platform',
+    home: 'L4: AI Platform',
     color: '#993556',
     bg: '#FBEAF0',
     principle:
@@ -759,7 +759,7 @@ const gapLayerBlocks = [
     ],
   },
   {
-    home: 'L5 — AI Model Provider',
+    home: 'L5: AI Model Provider',
     color: '#3B6D11',
     bg: '#EAF3DE',
     principle:
