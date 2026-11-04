@@ -104,7 +104,8 @@ def classify(rel):
     if top == "regulations" and len(seg) == 1:
         return "regulations", ext_frameworks()
     if rel == "regulations/discovery":
-        return "tool", ext_frameworks()[:6] + LAYERS
+        # Canonical copy is /tools/regulation-discovery/; this path redirects.
+        return "redirect", []
     if top == "industries":
         return "industries", ["srf.framework.cosai-srf", "srf.concept.control"] + LAYERS
     if top == "about":
@@ -156,6 +157,15 @@ def classify(rel):
             return "how-to", LAYERS + vertical_personas(v) + ["srf.concept.evidence-threshold"]
     if rel == "assess/layer-matrix":
         # Canonical page is /tools/layer-matrix/; this path 301-redirects there.
+        return "redirect", []
+    if rel in (
+        "assess/srf-stress",
+        "assess/policy-pyramid",
+        "controls/assessment",
+        "controls/security",
+        "regulations/discovery",
+    ):
+        # Canonical copies live under /tools/; these paths are redirect stubs.
         return "redirect", []
     if top in ("tools", "assess", "controls"):
         leaf = seg[-1]
