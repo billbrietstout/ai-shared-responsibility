@@ -216,12 +216,10 @@
           <p class="section__body">
             The <a href="/assess/claims-test/">claims test</a> builds a table of
             published attack classes in its C-attacks step. Pack 1.0.9 reads
-            this inventory by default and builds rows from it first, so those
-            rows carry ids resolved against ATLAS v2026.08, OWASP LLM Top 10
-            2025, OWASP Agentic AI Threats and Mitigations v1.1, OWASP GenAI
-            Data Security 1.0, FINOS AI Governance Framework v2, ATT&amp;CK
-            Enterprise 19.2, or CWE 4.20. Classes the inventory lacks still
-            get ids from model memory, marked <code>unresolved_unpinned</code>.
+            this inventory by default and builds rows from it first. Those rows
+            carry ids resolved against the pinned catalogs listed in the
+            inventory metadata. Classes the inventory lacks still get ids from
+            model memory, marked <code>unresolved_unpinned</code>.
             When a run names an industry pilot, the pack also selects classes
             whose <code>vertical_controls</code> cite that vertical.
           </p>
@@ -270,11 +268,18 @@
           <p class="section__body">
             Version 0.2.0 adds eight classes in which an AI system or agent
             moves money, changes a vendor or beneficiary record, or passes an
-            approval step: payment diversion, invoice or purchase order
-            alteration, approval gate bypass, master data change, workflow rule
-            injection, false status reporting, partner agent hijack, and
-            deepfake approver impersonation.
+            approval step:
           </p>
+          <ul class="findings">
+            <li>payment diversion</li>
+            <li>invoice or purchase order alteration</li>
+            <li>approval gate bypass</li>
+            <li>master data change</li>
+            <li>workflow rule injection</li>
+            <li>false status reporting</li>
+            <li>partner agent hijack</li>
+            <li>deepfake approver impersonation</li>
+          </ul>
           <ul class="findings">
             <li>Two of the eight have an exact catalog entry. Approval gate bypass matches FINOS <code>AIR-SEC-024</code> Agent Action Authorization Bypass and <code>CWE-841</code> Improper Enforcement of Behavioral Workflow. Deepfake approver impersonation matches <code>AML.T0052.001</code> Deepfake-Assisted Phishing. For the other six, closest is the best grade available.</li>
             <li>ATLAS v2026.08 names the harm (<code>AML.T0048.000</code> Financial Harm) and the tool step (<code>AML.T0053</code> AI Agent Tool Invocation). It has no technique for changing a business process. ATT&amp;CK <code>T1565</code> Data Manipulation and its three sub-techniques say the adversary may aim to affect a business process, so ATT&amp;CK Enterprise 19.2 is now pinned for those refs.</li>
@@ -302,11 +307,11 @@
             <li>Indirect prompt injection covers content an agent reads while it works on a task. A coding agent's rules or configuration file loads when the project opens and applies to every later task; CVE-2026-12957 ran commands from project configuration before the developer typed anything. Both entries cross-walk to the same <code>threats.json</code> row, because one application team decides what the agent accepts as instructions.</li>
             <li>Agent config credential exposure is about secrets stored in readable files. An exposed control interface hands over the agent's tools even when no secret is stored in plain text. <code>AML.CS0048</code> shows both on the same hosts; it is cited under the control interface because ATLAS records the entry point as <code>AML.T0049</code> Exploit Public-Facing Application.</li>
             <li>Agent session smuggling and the malicious LLM API router split from no entry. DSGAI06 names inter-agent context smuggling, but ATLAS v2026.08 has no technique for a victim agent that receives hidden turns. The router class rests on one measurement paper, cites no incident, and has no <code>threats.json</code> row.</li>
-            <li>Encoded input guardrail evasion covers a classifier that sees an encoded form and misjudges it. In the multi-agent covert channel (0.4.0) the monitor's tokenizer deletes the hidden characters before the monitor reads anything, so a better monitor prompt cannot help; the cited report measured 0% recovery even when the monitor held the decoding key. The fix sits before the monitor: strip tag, private-use, and format characters from the text it checks.</li>
+            <li>Encoded input guardrail evasion covers a classifier that sees an encoded form and misjudges it. In the multi-agent covert channel (0.4.0) the monitor's tokenizer deletes the hidden characters before the monitor reads anything. A better monitor prompt cannot help. The cited report measured 0% recovery even when the monitor held the decoding key. The fix sits before the monitor: strip tag, private-use, and format characters from the text it checks.</li>
             <li>Computer-use action on a stale screen (0.4.0) is separate from indirect prompt injection because the agent decides correctly and the screen changes before the click. The defender's check is a fresh look at the screen just before each action, which prompt-injection filters do not perform.</li>
             <li>Feedback-loop poisoning (0.5.0) splits from training data poisoning, which assumes access to training data. Here the attacker uses only the prompts and rating buttons any user has, and the provider's own tuning pipeline carries the result into the next model. ATLAS <code>AML.T0020</code> names manipulated feedback processes, and <code>AML.CS0009</code> (Tay, 2016) is the incident.</li>
-            <li>Control sequences in model output (0.5.0) sit next to telemetry-borne injection into LLM triage. That entry needs a model to read the logs; here a terminal or log viewer acts on escape codes with no model involved, so the fix is encoding control characters before output reaches the terminal or log file.</li>
-            <li>Adversarial perturbation of media input (0.6.0) splits from encoded input guardrail evasion and adversarial suffix jailbreaks, which both work on text. Media preprocessing that hides content from a model reviewer (0.6.0) splits from adversarial perturbation because the attacker changes nothing the model reads: the hidden content sits in frames the sampler skips, in animation frames after the first, or in an audio channel that playback drops. Robustness testing finds the first class; comparing what the model received with what a viewer gets finds the second.</li>
+            <li>Control sequences in model output (0.5.0) sit next to telemetry-borne injection into LLM triage. That entry needs a model to read the logs. Here a terminal or log viewer acts on escape codes with no model involved. Encode control characters before output reaches the terminal or log file.</li>
+            <li>Adversarial perturbation of media input (0.6.0) splits from encoded input guardrail evasion and adversarial suffix jailbreaks, which both work on text. Media preprocessing that hides content from a model reviewer (0.6.0) splits from adversarial perturbation because the attacker changes nothing the model reads. The hidden content sits in frames the sampler skips, in animation frames after the first, or in an audio channel that playback drops. Robustness testing finds the first class. Comparing what the model received with what a viewer gets finds the second.</li>
             <li>Untrusted media decoded inside a model server (0.6.0) is a classical parser weakness that multimodal serving reopens: the server fetches and decodes caller media before any model runs, often on a route with no authentication. CVE-2026-22778 and its advisory show that path reaching code execution on a server running a video model.</li>
             <li>Replay of encrypted reasoning blocks (0.4.0) sits next to model extraction and cross-tenant leakage. The provider must bind each block to the user, session, and model that produced it; the customer decides whether agent logs that hold blocks get published.</li>
           </ul>
@@ -318,13 +323,15 @@
           <span class="section__label">Live data</span>
           <h2 class="section__title">Inventory</h2>
           <p class="section__body">
-            Grades: <span class="q q--exact">exact</span> the catalog text covers
-            the class without stretching; <span class="q q--closest">closest</span>
-            it covers part of the class or a neighbor and is the best entry
-            available; <span class="q q--analogy">analogy</span> it describes a
+            Grades:
+            <span class="q q--exact">exact</span> means the catalog text covers
+            the class without stretching.
+            <span class="q q--closest">closest</span> means it covers part of
+            the class or a neighbor and is the best entry available.
+            <span class="q q--analogy">analogy</span> means it describes a
             different mechanism with a similar effect. The source file is
-            <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>,
-            with its schema at
+            <a href="/data/attack-inventory.json">/data/attack-inventory.json</a>.
+            Its schema is
             <a href="/data/attack-inventory.schema.json">/data/attack-inventory.schema.json</a>.
           </p>
 
@@ -407,8 +414,27 @@
           <ul class="findings">
             <li>An AI agent ran every check in this version. <code>reviewed_by</code> is null on all 58 entries until a person confirms them.</li>
             <li>A verified paper ref means the arXiv id resolves and the title and first author match. Abstracts were read for the three telemetry-triage papers, AgentDojo, and Agent Security Bench. The Agents of Chaos cases cited for display-name spoofing and false self-reports were not reread.</li>
-            <li>Twelve classes have no exact catalog entry. Three predate 0.2.0: deceptive agent self-report (OWASP Agentic T7 is the closest), observability-plane evasion (<code>AML.T0081</code> covers a disabled setting, not a starved guardrail), and the token-length side channel (no ATLAS, OWASP LLM, or OWASP Agentic entry). Replay of encrypted reasoning blocks has only closest refs, because <code>CWE-294</code> assumes captured network traffic and the blocks came from published logs. Media preprocessing that hides content has only closest refs: <code>AML.T0015</code> describes crafted adversarial data, and <code>CWE-436</code> names two readers of one input without naming a model. Untrusted media decoded in a model server has six closest refs, each covering either the code execution or the memory exhaustion. The other six are business-process classes; the section above names them.</li>
-            <li>Thirteen classes have no row in <a href="/data/threats.json">/data/threats.json</a>, so the inventory cannot name an SRF layer or accountable persona for them from that file: agent memory poisoning, hallucinated package squatting, sandbox escape, deceptive agent self-report, repudiation by log tampering, observability-plane evasion, approval fatigue, the token-length side channel, approval gate bypass, false process status reporting, deepfake approver impersonation, the malicious LLM API router, and computer-use action on a stale screen. Adding an L1 row for approval processes would need a source catalog id, because that file mints none of its own.</li>
+            <li>Twelve classes have no exact catalog entry. Three predate 0.2.0: deceptive agent self-report, observability-plane evasion, and the token-length side channel.</li>
+            <li>Replay of encrypted reasoning blocks has only closest refs, because <code>CWE-294</code> assumes captured network traffic and the blocks came from published logs. Media preprocessing that hides content has only closest refs: <code>AML.T0015</code> describes crafted adversarial data, and <code>CWE-436</code> names two readers of one input without naming a model. Untrusted media decoded in a model server has six closest refs, each covering either the code execution or the memory exhaustion. The other six are business-process classes; the section above names them.</li>
+            <li>Thirteen attack classes have no row in <a href="/data/threats.json">/data/threats.json</a>. For these, the inventory cannot name an SRF layer or an accountable persona.</li>
+          </ul>
+          <ul class="findings">
+            <li>agent memory poisoning</li>
+            <li>hallucinated package squatting</li>
+            <li>sandbox escape</li>
+            <li>deceptive agent self-report</li>
+            <li>repudiation by log tampering</li>
+            <li>observability-plane evasion</li>
+            <li>approval fatigue</li>
+            <li>the token-length side channel</li>
+            <li>approval gate bypass</li>
+            <li>false process status reporting</li>
+            <li>deepfake approver impersonation</li>
+            <li>the malicious LLM API router</li>
+            <li>computer-use action on a stale screen</li>
+          </ul>
+          <ul class="findings">
+            <li>Adding an L1 row for approval processes would need a source catalog id, because that file mints none of its own.</li>
             <li><code>vertical_controls</code> is filled only on the eight business-process classes. Earlier classes such as excessive agency and approval fatigue likely match finance and insurance controls too, but no one has checked those links.</li>
             <li>Bank payment-system intrusions with no AI step, such as the 2016 Bangladesh Bank theft, have no entry. The US Department of Justice page that would anchor that case returned a bot-check page with no text on 1 October 2026, so it could not be verified.</li>
             <li>BIML LLM24 ids are not mapped. They name risk areas broader than these classes, and choosing between them needs a reviewer.</li>
@@ -430,14 +456,16 @@
           <span class="section__label">Maintain</span>
           <h2 class="section__title">Change, verify, export</h2>
           <p class="section__body">
-            Edit the JSON, bump <code>inventory_version</code> (patch for a ref
-            fix, minor for a new entry, major for a removed field or changed id),
-            and add one changelog line naming the id and the reason. Then run the
-            verifier. It fails on a dangling id, a ref whose catalog version
-            differs from the pin, a vertical control id missing from
-            <a href="/ids.json">/ids.json</a>, a verified ref with no check date
-            or method, or an em dash in any text field. It warns when a newer catalog
-            release has been seen or a URL ref is more than 180 days old.
+            Edit the JSON, bump <code>inventory_version</code>, and add one
+            changelog line naming the id and the reason. Use patch for a ref
+            fix, minor for a new entry, and major for a removed field or changed
+            id. Then run the verifier. It fails on a dangling id. It also fails
+            when a ref's catalog version differs from the pin. It fails when a
+            vertical control id is missing from
+            <a href="/ids.json">/ids.json</a>. It fails when a verified ref has
+            no check date or method, or when an em dash appears in any text
+            field. It warns when a newer catalog release has been seen or a URL
+            ref is more than 180 days old.
           </p>
           <pre class="cmd"><code>python3 build/verify_attack_inventory.py</code></pre>
           <p class="section__body">
@@ -451,10 +479,10 @@ python3 build/export_attack_inventory.py --scope agentic --out attacks.json
 python3 build/export_attack_inventory.py --topics payment,approval --vertical finance</code></pre>
           <p class="section__body">
             Recheck the inventory when ATLAS or ATT&amp;CK Enterprise publishes a
-            release, when FINOS tags a new AI Governance Framework version, when
-            OWASP revises the LLM Top 10 or the Agentic AI Threats document, when
-            a CoSAI WS2 draft cites a new incident, or when a claims-test run
-            finds a class missing here.
+            release. Recheck when FINOS tags a new AI Governance Framework
+            version, or when OWASP revises the LLM Top 10 or the Agentic AI
+            Threats document. Recheck when a CoSAI WS2 draft cites a new
+            incident, or when a claims-test run finds a class missing here.
           </p>
         </div>
       </section>
