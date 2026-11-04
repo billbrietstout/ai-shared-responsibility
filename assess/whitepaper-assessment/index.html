@@ -163,6 +163,36 @@
         align-items: center;
         justify-content: center;
       }
+
+      h2.section-label {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-400);
+        margin: var(--sp-10) 0 var(--sp-3);
+        line-height: var(--leading-normal);
+      }
+      h2.section-label:first-child,
+      .page-body > .callout + h2.section-label {
+        margin-top: 0;
+      }
+      .section-note {
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        max-width: 720px;
+        margin: 0 0 var(--sp-5);
+        line-height: var(--leading-normal);
+      }
+      .section-note--tight {
+        margin-bottom: var(--sp-4);
+      }
+      .section-note--loose {
+        margin-bottom: var(--sp-10);
+      }
+      .section-note--end {
+        margin-bottom: 0;
+      }
     </style>
 
     <script type="application/ld+json">
@@ -194,16 +224,18 @@
     <site-nav current="assess"></site-nav>
 
     <header class="page-hero" data-llm="summary">
-      <p class="page-hero__eyebrow">Assess</p>
-      <h1>Assess an AI security whitepaper</h1>
-      <p class="page-hero__lede">
-        A copy-ready prompt that checks a paper against <span data-inv-count="classic">87</span> classic security
-        engineering principles, <span data-inv-count="principles">170</span> AI and agentic security principles, and the
-        SRF accountability and regulatory data, then reviews a working draft for
-        the mechanical defects that survive ordinary review. Paste the prompt,
-        add the paper, and your assistant fetches slim catalogs itself after it
-        confirms the read. No file uploads.
-      </p>
+      <div class="page-hero__inner">
+        <span class="page-hero__eyebrow">Assess</span>
+        <h1 class="page-hero__title">Assess an AI security whitepaper</h1>
+        <p class="page-hero__lede">
+          A copy-ready prompt that checks a paper against <span data-inv-count="classic">87</span> classic security
+          engineering principles, <span data-inv-count="principles">170</span> AI and agentic security principles, and the
+          SRF accountability and regulatory data, then reviews a working draft for
+          the mechanical defects that survive ordinary review. Paste the prompt,
+          add the paper, and your assistant fetches slim catalogs itself after it
+          confirms the read. No file uploads.
+        </p>
+      </div>
     </header>
 
     <main id="main" class="page-body">
@@ -212,7 +244,7 @@
         Always review prompts before referencing or copying them into an assistant, agent, or production system.
       </div>
 
-      <p class="section-label">How to run it</p>
+      <h2 class="section-label">How to run it</h2>
       <ol class="step-list">
         <li>
           Copy the prompt below into a new conversation with an AI assistant that
@@ -246,8 +278,8 @@
         </li>
       </ol>
 
-      <p class="section-label">What it checks against</p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-5);">
+      <h2 class="section-label">What it checks against</h2>
+      <p class="section-note">
         These three sources back the principle-matching steps below. The prompt
         fetches slim projections of the two principle catalogs after intake
         passes. The intake check, submission screen, regulatory grounding, and
@@ -308,19 +340,19 @@
       </div>
 
 
-      <h2 id="monitor-inventory">Monitor inventory</h2>
+      <h2 class="section-label" id="monitor-inventory">Monitor inventory</h2>
       <div data-inventory data-inventory-mode="render">
-        <p style="max-width: 720px;">
+        <p>
           The copy-ready prompt matches a paper to the two principle catalogs.
           Widening this list does not add entries to those catalogs. Cited in
           principles is the default. It is the papers the agentic catalog cites.
         </p>
-        <p style="max-width: 720px;">
+        <p>
           Included organization papers are a separate count from cited research.
           Cited research is the arXiv papers the monitor added because a
           monitored paper cites them. Cited research is not part of the default.
         </p>
-        <p style="max-width: 720px;">
+        <p>
           On this page, a source of principles means the agentic catalog cites
           the paper. Metadata only means the monitor has a title, an
           organization, a link, and sometimes an evidence level, and it has not
@@ -328,7 +360,7 @@
           principles. A duplicate, or a record marked for removal, is not a
           source of principles.
         </p>
-        <p style="max-width: 720px;">
+        <p>
           Conference talks are cited in the catalog. They are not monitor
           papers, so they are not in this list. Evidence level is a tag the
           monitor stored from an automated read. When the selected list
@@ -411,8 +443,8 @@
         </noscript>
       </div>
 
-      <p class="section-label">Four checks that are not principle matching</p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-5);">
+      <h2 class="section-label">Four checks that are not principle matching</h2>
+      <p class="section-note">
         Principle matching can pass while the read, the citations, the
         threat-to-layer mapping, or the draft mechanics are still wrong.
       </p>
@@ -445,7 +477,7 @@
           </tbody>
         </table>
       </div>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+      <p class="section-note section-note--loose">
         Disclosure under step 1 stays an observation: which conclusions favor a
         named vendor, and whether a funding or employment statement appears.
         Asserting an undisclosed relationship means asserting something that is
@@ -455,8 +487,8 @@
         patterns at least as often as a model does.
       </p>
 
-      <p class="section-label">How findings are ranked</p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-5);">
+      <h2 class="section-label">How findings are ranked</h2>
+      <p class="section-note">
         One scale covers every step, so a reader can see at a glance which
         findings are integrity-shaped and which are housekeeping. Mixing them in
         a single list invites an author to dismiss the whole report as pedantry.
@@ -490,7 +522,7 @@
           </tbody>
         </table>
       </div>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-4);">
+      <p class="section-note section-note--tight">
         A second rule caps each finding by how it was reached, and the cap is
         structural rather than a request for a softer tone. A finding checked
         against a fetched catalog entry, a resolved URL, or a registry record can
@@ -501,14 +533,14 @@
         non-native English writers at least as often as by a model, so it cannot
         carry an integrity verdict.
       </p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-4);">
+      <p class="section-note section-note--tight">
         Severity escalates on recurrence rather than on any single instance. One
         unpinned dependency is a P2 line item. The same shape appearing three or
         more times is a process defect, reported once. Three or more P2s of that
         shape become one P1. Three or more P3s become one P2. Three or more P4s
         become one P3. P1 stays P1.
       </p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+      <p class="section-note section-note--loose">
         Step 1 asks for resolved identifiers rather than a judgment by eye. A
         list of 15 or more entries runs a pinned reference audit tool; a shorter
         list resolves each identifier against one registry of record (Crossref
@@ -521,7 +553,7 @@
         prompt applies to every other dependency a paper recommends.
       </p>
 
-      <p class="section-label">The prompt</p>
+      <h2 class="section-label">The prompt</h2>
 
       <div class="prompt-block is-collapsed" id="assess-block">
         <div class="prompt-block__header">
@@ -644,7 +676,7 @@ Before reporting any P1 or P2, check it twice and check these known false positi
 Write in prose and tables, no nested bullet trees. Keep the verdict direct: state what the paper does and does not cover, skip hedging, and do not pad a clean result with caveats.</pre>
       </div>
 
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+      <p class="section-note section-note--loose">
         Prompt v2.2, September 2026.
         <a href="/assess/whitepaper-assessment/changes/">What changed in 2.2, 2.1, and 2.0</a>.
         A 2.1 report stays valid; it fetched full catalogs, emitted every
@@ -652,29 +684,29 @@ Write in prose and tables, no nested bullet trees. Keep the verdict direct: stat
         report stays valid; it screened less of the submission. A 1.0
         report stays valid on principle mapping; re-read its integrity findings.
       </p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+      <p class="section-note section-note--loose">
         Draft claims that need risk, obligation, control, and one owner, plus
         Google Docs or GitHub suggestion packets, use the separate
         <a href="/assess/claims-test/">draft claims test</a>. That pack is
         independently proposed and is not a merge with this catalog grader.
       </p>
 
-      <p class="section-label">What a Novel finding means</p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-6);">
+      <h2 class="section-label">What a Novel finding means</h2>
+      <p class="section-note">
         A Novel finding means the paper asserted something neither catalog
         covers. The table Note names the closest ids checked so you can
         disagree with the miss. It is a coverage observation about this paper
         against these two catalogs, at P3 at most unless the advice also
         contradicts a catalog entry.
       </p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-10);">
+      <p class="section-note section-note--loose">
         It is not a request to add anything to a catalog. Catalog edits are
         made by changing the OSCAL source or the synthesis document, then
         regenerating. That work is not part of this prompt.
       </p>
 
-      <p class="section-label">Notes on the catalogs</p>
-      <p style="max-width: 720px; font-size: var(--text-sm); color: var(--slate-600); line-height: var(--leading-normal);">
+      <h2 class="section-label">Notes on the catalogs</h2>
+      <p class="section-note section-note--end">
         Both catalogs are generated, not hand-maintained. The classic catalog is
         normalized from a 93-control OSCAL source; five sets of entries that
         different frameworks state as literal restatements of one principle were
