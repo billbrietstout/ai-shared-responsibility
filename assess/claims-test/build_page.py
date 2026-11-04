@@ -518,11 +518,17 @@ def main() -> None:
         <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v{esc(version)}</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
-          Paste a draft once. The pack extracts claims, collects published
-          topic attacks, binds each claim to a risk, an obligation, a control,
-          and one accountable party, then replies with a markdown report that
-          includes Google Docs or GitHub suggestion packets. Independently
-          proposed; not part of CoSAI SRF v1.0.
+          Paste a draft once. The pack does five jobs in order:
+        </p>
+        <ol class="page-hero__lede" style="margin-top:0;max-width:42rem;">
+          <li>Extract claims from the draft.</li>
+          <li>Collect published topic attacks.</li>
+          <li>Bind each claim to a risk, an obligation, a control, and one accountable party.</li>
+          <li>Reply with a markdown report.</li>
+          <li>Include Google Docs or GitHub suggestion packets.</li>
+        </ol>
+        <p class="page-hero__lede">
+          Editorial: Independently proposed; not part of CoSAI SRF v1.0.
           Templates:
           <a href="/assess/claims-test/prompts.json">prompts.json</a>.
           Schema:
@@ -636,8 +642,9 @@ def main() -> None:
       </p>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>ROCA score meanings for draft claims</caption>
           <thead>
-            <tr><th>Score</th><th>Meaning</th></tr>
+            <tr><th scope="col">Score</th><th scope="col">Meaning</th></tr>
           </thead>
           <tbody>
             {score_rows}
@@ -648,8 +655,9 @@ def main() -> None:
       <h2 class="section-label">Channels</h2>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>Output channels and what the pack emits</caption>
           <thead>
-            <tr><th>Channel</th><th>How humans edit</th><th>What this pack emits</th></tr>
+            <tr><th scope="col">Channel</th><th scope="col">How humans edit</th><th scope="col">What this pack emits</th></tr>
           </thead>
           <tbody>
             {channel_rows}
@@ -664,8 +672,9 @@ def main() -> None:
       </p>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>AI surface tags used on claim rows</caption>
           <thead>
-            <tr><th>Tag</th><th>Use when</th></tr>
+            <tr><th scope="col">Tag</th><th scope="col">Use when</th></tr>
           </thead>
           <tbody>
             {tag_rows}
@@ -703,8 +712,9 @@ def main() -> None:
       <h2 class="section-label">Chain</h2>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>Prompt chain steps, tracks, and next actions</caption>
           <thead>
-            <tr><th>Step</th><th>Purpose</th><th>Track</th><th>Next</th></tr>
+            <tr><th scope="col">Step</th><th scope="col">Purpose</th><th scope="col">Track</th><th scope="col">Next</th></tr>
           </thead>
           <tbody>
             {chain_rows}

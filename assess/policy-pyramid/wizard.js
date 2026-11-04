@@ -1,4 +1,4 @@
-/* CoSAI Wizards — AI Policy Pyramid.
+/* CoSAI Wizards: AI Policy Pyramid.
  * Apache-2.0. Vanilla ES2019. No framework, no bundler, no network.
  *
  * Structure:
@@ -60,7 +60,7 @@
       .then((data) => {
         DATA = data;
         STORAGE_KEY = data.meta.storageKey;
-        document.title = data.meta.title + ' — CoSAI Wizards';
+        document.title = data.meta.title + ' | CoSAI Wizards';
         indexData();
         applyCopy();
         renderPyramidShell();
@@ -301,7 +301,7 @@
       if (entries.length === 0) {
         cards.innerHTML = `
           <p class="tier__empty">
-            No ${esc(levelMeta.get(level).label.toLowerCase())} yet —
+            No ${esc(levelMeta.get(level).label.toLowerCase())} yet:
             <button type="button" data-empty-add="${level}">add from library</button>
           </p>
         `;

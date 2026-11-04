@@ -241,9 +241,6 @@
 }
     </script>
     <!-- llm:meta -->
-    <meta name="llm:type" content="tool" />
-    <meta name="llm:canonical-id" content="srf.page.assess-claims-test" />
-    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.accountability, srf.concept.responsibility-cascade, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5" />
     <!-- /llm:meta -->
   </head>
   <body>
@@ -256,11 +253,17 @@
         <span class="page-hero__eyebrow"><a href="/assess/">Assess</a> / Draft claims test / Pack v1.0.9</span>
         <h1 class="page-hero__title">Test draft paper claims</h1>
         <p class="page-hero__lede">
-          Paste a draft once. The pack extracts claims, collects published
-          topic attacks, binds each claim to a risk, an obligation, a control,
-          and one accountable party, then replies with a markdown report that
-          includes Google Docs or GitHub suggestion packets. Independently
-          proposed; not part of CoSAI SRF v1.0.
+          Paste a draft once. The pack does five jobs in order:
+        </p>
+        <ol class="page-hero__lede" style="margin-top:0;max-width:42rem;">
+          <li>Extract claims from the draft.</li>
+          <li>Collect published topic attacks.</li>
+          <li>Bind each claim to a risk, an obligation, a control, and one accountable party.</li>
+          <li>Reply with a markdown report.</li>
+          <li>Include Google Docs or GitHub suggestion packets.</li>
+        </ol>
+        <p class="page-hero__lede">
+          Editorial: Independently proposed; not part of CoSAI SRF v1.0.
           Templates:
           <a href="/assess/claims-test/prompts.json">prompts.json</a>.
           Schema:
@@ -479,8 +482,9 @@ Then: Run the claims-test chain.
       </p>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>ROCA score meanings for draft claims</caption>
           <thead>
-            <tr><th>Score</th><th>Meaning</th></tr>
+            <tr><th scope="col">Score</th><th scope="col">Meaning</th></tr>
           </thead>
           <tbody>
             <tr><td class="tier">Supported</td><td>Draft text plus ROCA or foundations backs the claim.</td></tr><tr><td class="tier">Partial</td><td>Implied; mechanism or owner missing.</td></tr><tr><td class="tier">Unsupported</td><td>No named actor, artifact, threshold, or failure mode.</td></tr><tr><td class="tier">Out of scope</td><td>Outside declared profile or subject.</td></tr><tr><td class="tier">Blocked</td><td>Cannot score until a screen defect (citation, definition) is fixed.</td></tr>
@@ -491,8 +495,9 @@ Then: Run the claims-test chain.
       <h2 class="section-label">Channels</h2>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>Output channels and what the pack emits</caption>
           <thead>
-            <tr><th>Channel</th><th>How humans edit</th><th>What this pack emits</th></tr>
+            <tr><th scope="col">Channel</th><th scope="col">How humans edit</th><th scope="col">What this pack emits</th></tr>
           </thead>
           <tbody>
             <tr><td class="tier">google-docs</td><td>Suggestion mode plus comments</td><td>Anchor plus comment (why) plus suggested replacement</td></tr><tr><td class="tier">github-md</td><td>PR review plus suggested changes</td><td>Heading or line anchor plus review comment plus optional diff</td></tr><tr><td class="tier">published</td><td>Errata or next version</td><td>Scorecard plus report; suggestions optional</td></tr>
@@ -507,8 +512,9 @@ Then: Run the claims-test chain.
       </p>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>AI surface tags used on claim rows</caption>
           <thead>
-            <tr><th>Tag</th><th>Use when</th></tr>
+            <tr><th scope="col">Tag</th><th scope="col">Use when</th></tr>
           </thead>
           <tbody>
             <tr><td class="tier">GenAI</td><td>Generative media or generative multimodal models.</td></tr><tr><td class="tier">LLM</td><td>Language or video-language model is the scored or steered surface.</td></tr><tr><td class="tier">AI</td><td>Broader automation, not specifically generative.</td></tr><tr><td class="tier">ML</td><td>Classical or adversarial ML without GenAI as the primary tool.</td></tr><tr><td class="tier">Agent</td><td>Tool use, planning, autonomy, or delegated actuation.</td></tr>
@@ -588,8 +594,9 @@ Do not fetch URLs. Do not assess claims. Do not emit ROCA.
       <h2 class="section-label">Chain</h2>
       <div class="table-scroll">
         <table class="tier-table">
+          <caption>Prompt chain steps, tracks, and next actions</caption>
           <thead>
-            <tr><th>Step</th><th>Purpose</th><th>Track</th><th>Next</th></tr>
+            <tr><th scope="col">Step</th><th scope="col">Purpose</th><th scope="col">Track</th><th scope="col">Next</th></tr>
           </thead>
           <tbody>
             <tr><td class="tier">C-intake</td><td>Record intake and halt if the body is not anchorable</td><td>A</td><td>C-claims</td></tr><tr><td class="tier">C-claims</td><td>Extract claims with stable ids and anchors</td><td>A</td><td>C-screen</td></tr><tr><td class="tier">C-screen</td><td>Integrity screen and draft mechanics</td><td>A</td><td>C-foundations</td></tr><tr><td class="tier">C-foundations</td><td>Harvest axioms, invariables, principles, and references</td><td>A</td><td>C-attacks</td></tr><tr><td class="tier">C-attacks</td><td>Collect published topic attacks from catalogs and papers</td><td>A</td><td>C-inventory</td></tr><tr><td class="tier">C-inventory</td><td>Bind draft-treated risks to collected attacks</td><td>A</td><td>C-tag</td></tr><tr><td class="tier">C-tag</td><td>Tag AI, GenAI, LLM, ML, and Agent surfaces</td><td>A</td><td>C-roca</td></tr><tr><td class="tier">C-roca</td><td>Bind risk, obligation, control, and one owner</td><td>A</td><td>C-score</td></tr><tr><td class="tier">C-score</td><td>Score every claim</td><td>A</td><td>C-qa (optional C-srf-join)</td></tr><tr><td class="tier">C-srf-join</td><td>Join ROCA rows to injected SRF layer data</td><td>B</td><td>C-srf-owner</td></tr><tr><td class="tier">C-srf-owner</td><td>Assign one injected SRF persona per ROCA row</td><td>B</td><td>C-srf-coverage</td></tr><tr><td class="tier">C-srf-coverage</td><td>Check SRF layer and owner coverage</td><td>B</td><td>C-qa (optional C-vertical-join)</td></tr><tr><td class="tier">C-vertical-join</td><td>Join injected vertical obligations</td><td>C</td><td>C-vertical-route</td></tr><tr><td class="tier">C-vertical-route</td><td>Route vertical acceptance authority</td><td>C</td><td>C-qa</td></tr><tr><td class="tier">C-qa</td><td>Check orphans, tag rules, and absolute coverage language</td><td>A</td><td>C-suggest</td></tr><tr><td class="tier">C-suggest</td><td>Emit channel-native suggestion packets</td><td>A</td><td>C-report</td></tr><tr><td class="tier">C-report</td><td>Write the readable assessment</td><td>A</td><td>C-export-md</td></tr><tr><td class="tier">C-export-md</td><td>Write the downloadable markdown report</td><td>export</td><td>end (optional C-export-json)</td></tr><tr><td class="tier">C-export-json</td><td>Write the completed JSON file</td><td>export</td><td>end</td></tr>

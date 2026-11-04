@@ -390,9 +390,11 @@ def render_controls(counts: dict) -> str:
         return str(count_value(counts, key))
 
     # The numbers inside the spans are stamped again after insertion.
-    return f"""<p class="inv-count-note">Included organization papers: <span data-inv-count="org">{n("org")}</span>. Cited research: <span data-inv-count="research">{n("research")}</span>. The two counts do not overlap. Cited research is not part of the default list.</p>
-<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">{n("org-metadata")}</span>. Cited research records with extracted principles: <span data-inv-count="research-extracted">{n("research-extracted")}</span>. A metadata only record is not a source of principles.</p>
-<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">{n("org-arxiv")}</span> arXiv records that are not in the cited research count. The evidence filter appears for a list that contains an arXiv record.</p>
+    # Seed evidence button counts from the research list (most tags live there).
+    # inventory-scope.js replaces these when the selected list changes.
+    return f"""<p class="inv-count-note">Organization papers: <span data-inv-count="org">{n("org")}</span>. Research the monitor found: <span data-inv-count="research">{n("research")}</span>. These counts do not overlap. Research the monitor found is not in the default list.</p>
+<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">{n("org-metadata")}</span>. Research records with extracted principles: <span data-inv-count="research-extracted">{n("research-extracted")}</span>. A metadata-only record is not a source of principles.</p>
+<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">{n("org-arxiv")}</span> arXiv records outside the research-monitor count. The evidence filter opens when the selected list contains an arXiv record.</p>
 <fieldset class="inv-options" id="inventory-scope-set">
   <legend>Which records to list</legend>
   <label class="inv-option">
@@ -405,39 +407,39 @@ def render_controls(counts: dict) -> str:
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="research">
-    <span>Cited research (<span data-inv-count="research">{n("research")}</span>)</span>
+    <span>Research the monitor found (<span data-inv-count="research">{n("research")}</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="all">
-    <span>All papers, including cited research (<span data-inv-count="all">{n("all")}</span>)</span>
+    <span>All papers, including research the monitor found (<span data-inv-count="all">{n("all")}</span>)</span>
   </label>
 </fieldset>
 <fieldset class="inv-options" id="inventory-evidence-set" hidden>
   <legend>Evidence level</legend>
-  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotations from the papers. Counts on the buttons match the list you selected. All levels is the default.</p>
+  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotes from the papers. Button counts match the list you selected. Seed counts below are for research the monitor found. All levels is the default.</p>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="all" checked>
     <span>All levels</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="theoretical">
-    <span>Theoretical (<span data-ev-count="theoretical">0</span>)</span>
+    <span>Theoretical (<span data-ev-count="theoretical">{n("ev-research-theoretical")}</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="tested">
-    <span>Tested (<span data-ev-count="tested">0</span>)</span>
+    <span>Tested (<span data-ev-count="tested">{n("ev-research-tested")}</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="possibly_deployed">
-    <span>Tested, possibly deployed, needs review (<span data-ev-count="possibly_deployed">0</span>)</span>
+    <span>Tested, possibly deployed (needs review) (<span data-ev-count="possibly_deployed">{n("ev-research-possibly_deployed")}</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="deployed">
-    <span>Deployed (<span data-ev-count="deployed">0</span>)</span>
+    <span>Deployed (<span data-ev-count="deployed">{n("ev-research-deployed")}</span>)</span>
   </label>
   <label class="inv-option" data-evidence-option="untagged">
     <input type="radio" name="inventory-evidence" value="untagged">
-    <span>Not yet tagged (<span data-ev-count="untagged">0</span>)</span>
+    <span>Not yet tagged (<span data-ev-count="untagged">{n("ev-research-untagged")}</span>)</span>
   </label>
   <dl class="inv-defs">
     <dt>Theoretical</dt>
