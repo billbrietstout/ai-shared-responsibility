@@ -20,7 +20,7 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const RETIRED_MESSAGE =
-  "LLM analysis via this Worker is unavailable. The SRF Stress Test uses a copy-prompt flow in the browser (no site-held API keys). Open /tools/srf-stress/ or /assess/srf-stress/, build the prompt, and paste it into your own model.";
+  "LLM analysis via this Worker is unavailable. The SRF Stress Test uses a copy-prompt flow in the browser (no site-held API keys). Open /tools/srf-stress/ or /tools/srf-stress/, build the prompt, and paste it into your own model.";
 
 function corsHeaders(origin) {
   const allowed = ALLOWED_ORIGINS.has(origin) ? origin : null;

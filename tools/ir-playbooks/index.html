@@ -87,7 +87,7 @@
 {
   "@context": "https://schema.org",
   "@type": "TechArticle",
-  "name": "AI Incident Response Playbooks — CoSAI SRF",
+  "name": "AI Incident Response Playbooks | CoSAI SRF",
   "url": "https://aisharedresponsibility.com/tools/ir-playbooks/",
   "description": "Scenario-based incident response playbooks for AI accountability-boundary failures, mapped to CoSAI SRF layers and operating models. Covers prompt injection and data exfiltration, model poisoning, agent misuse, data leakage, harmful output, supply-chain breach, and silent model change.",
   "publisher": {
@@ -235,7 +235,9 @@
           <div class="pb__body">
             <div class="pb__sub">
               <p class="pb__h">Who leads, by operating model</p>
-              <div class="table-scroll"><table class="who-table"><tbody>
+              <div class="table-scroll"><table class="who-table">
+              <caption>Prompt injection leading to data exfiltration</caption>
+<tbody>
                 <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns L3. You demand root cause and a fix; you own notifying affected users.</td></tr>
                 <tr><td class="opm">AI-PaaS</td><td><span class="lead lead--you">You lead</span> You own the application and its guardrails; provider supports at the platform and model layer.</td></tr>
                 <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> You own agent definitions and prompts; provider owns the runtime that executed the action.</td></tr>
@@ -280,7 +282,9 @@
           <div class="pb__body">
             <div class="pb__sub">
               <p class="pb__h">Who leads, by operating model</p>
-              <div class="table-scroll"><table class="who-table"><tbody>
+              <div class="table-scroll"><table class="who-table">
+              <caption>Model or training-data poisoning</caption>
+<tbody>
                 <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns the model. You document impact and hold them to the integrity clause.</td></tr>
                 <tr><td class="opm">AI-PaaS</td><td><span class="lead lead--vendor">Vendor leads (model)</span> Provider owns the foundation model; you own model evaluation and any data you supplied.</td></tr>
                 <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Provider owns the base model; you own fine-tunes, prompts, and retrieved data that could carry poison.</td></tr>
@@ -325,7 +329,9 @@
           <div class="pb__body">
             <div class="pb__sub">
               <p class="pb__h">Who leads, by operating model</p>
-              <div class="table-scroll"><table class="who-table"><tbody>
+              <div class="table-scroll"><table class="who-table">
+              <caption>Autonomous agent took a harmful or unauthorized action</caption>
+<tbody>
                 <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> You own the agent definition, granted scopes, and override config; provider owns the runtime that executed it.</td></tr>
                 <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns the embedded agent; you own which permissions you granted.</td></tr>
                 <tr><td class="opm">AI-PaaS / IaaS</td><td><span class="lead lead--you">You lead</span> You built the orchestration; provider supports the platform or infrastructure only.</td></tr>
@@ -369,7 +375,9 @@
           <div class="pb__body">
             <div class="pb__sub">
               <p class="pb__h">Who leads, by operating model</p>
-              <div class="table-scroll"><table class="who-table"><tbody>
+              <div class="table-scroll"><table class="who-table">
+              <caption>Sensitive data leaked through prompts, logs, or output</caption>
+<tbody>
                 <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--shared">Shared</span> You own what data you sent and classification; provider owns isolation and log handling.</td></tr>
                 <tr><td class="opm">AI-PaaS / Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Data layer is shared; you own classification and the provider owns platform retention.</td></tr>
                 <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You own the data layer end to end.</td></tr>
@@ -402,7 +410,7 @@
         <article class="pb" data-layers="L1 L3" data-llm="pb-harmful-output">
           <div class="pb__head">
             <div class="pb__num">Playbook 5</div>
-            <h3 class="pb__title">Harmful, infringing, or non-compliant output</h3>
+            <h3 class="pb__title">Harmful, infringing, or unlawful output</h3>
             <p class="pb__trigger">Trigger: the system produced a materially wrong decision, defamatory or biased content, or output that infringes IP or breaches regulation.</p>
             <div class="chip-row">
               <span class="chip chip--layer">L1 AI Business & Usage</span>
@@ -413,7 +421,9 @@
           <div class="pb__body">
             <div class="pb__sub">
               <p class="pb__h">Who leads, by operating model</p>
-              <div class="table-scroll"><table class="who-table"><tbody>
+              <div class="table-scroll"><table class="who-table">
+              <caption>Harmful, infringing, or unlawful output</caption>
+<tbody>
                 <tr><td class="opm">All models</td><td><span class="lead lead--you">You lead (L1)</span> Business governance owns the harm, the affected parties, and the regulatory clock, whoever built the model.</td></tr>
                 <tr><td class="opm">AI-SaaS</td><td><span class="lead lead--shared">Shared on cause</span> Provider owns the L3 application behavior; you invoke the IP and liability clauses.</td></tr>
                 <tr><td class="opm">AI-PaaS / IaaS</td><td><span class="lead lead--you">You lead on cause</span> You own the application that produced the output.</td></tr>
@@ -457,7 +467,9 @@
           <div class="pb__body">
             <div class="pb__sub">
               <p class="pb__h">Who leads, by operating model</p>
-              <div class="table-scroll"><table class="who-table"><tbody>
+              <div class="table-scroll"><table class="who-table">
+              <caption>Sub-processor or model supply-chain breach</caption>
+<tbody>
                 <tr><td class="opm">AI-SaaS / AI-PaaS</td><td><span class="lead lead--vendor">Vendor leads</span> Provider owns the platform and model supply chain; you own your exposure assessment and notification.</td></tr>
                 <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Map which side contracted the compromised sub-processor.</td></tr>
                 <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You assembled the stack and own the upstream relationships.</td></tr>
@@ -500,7 +512,9 @@
           <div class="pb__body">
             <div class="pb__sub">
               <p class="pb__h">Who leads, by operating model</p>
-              <div class="table-scroll"><table class="who-table"><tbody>
+              <div class="table-scroll"><table class="who-table">
+              <caption>Silent model change broke a control</caption>
+<tbody>
                 <tr><td class="opm">AI-SaaS / AI-PaaS</td><td><span class="lead lead--vendor">Vendor leads (notice)</span> Provider owns the model and the duty to notify; you own detecting and re-validating your controls.</td></tr>
                 <tr><td class="opm">Agent-PaaS</td><td><span class="lead lead--shared">Shared</span> Provider changed the base model; you own agent behavior that depended on it.</td></tr>
                 <tr><td class="opm">IaaS</td><td><span class="lead lead--you">You lead</span> You control versioning and should not be surprised.</td></tr>

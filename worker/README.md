@@ -33,6 +33,6 @@ npx wrangler deploy
 
 ## Product path
 
-See `/tools/srf-stress/` and `/assess/srf-stress/`: build prompt → Copy → paste
+See `/tools/srf-stress/` and `/tools/srf-stress/`: build prompt → Copy → paste
 into the user’s own model. Optional local layer sketch is deterministic and
 runs only in the browser.

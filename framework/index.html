@@ -505,15 +505,15 @@
             below inherits those constraints and adds its own.
           </p>
           <div class="cascade" aria-label="Five-layer dependency diagram">
-            <div class="cascade-box cascade-box--l1">L1 — AI Business &amp; Usage<div class="cascade-box__sub">Governance, Strategy, Compliance</div></div>
+            <div class="cascade-box cascade-box--l1">L1: AI Business &amp; Usage<div class="cascade-box__sub">Governance, Strategy, Compliance</div></div>
             <div class="cascade-arrow" aria-hidden="true"></div>
-            <div class="cascade-box cascade-box--l2">L2 — AI Information<div class="cascade-box__sub">Data Management, Quality, Privacy</div></div>
+            <div class="cascade-box cascade-box--l2">L2: AI Information<div class="cascade-box__sub">Data Management, Quality, Privacy</div></div>
             <div class="cascade-arrow" aria-hidden="true"></div>
-            <div class="cascade-box cascade-box--l3">L3 — AI Application<div class="cascade-box__sub">Development, Integration, Testing</div></div>
+            <div class="cascade-box cascade-box--l3">L3: AI Application<div class="cascade-box__sub">Development, Integration, Testing</div></div>
             <div class="cascade-arrow" aria-hidden="true"></div>
-            <div class="cascade-box cascade-box--l4">L4 — AI Platform<div class="cascade-box__sub">Infrastructure, APIs, Tooling</div></div>
+            <div class="cascade-box cascade-box--l4">L4: AI Platform<div class="cascade-box__sub">Infrastructure, APIs, Tooling</div></div>
             <div class="cascade-arrow" aria-hidden="true"></div>
-            <div class="cascade-box cascade-box--l5">L5 — AI Model Provider<div class="cascade-box__sub">Models, Training, Model Supply Chain</div></div>
+            <div class="cascade-box cascade-box--l5">L5: AI Model Provider<div class="cascade-box__sub">Models, Training, Model Supply Chain</div></div>
           </div>
         </section>
 
@@ -605,7 +605,9 @@
             <a href="/compare/" style="margin-left: 6px;">Full comparison →</a>
           </p>
           <table class="relation-table">
-            <thead><tr><th>Framework</th><th>What it answers</th><th>How it relates to the SRF</th></tr></thead>
+              <caption>Relationship to other frameworks</caption>
+
+            <thead><tr><th scope="col">Framework</th><th scope="col">What it answers</th><th scope="col">How it relates to the SRF</th></tr></thead>
             <tbody>
               <tr><td>NIST AI RMF</td><td><em>What</em> governance outcomes to achieve</td><td>SRF assigns who implements each RMF function at each layer</td></tr>
               <tr><td>ISO/IEC 42001</td><td><em>How</em> to manage an AI management system</td><td>SRF layer model maps into 42001 organizational and technical controls</td></tr>
@@ -613,7 +615,7 @@
               <tr><td>OWASP LLM Top 10</td><td><em>What</em> application security risks exist</td><td>Most LLM risks are mitigated at L3; some require L4 and L5 action</td></tr>
               <tr><td>CSA AICM</td><td><em>What</em> controls apply across 18 domains</td><td>AICM ownership tiers (MP/OSP/AP) map to CoSAI L5, L4, and L3</td></tr>
               <tr><td>AI SAFE²</td><td><em>What</em> runtime enforcement and evidence agents need</td><td>SRF assigns which persona owns each outcome under each operating model; this site does not ingest the SAFE² catalog</td></tr>
-              <tr><td>NIST NICE</td><td><em>Who</em> performs AI security work (workforce roles)</td><td>SRF responsibilities inform candidate NICE Tasks and a proposed AI Security Work Role Category — <a href="/framework/nice-mapping/">see the mapping →</a></td></tr>
+              <tr><td>NIST NICE</td><td><em>Who</em> performs AI security work (workforce roles)</td><td>SRF responsibilities inform candidate NICE Tasks and a proposed AI Security Work Role Category: <a href="/framework/nice-mapping/">see the mapping →</a></td></tr>
             </tbody>
           </table>
           <p style="font-size: var(--text-base); color: var(--slate-600); max-width: 580px; margin-top: var(--sp-4); line-height: var(--leading-normal);">
@@ -838,7 +840,9 @@
             <div class="model-desc"><strong>${model.name}:</strong> ${model.description}</div>
             <div class="matrix-wrap">
               <table class="matrix" aria-label="Responsibility matrix for ${model.name}">
-                <thead><tr><th>Layer</th>${parties.map(p => `<th>${p.label}</th>`).join("")}</tr></thead>
+              <caption>Responsibility matrix for ${model.name}</caption>
+
+                <thead><tr><th scope="col">Layer</th>${parties.map(p => `<th scope="col">${p.label}</th>`).join("")}</tr></thead>
                 <tbody>${rows}</tbody>
               </table>
             </div>
