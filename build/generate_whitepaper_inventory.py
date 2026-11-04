@@ -427,50 +427,54 @@ def render_controls(counts: dict) -> str:
 </table>
 <fieldset class="inv-options" id="inventory-scope-set">
   <legend>Which records to list</legend>
-  <label class="inv-option">
-    <input type="radio" name="inventory-scope" value="cited" checked>
-    <span>Cited in principles (<span data-inv-count="cited">{n("cited")}</span>)</span>
-  </label>
-  <label class="inv-option">
-    <input type="radio" name="inventory-scope" value="org">
-    <span>All included organization papers (<span data-inv-count="org">{n("org")}</span>)</span>
-  </label>
-  <label class="inv-option">
-    <input type="radio" name="inventory-scope" value="research">
-    <span>Cited research (<span data-inv-count="research">{n("research")}</span>)</span>
-  </label>
-  <label class="inv-option">
-    <input type="radio" name="inventory-scope" value="all">
-    <span>All papers, including cited research (<span data-inv-count="all">{n("all")}</span>)</span>
-  </label>
+  <div class="inv-option-row">
+    <label class="inv-option">
+      <input type="radio" name="inventory-scope" value="cited" checked>
+      <span>Cited in principles (<span data-inv-count="cited">{n("cited")}</span>)</span>
+    </label>
+    <label class="inv-option">
+      <input type="radio" name="inventory-scope" value="org">
+      <span>All included organization papers (<span data-inv-count="org">{n("org")}</span>)</span>
+    </label>
+    <label class="inv-option">
+      <input type="radio" name="inventory-scope" value="research">
+      <span>Cited research (<span data-inv-count="research">{n("research")}</span>)</span>
+    </label>
+    <label class="inv-option">
+      <input type="radio" name="inventory-scope" value="all">
+      <span>All papers, including cited research (<span data-inv-count="all">{n("all")}</span>)</span>
+    </label>
+  </div>
 </fieldset>
 <fieldset class="inv-options" id="inventory-evidence-set" hidden>
   <legend>Evidence level</legend>
   <p id="inventory-evidence-note">These definitions paraphrase the inventory's evidence tags. They are not quotes from the papers. Button counts match the list you selected. The counts below are for cited research. All levels is the default.</p>
-  <label class="inv-option">
-    <input type="radio" name="inventory-evidence" value="all" checked>
-    <span>All levels</span>
-  </label>
-  <label class="inv-option">
-    <input type="radio" name="inventory-evidence" value="theoretical">
-    <span>Theoretical (<span data-ev-count="theoretical">{n("ev-research-theoretical")}</span>)</span>
-  </label>
-  <label class="inv-option">
-    <input type="radio" name="inventory-evidence" value="tested">
-    <span>Tested (<span data-ev-count="tested">{n("ev-research-tested")}</span>)</span>
-  </label>
-  <label class="inv-option">
-    <input type="radio" name="inventory-evidence" value="possibly_deployed">
-    <span>Tested, possibly deployed (needs review) (<span data-ev-count="possibly_deployed">{n("ev-research-possibly_deployed")}</span>)</span>
-  </label>
-  <label class="inv-option">
-    <input type="radio" name="inventory-evidence" value="deployed">
-    <span>Deployed (<span data-ev-count="deployed">{n("ev-research-deployed")}</span>)</span>
-  </label>
-  <label class="inv-option" data-evidence-option="untagged">
-    <input type="radio" name="inventory-evidence" value="untagged">
-    <span>Not yet tagged (<span data-ev-count="untagged">{n("ev-research-untagged")}</span>)</span>
-  </label>
+  <div class="inv-option-row">
+    <label class="inv-option">
+      <input type="radio" name="inventory-evidence" value="all" checked>
+      <span>All levels</span>
+    </label>
+    <label class="inv-option">
+      <input type="radio" name="inventory-evidence" value="theoretical">
+      <span>Theoretical (<span data-ev-count="theoretical">{n("ev-research-theoretical")}</span>)</span>
+    </label>
+    <label class="inv-option">
+      <input type="radio" name="inventory-evidence" value="tested">
+      <span>Tested (<span data-ev-count="tested">{n("ev-research-tested")}</span>)</span>
+    </label>
+    <label class="inv-option">
+      <input type="radio" name="inventory-evidence" value="possibly_deployed">
+      <span>Tested, possibly deployed (needs review) (<span data-ev-count="possibly_deployed">{n("ev-research-possibly_deployed")}</span>)</span>
+    </label>
+    <label class="inv-option">
+      <input type="radio" name="inventory-evidence" value="deployed">
+      <span>Deployed (<span data-ev-count="deployed">{n("ev-research-deployed")}</span>)</span>
+    </label>
+    <label class="inv-option" data-evidence-option="untagged">
+      <input type="radio" name="inventory-evidence" value="untagged">
+      <span>Not yet tagged (<span data-ev-count="untagged">{n("ev-research-untagged")}</span>)</span>
+    </label>
+  </div>
   <dl class="inv-defs">
     <dt>Theoretical</dt>
     <dd>Paraphrase: a proposal, a position, or a taxonomy. The paper reports no experiment of its own.</dd>
