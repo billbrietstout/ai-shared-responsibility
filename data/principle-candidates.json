@@ -2,7 +2,7 @@
  "$schema_version": "1.0",
  "WARNING": "These are PROPOSALS, not accepted principles. Nothing in this file is part of the SRF principle catalogs. Do not cite an entry here as an established principle, and do not use this file as a source when assessing a document. Whitepaper assessment prompt v2.2 no longer asks users to file candidates. The accepted catalogs are https://aisharedresponsibility.com/data/security-principles.json and https://aisharedresponsibility.com/data/ai-agentic-principles.json.",
  "description": "Maintainer review queue for candidate principles. A Novel or Extended finding may land here when a catalog maintainer triages it. Whitepaper assessment prompt v2.2 no longer asks users to file candidates. This is the one file under /data/ that is hand-maintained rather than generated.",
- "updated": "2026-09-05",
+ "updated": "2026-11-04",
  "related_page": "https://aisharedresponsibility.com/assess/whitepaper-assessment/",
  "lifecycle": {
   "proposed": "Surfaced by an assessment. No triage done yet.",
@@ -23,7 +23,7 @@
   "agentic": "Additions to ai-agentic-principles.json are made by editing agentic-ai-security/agentic-security.md. A principle cannot be added without adding its source document to the source table, because the catalog records what specific published papers assert. The generator's CURATION table must be updated in the same change or the build fails.",
   "after_editing": "Run python3 build/generate_principle_catalogs.py, then commit the regenerated JSON with the source edit."
  },
- "count": 33,
+ "count": 50,
  "candidates": [
   {
    "id": "cand-2026-07-001",
@@ -1236,6 +1236,459 @@
     "method": "MOSAIC_AI_Security_Whitepapers spreadsheet review, Axioms column (MOSAIC, Peer SDOs, Coalitions tabs)"
    },
    "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-001",
+   "statement": "A Guardian verdict is required for each agent step; fail-closed if the Guardian is silent. Provenance fields are populated by deterministic framework code outside the LLM output path.",
+   "proposed_category": "access-control",
+   "proposed_section": "zero-standing-privilege",
+   "source": {
+    "label": "OWASP-ACS",
+    "title": "Agent Control Standard (ACS) v0.1.0",
+    "url": "https://github.com/GenAI-Security-Project/agent-control-standard",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "WP-0110. Conformance is self-declared; no test suite or registry checks v0.1.0."
+   },
+   "closest_existing": [
+    {
+     "id": "missing-decision-denies",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "The Nov 2026 synthesis already states deny when the decision point is silent from COSAI-ZT, OPENSSF-SAF-MCP, and CSA-ZT-SEG. ACS adds a Guardian protocol that is not yet testable."
+    }
+   ],
+   "proposed_disposition": "deferred",
+   "status": "deferred",
+   "disposition_note": "Wait for a version with a conformance test. Same posture as AISVS under cand-2026-09-013.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-002",
+   "statement": "AI control overlays sit on an existing SP 800-53 baseline; overlays are not a full enterprise control set.",
+   "proposed_category": "governance",
+   "proposed_section": "risk-governance",
+   "source": {
+    "label": "NIST-COSAIS",
+    "title": "NIST COSAIS: Control Overlays for Securing AI Systems",
+    "url": "https://csrc.nist.gov/projects/cosais",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "WP-0163 concept page, last updated October 20, 2026."
+   },
+   "closest_existing": [
+    {
+     "id": "risk-frameworks-and-control-catalogs-differ",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Already separates risk frameworks from control catalogs. COSAIS is the overlay mechanism, not a new invariable."
+    }
+   ],
+   "proposed_disposition": "deferred",
+   "status": "deferred",
+   "disposition_note": "Cite later when overlays ship as usable profiles. Do not mint ids from the concept page alone.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-003",
+   "statement": "GenAI deepfake harms require training, labeling, consent, and multilingual red teaming under ETSI TS 104 275 conformance tests.",
+   "proposed_category": "governance",
+   "proposed_section": "red-teaming",
+   "source": {
+    "label": "ETSI-104275",
+    "title": "ETSI TS 104 275 V1.1.1: Preventing Harm from Deepfakes",
+    "url": "https://www.etsi.org/deliver/etsi_ts/104200_104299/104275/01.01.01_60/ts_104275v010101p.pdf",
+    "tier": "published-standard",
+    "citation_verified": true,
+    "verification_note": "WP-0146."
+   },
+   "closest_existing": [
+    {
+     "id": "hazardous-capability-eval-is-a-release-gate",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Release-gate eval covers hazardous capability classes. Deepfake-specific conformance is a different artifact type."
+    }
+   ],
+   "proposed_disposition": "deferred",
+   "status": "deferred",
+   "disposition_note": "Published standard, mostly deepfake and training-consent rules. Only erasure or multilingual red-teaming would touch this page; revisit when a synthesis section on generative-content harm is warranted.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-004",
+   "statement": "Agentic misalignment is scored from durable artifacts left in mail, file, and API services, not from the agent transcript alone; release gates set thresholds such as maximum exfiltration attempt rate.",
+   "proposed_category": "red-teaming",
+   "proposed_section": "red-teaming",
+   "source": {
+    "label": "SANS-MISALIGN",
+    "title": "Quantifying Agentic Misalignment in Multi-Agent Systems",
+    "url": "https://www.sans.org/white-papers/quantifying-agentic-misalignment-multi-agent-systems",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "WP-0112."
+   },
+   "closest_existing": [
+    {
+     "id": "judge-by-steps-not-answer",
+     "catalog": "agentic",
+     "relation": "adjacent",
+     "note": "Already judges by investigation steps. This paper is an evaluation method, not a framework of obligations."
+    }
+   ],
+   "proposed_disposition": "deferred",
+   "status": "deferred",
+   "disposition_note": "Evaluation method. Do not mint catalog ids from the scoring matrix alone.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-005",
+   "statement": "Do not add OWASP GenAI and Agentic AI Exploit Roundup Q3 2026 as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0119",
+    "title": "OWASP GenAI and Agentic AI Exploit Roundup Q3 2026",
+    "url": "https://genai.owasp.org/2026/10/08/genai-and-agentic-ai-exploit-roundup-q3-2026/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0119."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Exploit roundup. Incident reporting, not principles. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-006",
+   "statement": "Do not add GenAI and Agentic AI Exploit Roundup Q2 2026 as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0134",
+    "title": "GenAI and Agentic AI Exploit Roundup Q2 2026",
+    "url": "https://genai.owasp.org/2026/07/08/genai-and-agentic-ai-exploit-roundup-q2-2026/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0134."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Exploit roundup. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-007",
+   "statement": "Do not add OWASP GenAI Exploit Round-up Report Q1 2026 as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0055",
+    "title": "OWASP GenAI Exploit Round-up Report Q1 2026",
+    "url": "https://genai.owasp.org/2026/04/14/owasp-genai-exploit-round-up-report-q1-2026/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0055."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Exploit roundup. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-008",
+   "statement": "Do not add OWASP Gen AI Incident & Exploit Round-up, Q2'25 as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0061",
+    "title": "OWASP Gen AI Incident & Exploit Round-up, Q2'25",
+    "url": "https://genai.owasp.org/2025/07/14/owasp-gen-ai-incident-exploit-round-up-q225/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0061."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Exploit roundup. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-009",
+   "statement": "Do not add I Love Google's Agentic AI Security Roadmap: An Open Letter to Google as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0128",
+    "title": "I Love Google's Agentic AI Security Roadmap: An Open Letter to Google",
+    "url": "https://cloudsecurityalliance.org/articles/i-love-google-s-agentic-ai-security-roadmap-adding-maestro-will-make-it-more-powerful-an-open-letter-to-google",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0128."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Open letter / advocacy, not a framework of obligations. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-010",
+   "statement": "Do not add Transitioning from STAR to STAR for AI as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0178",
+    "title": "Transitioning from STAR to STAR for AI",
+    "url": "https://cloudsecurityalliance.org/artifacts/transitioning-from-star-to-star-for-ai",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0178."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Program transition guide, not principles. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-011",
+   "statement": "Do not add GenAI Security Industry Framework Crosswalk v4.0.0 as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0111",
+    "title": "GenAI Security Industry Framework Crosswalk v4.0.0",
+    "url": "https://github.com/GenAI-Security-Project/crosswalk",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0111."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Crosswalk mapping, not principles. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-012",
+   "statement": "Do not add AI Security Solutions Landscape for AI and Agentic Red Teaming Q2 2026 as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0048",
+    "title": "AI Security Solutions Landscape for AI and Agentic Red Teaming Q2 2026",
+    "url": "https://genai.owasp.org/resource/ai-security-solutions-landscape-for-ai-and-agentic-red-teaming-q2-2026/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0048."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Vendor landscape. Same bar as cand-2026-09 red-team landscape rejects. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-013",
+   "statement": "Do not add Solutions Landscape - Red Teaming Taxonomy as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0049",
+    "title": "Solutions Landscape - Red Teaming Taxonomy",
+    "url": "https://genai.owasp.org/resource/solutions-landscape-red-teaming-taxonomy/",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0049."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Taxonomy, not principles. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-014",
+   "statement": "Do not add MAESTRO: Agentic AI Threat Modeling Framework as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0162",
+    "title": "MAESTRO: Agentic AI Threat Modeling Framework",
+    "url": "https://cloudsecurityalliance.org/blog/2025/02/06/agentic-ai-threat-modeling-framework-maestro",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0162."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Threat modeling method. Belongs with ATLAS-style artifacts, not the principle catalog. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-015",
+   "statement": "Do not add From Framework to Action: Applying the SANS AI Security Maturity Model as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0179",
+    "title": "From Framework to Action: Applying the SANS AI Security Maturity Model",
+    "url": "https://www.sans.org/white-papers/from-framework-action-applying-sans-ai-security-maturity-model",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0179."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Implementation guide for SANS-MATURITY already cited. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-016",
+   "statement": "Do not add Frontier Ready Assessment Framework as a synthesis source or principle.",
+   "proposed_category": "governance",
+   "proposed_section": "architectural-risk",
+   "source": {
+    "label": "WP-0177",
+    "title": "Frontier Ready Assessment Framework",
+    "url": "https://cloudsecurityalliance.org/artifacts/frontier-ready-assessment-framework",
+    "tier": "published-framework",
+    "citation_verified": true,
+    "verification_note": "Monitor WP-0177."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "rejected",
+   "status": "rejected",
+   "disposition_note": "Assessment checklist without extracted principles in the fixture. Same rejects as the September review where applicable.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": null
+  },
+  {
+   "id": "cand-2026-11-017",
+   "statement": "November 2026 monitor pass incorporated seventeen organization papers into the synthesis source table and added new agentic principles for Zero Trust PDP checks, two-gate MCP authorization, signed task mandates, per-call capability brokering, MCP crypto externalization, AIMM sign-and-verify, defensive-agent risk, derived-asset erasure, no-secrets-in-prompts, human examiner authority, monitor isolation, per-instance identity, and sandbox isolation.",
+   "proposed_category": "governance",
+   "proposed_section": "mcp-security",
+   "source": {
+    "label": "monitor-nov-2026",
+    "title": "ai-security-whitepaper-monitor fixture 2026-11-04",
+    "url": "https://github.com/billbrietstout/ai-security-whitepaper-monitor",
+    "tier": "practitioner-report",
+    "citation_verified": true,
+    "verification_note": "WP-0050,0051,0052,0087,0103,0109,0123,0135,0140,0141,0142,0158,0160,0172,0174,0175,0176."
+   },
+   "closest_existing": [],
+   "proposed_disposition": "accepted",
+   "status": "accepted",
+   "disposition_note": "Incorporated 4 Nov 2026 into agentic-ai-security/agentic-security.md. SANS-CAISG12 retired. ACS, COSAIS, ETSI TS 104 275, and SANS misalignment paper deferred under cand-2026-11-001 through 004.",
+   "opencre_checked": false,
+   "surfaced_by": {
+    "review_date": "2026-11-04",
+    "reviewer": "bill",
+    "method": "Monitor fixture review against agentic synthesis"
+   },
+   "incorporated_into": "agentic-ai-security/agentic-security.md"
   }
  ]
 }

@@ -3,8 +3,8 @@
   "projection": "slim",
   "full_catalog": "https://aisharedresponsibility.com/data/ai-agentic-principles.json",
   "description": "Slim projection of ai-agentic-principles.json for assessment mapping: id, section, category, statement, and gap_index. Fetch the full catalog for src citations and the sources table.",
-  "updated": "2026-11-01",
-  "count": 146,
+  "updated": "2026-11-04",
+  "count": 170,
   "gap_index_description": "Each section's own Gap note, resolved to the specific principle id(s) in security-principles.json that the note points at. Treat this as a known field-wide blind spot list, not a defect in any one paper. A note with kind editorial is this document's own position. Where a section keeps its classic Gap note and also states that position, the position is editorial_position, with kind editorial.",
   "gap_index": {
     "agent-identity": {
@@ -12,14 +12,14 @@
         "ms-immutable-5"
       ],
       "kind": "gap",
-      "note": "None of the 52 sources require the approver's authenticator strength to be recorded with the agent identity it created (Microsoft's Immutable Law 5, weak passwords). Identity standards outside this corpus define that strength: NIST SP 800-63B and FIDO2 (unverified). A strong agent credential can still be created by a person using a weak or reused password.\n\n**Research status:** arXiv work covers part of this gap. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2608.04292](https://arxiv.org/abs/2608.04292) is tagged tested (a lab prototype). [arXiv:2501.09674](https://arxiv.org/abs/2501.09674) is tagged theoretical (a proposal only)."
+      "note": "None of the 68 sources require the approver's authenticator strength to be recorded with the agent identity it created (Microsoft's Immutable Law 5, weak passwords). Identity standards outside this corpus define that strength: NIST SP 800-63B and FIDO2 (unverified). A strong agent credential can still be created by a person using a weak or reused password.\n\n**Research status:** arXiv work covers part of this gap. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2608.04292](https://arxiv.org/abs/2608.04292) is tagged tested (a lab prototype). [arXiv:2501.09674](https://arxiv.org/abs/2501.09674) is tagged theoretical (a proposal only)."
     },
     "zero-standing-privilege": {
       "classic_ids": [
         "sch-2"
       ],
       "kind": "gap",
-      "note": "NIST-GAI says a system can fail safely. None of the sources state \"deny by default when a decision is ambiguous or a control fails\" as its own named, general principle (Saltzer and Schroeder's fail-safe defaults). Continuous re-verification assumes a clean allow/deny answer at every check; nothing here says what an agent's access-control layer should do when that answer is unclear, timed out, or the policy engine itself is unreachable.\n\n**Research status:** Tested arXiv work addresses a fail-closed default. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.28679](https://arxiv.org/abs/2606.28679) is tagged tested (a lab proof of concept). [arXiv:2606.26057](https://arxiv.org/abs/2606.26057) is tagged theoretical (a proposal only).",
+      "note": "COSAI-ZT, OPENSSF-SAF-MCP, and CSA-ZT-SEG require deny when the decision point is silent or a required identity or telemetry signal is missing. NIST-GAI still says a system can fail safely. None of the sources say what to do when the policy decision point returns an ambiguous or conflicting answer rather than silence or a clean deny (Saltzer and Schroeder's fail-safe defaults still apply to that case).\n\n**Research status:** Tested arXiv work addresses a fail-closed default. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2606.28679](https://arxiv.org/abs/2606.28679) is tagged tested (a lab proof of concept). [arXiv:2606.26057](https://arxiv.org/abs/2606.26057) is tagged theoretical (a proposal only).",
       "editorial_position": {
         "kind": "editorial",
         "note": "None of the sources require agent actions to carry these three facts. None require them to survive when a request moves between agents run by different organizations. We think they should.\n\nDatabases solved this long ago. They can undo, redo, and replay work because every logged change records its transaction details. When agent chains lack those details, here is what goes wrong:\n- You can't undo. No one can tell which later actions went past the first limit.\n- You can't redo. After an outage, no one knows which pending actions were still approved.\n- You can't replay. An investigator can't compare the chain to what the person actually approved.\n- Power grows with each step. Each agent sees only the one before it, so it inherits that agent's full access instead of the person's narrower intent.\n- Approvals outlive their owner. A request can keep acting at a partner company after the person who approved it cancels it or leaves.\n- Old requests can come back. A request queued, retried, scheduled, or saved in agent memory can run weeks or months later. If it carries no expiry, nothing stops it, and no one can trace it to the person who asked.\n- No one holds the full story. Each company keeps part of the log, and nothing ties the parts together.\n\nSome tools exist outside the AI sources. OAuth token exchange (RFC 8693) can record a chain of agents acting for someone. OpenID Connect can record how the approver signed in. Neither sets a limit on what an agent may do alone, and the AI guidance requires neither."
@@ -51,28 +51,28 @@
         "nist-p4"
       ],
       "kind": "gap",
-      "note": "every source here treats logging as a purely technical control, and none discuss whether the people expected to review an audit trail are actually trained to recognize what they're looking at (NIST SP 800-27's requirement that developers, and by extension operators, be trained to work securely). An immutable log nobody knows how to read produces the same outcome as no log at all.\n\n**Research status:** No arXiv work was found. This gap is open in the 52 sources and open on arXiv."
+      "note": "every source here treats logging as a purely technical control, and none discuss whether the people expected to review an audit trail are actually trained to recognize what they're looking at (NIST SP 800-27's requirement that developers, and by extension operators, be trained to work securely). An immutable log nobody knows how to read produces the same outcome as no log at all.\n\n**Research status:** No arXiv work was found. This gap is open in the 68 sources and open on arXiv."
     },
     "untrusted-input": {
       "classic_ids": [
         "cis-design-2"
       ],
       "kind": "gap",
-      "note": "since no source claims prompt injection can be fully prevented, the practical question shifts from \"how do we stop this\" to \"where do we spend finite defensive effort first,\" and none of the 52 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once).\n\n**Research status:** arXiv work measures injection vectors. It does not rank them for where to spend defense first, so this gap stays open on that point. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2506.09956](https://arxiv.org/abs/2506.09956) is tagged tested (a public challenge). [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) is tagged theoretical (a survey, with no experiment of its own)."
+      "note": "since no source claims prompt injection can be fully prevented, the practical question shifts from \"how do we stop this\" to \"where do we spend finite defensive effort first,\" and none of the 68 papers rank injection vectors by how much attention they deserve (CIS's own design principle of focus: identify the most critical actions against the most important attacks rather than trying to solve everything at once).\n\n**Research status:** arXiv work measures injection vectors. It does not rank them for where to spend defense first, so this gap stays open on that point. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2506.09956](https://arxiv.org/abs/2506.09956) is tagged tested (a public challenge). [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) is tagged theoretical (a survey, with no experiment of its own)."
     },
     "mcp-security": {
       "classic_ids": [
         "encryption-is-not-sufficient"
       ],
       "kind": "gap",
-      "note": "CSA-DATA names a vault with KMS or HSM keys for data tokenization, not for MCP. The sources require OAuth 2.1/OIDC and TLS for MCP transport, but none say where the keys behind those protocols are stored, rotated, or protected (Microsoft's law that encrypted data is only as secure as its decryption key, and its related risk law that encryption alone isn't a data protection solution). A correctly configured OAuth flow is still only as strong as the keys backing it.\n\n**Research status:** arXiv work covers part of MCP key handling. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2609.22573](https://arxiv.org/abs/2609.22573) is tagged tested (lab, benchmark, or simulation). [arXiv:2608.10760](https://arxiv.org/abs/2608.10760) is tagged deployed (an industry deployment)."
+      "note": "COSAI-MCP-PQC requires that MCP authors not write cryptographic code and that hybrid PQ TLS terminate at a proxy or gateway. CSA-DATA still names a vault with KMS or HSM keys for data tokenization, not for MCP. None of the sources say how the proxy's own keys are stored, rotated, or protected once cryptography has been externalized (Microsoft's law that encrypted data is only as secure as its decryption key, and its related risk law that encryption alone isn't a data protection solution).\n\n**Research status:** arXiv work covers part of MCP key handling. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2609.22573](https://arxiv.org/abs/2609.22573) is tagged tested (lab, benchmark, or simulation). [arXiv:2608.10760](https://arxiv.org/abs/2608.10760) is tagged deployed (an industry deployment)."
     },
     "supply-chain": {
       "classic_ids": [
         "ms-immutable-3"
       ],
       "kind": "gap",
-      "note": "signing and provenance protect an artifact's chain of custody once it exists in digital form, but none of the sources discuss physical access controls over the systems that actually build or store that artifact (NIST SP 800-27's and Microsoft's shared principle that physical access defeats software-level guarantees). A signed model manifest doesn't help if the build server that produced it was physically accessible to anyone who walked up to it.\n\n**Research status:** No arXiv work was found. This gap is open in the 52 sources and open on arXiv. Physical access to a build server is a general security control, and these AI papers do not cover it."
+      "note": "signing and provenance protect an artifact's chain of custody once it exists in digital form, but none of the sources discuss physical access controls over the systems that actually build or store that artifact (NIST SP 800-27's and Microsoft's shared principle that physical access defeats software-level guarantees). A signed model manifest doesn't help if the build server that produced it was physically accessible to anyone who walked up to it.\n\n**Research status:** No arXiv work was found. This gap is open in the 68 sources and open on arXiv. Physical access to a build server is a general security control, and these AI papers do not cover it."
     },
     "shared-responsibility": {
       "classic_ids": [
@@ -164,7 +164,7 @@
         "psychological-acceptability"
       ],
       "kind": "unaddressed-in-corpus",
-      "note": "this document names control-adoption friction as a blind spot in the field, but none of the 52 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented.\n\n**Research status:** Tested arXiv work measures reviewer fatigue and approval settings in production systems. It does not define time-to-bypass, help-desk volume, or review abandonment. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) and [arXiv:2606.08919](https://arxiv.org/abs/2606.08919) are tagged tested (lab, benchmark, or simulation)."
+      "note": "this document names control-adoption friction as a blind spot in the field, but none of the 68 sources, and this document itself, propose a way to actually measure that friction, for instance time-to-bypass, help-desk ticket volume against a new control, or abandonment rate of a mandated review step, the way the rest of this corpus is comfortable measuring technical metrics. The absence is acknowledged here but still not instrumented.\n\n**Research status:** Tested arXiv work measures reviewer fatigue and approval settings in production systems. It does not define time-to-bypass, help-desk volume, or review abandonment. The tags are provisional because they come from abstracts only, and the papers are unverified. [arXiv:2605.24309](https://arxiv.org/abs/2605.24309) and [arXiv:2606.08919](https://arxiv.org/abs/2606.08919) are tagged tested (lab, benchmark, or simulation)."
     }
   },
   "principles": [
@@ -205,6 +205,30 @@
       "statement": "Non-human identities require the same lifecycle management (issuance, rotation, retirement) as any other governed credential"
     },
     {
+      "id": "per-instance-agent-identity",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "Each agent instance receives its own short-lived workload identity rather than a shared static key reused across instances"
+    },
+    {
+      "id": "signed-task-mandate",
+      "section": "agent-identity",
+      "category": "identity",
+      "statement": "The task originator signs a mandate that states the intended outcome and limits for the agent's actions"
+    },
+    {
+      "id": "time-to-stop-is-a-measured-control",
+      "section": "agent-identity",
+      "category": "monitoring",
+      "statement": "How quickly an organization can halt an agent once it starts behaving unexpectedly is a measured control, not an informal hope"
+    },
+    {
+      "id": "agent-permissions-subset-of-user",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "An agent's delegated permissions are a subset of the initiating user's permissions, so the agent cannot reach data or systems the user cannot"
+    },
+    {
       "id": "continuous-reverification",
       "section": "zero-standing-privilege",
       "category": "access-control",
@@ -221,6 +245,12 @@
       "section": "zero-standing-privilege",
       "category": "access-control",
       "statement": "When a user denies trust, anything already started must actually stop; a denial that leaves processes running is not a control"
+    },
+    {
+      "id": "every-downstream-call-is-separate-authorization",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "Every MCP tool call, RAG lookup, and data or API access is a separate authorization event checked against a policy decision point with the user plus agent identity"
     },
     {
       "id": "explain-restrictions-to-agents",
@@ -241,6 +271,12 @@
       "statement": "Least privilege extends to the agent's decision-making layer, not only its infrastructure access"
     },
     {
+      "id": "missing-decision-denies",
+      "section": "zero-standing-privilege",
+      "category": "access-control",
+      "statement": "When the decision point is silent, missing, or lacks a required identity or telemetry signal, the call is denied rather than allowed"
+    },
+    {
       "id": "short-lived-scoped-revocable-credentials",
       "section": "zero-standing-privilege",
       "category": "access-control",
@@ -251,6 +287,12 @@
       "section": "zero-standing-privilege",
       "category": "access-control",
       "statement": "Each agent action must record three things and pass them to the next agent:\n- who first made the request,\n- when that person's approval runs out, and\n- how much the agent may do on its own.\nEach record links back to the approval that granted it. An agent in any organization may tighten these limits. It may not loosen or drop them. If an action arrives without them, the agent refuses it."
+    },
+    {
+      "id": "zero-trust-does-not-cover-misaligned-permitted-actions",
+      "section": "zero-standing-privilege",
+      "category": "risk-management",
+      "statement": "Zero Trust does not stop misaligned reasoning: an agent can still take any unintended action the user is permitted to take"
     },
     {
       "id": "delegation-narrows-never-expands",
@@ -319,6 +361,18 @@
       "statement": "Environment teardown is a guaranteed platform property, not best-effort cleanup"
     },
     {
+      "id": "inference-endpoint-is-exfiltration-path",
+      "section": "ephemeral-execution",
+      "category": "resilience",
+      "statement": "Every permitted channel, including the LLM inference endpoint, is treated as a potential exfiltration path"
+    },
+    {
+      "id": "isolation-enforced-independently-of-agent",
+      "section": "ephemeral-execution",
+      "category": "resilience",
+      "statement": "Isolation is enforced independently of the agent, because an agent that can reason about its sandbox can reason around it"
+    },
+    {
       "id": "launch-gate-verifies-controls",
       "section": "ephemeral-execution",
       "category": "design",
@@ -341,6 +395,12 @@
       "section": "human-oversight",
       "category": "resilience",
       "statement": "Systems are continuously validated against their intended purpose and predefined failure modes, not checked once at launch and left alone"
+    },
+    {
+      "id": "human-examiner-owns-forensic-conclusions",
+      "section": "human-oversight",
+      "category": "governance",
+      "statement": "The human examiner remains the final authority for forensic conclusions, attribution, and legally sensitive sign-off; AI does not own those conclusions"
     },
     {
       "id": "human-in-loop-is-not-automatically-safe",
@@ -379,6 +439,18 @@
       "statement": "An agent's security-relevant components, meaning model, instructions, memory, planning, tools, protocols, access controls, guardrails, approvals, and logging, are each in scope for inventory and controls"
     },
     {
+      "id": "agent-reachable-logs-are-not-evidence",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Activity logs that the agent itself can reach or change cannot serve as reliable evidence"
+    },
+    {
+      "id": "agents-must-not-reach-monitors",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Agents must not be able to access or interfere with the monitoring processes and logs that watch them"
+    },
+    {
       "id": "execution-provenance-traceable-as-inventory",
       "section": "observability",
       "category": "monitoring",
@@ -401,6 +473,12 @@
       "section": "observability",
       "category": "monitoring",
       "statement": "Logging of agent actions, tool calls, and inter-agent messages is immutable and tamper-evident"
+    },
+    {
+      "id": "monitored-output-treated-as-hostile-to-monitors",
+      "section": "observability",
+      "category": "monitoring",
+      "statement": "Monitored model output is treated as possibly containing exploits aimed at the monitors"
     },
     {
       "id": "observability-extends-to-goals-and-decisions",
@@ -457,6 +535,12 @@
       "statement": "Agent memory is an attack surface: test over long trajectories after injection, and inspect memory writes and reads alongside actions"
     },
     {
+      "id": "no-secrets-in-prompts",
+      "section": "untrusted-input",
+      "category": "input-validation",
+      "statement": "System and developer prompts are never used as a secret store for keys, credentials, or hidden rules"
+    },
+    {
       "id": "treat-tool-descriptions-and-content-as-untrusted",
       "section": "untrusted-input",
       "category": "input-validation",
@@ -475,10 +559,22 @@
       "statement": "Input is validated at every trust boundary it crosses, not only at the outermost one"
     },
     {
+      "id": "approval-artifact-names-tool-args-session-expiry",
+      "section": "mcp-security",
+      "category": "access-control",
+      "statement": "The authorization artifact for a privileged tool call names the specific tool, its arguments or their digest, the requesting session, and a short expiry"
+    },
+    {
       "id": "containers-not-sufficient-mcp-boundary",
       "section": "mcp-security",
       "category": "mcp-protocol",
       "statement": "Containers alone are not treated as a sufficient security boundary for MCP execution"
+    },
+    {
+      "id": "discovery-is-not-authorization",
+      "section": "mcp-security",
+      "category": "access-control",
+      "statement": "Discovering a capability and being authorized to use it are different decisions; discovery filtering is risk reduction, not authorization"
     },
     {
       "id": "dual-signoff-third-party-mcp",
@@ -505,16 +601,40 @@
       "statement": "User sessions and execution contexts are fully isolated, with no shared global state across users"
     },
     {
+      "id": "mcp-crypto-externalized-to-proxy",
+      "section": "mcp-security",
+      "category": "mcp-protocol",
+      "statement": "MCP tool and server authors do not write cryptographic code; TLS libraries, proxies, and managed platforms supply it, and hybrid PQ TLS terminates at a reverse proxy, sidecar, or gateway"
+    },
+    {
       "id": "oauth-oidc-per-request-validation",
       "section": "mcp-security",
       "category": "mcp-protocol",
       "statement": "Remote MCP servers require OAuth 2.1/OIDC with per-request validation of issuer, audience, expiry, and signature"
     },
     {
+      "id": "per-call-capability-brokering",
+      "section": "mcp-security",
+      "category": "access-control",
+      "statement": "Per-call capability brokering issues a single-use token scoped to that call's declared filesystem, network, and syscall manifest"
+    },
+    {
       "id": "real-mcp-incidents-cited",
       "section": "mcp-security",
       "category": "risk-management",
       "statement": "Real, documented MCP incidents are cited as evidence the threat is active, not a hypothetical worst case"
+    },
+    {
+      "id": "revalidate-tools-after-change",
+      "section": "mcp-security",
+      "category": "supply-chain",
+      "statement": "Operators re-check MCP server and tool definitions after each change in testing and production, to catch a rug pull where a trusted tool turns malicious"
+    },
+    {
+      "id": "tool-call-is-a-request-not-a-command",
+      "section": "mcp-security",
+      "category": "access-control",
+      "statement": "A tool call is a request, not a command; a deterministic enforcement point outside the model decides whether this agent may use this tool on this resource now"
     },
     {
       "id": "agent-skills-are-supply-chain-artifacts",
@@ -685,6 +805,12 @@
       "statement": "Model and data provenance stay tamper-proof, traceable end to end, and continuously monitored rather than vetted once at intake"
     },
     {
+      "id": "sign-at-release-verify-on-download",
+      "section": "supply-chain-provenance",
+      "category": "supply-chain",
+      "statement": "The producer signs at the release boundary when the artifact is immutable, and the consumer verifies on download before the model enters a pipeline or production"
+    },
+    {
       "id": "signed-artifact-tying-producer-identity",
       "section": "supply-chain-provenance",
       "category": "supply-chain",
@@ -787,6 +913,12 @@
       "statement": "Each stage of the AI data lifecycle, from collection through monitoring, is treated as its own exposure point rather than covered by a single perimeter control"
     },
     {
+      "id": "erasure-must-reach-derived-assets",
+      "section": "data-security",
+      "category": "data-protection",
+      "statement": "Lifecycle controls such as retention and erasure must reach every derived asset; a deletion that leaves embeddings, traces, or adapter weights behind is not compliant"
+    },
+    {
       "id": "non-human-identities-rotated-periodically",
       "section": "data-security",
       "category": "identity",
@@ -823,10 +955,22 @@
       "statement": "Blast-radius containment through segmentation is the primary control once vulnerability discovery volume outpaces any realistic patch cadence, including when exploit windows are negative and an attacker holds a working exploit before a vendor fix ships"
     },
     {
+      "id": "connection-topology-nano-segmentation-scales-with-risk",
+      "section": "incident-response",
+      "category": "resilience",
+      "statement": "Connection-defined, topology-defined, and nano-segmentation controls scale with agent autonomy, tool power, and data sensitivity"
+    },
+    {
       "id": "contributors-accountable-for-ai-assisted-work",
       "section": "incident-response",
       "category": "governance",
       "statement": "Contributors remain personally accountable for AI-assisted work product under their own signed agreements, regardless of how much the AI tool generated"
+    },
+    {
+      "id": "defensive-agent-is-high-value-target",
+      "section": "incident-response",
+      "category": "risk-management",
+      "statement": "A defensive agent is itself a high-value target; fundamentals such as strong authentication, timely patching, and vulnerability management come before greater agent autonomy"
     },
     {
       "id": "every-critical-system-has-an-owner",

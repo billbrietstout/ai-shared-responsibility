@@ -68,9 +68,9 @@ class InventoryScopeTest(unittest.TestCase):
         self.assertEqual(counts["org"], len(org))
         self.assertEqual(counts["research"], len(research))
         self.assertEqual(counts["cited"], cited_codes)
-        self.assertEqual(counts["cited"], 52)
+        self.assertEqual(counts["cited"], 68)
         self.assertEqual(counts["talks"], 14)
-        self.assertEqual(counts["principles"], 146)
+        self.assertEqual(counts["principles"], 170)
         self.assertEqual(counts["classic"], 87)
         self.assertEqual(len(set(row["i"] for row in org) & set(row["i"] for row in research)), 0)
         self.assertEqual(counts["org"] + counts["research"] + (
@@ -112,8 +112,8 @@ class InventoryScopeTest(unittest.TestCase):
         self.assertEqual(cited["x"], "extracted")
         self.assertEqual(cited["k"], "org")
         shared = by_id["WP-0040"]
-        self.assertEqual(shared["c"], "SANS-CAISG12, SANS-CAISG14")
-        self.assertEqual(len(shared["cs"]), 2)
+        self.assertEqual(shared["c"], "SANS-CAISG14")
+        self.assertEqual(len(shared["cs"]), 1)
         early = by_id["WP-0168"]
         self.assertEqual(early["k"], "org")
         self.assertEqual(early["ev"], "theoretical")

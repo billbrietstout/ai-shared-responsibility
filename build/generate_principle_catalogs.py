@@ -9,7 +9,7 @@ assessment workflow, plus slim projections the assessment prompt fetches:
                                          from security_principles_reference.oscal.json
   /data/security-principles.slim.json    id, statement, category, related
   /data/ai-agentic-principles.json       contemporary AI and agentic consensus,
-                                         normalized from the 52-source synthesis at
+                                         normalized from the 68-source synthesis at
                                          agentic-ai-security/agentic-security.md
   /data/ai-agentic-principles.slim.json  id, section, category, statement, gap_index
 
@@ -48,7 +48,7 @@ SITE = "https://aisharedresponsibility.com"
 # carry their own dates so an agentic-only update does not touch the classic
 # catalog's metadata.
 UPDATED = "2026-10-30"
-AGENTIC_UPDATED = "2026-11-01"
+AGENTIC_UPDATED = "2026-11-04"
 
 OSCAL_SRC = "security_principles_reference.oscal.json"
 SYNTH_SRC = "agentic-ai-security/agentic-security.md"
@@ -315,6 +315,9 @@ CURATION = {
         ("non-human-identity-lifecycle-management", "identity"),
         ("no-implicit-trust-between-agents", "identity"),
         ("agentic-iam-extends-existing-iam", "identity"),
+        ("per-instance-agent-identity", "identity"),
+        ("signed-task-mandate", "identity"),
+        ("time-to-stop-is-a-measured-control", "monitoring"),
     ],
     "zero-standing-privilege": [
         ("continuous-reverification", "access-control"),
@@ -322,6 +325,10 @@ CURATION = {
         ("least-privilege-extends-to-decision-layer", "access-control"),
         ("controls-scale-with-capability-and-sensitivity", "risk-management"),
         ("fine-grained-attribute-policy-access-control", "access-control"),
+        ("agent-permissions-subset-of-user", "access-control"),
+        ("every-downstream-call-is-separate-authorization", "access-control"),
+        ("missing-decision-denies", "access-control"),
+        ("zero-trust-does-not-cover-misaligned-permitted-actions", "risk-management"),
         ("explain-restrictions-to-agents", "access-control"),
         ("denied-trust-halts-execution", "access-control"),
         ("who-asked-until-when-how-far", "access-control"),
@@ -341,6 +348,8 @@ CURATION = {
         ("guaranteed-teardown", "design"),
         ("ephemerality-as-containment", "resilience"),
         ("default-deny-egress-bounded-swarm", "resilience"),
+        ("isolation-enforced-independently-of-agent", "resilience"),
+        ("inference-endpoint-is-exfiltration-path", "resilience"),
         ("launch-gate-verifies-controls", "design"),
     ],
     "human-oversight": [
@@ -349,11 +358,15 @@ CURATION = {
         ("kill-switch-or-budget-limit", "agent-autonomy"),
         ("oversight-scales-with-autonomy-and-risk", "agent-autonomy"),
         ("override-authority-explicitly-assigned", "governance"),
+        ("human-examiner-owns-forensic-conclusions", "governance"),
         ("continuous-validation-against-purpose", "resilience"),
         ("human-in-loop-is-not-automatically-safe", "agent-autonomy"),
     ],
     "observability": [
         ("immutable-tamper-evident-logging", "monitoring"),
+        ("agent-reachable-logs-are-not-evidence", "monitoring"),
+        ("agents-must-not-reach-monitors", "monitoring"),
+        ("monitored-output-treated-as-hostile-to-monitors", "monitoring"),
         ("telemetry-covers-full-decision-path", "monitoring"),
         ("execution-provenance-traceable-as-inventory", "monitoring"),
         ("observability-extends-to-goals-and-decisions", "monitoring"),
@@ -369,6 +382,7 @@ CURATION = {
         ("chat-visibility-not-execution-control", "input-validation"),
         ("agents-amplify-not-new-vuln-class", "risk-management"),
         ("deterministic-controls-outside-reasoning-loop", "access-control"),
+        ("no-secrets-in-prompts", "input-validation"),
         ("agent-security-spans-distinct-control-layers", "design"),
         ("memory-is-attack-surface", "risk-management"),
         ("use-latest-model-as-defense-layer", "input-validation"),
@@ -381,6 +395,12 @@ CURATION = {
         ("isolated-sessions-no-shared-state", "mcp-protocol"),
         ("error-responses-no-internal-details", "mcp-protocol"),
         ("real-mcp-incidents-cited", "risk-management"),
+        ("discovery-is-not-authorization", "access-control"),
+        ("tool-call-is-a-request-not-a-command", "access-control"),
+        ("approval-artifact-names-tool-args-session-expiry", "access-control"),
+        ("per-call-capability-brokering", "access-control"),
+        ("mcp-crypto-externalized-to-proxy", "mcp-protocol"),
+        ("revalidate-tools-after-change", "supply-chain"),
     ],
     "supply-chain": [
         ("provenance-via-signed-manifests-sbom", "supply-chain"),
@@ -414,6 +434,7 @@ CURATION = {
     ],
     "supply-chain-provenance": [
         ("signed-artifact-tying-producer-identity", "supply-chain"),
+        ("sign-at-release-verify-on-download", "supply-chain"),
         ("no-unsafe-serialization-formats", "supply-chain"),
         ("no-loading-unsigned-artifacts", "supply-chain"),
         ("provenance-continuously-monitored", "supply-chain"),
@@ -443,6 +464,7 @@ CURATION = {
         ("non-human-identities-rotated-periodically", "identity"),
         ("=", "classification-labels-propagate"),
         ("deletion-does-not-guarantee-model-removal", "data-protection"),
+        ("erasure-must-reach-derived-assets", "data-protection"),
         ("each-lifecycle-stage-is-its-own-exposure-point", "data-protection"),
         ("context-window-is-flat-namespace", "data-protection"),
         ("privacy-preserving-abuse-detection", "data-protection"),
@@ -457,6 +479,8 @@ CURATION = {
         ("contributors-accountable-for-ai-assisted-work", "governance"),
         ("blast-radius-containment-via-segmentation", "resilience"),
         ("treat-environments-as-potentially-compromised", "incident-response"),
+        ("defensive-agent-is-high-value-target", "risk-management"),
+        ("connection-topology-nano-segmentation-scales-with-risk", "resilience"),
         ("variant-analysis-in-remediation", "incident-response"),
         ("advisories-are-attack-maps", "incident-response"),
     ],
@@ -506,7 +530,7 @@ CURATION = {
 }
 
 # Extra per-principle fields that cannot be derived from the synthesis text.
-# origin marks items that came from outside the 52-source whitepaper corpus so
+# origin marks items that came from outside the 68-source whitepaper corpus so
 # they can be told apart from it. The catalog schema defines no type field for
 # agentic principles, so when an extraction record types an item as an axiom
 # rather than a principle, that type is carried in a note instead.
@@ -571,7 +595,7 @@ PRINCIPLE_EXTRA = {
 # Each section's Gap note resolved to the classic-catalog id(s) it points at.
 # kind: gap                  the classic catalog asks something the corpus does not answer
 #       editorial            the document takes an explicit position rather than reporting a dispute
-#       unaddressed-in-corpus the document flags an absence spanning all 52 sources
+#       unaddressed-in-corpus the document flags an absence spanning all 68 sources
 GAP_INDEX = {
     "agent-identity": (["ms-immutable-5"], "gap"),
     "zero-standing-privilege": (["sch-2"], "gap"),
@@ -1026,7 +1050,7 @@ def main():
         "$schema_version": "1.0",
         "description": (
             "Contemporary AI and agentic security principles, normalized from "
-            "a 52-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, "
+            "a 68-source synthesis (BIML, CIS, CSA, CoSAI, NIST, OWASP, SANS, "
             "ETSI, ENISA, FMF, OpenSSF, AI Verify, 2019 to 2026) organized into 22 topic sections. These are current "
             "industry positions, not settled axioms; weigh disagreement with "
             "an entry here less heavily than disagreement with the classic "
