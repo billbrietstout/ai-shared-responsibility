@@ -311,31 +311,51 @@
         <p>
           The model loads
           <a href="/assess/claims-test/prompts.json">prompts.json</a>
-          (fetch or attach that file), runs Track A internally, and replies
-          with the markdown report. That report must include a Published
-          attack classes table of ATT-xx rows. Intermediate JSON stays internal.
-          ChatGPT and Grok file upload cannot fetch the pack URL; attach
-          <code>prompts.json</code> as a second file with the draft. If a fetch
-          returns an older pack, still run C-attacks. The pack is
-          not a pinned source. Omitted fields stay empty.
-          SRF and vertical mapping without injected data are not applicable.
-          If neither fetch nor attach is possible, use
-          <a href="#copy-one-block">Run one prompt at a time</a>.
+          (fetch or attach that file), runs Track A, and replies with the
+          markdown report.
         </p>
+        <ul class="q-list">
+          <li>The report must include a Published attack classes table of ATT-xx rows.</li>
+          <li>Intermediate JSON stays internal.</li>
+          <li>ChatGPT and Grok file upload cannot fetch the pack URL. Attach <code>prompts.json</code> as a second file with the draft.</li>
+          <li>If a fetch returns an older pack, still run C-attacks.</li>
+          <li>The pack is not a pinned source. Omitted fields stay empty.</li>
+          <li>SRF and vertical mapping without injected data are not applicable.</li>
+          <li>If neither fetch nor attach is possible, use <a href="#copy-one-block">Run one prompt at a time</a>.</li>
+        </ul>
         <h3 id="shortcut-a">Track A</h3>
         <p>
           Default path. <code>draft_body</code> and <code>channel</code> are
           enough. Default mode is <code>full</code>.
         </p>
+        <p>Required Track A steps, in order:</p>
+        <ol class="q-list">
+          <li>C-intake</li>
+          <li>C-claims</li>
+          <li>C-screen</li>
+          <li>C-foundations</li>
+          <li>C-attacks (required)</li>
+          <li>C-inventory</li>
+          <li>C-tag</li>
+          <li>C-roca</li>
+          <li>C-score</li>
+          <li>C-qa</li>
+          <li>C-suggest</li>
+          <li>C-report</li>
+        </ol>
         <p>
           C-attacks reads the
           <a href="/framework/attack-inventory/">attack inventory</a> by
-          default and builds rows from it first, keeping catalog and paper ids
-          that were checked against pinned catalog versions. The run judges
-          draft overlap and stage, and adds <code>training_memory</code> rows
-          only for classes the inventory lacks. The report names the inventory
-          version it read. To narrow the inventory to the draft's topics,
-          attach an export:
+          default and builds rows from it first. It keeps catalog and paper ids
+          that match pinned catalog versions.
+        </p>
+        <p>
+          The run judges draft overlap and stage. It adds
+          <code>training_memory</code> rows only for classes the inventory
+          lacks. The report names the inventory version it read.
+        </p>
+        <p>
+          To narrow the inventory to the draft's topics, attach an export:
           <code>python3 build/export_attack_inventory.py --topics telemetry,MCP</code>.
         </p>
         <div class="shortcut-paste">

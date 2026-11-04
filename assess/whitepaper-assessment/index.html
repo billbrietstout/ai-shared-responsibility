@@ -349,43 +349,58 @@
       <div data-inventory data-inventory-mode="render">
         <p>
           The copy-ready prompt matches a paper to the two principle catalogs.
-          Widening this list does not add entries to those catalogs. Cited in
-          principles is the default. It is the papers the agentic catalog cites.
+          Widening this list does not add entries to those catalogs.
+        </p>
+        <p>
+          Cited in principles is the default. It is the papers the agentic
+          catalog cites.
         </p>
         <p>
           Included organization papers are a separate count from research the
           monitor found. Research the monitor found is the arXiv set the monitor
           added because a monitored paper cites them. That research list is not part of the default.
         </p>
-        <p>
-          Terms on this page: <strong>Cited in principles</strong> means the
-          agentic catalog cites the paper as a source of principles.
-          <strong>Research the monitor found</strong> means an arXiv row the
-          monitor stored because another paper cites it.
-          <strong>Included</strong> on a scope button means the monitor decided
-          to keep that organization paper in the inventory.
-          <strong>In this list</strong> means the rows the filter currently shows.
-        </p>
+        <ul class="section-note">
+          <li><strong>Cited in principles</strong> means the agentic catalog cites the paper as a source of principles.</li>
+          <li><strong>Research the monitor found</strong> means an arXiv row the monitor stored because another paper cites it.</li>
+          <li><strong>Included</strong> on a scope button means the monitor decided to keep that organization paper in the inventory.</li>
+          <li><strong>In this list</strong> means the rows the filter currently shows.</li>
+        </ul>
         <p>
           On this page, a source of principles means the agentic catalog cites
-          the paper. Metadata only means the monitor has a title, an
-          organization, a link, and sometimes an evidence level, and it has not
-          extracted principles. A metadata only record is not a source of
-          principles. A duplicate, or a record marked for removal, is not a
-          source of principles.
+          the paper.
+        </p>
+        <p>
+          Metadata only means the monitor has a title, an organization, a link,
+          and sometimes an evidence level, and it has not extracted principles.
+          A metadata-only record is not a source of principles. A duplicate, or
+          a record marked for removal, is not a source of principles.
         </p>
         <p>
           Conference talks are cited in the catalog. They are not monitor
-          papers, so they are not in this list. Evidence level is a tag the
-          monitor stored from an automated read. When the selected list
-          contains an arXiv record, the filter below opens. Its definitions
-          paraphrase the monitor's tags. An evidence tag is not an extracted
-          principle.
+          papers, so they are not in this list.
+        </p>
+        <p>
+          Evidence level is a tag the monitor stored from an automated read.
+          When the selected list contains an arXiv record, the filter below
+          opens. Its definitions paraphrase the monitor's tags. An evidence tag
+          is not an extracted principle.
         </p>
         <!-- inventory-controls:start -->
-<p class="inv-count-note">Organization papers: <span data-inv-count="org">105</span>. Research the monitor found: <span data-inv-count="research">400</span>. These counts do not overlap. Research the monitor found is not part of the default list.</p>
-<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">3</span>. Research records with extracted principles: <span data-inv-count="research-extracted">0</span>. A metadata-only record is not a source of principles.</p>
-<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">2</span> arXiv records outside the research-monitor count. The evidence filter opens when the selected list contains an arXiv record.</p>
+<p class="inv-count-note">Organization papers and research the monitor found do not overlap. Research the monitor found is not part of the default list. A metadata-only record is not a source of principles. The evidence filter opens when the selected list contains an arXiv record.</p>
+<table class="inv-count-table">
+  <caption>Monitor inventory counts for this page</caption>
+  <thead>
+    <tr><th scope="col">Count</th><th scope="col">Value</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Organization papers</td><td><span data-inv-count="org">105</span></td></tr>
+    <tr><td>Research the monitor found</td><td><span data-inv-count="research">400</span></td></tr>
+    <tr><td>Organization papers that are metadata only</td><td><span data-inv-count="org-metadata">3</span></td></tr>
+    <tr><td>Research records with extracted principles</td><td><span data-inv-count="research-extracted">0</span></td></tr>
+    <tr><td>Organization arXiv records outside the research count</td><td><span data-inv-count="org-arxiv">2</span></td></tr>
+  </tbody>
+</table>
 <fieldset class="inv-options" id="inventory-scope-set">
   <legend>Which records to list</legend>
   <label class="inv-option">
@@ -692,14 +707,15 @@ Before reporting any P1 or P2, check it twice and check these known false positi
 Write in prose and tables, no nested bullet trees. Keep the verdict direct: state what the paper does and does not cover, skip hedging, and do not pad a clean result with caveats.</pre>
       </div>
 
-      <p class="section-note section-note--loose">
+      <p class="section-note">
         Prompt v2.2, September 2026.
         <a href="/assess/whitepaper-assessment/changes/">What changed in 2.2, 2.1, and 2.0</a>.
-        A 2.1 report stays valid; it fetched full catalogs, emitted every
-        Matched row, and packaged Novel rows for catalog addition. A 2.0
-        report stays valid; it screened less of the submission. A 1.0
-        report stays valid on principle mapping; re-read its integrity findings.
       </p>
+      <ul class="section-note section-note--loose">
+        <li>A 2.1 report stays valid; it fetched full catalogs, emitted every Matched row, and packaged Novel rows for catalog addition.</li>
+        <li>A 2.0 report stays valid; it screened less of the submission.</li>
+        <li>A 1.0 report stays valid on principle mapping; re-read its integrity findings.</li>
+      </ul>
       <p class="section-note section-note--loose">
         Draft claims that need risk, obligation, control, and one owner, plus
         Google Docs or GitHub suggestion packets, use the separate
@@ -722,22 +738,12 @@ Write in prose and tables, no nested bullet trees. Keep the verdict direct: stat
       </p>
 
       <h2 class="section-label">Notes on the catalogs</h2>
-      <p class="section-note section-note--end">
-        Both catalogs are generated, not hand-maintained. The classic catalog is
-        normalized from a 93-control OSCAL source; five sets of entries that
-        different frameworks state as literal restatements of one principle were
-        merged into a single entry citing every source, and every original
-        control id stays traceable through <code>src</code>. The AI-agentic
-        catalog is parsed from the
-        <a href="/agentic-ai-security/">synthesis document</a>; bullets the
-        synthesis itself calls restatements were merged, and three sentences
-        describing an absence of coverage rather than a claim any source makes
-        were moved into <code>gap_index</code> so a statement about what nobody
-        said is not represented as if somebody said it. The assessment prompt
-        fetches slim projections of both files. Regenerate all four with
-        <code>python3 build/generate_principle_catalogs.py</code> after editing
-        either source.
-      </p>
+      <p class="section-note">Both catalogs are generated, not hand-maintained.</p>
+      <ul class="section-note section-note--end">
+        <li>The classic catalog is normalized from a 93-control OSCAL source. Entries that different frameworks restate as the same principle were merged into one entry that cites every source. Every original control id stays traceable through <code>src</code>.</li>
+        <li>The AI-agentic catalog is parsed from the <a href="/agentic-ai-security/">synthesis document</a>. Bullets the synthesis calls restatements were merged. Three sentences that describe an absence of coverage, rather than a claim any source makes, moved into <code>gap_index</code>.</li>
+        <li>The assessment prompt fetches slim projections of both files. Regenerate all four with <code>python3 build/generate_principle_catalogs.py</code> after editing either source.</li>
+      </ul>
     </main>
 
     <script src="/shared/inventory-scope.js" defer></script>

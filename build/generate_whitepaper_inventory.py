@@ -392,9 +392,20 @@ def render_controls(counts: dict) -> str:
     # The numbers inside the spans are stamped again after insertion.
     # Seed evidence button counts from the research list (most tags live there).
     # inventory-scope.js replaces these when the selected list changes.
-    return f"""<p class="inv-count-note">Organization papers: <span data-inv-count="org">{n("org")}</span>. Research the monitor found: <span data-inv-count="research">{n("research")}</span>. These counts do not overlap. Research the monitor found is not part of the default list.</p>
-<p class="inv-count-note">Organization papers that are metadata only: <span data-inv-count="org-metadata">{n("org-metadata")}</span>. Research records with extracted principles: <span data-inv-count="research-extracted">{n("research-extracted")}</span>. A metadata-only record is not a source of principles.</p>
-<p class="inv-count-note">The organization list includes <span data-inv-count="org-arxiv">{n("org-arxiv")}</span> arXiv records outside the research-monitor count. The evidence filter opens when the selected list contains an arXiv record.</p>
+    return f"""<p class="inv-count-note">Organization papers and research the monitor found do not overlap. Research the monitor found is not part of the default list. A metadata-only record is not a source of principles. The evidence filter opens when the selected list contains an arXiv record.</p>
+<table class="inv-count-table">
+  <caption>Monitor inventory counts for this page</caption>
+  <thead>
+    <tr><th scope="col">Count</th><th scope="col">Value</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Organization papers</td><td><span data-inv-count="org">{n("org")}</span></td></tr>
+    <tr><td>Research the monitor found</td><td><span data-inv-count="research">{n("research")}</span></td></tr>
+    <tr><td>Organization papers that are metadata only</td><td><span data-inv-count="org-metadata">{n("org-metadata")}</span></td></tr>
+    <tr><td>Research records with extracted principles</td><td><span data-inv-count="research-extracted">{n("research-extracted")}</span></td></tr>
+    <tr><td>Organization arXiv records outside the research count</td><td><span data-inv-count="org-arxiv">{n("org-arxiv")}</span></td></tr>
+  </tbody>
+</table>
 <fieldset class="inv-options" id="inventory-scope-set">
   <legend>Which records to list</legend>
   <label class="inv-option">
