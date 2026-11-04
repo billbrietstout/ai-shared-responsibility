@@ -13,10 +13,13 @@ Grace date
 
 Support
   A principle id that is not on the base catalog fails when its support
-  score prints as 0.00 and a cited paper has extracted text. Ids on the
-  base catalog stay warnings. A 0.00 score with no extracted text stays
-  a warning. The base catalog is --grandfather, else --base-ref, else
-  PRINCIPLES_BASE_REF, else origin/develop, else develop.
+  score prints as 0.00 and a cited paper has extracted text. Extracted
+  text is that paper's axioms, invariants, and principles. The export
+  key is invariants. An older fixture with no invariants key is read
+  from invariables. When both keys are present, only invariants is read.
+  Ids on the base catalog stay warnings. A 0.00 score with no extracted
+  text stays a warning. The base catalog is --grandfather, else
+  --base-ref, else PRINCIPLES_BASE_REF, else origin/develop, else develop.
 
 Usage:
   python3 scripts/validate_principles.py
@@ -184,10 +187,26 @@ def validate_classic(data: dict, report: Report) -> None:
                 )
 
 
+def invariant_values(paper: dict) -> object:
+    """Return the invariant list on one monitor paper.
+
+    The export key is invariants. Older fixtures used invariables.
+    invariables is read only when invariants is absent. An empty
+    invariants list does not fall back to invariables.
+    """
+    if "invariants" in paper:
+        return paper.get("invariants")
+    return paper.get("invariables")
+
+
 def paper_corpus(paper: dict) -> list[str]:
+    """Collected axiom, invariant, and principle text for one paper."""
     out: list[str] = []
-    for key in ("axioms", "invariables", "principles"):
-        vals = paper.get(key) or []
+    for vals in (
+        paper.get("axioms"),
+        invariant_values(paper),
+        paper.get("principles"),
+    ):
         if isinstance(vals, list):
             out.extend(str(v) for v in vals)
         elif isinstance(vals, str) and vals.strip():
@@ -661,7 +680,7 @@ def validate_agentic(
                 report.err(
                     f"support score 0.00 for new principle {pid}: "
                     "the statement does not overlap axioms, "
-                    "invariables, or principles on its cited papers"
+                    "invariants, or principles on its cited papers"
                 )
             elif score < SUPPORT_THRESHOLD:
                 report.warn(

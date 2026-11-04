@@ -77,8 +77,8 @@ PAPER = {
     "issue": 7,
     "decision": "Include",
     "title": "Paper",
-    "axioms": ["training data must be signed before use"],
-    "invariables": [],
+    "axioms": [],
+    "invariants": ["training data must be signed before use"],
     "principles": [],
 }
 
@@ -323,7 +323,8 @@ class GraceRulesTest(unittest.TestCase):
             "decision": "include",
             "title": "Paper",
             "axioms": ["training data must be signed before use"],
-            "invariables": [],
+            "invariants": ["new list"],
+            "invariables": ["old list"],
             "principles": [],
         }
         ok = catalog(
@@ -332,6 +333,10 @@ class GraceRulesTest(unittest.TestCase):
         )
         report = run_agentic(ok, {"WP-0001": paper}, TODAY, {"p1"})
         self.assertEqual(report.errors, [])
+        corpus = vp.paper_corpus(paper)
+        self.assertIn("new list", corpus)
+        self.assertNotIn("old list", corpus)
+        self.assertEqual(corpus.count("new list"), 1)
 
         retired = dict(paper)
         retired["decision"] = "delete_candidate"
@@ -355,6 +360,7 @@ class GraceRulesTest(unittest.TestCase):
             "WP-0001": {
                 **PAPER,
                 "axioms": ["aaaa"],
+                "invariants": [],
             }
         }
         data = catalog(
@@ -378,14 +384,65 @@ class GraceRulesTest(unittest.TestCase):
         report = run_agentic(matched, papers, TODAY, set())
         self.assertFalse(any("support score 0.00" in msg for msg in report.errors))
 
+        # invariants is present and empty, so invariables is not read.
         # No extracted text: warn, and leave the grace-dated unmatched check
         # to cover sources that are not in the monitor yet.
         empty_papers = {
-            "WP-0001": {**PAPER, "axioms": [], "invariables": [], "principles": []}
+            "WP-0001": {
+                **PAPER,
+                "axioms": [],
+                "invariants": [],
+                "invariables": ["training data must be signed before use"],
+                "principles": [],
+            }
         }
         empty = run_agentic(data, empty_papers, TODAY, set())
         self.assertFalse(any("support score 0.00" in msg for msg in empty.errors))
         self.assertTrue(any("support weak" in msg for msg in empty.warnings))
+        self.assertEqual(vp.paper_corpus(empty_papers["WP-0001"]), [])
+
+    def test_paper_corpus_reads_invariants_and_falls_back(self):
+        new_key = vp.paper_corpus(
+            {
+                "axioms": ["axiom text"],
+                "invariants": ["invariant text"],
+                "principles": ["principle text"],
+            }
+        )
+        self.assertEqual(
+            new_key, ["axiom text", "invariant text", "principle text"]
+        )
+
+        old_key = {
+            "id": "WP-0001",
+            "issue": 7,
+            "decision": "Include",
+            "title": "Paper",
+            "axioms": [],
+            "invariables": ["training data must be signed before use"],
+            "principles": [],
+        }
+        self.assertEqual(
+            vp.paper_corpus(old_key),
+            ["training data must be signed before use"],
+        )
+        fallback = run_agentic(
+            catalog({"SRC": source()}, [principle()]),
+            {"WP-0001": old_key},
+            TODAY,
+            set(),
+        )
+        self.assertFalse(
+            any("support score 0.00" in msg for msg in fallback.errors)
+        )
+
+        both = vp.paper_corpus(
+            {
+                "invariants": ["new invariant text"],
+                "invariables": ["old invariant text"],
+            }
+        )
+        self.assertEqual(both, ["new invariant text"])
 
     def test_unknown_baseline_does_not_fail_zero_support(self):
         papers = {"WP-0001": {**PAPER, "axioms": ["aaaa"]}}
