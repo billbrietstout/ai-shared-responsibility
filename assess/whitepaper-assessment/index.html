@@ -345,8 +345,9 @@
       </div>
 
 
-      <h2 class="section-label" id="monitor-inventory">Monitor inventory</h2>
+      <h2 class="section-label" id="monitor-inventory">Whitepaper inventory</h2>
       <div data-inventory data-inventory-mode="render">
+        <p>We keep the AI security whitepaper inventory, a list of <span data-inv-count="all">579</span> published papers that we track and tag by evidence level. The list is kept in the public <a href="https://github.com/billbrietstout/ai-security-whitepaper-monitor">ai-security-whitepaper-monitor</a> repository. It includes organization papers this page does not cite, and arXiv research papers that those papers cite. The list below shows every paper.</p>
         <p>
           The copy-ready prompt matches a paper to the two principle catalogs.
           Widening this list does not add entries to those catalogs.
@@ -356,14 +357,14 @@
           catalog cites.
         </p>
         <p>
-          Included organization papers are a separate count from research the
-          monitor found. Research the monitor found is the arXiv set the monitor
-          added because a monitored paper cites them. That research list is not part of the default.
+          Included organization papers are a separate count from cited
+          research. Cited research is the arXiv papers we added because a paper
+          we track cites them. That research list is not part of the default.
         </p>
         <ul class="section-note">
           <li><strong>Cited in principles</strong> means the agentic catalog cites the paper as a source of principles.</li>
-          <li><strong>Research the monitor found</strong> means an arXiv row the monitor stored because another paper cites it.</li>
-          <li><strong>Included</strong> on a scope button means the monitor decided to keep that organization paper in the inventory.</li>
+          <li><strong>Cited research</strong> means an arXiv paper we added to the inventory because another paper cites it.</li>
+          <li><strong>Included</strong> on a scope button means we reviewed that organization paper and kept it in the inventory.</li>
           <li><strong>In this list</strong> means the rows the filter currently shows.</li>
         </ul>
         <p>
@@ -371,34 +372,47 @@
           the paper.
         </p>
         <p>
-          Metadata only means the monitor has a title, an organization, a link,
+          Metadata only means the inventory has a title, an organization, a link,
           and sometimes an evidence level, and it has not extracted principles.
           A metadata-only record is not a source of principles. A duplicate, or
           a record marked for removal, is not a source of principles.
         </p>
         <p>
-          Conference talks are cited in the catalog. They are not monitor
+          Conference talks are cited in the catalog. They are not inventory
           papers, so they are not in this list.
         </p>
         <p>
-          Evidence level is a tag the monitor stored from an automated read.
+          Evidence level is a tag we set after reading the abstract or the PDF. Some tags come from an automated read.
           When the selected list contains an arXiv record, the filter below
-          opens. Its definitions paraphrase the monitor's tags. An evidence tag
+          opens. Its definitions paraphrase the inventory tags. An evidence tag
           is not an extracted principle.
         </p>
         <!-- inventory-controls:start -->
-<p class="inv-count-note">Organization papers and research the monitor found do not overlap. Research the monitor found is not part of the default list. A metadata-only record is not a source of principles. The evidence filter opens when the selected list contains an arXiv record.</p>
+<p class="inv-count-note">Organization papers and cited research do not overlap. Cited research is not part of the default list. A metadata-only record is not a source of principles. The evidence filter opens when the selected list contains an arXiv record.</p>
 <table class="inv-count-table">
-  <caption>Monitor inventory counts for this page</caption>
+  <caption>Whitepaper inventory counts for this page</caption>
   <thead>
     <tr><th scope="col">Count</th><th scope="col">Value</th></tr>
   </thead>
   <tbody>
     <tr><td>Organization papers</td><td><span data-inv-count="org">105</span></td></tr>
-    <tr><td>Research the monitor found</td><td><span data-inv-count="research">400</span></td></tr>
+    <tr><td>Cited research</td><td><span data-inv-count="research">400</span></td></tr>
     <tr><td>Organization papers that are metadata only</td><td><span data-inv-count="org-metadata">3</span></td></tr>
     <tr><td>Research records with extracted principles</td><td><span data-inv-count="research-extracted">0</span></td></tr>
     <tr><td>Organization arXiv records outside the research count</td><td><span data-inv-count="org-arxiv">2</span></td></tr>
+  </tbody>
+</table>
+<table class="inv-count-table" id="inventory-org-evidence">
+  <caption>Evidence levels for included organization papers</caption>
+  <thead>
+    <tr><th scope="col">Evidence level</th><th scope="col">Papers</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Theoretical: guidance or a framework with no test of its own</td><td><span data-inv-count="ev-org-theoretical">91</span></td></tr>
+    <tr><td>Tested: lab tests, benchmarks, or simulations</td><td><span data-inv-count="ev-org-tested">3</span></td></tr>
+    <tr><td>Tested, possibly deployed (needs review): a person has not confirmed use in production</td><td><span data-inv-count="ev-org-possibly_deployed">11</span></td></tr>
+    <tr><td>Deployed: measured in production or on a real incident</td><td><span data-inv-count="ev-org-deployed">0</span></td></tr>
+    <tr><td>Not yet tagged</td><td><span data-inv-count="ev-org-untagged">0</span></td></tr>
   </tbody>
 </table>
 <fieldset class="inv-options" id="inventory-scope-set">
@@ -413,16 +427,16 @@
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="research">
-    <span>Research the monitor found (<span data-inv-count="research">400</span>)</span>
+    <span>Cited research (<span data-inv-count="research">400</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="all">
-    <span>All papers, including research the monitor found (<span data-inv-count="all">579</span>)</span>
+    <span>All papers, including cited research (<span data-inv-count="all">579</span>)</span>
   </label>
 </fieldset>
 <fieldset class="inv-options" id="inventory-evidence-set" hidden>
   <legend>Evidence level</legend>
-  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotes from the papers. Button counts match the list you selected. Seed counts below are for research the monitor found. All levels is the default.</p>
+  <p id="inventory-evidence-note">These definitions paraphrase the inventory's evidence tags. They are not quotes from the papers. Button counts match the list you selected. The counts below are for cited research. All levels is the default.</p>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="all" checked>
     <span>All levels</span>
@@ -453,18 +467,18 @@
     <dt>Tested</dt>
     <dd>Paraphrase: lab experiments, benchmarks, or simulations.</dd>
     <dt>Tested, possibly deployed (needs review)</dt>
-    <dd>This is the monitor's tag, not a paraphrase. An automated read found experiment language and words that can mean production or a real incident. A person has not confirmed that measurement. Do not read this tag as deployed.</dd>
+    <dd>This is the inventory's tag, not a paraphrase. An automated read found experiment language and words that can mean production or a real incident. A person has not confirmed that measurement. Do not read this tag as deployed.</dd>
     <dt>Deployed</dt>
-    <dd>Paraphrase: measured in production or on a real incident. Only a record the monitor tags deployed belongs here.</dd>
+    <dd>Paraphrase: measured in production or on a real incident. Only a paper tagged deployed belongs here.</dd>
     <dt>Not yet tagged</dt>
-    <dd>The monitor record has no evidence level. This option is hidden when the selected list has no untagged record.</dd>
+    <dd>The paper has no evidence level yet. This option is hidden when the selected list has no untagged record.</dd>
   </dl>
 </fieldset>
 <label class="inv-find" for="inventory-find">Find in this list
   <input id="inventory-find" type="search" autocomplete="off">
 </label>
 <p id="inventory-status" role="status" aria-live="polite"></p>
-<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. The page does not load the full monitor export.</p>
+<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. The page does not load the full inventory file, which includes extracted text.</p>
 <!-- inventory-controls:end -->
         <div id="inventory-mount"></div>
         <noscript>

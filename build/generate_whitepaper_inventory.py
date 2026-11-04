@@ -8,8 +8,8 @@ monitor fixture, which is about a megabyte and includes extracted text.
 Scopes:
   cited      papers the agentic catalog cites (the default)
   org        decision include, excluding cited research
-  research   monitor rows added because a monitored paper cites them
-  all        every monitor row
+  research   arXiv papers added because a paper in the inventory cites them
+  all        every inventory record
 
 Cited research is never given a catalog code, so it cannot appear in
 the default scope. A metadata-only row, a duplicate, or a row marked
@@ -261,6 +261,7 @@ def build_inventory(
         return counts
 
     research_ev = bucket(research_rows)
+    org_ev = bucket(org_rows)
     principles = catalog.get("count")
     if not isinstance(principles, int):
         principles = len(catalog.get("principles") or [])
@@ -283,6 +284,11 @@ def build_inventory(
         "ev-research-possibly_deployed": research_ev["possibly_deployed"],
         "ev-research-deployed": research_ev["deployed"],
         "ev-research-untagged": research_ev["untagged"],
+        "ev-org-theoretical": org_ev["theoretical"],
+        "ev-org-tested": org_ev["tested"],
+        "ev-org-possibly_deployed": org_ev["possibly_deployed"],
+        "ev-org-deployed": org_ev["deployed"],
+        "ev-org-untagged": org_ev["untagged"],
     }
     if classic_count is not None:
         counts["classic"] = classic_count
@@ -392,18 +398,31 @@ def render_controls(counts: dict) -> str:
     # The numbers inside the spans are stamped again after insertion.
     # Seed evidence button counts from the research list (most tags live there).
     # inventory-scope.js replaces these when the selected list changes.
-    return f"""<p class="inv-count-note">Organization papers and research the monitor found do not overlap. Research the monitor found is not part of the default list. A metadata-only record is not a source of principles. The evidence filter opens when the selected list contains an arXiv record.</p>
+    return f"""<p class="inv-count-note">Organization papers and cited research do not overlap. Cited research is not part of the default list. A metadata-only record is not a source of principles. The evidence filter opens when the selected list contains an arXiv record.</p>
 <table class="inv-count-table">
-  <caption>Monitor inventory counts for this page</caption>
+  <caption>Whitepaper inventory counts for this page</caption>
   <thead>
     <tr><th scope="col">Count</th><th scope="col">Value</th></tr>
   </thead>
   <tbody>
     <tr><td>Organization papers</td><td><span data-inv-count="org">{n("org")}</span></td></tr>
-    <tr><td>Research the monitor found</td><td><span data-inv-count="research">{n("research")}</span></td></tr>
+    <tr><td>Cited research</td><td><span data-inv-count="research">{n("research")}</span></td></tr>
     <tr><td>Organization papers that are metadata only</td><td><span data-inv-count="org-metadata">{n("org-metadata")}</span></td></tr>
     <tr><td>Research records with extracted principles</td><td><span data-inv-count="research-extracted">{n("research-extracted")}</span></td></tr>
     <tr><td>Organization arXiv records outside the research count</td><td><span data-inv-count="org-arxiv">{n("org-arxiv")}</span></td></tr>
+  </tbody>
+</table>
+<table class="inv-count-table" id="inventory-org-evidence">
+  <caption>Evidence levels for included organization papers</caption>
+  <thead>
+    <tr><th scope="col">Evidence level</th><th scope="col">Papers</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Theoretical: guidance or a framework with no test of its own</td><td><span data-inv-count="ev-org-theoretical">{n("ev-org-theoretical")}</span></td></tr>
+    <tr><td>Tested: lab tests, benchmarks, or simulations</td><td><span data-inv-count="ev-org-tested">{n("ev-org-tested")}</span></td></tr>
+    <tr><td>Tested, possibly deployed (needs review): a person has not confirmed use in production</td><td><span data-inv-count="ev-org-possibly_deployed">{n("ev-org-possibly_deployed")}</span></td></tr>
+    <tr><td>Deployed: measured in production or on a real incident</td><td><span data-inv-count="ev-org-deployed">{n("ev-org-deployed")}</span></td></tr>
+    <tr><td>Not yet tagged</td><td><span data-inv-count="ev-org-untagged">{n("ev-org-untagged")}</span></td></tr>
   </tbody>
 </table>
 <fieldset class="inv-options" id="inventory-scope-set">
@@ -418,16 +437,16 @@ def render_controls(counts: dict) -> str:
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="research">
-    <span>Research the monitor found (<span data-inv-count="research">{n("research")}</span>)</span>
+    <span>Cited research (<span data-inv-count="research">{n("research")}</span>)</span>
   </label>
   <label class="inv-option">
     <input type="radio" name="inventory-scope" value="all">
-    <span>All papers, including research the monitor found (<span data-inv-count="all">{n("all")}</span>)</span>
+    <span>All papers, including cited research (<span data-inv-count="all">{n("all")}</span>)</span>
   </label>
 </fieldset>
 <fieldset class="inv-options" id="inventory-evidence-set" hidden>
   <legend>Evidence level</legend>
-  <p id="inventory-evidence-note">These definitions paraphrase the monitor's evidence tags. They are not quotes from the papers. Button counts match the list you selected. Seed counts below are for research the monitor found. All levels is the default.</p>
+  <p id="inventory-evidence-note">These definitions paraphrase the inventory's evidence tags. They are not quotes from the papers. Button counts match the list you selected. The counts below are for cited research. All levels is the default.</p>
   <label class="inv-option">
     <input type="radio" name="inventory-evidence" value="all" checked>
     <span>All levels</span>
@@ -458,18 +477,18 @@ def render_controls(counts: dict) -> str:
     <dt>Tested</dt>
     <dd>Paraphrase: lab experiments, benchmarks, or simulations.</dd>
     <dt>Tested, possibly deployed (needs review)</dt>
-    <dd>This is the monitor's tag, not a paraphrase. An automated read found experiment language and words that can mean production or a real incident. A person has not confirmed that measurement. Do not read this tag as deployed.</dd>
+    <dd>This is the inventory's tag, not a paraphrase. An automated read found experiment language and words that can mean production or a real incident. A person has not confirmed that measurement. Do not read this tag as deployed.</dd>
     <dt>Deployed</dt>
-    <dd>Paraphrase: measured in production or on a real incident. Only a record the monitor tags deployed belongs here.</dd>
+    <dd>Paraphrase: measured in production or on a real incident. Only a paper tagged deployed belongs here.</dd>
     <dt>Not yet tagged</dt>
-    <dd>The monitor record has no evidence level. This option is hidden when the selected list has no untagged record.</dd>
+    <dd>The paper has no evidence level yet. This option is hidden when the selected list has no untagged record.</dd>
   </dl>
 </fieldset>
 <label class="inv-find" for="inventory-find">Find in this list
   <input id="inventory-find" type="search" autocomplete="off">
 </label>
 <p id="inventory-status" role="status" aria-live="polite"></p>
-<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. The page does not load the full monitor export.</p>"""
+<p class="inv-count-note">Machine-readable list: <a href="/data/whitepaper-inventory.slim.json">/data/whitepaper-inventory.slim.json</a>. The page does not load the full inventory file, which includes extracted text.</p>"""
 
 
 def apply_page(html: str, counts: dict) -> str:
