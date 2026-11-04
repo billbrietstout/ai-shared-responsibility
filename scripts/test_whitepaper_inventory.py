@@ -133,6 +133,43 @@ class InventoryScopeTest(unittest.TestCase):
         self.assertNotIn("Not extracted yet", text)
         self.assertNotIn("sophisticated associative-learning", text)
 
+    def test_extracted_flag_reads_invariants_then_invariables(self):
+        flag = self.mod.is_extracted
+        self.assertTrue(flag({"invariants": ["a rule that stays true"]}))
+        self.assertTrue(flag({"invariables": ["a rule that stays true"]}))
+        self.assertFalse(
+            flag(
+                {
+                    "invariants": [],
+                    "invariables": ["a rule that stays true"],
+                }
+            )
+        )
+        self.assertTrue(
+            flag(
+                {
+                    "invariants": ["new rule"],
+                    "invariables": ["Not extracted yet."],
+                }
+            )
+        )
+        self.assertFalse(
+            flag(
+                {
+                    "invariants": ["Not extracted yet."],
+                    "invariables": ["a rule that stays true"],
+                }
+            )
+        )
+        self.assertEqual(
+            self.mod.invariant_values({"invariants": ["new"], "invariables": ["old"]}),
+            ["new"],
+        )
+        self.assertEqual(
+            self.mod.invariant_values({"invariables": ["old"]}),
+            ["old"],
+        )
+
     def test_minimal_fixture_for_the_weekly_job(self):
         catalog = {
             "count": 1,

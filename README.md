@@ -85,7 +85,7 @@ request to `develop` and `main`. The validator checks schema shape, unique
 ids, section membership, that every `src` code resolves, that every matched
 source has a `wp_id` found in `build/fixtures/whitepapers.json` with decision
 `include` (`Include` on an older copy is accepted), `monitor_issue` when it
-is set, statement support against that paper's axioms, invariables, and
+is set, statement support against that paper's axioms, invariants, and
 principles, unused sources, include-paper gaps, near-duplicates, and
 duplicate URLs. Unmatched sources other than
 `type: conference-talk`, and empty `risks` or `obligations`, warn through
@@ -105,7 +105,9 @@ absence.
 merged on 2026-11-01. Each paper in that export uses `wp_id`, not `id`.
 The check counts either key. A parsed export with no `id` and no `wp_id`
 is an error, not a content diff, and the refresh command does not write
-the fixture.
+the fixture. Extracted rules on a paper are the `invariants` list. A
+fixture with no `invariants` key is read from `invariables`. When both
+keys are present, only `invariants` is read.
 
 How the data moves, and the branch protection settings to require these
 checks, are in [`docs/monitor-data-flow.md`](docs/monitor-data-flow.md).

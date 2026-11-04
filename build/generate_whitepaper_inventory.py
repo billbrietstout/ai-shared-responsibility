@@ -105,9 +105,26 @@ def is_arxiv(paper: dict) -> bool:
     return "arxiv.org" in str(paper.get("url") or "").lower()
 
 
+def invariant_values(paper: dict) -> object:
+    """Return the invariant list on one monitor paper.
+
+    The export key is invariants. Older fixtures used invariables.
+    invariables is read only when invariants is absent. An empty
+    invariants list does not fall back to invariables. Keep this rule
+    the same as invariant_values in scripts/validate_principles.py.
+    """
+    if "invariants" in paper:
+        return paper.get("invariants")
+    return paper.get("invariables")
+
+
 def is_extracted(paper: dict) -> bool:
-    for key in ("axioms", "invariables", "principles"):
-        for item in paper.get(key) or []:
+    for vals in (
+        paper.get("axioms"),
+        invariant_values(paper),
+        paper.get("principles"),
+    ):
+        for item in vals or []:
             text = " ".join(str(item).split())
             if text and not text.lower().startswith("not extracted"):
                 return True
