@@ -43,7 +43,21 @@ def shortcut_text_a(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, C-qa, C-suggest, C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs.
+Run required Track A internally in this order:
+1. C-intake
+2. C-claims
+3. C-screen
+4. C-foundations
+5. C-attacks
+6. C-inventory
+7. C-tag
+8. C-roca
+9. C-score
+10. C-qa
+11. C-suggest
+12. C-report
+C-attacks is required. Channel: google-docs unless this message names github-md or published. Mode: full unless this message names map-only or suggest-only.
 
 {chain_run_output_block()}
 
@@ -62,7 +76,18 @@ def shortcut_text_b(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs.
+Run required Track A internally in this order:
+1. C-intake
+2. C-claims
+3. C-screen
+4. C-foundations
+5. C-attacks
+6. C-inventory
+7. C-tag
+8. C-roca
+9. C-score
+Then run Track B from C-srf-join through C-srf-coverage, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 {chain_run_output_block()}
 
@@ -81,7 +106,18 @@ def shortcut_text_c(pack: dict) -> str:
     return f"""Paste the draft body in this message.
 {pack_load_block()}
 
-Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs. Run required Track A internally in this order: C-intake, C-claims, C-screen, C-foundations, C-attacks, C-inventory, C-tag, C-roca, C-score, then Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
+Use pack version {version}, runtime_defaults, chain_execution, and operator_initial_inputs.
+Run required Track A internally in this order:
+1. C-intake
+2. C-claims
+3. C-screen
+4. C-foundations
+5. C-attacks
+6. C-inventory
+7. C-tag
+8. C-roca
+9. C-score
+Then run Track B from C-srf-join through C-srf-coverage, then Track C from C-vertical-join through C-vertical-route, then C-qa, C-suggest, and C-report. C-attacks is required. Channel: google-docs unless this message names github-md or published.
 
 {chain_run_output_block()}
 
@@ -657,11 +693,16 @@ def main() -> None:
 
       <h2 class="section-label">What a testable claim needs</h2>
       <p class="section-note">
-        A claim is testable when the reader can point to a named risk or
-        attack class, an obligation (statute, regulation, or contract), a
-        control that implements the obligation (prefer NIST SP 800-53), and
-        one accountable party (job title or SRF persona). Shared is analysis
-        input, not a final owner. Obligation is not a control.
+        A claim is testable when the reader can point to four things.
+      </p>
+      <ul class="section-note">
+        <li>a named risk or attack class</li>
+        <li>an obligation (statute, regulation, or contract)</li>
+        <li>a control that implements the obligation (prefer NIST SP 800-53)</li>
+        <li>one accountable party (job title or SRF persona)</li>
+      </ul>
+      <p class="section-note">
+        Shared is analysis input, not a final owner. Obligation is not a control.
       </p>
       <div class="table-scroll">
         <table class="tier-table">
