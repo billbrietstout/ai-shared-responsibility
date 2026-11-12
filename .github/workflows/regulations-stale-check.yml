@@ -1,0 +1,54 @@
+name: Flag stale regulation dates
+
+# Lists regulation entries whose last_verified date is older than the
+# catalog threshold, commits the report on automation/regulations-stale-check,
+# and opens or updates one draft pull request into develop. The draft body
+# and a follow-up comment mention @cursor so a Cursor agent can re-verify
+# the listed sources. This job does not bump dates and does not merge.
+# Schedule: 04:00 UTC Thursday. See docs/regulations-verification.md.
+
+on:
+  schedule:
+    - cron: "0 4 * * 4"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Write the plan and print it. Do not push or edit a pull request."
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: regulations-stale-check
+  cancel-in-progress: false
+
+jobs:
+  open-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Flag stale dates and open or update the draft pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            python3 scripts/regulations_stale_pr.py --dry-run
+          else
+            python3 scripts/regulations_stale_pr.py --push
+          fi

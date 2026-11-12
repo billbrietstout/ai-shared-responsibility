@@ -179,7 +179,7 @@ Prioritize with the owner. None of these are in-flight in git.
 
 5. **Draft whitepaper claims-test pack.** Shipped at `/assess/claims-test/` (prompts.json, page, gold fixture, eval stub). v1.0.5 intake packet uses bracketed examples and drops `cosai_workstreams`. v1.0.4 requires C-attacks in the Track A shortcut so a stale fetch cannot skip the published-attack table; JSON is optional. Design notes remain in `whitepaper-claims-test-handoff.md`. Do not merge with `/assess/whitepaper-assessment/`. Second industry or WS1–WS4 profile packs are optional follow-on.
 
-6. **Gardening.** Regulation `last_verified` older than 180 days shows Verify on `/regulations/`. Follow PRs and CI on `main`/`develop`.
+6. **Gardening.** Regulation `last_verified` older than 180 days shows Verify on `/regulations/`. Weekly Action `regulations-stale-check.yml` opens a draft and mentions `@cursor`; Cursor follows `docs/regulations-verification.md`. Follow PRs and CI on `main`/`develop`.
 
 Do not revive ChatGPT architecture plans that this repo already refused (A0 to A6, homepage rebrand, `/autonomous-ai`, Control Envelope). The executed keep-list is in `~/.cursor/plans/handoff_plan_assessment_a081c39b.plan.md` (local Cursor plan; all todos completed).
 
