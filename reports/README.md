@@ -13,3 +13,12 @@
 These files are the proposal. The live catalog stays `data/ai-agentic-principles.json` until a person copies a candidate in a separate pull request.
 
 See [`docs/monitor-data-flow.md`](../docs/monitor-data-flow.md).
+
+## Regulation staleness reports
+
+`scripts/regulations_stale_pr.py` writes:
+
+- `regulations-stale.json`
+- `regulations-stale.md`
+
+Those files are committed on `automation/regulations-stale-check` by the weekly workflow. They list entries whose `last_verified` date is past the catalog threshold. Cursor updates `data/regulations.json` on that branch after opening each source. See [`docs/regulations-verification.md`](../docs/regulations-verification.md).
