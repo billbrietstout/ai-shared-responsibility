@@ -180,15 +180,6 @@
         line-height: 1.4;
       }
       .control-card__permalink:hover { color: var(--cosai-blue); border-color: var(--cosai-blue); }
-      .control-card__chevron {
-        width: 16px;
-        height: 16px;
-        color: var(--slate-400);
-        margin-top: var(--sp-1);
-        flex-shrink: 0;
-        transition: transform 0.2s;
-      }
-      .control-card.open .control-card__chevron { transform: rotate(180deg); }
 
       .control-detail {
         display: none;
@@ -561,6 +552,7 @@
               placeholder="Search controls&#8230;"
               aria-label="Search controls"
             />
+            <p class="results-hint">Use Details on a row to open the threshold and the accountable persona.</p>
           </div>
           <div id="controls-list"></div>
         </div>
@@ -750,7 +742,7 @@
                 escHtml(c.component) + ' &middot; <code>' + escHtml(c.accountable_persona) + '</code>' +
               '</div>' +
             '</div>' +
-            '<svg class="control-card__chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>' +
+            '<span class="card-expand"><span class="card-expand__show">Details</span><span class="card-expand__hide">Hide</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span>' +
           '</div>' +
           '<div class="control-detail">' +
             '<div class="detail-grid">' +
