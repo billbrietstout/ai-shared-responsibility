@@ -741,6 +741,64 @@ a:hover { text-decoration: none; }
 }
 
 /* --------------------------------------------------------------------------
+   Expandable control cards
+   The row is the control. This chip is the visible cue that it opens.
+   -------------------------------------------------------------------------- */
+
+.results-header { flex-wrap: wrap; }
+
+.results-hint {
+  flex: 1 0 100%;
+  margin: var(--sp-2) 0 0;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  color: var(--slate-500);
+}
+
+.card-expand {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  align-self: center;
+  padding: 4px 8px 4px 10px;
+  border: 1px solid var(--slate-300);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--cosai-navy);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.card-expand__hide { display: none; }
+
+.ctrl-card.open .card-expand__show,
+.control-card.open .card-expand__show { display: none; }
+
+.ctrl-card.open .card-expand__hide,
+.control-card.open .card-expand__hide { display: inline; }
+
+.card-expand svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.ctrl-card.open .card-expand svg,
+.control-card.open .card-expand svg { transform: rotate(180deg); }
+
+.ctrl-card__header:hover .card-expand,
+.ctrl-card__header:focus-visible .card-expand,
+.control-card__head:hover .card-expand,
+.control-card__head:focus-visible .card-expand {
+  border-color: var(--cosai-navy);
+  background: var(--slate-50);
+}
+
+/* --------------------------------------------------------------------------
    Print
    -------------------------------------------------------------------------- */
 

@@ -139,6 +139,14 @@
         cursor: pointer;
       }
       .ctrl-card__header:hover { background: var(--slate-50, #f8fafc); }
+      .ctrl-card__header:focus-visible {
+        outline: 2px solid var(--cosai-navy);
+        outline-offset: -2px;
+      }
+      @media (max-width: 720px) {
+        .ctrl-card__header { grid-template-columns: 42px 1fr; }
+        .ctrl-card__header .card-expand { grid-column: 1 / -1; justify-self: start; }
+      }
       .ctrl-card__layer-badge {
         display: grid;
         place-items: center;
@@ -176,7 +184,7 @@
         font-family: inherit;
       }
       .ctrl-card__permalink:hover { color: var(--cosai-navy); }
-      .ctrl-card__pills { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+      .ctrl-card__pills { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-start; margin-top: 6px; }
       .ctrl-card__detail { display: none; padding: 0 var(--sp-4) var(--sp-4); }
       .ctrl-card.open .ctrl-card__detail { display: block; }
       .ctrl-desc {
@@ -491,6 +499,7 @@
               placeholder="Search controls&hellip;"
               aria-label="Search controls"
             />
+            <p class="results-hint">Use Details on a row to open the threshold and the accountable persona.</p>
           </div>
 
           <div class="control-list" id="control-list">
@@ -746,12 +755,17 @@
               onclick="navigator.clipboard.writeText(location.origin+location.pathname+'#${escHtml(c.id)}');this.textContent='Copied!';setTimeout(()=>this.textContent='#',1200)"
               title="Copy permalink">#</button></div>
             <div class="ctrl-card__title">${escHtml(c.title)}</div>
+            <div class="ctrl-card__pills">
+              <span class="pill pill--${DOMAIN_PILL[c.accountability_domain]}">${escHtml(DOMAIN_LABEL[c.accountability_domain])}</span>
+              <span class="pill pill--stage">${escHtml(titleCase(c.lifecycle_stage))}</span>
+              <span class="pill pill--${STATUS_PILL[c.implementation_status]}">${escHtml(STATUS_LABEL[c.implementation_status])}</span>
+            </div>
           </div>
-          <div class="ctrl-card__pills">
-            <span class="pill pill--${DOMAIN_PILL[c.accountability_domain]}">${escHtml(DOMAIN_LABEL[c.accountability_domain])}</span>
-            <span class="pill pill--stage">${escHtml(titleCase(c.lifecycle_stage))}</span>
-            <span class="pill pill--${STATUS_PILL[c.implementation_status]}">${escHtml(STATUS_LABEL[c.implementation_status])}</span>
-          </div>
+          <span class="card-expand">
+            <span class="card-expand__show">Details</span>
+            <span class="card-expand__hide">Hide</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+          </span>
         </div>
         <div class="ctrl-card__detail">
           <p class="ctrl-desc">${escHtml(c.description)}</p>
