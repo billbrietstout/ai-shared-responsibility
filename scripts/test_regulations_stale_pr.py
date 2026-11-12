@@ -21,7 +21,7 @@ import regulations_stale_pr as rsp  # noqa: E402
 
 
 class RegulationsStalePrTests(unittest.TestCase):
-    def test_find_stale_uses_threshold(self):
+    def test_find_stale_flags_missing_unverified_and_aged(self):
         payload = {
             "stale_threshold_days": 180,
             "items": [
@@ -44,6 +44,14 @@ class RegulationsStalePrTests(unittest.TestCase):
                     "body": "Y",
                 },
                 {
+                    "id": "missing-date",
+                    "name": "Missing",
+                    "url": "https://example.com/missing",
+                    "version": "1",
+                    "depth": "full",
+                    "body": "Z",
+                },
+                {
                     "id": "reference-only",
                     "name": "Reference",
                     "url": "https://example.com/ref",
@@ -51,28 +59,48 @@ class RegulationsStalePrTests(unittest.TestCase):
                     "depth": "reference",
                     "verification_status": "unverified",
                 },
+                {
+                    "id": "reference-dated-unverified",
+                    "name": "Dated unverified",
+                    "url": "https://example.com/du",
+                    "version": "1",
+                    "last_verified": "2026-10-01",
+                    "depth": "reference",
+                    "verification_status": "unverified",
+                },
             ],
         }
         threshold, stale = rsp.find_stale(payload, today=date(2026, 11, 12))
         self.assertEqual(threshold, 180)
-        self.assertEqual([row.id for row in stale], ["stale"])
+        self.assertEqual(
+            [(row.id, row.reason) for row in stale],
+            [
+                ("stale", "stale"),
+                ("missing-date", "missing"),
+                ("reference-only", "missing"),
+                ("reference-dated-unverified", "unverified"),
+            ],
+        )
         self.assertEqual(stale[0].age_days, 315)
+        self.assertIsNone(stale[1].age_days)
 
     def test_ids_with_newer_verification(self):
         develop = {
             "items": [
                 {"id": "a", "last_verified": "2026-01-01"},
                 {"id": "b", "last_verified": "2026-05-01"},
+                {"id": "c"},
             ]
         }
         branch = {
             "items": [
                 {"id": "a", "last_verified": "2026-11-12"},
                 {"id": "b", "last_verified": "2026-05-01"},
+                {"id": "c", "last_verified": "2026-11-12"},
             ]
         }
         self.assertEqual(
-            rsp.ids_with_newer_verification(develop, branch), ["a"]
+            rsp.ids_with_newer_verification(develop, branch), ["a", "c"]
         )
 
     def test_plan_reuses_one_pull_request(self):
@@ -124,6 +152,7 @@ class RegulationsStalePrTests(unittest.TestCase):
                     age_days=181,
                     depth="full",
                     body="NIST",
+                    reason="stale",
                 )
             ],
             newer_on_branch=["eu-ai-act"],
@@ -135,6 +164,7 @@ class RegulationsStalePrTests(unittest.TestCase):
         self.assertIn(rsp.DOCS_PATH, body)
         self.assertIn(rsp.REGULATIONS_PATH, body)
         self.assertIn("Do not bump a date without opening the source", body)
+        self.assertIn("missing `last_verified` date", body)
         self.assertNotIn("\u2014", body)
         self.assertNotIn("\u2013", body)
         comment = rsp.cursor_comment(payload)
@@ -155,7 +185,19 @@ class RegulationsStalePrTests(unittest.TestCase):
                     age_days=181,
                     depth="full",
                     body="EU",
-                )
+                    reason="stale",
+                ),
+                rsp.StaleEntry(
+                    id="finos-aigf",
+                    name="FINOS",
+                    url="https://example.com/finos",
+                    version="1",
+                    last_verified="",
+                    age_days=None,
+                    depth="reference",
+                    body="FINOS",
+                    reason="missing",
+                ),
             ],
             newer_on_branch=[],
         )
@@ -163,6 +205,8 @@ class RegulationsStalePrTests(unittest.TestCase):
         self.assertIn("`gdpr`", md)
         self.assertIn("https://gdpr-info.eu/", md)
         self.assertIn("181", md)
+        self.assertIn("missing", md)
+        self.assertIn("`finos-aigf`", md)
 
     def test_workflow_is_least_privilege_and_scheduled(self):
         workflow = (
