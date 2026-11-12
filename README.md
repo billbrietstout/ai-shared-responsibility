@@ -44,7 +44,7 @@ All asset paths are root-relative (`/shared/styles.css`, `/data/layers.json`) so
 
 ### Updating regulation references
 
-Edit `data/regulations.json`. Update the `last_verified` date for any entry you confirm is current — this clears the staleness badge on the Regulations page. Entries older than 180 days display a visible **Verify** indicator.
+Edit `data/regulations.json`. Update the `last_verified` date for any entry you confirm is current. That clears the Verify badge on the Regulations page. Entries with no verification date, a date older than 180 days, or `verification_status: unverified` show Verify.
 
 Weekly gardening: `.github/workflows/regulations-stale-check.yml` lists stale dates, opens one draft pull request, and mentions `@cursor`. The Cursor agent follows [`docs/regulations-verification.md`](docs/regulations-verification.md) and bumps dates only after opening the source. A person merges the draft.
 

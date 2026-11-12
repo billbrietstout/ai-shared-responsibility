@@ -133,9 +133,10 @@ renders its skeleton immediately, then populates dynamic content.
 }
 ```
 
-`last_verified` drives the staleness badge on the Regulations page. Any entry
-older than 180 days gets a visible `Verify` badge. Contributors update this field
-via pull request — no server, no admin panel.
+`last_verified` drives the Verify badge on the Regulations page. An entry with
+no date, a date older than 180 days, or `verification_status: unverified` gets
+the badge. Contributors update those fields via pull request against this repo.
+No server, no admin panel.
 
 ### layers.json schema
 

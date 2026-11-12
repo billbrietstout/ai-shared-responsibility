@@ -230,7 +230,8 @@
         <p class="page-hero__lede">
           Regulations and standards referenced by the CoSAI SRF. Each entry
           shows which framework layers it touches and when it was last verified.
-          Entries older than 180 days are flagged for review.
+          Entries with no verification date, a date older than 180 days, or an
+          unverified status are flagged for review.
         </p>
       </div>
     </header>
@@ -246,9 +247,32 @@
     <script type="module">
       const LAYER_COLORS = { L1: "l1", L2: "l2", L3: "l3", L4: "l4", L5: "l5" };
       const STALE_DAYS = 180;
+      const REGS_EDIT_URL =
+        "https://github.com/billbrietstout/ai-shared-responsibility/blob/develop/data/regulations.json";
 
       function daysSince(dateStr) {
-        return Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+        if (!dateStr) return null;
+        const then = new Date(dateStr);
+        if (Number.isNaN(then.getTime())) return null;
+        return Math.floor((Date.now() - then.getTime()) / 86400000);
+      }
+
+      function needsVerification(item, threshold) {
+        if (item.verification_status === "unverified") return "unverified";
+        const age = daysSince(item.last_verified);
+        if (age === null) return "missing";
+        if (age > threshold) return "stale";
+        return null;
+      }
+
+      function verifyNotice(reason, threshold) {
+        if (reason === "missing") {
+          return "This entry has no last_verified date.";
+        }
+        if (reason === "unverified") {
+          return "This entry is marked unverified in the catalog.";
+        }
+        return `This entry was last verified more than ${threshold} days ago.`;
       }
 
       function layerPill(id) {
@@ -259,13 +283,16 @@
       }
 
       function regItem(item, threshold) {
-        const stale = daysSince(item.last_verified) > threshold;
+        const reason = needsVerification(item, threshold);
         const layers = item.srf_layers.map(layerPill).join(" ");
+        const dateLabel = item.last_verified
+          ? `Verified ${item.last_verified}`
+          : "No verification date";
 
-        const staleBlock = stale ? `
+        const staleBlock = reason ? `
           <div class="stale-notice">
-            This entry was last verified more than ${threshold} days ago.
-            <a href="https://github.com/billbrietstout/cosai-wizards" target="_blank" rel="noopener">
+            ${verifyNotice(reason, threshold)}
+            <a href="${REGS_EDIT_URL}" target="_blank" rel="noopener">
               Submit a correction on GitHub
             </a>
           </div>
@@ -292,10 +319,10 @@
                   </svg>
                 </a>
                 <div class="freshness">
-                  <span class="badge ${stale ? "badge--stale" : "badge--fresh"}">
-                    ${stale ? "Verify" : "Current"}
+                  <span class="badge ${reason ? "badge--stale" : "badge--fresh"}">
+                    ${reason ? "Verify" : "Current"}
                   </span>
-                  <span class="freshness__date">Verified ${item.last_verified}</span>
+                  <span class="freshness__date">${dateLabel}</span>
                 </div>
               </div>
             </div>
@@ -346,7 +373,7 @@
             : data.items.filter((i) => i.tags.includes(activeTag));
 
           const staleCount = items.filter(
-            (i) => daysSince(i.last_verified) > threshold
+            (i) => needsVerification(i, threshold)
           ).length;
 
           const tags = ["all", ...allTags(data.items)];
@@ -373,15 +400,16 @@
               <div>
                 <h2>Keeping this current</h2>
                 <p>
-                  Each entry has a <code>last_verified</code> date in the source
-                  data file. To update a reference or add a new one, open a pull
-                  request against <code>data/regulations.json</code> in the
-                  GitHub repository.
+                  Each entry records a <code>last_verified</code> date or a
+                  <code>verification_status</code> in
+                  <code>data/regulations.json</code>. To update a reference or
+                  add a new one, open a pull request in
+                  <code>ai-shared-responsibility</code>.
                 </p>
               </div>
               <a
                 class="btn btn--primary"
-                href="https://github.com/billbrietstout/cosai-wizards"
+                href="${REGS_EDIT_URL}"
                 target="_blank"
                 rel="noopener"
               >Edit on GitHub</a>

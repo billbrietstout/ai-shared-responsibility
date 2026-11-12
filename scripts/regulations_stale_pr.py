@@ -49,9 +49,8 @@ _SEGMENT = re.compile(r"[A-Za-z0-9._-]+$")
 _TOKEN = re.compile(r"(ghp_|github_pat_|gho_)[A-Za-z0-9_]+")
 
 CLOSE_CLEAN = (
-    "No regulation entry on develop is past the staleness threshold, so "
-    "this draft has nothing left to review. The workflow closed it without "
-    "merging."
+    "No regulation entry on develop still needs verification, so this draft "
+    "has nothing left to review. The workflow closed it without merging."
 )
 
 
@@ -69,9 +68,10 @@ class StaleEntry:
     url: str
     version: str
     last_verified: str
-    age_days: int
+    age_days: int | None
     depth: str
     body: str
+    reason: str
 
 
 def redact(text: str) -> str:
@@ -125,6 +125,13 @@ def find_stale(
     *,
     today: date | None = None,
 ) -> tuple[int, list[StaleEntry]]:
+    """Flag entries that need a human or Cursor verification pass.
+
+    An entry needs verification when it has no last_verified date, its
+    last_verified date is older than the threshold, or verification_status
+    is unverified. Missing dates used to be skipped, which hid most of the
+    catalog from the weekly draft.
+    """
     if not isinstance(payload, dict):
         raise SystemExit("regulations.json must be an object")
     threshold = payload.get("stale_threshold_days", 180)
@@ -142,11 +149,18 @@ def find_stale(
         if not isinstance(item_id, str) or not item_id:
             raise SystemExit("each regulations item needs a string id")
         last_verified = item.get("last_verified")
-        if not isinstance(last_verified, str) or not last_verified:
-            continue
-        verified_on = parse_day(last_verified)
-        age = (as_of - verified_on).days
-        if age <= threshold:
+        has_date = isinstance(last_verified, str) and bool(last_verified)
+        age: int | None = None
+        reason: str | None = None
+        if has_date:
+            age = (as_of - parse_day(last_verified)).days
+            if age > threshold:
+                reason = "stale"
+        else:
+            reason = "missing"
+        if reason is None and item.get("verification_status") == "unverified":
+            reason = "unverified"
+        if reason is None:
             continue
         stale.append(
             StaleEntry(
@@ -154,13 +168,21 @@ def find_stale(
                 name=str(item.get("name") or item_id),
                 url=str(item.get("url") or ""),
                 version=str(item.get("version") or ""),
-                last_verified=last_verified,
+                last_verified=last_verified if has_date else "",
                 age_days=age,
                 depth=str(item.get("depth") or ""),
                 body=str(item.get("body") or ""),
+                reason=reason,
             )
         )
-    stale.sort(key=lambda row: (-row.age_days, row.id))
+    reason_rank = {"stale": 0, "missing": 1, "unverified": 2}
+    stale.sort(
+        key=lambda row: (
+            reason_rank.get(row.reason, 9),
+            -(row.age_days if row.age_days is not None else -1),
+            row.id,
+        )
+    )
     return threshold, stale
 
 
@@ -181,7 +203,8 @@ def ids_with_newer_verification(
         if not isinstance(item_id, str) or not isinstance(branch_day, str):
             continue
         base_day = left.get(item_id)
-        if not isinstance(base_day, str):
+        if not isinstance(base_day, str) or not base_day:
+            newer.append(item_id)
             continue
         if parse_day(branch_day) > parse_day(base_day):
             newer.append(item_id)
@@ -206,9 +229,10 @@ def report_payload(
                 "body": row.body,
                 "url": row.url,
                 "version": row.version,
-                "last_verified": row.last_verified,
+                "last_verified": row.last_verified or None,
                 "age_days": row.age_days,
                 "depth": row.depth,
+                "reason": row.reason,
             }
             for row in stale
         ],
@@ -228,18 +252,20 @@ def render_report_markdown(payload: dict[str, Any]) -> str:
     if payload["stale"]:
         lines.extend(
             [
-                "| id | last_verified | age_days | source |",
-                "| --- | --- | ---: | --- |",
+                "| id | reason | last_verified | age_days | source |",
+                "| --- | --- | --- | ---: | --- |",
             ]
         )
         for row in payload["stale"]:
+            verified = row["last_verified"] or "none"
+            age = row["age_days"] if row["age_days"] is not None else "n/a"
             lines.append(
-                f"| `{row['id']}` | {row['last_verified']} | "
-                f"{row['age_days']} | {row['url']} |"
+                f"| `{row['id']}` | {row['reason']} | {verified} | "
+                f"{age} | {row['url']} |"
             )
         lines.append("")
     else:
-        lines.append("No stale entries on this tree.")
+        lines.append("No entries need verification on this tree.")
         lines.append("")
     newer = payload.get("newer_last_verified_on_branch") or []
     if newer:
@@ -268,15 +294,17 @@ def render_pull_request_body(payload: dict[str, Any]) -> str:
         "",
         "## Summary",
         "",
-        "This draft lists regulation entries whose `last_verified` date on "
-        f"`develop` is older than {payload['stale_threshold_days']} days.",
+        "This draft lists regulation entries on `develop` that need "
+        "verification: a missing `last_verified` date, a date older than "
+        f"{payload['stale_threshold_days']} days, or "
+        "`verification_status: unverified`.",
         "",
         f"- Checked: {payload['checked_on']}",
-        f"- Stale in this report: {payload['stale_count']}",
+        f"- Entries needing verification: {payload['stale_count']}",
         f"- Report: `{REPORT_JSON}`",
         f"- Agent instructions: `{DOCS_PATH}`",
         "",
-        "## Stale ids",
+        "## Ids needing verification",
         "",
         clip_ids(stale_ids),
         "",
@@ -304,12 +332,14 @@ def render_pull_request_body(payload: dict[str, Any]) -> str:
                 "1. Open each stale source URL in the report.",
                 "2. Confirm the entry still matches the live instrument.",
                 "3. When confirmed, set `last_verified` to today's UTC date "
-                f"in `{REGULATIONS_PATH}` on this branch.",
+                f"in `{REGULATIONS_PATH}` on this branch. For a reference "
+                "entry that was `unverified`, set "
+                "`verification_status` to `verified` in the same edit.",
                 "4. If the source moved or changed, update `url`, `version`, "
                 "`name`, or `scope` in the same commit and say what changed "
                 "in the pull request comment.",
-                "5. If you cannot verify an entry, leave its date alone and "
-                "comment why.",
+                "5. If you cannot verify an entry, leave its date and status "
+                "alone and comment why.",
                 "6. Do not bump a date without opening the source. Do not "
                 "merge. Do not mark the draft ready.",
                 "",
@@ -320,8 +350,8 @@ def render_pull_request_body(payload: dict[str, Any]) -> str:
             [
                 "## Cursor task",
                 "",
-                "No stale ids remain on this branch. Leave the draft for a "
-                "person to merge the `last_verified` updates into develop.",
+                "No ids still need verification on this branch. Leave the "
+                "draft for a person to merge the updates into develop.",
                 "",
             ]
         )
@@ -357,10 +387,10 @@ def cursor_comment(payload: dict[str, Any]) -> str:
 
 def commit_message(payload: dict[str, Any]) -> str:
     return (
-        "Flag stale regulation last_verified dates.\n"
+        "Flag regulation entries that need verification.\n"
         "\n"
         f"Checked on {payload['checked_on']}. "
-        f"Stale entries: {payload['stale_count']}.\n"
+        f"Entries needing verification: {payload['stale_count']}.\n"
     )
 
 
@@ -680,8 +710,8 @@ def apply_plan(
 
 def print_counts(threshold: int, stale: list[StaleEntry], newer: list[str]) -> None:
     print(
-        f"Threshold: {threshold} days. Stale on develop: {len(stale)}. "
-        f"Newer on branch: {len(newer)}."
+        f"Threshold: {threshold} days. Need verification on develop: "
+        f"{len(stale)}. Newer on branch: {len(newer)}."
     )
 
 
@@ -793,7 +823,7 @@ def run(args: argparse.Namespace) -> int:
 
 
 def finish_clean(repo: Path, branch: str, base: str) -> int:
-    print("No stale last_verified dates on develop.")
+    print("No regulation entries on develop still need verification.")
     plan = plan_pull_request(list_open_pull_requests(repo, branch, base), False)
     if plan.action == "skip":
         print("No pull request to open.")
