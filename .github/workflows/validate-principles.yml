@@ -68,4 +68,6 @@ jobs:
           python-version: "3.12"
 
       - name: Compare fixture to the monitor export on its default branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python3 scripts/sync_whitepapers_fixture.py --check
