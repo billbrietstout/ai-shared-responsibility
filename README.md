@@ -46,6 +46,8 @@ All asset paths are root-relative (`/shared/styles.css`, `/data/layers.json`) so
 
 Edit `data/regulations.json`. Update the `last_verified` date for any entry you confirm is current — this clears the staleness badge on the Regulations page. Entries older than 180 days display a visible **Verify** indicator.
 
+Weekly gardening: `.github/workflows/regulations-stale-check.yml` lists stale dates, opens one draft pull request, and mentions `@cursor`. The Cursor agent follows [`docs/regulations-verification.md`](docs/regulations-verification.md) and bumps dates only after opening the source. A person merges the draft.
+
 ### Updating framework content
 
 Layer definitions live in `data/layers.json`. Persona definitions live in `data/personas.json`. The operating model matrix lives in `data/matrix.json`. Schemas for all three are documented in `ARCHITECTURE.md`.
