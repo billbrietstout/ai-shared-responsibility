@@ -34,7 +34,13 @@
     return n;
   }
   function esc(s) { return (s == null ? "" : String(s)); }
-  function todayISO() { return new Date().toISOString().slice(0, 10); }
+  // Viewer's calendar date. toISOString() is UTC, so a US evening is already the next day.
+  function todayISO() {
+    var d = new Date();
+    var m = d.getMonth() + 1;
+    var day = d.getDate();
+    return d.getFullYear() + "-" + (m < 10 ? "0" : "") + m + "-" + (day < 10 ? "0" : "") + day;
+  }
 
   function defaultState() {
     return {
@@ -414,13 +420,72 @@
       setF(9, "normal", navy); text(state.review, M + 70, y); y += 16;
     }
 
-    // footer
-    var fy = doc.internal.pageSize.getHeight() - 36;
+    function drawSignLine(pdf, yPos) {
+      var labels = ["Signature", "Name", "Date"];
+      var gap = 12;
+      var pad = 4;
+      setF(9, "bold", slate);
+      var widths = labels.map(function (label) { return pdf.getTextWidth(label); });
+      var used = gap * (labels.length - 1);
+      widths.forEach(function (w) { used += w + pad; });
+      var lineW = Math.floor((contentW - used) / labels.length);
+      var x = M;
+      pdf.setDrawColor(71, 85, 105);
+      pdf.setLineWidth(0.6);
+      labels.forEach(function (label, i) {
+        setF(9, "bold", slate);
+        pdf.text(label, x, yPos);
+        var x1 = x + widths[i] + pad;
+        pdf.line(x1, yPos + 3, x1 + lineW, yPos + 3);
+        x = x1 + lineW + gap;
+      });
+    }
+
+    var unresolvedCount = 0;
+    DATA.layers.forEach(function (layer) {
+      if (layerUnresolved(layer)) unresolvedCount++;
+    });
+
+    var contentW = W - M * 2;
+    var H = doc.internal.pageSize.getHeight();
+    var footText = "Generated " + new Date().toLocaleString() + " via aisharedresponsibility.com. Applies the CoSAI AI Shared Responsibility Framework rule of one accountable party per activity. Governance artifact, not legal advice; does not by itself transfer liability.";
+    var footLeading = 10;
     setF(7.5, "normal", slate);
-    var foot = doc.splitTextToSize(
-      "Generated " + new Date().toLocaleString() + " via aisharedresponsibility.com. Applies the CoSAI AI Shared Responsibility Framework rule of one accountable party per activity. Governance artifact, not legal advice; does not by itself transfer liability.",
-      W - M * 2);
-    text(foot, M, fy);
+    // Inset the wrap. The drawn glyph box runs a few points past splitTextToSize,
+    // and text() would join these lines into one string that runs past the right margin.
+    var foot = doc.splitTextToSize(footText, contentW - 12);
+    // Keep the last line's ink inside the bottom margin.
+    var lastFoot = H - M - 4;
+    var firstFoot = lastFoot - (foot.length - 1) * footLeading;
+
+    var warnLines = [];
+    var warnLeading = 12;
+    if (unresolvedCount) {
+      var warn = unresolvedCount + " layer" + (unresolvedCount > 1 ? "s" : "") + " still unresolved. Shared is not a valid final answer.";
+      setF(9, "bold", [185, 28, 28]);
+      warnLines = doc.splitTextToSize(warn, contentW);
+    }
+    var closingH = (warnLines.length ? warnLines.length * warnLeading + 8 : 0) + 20;
+    if (y + 8 + closingH > firstFoot - 12) {
+      doc.addPage();
+      y = M;
+    }
+
+    y += 8;
+    if (warnLines.length) {
+      setF(9, "bold", [185, 28, 28]);
+      warnLines.forEach(function (line, i) {
+        doc.text(line, M, y + i * warnLeading);
+      });
+      y += warnLines.length * warnLeading + 8;
+    }
+
+    drawSignLine(doc, y);
+
+    setF(7.5, "normal", slate);
+    foot.forEach(function (line, i) {
+      doc.text(line, M, firstFoot + i * footLeading);
+    });
 
     doc.save(fileSlug() + ".pdf");
   }
