@@ -38,7 +38,7 @@
     persona: 1.35,
     model: 1.9,
     control: 0.5,
-    policy: 1.45,
+    policy: 1.9,
     topic: 1.05
   };
   var LAYER_Y = { L1: 84, L2: 66, L3: 48, L4: 30, L5: 12 };
@@ -345,17 +345,26 @@
     return shown[kind] !== false;
   }
 
+  /* Operating-model and policy names are short anchors. On a wide canvas
+   * they are forced on, so the label grid cannot drop AI-SaaS, Agent-PaaS,
+   * or the five policy levels at the default zoom. On a narrow canvas they
+   * stay on "auto": the grid may cull them until a zoom makes room. */
+  function anchorLabelsForced() {
+    return !!(graphEl && graphEl.clientWidth >= 700);
+  }
+
   function labelMode(key, attrs, hovered) {
     if (key === selected || hovered) return "visible";
     if (selected && !neighborMap[key]) return "hidden";
     if (attrs.kind === "layer") return "visible";
+    if ((attrs.kind === "model" || attrs.kind === "policy") && anchorLabelsForced()) return "visible";
     if (attrs.kind === "persona" || attrs.kind === "model" || attrs.kind === "policy") return "auto";
     return "hidden";
   }
 
   function labelPlate(mode, kind) {
     if (mode === "hidden") return {};
-    if (kind !== "layer" && kind !== "persona" && kind !== "model") return {};
+    if (kind !== "layer" && kind !== "persona" && kind !== "model" && kind !== "policy") return {};
     return {
       labelBackgroundColor: palette.stage,
       labelBackgroundPadding: 4,
@@ -763,6 +772,7 @@
 
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
+        renderer.refresh();
         publish();
         renderDetails();
         statusEl.dataset.ready = "true";
