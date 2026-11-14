@@ -71,17 +71,27 @@
     </div>
 
     <main id="main" class="layout" data-llm="accountability-decision-record">
-      <div class="state-bar" role="group" aria-label="Decision Record actions">
-        <span class="state-bar__label" id="privacy-note">Your Decision Record stays in this browser. Nothing from this form leaves your device.</span>
-        <button id="btn-export" class="btn btn--ghost" type="button">Export JSON</button>
-        <button id="btn-import" class="btn btn--ghost" type="button" aria-describedby="import-help">Import JSON</button>
-        <input id="file-import" type="file" accept="application/json,.json" hidden />
-        <button id="btn-pdf" class="btn btn--primary" type="button">Download PDF</button>
-        <button id="btn-reset" class="btn btn--ghost" type="button">Reset</button>
+      <div class="state-bar" role="region" aria-label="Decision Record actions">
+        <p class="state-bar__label" id="privacy-note">Your Decision Record stays in this browser. Nothing from this form leaves your device.</p>
+        <div class="state-actions">
+          <div class="state-actions__primary">
+            <button id="btn-pdf" class="btn btn--primary" type="button">Download PDF</button>
+          </div>
+          <div class="state-actions__files" role="group" aria-label="JSON file">
+            <button id="btn-export" class="btn btn--ghost" type="button">Export JSON</button>
+            <button id="btn-import" class="btn btn--ghost" type="button" aria-describedby="import-help">Import JSON</button>
+            <input id="file-import" type="file" accept="application/json,.json" hidden />
+          </div>
+          <div class="state-actions__reset">
+            <button id="btn-reset" class="btn btn--danger" type="button">Reset</button>
+            <button id="btn-undo" class="btn btn--ghost" type="button" hidden>Undo reset</button>
+          </div>
+        </div>
         <p id="import-help" class="import-help">
           Restores a record saved with Export JSON.
           <a href="srf-decision-record-example.json" download>Download an example.</a>
         </p>
+        <p id="action-status" class="import-help" role="status" aria-live="polite"></p>
       </div>
 
       <section class="intro-block" aria-labelledby="intro-heading" data-llm="accountability-decision-record">
@@ -195,6 +205,7 @@
               <div class="field">
                 <label class="field__label" for="f-decision">Decision</label>
                 <select id="f-decision" class="field__input">
+                  <option value="Not decided">Not decided</option>
                   <option value="Approved">Approved</option>
                   <option value="Approved with conditions">Approved with conditions</option>
                   <option value="Deferred">Deferred</option>
