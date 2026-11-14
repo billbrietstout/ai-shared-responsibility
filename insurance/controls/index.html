@@ -8,7 +8,7 @@
       name="description"
       content="Browse all 40 insurance controls in the CoSAI SRF. Filter by SRF layer, insurance lifecycle stage, operating model, and accountable persona."
     />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/insurance/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
@@ -113,18 +113,18 @@
         font-size: var(--text-sm);
         font-family: inherit;
         color: var(--slate-800);
-        background: #fff;
+        background: var(--surface);
         width: 200px;
         outline: none;
         transition: border-color 0.1s;
       }
-      .search-input:focus { border-color: #1d4ed8; }
+      .search-input:focus { border-color: var(--dm-bd-1d4ed8); }
 
       /* ── Control card ─────────────────────────────────────────────── */
       .control-card {
         border: 1px solid var(--slate-200);
         border-radius: var(--radius-lg);
-        background: #fff;
+        background: var(--surface);
         margin-bottom: var(--sp-4);
         overflow: hidden;
         transition: box-shadow 0.12s;
@@ -160,12 +160,12 @@
       .badge--l3 { color: var(--l3-text); background: var(--l3-bg); }
       .badge--l4 { color: var(--l4-text); background: var(--l4-bg); }
       .badge--l5 { color: var(--l5-text); background: var(--l5-bg); }
-      .badge--dev  { color: #1e40af; background: #dbeafe; }
-      .badge--val  { color: #5b21b6; background: #ede9fe; }
-      .badge--mon  { color: #065f46; background: #d1fae5; }
-      .badge--tpo  { color: #92400e; background: #fef3c7; }
-      .badge--zero  { color: #991b1b; background: #fee2e2; }
-      .badge--verif { color: #155e75; background: #cffafe; }
+      .badge--dev  { color: var(--dm-fg-1e40af); background: var(--dm-bg-dbeafe); }
+      .badge--val  { color: var(--dm-fg-5b21b6); background: var(--dm-bg-ede9fe); }
+      .badge--mon  { color: var(--dm-fg-065f46); background: var(--dm-bg-d1fae5); }
+      .badge--tpo  { color: var(--dm-fg-92400e); background: var(--dm-bg-fef3c7); }
+      .badge--zero  { color: var(--dm-fg-991b1b); background: var(--dm-bg-fee2e2); }
+      .badge--verif { color: var(--dm-fg-155e75); background: var(--dm-bg-cffafe); }
       .control-card__title-area { flex: 1; min-width: 0; }
       .control-card__id {
         font-size: var(--text-xs);
@@ -252,7 +252,7 @@
         font-size: var(--text-xs);
         font-family: ui-monospace, monospace;
         color: var(--slate-700);
-        background: #fff;
+        background: var(--surface);
         border: 1px solid var(--slate-200);
         padding: 2px 7px;
         border-radius: 4px;
@@ -265,9 +265,9 @@
         font-weight: 700;
         letter-spacing: 0.06em;
         text-transform: uppercase;
-        background: #dbeafe;
-        color: #1e3a8a;
-        border: 1px solid #93c5fd;
+        background: var(--dm-bg-dbeafe);
+        color: var(--dm-fg-1e3a8a);
+        border: 1px solid var(--dm-bd-93c5fd);
         border-radius: 4px;
         padding: 2px 7px;
         margin-bottom: var(--sp-2);
@@ -296,9 +296,9 @@
         font-weight: 600;
         padding: 2px 6px;
         border-radius: 4px;
-        background: #dbeafe;
-        color: #1e3a8a;
-        border: 1px solid #93c5fd;
+        background: var(--dm-bg-dbeafe);
+        color: var(--dm-fg-1e3a8a);
+        border: 1px solid var(--dm-bd-93c5fd);
       }
 
       /* ── Empty state ──────────────────────────────────────────────── */
@@ -380,16 +380,16 @@
     <main id="main" class="page-body" data-llm="insurance-controls-browser">
 
       <!-- Status notice -->
-      <div role="note" style="background:#fffbeb;border:1px solid #fbbf24;border-radius:10px;padding:14px 20px;margin-top:24px;font-size:0.875rem;color:#78350f;line-height:1.55;">
-        <strong style="color:#92400e;">Experimental schema.</strong> This vertical is a proposed
+      <div role="note" style="background:var(--dm-bg-fffbeb);border:1px solid var(--dm-bd-fbbf24);border-radius:10px;padding:14px 20px;margin-top:24px;font-size:0.875rem;color:var(--dm-fg-78350f);line-height:1.55;">
+        <strong style="color:var(--dm-fg-92400e);">Experimental schema.</strong> This vertical is a proposed
         extension of the CoSAI Shared Responsibility Framework, developed independently to
         demonstrate the approach. It is not part of CoSAI SRF v1.0 and has not been endorsed
         by CoSAI, the NAIC, or any regulator.
       </div>
 
       <!-- OSCAL downloads -->
-      <div role="note" style="background:#f0f9ff;border:1px solid #7dd3fc;border-radius:10px;padding:14px 20px;margin-bottom:24px;font-size:0.875rem;color:#0c4a6e;line-height:1.55;">
-        <strong style="color:#075985;">Machine-readable (OSCAL).</strong> These controls are
+      <div role="note" style="background:var(--dm-bg-f0f9ff);border:1px solid var(--dm-bd-7dd3fc);border-radius:10px;padding:14px 20px;margin-bottom:24px;font-size:0.875rem;color:var(--dm-fg-0c4a6e);line-height:1.55;">
+        <strong style="color:var(--dm-fg-075985);">Machine-readable (OSCAL).</strong> These controls are
         published as an <a href="/export/srf-insurance.profile.json">OSCAL 1.2.2 profile</a> that
         imports the <a href="/export/srf-oscal-verticals-catalog.json">SRF vertical controls
         catalog</a> and binds every threshold to a parameter. Raw schema:

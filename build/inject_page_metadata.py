@@ -234,6 +234,32 @@ def page_rel(path):
     rel = os.path.relpath(os.path.dirname(path), ROOT)
     return "" if rel == "." else rel
 
+# Human-readable pages follow the device scheme. Machine-readable files
+# (JSON, OSCAL, llms.txt) are not HTML and are not touched here.
+COLOR_SCHEME_RE = re.compile(
+    r'(<meta\b[^>]*\bname=["\']color-scheme["\'][^>]*\bcontent=["\'])([^"\']*)(["\'])',
+    re.I,
+)
+
+def ensure_color_scheme(src):
+    """Set color-scheme to "light dark". Insert the tag when a page has none."""
+    if re.search(r'\bname=["\']color-scheme["\']', src, re.I):
+        def repl(m):
+            if m.group(2).strip() == "light dark":
+                return m.group(0)
+            return m.group(1) + "light dark" + m.group(3)
+        return COLOR_SCHEME_RE.sub(repl, src, count=1)
+    insert = '<meta name="color-scheme" content="light dark" />'
+    for pattern in (
+        r'^[ \t]*<meta\b[^>]*\bname=["\']viewport["\'][^>]*>\n',
+        r'^[ \t]*<meta\b[^>]*\bcharset\b[^>]*>\n',
+    ):
+        m = re.search(pattern, src, re.M | re.I)
+        if m:
+            indent = re.match(r'[ \t]*', m.group(0)).group(0)
+            return src[:m.end()] + indent + insert + "\n" + src[m.end():]
+    return re.sub(r'\n([ \t]*)</head>', '\n' + insert + r'\n\1</head>', src, count=1, flags=re.I)
+
 def main():
     check = "--check" in sys.argv
     valid = {e["id"] for e in json.load(open(os.path.join(ROOT, "ids.json")))["ids"]}
@@ -259,21 +285,24 @@ def main():
             concepts = [c for c in concepts if c in valid]
 
         src = open(path, encoding="utf-8").read()
+        src = ensure_color_scheme(src)
 
         # Skip hand-authored llm:meta that predates this script (no markers).
+        # Color-scheme is still applied above.
         if 'name="llm:type"' in src and "<!-- llm:meta -->" not in src:
-            continue
-
-        block = build_block(ptype, cid, concepts)
-        if "<!-- llm:meta -->" in src:
-            new = BLOCK_RE.sub(block, src, count=1)
+            new = src
         else:
-            if "</head>" not in src:
-                print(f"WARN  {rel}: no </head>, skipped")
-                continue
-            new = re.sub(r"\n[ \t]*</head>", "\n" + block + "  </head>", src, count=1)
+            block = build_block(ptype, cid, concepts)
+            if "<!-- llm:meta -->" in src:
+                new = BLOCK_RE.sub(block, src, count=1)
+            else:
+                if "</head>" not in src:
+                    print(f"WARN  {rel}: no </head>, skipped")
+                    new = src
+                else:
+                    new = re.sub(r"\n[ \t]*</head>", "\n" + block + "  </head>", src, count=1)
 
-        if new != src:
+        if new != open(path, encoding="utf-8").read():
             changed += 1
             if not check:
                 open(path, "w", encoding="utf-8").write(new)

@@ -273,7 +273,7 @@ def main() -> None:
       name="description"
       content="Non-interactive prompt pack that scores draft AI security whitepaper claims on risk, obligation, control, and one accountable party, then emits Google Docs or GitHub suggestion packets."
     />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
       .prompt-block {{

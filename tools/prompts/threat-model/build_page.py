@@ -508,7 +508,7 @@ def main():
       name="description"
       content="Version 3 prompts for AI-enabled system threat modeling. Track A combines typed STRIDE, conditional abuse and operational analysis, PHANTOM-B, composition paths, and pinned source references. Optional tracks assign SRF accountability and vertical obligations."
     />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
       .prompt-block {{
