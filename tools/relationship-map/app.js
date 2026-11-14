@@ -345,13 +345,33 @@
     return shown[kind] !== false;
   }
 
-  function nodeReducer(key, data, attrs) {
+  function labelMode(key, attrs, hovered) {
+    if (key === selected || hovered) return "visible";
+    if (selected && !neighborMap[key]) return "hidden";
+    if (attrs.kind === "layer") return "visible";
+    if (attrs.kind === "persona" || attrs.kind === "model" || attrs.kind === "policy") return "auto";
+    return "hidden";
+  }
+
+  function labelPlate(mode, kind) {
+    if (mode === "hidden") return {};
+    if (kind !== "layer" && kind !== "persona" && kind !== "model") return {};
+    return {
+      labelBackgroundColor: palette.stage,
+      labelBackgroundPadding: 4,
+      labelDepth: "topNodes"
+    };
+  }
+
+  function nodeReducer(key, data, attrs, state) {
     if (!kindShown(attrs.kind)) {
       return { visibility: "hidden", labelVisibility: "hidden" };
     }
+    var hovered = !!(state && state.isHovered);
     var color = palette[attrs.kind] || FALLBACK[attrs.kind];
-    var focus = !selected || key === selected || neighborMap[key];
-    var z = key === selected ? 4 : neighborMap[key] ? 3 : (attrs.kind === "layer" || attrs.kind === "model" ? 2 : 1);
+    var focus = !selected || key === selected || neighborMap[key] || hovered;
+    var showLabel = focus ? labelMode(key, attrs, hovered) : "hidden";
+    var z = key === selected ? 4 : (neighborMap[key] || hovered) ? 3 : (attrs.kind === "layer" || attrs.kind === "model" ? 2 : 1);
     if (!focus) {
       return {
         visibility: "visible",
@@ -363,21 +383,17 @@
         cursor: "pointer"
       };
     }
-    var showLabel = "hidden";
-    if (key === selected) showLabel = "visible";
-    else if (neighborMap[key] && attrs.kind !== "control") showLabel = "visible";
-    else if (!selected && attrs.kind === "layer") showLabel = "visible";
-    else if (!selected && (attrs.kind === "model" || attrs.kind === "policy")) showLabel = "auto";
-    return {
+    return Object.assign({
       visibility: "visible",
       color: color,
       labelColor: palette.label,
       labelVisibility: showLabel,
+      labelPosition: attrs.kind === "persona" ? "left" : "right",
       zIndex: z,
-      size: key === selected ? attrs.size * 1.45 : attrs.size,
+      size: key === selected ? attrs.size * 1.25 : attrs.size,
       highlighted: key === selected,
       cursor: "pointer"
-    };
+    }, labelPlate(showLabel, attrs.kind));
   }
 
   function edgeReducer(key, data) {
@@ -564,18 +580,52 @@
     refreshView();
   }
 
-  function focusNode(id) {
-    var attrs = graph.getNodeAttributes(id);
+  /* Frame the selected node and its neighbors. Do not zoom closer than
+   * about 55% of the map, so the surrounding nodes stay in view. */
+  function frameSelection(id) {
+    var ids = [id];
+    graph.forEachNeighbor(id, function (neighbor) {
+      if (kindShown(graph.getNodeAttribute(neighbor, "kind"))) ids.push(neighbor);
+    });
+    var dims = renderer.getDimensions();
+    var edge = 40;
+    var allIn = true;
+    var minX = Infinity;
+    var maxX = -Infinity;
+    var minY = Infinity;
+    var maxY = -Infinity;
+    ids.forEach(function (nid) {
+      var attrs = graph.getNodeAttributes(nid);
+      if (attrs.x < minX) minX = attrs.x;
+      if (attrs.x > maxX) maxX = attrs.x;
+      if (attrs.y < minY) minY = attrs.y;
+      if (attrs.y > maxY) maxY = attrs.y;
+      var point = renderer.graphToViewport({ x: attrs.x, y: attrs.y });
+      if (point.x < edge || point.y < edge || point.x > dims.width - edge || point.y > dims.height - edge) {
+        allIn = false;
+      }
+    });
+    if (allIn) return;
+    var spanX = Math.max(maxX - minX, 8);
+    var spanY = Math.max(maxY - minY, 8);
+    var padX = Math.max(spanX * 0.3, 10);
+    var padY = Math.max(spanY * 0.3, 10);
     var norm = renderer.getNormalizationFunction();
     if (typeof norm !== "function") return;
-    var framed = norm({ x: attrs.x, y: attrs.y });
-    renderer.getCamera().animate(
-      { x: framed.x, y: framed.y, ratio: 0.28, angle: 0 },
-      { duration: 280 }
-    );
+    var a = norm({ x: minX - padX, y: minY - padY });
+    var b = norm({ x: maxX + padX, y: maxY + padY });
+    var ratio = Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y));
+    if (ratio < 0.55) ratio = 0.55;
+    if (ratio > 1) ratio = 1;
+    renderer.getCamera().animate({
+      x: (a.x + b.x) / 2,
+      y: (a.y + b.y) / 2,
+      ratio: ratio,
+      angle: 0
+    }, { duration: 280 });
   }
 
-  function selectNode(id, shouldFocus) {
+  function selectNode(id, moveFocus) {
     if (!graph.hasNode(id)) return;
     var kind = graph.getNodeAttribute(id, "kind");
     if (!kindShown(kind)) {
@@ -589,8 +639,8 @@
       neighborMap[neighbor] = true;
     });
     refreshView();
-    if (shouldFocus) {
-      focusNode(id);
+    frameSelection(id);
+    if (moveFocus) {
       detailsHeading.setAttribute("tabindex", "-1");
       detailsHeading.focus({ preventScroll: true });
     }
@@ -667,8 +717,13 @@
         enableNodeDrag: false,
         enableCameraRotation: false,
         enableCameraMouseRotation: false,
-        labelRenderedSizeThreshold: 7,
-        labelDensity: 0.65,
+        /* Persona labels use "auto". At the overview a persona is about 7px,
+         * under this threshold, so the name stays off. A modest zoom (camera
+         * ratio near 0.6) crosses 9px and the name is drawn. The label grid
+         * drops names that would stack. Hover forces one name on at any zoom. */
+        labelRenderedSizeThreshold: 9,
+        labelDensity: 0.5,
+        labelGridCellSize: 150,
         nodePickingPadding: 4,
         minEdgeThickness: 0.4,
         stagePadding: 28,
