@@ -249,10 +249,14 @@
   }
 
   /* ---------- live record ---------- */
+  function metaText(value) {
+    if (value == null || String(value).trim() === "") return "Not stated";
+    return String(value);
+  }
   function metaRow(label, value) {
     var r = el("div", "rec-meta__row");
     r.appendChild(el("span", "rec-meta__k", label));
-    r.appendChild(el("span", "rec-meta__v", value || ":"));
+    r.appendChild(el("span", "rec-meta__v", metaText(value)));
     return r;
   }
 
@@ -524,7 +528,7 @@
     text(titleLines, M, y); y += titleLines.length * 20 + 4;
 
     var metaPairs = [
-      ["Accountable org", state.org], ["Provider", state.vendor || ":"],
+      ["Accountable org", state.org], ["Provider", state.vendor],
       ["Operating model", operatingModelLabel()],
       ["Industry", state.vertical ? verticalLabel(state.vertical) : "General"]
     ];
@@ -533,7 +537,7 @@
     setF(9, "normal", slate);
     metaPairs.forEach(function (p) {
       setF(9, "bold", slate); text(p[0] + ":", M, y);
-      setF(9, "normal", navy); text(p[1] || ":", M + 96, y);
+      setF(9, "normal", navy); text(metaText(p[1]), M + 96, y);
       y += 14;
     });
     if (!isCoreModel(state.model)) {
