@@ -364,6 +364,106 @@
   }
 
   /* ---------- export / import ---------- */
+  var RECORD_FIELDS = [
+    "system", "org", "vendor", "model", "vertical", "autonomy", "override",
+    "layers", "gaps", "decision", "date", "approver", "review"
+  ];
+  var FIELD_LABEL = {
+    system: "system name",
+    org: "accountable organization",
+    vendor: "provider",
+    model: "operating model",
+    vertical: "industry",
+    autonomy: "agent autonomy",
+    override: "human override tier",
+    layers: "layers",
+    gaps: "open gaps",
+    decision: "decision",
+    date: "decision date",
+    approver: "approver",
+    review: "next review date"
+  };
+
+  function isPlainObject(v) {
+    return !!v && typeof v === "object" && !Array.isArray(v);
+  }
+  function englishList(items) {
+    if (items.length < 2) return items[0] || "";
+    if (items.length === 2) return items[0] + " and " + items[1];
+    return items.slice(0, -1).join(", ") + ", and " + items[items.length - 1];
+  }
+  function ownerTypeOk(key) {
+    for (var i = 0; i < OWNER_TYPES.length; i++) {
+      if (OWNER_TYPES[i].key === key) return true;
+    }
+    return false;
+  }
+  function validateRecord(data) {
+    if (!isPlainObject(data)) {
+      return "This file is not a Decision Record. Export JSON saves one record as a .json file.";
+    }
+    var missing = [];
+    for (var i = 0; i < RECORD_FIELDS.length; i++) {
+      if (!Object.prototype.hasOwnProperty.call(data, RECORD_FIELDS[i])) missing.push(RECORD_FIELDS[i]);
+    }
+    if (missing.length) {
+      if (missing.length > 4) {
+        return "This file is not a Decision Record. It does not include the fields Export JSON writes, such as the system name, the operating model, and the layers. Download the example to see a complete record.";
+      }
+      var labels = missing.map(function (k) { return "the " + (FIELD_LABEL[k] || k); });
+      return "This file is not a Decision Record. It is missing " + englishList(labels) + ". Use a file saved with Export JSON.";
+    }
+    for (var s = 0; s < RECORD_FIELDS.length; s++) {
+      var key = RECORD_FIELDS[s];
+      if (key === "layers") continue;
+      if (typeof data[key] !== "string") {
+        return "This file is not a Decision Record. The " + (FIELD_LABEL[key] || key) + " must be text. Use a file saved with Export JSON.";
+      }
+    }
+    if (!isPlainObject(data.layers)) {
+      return "This file is not a Decision Record. The layers entry must be a set of layers. Use a file saved with Export JSON.";
+    }
+    if (!findModel(data.model)) {
+      var modelName = data.model ? " (" + data.model + ")" : "";
+      return "This file names an operating model this site does not have" + modelName + ". Use a file saved with Export JSON.";
+    }
+    var known = {};
+    DATA.layers.forEach(function (layer) { known[layer.id] = true; });
+    var ids = Object.keys(data.layers);
+    for (var n = 0; n < ids.length; n++) {
+      var id = ids[n];
+      if (!known[id]) {
+        return "This file names a layer this framework does not have (" + id + "). Use a file saved with Export JSON.";
+      }
+      var ls = data.layers[id];
+      if (!isPlainObject(ls) || !ownerTypeOk(ls.ownerType)) {
+        var got = (ls && typeof ls.ownerType === "string" && ls.ownerType) ? " (" + ls.ownerType + ")" : "";
+        return "This file uses an owner type this record does not have" + got + " for " + id + ". Use Customer, Provider, Other, or Out of scope.";
+      }
+      if ((ls.otherName != null && typeof ls.otherName !== "string") ||
+          (ls.supporting != null && typeof ls.supporting !== "string")) {
+        return "This file is not a Decision Record. The owner name and supporting parties for " + id + " must be text. Use a file saved with Export JSON.";
+      }
+    }
+    return "";
+  }
+  function recordFromImport(data) {
+    var next = defaultState();
+    for (var i = 0; i < RECORD_FIELDS.length; i++) {
+      var key = RECORD_FIELDS[i];
+      if (key !== "layers") next[key] = data[key];
+    }
+    next.layers = {};
+    Object.keys(data.layers).forEach(function (id) {
+      var ls = data.layers[id];
+      next.layers[id] = {
+        ownerType: ls.ownerType,
+        otherName: typeof ls.otherName === "string" ? ls.otherName : "",
+        supporting: typeof ls.supporting === "string" ? ls.supporting : ""
+      };
+    });
+    return next;
+  }
   function exportJSON() {
     var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
     downloadBlob(blob, fileSlug() + ".json");
@@ -371,11 +471,21 @@
   function importJSON(file) {
     var reader = new FileReader();
     reader.onload = function () {
+      var data;
       try {
-        state = Object.assign(defaultState(), JSON.parse(reader.result));
-        save();
-        rerenderAll();
-      } catch (e) { alert("That file is not a valid Decision Record JSON export."); }
+        data = JSON.parse(reader.result);
+      } catch (e) {
+        alert("This file is not JSON. Export JSON saves a Decision Record as a .json file.");
+        return;
+      }
+      var message = validateRecord(data);
+      if (message) {
+        alert(message);
+        return;
+      }
+      state = recordFromImport(data);
+      save();
+      rerenderAll();
     };
     reader.readAsText(file);
   }
