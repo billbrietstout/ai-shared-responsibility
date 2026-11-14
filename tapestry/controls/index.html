@@ -8,7 +8,7 @@
       name="description"
       content="Proposed accountability control set for a federated AI consortium, mapping Project Tapestry's governance ADRs onto the CoSAI SRF layers. Filter by layer, lifecycle stage, governing domain, disclosure tier, and status."
     />
-    <meta name="color-scheme" content="light" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/tapestry/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
@@ -79,7 +79,7 @@
       }
       .filter-btn:hover { background: var(--slate-100); color: var(--slate-800); }
       .filter-btn.active {
-        background: var(--cosai-navy);
+        background: var(--fill-navy);
         color: #fff;
         font-weight: 600;
       }
@@ -94,7 +94,7 @@
         padding: var(--sp-2) var(--sp-3);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
-        background: #fff;
+        background: var(--surface);
         cursor: pointer;
         font-family: inherit;
         font-size: var(--text-xs);
@@ -127,7 +127,7 @@
       .ctrl-card {
         border: 1px solid var(--slate-200);
         border-radius: 10px;
-        background: #fff;
+        background: var(--surface);
         overflow: hidden;
       }
       .ctrl-card__header {
@@ -138,7 +138,7 @@
         padding: var(--sp-3) var(--sp-4);
         cursor: pointer;
       }
-      .ctrl-card__header:hover { background: var(--slate-50, #f8fafc); }
+      .ctrl-card__header:hover { background: var(--slate-50, var(--dm-bg-f8fafc)); }
       .ctrl-card__header:focus-visible {
         outline: 2px solid var(--cosai-navy);
         outline-offset: -2px;
@@ -207,12 +207,12 @@
         text-transform: uppercase;
         white-space: nowrap;
       }
-      .pill--stage      { background: #f1f5f9; color: var(--slate-600); }
-      .pill--commons    { background: #ccfbf1; color: #115e59; }
-      .pill--sovereign  { background: #dcfce7; color: #166534; }
-      .pill--open       { background: #fef3c7; color: #92400e; }
-      .pill--conflicted { background: #fee2e2; color: #991b1b; }
-      .pill--resolved   { background: #e0f2fe; color: #075985; }
+      .pill--stage      { background: var(--dm-bg-f1f5f9); color: var(--slate-600); }
+      .pill--commons    { background: var(--dm-bg-ccfbf1); color: var(--dm-fg-115e59); }
+      .pill--sovereign  { background: var(--dm-bg-dcfce7); color: var(--dm-fg-166534); }
+      .pill--open       { background: var(--dm-bg-fef3c7); color: var(--dm-fg-92400e); }
+      .pill--conflicted { background: var(--dm-bg-fee2e2); color: var(--dm-fg-991b1b); }
+      .pill--resolved   { background: var(--dm-bg-e0f2fe); color: var(--dm-fg-075985); }
 
       /* ── Detail fields ────────────────────────────────────────────── */
       .detail-grid {
@@ -254,14 +254,14 @@
         text-transform: uppercase;
       }
       .sub-block__body { padding: var(--sp-3) var(--sp-3); }
-      .sub-block--threshold .sub-block__head { background: #e0f2fe; color: #075985; }
-      .sub-block--threshold .sub-block__body { background: #f0f9ff; }
-      .sub-block--tier .sub-block__head { background: #ede9fe; color: #5b21b6; }
-      .sub-block--tier .sub-block__body { background: #f5f3ff; }
-      .sub-block--status .sub-block__head { background: #fef3c7; color: #92400e; }
-      .sub-block--status .sub-block__body { background: #fffbeb; }
-      .sub-block--juris .sub-block__head { background: #f1f5f9; color: var(--slate-600); }
-      .sub-block--juris .sub-block__body { background: #f8fafc; }
+      .sub-block--threshold .sub-block__head { background: var(--dm-bg-e0f2fe); color: var(--dm-fg-075985); }
+      .sub-block--threshold .sub-block__body { background: var(--dm-bg-f0f9ff); }
+      .sub-block--tier .sub-block__head { background: var(--dm-bg-ede9fe); color: var(--dm-fg-5b21b6); }
+      .sub-block--tier .sub-block__body { background: var(--dm-bg-f5f3ff); }
+      .sub-block--status .sub-block__head { background: var(--dm-bg-fef3c7); color: var(--dm-fg-92400e); }
+      .sub-block--status .sub-block__body { background: var(--dm-bg-fffbeb); }
+      .sub-block--juris .sub-block__head { background: var(--dm-bg-f1f5f9); color: var(--slate-600); }
+      .sub-block--juris .sub-block__body { background: var(--dm-bg-f8fafc); }
       .sub-block p {
         margin: 0;
         font-size: 0.8rem;
@@ -291,7 +291,7 @@
         color: var(--slate-400);
       }
       .tier-table td small { color: var(--slate-500); }
-      .tier-table tr.dominated td { background: #fffbeb; }
+      .tier-table tr.dominated td { background: var(--dm-bg-fffbeb); }
       .score {
         display: inline-grid;
         place-items: center;
@@ -354,8 +354,8 @@
       </div>
 
       <div class="note-box" role="note"
-           style="background:#fffbeb;border:1px solid #fbbf24;color:#78350f;">
-        <strong style="color:#92400e;">Proposed extension, and the source is still in draft.</strong>
+           style="background:var(--dm-bg-fffbeb);border:1px solid var(--dm-bd-fbbf24);color:var(--dm-fg-78350f);">
+        <strong style="color:var(--dm-fg-92400e);">Proposed extension, and the source is still in draft.</strong>
         This control set is not part of CoSAI SRF v1.0 and has not been endorsed by CoSAI or
         by the AI Alliance. Its source documents carry status <em>Proposed</em> and name a
         Tapestry Governance Committee that is not yet seated, so several controls below
@@ -367,8 +367,8 @@
       </div>
 
       <div class="note-box" role="note"
-           style="background:#f0f9ff;border:1px solid #7dd3fc;color:#0c4a6e;">
-        <strong style="color:#075985;">Machine-readable.</strong> Raw schema:
+           style="background:var(--dm-bg-f0f9ff);border:1px solid var(--dm-bd-7dd3fc);color:var(--dm-fg-0c4a6e);">
+        <strong style="color:var(--dm-fg-075985);">Machine-readable.</strong> Raw schema:
         <a href="/data/tapestry-controls.json">tapestry-controls.json</a>.
         An OSCAL component-definition export for node contribution manifests is not
         published yet; use the JSON schema until that export lands. The declared rules

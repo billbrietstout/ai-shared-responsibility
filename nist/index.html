@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark" />
 <!-- Orphan / unlinked example directory: not integrated with the rest of the site. -->
 <meta name="robots" content="noindex, nofollow">
 <!-- Satisfies the site page contract (build/verify_pages.py): llm:type + data-llm chunk markers.
@@ -76,6 +77,33 @@ footer{border-top:1px solid var(--line);margin-top:40px;padding-top:16px;color:v
  font:13px/1.5 system-ui,sans-serif}
 @media print{.perma{display:none} a{color:inherit} .container{max-width:none}}
 @media(max-width:640px){.toc{columns:1}}
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --ink: #e8eef6;
+    --muted: #b7c3d4;
+    --line: #6a7684;
+    --accent: #c5d8f8;
+    --accent2: #86efac;
+    --bg: #10141b;
+    --soft: #1a2230;
+    --chip: #1e2836;
+  }
+  body { background: var(--bg); }
+  h4, h5 { color: var(--ink); }
+  .disclaimer, .pending, .phead, .pfield { color: #fde68a; background: #3a2a08; border-color: #fbbf24; }
+  .pnote, .psrc { color: #fde68a; }
+  .note code { background: #1e2836; color: var(--ink); }
+  .perma { color: #9aadc2; }
+  .proposed { background: #2a2108; border-color: #a16207; }
+  .ptag { background: #a16207; color: #fff; }
+  .auto { background: #052e16; border-color: #166534; }
+  .autonote { color: #86efac; }
+  .xref { background: #052e16; border-color: #166534; color: #86efac; }
+  .task { border-left-color: #3d5a88; }
+  .impl { border-left-color: #6a7684; }
+  .chip { color: var(--ink); }
+  .note[style] { background: #052e16 !important; border-color: #166534 !important; }
+}
 </style>
 <script src="/shared/analytics.js"></script>
 </head>
