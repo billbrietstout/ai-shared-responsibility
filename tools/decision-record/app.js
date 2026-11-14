@@ -97,22 +97,80 @@
     return true;
   }
 
+  /* ---------- operating models ---------- */
+  function findModel(id) {
+    if (!DATA.models) return null;
+    for (var i = 0; i < DATA.models.length; i++) {
+      if (DATA.models[i].id === id) return DATA.models[i];
+    }
+    return null;
+  }
+  function isCoreModel(id) {
+    var m = findModel(id);
+    return !!(m && m.provenance === "cosai-core");
+  }
+  function coreModels() {
+    return DATA.models.filter(function (m) { return m && m.provenance === "cosai-core"; });
+  }
+  function modelDisplayName(id) {
+    var m = findModel(id);
+    var raw = (m && m.name) ? m.name : (id == null ? "" : String(id));
+    raw = raw.replace(/\s+/g, " ").trim();
+    if (raw.length > 120) raw = raw.slice(0, 117) + "...";
+    return raw;
+  }
+  /* Shown when a saved or imported record names a model outside SRF v1.0. */
+  function nonCoreNote(id) {
+    var name = modelDisplayName(id);
+    if (!name) {
+      return "This record has no operating model. Choose AI-SaaS, AI-PaaS, Agent-PaaS, or IaaS.";
+    }
+    return "The operating model on this record is " + name + ". That model is not in SRF v1.0. Choose AI-SaaS, AI-PaaS, Agent-PaaS, or IaaS.";
+  }
+  function operatingModelLabel() {
+    var name = modelDisplayName(state.model);
+    if (isCoreModel(state.model)) return name;
+    if (!name) return "None (not in SRF v1.0)";
+    return name + " (not in SRF v1.0)";
+  }
+
   /* ---------- build form ---------- */
   function buildModelSelect() {
     var sel = $("#f-model");
+    var current = state.model == null ? "" : String(state.model);
     sel.innerHTML = "";
-    DATA.models.forEach(function (m) {
+    sel.setAttribute("aria-describedby", "model-desc");
+    if (!isCoreModel(state.model)) {
+      var held = el("option");
+      held.value = current;
+      held.textContent = modelDisplayName(state.model)
+        ? modelDisplayName(state.model) + " (not in SRF v1.0)"
+        : "Choose an SRF v1.0 model";
+      sel.appendChild(held);
+    }
+    coreModels().forEach(function (m) {
       var o = el("option");
       o.value = m.id;
       o.textContent = m.name + " (" + m.short + ")";
       sel.appendChild(o);
     });
-    sel.value = state.model;
+    sel.value = current;
   }
 
   function renderModelDesc() {
-    var m = DATA.models.filter(function (x) { return x.id === state.model; })[0];
-    $("#model-desc").textContent = m ? m.description : "";
+    var note = $("#model-desc");
+    if (!isCoreModel(state.model)) {
+      note.classList.add("rec-valid", "rec-valid--bad");
+      note.style.fontStyle = "normal";
+      note.setAttribute("role", "status");
+      note.textContent = nonCoreNote(state.model);
+      return;
+    }
+    note.classList.remove("rec-valid", "rec-valid--bad");
+    note.style.fontStyle = "";
+    note.removeAttribute("role");
+    var m = findModel(state.model);
+    note.textContent = m ? m.description : "";
   }
 
   function ensureLayerState(layer) {
@@ -206,14 +264,16 @@
     r.appendChild(el("h2", "rec-title", state.system || "Untitled deployment"));
 
     var meta = el("div", "rec-meta");
-    var m = DATA.models.filter(function (x) { return x.id === state.model; })[0];
     meta.appendChild(metaRow("Accountable org", state.org));
     meta.appendChild(metaRow("Provider", state.vendor));
-    meta.appendChild(metaRow("Operating model", m ? m.name : state.model));
+    meta.appendChild(metaRow("Operating model", operatingModelLabel()));
     if (state.vertical) meta.appendChild(metaRow("Industry", verticalLabel(state.vertical)));
     if (state.autonomy) meta.appendChild(metaRow("Autonomy", state.autonomy));
     if (state.override) meta.appendChild(metaRow("Override tier", state.override));
     r.appendChild(meta);
+    if (!isCoreModel(state.model)) {
+      r.appendChild(el("div", "rec-valid rec-valid--bad", nonCoreNote(state.model)));
+    }
 
     // layer table
     var unresolved = 0;
@@ -291,7 +351,7 @@
     bindField("f-system", "system");
     bindField("f-org", "org", renderLayers);
     bindField("f-vendor", "vendor", renderLayers);
-    bindField("f-model", "model", function () { renderModelDesc(); renderLayers(); });
+    bindField("f-model", "model", function () { buildModelSelect(); renderModelDesc(); renderLayers(); });
     bindField("f-vertical", "vertical");
     bindField("f-autonomy", "autonomy");
     bindField("f-override", "override");
@@ -353,10 +413,9 @@
     var titleLines = doc.splitTextToSize(state.system || "Untitled deployment", W - M * 2);
     text(titleLines, M, y); y += titleLines.length * 20 + 4;
 
-    var m = DATA.models.filter(function (x) { return x.id === state.model; })[0];
     var metaPairs = [
       ["Accountable org", state.org], ["Provider", state.vendor || ":"],
-      ["Operating model", m ? m.name : state.model],
+      ["Operating model", operatingModelLabel()],
       ["Industry", state.vertical ? verticalLabel(state.vertical) : "General"]
     ];
     if (state.autonomy) metaPairs.push(["Autonomy", state.autonomy]);
@@ -367,6 +426,14 @@
       setF(9, "normal", navy); text(p[1] || ":", M + 96, y);
       y += 14;
     });
+    if (!isCoreModel(state.model)) {
+      setF(9, "bold", [185, 28, 28]);
+      var modelNoteLines = doc.splitTextToSize(nonCoreNote(state.model), W - M * 2);
+      modelNoteLines.forEach(function (line, i) {
+        doc.text(line, M, y + i * 12);
+      });
+      y += modelNoteLines.length * 12 + 6;
+    }
     y += 8;
 
     // layer table
