@@ -47,7 +47,7 @@
       system: "", org: "", vendor: "", model: "AI-SaaS", vertical: "",
       autonomy: "", override: "",
       layers: {}, // id -> { ownerType, otherName, supporting }
-      gaps: "", decision: "Approved", date: todayISO(), approver: "", review: ""
+      gaps: "", decision: "Not decided", date: todayISO(), approver: "", review: ""
     };
   }
 
@@ -86,6 +86,32 @@
   }
 
   /* A layer is unresolved if it is in scope but has no single named owner. */
+  function countUnresolved() {
+    var n = 0;
+    if (!DATA.layers) return 0;
+    DATA.layers.forEach(function (layer) {
+      if (layerUnresolved(layer)) n++;
+    });
+    return n;
+  }
+
+  function recordHasData() {
+    var keys = ["system", "org", "vendor", "gaps", "approver", "review", "vertical", "autonomy", "override"];
+    for (var i = 0; i < keys.length; i++) {
+      if (state[keys[i]] && String(state[keys[i]]).trim()) return true;
+    }
+    if (state.decision && state.decision !== "Not decided") return true;
+    if (!DATA.layers) return false;
+    for (var n = 0; n < DATA.layers.length; n++) {
+      var layer = DATA.layers[n];
+      var ls = state.layers[layer.id];
+      if (!ls) continue;
+      if ((ls.otherName && String(ls.otherName).trim()) || (ls.supporting && String(ls.supporting).trim())) return true;
+      if (ls.ownerType && ls.ownerType !== suggestedOwnerType(layerDefault(layer))) return true;
+    }
+    return false;
+  }
+
   function layerUnresolved(layer) {
     var id = layer.id;
     var ls = state.layers[id] || {};
@@ -487,6 +513,7 @@
         alert(message);
         return;
       }
+      if (recordHasData() && !confirm("Replace this Decision Record with the file? You cannot undo this.")) return;
       state = recordFromImport(data);
       save();
       rerenderAll();
@@ -510,6 +537,12 @@
   function exportPDF() {
     var jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
     if (!jsPDF) { alert("PDF library did not load. Reload the page and try again."); return; }
+    var unresolvedN = countUnresolved();
+    if (unresolvedN) {
+      var noun = unresolvedN === 1 ? "layer has" : "layers have";
+      var proceed = confirm(unresolvedN + " " + noun + " no named party. The PDF will be marked DRAFT. Download it anyway?");
+      if (!proceed) return;
+    }
     var doc = new jsPDF({ unit: "pt", format: "letter" });
     var M = 54, W = doc.internal.pageSize.getWidth(), y = M;
     var navy = [15, 31, 61], slate = [71, 85, 105], line = [203, 213, 225];
@@ -521,6 +554,11 @@
       doc.setTextColor.apply(doc, color || navy);
     }
 
+    if (unresolvedN) {
+      setF(12, "bold", [185, 28, 28]);
+      text("DRAFT: unresolved layers", M, y);
+      y += 20;
+    }
     setF(8, "bold", slate);
     text("AI ACCOUNTABILITY DECISION RECORD", M, y); y += 18;
     setF(18, "bold", navy);
@@ -583,7 +621,7 @@
     }
 
     // decision strip
-    var decColors = { approved: [21, 128, 61], approvedwithconditions: [161, 98, 7], deferred: [161, 98, 7], rejected: [185, 28, 28] };
+    var decColors = { approved: [21, 128, 61], approvedwithconditions: [161, 98, 7], deferred: [161, 98, 7], rejected: [185, 28, 28], notdecided: [71, 85, 105] };
     var dc = decColors[state.decision.replace(/[^a-z]/gi, "").toLowerCase()] || navy;
     doc.setFillColor.apply(doc, dc);
     doc.rect(M, y, W - M * 2, 26, "F");
@@ -680,6 +718,21 @@
     renderRecord();
   }
 
+  var undoSnapshot = null;
+
+  function announce(text) {
+    var node = $("#action-status");
+    if (!node) return;
+    node.textContent = "";
+    window.setTimeout(function () { node.textContent = text; }, 30);
+  }
+  function showUndo(on) {
+    var btn = $("#btn-undo");
+    if (!btn) return;
+    if (on) btn.hidden = false;
+    else btn.hidden = true;
+  }
+
   function wireButtons() {
     $("#btn-export").addEventListener("click", exportJSON);
     $("#btn-pdf").addEventListener("click", exportPDF);
@@ -689,10 +742,24 @@
       e.target.value = "";
     });
     $("#btn-reset").addEventListener("click", function () {
-      if (!confirm("Clear this Decision Record and start over?")) return;
+      if (!confirm("Clear every field in this Decision Record? You can undo this one time.")) return;
+      undoSnapshot = JSON.parse(JSON.stringify(state));
       state = defaultState();
       save();
       rerenderAll();
+      showUndo(true);
+      announce("Decision Record cleared. Undo reset is available.");
+      window.setTimeout(function () { $("#btn-undo").focus(); }, 0);
+    });
+    $("#btn-undo").addEventListener("click", function () {
+      if (!undoSnapshot) return;
+      state = JSON.parse(JSON.stringify(undoSnapshot));
+      undoSnapshot = null;
+      save();
+      rerenderAll();
+      showUndo(false);
+      announce("Decision Record restored.");
+      window.setTimeout(function () { $("#btn-reset").focus(); }, 0);
     });
   }
 

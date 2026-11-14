@@ -77,6 +77,52 @@ body {
   color: var(--slate-600);
   line-height: 1.5;
 }
+.state-actions {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 28px;
+}
+.state-actions__primary,
+.state-actions__files,
+.state-actions__reset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.state-actions__reset { margin-left: auto; }
+.state-bar .btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 16px;
+}
+.state-bar .btn:focus-visible {
+  outline: 2px solid var(--cosai-blue);
+  outline-offset: 2px;
+}
+.btn--danger {
+  background: var(--status-bad-bg);
+  color: var(--status-bad);
+  border: 1px solid var(--status-bad-br);
+}
+.btn--danger:hover {
+  background: var(--status-bad);
+  color: #fff;
+}
+@media (max-width: 520px) {
+  .state-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .state-actions__reset {
+    margin-left: 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--slate-200);
+  }
+}
 
 .intro-block { margin: 22px 0 18px; }
 
@@ -238,6 +284,8 @@ textarea.field__input { resize: vertical; }
 .rec-decision--approvedwithconditions .rec-decision__value, .rec-decision--deferred .rec-decision__value { color: var(--status-warn); }
 .rec-decision--rejected { background: var(--status-bad-bg); border-color: var(--status-bad-br); }
 .rec-decision--rejected .rec-decision__value { color: var(--status-bad); }
+.rec-decision--notdecided { background: var(--slate-50); border-color: var(--slate-300); }
+.rec-decision--notdecided .rec-decision__value { color: var(--slate-700); }
 
 .rec-valid { font-size: var(--text-xs); font-weight: 600; padding: 8px 12px; border-radius: var(--radius); margin-bottom: 10px; }
 .rec-valid--ok { background: var(--status-good-bg); color: var(--status-good); border: 1px solid var(--status-good-br); }
