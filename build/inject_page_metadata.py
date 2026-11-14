@@ -181,6 +181,11 @@ def classify(rel):
         if "streaming-bsp" in rel:
             return "tool", (LAYERS + STREAMING_BSP_ROLES
                             + ["srf.concept.evidence-threshold"])
+        if "relationship-map" in rel:
+            return "tool", (["srf.framework.cosai-srf", "srf.concept.persona",
+                             "srf.concept.operating-model", "srf.concept.control",
+                             "srf.concept.responsibility-cascade"]
+                            + LAYERS + OPMODELS + ROLES8)
         if "layer-matrix" in rel:        return "tool", LAYERS + OPMODELS
         if "policy-pyramid" in rel:      return "tool", LAYERS + ["srf.concept.responsibility-cascade"]
         if "srf-stress" in rel:          return "tool", ACCT + LAYERS
