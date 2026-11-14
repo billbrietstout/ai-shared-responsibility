@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Relationship map · AI Shared Responsibility</title>
+    <meta
+      name="description"
+      content="This map shows how SRF layers, personas, the four SRF v1.0 operating models, controls, policy levels, and whitepaper topics connect in the site data."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='5' cy='5' r='2' fill='%23166534'/%3E%3Ccircle cx='11' cy='11' r='2' fill='%231d4ed8'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "SRF relationship map",
+  "url": "https://aisharedresponsibility.com/tools/relationship-map/",
+  "description": "This map shows how SRF layers, personas, the four SRF v1.0 operating models, controls, policy levels, and whitepaper topics connect in the site data.",
+  "applicationCategory": "BusinessApplication",
+  "isAccessibleForFree": true,
+  "publisher": {
+    "@type": "Organization",
+    "name": "AI Shared Responsibility",
+    "url": "https://aisharedresponsibility.com/"
+  }
+}
+    </script>
+    <!-- llm:meta -->
+    <meta name="llm:type" content="tool" />
+    <meta name="llm:canonical-id" content="srf.page.tools-relationship-map" />
+    <meta name="llm:concepts" content="srf.framework.cosai-srf, srf.concept.persona, srf.concept.operating-model, srf.concept.control, srf.concept.responsibility-cascade, srf.layer.L1, srf.layer.L2, srf.layer.L3, srf.layer.L4, srf.layer.L5, srf.opmodel.ai-saas, srf.opmodel.ai-paas, srf.opmodel.agent-paas, srf.opmodel.iaas, srf.role.ai-system-users, srf.role.ai-system-governance, srf.role.data-provider, srf.role.application-developer, srf.role.agentic-platform-provider, srf.role.ai-model-serving, srf.role.ai-platform-provider, srf.role.model-provider" />
+    <!-- /llm:meta -->
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <script type="module" src="/shared/components.js"></script>
+    <site-nav current="tools"></site-nav>
+
+    <header class="page-hero" data-llm="summary">
+      <div class="page-hero__inner map-hero__inner">
+        <span class="page-hero__eyebrow">Tools</span>
+        <h1 class="page-hero__title">Relationship map</h1>
+        <p class="page-hero__lede">
+          This map shows how SRF layers, personas, the four SRF v1.0 operating
+          models, controls, policy levels, and whitepaper topics connect in the
+          site data.
+        </p>
+      </div>
+    </header>
+
+    <main id="main" class="map-page" data-llm="relationship-map">
+      <div class="map-layout">
+        <section class="map-stage" aria-labelledby="map-heading" data-llm="map">
+          <h2 id="map-heading" class="visually-hidden">Map</h2>
+
+          <div id="map-tools" class="map-tools">
+            <form id="find-form" class="find-form" role="search">
+              <label class="find-form__label" for="node-search">Find a node</label>
+              <div class="find-form__row">
+                <input
+                  id="node-search"
+                  class="find-form__input"
+                  type="search"
+                  name="q"
+                  autocomplete="off"
+                  spellcheck="false"
+                  placeholder="Layer, persona, or control name"
+                  aria-describedby="map-help"
+                />
+                <button class="find-form__submit" type="submit">Find</button>
+              </div>
+              <p id="map-help" class="map-help">
+                Type a name, then choose Find. The map moves to that node.
+              </p>
+              <p id="search-note" class="search-note" hidden></p>
+              <ul id="search-results" class="search-results" aria-label="Matches"></ul>
+            </form>
+
+            <fieldset class="kind-filters">
+              <legend>Show kinds</legend>
+              <div class="kind-filters__list">
+                <label class="kind-filter">
+                  <input type="checkbox" data-kind="layer" checked />
+                  <span class="swatch" data-swatch="layer" aria-hidden="true"></span>
+                  <span>Layer</span>
+                  <span class="kind-count" data-count-for="layer"></span>
+                </label>
+                <label class="kind-filter">
+                  <input type="checkbox" data-kind="persona" checked />
+                  <span class="swatch" data-swatch="persona" aria-hidden="true"></span>
+                  <span>Persona</span>
+                  <span class="kind-count" data-count-for="persona"></span>
+                </label>
+                <label class="kind-filter">
+                  <input type="checkbox" data-kind="model" checked />
+                  <span class="swatch" data-swatch="model" aria-hidden="true"></span>
+                  <span>Operating model</span>
+                  <span class="kind-count" data-count-for="model"></span>
+                </label>
+                <label class="kind-filter">
+                  <input type="checkbox" data-kind="control" checked />
+                  <span class="swatch" data-swatch="control" aria-hidden="true"></span>
+                  <span>Control</span>
+                  <span class="kind-count" data-count-for="control"></span>
+                </label>
+                <label class="kind-filter">
+                  <input type="checkbox" data-kind="policy" checked />
+                  <span class="swatch" data-swatch="policy" aria-hidden="true"></span>
+                  <span>Policy level</span>
+                  <span class="kind-count" data-count-for="policy"></span>
+                </label>
+                <label class="kind-filter">
+                  <input type="checkbox" data-kind="topic" checked />
+                  <span class="swatch" data-swatch="topic" aria-hidden="true"></span>
+                  <span>Whitepaper topic</span>
+                  <span class="kind-count" data-count-for="topic"></span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+
+          <p id="map-status" class="map-status" role="status">Loading map data.</p>
+          <p id="map-error" class="map-error" role="alert" hidden></p>
+          <p class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
+          <div
+            id="graph"
+            class="graph"
+            role="img"
+            aria-label="Graph of SRF relationships. Choose a node to read its connections in the list."
+          ></div>
+        </section>
+
+        <section class="details" aria-labelledby="details-heading" data-llm="node-details">
+          <div class="details__bar">
+            <h2 id="details-heading">Node details</h2>
+            <button id="clear-selection" type="button" disabled>Clear selection</button>
+          </div>
+          <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
+          <p id="details-empty">Select a node to see its name, kind, and connections.</p>
+          <div id="details-body" hidden>
+            <p id="details-kind"></p>
+            <p id="details-meta" hidden></p>
+            <h3 id="connections-heading">Connections</h3>
+            <ul id="details-connections" aria-labelledby="connections-heading"></ul>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <site-footer></site-footer>
+    <script defer src="/shared/vendor/graphology-0.26.0.umd.min.js"></script>
+    <script defer src="/shared/vendor/sigma-4.0.6.min.js"></script>
+    <script defer src="app.js"></script>
+  </body>
+</html>
