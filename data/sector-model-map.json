@@ -1,0 +1,125 @@
+{
+  "updated": "2026-11-15",
+  "description": "Maps each sector operating-model name to one SRF v1.0 model. The sector name stays on the control as context. Edit srf_model to change a row. The value must be one of the four SRF model ids. Shared is not a value. This file does not change a control's operating_models list.",
+  "edit_rule": "Set srf_model to AI-SaaS, AI-PaaS, Agent-PaaS, or IaaS. Do not add Responsible, Consulted, or Informed. Do not use Shared as an owner or as a model id.",
+  "srf_models": [
+    {
+      "id": "AI-SaaS",
+      "name": "AI-Enabled SaaS",
+      "definition": "Provider supplies a managed AI application. Customer retains business governance and supplies context data; provider assumes technical responsibility for the application, platform, and model.",
+      "source": "data/matrix.json models[AI-SaaS].description"
+    },
+    {
+      "id": "AI-PaaS",
+      "name": "AI Platform as a Service",
+      "definition": "Customer builds and operates the application layer on a provider-managed AI platform. Customer owns business governance and the application; provider manages the platform and foundational model.",
+      "source": "data/matrix.json models[AI-PaaS].description"
+    },
+    {
+      "id": "Agent-PaaS",
+      "name": "Agentic Platform as a Service",
+      "definition": "Customer owns agent definitions and business logic on a provider-managed orchestration runtime. Responsibility at L3 and L5 is shared as both parties control distinct parts of the agentic stack.",
+      "source": "data/matrix.json models[Agent-PaaS].description"
+    },
+    {
+      "id": "IaaS",
+      "name": "Infrastructure as a Service",
+      "definition": "Maximum customer responsibility. Customer builds and operates the application, platform, and model layers. Provider is accountable only for the physical and virtual infrastructure underpinning L4.",
+      "source": "data/matrix.json models[IaaS].description"
+    }
+  ],
+  "mappings": [
+    {
+      "sector_model": "SaMD-Cloud",
+      "srf_model": "AI-SaaS",
+      "verticals": ["healthcare"],
+      "definition": "Cloud-hosted Software as a Medical Device; regulated under FDA SaMD guidance and EU MDR/IVDR as applicable.",
+      "definition_source": "data/healthcare-controls.json operating_models.SaMD-Cloud",
+      "rationale": "Cloud-hosted device software is a managed application. SRF AI-SaaS is the model in which the provider supplies a managed AI application and the customer keeps business governance."
+    },
+    {
+      "sector_model": "EHR-Embedded",
+      "srf_model": "AI-SaaS",
+      "verticals": ["healthcare"],
+      "definition": "AI embedded in ONC-certified health IT (EHR); subject to ONC HTI-1 algorithmic transparency requirements.",
+      "definition_source": "data/healthcare-controls.json operating_models.EHR-Embedded",
+      "rationale": "The definition places the AI inside certified health IT, which is the application the care organization uses. SRF AI-SaaS is the managed-application model.",
+      "alternative": {
+        "srf_model": "AI-PaaS",
+        "why": "Use AI-PaaS if the organization builds the model on the EHR as a platform rather than using AI that the health-IT vendor embeds in the application."
+      }
+    },
+    {
+      "sector_model": "Agent-Clinical",
+      "srf_model": "Agent-PaaS",
+      "verticals": ["healthcare"],
+      "definition": "Agentic AI performing autonomous clinical workflow tasks (prior auth, care coordination, order entry support); highest surface area under FDA TPLC and HIPAA.",
+      "definition_source": "data/healthcare-controls.json operating_models.Agent-Clinical",
+      "rationale": "The definition is agentic clinical workflow. SRF Agent-PaaS is the model in which the customer owns agent definitions on a provider-managed orchestration runtime. Healthcare controls that name only Agent-Clinical are the agent context-store and task-boundary controls."
+    },
+    {
+      "sector_model": "On-Premise",
+      "srf_model": "IaaS",
+      "verticals": ["healthcare"],
+      "definition": "Hospital-deployed AI on local infrastructure; institution retains platform accountability.",
+      "definition_source": "data/healthcare-controls.json operating_models.On-Premise",
+      "rationale": "The institution keeps platform accountability and runs the AI on local infrastructure. SRF IaaS is the model in which the customer operates the application, platform, and model, and the provider is accountable only for infrastructure under L4."
+    },
+    {
+      "sector_model": "Agent-Ops",
+      "srf_model": "Agent-PaaS",
+      "verticals": ["defense", "insurance", "public-sector"],
+      "definition": "Agentic AI in an operational workflow. Defense: logistics, ISR data triage, and administrative processing. Insurance: tool use, multi-step reasoning, or autonomous action in claims, underwriting, or service. Public sector: casework, benefits processing, or citizen service.",
+      "definition_source": "defense/how-to/index.html (Agent-Ops row); insurance/how-to/index.html (Agent-Ops row); public-sector/how-to/index.html (Agent-Ops row)",
+      "rationale": "Each vertical defines Agent-Ops as agentic work, not as a second name for AI-SaaS or AI-PaaS. SRF Agent-PaaS is the agentic model. Controls that name only Agent-Ops are task-boundary controls: defense SRF-L3-OPS-006, insurance SRF-L3-DEV-002, and public-sector SRF-L3-MON-006."
+    },
+    {
+      "sector_model": "Program-Embedded",
+      "srf_model": "IaaS",
+      "verticals": ["defense"],
+      "definition": "AI embedded directly in a weapon system or C2 program (ACAT program); subject to DoDI 5000.89 TEVV. The component or prime contractor owns all layers.",
+      "definition_source": "defense/how-to/index.html (Program-Embedded row)",
+      "rationale": "The how-to says the component or prime contractor owns all layers of an embedded weapon or C2 system. SRF IaaS is the model in which the customer operates the application, platform, and model."
+    },
+    {
+      "sector_model": "Vendor-Model",
+      "srf_model": "AI-PaaS",
+      "verticals": ["insurance"],
+      "definition": "Third-party predictive model or ECDIS vendor whose output is used in underwriting, rating, or claims. The insurer remains accountable for due diligence. The provider supplies the artifacts. Examples: a bureau loss-cost model, a credit-based insurance score, a telematics scoring engine.",
+      "definition_source": "insurance/how-to/index.html (Vendor-Model row and the Vendor-Model callout)",
+      "rationale": "The insurer uses the vendor's model output inside its own underwriting or claims application, and the provider supplies the model artifacts. SRF AI-PaaS is the split in which the customer operates the application and the provider manages the foundational model. The insurance page's own AI-PaaS sentence is narrower: it says the insurer builds and trains its own models. This row follows the SRF sentence.",
+      "alternative": {
+        "srf_model": "AI-SaaS",
+        "why": "Use AI-SaaS if the vendor model is a turnkey application the insurer configures and does not host. The insurance AI-SaaS sentence is that case. A bureau score or telematics engine is a model output, not that turnkey application, which is why the row stays AI-PaaS."
+      }
+    },
+    {
+      "sector_model": "Shared-Service",
+      "srf_model": "AI-PaaS",
+      "verticals": ["public-sector"],
+      "definition": "Interagency platform (for example, GSA enterprise AI services). The consuming agency inherits the service provider's authorization and documents the inheritance chain.",
+      "definition_source": "public-sector/how-to/index.html (Shared-Service row); public-sector-vertical-handoff.md",
+      "rationale": "The how-to calls Shared-Service an interagency platform. SRF AI-PaaS is the platform model. The one control that names only Shared-Service is public-sector SRF-L3-VAL-007, Shared-Service AI Inheritance Chain Documentation.",
+      "alternative": {
+        "srf_model": "AI-SaaS",
+        "why": "Use AI-SaaS if the shared service is a finished application the agency only configures, and the providing agency holds the platform and model the way an AI-SaaS provider does."
+      }
+    },
+    {
+      "sector_model": "OT-Edge",
+      "srf_model": "IaaS",
+      "verticals": ["manufacturing"],
+      "definition": "AI deployed within OT/ICS security zones, on sensor streams and PLC/SCADA signals, inside an IEC 62443 zone.",
+      "definition_source": "manufacturing/how-to/index.html (operating-model paragraph); manufacturing/index.html (OT-Edge row)",
+      "rationale": "The manufacturer runs the AI on plant hardware inside the OT zone. Controls that name only OT-Edge cover zone segmentation, the hardware baseline, the air gap, and patching. SRF IaaS is the model in which the customer operates the application, platform, and model."
+    },
+    {
+      "sector_model": "Product-Embedded",
+      "srf_model": "IaaS",
+      "verticals": ["manufacturing"],
+      "definition": "AI in machinery or products placed on the EU market. The embedded stack travels with the product. External network connectivity varies.",
+      "definition_source": "manufacturing/how-to/index.html (operating-model paragraph); manufacturing/index.html (Product-Embedded row)",
+      "rationale": "The manufacturer who places the product on the market builds and operates the embedded stack. SRF IaaS is that responsibility split. In this row the SRF customer is the manufacturer, not the buyer of the machine."
+    }
+  ]
+}

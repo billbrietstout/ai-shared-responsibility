@@ -358,6 +358,52 @@ check(not bad_node_kind,
       f"framework nodes copy source_kind and current_obligation "
       f"(bad: {bad_node_kind[:5]})")
 
+# 6f. Sector model names map to exactly one of the four SRF v1.0 models.
+# The table is the editable source. Shared is not a model id.
+SRF_MODELS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
+SECTOR_MODELS = (
+    "SaMD-Cloud", "EHR-Embedded", "Agent-Clinical", "On-Premise",
+    "Agent-Ops", "Program-Embedded", "Vendor-Model", "Shared-Service",
+    "OT-Edge", "Product-Embedded",
+)
+smap = J("data/sector-model-map.json")
+core_models = {m["id"]: m for m in J("data/matrix.json")["models"]
+               if m.get("provenance") == "cosai-core"}
+check(set(core_models) == set(SRF_MODELS),
+      "matrix.json cosai-core models are the four SRF v1.0 models")
+listed = [m["id"] for m in smap.get("srf_models", [])]
+check(listed == list(SRF_MODELS),
+      f"sector map lists the four SRF models in order (got {listed})")
+bad_def = [m["id"] for m in smap.get("srf_models", [])
+           if core_models.get(m["id"], {}).get("description") != m.get("definition")]
+check(not bad_def,
+      f"sector map copies the SRF model definition from matrix.json (bad: {bad_def})")
+rows = smap.get("mappings", [])
+got_names = [r.get("sector_model") for r in rows]
+check(got_names == list(SECTOR_MODELS),
+      f"sector map has the 10 sector models once, in order (got {got_names})")
+bad_row = []
+for r in rows:
+    if r.get("srf_model") not in SRF_MODELS:
+        bad_row.append(r.get("sector_model"))
+    alt = (r.get("alternative") or {}).get("srf_model")
+    if alt is not None and (alt not in SRF_MODELS or alt == r.get("srf_model")):
+        bad_row.append(str(r.get("sector_model")) + ":alternative")
+    if not r.get("definition") or not r.get("definition_source") or not r.get("rationale"):
+        bad_row.append(str(r.get("sector_model")) + ":missing-text")
+check(not bad_row, f"each sector model maps to one SRF model (bad: {bad_row})")
+used_sector = set()
+for vertical in ("finance", "healthcare", "insurance",
+                 "public-sector", "defense", "manufacturing"):
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        for code in c.get("operating_models") or []:
+            if code not in SRF_MODELS:
+                used_sector.add(code)
+check(used_sector == set(SECTOR_MODELS),
+      f"sector model names on controls match the map "
+      f"(only on controls: {sorted(used_sector - set(SECTOR_MODELS))}; "
+      f"only on map: {sorted(set(SECTOR_MODELS) - used_sector)})")
+
 # Depth carries a verification promise. A full-depth entry was read against the
 # primary source, so it records last_verified and cannot sit at unverified; a
 # reference entry has not been read that way and must say so. The OECD entry was
