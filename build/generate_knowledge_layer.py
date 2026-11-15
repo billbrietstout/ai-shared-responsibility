@@ -31,6 +31,8 @@ import os
 import re
 import sys
 
+from obligation_kind import citation_pattern, current_obligation
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 SITE = "https://aisharedresponsibility.com"
@@ -242,7 +244,7 @@ def build_glossary_outputs(terms):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
-                   controls_by_vertical, moral=None, tapestry=None):
+                   controls_by_vertical, moral=None, tapestry=None, threats=None):
     nodes = {}   # id -> node
     edges = []
     related = {} # id -> set of neighbour ids
@@ -383,6 +385,7 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
     # mapping_key is how a vertical control's mappings object names this
     # instrument; it is the join key for the governed_by edges below.
     key_to_ext = {}
+    ext_current = {}
     for item in regs["items"]:
         nid = ext_id(item["id"])
         add_node(nid, item["name"], "framework", item.get("url", f"{SITE}/regulations/"))
@@ -401,8 +404,12 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             add_edge(nid, "superseded_by", ext_id(item["superseded_by"]))
         if item.get("jurisdiction"):
             add_edge(nid, "issued_in_jurisdiction", juris_id(item["jurisdiction"]))
+        if item.get("source_kind"):
+            nodes[nid]["source_kind"] = item["source_kind"]
+            nodes[nid]["current_obligation"] = current_obligation(item)
         if item.get("mapping_key"):
             key_to_ext[item["mapping_key"]] = nid
+        ext_current[nid] = current_obligation(item)
         for vslug in item.get("applicable_verticals") or []:
             if vslug in VERTICALS:
                 add_edge(nid, "applies_to_vertical", vertical_id(vslug),
@@ -484,30 +491,35 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
                      subtype="requirement")
             nodes[rid]["instrument"] = instrument
             nodes[rid]["citation"] = req["citation"]
-            profile = req.get("moral_profile") or {}
-            nodes[rid]["moral_profile"] = {
-                "actor": profile.get("actor", 0),
-                "action": profile.get("action", 0),
-                "outcome": profile.get("outcome", 0),
-            }
-            if profile.get("rationale"):
-                nodes[rid]["moral_rationale"] = profile["rationale"]
+            profile = req.get("moral_profile")
+            if profile is None:
+                # Recorded obligation, not yet tagged. Do not invent salience.
+                nodes[rid]["moral_profile"] = None
+            else:
+                nodes[rid]["moral_profile"] = {
+                    "actor": profile.get("actor", 0),
+                    "action": profile.get("action", 0),
+                    "outcome": profile.get("outcome", 0),
+                }
+                if profile.get("rationale"):
+                    nodes[rid]["moral_rationale"] = profile["rationale"]
 
             add_edge(rid, "part_of", ext_id(instrument))
             for code in req.get("srf_layers", []):
                 add_edge(rid, "maps_to_layer", layer_id(code))
-            for dim in ("actor", "action", "outcome"):
-                salience = int(profile.get(dim, 0) or 0)
-                if salience > 0:
-                    add_edge(rid, "emphasizes", moral_id(dim), salience=salience)
+            if profile:
+                for dim in ("actor", "action", "outcome"):
+                    salience = int(profile.get(dim, 0) or 0)
+                    if salience > 0:
+                        add_edge(rid, "emphasizes", moral_id(dim), salience=salience)
 
-            bucket = rollup.setdefault(instrument,
-                                       {"actor": 0, "action": 0, "outcome": 0})
-            for dim in ("actor", "action", "outcome"):
-                bucket[dim] = max(bucket[dim], int(profile.get(dim, 0) or 0))
+                bucket = rollup.setdefault(instrument,
+                                           {"actor": 0, "action": 0, "outcome": 0})
+                for dim in ("actor", "action", "outcome"):
+                    bucket[dim] = max(bucket[dim], int(profile.get(dim, 0) or 0))
 
             patterns = [
-                re.compile(re.escape(p) + r"\b", re.I)
+                citation_pattern(p)
                 for p in req.get("citation_match") or [req["citation"]]
             ]
             req_matchers.append((patterns, rid, ext_id(instrument)))
@@ -543,7 +555,18 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             add_edge(nid, "belongs_to_vertical", vertical_id(vertical))
             add_edge(nid, "applies_to_layer", layer_id(c["layer"]))
             persona = c.get("accountable_persona")
-            if persona:
+            by_model = c.get("accountable_by_model")
+            if isinstance(by_model, dict) and by_model:
+                # One edge per SRF model. The persona is the canonical SRF
+                # persona, including when accountable_persona stores a
+                # sector specialization of that persona.
+                for model, model_persona in by_model.items():
+                    if (model_persona not in canonical_personas
+                            and model_persona not in specialization_ids):
+                        ensure_role(model_persona, vertical)
+                    add_edge(nid, "accountable_to", role_id(model_persona),
+                             operating_model=model)
+            elif persona:
                 if persona not in canonical_personas and persona not in specialization_ids:
                     ensure_role(persona, vertical)
                 add_edge(nid, "accountable_to", role_id(persona))
@@ -567,18 +590,64 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             # US ONC citation reading "Training data description" matching a
             # Chinese requirement whose pattern is "training data".
             linked_reqs = set()
+            governed_rows = []
             for mkey, citation in (c.get("mappings") or {}).items():
                 if mkey == "mapping_status_note" or is_placeholder(citation):
                     continue
                 target = key_to_ext.get(mkey)
                 if target:
-                    add_edge(nid, "governed_by", target, citation=citation)
+                    governed_rows.append((target, citation))
                 for patterns, req_nid, req_ext in req_matchers:
                     if target != req_ext or req_nid in linked_reqs:
                         continue
                     if any(p.search(citation) for p in patterns):
                         add_edge(nid, "implements", req_nid, citation=citation)
                         linked_reqs.add(req_nid)
+            # A current obligation with no matching article record is an
+            # instrument-level fallback. Catalogs are not obligations, so
+            # they do not get the flag. linked_reqs holds requirement node ids.
+            matched_ext = set()
+            for req_nid in linked_reqs:
+                inst = nodes.get(req_nid, {}).get("instrument")
+                if inst:
+                    matched_ext.add(ext_id(inst))
+            for target, citation in governed_rows:
+                props = {"citation": citation}
+                if ext_current.get(target):
+                    props["obligation_fallback"] = target not in matched_ext
+                add_edge(nid, "governed_by", target, **props)
+
+    # Risk records are the threats.json rows. Definitions stay with the
+    # external catalog. This graph adds the control, the obligation link,
+    # and the risk owner per SRF model. Obligation links are read from
+    # threats[].obligations; they are not inferred again here.
+    if threats:
+        dsgai_url = ((threats.get("sources") or {}).get("owasp_dsgai") or {}).get("url")
+        for t in threats.get("threats", []):
+            tid = f"ext.threat.{t['id']}"
+            url = t.get("ai_exchange")
+            if not (isinstance(url, str) and url.startswith("http")):
+                url = dsgai_url or f"{SITE}/data/threats.json"
+            add_node(tid, t["name"], "concept", url, subtype="risk")
+            nodes[tid]["srf_layer"] = t.get("srf_layer")
+            for cid in t.get("related_controls") or []:
+                if cid in nodes:
+                    add_edge(tid, "mitigated_by", cid)
+            for link in t.get("obligations") or []:
+                req_nid = requirement_id(link["requirement"])
+                if req_nid in nodes:
+                    # The property is obligation_source, not source: source is the
+                    # edge's own endpoint field.
+                    add_edge(tid, "triggers_obligation", req_nid,
+                             basis=link.get("basis"),
+                             obligation_source=link.get("source"))
+            for model, cell in (t.get("accountability") or {}).items():
+                if model not in OPMODEL_SLUG or model == "Federated-Consortium":
+                    continue
+                persona = (cell or {}).get("accountable_persona")
+                if persona:
+                    add_edge(tid, "risk_owner", role_id(persona),
+                             operating_model=model)
 
     # Project Tapestry accountability controls. These are not an industry
     # vertical: they describe one deployment topology, the Federated-Consortium
@@ -684,7 +753,7 @@ def build_ids(nodes, terms):
                        "srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, "
                        "srf.jurisdiction.*, srf.moral.*, srf.vertical.*, "
                        "srf.control.<vertical>.*, ext.framework.*, "
-                       "ext.requirement.*.",
+                       "ext.requirement.*, ext.threat.*.",
         "srf_version": SRF_VERSION,
         "updated": UPDATED,
         "namespaces": {
@@ -700,6 +769,8 @@ def build_ids(nodes, terms):
             "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
             "ext.framework": "An external standard or regulation",
             "ext.requirement": "A concrete requirement inside an external instrument",
+            "ext.threat": "A catalog risk from threats.json. The definition belongs to the external source.",
+            "ext.threat": "A catalog risk from threats.json. The definition belongs to the external source.",
         },
         "count": len(entries),
         "ids": entries,
@@ -738,11 +809,16 @@ def build_exports(terms, nodes, edges, layers, personas, matrix):
     }
 
     # export/framework.json — combined pack { concepts, relationships, definitions }
-    concepts = [
-        {"id": n["id"], "label": n["label"], "type": n["type"],
-         "subtype": n.get("subtype"), "url": n["url"]}
-        for n in nodes.values()
-    ]
+    concepts = []
+    for n in nodes.values():
+        row = {"id": n["id"], "label": n["label"], "type": n["type"],
+               "subtype": n.get("subtype"), "url": n["url"]}
+        # Instrument kind rides on the framework node. Keep it on the pack
+        # so a consumer does not have to reopen ontology/nodes.json.
+        if "source_kind" in n:
+            row["source_kind"] = n["source_kind"]
+            row["current_obligation"] = n["current_obligation"]
+        concepts.append(row)
     relationships = [
         {"source": e["source"], "rel": e["rel"], "target": e["target"],
          **{k: v for k, v in e.items() if k not in ("source", "rel", "target")}}
@@ -790,11 +866,14 @@ def main():
     tapestry_path = os.path.join(DATA, "tapestry-controls.json")
     tapestry = (json.load(open(tapestry_path, encoding="utf-8"))
                 if os.path.exists(tapestry_path) else None)
+    threats_path = os.path.join(DATA, "threats.json")
+    threats = (json.load(open(threats_path, encoding="utf-8"))
+               if os.path.exists(threats_path) else None)
 
     registry, index, per_term = build_glossary_outputs(terms)
     nodes, edges, nodes_out, edges_out = build_ontology(
         terms, layers, personas, matrix, regs, jurisdictions,
-        controls_by_vertical, moral=moral, tapestry=tapestry)
+        controls_by_vertical, moral=moral, tapestry=tapestry, threats=threats)
     ids = build_ids(nodes, terms)
     exp_g, exp_o, exp_f = build_exports(
         terms, nodes, edges, layers, personas, matrix)
@@ -815,6 +894,10 @@ def main():
         "specializes_edges": sum(1 for e in edges if e["rel"] == "specializes"),
         "emphasizes_edges": sum(1 for e in edges if e["rel"] == "emphasizes"),
         "implements_edges": sum(1 for e in edges if e["rel"] == "implements"),
+        "risk_nodes": sum(1 for n in nodes.values() if n.get("subtype") == "risk"),
+        "mitigated_by_edges": sum(1 for e in edges if e["rel"] == "mitigated_by"),
+        "triggers_obligation_edges": sum(1 for e in edges if e["rel"] == "triggers_obligation"),
+        "risk_owner_edges": sum(1 for e in edges if e["rel"] == "risk_owner"),
         "part_of_edges": sum(1 for e in edges if e["rel"] == "part_of"),
         "applies_to_vertical_edges": sum(1 for e in edges if e["rel"] == "applies_to_vertical"),
     }

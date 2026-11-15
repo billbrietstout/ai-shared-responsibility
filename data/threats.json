@@ -1,8 +1,8 @@
 {
   "$schema_version": "0.2",
   "srf_version": "1.0",
-  "updated": "2026-08-27",
-  "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers.",
+  "updated": "2026-11-15",
+  "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers. obligations[] is a risk-to-obligation link. A link is stored only when a related control's citation matches a current obligation. basis derived_via_control means the link was reached through that control, and the source lists the control id and the citation.",
   "id_convention": "AI Exchange entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Entries that exist only in the OWASP GenAI Data Security Risks taxonomy are keyed dsgaiNN (lowercase), matching the published DSGAI identifier. Threat names for AI Exchange rows are taken verbatim from the AI Exchange AI security matrix; names for DSGAI-only rows are taken verbatim from the DSGAI 2026 taxonomy. impact and attack_surface for DSGAI-only rows are derived from the published DSGAI summary, because that taxonomy does not use the AI Exchange field names. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. This file cites DSGAI identifiers; it does not copy DSGAI mitigation text. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json. DSGAI07 (governance, lifecycle, and classification as an enabling condition) and DSGAI08 (regulatory non-compliance as an outcome) have no rows: they are not attack techniques. Classification and provenance duties already sit on the Data Provider persona at L2.",
   "accountability_convention": "One accountable persona per threat per operating model. The responsibility object quotes the customer and provider cell values verbatim from /data/matrix.json for the threat's primary SRF layer. Where the matrix says shared, this file still names a single accountable lead and records the counterparty obligation in the note, because shared is not a valid final answer.",
   "verification": {
@@ -74,13 +74,18 @@
           "note": "The customer builds the application and owns injection defenses. The platform provider supplies guardrail primitives; demand their documented limits."
         },
         "Agent-PaaS": {
-          "accountable_persona": "agentic-platform-provider",
+          "accountable_persona": "application-developer",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The orchestration runtime provider leads on input mediation and tool-execution safety. The customer's application-developer remains accountable for injection paths opened by its own agent definitions."
+          "note": "Accountable persona is application-developer, the owner of srf.control.defense.SRF-L3-OPS-007 in this model. That control is at L3, and this risk is at L3. The previous persona was agentic-platform-provider.",
+          "owner_alignment": {
+            "previous_persona": "agentic-platform-provider",
+            "previous_note": "The orchestration runtime provider leads on input mediation and tool-execution safety. The customer's application-developer remains accountable for injection paths opened by its own agent definitions.",
+            "control": "srf.control.defense.SRF-L3-OPS-007"
+          }
         },
         "IaaS": {
           "accountable_persona": "application-developer",
@@ -105,6 +110,173 @@
         "srf.control.healthcare.SRF-L3-VV-002",
         "srf.control.defense.SRF-L3-OPS-007",
         "srf.control.public-sector.SRF-L3-VAL-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-MON-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI systems)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-VV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9(5)(b) (Testing including cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-308",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L3-VV-002",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.308(a)(1): Security risk analysis"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L3-OPS-007",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6"
+              },
+              {
+                "control": "srf.control.public-sector.SRF-L3-VAL-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.1 (trustworthiness evaluation includes security); MEASURE 2.6"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-v",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-MON-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section V (Ongoing Model Monitoring)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 4.1 (post-deployment monitoring plans are implemented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L3-VAL-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.1 (trustworthiness evaluation includes security); MEASURE 2.6"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 4.1 (post-deployment monitoring plans are implemented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-VV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L3-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.4b-i",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L3-VAL-003",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(b)(i) (Conduct Pre-Deployment Testing)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -140,13 +312,18 @@
           "note": "The customer owns retrieval design and content mediation. Its data-provider owns integrity of augmentation sources."
         },
         "Agent-PaaS": {
-          "accountable_persona": "agentic-platform-provider",
+          "accountable_persona": "application-developer",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The runtime provider leads on blast-radius control around tool execution. The customer's application-developer owns which sources its agents may read, and its data-provider owns integrity of those sources."
+          "note": "Accountable persona is application-developer, the owner of srf.control.finance.SRF-L3-DEV-001 in this model. That control is at L3, and this risk is at L3. The previous persona was agentic-platform-provider.",
+          "owner_alignment": {
+            "previous_persona": "agentic-platform-provider",
+            "previous_note": "The runtime provider leads on blast-radius control around tool execution. The customer's application-developer owns which sources its agents may read, and its data-provider owns integrity of those sources.",
+            "control": "srf.control.finance.SRF-L3-DEV-001"
+          }
         },
         "IaaS": {
           "accountable_persona": "application-developer",
@@ -171,6 +348,191 @@
         "srf.control.healthcare.SRF-L3-VV-002",
         "srf.control.defense.SRF-L2-OPS-005",
         "srf.control.insurance.SRF-L3-DEV-002"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-14",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L3-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (human oversight for high-risk AI); Article 15 (robustness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L3-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (human oversight for high-risk AI); Article 15 (robustness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management for agentic AI)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-VV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9(5)(b) (Testing including cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-308",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L3-VV-002",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.308(a)(1): Security risk analysis"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(c)(1): Integrity controls"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L3-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-VV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L3-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -187,13 +549,18 @@
       "layer_rationale": "Adversarial examples exploit model robustness, a property of the model itself. Input handling at L3 can reduce exposure but cannot fix a non-robust model.",
       "accountability": {
         "AI-SaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "data-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "N/A",
             "provider": "provider-managed"
           },
-          "note": "Robustness testing of the provider's model requires provider authorization."
+          "note": "Accountable persona is data-provider, the owner of srf.control.defense.SRF-L2-OPS-005 in this model. That control is at L2, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "Robustness testing of the provider's model requires provider authorization.",
+            "control": "srf.control.defense.SRF-L2-OPS-005"
+          }
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
@@ -233,6 +600,106 @@
         "srf.control.healthcare.SRF-L3-DEV-003",
         "srf.control.defense.SRF-L2-OPS-005",
         "srf.control.finance.SRF-L5-DEV-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9(5)(b) (Testing of high-risk AI systems)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6"
+              },
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -296,6 +763,114 @@
         "srf.control.public-sector.SRF-L4-MON-008",
         "srf.control.defense.SRF-L4-ACQ-002",
         "srf.control.finance.SRF-L5-MON-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-MON-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (robustness and resilience, detection of anomalous behavior for high-risk AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4"
+              },
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-008",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (risk treatments tracked); MEASURE 2.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-MON-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-3-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-008",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (risk treatments tracked); MEASURE 2.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -359,6 +934,137 @@
         "srf.control.insurance.SRF-L5-DEV-002",
         "srf.control.public-sector.SRF-L5-ACQ-003",
         "srf.control.defense.SRF-L5-ACQ-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 17 (Quality management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L5-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (cybersecurity, model integrity and supply-chain security)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L5-VV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management); Article 28 (Transparency for providers)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L5-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain risk management includes artifact integrity); MAP 4.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-3-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L5-VV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L5-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain risk management includes artifact integrity); MAP 4.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L5-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 5.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L5-VV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -423,6 +1129,129 @@
         "srf.control.healthcare.SRF-L2-DEV-001",
         "srf.control.defense.SRF-L2-TEVV-009",
         "srf.control.insurance.SRF-L2-TPO-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-6-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L2-TPO-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); GOVERN 6.1 (third-party policies are in place)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-2-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-TEVV-009",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 2.2"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-2-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); MAP 2.3 (data collection and selection considerations are documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.3 (performance is demonstrated for conditions similar to deployment); MAP 2.3 (data selection considerations are documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); MAP 2.3 (data collection and selection considerations are documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L2-TPO-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); GOVERN 6.1 (third-party policies are in place)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -488,6 +1317,142 @@
         "srf.control.public-sector.SRF-L5-ACQ-003",
         "srf.control.public-sector.SRF-L1-ACQ-010",
         "srf.control.defense.SRF-L5-ACQ-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 17 (Quality management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L5-VV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management); Article 28 (Transparency for providers)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L1-ACQ-010",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)"
+              },
+              {
+                "control": "srf.control.public-sector.SRF-L5-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain risk management includes artifact integrity); MAP 4.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-3-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party components are mapped); MANAGE 3.1 (AI risks from third-party resources are monitored)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L5-VV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party components are mapped); MANAGE 3.1 (AI risks from third-party resources are monitored)"
+              },
+              {
+                "control": "srf.control.public-sector.SRF-L1-ACQ-010",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain risk management); MAP 4.1 (risks from third-party AI enumerated)"
+              },
+              {
+                "control": "srf.control.public-sector.SRF-L5-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain risk management includes artifact integrity); MAP 4.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L5-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 5.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L5-VV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -504,13 +1469,18 @@
       "layer_rationale": "Sensitive training data escapes through model output. The model layer owns what the model memorized. The application layer owns output filtering as a compensating control.",
       "accountability": {
         "AI-SaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "application-developer",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "N/A",
             "provider": "provider-managed"
           },
-          "note": "The provider owns both the model's memorization behavior and the application-level output filtering in front of it."
+          "note": "Accountable persona is application-developer, the owner of srf.control.finance.SRF-L3-DEV-002 in this model. That control is at L3, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "The provider owns both the model's memorization behavior and the application-level output filtering in front of it.",
+            "control": "srf.control.finance.SRF-L3-DEV-002"
+          }
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
@@ -551,6 +1521,165 @@
         "srf.control.finance.SRF-L3-MON-002",
         "srf.control.healthcare.SRF-L3-PMS-002",
         "srf.control.finance.SRF-L5-DEV-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-v",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section V (Ongoing Model Monitoring)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -573,7 +1702,8 @@
             "customer": "N/A",
             "provider": "provider-managed"
           },
-          "note": "The provider owns inversion resistance. Testing it against the provider's model requires provider authorization."
+          "note": "The provider owns inversion resistance. Testing it against the provider's model requires provider authorization. No related control applies to this SRF model, so this persona was not changed to match a control.",
+          "no_linked_control_in_model": true
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
@@ -612,6 +1742,143 @@
       "related_controls": [
         "srf.control.finance.SRF-L5-DEV-003",
         "srf.control.finance.SRF-L5-DEV-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-53",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 11 (Technical documentation); Article 53 (General-purpose AI model provider obligations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vi",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section VII (Vendor and Other Third-Party Products); Section VI (Documentation)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section VII (Vendor and Other Third-Party Products); Section VI (Documentation)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-2-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 2.2 (information about the AI system knowledge limits is documented); MEASURE 2.8 (transparency and accountability are examined)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-8",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 2.2 (information about the AI system knowledge limits is documented); MEASURE 2.8 (transparency and accountability are examined)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -672,6 +1939,52 @@
       "related_controls": [
         "srf.control.finance.SRF-L2-MON-002",
         "srf.control.healthcare.SRF-L2-DEV-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -689,40 +2002,60 @@
       "layer_rationale": "The model is replicated by harvesting inputs and outputs through normal use. The model owner holds the asset at risk; rate limiting and access control at the application and platform layers are the practical defenses.",
       "accountability": {
         "AI-SaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "N/A",
             "provider": "provider-managed"
           },
-          "note": "The provider owns the model asset and the rate limiting and monitoring that protect it."
+          "note": "Accountable persona is ai-platform-provider, the owner of srf.control.finance.SRF-L4-DEV-002 in this model. That control is at L4, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "The provider owns the model asset and the rate limiting and monitoring that protect it.",
+            "control": "srf.control.finance.SRF-L4-DEV-002"
+          }
         },
         "AI-PaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "model-evaluation",
             "provider": "provider-managed"
           },
-          "note": "The provider owns protection of hosted models. The customer owns protecting any proprietary model it deploys to the platform."
+          "note": "Accountable persona is ai-platform-provider, the owner of srf.control.finance.SRF-L4-DEV-002 in this model. That control is at L4, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "The provider owns protection of hosted models. The customer owns protecting any proprietary model it deploys to the platform.",
+            "control": "srf.control.finance.SRF-L4-DEV-002"
+          }
         },
         "Agent-PaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "shared",
             "provider": "shared"
           },
-          "note": "Lead sits with the model provider. The customer owns query patterns its agents expose to third parties."
+          "note": "Accountable persona is ai-platform-provider, the owner of srf.control.finance.SRF-L4-DEV-002 in this model. That control is at L4, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "Lead sits with the model provider. The customer owns query patterns its agents expose to third parties.",
+            "control": "srf.control.finance.SRF-L4-DEV-002"
+          }
         },
         "IaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "ai-platform-provider",
           "accountable_party": "customer",
           "responsibility": {
             "customer": "customer-owned",
             "provider": "N/A"
           },
-          "note": "The customer owns its model asset and the serving controls around it."
+          "note": "Accountable persona is ai-platform-provider, the owner of srf.control.finance.SRF-L4-DEV-002 in this model. That control is at L4, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "The customer owns its model asset and the serving controls around it.",
+            "control": "srf.control.finance.SRF-L4-DEV-002"
+          }
         }
       },
       "mappings": {
@@ -736,6 +2069,93 @@
         "srf.control.finance.SRF-L4-MON-002",
         "srf.control.public-sector.SRF-L4-ACQ-003",
         "srf.control.insurance.SRF-L4-MON-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-MON-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (robustness and resilience, detection of anomalous behavior for high-risk AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain access controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.1 (supply chain access controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -799,6 +2219,109 @@
         "srf.control.insurance.SRF-L4-MON-003",
         "srf.control.public-sector.SRF-L4-MON-004",
         "srf.control.defense.SRF-L4-ACQ-002"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (cybersecurity, data integrity and confidentiality)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (robustness and resilience, detection of anomalous behavior for high-risk AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-3-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 3.1 (AI risks from third-party resources are monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 3.1 (AI risks from third-party resources are monitored)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L4-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -820,34 +2343,50 @@
             "customer": "N/A",
             "provider": "provider-managed"
           },
-          "note": "The provider owns development-environment security for its models."
+          "note": "The provider owns development-environment security for its models. No related control applies to this SRF model, so this persona was not changed to match a control.",
+          "no_linked_control_in_model": true
         },
         "AI-PaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "model-evaluation",
             "provider": "provider-managed"
           },
-          "note": "The provider owns its development environment. The customer owns any fine-tuning environment it operates."
+          "note": "Accountable persona is ai-platform-provider, the owner of srf.control.finance.SRF-L4-DEV-003 in this model. That control is at L4, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "The provider owns its development environment. The customer owns any fine-tuning environment it operates.",
+            "control": "srf.control.finance.SRF-L4-DEV-003"
+          }
         },
         "Agent-PaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "ai-platform-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "shared",
             "provider": "shared"
           },
-          "note": "Lead sits with the model provider for foundation model artifacts."
+          "note": "Accountable persona is ai-platform-provider, the owner of srf.control.finance.SRF-L4-DEV-003 in this model. That control is at L4, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "Lead sits with the model provider for foundation model artifacts.",
+            "control": "srf.control.finance.SRF-L4-DEV-003"
+          }
         },
         "IaaS": {
-          "accountable_persona": "model-provider",
+          "accountable_persona": "ai-platform-provider",
           "accountable_party": "customer",
           "responsibility": {
             "customer": "customer-owned",
             "provider": "N/A"
           },
-          "note": "The customer owns protection of its own model artifacts."
+          "note": "Accountable persona is ai-platform-provider, the owner of srf.control.finance.SRF-L4-DEV-003 in this model. That control is at L4, and this risk is at L5. The previous persona was model-provider.",
+          "owner_alignment": {
+            "previous_persona": "model-provider",
+            "previous_note": "The customer owns protection of its own model artifacts.",
+            "control": "srf.control.finance.SRF-L4-DEV-003"
+          }
         }
       },
       "mappings": {
@@ -859,6 +2398,57 @@
       "related_controls": [
         "srf.control.finance.SRF-L4-DEV-003",
         "srf.control.finance.SRF-L4-MON-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -921,6 +2511,78 @@
         "srf.control.finance.SRF-L4-DEV-002",
         "srf.control.public-sector.SRF-L4-MON-006",
         "srf.control.defense.SRF-L4-OPS-010"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-OPS-010",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.4b-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -937,40 +2599,60 @@
       "layer_rationale": "Prompts and other model inputs leak from wherever they are handled or stored at runtime. The application layer decides what goes into prompts and how long input persists; the platform layer protects input in transit and at rest.",
       "accountability": {
         "AI-SaaS": {
-          "accountable_persona": "application-developer",
+          "accountable_persona": "data-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "N/A",
             "provider": "provider-managed"
           },
-          "note": "The provider owns input confidentiality across the managed application. The customer's ai-system-users remain accountable for what they submit."
+          "note": "Accountable persona is data-provider, the owner of srf.control.finance.SRF-L2-MON-002 in this model. That control is at L2, and this risk is at L3. The previous persona was application-developer.",
+          "owner_alignment": {
+            "previous_persona": "application-developer",
+            "previous_note": "The provider owns input confidentiality across the managed application. The customer's ai-system-users remain accountable for what they submit.",
+            "control": "srf.control.finance.SRF-L2-MON-002"
+          }
         },
         "AI-PaaS": {
-          "accountable_persona": "application-developer",
+          "accountable_persona": "data-provider",
           "accountable_party": "customer",
           "responsibility": {
             "customer": "customer-owned",
             "provider": "shared"
           },
-          "note": "The customer owns prompt construction and input retention. Demand the platform provider's input logging and retention terms."
+          "note": "Accountable persona is data-provider, the owner of srf.control.finance.SRF-L2-MON-002 in this model. That control is at L2, and this risk is at L3. The previous persona was application-developer.",
+          "owner_alignment": {
+            "previous_persona": "application-developer",
+            "previous_note": "The customer owns prompt construction and input retention. Demand the platform provider's input logging and retention terms.",
+            "control": "srf.control.finance.SRF-L2-MON-002"
+          }
         },
         "Agent-PaaS": {
-          "accountable_persona": "agentic-platform-provider",
+          "accountable_persona": "data-provider",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The runtime provider leads on protecting input flowing through managed state. The customer owns what its agent definitions place into prompts."
+          "note": "Accountable persona is data-provider, the owner of srf.control.finance.SRF-L2-MON-002 in this model. That control is at L2, and this risk is at L3. The previous persona was agentic-platform-provider.",
+          "owner_alignment": {
+            "previous_persona": "agentic-platform-provider",
+            "previous_note": "The runtime provider leads on protecting input flowing through managed state. The customer owns what its agent definitions place into prompts.",
+            "control": "srf.control.finance.SRF-L2-MON-002"
+          }
         },
         "IaaS": {
-          "accountable_persona": "application-developer",
+          "accountable_persona": "data-provider",
           "accountable_party": "customer",
           "responsibility": {
             "customer": "customer-owned",
             "provider": "N/A"
           },
-          "note": "The customer owns input confidentiality end to end."
+          "note": "Accountable persona is data-provider, the owner of srf.control.finance.SRF-L2-MON-002 in this model. That control is at L2, and this risk is at L3. The previous persona was application-developer.",
+          "owner_alignment": {
+            "previous_persona": "application-developer",
+            "previous_note": "The customer owns input confidentiality end to end.",
+            "control": "srf.control.finance.SRF-L2-MON-002"
+          }
         }
       },
       "mappings": {
@@ -983,6 +2665,91 @@
         "srf.control.finance.SRF-L2-MON-002",
         "srf.control.healthcare.SRF-L4-DEV-003",
         "srf.control.public-sector.SRF-L4-MON-004"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management, data security)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(a)(2)(iv): Encryption; §164.312(e)(2)(ii): Encryption in transit"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1016,13 +2783,18 @@
           "note": "The customer owns treating model output as untrusted in everything it builds downstream."
         },
         "Agent-PaaS": {
-          "accountable_persona": "agentic-platform-provider",
+          "accountable_persona": "application-developer",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The runtime provider leads on safe handling where output feeds tool execution. The customer owns downstream consumers its agents write to."
+          "note": "Accountable persona is application-developer, the owner of srf.control.finance.SRF-L3-DEV-002 in this model. That control is at L3, and this risk is at L3. The previous persona was agentic-platform-provider.",
+          "owner_alignment": {
+            "previous_persona": "agentic-platform-provider",
+            "previous_note": "The runtime provider leads on safe handling where output feeds tool execution. The customer owns downstream consumers its agents write to.",
+            "control": "srf.control.finance.SRF-L3-DEV-002"
+          }
         },
         "IaaS": {
           "accountable_persona": "application-developer",
@@ -1045,6 +2817,150 @@
         "srf.control.finance.SRF-L3-MON-002",
         "srf.control.healthcare.SRF-L3-PMS-002",
         "srf.control.insurance.SRF-L3-TPO-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L3-TPO-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-v",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section V (Ongoing Model Monitoring)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-3-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L3-TPO-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 3.1 (AI risks from third-party resources are monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L3-TPO-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MANAGE 3.1 (AI risks from third-party resources are monitored)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1108,6 +3024,101 @@
         "srf.control.finance.SRF-L4-MON-002",
         "srf.control.finance.SRF-L3-DEV-003",
         "srf.control.finance.SRF-L4-DEV-002"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-14",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-MON-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 1.3 (responses to high-priority AI risks are developed); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 1.3 (responses to high-priority AI risks are developed); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1173,6 +3184,153 @@
         "srf.control.finance.SRF-L1-MON-001",
         "srf.control.public-sector.SRF-L2-ACQ-002",
         "srf.control.defense.SRF-L2-OPS-004"
+      ],
+      "obligations": [
+        {
+          "requirement": "cmmc-2-0.access-control",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "cmmc_2_0",
+                "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-26",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 26 (Deployer obligations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-2-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section VI (Model Inventory); Section III (model materiality)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vi",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section VI (Model Inventory); Section III (model materiality)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section VI (Roles and Responsibilities)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L1-MON-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section VI (Model Inventory)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-1-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-1-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 1.6 (mechanisms are in place to inventory AI systems, resourced by risk priority)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L1-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 1.6 (AI system inventory completeness is maintained)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-5-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.2 (risk management includes third-party AI providers and data practices); MAP 5.1 (likelihood of impacts on individuals is assessed)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.2 (risk management includes third-party AI providers and data practices); MAP 5.1 (likelihood of impacts on individuals is assessed)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1195,7 +3353,8 @@
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The provider owns integrity checks on data the managed application ingests. The customer stays accountable for the integrity of context data it connects."
+          "note": "The provider owns integrity checks on data the managed application ingests. The customer stays accountable for the integrity of context data it connects. No related control applies to this SRF model, so this persona was not changed to match a control.",
+          "no_linked_control_in_model": true
         },
         "AI-PaaS": {
           "accountable_persona": "data-provider",
@@ -1236,6 +3395,153 @@
         "srf.control.finance.SRF-L2-DEV-001",
         "srf.control.healthcare.SRF-L2-PMS-003",
         "srf.control.manufacturing.SRF-L2-DES-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L2-VAL-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance); Article 9 (Risk management system)"
+              },
+              {
+                "control": "srf.control.manufacturing.SRF-L2-DES-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (data and data governance); Annex IV (technical documentation data section)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-VAL-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance); Article 9 (Risk management system)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management for agentic AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(c)(1): Integrity controls"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-v",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-VAL-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section V (Conceptual Soundness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-2-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); MAP 2.3 (data collection and selection considerations are documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); MAP 2.3 (data collection and selection considerations are documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-VAL-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.11 (fairness and bias are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-11",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-VAL-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.11 (fairness and bias are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1300,6 +3606,142 @@
         "srf.control.finance.SRF-L3-DEV-001",
         "srf.control.finance.SRF-L4-DEV-002",
         "srf.control.healthcare.SRF-L2-PMS-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-14",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management for agentic AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(c)(1): Integrity controls"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 1.3 (responses to high-priority AI risks are developed); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 1.3 (responses to high-priority AI risks are developed); MEASURE 2.7 (security and resilience are evaluated)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1364,6 +3806,135 @@
         "srf.control.finance.SRF-L3-DEV-002",
         "srf.control.defense.SRF-L2-ACQ-001",
         "srf.control.healthcare.SRF-L4-DEV-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "cmmc-2-0.access-control",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-ACQ-001",
+                "mapping_key": "cmmc_2_0",
+                "citation": "AC.L2-3.1.3 (control the flow of CUI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management, data security)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(a)(2)(iv): Encryption; §164.312(e)(2)(ii): Encryption in transit"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1428,6 +3999,179 @@
         "srf.control.finance.SRF-L2-DEV-002",
         "srf.control.finance.SRF-L5-DEV-003",
         "srf.control.public-sector.SRF-L2-ACQ-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-2-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 2.2 (scientific rigor and data quality are characterized for intended context); MAP 3.5 (organizational risk tolerances are considered)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-3-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 2.2 (scientific rigor and data quality are characterized for intended context); MAP 3.5 (organizational risk tolerances are considered)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L5-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.4b-ii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(b)(ii) (Complete AI Impact Assessment)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1478,7 +4222,8 @@
             "customer": "customer-owned",
             "provider": "shared"
           },
-          "note": "The customer owns session and tenant isolation in the stack it runs. The infrastructure provider retains isolation obligations for the shared hardware underneath."
+          "note": "The customer owns session and tenant isolation in the stack it runs. The infrastructure provider retains isolation obligations for the shared hardware underneath. No related control applies to this SRF model, so this persona was not changed to match a control.",
+          "no_linked_control_in_model": true
         }
       },
       "mappings": {
@@ -1492,6 +4237,166 @@
         "srf.control.healthcare.SRF-L2-PMS-003",
         "srf.control.finance.SRF-L4-DEV-001",
         "srf.control.public-sector.SRF-L4-MON-004"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity); Article 9 (Risk management system)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity); Article 9 (Risk management system)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management for agentic AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(c)(1): Integrity controls"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 1.3 (responses to high-priority risks are developed)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 1.3 (responses to high-priority risks are developed)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1555,6 +4460,176 @@
         "srf.control.finance.SRF-L3-DEV-003",
         "srf.control.finance.SRF-L2-DEV-002",
         "srf.control.healthcare.SRF-L3-PMS-002"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-14",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L3-PMS-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 1.3 (responses to high-priority AI risks are developed); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 1.3 (responses to high-priority AI risks are developed); MEASURE 2.7 (security and resilience are evaluated)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1599,13 +4674,18 @@
           "note": "The runtime provider owns managed embedding stores. The customer owns corpora it loads and any external vector service it attaches."
         },
         "IaaS": {
-          "accountable_persona": "ai-platform-provider",
+          "accountable_persona": "data-provider",
           "accountable_party": "customer",
           "responsibility": {
             "customer": "customer-owned",
             "provider": "shared"
           },
-          "note": "The customer runs the vector store and owns its authentication, isolation, and inversion resistance. The infrastructure provider retains obligations for the compute underneath."
+          "note": "Accountable persona is data-provider, the owner of srf.control.finance.SRF-L2-DEV-002 in this model. That control is at L2, and this risk is at L4. The previous persona was ai-platform-provider.",
+          "owner_alignment": {
+            "previous_persona": "ai-platform-provider",
+            "previous_note": "The customer runs the vector store and owns its authentication, isolation, and inversion resistance. The infrastructure provider retains obligations for the compute underneath.",
+            "control": "srf.control.finance.SRF-L2-DEV-002"
+          }
         }
       },
       "mappings": {
@@ -1619,6 +4699,117 @@
         "srf.control.finance.SRF-L2-MON-002",
         "srf.control.healthcare.SRF-L2-PMS-003",
         "srf.control.public-sector.SRF-L4-MON-004"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management for agentic AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(c)(1): Integrity controls"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L2-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1683,6 +4874,117 @@
         "srf.control.healthcare.SRF-L4-DEV-003",
         "srf.control.public-sector.SRF-L4-MON-004",
         "srf.control.defense.SRF-L2-OPS-004"
+      ],
+      "obligations": [
+        {
+          "requirement": "cmmc-2-0.access-control",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "cmmc_2_0",
+                "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management, data security)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(a)(2)(iv): Encryption; §164.312(e)(2)(ii): Encryption in transit"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L4-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1718,13 +5020,18 @@
           "note": "The customer owns retrieval design and prompt assembly. Its data-provider owns not returning chunks above the caller's clearance. Demand the platform's documented context-isolation limits."
         },
         "Agent-PaaS": {
-          "accountable_persona": "agentic-platform-provider",
+          "accountable_persona": "application-developer",
           "accountable_party": "provider",
           "responsibility": {
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The runtime provider leads on how agent state, tool output, and memory are concatenated. The customer owns which sources its agents may read."
+          "note": "Accountable persona is application-developer, the owner of srf.control.finance.SRF-L3-DEV-001 in this model. That control is at L3, and this risk is at L3. The previous persona was agentic-platform-provider.",
+          "owner_alignment": {
+            "previous_persona": "agentic-platform-provider",
+            "previous_note": "The runtime provider leads on how agent state, tool output, and memory are concatenated. The customer owns which sources its agents may read.",
+            "control": "srf.control.finance.SRF-L3-DEV-001"
+          }
         },
         "IaaS": {
           "accountable_persona": "application-developer",
@@ -1747,6 +5054,142 @@
         "srf.control.finance.SRF-L3-DEV-001",
         "srf.control.finance.SRF-L2-MON-003",
         "srf.control.healthcare.SRF-L2-PMS-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management for agentic AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(c)(1): Integrity controls"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1811,6 +5254,164 @@
         "srf.control.finance.SRF-L3-DEV-001",
         "srf.control.defense.SRF-L2-OPS-004",
         "srf.control.public-sector.SRF-L2-ACQ-002"
+      ],
+      "obligations": [
+        {
+          "requirement": "cmmc-2-0.access-control",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "cmmc_2_0",
+                "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-26",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 26 (Deployer obligations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-2-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vi",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section VI (Roles and Responsibilities)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-1-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-5-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.2 (risk management includes third-party AI providers and data practices); MAP 5.1 (likelihood of impacts on individuals is assessed)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 5.2 (risk management includes third-party AI providers and data practices); MAP 5.1 (likelihood of impacts on individuals is assessed)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L3-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1875,6 +5476,130 @@
         "srf.control.public-sector.SRF-L4-MON-006",
         "srf.control.defense.SRF-L4-OPS-010",
         "srf.control.finance.SRF-L2-MON-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-15",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-v",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section V (Ongoing Model Monitoring)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-4",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-OPS-010",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7"
+              },
+              {
+                "control": "srf.control.finance.SRF-L4-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.4b-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -1939,6 +5664,161 @@
         "srf.control.healthcare.SRF-L2-DEV-001",
         "srf.control.public-sector.SRF-L2-ACQ-001",
         "srf.control.finance.SRF-L1-DEV-003"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-26",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 26 (Deployer obligations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-2-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-vi",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section VI (Roles and Responsibilities)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-1-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L1-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-2-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 2.2 (scientific rigor and data quality are characterized for intended context); MAP 3.5 (organizational risk tolerances are considered)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-3-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 2.2 (scientific rigor and data quality are characterized for intended context); MAP 3.5 (organizational risk tolerances are considered)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.10 (privacy risk is examined and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.4b-ii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(b)(ii) (Complete AI Impact Assessment)"
+              }
+            ]
+          }
+        }
       ]
     },
     {
@@ -2004,6 +5884,158 @@
         "srf.control.defense.SRF-L2-OPS-005",
         "srf.control.healthcare.SRF-L2-PMS-003",
         "srf.control.insurance.SRF-L2-TPO-001"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-10",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-9",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 9 (Risk management for agentic AI)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-312",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.312(c)(1): Integrity controls"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.6"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "sr26_2",
+                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "sr-26-2.section-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "sr26_2",
+                "citation": "Section IV (Model Development)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-6-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L2-TPO-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); GOVERN 6.1 (third-party policies are in place)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-2-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); MAP 2.3 (data collection and selection considerations are documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); MAP 2.3 (data collection and selection considerations are documented)"
+              },
+              {
+                "control": "srf.control.insurance.SRF-L2-TPO-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 4.1 (legal and technology risks of third-party data are mapped); GOVERN 6.1 (third-party policies are in place)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-7",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-MON-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L2-PMS-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        }
       ]
     }
   ]
