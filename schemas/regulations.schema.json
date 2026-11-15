@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aisharedresponsibility.com/schemas/regulations.schema.json",
+  "title": "SRF instrument catalog",
+  "description": "Schema for data/regulations.json. source_kind separates binding instruments and voluntary standards, which can be obligations, from catalogs, which are not.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["items"],
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/instrument" }
+    }
+  },
+  "$defs": {
+    "instrument": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "name", "source_kind"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "source_kind": {
+          "type": "string",
+          "enum": ["binding", "voluntary_standard", "catalog"],
+          "description": "binding and voluntary_standard can be obligations. catalog is a risk list, threat list, or control catalog and is not an obligation."
+        },
+        "source_kind_note": {
+          "type": "string",
+          "description": "Why this source_kind was chosen when the record's tags do not say it outright. Bill can change the kind."
+        },
+        "current_obligation": {
+          "type": "boolean",
+          "description": "Optional override. When set, it wins over the draft, rescinded, and proposed-tag rule."
+        }
+      }
+    }
+  }
+}
