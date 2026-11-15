@@ -1,15 +1,27 @@
 /* Relationship map
  * Reads site JSON at runtime and draws only links those files already name.
- * No sector model name is rewritten onto an SRF v1.0 model.
+ * ROCA is Risk, Obligation, Control, Accountable. It is not a RACI chart.
+ *
+ * A sector model name is not rewritten on the control. data/sector-model-map.json
+ * says which of the four SRF v1.0 models that name joins. The chain uses that
+ * mapping, and the sector name stays on the control as context.
  *
  * Node kinds and files:
  *   layer    data/layers.json                         layers[]
  *   persona  data/personas.json                       personas[] and sector_specializations[]
  *   model    data/matrix.json                         cosai-core models, plus proposed-extension
  *                                                     models drawn only while Tapestry is on
+ *   risk     data/threats.json                        threats[] (the 31 Risk records)
  *   control  data/<vertical>-controls.json            controls[]
  *   policy   tools/policy-pyramid/data.json           levels[]
  *   topic    data/ai-agentic-principles.json          sections{}
+ *
+ * The chain view also reads:
+ *   data/moral-regulatory-hierarchy.json   requirements[] (article-level obligations)
+ *   data/regulations.json                  source_kind, used for the instrument fallback
+ *   data/sector-model-map.json             sector name to SRF model
+ *   controls[].accountable_by_model        one persona per SRF model
+ *   threats[].obligations[]                basis and source for the risk-to-obligation link
  *
  * Edge types and the field that produces them:
  *   persona-layer   personas[].srf_layers and sector_specializations[].srf_layers
@@ -17,23 +29,36 @@
  *   model-layer     layers[].operating_models[<cosai-core model id>]
  *   control-layer   controls[].layer
  *   control-persona controls[].accountable_persona
- *   control-model   controls[].operating_models[] when the id is a matrix model
+ *   control-model   controls[].operating_models[] when the id is a matrix model,
+ *                   or the SRF model named for a sector model in the sector map
  *   control-policy  controls[].policy_level or controls[].policy, when the value
  *                   matches a policy level (no control has this field today)
+ *   risk-control    threats[].related_controls
+ *
+ * Chain edges are drawn in the chain view, not as extra graph edges:
+ *   risk to obligation     threats[].obligations[] (dashed when the basis is
+ *                          derived_via_control or editorial)
+ *   obligation to control  the source control on that link, or a citation match
+ *   instrument to control  a current-obligation citation with no article match
+ *                          (marked instrument-level)
+ *   control to persona     controls[].accountable_by_model for the chosen model
  *
  * A control is Tapestry when its file or record provenance is proposed-extension,
  * or when every operating model it names is a proposed-extension model.
  * A persona is Tapestry when its provenance is proposed-extension.
- * Operating-model strings that are not matrix models are not drawn.
+ * Tapestry records stay out of an SRF chain.
+ * Operating-model strings that are not matrix models and are not in the sector
+ * map are not drawn.
  */
 (function () {
   "use strict";
 
-  var KIND_ORDER = ["layer", "persona", "model", "control", "policy", "topic"];
+  var KIND_ORDER = ["layer", "persona", "model", "risk", "control", "policy", "topic"];
   var KIND_LABEL = {
     layer: "Layer",
     persona: "Persona",
     model: "Operating model",
+    risk: "Risk",
     control: "Control",
     policy: "Policy level",
     topic: "Whitepaper topic"
@@ -42,10 +67,12 @@
     layer: 2.4,
     persona: 1.35,
     model: 1.9,
+    risk: 1.15,
     control: 0.5,
     policy: 1.9,
     topic: 1.05
   };
+  var MODEL_ORDER = ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"];
   var LAYER_Y = { L1: 84, L2: 66, L3: 48, L4: 30, L5: 12 };
   var LAYERS = ["L1", "L2", "L3", "L4", "L5"];
   var VERTICAL_RANK = {
@@ -71,6 +98,7 @@
     persona: "#1d4ed8",
     model: "#c2410c",
     control: "#6d28d9",
+    risk: "#7c2d12",
     policy: "#0f766e",
     topic: "#be123c",
     edge: "#475569",
@@ -81,7 +109,12 @@
   var GAP_NOTE = "This control isn't in any operating model filter yet.";
 
   var graphEl = document.getElementById("graph");
+  var graphWrap = graphEl.parentNode;
   var graphEmpty = document.getElementById("graph-empty");
+  var chainEl = document.getElementById("chain");
+  var chainBoard = document.getElementById("chain-board");
+  var chainModelNote = document.getElementById("chain-model-note");
+  var gestureEl = document.getElementById("map-gesture");
   var statusEl = document.getElementById("map-status");
   var errorEl = document.getElementById("map-error");
   var findForm = document.getElementById("find-form");
@@ -91,11 +124,13 @@
   var searchNote = document.getElementById("search-note");
   var suggestionsWrap = document.getElementById("suggestions-wrap");
   var suggestions = document.getElementById("suggestions");
+  var riskSuggestions = document.getElementById("risk-suggestions");
   var modelList = document.getElementById("model-filter-list");
   var modelNote = document.getElementById("model-note");
   var tapestryInput = document.getElementById("show-tapestry");
   var kindFilters = document.getElementById("kind-filters");
   var widenBtn = document.getElementById("widen-view");
+  var chainBtn = document.getElementById("show-chain");
   var fullBtn = document.getElementById("full-graph");
   var startBtn = document.getElementById("start-one");
   var helpEl = document.getElementById("map-help");
@@ -107,6 +142,8 @@
   var detailsModelNote = document.getElementById("details-model-note");
   var detailsSummary = document.getElementById("details-summary");
   var detailsList = document.getElementById("details-connections");
+  var detailsChain = document.getElementById("details-chain");
+  var connectionsHeading = document.getElementById("connections-heading");
   var clearBtn = document.getElementById("clear-selection");
 
   var graph = null;
@@ -121,12 +158,14 @@
     sectorOnly: 0,
     noModels: 0,
     tapestryControls: 0,
-    tapestryPersonas: 0
+    tapestryPersonas: 0,
+    mappedFromSector: 0
   };
   var shown = {
     layer: true,
     persona: true,
     model: true,
+    risk: true,
     control: true,
     policy: true,
     topic: true
@@ -139,6 +178,9 @@
   var modelFilter = "all";
   var focusSet = {};
   var neighborMap = {};
+  var catalog = null;
+  var currentChain = null;
+  var chainFocus = "";
   var linkHits = null;
   var linkNote = "";
   var skippedModels = {};
@@ -147,7 +189,7 @@
   function readPalette() {
     var cs = getComputedStyle(document.documentElement);
     var out = {};
-    ["layer", "persona", "model", "control", "policy", "topic", "edge", "dim", "label", "stage"].forEach(function (key) {
+    ["layer", "persona", "model", "risk", "control", "policy", "topic", "edge", "dim", "label", "stage"].forEach(function (key) {
       var token = key === "label" ? "--ink" : key === "stage" ? "--surface" : "--map-" + key;
       var value = cs.getPropertyValue(token).trim();
       out[key] = value || FALLBACK[key];
@@ -239,6 +281,57 @@
     return policyLookup[key] || policyLookup[key.toLowerCase()] || "";
   }
 
+  function citationPattern(text) {
+    var escaped = String(text).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (text && /[A-Za-z0-9]/.test(String(text).charAt(String(text).length - 1))) escaped += "\\b";
+    return new RegExp(escaped, "i");
+  }
+
+  function isPlaceholder(value) {
+    return typeof value !== "string" || !value.trim() || /^\s*(TBD|N\/?A|None|-)\b/i.test(value);
+  }
+
+  function isCurrentObligation(item) {
+    if (!item) return false;
+    if (Object.prototype.hasOwnProperty.call(item, "current_obligation")) return !!item.current_obligation;
+    if (item.source_kind === "catalog") return false;
+    if (item.lifecycle === "draft" || item.lifecycle === "rescinded") return false;
+    if ((item.tags || []).indexOf("proposed") !== -1) return false;
+    return item.source_kind === "binding" || item.source_kind === "voluntary_standard";
+  }
+
+  function buildCatalog(data) {
+    var next = {
+      threats: {},
+      reqs: {},
+      regsById: {},
+      regsByKey: {},
+      matchers: {},
+      sectorToSrf: {},
+      byFull: {},
+      personaName: {}
+    };
+    ((data.sectorMap && data.sectorMap.mappings) || []).forEach(function (row) {
+      if (row && row.sector_model && row.srf_model) next.sectorToSrf[row.sector_model] = row.srf_model;
+    });
+    ((data.threats && data.threats.threats) || []).forEach(function (threat) {
+      if (threat && threat.id) next.threats[threat.id] = threat;
+    });
+    ((data.requirements && data.requirements.requirements) || []).forEach(function (req) {
+      if (!req || !req.id) return;
+      next.reqs[req.id] = req;
+      var pats = (req.citation_match || [req.citation]).filter(Boolean).map(citationPattern);
+      if (!next.matchers[req.instrument]) next.matchers[req.instrument] = [];
+      next.matchers[req.instrument].push({ pats: pats, req: req });
+    });
+    ((data.regulations && data.regulations.items) || []).forEach(function (item) {
+      if (!item || !item.id) return;
+      next.regsById[item.id] = item;
+      if (item.mapping_key) next.regsByKey[item.mapping_key] = item;
+    });
+    return next;
+  }
+
   function buildGraph(data) {
     var Graph = window.graphology && window.graphology.UndirectedGraph;
     if (typeof Graph !== "function") throw new Error("Graphology did not load.");
@@ -253,8 +346,10 @@
       sectorOnly: 0,
       noModels: 0,
       tapestryControls: 0,
-      tapestryPersonas: 0
+      tapestryPersonas: 0,
+      mappedFromSector: 0
     };
+    catalog = buildCatalog(data);
 
     var layers = (data.layers && data.layers.layers) || [];
     layers.forEach(function (layer) {
@@ -326,6 +421,7 @@
       var tapestry = persona.provenance === "proposed-extension";
       personaIds.push(id);
       if (tapestry) stats.tapestryPersonas += 1;
+      catalog.personaName[persona.id] = persona.name;
       addNode(id, {
         kind: "persona",
         name: persona.name,
@@ -345,6 +441,7 @@
     specs.forEach(function (spec) {
       var id = "persona:" + spec.id;
       personaIds.push(id);
+      catalog.personaName[spec.id] = spec.name;
       addNode(id, {
         kind: "persona",
         name: spec.name,
@@ -411,13 +508,24 @@
         var tapestry = controlIsTapestry(control, file.provenance, extIds);
         var coreModels = [];
         var otherModels = [];
+        var sectorModels = [];
+        var directCore = false;
         var listed = control.operating_models || [];
         stats.controls += 1;
         if (tapestry) stats.tapestryControls += 1;
         listed.forEach(function (modelId) {
           if (!modelId) return;
-          if (coreIds[modelId]) coreModels.push(modelId);
-          else if (!extIds[modelId]) {
+          if (coreIds[modelId]) {
+            directCore = true;
+            if (coreModels.indexOf(modelId) === -1) coreModels.push(modelId);
+          } else if (extIds[modelId]) {
+            return;
+          } else if (!tapestry && catalog.sectorToSrf[modelId]) {
+            var mapped = catalog.sectorToSrf[modelId];
+            sectorModels.push({ name: modelId, srf: mapped });
+            otherModels.push(modelId);
+            if (coreModels.indexOf(mapped) === -1) coreModels.push(mapped);
+          } else if (!extIds[modelId]) {
             skippedModels[modelId] = true;
             otherModels.push(modelId);
           }
@@ -425,21 +533,29 @@
         if (coreModels.length) stats.srfControls += 1;
         else if (!tapestry && listed.length) stats.sectorOnly += 1;
         else if (!tapestry) stats.noModels += 1;
+        if (!tapestry && !directCore && sectorModels.length) stats.mappedFromSector += 1;
+        var fullId = "srf.control." + file.slug + "." + control.id;
         addNode(id, {
           kind: "control",
           name: control.title,
           label: file.short + " " + String(control.id || "").replace(/^SRF-/, ""),
           ref: control.id,
+          fullId: fullId,
           meta: file.name,
           vertical: file.slug,
           layer: control.layer || "",
           coreModels: coreModels,
           otherModels: otherModels,
+          sectorModels: sectorModels,
+          accountablePersona: control.accountable_persona || "",
+          accountableByModel: control.accountable_by_model || {},
+          mappings: control.mappings || {},
           tapestry: tapestry,
           provenance: tapestry ? "proposed-extension" : (control.provenance || ""),
           x: 0,
           y: 0
         });
+        catalog.byFull[fullId] = id;
         if (controlsByLayer[control.layer]) controlsByLayer[control.layer].push(id);
         if (control.layer) link(id, "layer:" + control.layer, { type: "control-layer" });
         if (control.accountable_persona) {
@@ -449,6 +565,9 @@
           if (coreIds[modelId] || extIds[modelId]) {
             link(id, "model:" + modelId, { type: "control-model" });
           }
+        });
+        sectorModels.forEach(function (row) {
+          link(id, "model:" + row.srf, { type: "control-model", viaSector: row.name });
         });
         var policyId = policyNodeFor(control, policyLookup);
         if (policyId) link(id, policyId, { type: "control-policy" });
@@ -461,6 +580,35 @@
       var rows = Math.max(1, Math.ceil(ids.length / cols));
       var originY = (LAYER_Y[layerId] || 0) - ((rows - 1) * dy) / 2;
       placeGrid(ids, 46, originY, cols, 2.15, dy);
+    });
+
+    var riskIds = Object.keys(catalog.threats);
+    riskIds.sort(function (a, b) {
+      var an = catalog.threats[a].name || a;
+      var bn = catalog.threats[b].name || b;
+      return an < bn ? -1 : an > bn ? 1 : 0;
+    });
+    riskIds.forEach(function (threatId, i) {
+      var threat = catalog.threats[threatId];
+      var id = "risk:" + threatId;
+      var y = riskIds.length > 1 ? 4 + (i * 90) / (riskIds.length - 1) : 48;
+      addNode(id, {
+        kind: "risk",
+        name: threat.name,
+        label: threat.name,
+        ref: threatId,
+        layer: threat.srf_layer || "",
+        x: -28,
+        y: y
+      });
+      (threat.related_controls || []).forEach(function (fullId) {
+        var controlId = catalog.byFull[fullId];
+        if (!controlId) {
+          missingLinks.push(id + " -> " + fullId);
+          return;
+        }
+        link(id, controlId, { type: "risk-control" });
+      });
     });
 
     return models.map(function (model) {
@@ -485,14 +633,14 @@
     if (!graph || !graph.hasNode(id)) return false;
     var attrs = graph.getNodeAttributes(id);
     if (!nodeAllowed(attrs)) return false;
-    if (view === "search") return false;
+    if (view === "search" || view === "chain") return false;
     if (view === "focus") return !!focusSet[id];
     return kindShown(attrs.kind);
   }
 
   function edgeVisible(source, target, type) {
     if (!nodeVisible(source) || !nodeVisible(target)) return false;
-    if (view === "full" && !selected && String(type).indexOf("control-") === 0) return false;
+    if (view === "full" && !selected && (String(type).indexOf("control-") === 0 || type === "risk-control")) return false;
     if (view === "full" && selected && source !== selected && target !== selected) return false;
     return true;
   }
@@ -546,13 +694,13 @@
     if (selected && !neighborMap[key]) return "hidden";
     if (attrs.kind === "layer") return "visible";
     if ((attrs.kind === "model" || attrs.kind === "policy") && anchorLabelsForced()) return "visible";
-    if (attrs.kind === "persona" || attrs.kind === "model" || attrs.kind === "policy") return "auto";
+    if (attrs.kind === "persona" || attrs.kind === "model" || attrs.kind === "policy" || attrs.kind === "risk") return "auto";
     return "hidden";
   }
 
   function labelPlate(mode, kind) {
     if (mode === "hidden") return {};
-    if (kind !== "layer" && kind !== "persona" && kind !== "model" && kind !== "policy") {
+    if (kind !== "layer" && kind !== "persona" && kind !== "model" && kind !== "policy" && kind !== "risk") {
       if (!(kind === "control" && view === "focus")) return {};
     }
     return {
@@ -631,26 +779,691 @@
         : "Accountable for this control.";
     }
     if (type === "control-model") {
+      var mapped = attr.viaSector ? " Sector model " + attr.viaSector + " is mapped to this model by data/sector-model-map.json." : "";
       return graph.getNodeAttribute(fromId, "kind") === "control"
-        ? "Applies in this operating model."
-        : "Control in this operating model.";
+        ? "Applies in this operating model." + mapped
+        : "Control in this operating model." + mapped;
     }
     if (type === "control-policy") {
       return graph.getNodeAttribute(fromId, "kind") === "control"
         ? "Policy level for this control."
         : "Control at this policy level.";
     }
+    if (type === "risk-control") {
+      return graph.getNodeAttribute(fromId, "kind") === "risk"
+        ? "Control that addresses this risk."
+        : "Risk this control addresses.";
+    }
     return "Connected in the site data.";
   }
 
+  function personaLabel(id) {
+    if (!id) return "";
+    return (catalog && catalog.personaName && catalog.personaName[id]) || id;
+  }
+
+  function modelName(id) {
+    return modelShort[id] || id;
+  }
+
+  function controlRecord(fullId) {
+    var nodeId = catalog && catalog.byFull[fullId];
+    if (!nodeId || !graph.hasNode(nodeId)) return null;
+    return { id: nodeId, attrs: graph.getNodeAttributes(nodeId) };
+  }
+
+  function controlInChain(attrs) {
+    if (!attrs || attrs.kind !== "control" || attrs.tapestry) return false;
+    if (!nodeAllowed(attrs)) return false;
+    if (!(attrs.coreModels && attrs.coreModels.length)) return false;
+    if (modelFilter === "all") return true;
+    return attrs.coreModels.indexOf(modelFilter) !== -1;
+  }
+
+  function modelsFor(attrs) {
+    var models = (attrs.coreModels || []).filter(function (id) { return MODEL_ORDER.indexOf(id) !== -1; });
+    models.sort(function (a, b) { return MODEL_ORDER.indexOf(a) - MODEL_ORDER.indexOf(b); });
+    if (modelFilter === "all") return models;
+    return models.indexOf(modelFilter) === -1 ? [] : [modelFilter];
+  }
+
+  function basisIsDashed(basis) {
+    return basis === "derived_via_control" || basis === "editorial" || basis === "editorial_mapping" ||
+      !(basis === "official_text" || basis === "official_legal_text" || basis === "named_citation" || basis === "named_cite");
+  }
+
+  function basisSentence(basis) {
+    if (basis === "derived_via_control") {
+      return "Reached through a shared control. The legal text is not the source of this risk link.";
+    }
+    if (basis === "editorial" || basis === "editorial_mapping") {
+      return "Editorial judgment. The legal text is not the source of this risk link.";
+    }
+    if (basis === "official_text" || basis === "official_legal_text") return "Taken from the official text.";
+    if (basis === "named_citation" || basis === "named_cite") return "The record names this citation.";
+    return "The basis recorded on this link is " + (basis || "missing") + ".";
+  }
+
+  function blankChain(startKind) {
+    return {
+      startKind: startKind,
+      risks: [],
+      obligations: [],
+      controls: [],
+      personaCards: [],
+      gaps: [],
+      edges: [],
+      dashed: 0,
+      fallbacks: 0,
+      personaCount: 0
+    };
+  }
+
+  function addEdge(chain, edge) {
+    var key = edge.from + ">" + edge.to + ">" + edge.style;
+    if (chain.edges.some(function (item) { return item.from === edge.from && item.to === edge.to && item.style === edge.style; })) return;
+    chain.edges.push(edge);
+    if (edge.style === "dashed") chain.dashed += 1;
+    if (edge.style === "dotted") chain.fallbacks += 1;
+  }
+
+  function riskCard(threat) {
+    var owners = [];
+    MODEL_ORDER.forEach(function (modelId) {
+      if (modelFilter !== "all" && modelId !== modelFilter) return;
+      var cell = (threat.accountability || {})[modelId] || {};
+      owners.push({
+        model: modelId,
+        label: modelName(modelId),
+        personaId: cell.accountable_persona || "",
+        name: cell.accountable_persona ? personaLabel(cell.accountable_persona) : "",
+        gap: !!cell.no_linked_control_in_model
+      });
+    });
+    var url = typeof threat.ai_exchange === "string" && threat.ai_exchange.indexOf("http") === 0 ? threat.ai_exchange : "";
+    return {
+      id: "risk:" + threat.id,
+      ref: threat.id,
+      name: threat.name,
+      url: url,
+      layer: threat.srf_layer || "",
+      owners: owners
+    };
+  }
+
+  function controlCard(nodeId, attrs) {
+    return {
+      id: nodeId,
+      name: attrs.name,
+      ref: attrs.ref,
+      meta: attrs.meta || "",
+      layer: attrs.layer || "",
+      vertical: attrs.vertical || "",
+      url: "/" + attrs.vertical + "/controls/#" + attrs.ref,
+      sectorModels: attrs.sectorModels || [],
+      fullId: attrs.fullId
+    };
+  }
+
+  function personaCard(nodeId, attrs) {
+    var lines = [];
+    modelsFor(attrs).forEach(function (modelId) {
+      var personaId = (attrs.accountableByModel || {})[modelId];
+      if (!personaId) {
+        lines.push({ model: modelId, label: modelName(modelId), missing: true });
+      } else {
+        lines.push({
+          model: modelId,
+          label: modelName(modelId),
+          personaId: personaId,
+          name: personaLabel(personaId),
+          missing: false
+        });
+      }
+    });
+    return {
+      id: "accountable:" + nodeId,
+      controlId: nodeId,
+      controlName: attrs.name,
+      lines: lines,
+      sectorPersona: attrs.accountablePersona || ""
+    };
+  }
+
+  function sourceRows(link) {
+    return (((link || {}).source || {}).controls || []).map(function (row) {
+      var node = row && row.control ? controlRecord(row.control) : null;
+      return {
+        fullId: row.control || "",
+        nodeId: node ? node.id : "",
+        name: node ? node.attrs.name : (row.control || ""),
+        ref: node ? node.attrs.ref : "",
+        vertical: node ? node.attrs.vertical : "",
+        citation: row.citation || "",
+        inChain: !!(node && controlInChain(node.attrs))
+      };
+    });
+  }
+
+  function citationsForControl(attrs) {
+    var articles = [];
+    var seenReq = {};
+    var matched = {};
+    var keys = Object.keys(attrs.mappings || {});
+    keys.forEach(function (key) {
+      if (key === "mapping_status_note") return;
+      var citation = attrs.mappings[key];
+      if (isPlaceholder(citation)) return;
+      var reg = catalog.regsByKey[key];
+      if (!reg || !isCurrentObligation(reg)) return;
+      (catalog.matchers[reg.id] || []).forEach(function (matcher) {
+        if (seenReq[matcher.req.id]) return;
+        var hit = matcher.pats.some(function (pattern) { return pattern.test(citation); });
+        if (!hit) return;
+        seenReq[matcher.req.id] = true;
+        matched[reg.id] = true;
+        articles.push({ req: matcher.req, citation: citation, instrument: reg });
+      });
+    });
+    var fallbacks = [];
+    var seenFallback = {};
+    keys.forEach(function (key) {
+      if (key === "mapping_status_note") return;
+      var citation = attrs.mappings[key];
+      if (isPlaceholder(citation)) return;
+      var reg = catalog.regsByKey[key];
+      if (!reg || !isCurrentObligation(reg) || matched[reg.id] || seenFallback[reg.id]) return;
+      seenFallback[reg.id] = true;
+      fallbacks.push({ reg: reg, citation: citation });
+    });
+    articles.sort(function (a, b) {
+      return String(a.req.citation) < String(b.req.citation) ? -1 : String(a.req.citation) > String(b.req.citation) ? 1 : 0;
+    });
+    fallbacks.sort(function (a, b) { return a.reg.name < b.reg.name ? -1 : a.reg.name > b.reg.name ? 1 : 0; });
+    return { articles: articles, fallbacks: fallbacks };
+  }
+
+  function pushControlGaps(chain, threat, controlCount) {
+    function gapFor(modelId) {
+      var label = modelName(modelId);
+      chain.gaps.push({ column: "control", text: "No linked control in " + label + "." });
+      chain.gaps.push({
+        column: "accountable",
+        text: "No accountable persona is recorded for " + label + ", because no linked control applies in that model."
+      });
+    }
+    if (modelFilter !== "all") {
+      if (!controlCount) gapFor(modelFilter);
+      return;
+    }
+    MODEL_ORDER.forEach(function (modelId) {
+      var row = ((threat || {}).accountability || {})[modelId] || {};
+      if (row.no_linked_control_in_model) gapFor(modelId);
+    });
+  }
+
+  function addPersonaCards(chain, nodes) {
+    nodes.forEach(function (node) {
+      var card = personaCard(node.id, node.attrs);
+      if (!card.lines.length) return;
+      chain.personaCards.push(card);
+      card.lines.forEach(function (line) { if (!line.missing) chain.personaCount += 1; });
+      addEdge(chain, { from: node.id, to: card.id, style: "solid" });
+    });
+  }
+
+  function chainFromRisk(nodeId, attrs) {
+    var threat = catalog.threats[attrs.ref];
+    var chain = blankChain("risk");
+    if (!threat) return chain;
+    chain.risks.push(riskCard(threat));
+    var nodes = [];
+    var seen = {};
+    (threat.related_controls || []).forEach(function (fullId) {
+      var node = controlRecord(fullId);
+      if (!node || seen[node.id] || !controlInChain(node.attrs)) return;
+      seen[node.id] = true;
+      nodes.push(node);
+    });
+    nodes.sort(function (a, b) {
+      if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
+      return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
+    });
+    var links = threat.obligations || [];
+    if (!links.length) {
+      chain.gaps.push({ column: "obligation", text: "No obligation is linked to this risk." });
+    }
+    links.forEach(function (link) {
+      var req = catalog.reqs[link.requirement];
+      if (!req) {
+        chain.gaps.push({ column: "obligation", text: "An obligation id on this risk does not match a requirement record." });
+        return;
+      }
+      var cardId = "obligation:" + req.id;
+      var style = basisIsDashed(link.basis) ? "dashed" : "solid";
+      var sources = sourceRows(link);
+      chain.obligations.push({
+        id: cardId,
+        citation: req.citation,
+        title: req.title,
+        summary: req.summary || "",
+        url: req.url || "",
+        basis: link.basis,
+        style: style,
+        instrumentLevel: false,
+        sources: sources
+      });
+      addEdge(chain, { from: nodeId, to: cardId, style: style });
+      sources.forEach(function (source) {
+        if (source.inChain && seen[source.nodeId]) addEdge(chain, { from: cardId, to: source.nodeId, style: "solid" });
+      });
+    });
+    nodes.forEach(function (node) { chain.controls.push(controlCard(node.id, node.attrs)); });
+    pushControlGaps(chain, threat, nodes.length);
+    addPersonaCards(chain, nodes);
+    return chain;
+  }
+
+  function chainFromControl(nodeId, attrs) {
+    var chain = blankChain("control");
+    var threats = [];
+    Object.keys(catalog.threats).forEach(function (id) {
+      var threat = catalog.threats[id];
+      if ((threat.related_controls || []).indexOf(attrs.fullId) !== -1) threats.push(threat);
+    });
+    threats.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+    if (!threats.length) {
+      chain.gaps.push({ column: "risk", text: "No risk in the catalog links to this control." });
+    }
+    threats.forEach(function (threat) { chain.risks.push(riskCard(threat)); });
+    var cited = citationsForControl(attrs);
+    if (!cited.articles.length && !cited.fallbacks.length) {
+      chain.gaps.push({ column: "obligation", text: "No obligation is linked to this control." });
+    }
+    var obligationIds = {};
+    cited.articles.forEach(function (item) {
+      var cardId = "obligation:" + item.req.id;
+      obligationIds[item.req.id] = cardId;
+      chain.obligations.push({
+        id: cardId,
+        citation: item.req.citation,
+        title: item.req.title,
+        summary: item.req.summary || "",
+        url: item.req.url || "",
+        basis: "",
+        style: "solid",
+        instrumentLevel: false,
+        citationText: item.citation,
+        sources: []
+      });
+      addEdge(chain, { from: cardId, to: nodeId, style: "solid" });
+    });
+    cited.fallbacks.forEach(function (item) {
+      var cardId = "instrument:" + item.reg.id;
+      chain.obligations.push({
+        id: cardId,
+        citation: item.reg.short || item.reg.name,
+        title: item.reg.name,
+        summary: "",
+        url: item.reg.url || "",
+        basis: "",
+        style: "dotted",
+        instrumentLevel: true,
+        citationText: item.citation,
+        sources: []
+      });
+      addEdge(chain, { from: cardId, to: nodeId, style: "dotted" });
+    });
+    threats.forEach(function (threat) {
+      (threat.obligations || []).forEach(function (link) {
+        var cardId = obligationIds[link.requirement];
+        if (!cardId) return;
+        var listsThis = (((link.source || {}).controls) || []).some(function (row) {
+          return row.control === attrs.fullId;
+        });
+        if (!listsThis) return;
+        var style = basisIsDashed(link.basis) ? "dashed" : "solid";
+        addEdge(chain, { from: "risk:" + threat.id, to: cardId, style: style });
+        chain.obligations.forEach(function (item) {
+          if (item.id !== cardId || item.basis) return;
+          item.basis = link.basis;
+          item.style = style;
+        });
+      });
+    });
+    chain.controls.push(controlCard(nodeId, attrs));
+    addPersonaCards(chain, [{ id: nodeId, attrs: attrs }]);
+    return chain;
+  }
+
+  function buildChain(nodeId) {
+    if (!graph.hasNode(nodeId)) return null;
+    var attrs = graph.getNodeAttributes(nodeId);
+    if (attrs.tapestry) return null;
+    if (attrs.kind === "risk") return chainFromRisk(nodeId, attrs);
+    if (attrs.kind === "control") {
+      if (!controlInChain(attrs)) return null;
+      return chainFromControl(nodeId, attrs);
+    }
+    return null;
+  }
+
+  function makeEl(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text) node.textContent = text;
+    return node;
+  }
+
+  function makeLink(href, text) {
+    var anchor = document.createElement("a");
+    anchor.href = href;
+    anchor.textContent = text;
+    if (/^https?:/i.test(href)) {
+      anchor.target = "_blank";
+      anchor.rel = "noopener noreferrer";
+    }
+    return anchor;
+  }
+
+  function cardButton(cardId, pressed) {
+    var button = makeEl("button", "chain-card");
+    button.type = "button";
+    button.dataset.chainId = cardId;
+    button.setAttribute("aria-pressed", pressed ? "true" : "false");
+    return button;
+  }
+
+  function renderChain(chain) {
+    chainBoard.textContent = "";
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("id", "chain-svg");
+    svg.setAttribute("class", "chain-svg");
+    svg.setAttribute("aria-hidden", "true");
+    chainBoard.appendChild(svg);
+    var columnsWrap = makeEl("div", "chain-columns");
+    chainBoard.appendChild(columnsWrap);
+    if (modelFilter === "all") {
+      chainModelNote.textContent = "All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.";
+    } else {
+      chainModelNote.textContent = "";
+    }
+    var columns = [
+      ["Risk", chain.risks, "risk"],
+      ["Obligation", chain.obligations, "obligation"],
+      ["Control", chain.controls, "control"],
+      ["Accountable", chain.personaCards, "accountable"]
+    ];
+    columns.forEach(function (column) {
+      var wrap = makeEl("div", "chain-col");
+      var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
+      wrap.appendChild(heading);
+      column[1].forEach(function (item) {
+        var pressed = chainFocus === item.id;
+        var button = cardButton(item.id, pressed);
+        if (column[2] === "risk") {
+          button.appendChild(makeEl("span", "chain-card__kicker", item.layer ? "Risk · " + item.layer : "Risk"));
+          button.appendChild(makeEl("span", "chain-card__title", item.name));
+        } else if (column[2] === "obligation") {
+          var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
+          if (item.citation && item.citation !== duty) button.appendChild(makeEl("span", "chain-card__kicker", item.citation));
+          button.appendChild(makeEl("span", "chain-card__title", duty));
+          button.appendChild(makeEl("span", "chain-card__tag", item.instrumentLevel ? "Instrument-level" : (item.style === "dashed" ? "Dashed link" : "Solid link")));
+        } else if (column[2] === "control") {
+          button.appendChild(makeEl("span", "chain-card__kicker", [item.layer, item.meta, item.ref].filter(Boolean).join(" · ")));
+          button.appendChild(makeEl("span", "chain-card__title", item.name));
+          if (item.sectorModels.length) {
+            button.appendChild(makeEl("span", "chain-card__meta", "Sector: " + item.sectorModels.map(function (row) {
+              return row.name;
+            }).join(", ")));
+          }
+        } else {
+          var one = item.lines.length === 1 ? item.lines[0] : null;
+          button.appendChild(makeEl("span", "chain-card__kicker", one ? one.label : item.controlName));
+          button.appendChild(makeEl("span", "chain-card__title", one ? (one.missing ? "No persona recorded" : one.name) : "One persona per model"));
+          if (!one) {
+            item.lines.forEach(function (line) {
+              button.appendChild(makeEl("span", "chain-owner", line.label + ": " + (line.missing ? "No persona recorded" : line.name)));
+            });
+          }
+        }
+        wrap.appendChild(button);
+      });
+      chain.gaps.forEach(function (gap) {
+        if (gap.column !== column[2]) return;
+        var note = makeEl("p", "chain-gap");
+        note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
+        note.appendChild(document.createTextNode(" " + gap.text));
+        wrap.appendChild(note);
+      });
+      columnsWrap.appendChild(wrap);
+    });
+    requestAnimationFrame(drawChainLines);
+  }
+
+  function chainCard(id) {
+    var cards = chainBoard.querySelectorAll("button[data-chain-id]");
+    for (var i = 0; i < cards.length; i++) {
+      if (cards[i].dataset.chainId === id) return cards[i];
+    }
+    return null;
+  }
+
+  function drawChainLines() {
+    if (!currentChain || !chainBoard) return;
+    var svg = document.getElementById("chain-svg");
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (window.matchMedia("(max-width: 800px)").matches) return;
+    var origin = chainBoard.getBoundingClientRect();
+    svg.setAttribute("viewBox", "0 0 " + chainBoard.scrollWidth + " " + chainBoard.scrollHeight);
+    currentChain.edges.forEach(function (edge) {
+      var from = chainCard(edge.from);
+      var to = chainCard(edge.to);
+      if (!from || !to) return;
+      var ar = from.getBoundingClientRect();
+      var br = to.getBoundingClientRect();
+      var x1 = ar.right - origin.left;
+      var y1 = ar.top + ar.height / 2 - origin.top;
+      var x2 = br.left - origin.left;
+      var y2 = br.top + br.height / 2 - origin.top;
+      var mid = (x1 + x2) / 2;
+      var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", "M " + x1 + " " + y1 + " C " + mid + " " + y1 + ", " + mid + " " + y2 + ", " + x2 + " " + y2);
+      path.setAttribute("class", "chain-line chain-line--" + edge.style);
+      svg.appendChild(path);
+    });
+  }
+
+  function appendSentence(parent, text) {
+    if (!text) return;
+    parent.appendChild(makeEl("p", "", text));
+  }
+
+  function renderChainDetails(chain) {
+    detailsChain.hidden = false;
+    detailsChain.className = "details-chain";
+    detailsChain.textContent = "";
+    connectionsHeading.hidden = true;
+    detailsList.hidden = true;
+    var sections = [
+      ["Risk", chain.risks, "risk"],
+      ["Obligation", chain.obligations, "obligation"],
+      ["Control", chain.controls, "control"],
+      ["Accountable", chain.personaCards, "accountable"]
+    ];
+    sections.forEach(function (section) {
+      var heading = makeEl("h3", "", section[0]);
+      heading.id = "chain-detail-" + section[2];
+      detailsChain.appendChild(heading);
+      var list = makeEl("ul", "");
+      list.setAttribute("aria-labelledby", heading.id);
+      if (!section[1].length) {
+        var gaps = chain.gaps.filter(function (gap) { return gap.column === section[2]; });
+        if (!gaps.length) {
+          list.appendChild(makeEl("li", "", "Nothing is recorded for this step."));
+        }
+        gaps.forEach(function (gap) {
+          var item = makeEl("li", "");
+          var note = makeEl("p", "chain-gap");
+          note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
+          note.appendChild(document.createTextNode(" " + gap.text));
+          item.appendChild(note);
+          list.appendChild(item);
+        });
+      }
+      section[1].forEach(function (item) {
+        var li = makeEl("li", "");
+        if (section[2] === "risk") {
+          li.appendChild(makeEl("strong", "", item.name));
+          appendSentence(li, item.layer ? "Layer " + item.layer + "." : "");
+          if (item.url) {
+            var source = makeEl("p", "");
+            source.appendChild(document.createTextNode("Source: "));
+            source.appendChild(makeLink(item.url, "Threat definition"));
+            li.appendChild(source);
+          }
+          item.owners.forEach(function (owner) {
+            var sentence = "Risk owner in " + owner.label + ": " + (owner.name || "none recorded") + ". ";
+            sentence += owner.gap
+              ? "No linked control in this model, so this risk owner is not matched to a control."
+              : "This is context. The accountable persona below is the one on the control.";
+            appendSentence(li, sentence);
+          });
+        } else if (section[2] === "obligation") {
+          li.appendChild(makeEl("strong", "", (item.citation ? item.citation + ": " : "") + item.title));
+          if (item.instrumentLevel) {
+            appendSentence(li, "Instrument-level. The control cites this instrument, and no article record matched.");
+            if (item.citationText) appendSentence(li, "Citation on the control: " + item.citationText);
+          } else if (item.basis) {
+            appendSentence(li, basisSentence(item.basis));
+          } else if (item.citationText) {
+            appendSentence(li, "The control cites this obligation. Citation: " + item.citationText);
+          }
+          if (item.url) {
+            var duty = makeEl("p", "");
+            duty.appendChild(document.createTextNode("Source: "));
+            duty.appendChild(makeLink(item.url, item.instrumentLevel ? "Instrument" : "Obligation text"));
+            li.appendChild(duty);
+          }
+          if (item.sources && item.sources.length) {
+            var through = makeEl("p", "", "Through these controls:");
+            li.appendChild(through);
+            var sub = makeEl("ul", "");
+            item.sources.forEach(function (source) {
+              var row = makeEl("li", "");
+              if (source.vertical && source.ref) row.appendChild(makeLink("/" + source.vertical + "/controls/#" + source.ref, source.name));
+              else row.appendChild(document.createTextNode(source.name));
+              if (source.citation) row.appendChild(document.createTextNode(". Citation: " + source.citation));
+              if (!source.inChain) row.appendChild(document.createTextNode(". This control is not in the selected operating model."));
+              sub.appendChild(row);
+            });
+            li.appendChild(sub);
+          }
+        } else if (section[2] === "control") {
+          li.appendChild(makeEl("strong", "", item.name));
+          appendSentence(li, [item.meta, item.ref, item.layer].filter(Boolean).join(" · "));
+          var page = makeEl("p", "");
+          page.appendChild(document.createTextNode("Source: "));
+          page.appendChild(makeLink(item.url, "Control page"));
+          li.appendChild(page);
+          item.sectorModels.forEach(function (row) {
+            appendSentence(li, "Sector model " + row.name + " is mapped to " + modelName(row.srf) + " by data/sector-model-map.json. The sector name stays on this control.");
+          });
+        } else {
+          li.appendChild(makeEl("strong", "", item.controlName));
+          item.lines.forEach(function (line) {
+            var row = makeEl("p", "");
+            if (line.missing) {
+              row.textContent = line.label + ": no accountable persona is recorded for this model.";
+            } else {
+              row.appendChild(document.createTextNode(line.label + ": "));
+              row.appendChild(makeLink("/personas/#" + line.personaId, line.name));
+              row.appendChild(document.createTextNode(". The control record names this persona for " + line.label + "."));
+            }
+            li.appendChild(row);
+          });
+          var extra = item.sectorPersona && item.lines.every(function (line) { return line.personaId !== item.sectorPersona; });
+          if (extra && personaLabel(item.sectorPersona) !== item.sectorPersona) {
+            appendSentence(li, "The control record also names " + personaLabel(item.sectorPersona) + ".");
+          }
+        }
+        list.appendChild(li);
+      });
+      if (section[1].length) {
+        chain.gaps.forEach(function (gap) {
+          if (gap.column !== section[2]) return;
+          var item = makeEl("li", "");
+          var note = makeEl("p", "chain-gap");
+          note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
+          note.appendChild(document.createTextNode(" " + gap.text));
+          item.appendChild(note);
+          list.appendChild(item);
+        });
+      }
+      detailsChain.appendChild(list);
+    });
+  }
+
+  function chainSentence(chain) {
+    var personaBit = modelFilter === "all"
+      ? chain.personaCount + (chain.personaCount === 1 ? " accountable persona" : " accountable personas") + ", one for each model on a shown control"
+      : unit(chain.personaCount, "accountable persona", "accountable personas");
+    var text = "Showing " + unit(chain.risks.length, "risk", "risks") + ", " +
+      unit(chain.obligations.length, "obligation", "obligations") + ", " +
+      unit(chain.controls.length, "control", "controls") + ", and " + personaBit + ".";
+    if (chain.gaps.length) text += " " + unit(chain.gaps.length, "gap is labeled.", "gaps are labeled.");
+    return text;
+  }
+
+  function focusedChainName(chain) {
+    var pools = [chain.risks, chain.obligations, chain.controls, chain.personaCards];
+    for (var i = 0; i < pools.length; i++) {
+      for (var j = 0; j < pools[i].length; j++) {
+        if (pools[i][j].id === chainFocus) {
+          return pools[i][j].name || pools[i][j].title || pools[i][j].controlName || "";
+        }
+      }
+    }
+    return "";
+  }
+
   function renderDetails() {
-    clearBtn.disabled = !selected;
+    clearBtn.disabled = !selected && !root;
+    if (view === "chain" && currentChain && root && graph.hasNode(root)) {
+      var rootAttrs = graph.getNodeAttributes(root);
+      var focusedName = focusedChainName(currentChain);
+      detailsHeading.textContent = focusedName || rootAttrs.name;
+      detailsEmpty.hidden = true;
+      detailsBody.hidden = false;
+      var focusKind = "";
+      if (focusedName && chainFocus !== root) {
+        if (chainFocus.indexOf("instrument:") === 0 || chainFocus.indexOf("obligation:") === 0) focusKind = "Obligation";
+        else if (chainFocus.indexOf("accountable:") === 0) focusKind = "Accountable";
+        else if (chainFocus.indexOf("risk:") === 0) focusKind = "Risk";
+        else focusKind = "Control";
+      }
+      detailsKind.textContent = focusKind || (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind);
+      detailsMeta.hidden = true;
+      detailsMeta.textContent = "";
+      detailsModelNote.hidden = true;
+      detailsModelNote.textContent = "";
+      connectionsHeading.hidden = true;
+      detailsList.hidden = true;
+      renderChainDetails(currentChain);
+      detailsSummary.textContent = chainSentence(currentChain);
+      return;
+    }
+    detailsChain.hidden = true;
+    detailsChain.textContent = "";
+    connectionsHeading.hidden = false;
+    detailsList.hidden = false;
     if (!selected || !graph.hasNode(selected)) {
       detailsHeading.textContent = "Node details";
       detailsEmpty.hidden = false;
       detailsEmpty.textContent = view === "full"
         ? "Select a node to see its name, kind, and connections."
-        : "Select a control to see its name and the nodes next to it.";
+        : "Select a risk or a control to see the chain, with sources and links.";
       detailsBody.hidden = true;
       detailsSummary.textContent = "";
       detailsList.textContent = "";
@@ -716,7 +1529,7 @@
   }
 
   function countNodes(pred) {
-    var counts = { layer: 0, persona: 0, model: 0, control: 0, policy: 0, topic: 0, total: 0 };
+    var counts = { layer: 0, persona: 0, model: 0, risk: 0, control: 0, policy: 0, topic: 0, total: 0 };
     graph.forEachNode(function (id, attrs) {
       if (!pred(id, attrs)) return;
       counts[attrs.kind] = (counts[attrs.kind] || 0) + 1;
@@ -736,32 +1549,39 @@
       unit(visible.layer || 0, "layer", "layers"),
       unit(visible.persona || 0, "persona", "personas"),
       unit(visible.model || 0, "operating model", "operating models"),
+      unit(visible.risk || 0, "risk", "risks"),
       unit(visible.control || 0, "control", "controls"),
       unit(visible.policy || 0, "policy level", "policy levels"),
       unit(visible.topic || 0, "whitepaper topic", "whitepaper topics")
     ];
     var text = "";
-    if (view === "search") {
+    if (view === "chain" && currentChain) {
+      text = chainSentence(currentChain);
+    } else if (view === "search") {
+      var riskNoun = unit(allowed.risk || 0, "risk", "risks");
       if (modelFilter === "all") {
-        text = unit(allowed.control || 0, "control can be opened.", "controls can be opened.");
+        text = riskNoun + " and " + unit(allowed.control || 0, "control can be opened.", "controls can be opened.");
         if (!showTapestry && stats.tapestryControls) {
           text += " " + unit(stats.tapestryControls, "Tapestry control is hidden.", "Tapestry controls are hidden.");
         }
       } else {
-        text = unit(allowed.control || 0, "control lists " + (modelShort[modelFilter] || modelFilter) + ".", "controls list " + (modelShort[modelFilter] || modelFilter) + ".");
+        text = riskNoun + " and " + unit(allowed.control || 0, "control lists " + modelName(modelFilter) + ".", "controls list " + modelName(modelFilter) + ".");
       }
-      text += " Choose a control to see it and the nodes next to it.";
-    } else if (view === "focus" && root && graph.hasNode(root)) {
+      text += " Choose a risk or a control to see its chain.";
+    } else if ((view === "focus" || view === "chain") && root && graph.hasNode(root)) {
       var rootAttrs = graph.getNodeAttributes(root);
+      var rootKind = rootAttrs.kind === "risk" ? "risk" : "control";
       if (!nodeAllowed(rootAttrs)) {
         text = outsideFilter(rootAttrs)
           ? GAP_NOTE + " Choose All to see it on the map."
-          : "This control does not list " + (modelShort[modelFilter] || modelFilter) + ". Choose All under Operating model to see it.";
+          : "This control does not list " + modelName(modelFilter) + ". Choose All under Operating model to see it.";
+      } else if (view === "chain") {
+        text = "Choose a risk or a control to see its chain.";
       } else {
         var beside = Math.max(0, visible.total - 1);
         text = beside === 1
-          ? "Showing this control and 1 node next to it."
-          : "Showing this control and " + beside + " nodes next to it.";
+          ? "Showing this " + rootKind + " and 1 node next to it."
+          : "Showing this " + rootKind + " and " + beside + " nodes next to it.";
       }
     } else {
       text = "Showing " + listPhrase(parts) + ".";
@@ -788,6 +1608,15 @@
     statusEl.dataset.focusCount = String(Object.keys(focusSet).length);
     statusEl.dataset.skippedModels = Object.keys(skippedModels).sort().join(",");
     statusEl.dataset.missingLinks = String(missingLinks.length);
+    statusEl.dataset.mappedFromSector = String(stats.mappedFromSector || 0);
+    statusEl.dataset.chainRisks = currentChain ? String(currentChain.risks.length) : "";
+    statusEl.dataset.chainObligations = currentChain ? String(currentChain.obligations.length) : "";
+    statusEl.dataset.chainControls = currentChain ? String(currentChain.controls.length) : "";
+    statusEl.dataset.chainPersonas = currentChain ? String(currentChain.personaCount) : "";
+    statusEl.dataset.chainGaps = currentChain ? String(currentChain.gaps.length) : "";
+    statusEl.dataset.chainDashed = currentChain ? String(currentChain.dashed) : "";
+    statusEl.dataset.chainFallbacks = currentChain ? String(currentChain.fallbacks) : "";
+    statusEl.dataset.chainGapText = currentChain ? currentChain.gaps.map(function (gap) { return gap.text; }).join(" | ") : "";
     var suggested = suggestedIds();
     statusEl.dataset.suggested = suggested.join(",");
   }
@@ -820,7 +1649,7 @@
     button.type = "button";
     button.dataset.nodeId = id;
     var title = document.createElement("span");
-    title.textContent = attrs.kind === "control" && attrs.layer
+    title.textContent = (attrs.kind === "control" || attrs.kind === "risk") && attrs.layer
       ? attrs.layer + " · " + attrs.name
       : attrs.name + " · " + (KIND_LABEL[attrs.kind] || attrs.kind);
     button.appendChild(title);
@@ -854,7 +1683,7 @@
     var ids = [];
     graph.forEachNode(function (id, attrs) {
       if (!nodeAllowed(attrs)) return;
-      if (view !== "full" && attrs.kind !== "control") return;
+      if (view !== "full" && attrs.kind !== "control" && attrs.kind !== "risk") return;
       if (attrs.search.indexOf(q) === -1) return;
       ids.push(id);
     });
@@ -889,18 +1718,40 @@
     }
     var noun = view === "full"
       ? (ids.length === 1 ? "node matches." : "nodes match.")
-      : (ids.length === 1 ? "control matches." : "controls match.");
-    var line = ids.length ? ids.length + " " + noun : (view === "full" ? "No matching node." : "No matching control.");
+      : (ids.length === 1 ? "record matches." : "records match.");
+    var line = ids.length ? ids.length + " " + noun : (view === "full" ? "No matching node." : "No matching risk or control.");
     if (ids.length > shownIds.length) line += " Showing the first " + shownIds.length + ".";
     searchNote.textContent = line;
     return ids;
   }
 
+  function riskIds() {
+    var ids = [];
+    graph.forEachNode(function (id, attrs) {
+      if (attrs.kind === "risk") ids.push(id);
+    });
+    ids.sort(function (a, b) {
+      var an = graph.getNodeAttribute(a, "name");
+      var bn = graph.getNodeAttribute(b, "name");
+      return an < bn ? -1 : an > bn ? 1 : 0;
+    });
+    return ids;
+  }
+
   function renderSuggestions() {
-    var ids = suggestedIds();
+    var controlIds = suggestedIds();
+    var risks = riskIds();
     suggestions.textContent = "";
-    suggestionsWrap.hidden = !ids.length;
-    ids.forEach(function (id) {
+    riskSuggestions.textContent = "";
+    suggestionsWrap.hidden = !risks.length && !controlIds.length;
+    risks.forEach(function (id) {
+      var li = document.createElement("li");
+      var button = document.createElement("button");
+      fillButton(button, id);
+      li.appendChild(button);
+      riskSuggestions.appendChild(li);
+    });
+    controlIds.forEach(function (id) {
       var li = document.createElement("li");
       var button = document.createElement("button");
       fillButton(button, id);
@@ -909,9 +1760,14 @@
     });
     searchResults.hidden = true;
     searchResults.textContent = "";
-    searchNote.textContent = ids.length
-      ? unit(ids.length, "suggested starting point.", "suggested starting points.")
-      : "No control lists this operating model.";
+    if (!risks.length && !controlIds.length) {
+      searchNote.textContent = "No risk or control lists this operating model.";
+      return;
+    }
+    var bits = [];
+    if (risks.length) bits.push(unit(risks.length, "risk", "risks"));
+    if (controlIds.length) bits.push(unit(controlIds.length, "suggested control", "suggested controls"));
+    searchNote.textContent = bits.join(". ") + ".";
   }
 
   function syncToggles() {
@@ -949,39 +1805,54 @@
 
     var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
     var rootVisible = !!(rootAttrs && nodeAllowed(rootAttrs));
-    widenBtn.hidden = !(view === "focus" && rootVisible);
-    widenBtn.textContent = wide ? "Show only the nodes next to this control" : "Widen the view";
-    widenBtn.setAttribute("aria-pressed", wide ? "true" : "false");
+    var rootWord = rootAttrs && rootAttrs.kind === "risk" ? "risk" : "control";
+    var chainable = !!(rootAttrs && !rootAttrs.tapestry && (rootAttrs.kind === "risk" || rootAttrs.kind === "control"));
+    widenBtn.hidden = !((view === "focus" || view === "chain") && rootVisible);
+    widenBtn.textContent = view === "focus" && wide ? "Show only the nodes next to this " + rootWord : "Widen the view";
+    widenBtn.setAttribute("aria-pressed", view === "focus" && wide ? "true" : "false");
+    chainBtn.hidden = !(view === "focus" && chainable);
     fullBtn.hidden = view === "full";
     startBtn.hidden = view === "search";
+    startBtn.textContent = "Start from one risk or control";
     kindFilters.hidden = view !== "full";
+    var chainOn = view === "chain" && !!currentChain;
+    chainEl.hidden = !chainOn;
+    graphWrap.classList.toggle("graph-wrap--chain", chainOn);
+    gestureEl.hidden = chainOn;
 
     if (view === "full") {
       findLabel.textContent = "Find a node";
-      searchInput.placeholder = "Layer, persona, model, or control name";
+      searchInput.placeholder = "Layer, persona, risk, or control name";
       helpEl.textContent = "Type a name, then choose Find. The map moves to that node and keeps the nodes next to it in view.";
     } else if (view === "focus" && wide) {
-      findLabel.textContent = "Find a control";
-      searchInput.placeholder = "Control name or identifier";
-      helpEl.textContent = "The map includes the layers and personas connected to the nodes next to this control.";
+      findLabel.textContent = "Find a risk or a control";
+      searchInput.placeholder = "Risk or control name";
+      helpEl.textContent = "The map includes the layers and personas connected to the nodes next to this " + rootWord + ".";
     } else if (view === "focus") {
-      findLabel.textContent = "Find a control";
-      searchInput.placeholder = "Control name or identifier";
-      helpEl.textContent = "The map is showing this control and the nodes next to it.";
+      findLabel.textContent = "Find a risk or a control";
+      searchInput.placeholder = "Risk or control name";
+      helpEl.textContent = "The map is showing this " + rootWord + " and the nodes next to it.";
+    } else if (view === "chain") {
+      findLabel.textContent = "Find a risk or a control";
+      searchInput.placeholder = "Risk or control name";
+      helpEl.textContent = "The map is showing this chain: risk, obligation, control, and the accountable persona.";
     } else {
-      findLabel.textContent = "Find a control";
-      searchInput.placeholder = "Control name or identifier";
-      helpEl.textContent = "Type a control name or identifier, then choose a match. The map shows that control and the nodes next to it.";
+      findLabel.textContent = "Find a risk or a control";
+      searchInput.placeholder = "Risk or control name";
+      helpEl.textContent = "Type a risk or a control name, then choose a match. The map shows that chain: risk, obligation, control, and the accountable persona.";
     }
 
     if (view === "search") {
       graphEmpty.hidden = false;
-      graphEmpty.textContent = "Choose a control to see it and the nodes next to it.";
-    } else if (view === "focus" && rootAttrs && !rootVisible) {
+      graphEmpty.textContent = "Choose a risk or a control to see its chain.";
+    } else if ((view === "focus" || view === "chain") && rootAttrs && !rootVisible) {
       graphEmpty.hidden = false;
       graphEmpty.textContent = outsideFilter(rootAttrs)
         ? GAP_NOTE + " Choose All to see it on the map."
-        : "This control does not list " + (modelShort[modelFilter] || modelFilter) + ". Choose All under Operating model to see it.";
+        : "This control does not list " + modelName(modelFilter) + ". Choose All under Operating model to see it.";
+    } else if (view === "chain" && !currentChain) {
+      graphEmpty.hidden = false;
+      graphEmpty.textContent = "This record has no chain for the selected operating model.";
     } else {
       graphEmpty.hidden = true;
       graphEmpty.textContent = "";
@@ -993,10 +1864,12 @@
     if (view === "full") {
       params.set("view", "full");
       if (selected && graph.hasNode(selected)) params.set("node", selected);
-    } else if (view === "focus" && root && graph.hasNode(root)) {
+    } else if ((view === "focus" || view === "chain") && root && graph.hasNode(root)) {
       var attrs = graph.getNodeAttributes(root);
-      params.set("control", attrs.vertical + ":" + attrs.ref);
-      if (wide) params.set("wide", "1");
+      if (attrs.kind === "risk") params.set("risk", attrs.ref);
+      else params.set("control", attrs.vertical + ":" + attrs.ref);
+      if (view === "focus" && wide) params.set("wide", "1");
+      else if (view === "focus") params.set("neighbors", "1");
     }
     if (modelFilter !== "all") params.set("model", modelFilter);
     if (showTapestry) params.set("tapestry", "1");
@@ -1012,12 +1885,16 @@
   }
 
   function commit(push) {
+    currentChain = view === "chain" && root ? buildChain(root) : null;
+    if (view !== "chain") chainFocus = "";
+    if (currentChain) renderChain(currentChain);
+    else if (chainBoard) chainBoard.textContent = "";
     rebuildFocus();
     rebuildNeighbors();
     updateChrome();
     renderDetails();
     if (renderer) {
-      renderer.refresh();
+      safeRefresh();
       publish();
     }
     writeUrl(!!push);
@@ -1047,6 +1924,18 @@
     return { id: "", hits: hits };
   }
 
+  function resolveRisk(token) {
+    var raw = String(token || "").trim();
+    if (!raw) return "";
+    if (graph.hasNode("risk:" + raw)) return "risk:" + raw;
+    var hit = "";
+    graph.forEachNode(function (id, attrs) {
+      if (attrs.kind !== "risk") return;
+      if (attrs.ref === raw || attrs.name.toLowerCase() === raw.toLowerCase()) hit = id;
+    });
+    return hit;
+  }
+
   function applyFromLocation() {
     if (!graph) return;
     var params = new URLSearchParams(location.search);
@@ -1058,20 +1947,34 @@
     linkNote = "";
     root = null;
     selected = null;
+    chainFocus = "";
     view = params.get("view") === "full" ? "full" : "search";
     var controlParam = params.get("control");
-    if (controlParam && view !== "full") {
-      var resolved = resolveControl(controlParam);
-      if (resolved.id) {
-        if (graph.getNodeAttribute(resolved.id, "tapestry")) showTapestry = true;
-        root = resolved.id;
-        selected = resolved.id;
-        view = "focus";
-      } else if (resolved.hits.length > 1) {
-        linkHits = resolved.hits;
-        linkNote = "More than one control uses this identifier. Choose one.";
-      } else {
-        linkNote = "No control matches that link.";
+    var riskParam = params.get("risk");
+    if (view !== "full" && (riskParam || controlParam)) {
+      var opened = "";
+      if (riskParam) {
+        opened = resolveRisk(riskParam);
+        if (!opened) linkNote = "No risk matches that link.";
+      }
+      if (!opened && controlParam) {
+        var resolved = resolveControl(controlParam);
+        if (resolved.id) opened = resolved.id;
+        else if (resolved.hits.length > 1) {
+          linkHits = resolved.hits;
+          linkNote = "More than one control uses this identifier. Choose one.";
+        } else if (!riskParam) {
+          linkNote = "No control matches that link.";
+        }
+      }
+      if (opened) {
+        var openedAttrs = graph.getNodeAttributes(opened);
+        if (openedAttrs.tapestry) showTapestry = true;
+        root = opened;
+        selected = opened;
+        chainFocus = opened;
+        if (openedAttrs.tapestry || wide || params.get("neighbors") === "1") view = "focus";
+        else view = "chain";
       }
     } else if (view === "full") {
       var node = params.get("node");
@@ -1084,7 +1987,7 @@
     if (!renderer) return;
     if (view === "focus") frameFocus();
     else if (view === "full" && selected) frameSelection(selected);
-    else frameAll();
+    else if (view !== "chain") frameAll();
   }
 
   function focusDetails(moveFocus) {
@@ -1096,16 +1999,24 @@
   function openControl(id, moveFocus, options) {
     options = options || {};
     if (!graph.hasNode(id)) return;
+    var attrs = graph.getNodeAttributes(id);
     root = id;
     selected = id;
-    view = "focus";
-    if (!options.keepWide) wide = false;
+    chainFocus = id;
     linkHits = null;
     linkNote = "";
     searchInput.value = "";
-    if (graph.getNodeAttribute(id, "tapestry")) showTapestry = true;
+    if (attrs.tapestry) showTapestry = true;
+    if (attrs.tapestry || (attrs.kind !== "risk" && attrs.kind !== "control") || options.neighbors) {
+      view = "focus";
+      wide = !!options.wide;
+      if (!options.keepWide && !options.neighbors) wide = false;
+    } else {
+      view = "chain";
+      wide = false;
+    }
     commit(options.push !== false);
-    if (renderer) frameFocus();
+    if (renderer && view === "focus") frameFocus();
     focusDetails(moveFocus);
   }
 
@@ -1134,6 +2045,7 @@
     view = "full";
     root = null;
     selected = null;
+    chainFocus = "";
     wide = false;
     linkHits = null;
     linkNote = "";
@@ -1146,6 +2058,7 @@
     view = "search";
     root = null;
     selected = null;
+    chainFocus = "";
     wide = false;
     linkHits = null;
     linkNote = "";
@@ -1155,12 +2068,13 @@
   }
 
   function clearSelection(push) {
-    if (view === "focus" && root && selected && selected !== root) {
+    if ((view === "focus" || view === "chain") && root && chainFocus && chainFocus !== root) {
+      chainFocus = root;
       selected = root;
       commit(!!push);
       return;
     }
-    if (view === "focus") {
+    if (view === "focus" || view === "chain") {
       showSearch(!!push);
       return;
     }
@@ -1169,10 +2083,27 @@
   }
 
   function toggleWide() {
+    if (view === "chain" && root) {
+      view = "focus";
+      wide = false;
+      commit(true);
+      if (renderer) frameFocus();
+      return;
+    }
     if (view !== "focus" || !root) return;
     wide = !wide;
     commit(true);
     if (renderer) frameFocus();
+  }
+
+  function showChainView() {
+    if (!root || !graph.hasNode(root)) return;
+    if (graph.getNodeAttribute(root, "tapestry")) return;
+    view = "chain";
+    wide = false;
+    chainFocus = root;
+    selected = root;
+    commit(true);
   }
 
   function setModel(id, push) {
@@ -1272,7 +2203,7 @@
   }
 
   function activeButtons() {
-    var list = suggestionsWrap.hidden ? searchResults : suggestions;
+    var list = suggestionsWrap.hidden ? searchResults : suggestionsWrap;
     return Array.prototype.slice.call(list.querySelectorAll("button"));
   }
 
@@ -1294,15 +2225,25 @@
   }
 
   function renderModelNote() {
-    var verb = stats.srfControls === 1 ? "lists" : "list";
-    modelNote.textContent = "Some controls use sector model names and aren't in this filter yet. "
-      + stats.srfControls + " of " + stats.controls + " controls " + verb + " an SRF v1.0 model.";
+    var mapped = stats.mappedFromSector || 0;
+    var verb = mapped === 1 ? "uses" : "use";
+    modelNote.textContent = mapped
+      ? mapped + " controls " + verb + " a sector model name, such as SaMD-Cloud or OT-Edge. data/sector-model-map.json maps each name to one of these four SRF models. The sector name stays on the control. This filter uses that mapping."
+      : "Sector model names are mapped to these four SRF models by data/sector-model-map.json. The sector name stays on the control.";
+  }
+
+  function safeRefresh() {
+    if (!renderer) return;
+    if (graphWrap.classList.contains("graph-wrap--chain")) return;
+    if (!graphEl.clientWidth || !graphEl.clientHeight) return;
+    if (typeof renderer.resize === "function") renderer.resize();
+    renderer.refresh();
   }
 
   function applyScheme() {
     palette = readPalette();
     graphEl.style.backgroundColor = palette.stage;
-    if (renderer) renderer.refresh();
+    safeRefresh();
     if (statusEl.dataset.ready === "true") publish();
   }
 
@@ -1310,6 +2251,8 @@
     var SigmaCtor = window.Sigma && (window.Sigma.Sigma || window.Sigma);
     if (typeof SigmaCtor !== "function") throw new Error("Sigma did not load.");
     palette = readPalette();
+    var chainHidden = graphWrap.classList.contains("graph-wrap--chain");
+    if (chainHidden) graphWrap.classList.remove("graph-wrap--chain");
     renderer = new SigmaCtor(graph, graphEl, {
       settings: {
         enableNodeDrag: false,
@@ -1336,6 +2279,7 @@
       nodeReducer: nodeReducer,
       edgeReducer: edgeReducer
     });
+    if (chainHidden) graphWrap.classList.add("graph-wrap--chain");
     graphEl.style.backgroundColor = palette.stage;
 
     var ignoreStage = false;
@@ -1368,7 +2312,7 @@
 
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        renderer.refresh();
+        safeRefresh();
         publish();
         renderDetails();
         if (view === "focus") frameFocus();
@@ -1429,6 +2373,28 @@
     setTapestry(tapestryInput.checked, true);
   });
   widenBtn.addEventListener("click", toggleWide);
+  chainBtn.addEventListener("click", showChainView);
+  chainBoard.addEventListener("click", function (event) {
+    var button = event.target.closest("button[data-chain-id]");
+    if (!button) return;
+    chainFocus = button.dataset.chainId;
+    var keep = chainFocus;
+    commit(false);
+    var again = chainCard(keep);
+    if (again) again.focus();
+  });
+  chainBoard.addEventListener("keydown", function (event) {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    var buttons = Array.prototype.slice.call(chainBoard.querySelectorAll("button"));
+    var idx = buttons.indexOf(document.activeElement);
+    if (idx < 0) return;
+    event.preventDefault();
+    var next = event.key === "ArrowDown" ? Math.min(buttons.length - 1, idx + 1) : Math.max(0, idx - 1);
+    buttons[next].focus();
+  });
+  window.addEventListener("resize", function () {
+    if (view === "chain" && currentChain) drawChainLines();
+  });
   fullBtn.addEventListener("click", function () { showFull(true); });
   startBtn.addEventListener("click", function () { showSearch(true); });
   document.querySelectorAll(".kind-filter input").forEach(function (box) {
@@ -1469,7 +2435,12 @@
     fetchJson("/data/matrix.json"),
     fetchJson("/tools/policy-pyramid/data.json"),
     fetchJson("/data/ai-agentic-principles.json")
-  ].concat(CONTROL_FILES.map(function (file) { return fetchJson(file[2]); }));
+  ].concat(CONTROL_FILES.map(function (file) { return fetchJson(file[2]); })).concat([
+    fetchJson("/data/threats.json"),
+    fetchJson("/data/moral-regulatory-hierarchy.json"),
+    fetchJson("/data/regulations.json"),
+    fetchJson("/data/sector-model-map.json")
+  ]);
 
   Promise.all(loads).then(function (files) {
     var data = {
@@ -1478,6 +2449,10 @@
       matrix: files[2],
       policy: files[3],
       topics: files[4],
+      threats: files[5 + CONTROL_FILES.length],
+      requirements: files[6 + CONTROL_FILES.length],
+      regulations: files[7 + CONTROL_FILES.length],
+      sectorMap: files[8 + CONTROL_FILES.length],
       controlFiles: CONTROL_FILES.map(function (file, i) {
         return {
           slug: file[0],
