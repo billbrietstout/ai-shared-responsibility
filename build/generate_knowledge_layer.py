@@ -31,7 +31,7 @@ import os
 import re
 import sys
 
-from obligation_kind import current_obligation
+from obligation_kind import citation_pattern, current_obligation
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
@@ -385,6 +385,7 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
     # mapping_key is how a vertical control's mappings object names this
     # instrument; it is the join key for the governed_by edges below.
     key_to_ext = {}
+    ext_current = {}
     for item in regs["items"]:
         nid = ext_id(item["id"])
         add_node(nid, item["name"], "framework", item.get("url", f"{SITE}/regulations/"))
@@ -408,6 +409,7 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             nodes[nid]["current_obligation"] = current_obligation(item)
         if item.get("mapping_key"):
             key_to_ext[item["mapping_key"]] = nid
+        ext_current[nid] = current_obligation(item)
         for vslug in item.get("applicable_verticals") or []:
             if vslug in VERTICALS:
                 add_edge(nid, "applies_to_vertical", vertical_id(vslug),
@@ -489,30 +491,35 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
                      subtype="requirement")
             nodes[rid]["instrument"] = instrument
             nodes[rid]["citation"] = req["citation"]
-            profile = req.get("moral_profile") or {}
-            nodes[rid]["moral_profile"] = {
-                "actor": profile.get("actor", 0),
-                "action": profile.get("action", 0),
-                "outcome": profile.get("outcome", 0),
-            }
-            if profile.get("rationale"):
-                nodes[rid]["moral_rationale"] = profile["rationale"]
+            profile = req.get("moral_profile")
+            if profile is None:
+                # Recorded obligation, not yet tagged. Do not invent salience.
+                nodes[rid]["moral_profile"] = None
+            else:
+                nodes[rid]["moral_profile"] = {
+                    "actor": profile.get("actor", 0),
+                    "action": profile.get("action", 0),
+                    "outcome": profile.get("outcome", 0),
+                }
+                if profile.get("rationale"):
+                    nodes[rid]["moral_rationale"] = profile["rationale"]
 
             add_edge(rid, "part_of", ext_id(instrument))
             for code in req.get("srf_layers", []):
                 add_edge(rid, "maps_to_layer", layer_id(code))
-            for dim in ("actor", "action", "outcome"):
-                salience = int(profile.get(dim, 0) or 0)
-                if salience > 0:
-                    add_edge(rid, "emphasizes", moral_id(dim), salience=salience)
+            if profile:
+                for dim in ("actor", "action", "outcome"):
+                    salience = int(profile.get(dim, 0) or 0)
+                    if salience > 0:
+                        add_edge(rid, "emphasizes", moral_id(dim), salience=salience)
 
-            bucket = rollup.setdefault(instrument,
-                                       {"actor": 0, "action": 0, "outcome": 0})
-            for dim in ("actor", "action", "outcome"):
-                bucket[dim] = max(bucket[dim], int(profile.get(dim, 0) or 0))
+                bucket = rollup.setdefault(instrument,
+                                           {"actor": 0, "action": 0, "outcome": 0})
+                for dim in ("actor", "action", "outcome"):
+                    bucket[dim] = max(bucket[dim], int(profile.get(dim, 0) or 0))
 
             patterns = [
-                re.compile(re.escape(p) + r"\b", re.I)
+                citation_pattern(p)
                 for p in req.get("citation_match") or [req["citation"]]
             ]
             req_matchers.append((patterns, rid, ext_id(instrument)))
@@ -583,18 +590,32 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             # US ONC citation reading "Training data description" matching a
             # Chinese requirement whose pattern is "training data".
             linked_reqs = set()
+            governed_rows = []
             for mkey, citation in (c.get("mappings") or {}).items():
                 if mkey == "mapping_status_note" or is_placeholder(citation):
                     continue
                 target = key_to_ext.get(mkey)
                 if target:
-                    add_edge(nid, "governed_by", target, citation=citation)
+                    governed_rows.append((target, citation))
                 for patterns, req_nid, req_ext in req_matchers:
                     if target != req_ext or req_nid in linked_reqs:
                         continue
                     if any(p.search(citation) for p in patterns):
                         add_edge(nid, "implements", req_nid, citation=citation)
                         linked_reqs.add(req_nid)
+            # A current obligation with no matching article record is an
+            # instrument-level fallback. Catalogs are not obligations, so
+            # they do not get the flag. linked_reqs holds requirement node ids.
+            matched_ext = set()
+            for req_nid in linked_reqs:
+                inst = nodes.get(req_nid, {}).get("instrument")
+                if inst:
+                    matched_ext.add(ext_id(inst))
+            for target, citation in governed_rows:
+                props = {"citation": citation}
+                if ext_current.get(target):
+                    props["obligation_fallback"] = target not in matched_ext
+                add_edge(nid, "governed_by", target, **props)
 
     # Risk records are the threats.json rows. Definitions stay with the
     # external catalog. This graph adds the control, the obligation link,
