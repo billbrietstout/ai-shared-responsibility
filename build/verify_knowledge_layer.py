@@ -2,6 +2,9 @@
 """Integrity checks for the generated knowledge layer. Exit non-zero on failure."""
 import json, os, re, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from obligation_kind import REQUIRED_CATALOGS, SOURCE_KINDS, current_obligation
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def J(p): return json.load(open(os.path.join(ROOT, p), encoding="utf-8"))
 fail = []
@@ -332,6 +335,28 @@ check(not bad_source,
 bad_life = sorted({str(i.get("lifecycle")) for i in regs["items"]}
                   - {"None", "draft", "rescinded"})
 check(not bad_life, f"lifecycle uses a known value (bad: {bad_life})")
+
+# 6e. ROCA source_kind: every instrument is binding, a voluntary standard,
+# or a catalog. Catalogs are not obligations. The ontology node must carry
+# the same kind and the same current-obligation flag the data rule produces.
+bad_kind = [i["id"] for i in regs["items"] if i.get("source_kind") not in SOURCE_KINDS]
+check(not bad_kind, f"every instrument has a known source_kind (bad: {bad_kind[:5]})")
+by_reg_id = {i["id"]: i for i in regs["items"]}
+bad_catalog = [cid for cid in REQUIRED_CATALOGS
+               if by_reg_id.get(cid, {}).get("source_kind") != "catalog"]
+check(not bad_catalog,
+      f"named risk lists and control catalogs stay source_kind catalog "
+      f"(bad: {bad_catalog})")
+bad_node_kind = []
+for i in regs["items"]:
+    node = next((n for n in nodes["nodes"] if n["id"] == f"ext.framework.{i['id']}"), None)
+    if not node or node.get("source_kind") != i.get("source_kind"):
+        bad_node_kind.append(i["id"] + ":source_kind")
+    elif node.get("current_obligation") is not current_obligation(i):
+        bad_node_kind.append(i["id"] + ":current_obligation")
+check(not bad_node_kind,
+      f"framework nodes copy source_kind and current_obligation "
+      f"(bad: {bad_node_kind[:5]})")
 
 # Depth carries a verification promise. A full-depth entry was read against the
 # primary source, so it records last_verified and cannot sit at unverified; a

@@ -31,6 +31,8 @@ import os
 import re
 import sys
 
+from obligation_kind import current_obligation
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 SITE = "https://aisharedresponsibility.com"
@@ -401,6 +403,9 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             add_edge(nid, "superseded_by", ext_id(item["superseded_by"]))
         if item.get("jurisdiction"):
             add_edge(nid, "issued_in_jurisdiction", juris_id(item["jurisdiction"]))
+        if item.get("source_kind"):
+            nodes[nid]["source_kind"] = item["source_kind"]
+            nodes[nid]["current_obligation"] = current_obligation(item)
         if item.get("mapping_key"):
             key_to_ext[item["mapping_key"]] = nid
         for vslug in item.get("applicable_verticals") or []:
@@ -738,11 +743,16 @@ def build_exports(terms, nodes, edges, layers, personas, matrix):
     }
 
     # export/framework.json — combined pack { concepts, relationships, definitions }
-    concepts = [
-        {"id": n["id"], "label": n["label"], "type": n["type"],
-         "subtype": n.get("subtype"), "url": n["url"]}
-        for n in nodes.values()
-    ]
+    concepts = []
+    for n in nodes.values():
+        row = {"id": n["id"], "label": n["label"], "type": n["type"],
+               "subtype": n.get("subtype"), "url": n["url"]}
+        # Instrument kind rides on the framework node. Keep it on the pack
+        # so a consumer does not have to reopen ontology/nodes.json.
+        if "source_kind" in n:
+            row["source_kind"] = n["source_kind"]
+            row["current_obligation"] = n["current_obligation"]
+        concepts.append(row)
     relationships = [
         {"source": e["source"], "rel": e["rel"], "target": e["target"],
          **{k: v for k, v in e.items() if k not in ("source", "rel", "target")}}
