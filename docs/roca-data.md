@@ -34,3 +34,11 @@ A record is a current obligation when `source_kind` is `binding` or `voluntary_s
 Three rows record an alternative Bill can switch to without rewriting the definition: EHR-Embedded to `AI-PaaS`, Vendor-Model to `AI-SaaS`, and Shared-Service to `AI-SaaS`. The reason is on the row.
 
 `build/verify_knowledge_layer.py` checks that the 10 names match the names used on controls, that each `srf_model` is one of the four, and that the SRF definitions in the table match `data/matrix.json`. `schemas/sector-model-map.schema.json` checks the same shape. Control `operating_models` lists are unchanged.
+
+## Risk records and obligation links
+
+The 31 rows in `data/threats.json` are the Risk records. The generator emits one `ext.threat.*` node per row, a `mitigated_by` edge to each related control, a `risk_owner` edge to the accountable persona for each of the four SRF models, and a `triggers_obligation` edge for each `obligations[]` entry. The edge carries the same `basis` as the row, and the citation list in `obligation_source` (the edge field is not named `source`, because `source` is the edge's start node). There is no separate path file. A ROCA path is the join of these edges.
+
+`obligations[]` has 153 links. Every one has `basis` `derived_via_control`. The source lists the related control, the mapping key, and the citation string that matched a requirement. The link means the control that addresses the risk cites that requirement. It does not mean the legal text names the risk.
+
+No link uses `official_text`. EUR-Lex returned HTTP 403 and a WAF challenge, so Article 15 was not checked against the official text in this change. No link uses `named_citation`. None of the control citation strings name the threat. A candidate with no control citation that matches a current obligation was not stored. Catalog instruments are not obligations, so an OWASP or AICM citation does not become a link. `schemas/threats.schema.json` requires `basis` and `source`. `build/verify_knowledge_layer.py` rejects a derived link whose citation does not match the requirement.

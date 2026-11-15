@@ -4,6 +4,7 @@ import json, os, re, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from obligation_kind import REQUIRED_CATALOGS, SOURCE_KINDS, current_obligation
+from risk_obligation_links import derived_control_rows, link_problem
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def J(p): return json.load(open(os.path.join(ROOT, p), encoding="utf-8"))
@@ -403,6 +404,66 @@ check(used_sector == set(SECTOR_MODELS),
       f"sector model names on controls match the map "
       f"(only on controls: {sorted(used_sector - set(SECTOR_MODELS))}; "
       f"only on map: {sorted(set(SECTOR_MODELS) - used_sector)})")
+
+# 6g. Risk records are threats.json. Every obligation link has a basis and a
+# source, and a derived link's citation actually matches the requirement.
+threat_doc = J("data/threats.json")
+req_ids = {r["id"] for r in J("data/moral-regulatory-hierarchy.json")["requirements"]}
+control_ids = set()
+for vertical in VERTICALS:
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        control_ids.add(f"srf.control.{vertical}.{c['id']}")
+allowed_derived = derived_control_rows(ROOT)
+SRF_MODEL_IDS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
+bad_threat = []
+link_basis = {}
+for t in threat_doc["threats"]:
+    tid = f"ext.threat.{t['id']}"
+    if tid not in node_ids:
+        bad_threat.append(t["id"] + ":missing-node")
+    for cid in t.get("related_controls") or []:
+        if cid not in control_ids:
+            bad_threat.append(f"{t['id']}:bad-control:{cid}")
+        elif (tid, cid) not in {(e["source"], e["target"])
+                                for e in edges["edges"] if e["rel"] == "mitigated_by"}:
+            bad_threat.append(f"{t['id']}:missing-mitigated_by:{cid}")
+    seen_req = set()
+    for link in t.get("obligations") or []:
+        problem = link_problem(link, t, allowed_derived)
+        if problem:
+            bad_threat.append(f"{t['id']}:{problem}")
+            continue
+        rid = link["requirement"]
+        if rid not in req_ids:
+            bad_threat.append(f"{t['id']}:unknown-requirement:{rid}")
+        if rid in seen_req:
+            bad_threat.append(f"{t['id']}:duplicate:{rid}")
+        seen_req.add(rid)
+        link_basis[link["basis"]] = link_basis.get(link["basis"], 0) + 1
+        edge = next((e for e in edges["edges"]
+                     if e["rel"] == "triggers_obligation"
+                     and e["source"] == tid
+                     and e["target"] == f"ext.requirement.{rid}"), None)
+        if edge is None or edge.get("basis") != link["basis"]:
+            bad_threat.append(f"{t['id']}:missing-edge:{rid}")
+    for model in SRF_MODEL_IDS:
+        cell = (t.get("accountability") or {}).get(model) or {}
+        persona = cell.get("accountable_persona")
+        if not persona:
+            bad_threat.append(f"{t['id']}:no-owner:{model}")
+            continue
+        owner_edge = next((e for e in edges["edges"]
+                           if e["rel"] == "risk_owner"
+                           and e["source"] == tid
+                           and e["target"] == f"srf.role.{persona}"
+                           and e.get("operating_model") == model), None)
+        if owner_edge is None:
+            bad_threat.append(f"{t['id']}:missing-risk-owner:{model}")
+check(not bad_threat,
+      f"threat obligation links are traceable and wired "
+      f"(bad: {bad_threat[:5]})")
+check(sum(link_basis.values()) > 0,
+      f"obligation links present ({link_basis})")
 
 # Depth carries a verification promise. A full-depth entry was read against the
 # primary source, so it records last_verified and cannot sit at unverified; a

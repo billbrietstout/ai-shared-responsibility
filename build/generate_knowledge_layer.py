@@ -244,7 +244,7 @@ def build_glossary_outputs(terms):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
-                   controls_by_vertical, moral=None, tapestry=None):
+                   controls_by_vertical, moral=None, tapestry=None, threats=None):
     nodes = {}   # id -> node
     edges = []
     related = {} # id -> set of neighbour ids
@@ -585,6 +585,38 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
                         add_edge(nid, "implements", req_nid, citation=citation)
                         linked_reqs.add(req_nid)
 
+    # Risk records are the threats.json rows. Definitions stay with the
+    # external catalog. This graph adds the control, the obligation link,
+    # and the risk owner per SRF model. Obligation links are read from
+    # threats[].obligations; they are not inferred again here.
+    if threats:
+        dsgai_url = ((threats.get("sources") or {}).get("owasp_dsgai") or {}).get("url")
+        for t in threats.get("threats", []):
+            tid = f"ext.threat.{t['id']}"
+            url = t.get("ai_exchange")
+            if not (isinstance(url, str) and url.startswith("http")):
+                url = dsgai_url or f"{SITE}/data/threats.json"
+            add_node(tid, t["name"], "concept", url, subtype="risk")
+            nodes[tid]["srf_layer"] = t.get("srf_layer")
+            for cid in t.get("related_controls") or []:
+                if cid in nodes:
+                    add_edge(tid, "mitigated_by", cid)
+            for link in t.get("obligations") or []:
+                req_nid = requirement_id(link["requirement"])
+                if req_nid in nodes:
+                    # The property is obligation_source, not source: source is the
+                    # edge's own endpoint field.
+                    add_edge(tid, "triggers_obligation", req_nid,
+                             basis=link.get("basis"),
+                             obligation_source=link.get("source"))
+            for model, cell in (t.get("accountability") or {}).items():
+                if model not in OPMODEL_SLUG or model == "Federated-Consortium":
+                    continue
+                persona = (cell or {}).get("accountable_persona")
+                if persona:
+                    add_edge(tid, "risk_owner", role_id(persona),
+                             operating_model=model)
+
     # Project Tapestry accountability controls. These are not an industry
     # vertical: they describe one deployment topology, the Federated-Consortium
     # operating model, so they carry no belongs_to_vertical edge. Their
@@ -689,7 +721,7 @@ def build_ids(nodes, terms):
                        "srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, "
                        "srf.jurisdiction.*, srf.moral.*, srf.vertical.*, "
                        "srf.control.<vertical>.*, ext.framework.*, "
-                       "ext.requirement.*.",
+                       "ext.requirement.*, ext.threat.*.",
         "srf_version": SRF_VERSION,
         "updated": UPDATED,
         "namespaces": {
@@ -705,6 +737,8 @@ def build_ids(nodes, terms):
             "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
             "ext.framework": "An external standard or regulation",
             "ext.requirement": "A concrete requirement inside an external instrument",
+            "ext.threat": "A catalog risk from threats.json. The definition belongs to the external source.",
+            "ext.threat": "A catalog risk from threats.json. The definition belongs to the external source.",
         },
         "count": len(entries),
         "ids": entries,
@@ -800,11 +834,14 @@ def main():
     tapestry_path = os.path.join(DATA, "tapestry-controls.json")
     tapestry = (json.load(open(tapestry_path, encoding="utf-8"))
                 if os.path.exists(tapestry_path) else None)
+    threats_path = os.path.join(DATA, "threats.json")
+    threats = (json.load(open(threats_path, encoding="utf-8"))
+               if os.path.exists(threats_path) else None)
 
     registry, index, per_term = build_glossary_outputs(terms)
     nodes, edges, nodes_out, edges_out = build_ontology(
         terms, layers, personas, matrix, regs, jurisdictions,
-        controls_by_vertical, moral=moral, tapestry=tapestry)
+        controls_by_vertical, moral=moral, tapestry=tapestry, threats=threats)
     ids = build_ids(nodes, terms)
     exp_g, exp_o, exp_f = build_exports(
         terms, nodes, edges, layers, personas, matrix)
@@ -825,6 +862,10 @@ def main():
         "specializes_edges": sum(1 for e in edges if e["rel"] == "specializes"),
         "emphasizes_edges": sum(1 for e in edges if e["rel"] == "emphasizes"),
         "implements_edges": sum(1 for e in edges if e["rel"] == "implements"),
+        "risk_nodes": sum(1 for n in nodes.values() if n.get("subtype") == "risk"),
+        "mitigated_by_edges": sum(1 for e in edges if e["rel"] == "mitigated_by"),
+        "triggers_obligation_edges": sum(1 for e in edges if e["rel"] == "triggers_obligation"),
+        "risk_owner_edges": sum(1 for e in edges if e["rel"] == "risk_owner"),
         "part_of_edges": sum(1 for e in edges if e["rel"] == "part_of"),
         "applies_to_vertical_edges": sum(1 for e in edges if e["rel"] == "applies_to_vertical"),
     }

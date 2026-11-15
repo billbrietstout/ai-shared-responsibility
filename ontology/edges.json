@@ -22,15 +22,18 @@
     "implements",
     "issued_in_jurisdiction",
     "maps_to_layer",
+    "mitigated_by",
     "operates_at_layer",
     "part_of",
     "part_of_extension",
     "resolves_against_instrument",
+    "risk_owner",
     "specializes",
     "subordinate_to",
-    "superseded_by"
+    "superseded_by",
+    "triggers_obligation"
   ],
-  "count": 3780,
+  "count": 4181,
   "edges": [
     {
       "source": "srf.framework.cosai-srf",
@@ -20253,6 +20256,3965 @@
       "rel": "governed_by",
       "target": "ext.framework.csa-aicm",
       "citation": "STA-14 (Supply Chain Governance Review); STA-11 (Supply Chain Agreement Review)"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-001"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-MON-001"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L3-DEV-001"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L3-VV-002"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L3-OPS-007"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L3-VAL-003"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-MON-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI systems)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-VV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9(5)(b) (Testing including cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-308",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L3-VV-002",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.308(a)(1): Security risk analysis"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L3-OPS-007",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6"
+          },
+          {
+            "control": "srf.control.public-sector.SRF-L3-VAL-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.1 (trustworthiness evaluation includes security); MEASURE 2.6"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-v",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-MON-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section V (Ongoing Model Monitoring)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.directpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-001"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-003"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-PMS-003"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L3-VV-002"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-OPS-005"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L3-DEV-002"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-14",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.insurance.SRF-L3-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (human oversight for high-risk AI); Article 15 (robustness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L3-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (human oversight for high-risk AI); Article 15 (robustness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management for agentic AI)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-VV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9(5)(b) (Testing including cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-308",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L3-VV-002",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.308(a)(1): Security risk analysis"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(c)(1): Integrity controls"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.insurance.SRF-L3-DEV-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use); MEASURE 2.7 (security and resilience are evaluated)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-005",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.indirectpromptinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L3-DEV-003"
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-OPS-005"
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-DEV-003"
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9(5)(b) (Testing of high-risk AI systems)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-005",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6"
+          },
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.evasion",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L4-MON-003"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-008"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L4-ACQ-002"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-MON-001"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-MON-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L4-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (robustness and resilience, detection of anomalous behavior for high-risk AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L4-ACQ-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4"
+          },
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-008",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4 (risk treatments tracked); MEASURE 2.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-MON-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-DEV-002"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L5-VV-002"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L5-DEV-002"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L5-ACQ-003"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L5-ACQ-003"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 17 (Quality management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L5-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (cybersecurity, model integrity and supply-chain security)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L5-VV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management); Article 28 (Transparency for providers)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.devmodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-001"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-003"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-DEV-001"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-TEVV-009"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L2-TPO-001"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.datapoison",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-DEV-002"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L5-VV-002"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L5-DEV-002"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L5-ACQ-003"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L1-ACQ-010"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L5-ACQ-003"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 17 (Quality management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L5-VV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management); Article 28 (Transparency for providers)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.supplymodelpoison",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-002"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-MON-002"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L3-PMS-002"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-DEV-003"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-MON-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-MON-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-v",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-MON-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section V (Ongoing Model Monitoring)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.disclosureinoutput",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-DEV-003"
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-DEV-001"
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-53",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 11 (Technical documentation); Article 53 (General-purpose AI model provider obligations)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section VII (Vendor and Other Third-Party Products); Section VI (Documentation)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section VII (Vendor and Other Third-Party Products); Section VI (Documentation)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.modelinversionandmembership",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.devdataleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-002"
+    },
+    {
+      "source": "ext.threat.devdataleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-DEV-001"
+    },
+    {
+      "source": "ext.threat.devdataleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.devdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.devdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.devdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.devdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-DEV-002"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-MON-002"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-ACQ-003"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L4-MON-003"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L4-MON-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L4-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (robustness and resilience, detection of anomalous behavior for high-risk AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-ACQ-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 5.1 (supply chain access controls); MAP 1.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.modelexfiltration",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L4-MON-001"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L4-MON-003"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-004"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L4-ACQ-002"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.insurance.SRF-L4-MON-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (cybersecurity, data integrity and confidentiality)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L4-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (robustness and resilience, detection of anomalous behavior for high-risk AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L4-ACQ-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.runtimemodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.devmodelleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-DEV-003"
+    },
+    {
+      "source": "ext.threat.devmodelleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-MON-003"
+    },
+    {
+      "source": "ext.threat.devmodelleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L4-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.devmodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.devmodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.devmodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.devmodelleak",
+      "rel": "risk_owner",
+      "target": "srf.role.model-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-DEV-002"
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-006"
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L4-OPS-010"
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-006",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.airesourceexhaustion",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-002"
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L4-DEV-003"
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-004"
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L4-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management, data security)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L4-DEV-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(a)(2)(iv): Encryption; §164.312(e)(2)(ii): Encryption in transit"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.inputdataleak",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-002"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-MON-002"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L3-PMS-002"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L3-TPO-001"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-MON-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L3-TPO-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (accuracy, robustness and cybersecurity for high-risk AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-MON-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-v",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-MON-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section V (Ongoing Model Monitoring)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.outputcontainsconventionalinjection",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-MON-002"
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-14",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L4-MON-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai02",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-MON-001"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L2-ACQ-002"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-OPS-004"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.cmmc-2-0.access-control",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-004",
+            "mapping_key": "cmmc_2_0",
+            "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-26",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 26 (Deployer obligations)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Model Inventory); Section III (model materiality)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Model Inventory); Section III (model materiality)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Roles and Responsibilities)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L1-MON-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Model Inventory)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai03",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-VAL-001"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-PMS-003"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "mitigated_by",
+      "target": "srf.control.manufacturing.SRF-L2-DES-001"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L2-VAL-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance); Article 9 (Risk management system)"
+          },
+          {
+            "control": "srf.control.manufacturing.SRF-L2-DES-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (data and data governance); Annex IV (technical documentation data section)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-VAL-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance); Article 9 (Risk management system)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management for agentic AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(c)(1): Integrity controls"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-v",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-VAL-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section V (Conceptual Soundness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai05",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-PMS-003"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-14",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management for agentic AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(c)(1): Integrity controls"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai06",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-ACQ-001"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L4-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.cmmc-2-0.access-control",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-ACQ-001",
+            "mapping_key": "cmmc_2_0",
+            "citation": "AC.L2-3.1.3 (control the flow of CUI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L4-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management, data security)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L4-DEV-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(a)(2)(iv): Encryption; §164.312(e)(2)(ii): Encryption in transit"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai09",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L5-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L2-ACQ-001"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.6 (safety risks are evaluated)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L5-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development); Section VII (Vendor and Other Third-Party Products)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai10",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-003"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-PMS-003"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-004"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity); Article 9 (Risk management system)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity); Article 9 (Risk management system)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management for agentic AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(c)(1): Integrity controls"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-001",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 1.3 (responses to high-priority risks are developed)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai11",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L3-PMS-002"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-14",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (Human oversight); Article 9 (Risk management system)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy and robustness)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L3-PMS-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MANAGE 2.4 (mechanisms are in place to supersede or disengage systems that deviate from intended use)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai12",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-002"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-PMS-003"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-004"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management for agentic AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(c)(1): Integrity controls"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai13",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-002"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L4-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-004"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-OPS-004"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.cmmc-2-0.access-control",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-004",
+            "mapping_key": "cmmc_2_0",
+            "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L4-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management, data security)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L4-DEV-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(a)(2)(iv): Encryption; §164.312(e)(2)(ii): Encryption in transit"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.5 (ongoing monitoring tracks security controls); MAP 1.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai14",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-003"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-PMS-003"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management for agentic AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(c)(1): Integrity controls"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "risk_owner",
+      "target": "srf.role.agentic-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai15",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L3-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-OPS-004"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L2-ACQ-002"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.cmmc-2-0.access-control",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-004",
+            "mapping_key": "cmmc_2_0",
+            "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-26",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 26 (Deployer obligations)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L3-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Roles and Responsibilities)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai16",
+      "rel": "risk_owner",
+      "target": "srf.role.application-developer",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L4-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L4-MON-006"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L4-OPS-010"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-001"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-15",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L4-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 15 (Accuracy, robustness and cybersecurity)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-2-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L4-MON-006",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MANAGE 2.4 (risk treatments are tracked); MEASURE 2.5"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-v",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section V (Ongoing Model Monitoring)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai17",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-platform-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-002"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L2-ACQ-001"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-003"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-26",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 26 (Deployer obligations)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Roles and Responsibilities)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai19",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-DEV-001"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L2-MON-003"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "mitigated_by",
+      "target": "srf.control.defense.SRF-L2-OPS-005"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L2-PMS-003"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L2-TPO-001"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-10",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system); Article 10 (Data and data governance)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management for agentic AI)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-312",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L2-PMS-003",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.312(c)(1): Integrity controls"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.measure-2-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.defense.SRF-L2-OPS-005",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "MEASURE 2.6"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-MON-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L2-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section IV (Model Development)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.dsgai21",
+      "rel": "risk_owner",
+      "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
     },
     {
       "source": "srf.concept.project-tapestry",
