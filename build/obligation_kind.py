@@ -5,6 +5,7 @@ A catalog is not an obligation. A binding instrument or a voluntary
 standard is a current obligation unless the record is draft, rescinded,
 or tagged proposed, or the record sets current_obligation to false.
 """
+import re
 
 SOURCE_KINDS = ("binding", "voluntary_standard", "catalog")
 
@@ -15,6 +16,20 @@ REQUIRED_CATALOGS = (
     "csa-aicm",
     "cis-controls",
 )
+
+
+def citation_pattern(text):
+    """Compile a citation_match token.
+
+    A trailing word boundary is added only when the token ends in a letter
+    or digit. A token that ends in punctuation, such as Section 4(b)(iii),
+    would never match if a boundary were required after the closing
+    parenthesis.
+    """
+    pattern = re.escape(text)
+    if text and text[-1].isalnum():
+        pattern += r"\b"
+    return re.compile(pattern, re.I)
 
 
 def current_obligation(item):

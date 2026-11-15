@@ -239,14 +239,19 @@ if os.path.exists(moral_path):
     bad_req = []
     for req in reqs:
         rid = f"ext.requirement.{req['id']}"
-        profile = req.get("moral_profile") or {}
+        profile = req.get("moral_profile")
         if rid not in node_ids:
             bad_req.append(req["id"] + ":missing-node")
             continue
-        if not profile.get("rationale"):
+        # null means the obligation is recorded and not yet tagged.
+        if profile is None:
+            if f"ext.framework.{req['instrument']}" not in node_ids:
+                bad_req.append(req["id"] + ":bad-instrument")
+            continue
+        if not isinstance(profile, dict) or not profile.get("rationale"):
             bad_req.append(req["id"] + ":no-rationale")
         for dim in ("actor", "action", "outcome"):
-            sal = profile.get(dim)
+            sal = (profile or {}).get(dim)
             if sal not in (0, 1, 2, 3):
                 bad_req.append(req["id"] + f":bad-{dim}")
         if f"ext.framework.{req['instrument']}" not in node_ids:
@@ -267,6 +272,32 @@ if os.path.exists(moral_path):
     check(all(e["source"].startswith("srf.control.") and
               e["target"].startswith("ext.requirement.") for e in implements),
           "implements edges run control -> requirement")
+
+    # Instrument fallback: a current obligation citation with no article
+    # match is marked obligation_fallback. A catalog is not an obligation.
+    impl_by_src = {}
+    for e in implements:
+        impl_by_src.setdefault(e["source"], set()).add(e["target"])
+    by_ext = {f"ext.framework.{i['id']}": i for i in regs["items"]}
+    bad_fb = []
+    for e in edges["edges"]:
+        if e["rel"] != "governed_by":
+            continue
+        item = by_ext.get(e["target"])
+        if not item or not current_obligation(item):
+            if "obligation_fallback" in e:
+                bad_fb.append(e["source"] + ":flag-on-non-obligation")
+            continue
+        if not isinstance(e.get("obligation_fallback"), bool):
+            bad_fb.append(e["source"] + ":missing-fallback-flag")
+            continue
+        prefix = f"ext.requirement.{item['id']}."
+        has_article = any(t.startswith(prefix) for t in impl_by_src.get(e["source"], ()))
+        if e["obligation_fallback"] == has_article:
+            bad_fb.append(e["source"] + "->" + item["id"])
+    check(not bad_fb,
+          f"obligation_fallback is true only when no article record matched "
+          f"(bad: {bad_fb[:4]})")
 
     # implements refines governed_by: a control can only implement a requirement
     # of an instrument it actually cites. Without this, citation_match text from

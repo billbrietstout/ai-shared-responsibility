@@ -43,6 +43,19 @@ The 31 rows in `data/threats.json` are the Risk records. The generator emits one
 
 No link uses `official_text`. EUR-Lex returned HTTP 403 and a WAF challenge, so Article 15 was not checked against the official text in this change. No link uses `named_citation`. None of the control citation strings name the threat. A candidate with no control citation that matches a current obligation was not stored. Catalog instruments are not obligations, so an OWASP or AICM citation does not become a link. `schemas/threats.schema.json` requires `basis` and `source`. `build/verify_knowledge_layer.py` rejects a derived link whose citation does not match the requirement.
 
+## Article records and the instrument fallback
+
+New rows in `requirements[]` keep `moral_profile` null. Null means the obligation is recorded and has not been tagged on actor, action, and outcome. The generator does not invent salience for those rows.
+
+39 records were added, each with a URL and a citation:
+
+- 36 NIST AI RMF subcategories, from NIST AI 100-1 (January 26, 2023), `https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf`. The sentences are the subcategory text in the function tables. Line-break hyphens in the PDF extract were rejoined. GOVERN 2.3 was not added: the table extract places an extra token in that sentence.
+- 3 M-25-21 Section 4(b) practices (pre-deployment testing, AI impact assessment, ongoing monitoring), from the White House PDF fetched on November 15, 2026. The memorandum lists them in order under heading 4.b. Control files cite that order as Section 4(b)(i), (ii), and (iii).
+
+EU AI Act articles that controls cite and that have no record yet were not added. EUR-Lex returned HTTP 403, so those article titles were not read. The same is true for paywalled IEC and ISO clause text, FDA guidance sections, and state insurance provisions whose official text was not fetched. Those citations stay on the instrument fallback.
+
+When a control cites a current obligation and no article record matches, the `governed_by` edge sets `obligation_fallback` to true. When an article matches, the flag is false. Catalog edges do not get the flag. Adding the 39 records also added 104 `derived_via_control` threat links (99 from the NIST rows, 5 from the M-25-21 rows). No `official_text` or `named_citation` link was added.
+
 ## One accountable persona per SRF model
 
 Each vertical control has `accountable_by_model`. The keys are the SRF models the control applies to: a model named on the control, or the SRF model that `data/sector-model-map.json` assigns to a sector name on the control. Each value is one canonical SRF persona. `Shared` is not a value. `co_accountable_persona` and `accountability_split` are rejected. A sector specialization such as `clinical-ai-governance` stays in `accountable_persona`. The per-model field stores the canonical persona that specialization points at, `ai-system-governance`.

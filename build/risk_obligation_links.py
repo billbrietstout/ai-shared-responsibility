@@ -9,7 +9,7 @@ control.
 import os
 import re
 
-from obligation_kind import current_obligation
+from obligation_kind import citation_pattern, current_obligation
 
 BASIS_VALUES = ("official_text", "named_citation", "derived_via_control")
 PLACEHOLDER = re.compile(r"^\s*(TBD|N/?A|None|-)\b", re.I)
@@ -35,7 +35,7 @@ def derived_control_rows(root):
     matchers = []
     for req in moral.get("requirements", []):
         patterns = [
-            re.compile(re.escape(p) + r"\b", re.I)
+            citation_pattern(p)
             for p in (req.get("citation_match") or [req["citation"]])
         ]
         matchers.append((req, patterns))
