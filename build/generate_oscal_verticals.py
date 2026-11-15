@@ -55,7 +55,8 @@ DISCLAIMER = (
 # generic props (scalars, lists) or guidance prose (notes, complex values).
 CORE_FIELDS = {
     "id", "layer", "component", "title", "description",
-    "accountable_persona", "operating_models", "mappings", "threshold",
+    "accountable_persona", "accountable_by_model", "operating_models",
+    "mappings", "threshold",
 }
 
 VERTICALS = [
@@ -216,6 +217,8 @@ def convert_control(ctl, vshort, vslug, stage_field, registry):
         prop("component", ctl["component"]),
         prop("accountable-persona", ctl["accountable_persona"]),
     ]
+    for model, model_persona in sorted((ctl.get("accountable_by_model") or {}).items()):
+        props.append(prop("accountable-by-model", f"{model}={model_persona}"))
     for om in ctl.get("operating_models", []):
         props.append(prop("operating-model", om))
 

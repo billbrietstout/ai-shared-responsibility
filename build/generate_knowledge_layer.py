@@ -548,7 +548,18 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
             add_edge(nid, "belongs_to_vertical", vertical_id(vertical))
             add_edge(nid, "applies_to_layer", layer_id(c["layer"]))
             persona = c.get("accountable_persona")
-            if persona:
+            by_model = c.get("accountable_by_model")
+            if isinstance(by_model, dict) and by_model:
+                # One edge per SRF model. The persona is the canonical SRF
+                # persona, including when accountable_persona stores a
+                # sector specialization of that persona.
+                for model, model_persona in by_model.items():
+                    if (model_persona not in canonical_personas
+                            and model_persona not in specialization_ids):
+                        ensure_role(model_persona, vertical)
+                    add_edge(nid, "accountable_to", role_id(model_persona),
+                             operating_model=model)
+            elif persona:
                 if persona not in canonical_personas and persona not in specialization_ids:
                     ensure_role(persona, vertical)
                 add_edge(nid, "accountable_to", role_id(persona))

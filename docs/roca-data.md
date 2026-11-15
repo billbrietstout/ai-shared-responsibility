@@ -42,3 +42,17 @@ The 31 rows in `data/threats.json` are the Risk records. The generator emits one
 `obligations[]` has 153 links. Every one has `basis` `derived_via_control`. The source lists the related control, the mapping key, and the citation string that matched a requirement. The link means the control that addresses the risk cites that requirement. It does not mean the legal text names the risk.
 
 No link uses `official_text`. EUR-Lex returned HTTP 403 and a WAF challenge, so Article 15 was not checked against the official text in this change. No link uses `named_citation`. None of the control citation strings name the threat. A candidate with no control citation that matches a current obligation was not stored. Catalog instruments are not obligations, so an OWASP or AICM citation does not become a link. `schemas/threats.schema.json` requires `basis` and `source`. `build/verify_knowledge_layer.py` rejects a derived link whose citation does not match the requirement.
+
+## One accountable persona per SRF model
+
+Each vertical control has `accountable_by_model`. The keys are the SRF models the control applies to: a model named on the control, or the SRF model that `data/sector-model-map.json` assigns to a sector name on the control. Each value is one canonical SRF persona. `Shared` is not a value. `co_accountable_persona` and `accountability_split` are rejected. A sector specialization such as `clinical-ai-governance` stays in `accountable_persona`. The per-model field stores the canonical persona that specialization points at, `ai-system-governance`.
+
+The four L5 controls whose field and note disagreed now name `ai-system-governance` on every SRF model they apply to. The measured work is the institution commissioning the evaluation, the challenge, or the due-diligence package. The persona text in `data/personas.json`, from SRF v1.0 section 3.1, assigns that evaluation and compliance duty to AI System Governance. The model provider remains the subject of the review, and the provider's own release evaluation stays on the provider's release control.
+
+The three joint-accountability controls now have one owner per model:
+
+- Finance `SRF-L4-MON-002` is `ai-platform-provider` on all four models. The control measures gateway failures. On IaaS the customer fills that platform role for the gateway it runs.
+- Finance `SRF-L4-MON-003` is `ai-platform-provider` on AI-PaaS and Agent-PaaS, where matrix.json marks L4 provider-managed, and `ai-model-serving` on IaaS, where the customer runs the instances and the persona text assigns confidential-computing execution to AI Model Serving.
+- Finance `SRF-L5-MON-001` is `ai-platform-provider` on AI-PaaS and Agent-PaaS, and `ai-model-serving` on IaaS. Signing the artifact stays on `SRF-L5-DEV-002`, owned by `model-provider`.
+
+18 risk-owner cells were set to the persona of a linked control that applies in that model, preferring a control at the risk's layer. 4 cells have no linked control in that model (`modelinversionandmembership` and `devmodelleak` and `dsgai05` on AI-SaaS, and `dsgai11` on IaaS). Those four keep their persona and set `no_linked_control_in_model`. 9 of the original 31 mismatched cells already matched after the sector map and the control-owner edits, so the persona was left as it was. The previous persona and note for each changed cell are in `owner_alignment`.
