@@ -3,6 +3,10 @@
 import json, os, re, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from accountable_models import (
+    FORBIDDEN_OWNER_FIELDS, applicable_models, canonical_ids,
+    sector_to_srf, specialization_map, to_canonical,
+)
 from obligation_kind import REQUIRED_CATALOGS, SOURCE_KINDS, current_obligation
 from risk_obligation_links import derived_control_rows, link_problem
 
@@ -156,21 +160,49 @@ check(not bad_persona,
 check(not bad_layer,
       f"every vertical control layer is L1-L5 (bad: {bad_layer[:5]})")
 
-accountable_edges = {(e["source"], e["target"]) for e in edges["edges"]
-                     if e["rel"] == "accountable_to"}
-missing_edge = []
+# One canonical SRF persona per applicable SRF model. The edge carries
+# operating_model. Shared, a list, and a second owner field are rejected.
+_personas_doc = J("data/personas.json")
+_canonical = canonical_ids(_personas_doc)
+_specs = specialization_map(_personas_doc)
+_sector_map = sector_to_srf(ROOT)
+_model_edges = {
+    (e["source"], e.get("operating_model"), e["target"])
+    for e in edges["edges"] if e["rel"] == "accountable_to"
+}
+bad_by_model = []
 for vertical in VERTICALS:
     for c in J(f"data/{vertical}-controls.json")["controls"]:
-        ap = c.get("accountable_persona")
-        if not ap or isinstance(ap, (list, tuple)):
-            continue
+        cid = f"{vertical}:{c['id']}"
         src = f"srf.control.{vertical}.{c['id']}"
-        tgt = f"srf.role.{ap}"
-        if (src, tgt) not in accountable_edges:
-            missing_edge.append(f"{src}->{tgt}")
-check(not missing_edge,
-      f"every vertical control has an accountable_to edge "
-      f"(bad: {missing_edge[:5]})")
+        for forbidden in FORBIDDEN_OWNER_FIELDS:
+            if forbidden in c:
+                bad_by_model.append(f"{cid}:{forbidden}")
+        expected = applicable_models(c.get("operating_models"), _sector_map)
+        by_model = c.get("accountable_by_model")
+        if not isinstance(by_model, dict) or list(by_model) != expected:
+            bad_by_model.append(f"{cid}:models")
+            continue
+        values = []
+        for model in expected:
+            persona = by_model[model]
+            if not isinstance(persona, str) or persona not in _canonical:
+                bad_by_model.append(f"{cid}:{model}:{persona}")
+                continue
+            values.append(persona)
+            tgt = f"srf.role.{persona}"
+            if (src, model, tgt) not in _model_edges:
+                bad_by_model.append(f"{cid}:missing-edge:{model}")
+        ap = c.get("accountable_persona")
+        ap_canon = to_canonical(ap, _specs) if isinstance(ap, str) else None
+        if len(set(values)) == 1:
+            if ap_canon != values[0]:
+                bad_by_model.append(f"{cid}:single-field")
+        elif ap_canon not in values:
+            bad_by_model.append(f"{cid}:single-field")
+check(not bad_by_model,
+      f"exactly one canonical persona per applicable SRF model "
+      f"(bad: {bad_by_model[:6]})")
 
 def _collect_accountable_personas(obj, out):
     if isinstance(obj, dict):
@@ -410,9 +442,12 @@ check(used_sector == set(SECTOR_MODELS),
 threat_doc = J("data/threats.json")
 req_ids = {r["id"] for r in J("data/moral-regulatory-hierarchy.json")["requirements"]}
 control_ids = set()
+controls_by_full = {}
 for vertical in VERTICALS:
     for c in J(f"data/{vertical}-controls.json")["controls"]:
-        control_ids.add(f"srf.control.{vertical}.{c['id']}")
+        full = f"srf.control.{vertical}.{c['id']}"
+        control_ids.add(full)
+        controls_by_full[full] = c
 allowed_derived = derived_control_rows(ROOT)
 SRF_MODEL_IDS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
 bad_threat = []
@@ -459,6 +494,18 @@ for t in threat_doc["threats"]:
                            and e.get("operating_model") == model), None)
         if owner_edge is None:
             bad_threat.append(f"{t['id']}:missing-risk-owner:{model}")
+        linked_owners = []
+        for cid in t.get("related_controls") or []:
+            owners = (controls_by_full.get(cid) or {}).get("accountable_by_model") or {}
+            if model in owners:
+                linked_owners.append(owners[model])
+        if linked_owners:
+            if cell.get("no_linked_control_in_model"):
+                bad_threat.append(f"{t['id']}:gap-flag-but-controls:{model}")
+            if persona not in linked_owners:
+                bad_threat.append(f"{t['id']}:owner-mismatch:{model}")
+        elif not cell.get("no_linked_control_in_model"):
+            bad_threat.append(f"{t['id']}:unmarked-gap:{model}")
 check(not bad_threat,
       f"threat obligation links are traceable and wired "
       f"(bad: {bad_threat[:5]})")
