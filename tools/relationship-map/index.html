@@ -7,7 +7,7 @@
     <title>Relationship map · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="This map shows how SRF layers, personas, the four SRF v1.0 operating models, controls, policy levels, and whitepaper topics connect in the site data."
+      content="Start from one risk or one control. The chain is risk, obligation, control, and one accountable persona for the operating model you choose."
     />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='5' cy='5' r='2' fill='%23166534'/%3E%3Ccircle cx='11' cy='11' r='2' fill='%231d4ed8'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -18,7 +18,7 @@
   "@type": "WebApplication",
   "name": "SRF relationship map",
   "url": "https://aisharedresponsibility.com/tools/relationship-map/",
-  "description": "This map shows how SRF layers, personas, the four SRF v1.0 operating models, controls, policy levels, and whitepaper topics connect in the site data.",
+  "description": "Start from one risk or one control. The chain is risk, obligation, control, and one accountable persona for the operating model you choose.",
   "applicationCategory": "BusinessApplication",
   "isAccessibleForFree": true,
   "publisher": {
@@ -44,9 +44,11 @@
         <span class="page-hero__eyebrow">Tools</span>
         <h1 class="page-hero__title">Relationship map</h1>
         <p class="page-hero__lede">
-          This map shows how SRF layers, personas, the four SRF v1.0 operating
-          models, controls, policy levels, and whitepaper topics connect in the
-          site data.
+          Start from one risk or one control. The chain is risk, then
+          obligation, then control, then one accountable persona for the
+          operating model you choose. The full graph of layers, personas,
+          models, controls, policy levels, and whitepaper topics is still
+          available.
         </p>
       </div>
     </header>
@@ -55,9 +57,10 @@
       <aside class="callout map-preview" role="note" aria-labelledby="map-preview-heading">
         <h2 id="map-preview-heading" class="map-preview__title">Preview</h2>
         <p>
-          This map is a preview. Links from risks to obligations aren't in the
-          data yet, so you can't see the full chain from risk to obligation to
-          control to the person accountable. We're still improving the map.
+          This map is a preview. Risk-to-obligation links are in the data.
+          Each link is indirect: it runs through a control that addresses the
+          risk and cites the obligation. The link does not mean the legal text
+          names the risk.
         </p>
       </aside>
 
@@ -67,7 +70,7 @@
 
           <div id="map-tools" class="map-tools">
             <form id="find-form" class="find-form" role="search">
-              <label class="find-form__label" for="node-search">Find a control</label>
+              <label class="find-form__label" for="node-search">Find a risk or a control</label>
               <div class="find-form__row">
                 <input
                   id="node-search"
@@ -76,18 +79,20 @@
                   name="q"
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder="Control name or identifier"
+                  placeholder="Risk or control name"
                   aria-describedby="map-help"
                   aria-controls="search-results"
                 />
                 <button class="find-form__submit" type="submit">Find</button>
               </div>
               <p id="map-help" class="map-help">
-                Type a control name or identifier, then choose a match. The map shows that control and the nodes next to it.
+                Type a risk or a control name, then choose a match. The map shows that chain: risk, obligation, control, and the accountable persona.
               </p>
               <p id="search-note" class="search-note" aria-live="polite"></p>
               <div id="suggestions-wrap">
-                <h3 id="suggestions-heading" class="suggestions-heading">Suggested starting points</h3>
+                <h3 id="risk-suggestions-heading" class="suggestions-heading">Risks</h3>
+                <ul id="risk-suggestions" class="search-results search-results--risks" aria-labelledby="risk-suggestions-heading"></ul>
+                <h3 id="suggestions-heading" class="suggestions-heading">Controls</h3>
                 <ul id="suggestions" class="search-results" aria-labelledby="suggestions-heading"></ul>
               </div>
               <ul id="search-results" class="search-results" aria-label="Matches" hidden></ul>
@@ -111,8 +116,9 @@
 
             <div class="view-actions">
               <button id="widen-view" type="button" hidden>Widen the view</button>
+              <button id="show-chain" type="button" hidden>Show the chain</button>
               <button id="full-graph" type="button">Show the full graph</button>
-              <button id="start-one" type="button" hidden>Start from one control</button>
+              <button id="start-one" type="button" hidden>Start from one risk or control</button>
             </div>
 
             <fieldset class="kind-filters" id="kind-filters" hidden>
@@ -135,6 +141,12 @@
                   <span class="swatch" data-swatch="model" aria-hidden="true"></span>
                   <span>Operating model</span>
                   <span class="kind-count" data-count-for="model"></span>
+                </label>
+                <label class="kind-filter">
+                  <input type="checkbox" data-kind="risk" checked />
+                  <span class="swatch" data-swatch="risk" aria-hidden="true"></span>
+                  <span>Risk</span>
+                  <span class="kind-count" data-count-for="risk"></span>
                 </label>
                 <label class="kind-filter">
                   <input type="checkbox" data-kind="control" checked />
@@ -160,15 +172,33 @@
 
           <p id="map-status" class="map-status" role="status">Loading map data.</p>
           <p id="map-error" class="map-error" role="alert" hidden></p>
-          <p class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
+          <p id="map-gesture" class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
           <div class="graph-wrap">
             <div
               id="graph"
               class="graph"
               role="img"
-              aria-label="Graph of SRF relationships. Choose a control to see it and the nodes next to it."
+              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
             ></div>
-            <p id="graph-empty" class="graph-empty">Choose a control to see it and the nodes next to it.</p>
+            <div id="chain" class="chain" hidden>
+              <ul class="chain-legend" aria-label="Line types">
+                <li>
+                  <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
+                  <span>Solid line. The record names this link.</span>
+                </li>
+                <li>
+                  <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
+                  <span>Dashed line. The link was reached through a shared control, or it is an editorial judgment. It does not mean the legal text names the risk.</span>
+                </li>
+                <li>
+                  <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
+                  <span>Instrument-level. The control cites the instrument, and no article record matched.</span>
+                </li>
+              </ul>
+              <p id="chain-model-note" class="chain-model-note"></p>
+              <div id="chain-board" class="chain-board" aria-label="Risk, obligation, control, and accountable"></div>
+            </div>
+            <p id="graph-empty" class="graph-empty">Choose a risk or a control to see its chain.</p>
           </div>
         </section>
 
@@ -178,11 +208,12 @@
             <button id="clear-selection" type="button" disabled>Clear selection</button>
           </div>
           <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
-          <p id="details-empty">Select a control to see its name and the nodes next to it.</p>
+          <p id="details-empty">Select a risk or a control to see the chain, with sources and links.</p>
           <div id="details-body" hidden>
             <p id="details-kind"></p>
             <p id="details-meta" hidden></p>
             <p id="details-model-note" class="model-gap-note" hidden></p>
+            <div id="details-chain" hidden></div>
             <h3 id="connections-heading">Connections</h3>
             <ul id="details-connections" aria-labelledby="connections-heading"></ul>
           </div>

@@ -2,6 +2,14 @@
 """Integrity checks for the generated knowledge layer. Exit non-zero on failure."""
 import json, os, re, sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from accountable_models import (
+    FORBIDDEN_OWNER_FIELDS, applicable_models, canonical_ids,
+    sector_to_srf, specialization_map, to_canonical,
+)
+from obligation_kind import REQUIRED_CATALOGS, SOURCE_KINDS, current_obligation
+from risk_obligation_links import derived_control_rows, link_problem
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def J(p): return json.load(open(os.path.join(ROOT, p), encoding="utf-8"))
 fail = []
@@ -152,21 +160,49 @@ check(not bad_persona,
 check(not bad_layer,
       f"every vertical control layer is L1-L5 (bad: {bad_layer[:5]})")
 
-accountable_edges = {(e["source"], e["target"]) for e in edges["edges"]
-                     if e["rel"] == "accountable_to"}
-missing_edge = []
+# One canonical SRF persona per applicable SRF model. The edge carries
+# operating_model. Shared, a list, and a second owner field are rejected.
+_personas_doc = J("data/personas.json")
+_canonical = canonical_ids(_personas_doc)
+_specs = specialization_map(_personas_doc)
+_sector_map = sector_to_srf(ROOT)
+_model_edges = {
+    (e["source"], e.get("operating_model"), e["target"])
+    for e in edges["edges"] if e["rel"] == "accountable_to"
+}
+bad_by_model = []
 for vertical in VERTICALS:
     for c in J(f"data/{vertical}-controls.json")["controls"]:
-        ap = c.get("accountable_persona")
-        if not ap or isinstance(ap, (list, tuple)):
-            continue
+        cid = f"{vertical}:{c['id']}"
         src = f"srf.control.{vertical}.{c['id']}"
-        tgt = f"srf.role.{ap}"
-        if (src, tgt) not in accountable_edges:
-            missing_edge.append(f"{src}->{tgt}")
-check(not missing_edge,
-      f"every vertical control has an accountable_to edge "
-      f"(bad: {missing_edge[:5]})")
+        for forbidden in FORBIDDEN_OWNER_FIELDS:
+            if forbidden in c:
+                bad_by_model.append(f"{cid}:{forbidden}")
+        expected = applicable_models(c.get("operating_models"), _sector_map)
+        by_model = c.get("accountable_by_model")
+        if not isinstance(by_model, dict) or list(by_model) != expected:
+            bad_by_model.append(f"{cid}:models")
+            continue
+        values = []
+        for model in expected:
+            persona = by_model[model]
+            if not isinstance(persona, str) or persona not in _canonical:
+                bad_by_model.append(f"{cid}:{model}:{persona}")
+                continue
+            values.append(persona)
+            tgt = f"srf.role.{persona}"
+            if (src, model, tgt) not in _model_edges:
+                bad_by_model.append(f"{cid}:missing-edge:{model}")
+        ap = c.get("accountable_persona")
+        ap_canon = to_canonical(ap, _specs) if isinstance(ap, str) else None
+        if len(set(values)) == 1:
+            if ap_canon != values[0]:
+                bad_by_model.append(f"{cid}:single-field")
+        elif ap_canon not in values:
+            bad_by_model.append(f"{cid}:single-field")
+check(not bad_by_model,
+      f"exactly one canonical persona per applicable SRF model "
+      f"(bad: {bad_by_model[:6]})")
 
 def _collect_accountable_personas(obj, out):
     if isinstance(obj, dict):
@@ -203,14 +239,19 @@ if os.path.exists(moral_path):
     bad_req = []
     for req in reqs:
         rid = f"ext.requirement.{req['id']}"
-        profile = req.get("moral_profile") or {}
+        profile = req.get("moral_profile")
         if rid not in node_ids:
             bad_req.append(req["id"] + ":missing-node")
             continue
-        if not profile.get("rationale"):
+        # null means the obligation is recorded and not yet tagged.
+        if profile is None:
+            if f"ext.framework.{req['instrument']}" not in node_ids:
+                bad_req.append(req["id"] + ":bad-instrument")
+            continue
+        if not isinstance(profile, dict) or not profile.get("rationale"):
             bad_req.append(req["id"] + ":no-rationale")
         for dim in ("actor", "action", "outcome"):
-            sal = profile.get(dim)
+            sal = (profile or {}).get(dim)
             if sal not in (0, 1, 2, 3):
                 bad_req.append(req["id"] + f":bad-{dim}")
         if f"ext.framework.{req['instrument']}" not in node_ids:
@@ -231,6 +272,32 @@ if os.path.exists(moral_path):
     check(all(e["source"].startswith("srf.control.") and
               e["target"].startswith("ext.requirement.") for e in implements),
           "implements edges run control -> requirement")
+
+    # Instrument fallback: a current obligation citation with no article
+    # match is marked obligation_fallback. A catalog is not an obligation.
+    impl_by_src = {}
+    for e in implements:
+        impl_by_src.setdefault(e["source"], set()).add(e["target"])
+    by_ext = {f"ext.framework.{i['id']}": i for i in regs["items"]}
+    bad_fb = []
+    for e in edges["edges"]:
+        if e["rel"] != "governed_by":
+            continue
+        item = by_ext.get(e["target"])
+        if not item or not current_obligation(item):
+            if "obligation_fallback" in e:
+                bad_fb.append(e["source"] + ":flag-on-non-obligation")
+            continue
+        if not isinstance(e.get("obligation_fallback"), bool):
+            bad_fb.append(e["source"] + ":missing-fallback-flag")
+            continue
+        prefix = f"ext.requirement.{item['id']}."
+        has_article = any(t.startswith(prefix) for t in impl_by_src.get(e["source"], ()))
+        if e["obligation_fallback"] == has_article:
+            bad_fb.append(e["source"] + "->" + item["id"])
+    check(not bad_fb,
+          f"obligation_fallback is true only when no article record matched "
+          f"(bad: {bad_fb[:4]})")
 
     # implements refines governed_by: a control can only implement a requirement
     # of an instrument it actually cites. Without this, citation_match text from
@@ -332,6 +399,149 @@ check(not bad_source,
 bad_life = sorted({str(i.get("lifecycle")) for i in regs["items"]}
                   - {"None", "draft", "rescinded"})
 check(not bad_life, f"lifecycle uses a known value (bad: {bad_life})")
+
+# 6e. ROCA source_kind: every instrument is binding, a voluntary standard,
+# or a catalog. Catalogs are not obligations. The ontology node must carry
+# the same kind and the same current-obligation flag the data rule produces.
+bad_kind = [i["id"] for i in regs["items"] if i.get("source_kind") not in SOURCE_KINDS]
+check(not bad_kind, f"every instrument has a known source_kind (bad: {bad_kind[:5]})")
+by_reg_id = {i["id"]: i for i in regs["items"]}
+bad_catalog = [cid for cid in REQUIRED_CATALOGS
+               if by_reg_id.get(cid, {}).get("source_kind") != "catalog"]
+check(not bad_catalog,
+      f"named risk lists and control catalogs stay source_kind catalog "
+      f"(bad: {bad_catalog})")
+bad_node_kind = []
+for i in regs["items"]:
+    node = next((n for n in nodes["nodes"] if n["id"] == f"ext.framework.{i['id']}"), None)
+    if not node or node.get("source_kind") != i.get("source_kind"):
+        bad_node_kind.append(i["id"] + ":source_kind")
+    elif node.get("current_obligation") is not current_obligation(i):
+        bad_node_kind.append(i["id"] + ":current_obligation")
+check(not bad_node_kind,
+      f"framework nodes copy source_kind and current_obligation "
+      f"(bad: {bad_node_kind[:5]})")
+
+# 6f. Sector model names map to exactly one of the four SRF v1.0 models.
+# The table is the editable source. Shared is not a model id.
+SRF_MODELS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
+SECTOR_MODELS = (
+    "SaMD-Cloud", "EHR-Embedded", "Agent-Clinical", "On-Premise",
+    "Agent-Ops", "Program-Embedded", "Vendor-Model", "Shared-Service",
+    "OT-Edge", "Product-Embedded",
+)
+smap = J("data/sector-model-map.json")
+core_models = {m["id"]: m for m in J("data/matrix.json")["models"]
+               if m.get("provenance") == "cosai-core"}
+check(set(core_models) == set(SRF_MODELS),
+      "matrix.json cosai-core models are the four SRF v1.0 models")
+listed = [m["id"] for m in smap.get("srf_models", [])]
+check(listed == list(SRF_MODELS),
+      f"sector map lists the four SRF models in order (got {listed})")
+bad_def = [m["id"] for m in smap.get("srf_models", [])
+           if core_models.get(m["id"], {}).get("description") != m.get("definition")]
+check(not bad_def,
+      f"sector map copies the SRF model definition from matrix.json (bad: {bad_def})")
+rows = smap.get("mappings", [])
+got_names = [r.get("sector_model") for r in rows]
+check(got_names == list(SECTOR_MODELS),
+      f"sector map has the 10 sector models once, in order (got {got_names})")
+bad_row = []
+for r in rows:
+    if r.get("srf_model") not in SRF_MODELS:
+        bad_row.append(r.get("sector_model"))
+    alt = (r.get("alternative") or {}).get("srf_model")
+    if alt is not None and (alt not in SRF_MODELS or alt == r.get("srf_model")):
+        bad_row.append(str(r.get("sector_model")) + ":alternative")
+    if not r.get("definition") or not r.get("definition_source") or not r.get("rationale"):
+        bad_row.append(str(r.get("sector_model")) + ":missing-text")
+check(not bad_row, f"each sector model maps to one SRF model (bad: {bad_row})")
+used_sector = set()
+for vertical in ("finance", "healthcare", "insurance",
+                 "public-sector", "defense", "manufacturing"):
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        for code in c.get("operating_models") or []:
+            if code not in SRF_MODELS:
+                used_sector.add(code)
+check(used_sector == set(SECTOR_MODELS),
+      f"sector model names on controls match the map "
+      f"(only on controls: {sorted(used_sector - set(SECTOR_MODELS))}; "
+      f"only on map: {sorted(set(SECTOR_MODELS) - used_sector)})")
+
+# 6g. Risk records are threats.json. Every obligation link has a basis and a
+# source, and a derived link's citation actually matches the requirement.
+threat_doc = J("data/threats.json")
+req_ids = {r["id"] for r in J("data/moral-regulatory-hierarchy.json")["requirements"]}
+control_ids = set()
+controls_by_full = {}
+for vertical in VERTICALS:
+    for c in J(f"data/{vertical}-controls.json")["controls"]:
+        full = f"srf.control.{vertical}.{c['id']}"
+        control_ids.add(full)
+        controls_by_full[full] = c
+allowed_derived = derived_control_rows(ROOT)
+SRF_MODEL_IDS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
+bad_threat = []
+link_basis = {}
+for t in threat_doc["threats"]:
+    tid = f"ext.threat.{t['id']}"
+    if tid not in node_ids:
+        bad_threat.append(t["id"] + ":missing-node")
+    for cid in t.get("related_controls") or []:
+        if cid not in control_ids:
+            bad_threat.append(f"{t['id']}:bad-control:{cid}")
+        elif (tid, cid) not in {(e["source"], e["target"])
+                                for e in edges["edges"] if e["rel"] == "mitigated_by"}:
+            bad_threat.append(f"{t['id']}:missing-mitigated_by:{cid}")
+    seen_req = set()
+    for link in t.get("obligations") or []:
+        problem = link_problem(link, t, allowed_derived)
+        if problem:
+            bad_threat.append(f"{t['id']}:{problem}")
+            continue
+        rid = link["requirement"]
+        if rid not in req_ids:
+            bad_threat.append(f"{t['id']}:unknown-requirement:{rid}")
+        if rid in seen_req:
+            bad_threat.append(f"{t['id']}:duplicate:{rid}")
+        seen_req.add(rid)
+        link_basis[link["basis"]] = link_basis.get(link["basis"], 0) + 1
+        edge = next((e for e in edges["edges"]
+                     if e["rel"] == "triggers_obligation"
+                     and e["source"] == tid
+                     and e["target"] == f"ext.requirement.{rid}"), None)
+        if edge is None or edge.get("basis") != link["basis"]:
+            bad_threat.append(f"{t['id']}:missing-edge:{rid}")
+    for model in SRF_MODEL_IDS:
+        cell = (t.get("accountability") or {}).get(model) or {}
+        persona = cell.get("accountable_persona")
+        if not persona:
+            bad_threat.append(f"{t['id']}:no-owner:{model}")
+            continue
+        owner_edge = next((e for e in edges["edges"]
+                           if e["rel"] == "risk_owner"
+                           and e["source"] == tid
+                           and e["target"] == f"srf.role.{persona}"
+                           and e.get("operating_model") == model), None)
+        if owner_edge is None:
+            bad_threat.append(f"{t['id']}:missing-risk-owner:{model}")
+        linked_owners = []
+        for cid in t.get("related_controls") or []:
+            owners = (controls_by_full.get(cid) or {}).get("accountable_by_model") or {}
+            if model in owners:
+                linked_owners.append(owners[model])
+        if linked_owners:
+            if cell.get("no_linked_control_in_model"):
+                bad_threat.append(f"{t['id']}:gap-flag-but-controls:{model}")
+            if persona not in linked_owners:
+                bad_threat.append(f"{t['id']}:owner-mismatch:{model}")
+        elif not cell.get("no_linked_control_in_model"):
+            bad_threat.append(f"{t['id']}:unmarked-gap:{model}")
+check(not bad_threat,
+      f"threat obligation links are traceable and wired "
+      f"(bad: {bad_threat[:5]})")
+check(sum(link_basis.values()) > 0,
+      f"obligation links present ({link_basis})")
 
 # Depth carries a verification promise. A full-depth entry was read against the
 # primary source, so it records last_verified and cannot sit at unverified; a

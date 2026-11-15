@@ -15,6 +15,12 @@
       "title": "AI Risk Appetite Statement with Named Accountable Executive",
       "description": "The institution must publish a board-approved AI risk appetite statement that names a specific senior executive accountable for AI risk. The statement must define risk tolerance thresholds for each operating model (AI-SaaS, AI-PaaS, Agent-PaaS, IaaS) and be reviewed on the cadence defined in SRF-L1-MON-002.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -50,6 +56,12 @@
       "title": "AI Model Inventory and Tier Classification Policy",
       "description": "The institution must maintain a complete inventory of AI models in use, with each model assigned a materiality tier (e.g., Tier 1: high materiality, Tier 2: moderate, Tier 3: low) per SR 26-2's risk-based approach. Tier assignment criteria must be documented and approved by the accountable executive named in SRF-L1-DEV-001.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -85,6 +97,11 @@
       "title": "Acceptable Use Policy with Named Business-Unit Accountable Individual",
       "description": "Each business unit deploying AI systems must designate a named individual (not a team, role title, or org-unit) as the accountable signatory for the acceptable use policy covering that unit's AI systems. The AUP must specify permitted use cases, prohibited outputs, user categories, and escalation paths, and must address each operating model in scope. A business-unit-level signature without a named individual does not satisfy SR 26-2's governance accountability expectations and will be a finding under examiner review. The named individual must be recorded in the model inventory alongside the models they are accountable for, and updated when the individual changes (see SRF-L1-MON-003).",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance"
+      },
       "named_individual_constraint": "Must be a specific named employee. Cannot be a shared mailbox, team name, or role title. Must have sufficient seniority and authority to enforce the AUP within their business unit.",
       "operating_models": [
         "AI-SaaS",
@@ -125,6 +142,9 @@
       "cross_layer_note": "The agent authorization scope defined here must be reflected in the tool allow-list (SRF-L3-DEV-003) and in the gateway authorization entitlements (SRF-L4-DEV-002). A change to this policy must trigger re-review of both downstream controls. ECH reviews at L3 and L4 must verify alignment with the current version of this policy.",
       "description": "Before any Agent-PaaS system is deployed to act autonomously on the institution's behalf, executing transactions, communicating with clients, initiating workflows, or making decisions that produce regulatory or financial consequences; the institution must produce a written agent authorization policy for each business process the agent is permitted to act within. The policy must specify: the bounded scope of agent authority (which actions are permitted, which require human approval), the named human business owner accountable for agent actions within that process, the escalation path when an agent action falls outside its authorized scope, and the conditions under which the agent must halt and refer to a human. SR 26-2 puts agentic AI out of scope but existing MRM principles require human accountability for model outputs. When an agent acts, the accountable human must be named at L1 before deployment, not identified after an incident. This control applies to Agent-PaaS only; AI-SaaS and AI-PaaS systems that do not act autonomously are out of scope.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "Agent-PaaS": "ai-system-governance"
+      },
       "named_business_owner_constraint": "Each agent business process authorization must name a specific individual as the accountable business owner. The named owner is responsible for reviewing agent action logs at the cadence defined in the policy and for escalating anomalies to the MRM function.",
       "operating_models": [
         "Agent-PaaS"
@@ -159,6 +179,12 @@
       "title": "Third-Party AI Vendor Register with Named Accountable Officer",
       "description": "The institution must maintain a register of every third-party AI vendor whose systems, models, data services, or professional services are used in production or in model development. Each vendor entry must name an institution-side accountable officer and one of the seven vendor-risk categories at https://aisharedresponsibility.com/tools/vendor-risk/. Assessment depth follows that page's three-axis tier: data sensitivity, autonomy, and stack depth. For a vendor that is not a pre-trained model provider but embeds or resells a model, the register entry must include that model provider's evidence package (model card, artifact signing or BoAIM, vulnerability disclosure) as a sub-processor or OEM pass-through.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -195,6 +221,12 @@
       "title": "Independent Review of AI Risk Appetite by Second Line",
       "description": "The second line of defense (model risk management or independent risk function) must perform an annual independent review of the AI risk appetite statement (SRF-L1-DEV-001) and tier classification policy (SRF-L1-DEV-002). The review must assess whether thresholds remain appropriate given changes to the model portfolio, operating models, and regulatory guidance.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -230,6 +262,12 @@
       "title": "Model Tier Classification Coverage Rate",
       "description": "Ongoing monitoring of the percentage of AI models in production that have an assigned materiality tier per the policy in SRF-L1-DEV-002. Any model that has been in production longer than the onboarding window without a tier assignment constitutes a breach.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -265,6 +303,12 @@
       "title": "AI Governance Committee Review Cadence",
       "description": "The AI governance committee (or equivalent body) must hold documented reviews of the AI model portfolio at the cadence required by the institution's tier policy. Tier-1 models require quarterly review; Tier-2 and Tier-3 review cadence is institution-defined per SR 26-2's materiality principle. This control monitors that reviews occur as scheduled.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -300,6 +344,12 @@
       "title": "Governance Role Identity Lifecycle Monitoring",
       "description": "When any named individual in an AI governance accountability role changes, including the accountable executive (SRF-L1-DEV-001), business-unit AUP signatories (SRF-L1-DEV-003), agent business process owners (SRF-L1-DEV-004), and the MRM function head; the vacancy or transition must be resolved within the SLA defined per role tier. A stale name on a governance document is an accountability gap and a regulatory finding. This control monitors open vacancies against SLA and flags overdue reassignments. SLA tiers: Tier-1 roles (accountable executive, MRM head) must be reassigned within 30 days of vacancy; Tier-2 roles (business-unit signatories, agent process owners) within 60 days. Institutions may tighten but not loosen these defaults.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -336,6 +386,12 @@
       "title": "Board-Level Effective Challenge of AI Risk Profile",
       "description": "The board risk committee (or equivalent) must conduct annual effective challenge of the institution's AI risk profile, including review of the risk appetite statement, tier distribution, open findings from independent validation, and any material incidents from the prior period. Challenge must be documented with evidence of substantive board-level inquiry, not passive acceptance.",
       "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-governance",
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -371,6 +427,11 @@
       "title": "Training and RAG Data Provenance Documentation",
       "description": "Before a model enters validation, the data provider must produce a provenance record for every training dataset and RAG corpus used, covering: source, licensing terms, collection date, preprocessing steps applied, known biases documented, and the data owner accountable for ongoing quality. The record must be stored in the model inventory and linked to the model card. For third-party data sources, the provenance record must additionally name an internal data steward accountable for the vendor relationship and for validating that the source meets the institution's data quality and classification standards. The SRF's single-accountable-party principle applies regardless of whether the data provider is internal or external; accountability does not transfer to the vendor.",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
       "data_source_type_field": {
         "description": "Required field on each provenance record entry. Distinguishes internal data sources from third-party vendors so that the internal_steward requirement can be enforced.",
         "values": [
@@ -417,6 +478,12 @@
       "title": "Data Classification for AI-Accessible Data Stores",
       "description": "All data stores accessible by AI systems at runtime (RAG corpora, grounding databases, tool-accessible APIs) must have a current data classification label (e.g., public, internal, confidential, restricted) before the system enters production. Classification must be performed by or reviewed by the accountable data owner, not the application developer.",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -453,6 +520,11 @@
       "title": "Training Data Quality Baseline and PSI Reference Distribution",
       "description": "For each model using institution-provided training data, the data provider must establish a reference distribution at the time of initial training. This reference distribution anchors Population Stability Index (PSI) calculations during ongoing monitoring (SRF-L2-MON-001). The baseline must cover all features used by the model and be stored alongside the model artifacts.",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -487,6 +559,11 @@
       "title": "Independent Validation of Training Data Quality and Representativeness",
       "description": "The independent validation function must assess training data quality before a model is approved for production. Assessment must cover: representativeness of training data relative to the production population, absence of prohibited data (per SRF-L2-DEV-002 classification), bias indicators across protected classes relevant to the use case, and completeness of the provenance record (SRF-L2-DEV-001). Findings must be documented with disposition (accepted, conditionally accepted, or rejected).",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -521,6 +598,11 @@
       "title": "Training and RAG Data Drift Monitoring (PSI)",
       "description": "For models using institution-provided training data or runtime RAG corpora, the data provider must monitor Population Stability Index (PSI) against the reference distribution established in SRF-L2-DEV-003. PSI breach thresholds follow MRM convention: PSI >= 0.1 triggers investigation; PSI >= 0.25 triggers re-validation. Tier-1 models require continuous or daily monitoring; lower tiers follow institution-defined cadence per SR 26-2's materiality principle.",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -536,7 +618,7 @@
       },
       "threshold": {
         "metric": "psi_score",
-        "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1\u20130.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
+        "description": "Population Stability Index calculated between current input distribution and reference distribution. Conventional MRM thresholds: < 0.1 stable, 0.1–0.25 minor shift (investigate), >= 0.25 major shift (re-validate). Institutions set tier-specific alert levels.",
         "evidence": {
           "ocsf_class": "ai_operation",
           "attribute": "message_context: input feature distributions observable from ai_operation events at inference time can be aggregated to compute PSI against the stored reference distribution.",
@@ -561,6 +643,12 @@
       "cross_layer_note": "If a data store accessible by a Tier-1 or Tier-2 model is reclassified upward (e.g., from internal to confidential or restricted), the reclassification must trigger re-evaluation of the L4 compute configuration (SRF-L4-DEV-003) to confirm confidential compute requirements are still met. The breach action for an upward reclassification event must notify ai-platform-provider in addition to the data owner.",
       "description": "Ongoing monitoring of the percentage of data stores accessible by AI systems in production that carry a current data classification. New data stores connected to AI systems after initial production approval must be classified before use. This control catches classification drift as AI systems are extended to new data sources over time. Upward reclassification of an existing store (sensitivity level increasing) is treated as a breach event requiring re-evaluation of platform-level compute controls at L4, not only a coverage metric update.",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -596,6 +684,9 @@
       "title": "Agent Runtime Memory Store Integrity Monitoring",
       "description": "For Agent-PaaS deployments, the data provider (in coordination with the agentic platform provider at L3/L4) must monitor agent runtime memory stores: episodic memory, working memory, and any mutable knowledge store the agent reads from or writes to, for unauthorized or anomalous write operations. This control targets memory poisoning: the injection of malicious or incorrect content into an agent's memory during a session, which can corrupt subsequent reasoning across that session or persist across sessions if memory is durable. Monitoring must cover: write-access events by actor (agent identity, tool, or external input), write rate relative to session baseline, and content that deviates significantly from the memory store's established distribution. Accountability for the integrity of the data in the store sits at L2 (data-provider); the implementing telemetry sits at L3/L4 (agentic-platform-provider).",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "Agent-PaaS": "data-provider"
+      },
       "implementing_persona_note": "Telemetry and enforcement implemented by agentic-platform-provider at L3/L4. Data-provider is accountable for defining acceptable write patterns and integrity standards for the memory store content.",
       "operating_models": [
         "Agent-PaaS"
@@ -631,6 +722,11 @@
       "title": "Effective Challenge of Data Quality Standards and Drift Thresholds",
       "description": "The independent validation or second-line risk function must annually challenge whether the PSI thresholds (SRF-L2-MON-001) and classification coverage targets (SRF-L2-MON-002) remain appropriate. Challenge must assess: whether conventional PSI thresholds are calibrated to the institution's specific model population, whether new data modalities (e.g., multimodal inputs, agent tool outputs) require additional drift metrics, and whether any Tier-1 model has exceeded its drift threshold without triggering a re-validation.",
       "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -665,6 +761,12 @@
       "title": "Input Validation and Prompt Injection Defense Design",
       "description": "Before a model-backed application enters validation, the application developer must document and implement input validation controls covering: maximum input length enforcement, character set and encoding validation, detection of prompt injection patterns (instruction override attempts, role-switch instructions, jailbreak patterns), and sanitization of user-supplied content before it reaches the model context. For RAG pipelines, retrieved content must be treated as untrusted input and passed through the same validation chain as user input. Defense-in-depth is required: a single detection layer is not sufficient. Design must be documented and reviewable by the independent validation function.",
       "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -701,6 +803,12 @@
       "title": "Output Filtering and Content Safety Design",
       "description": "The application developer must implement output filtering controls before model outputs reach end users or downstream systems. Required layers: a content safety classifier or rules engine that blocks prohibited output categories (defined by the institution's acceptable use policy at SRF-L1-DEV-003), a PII detection and redaction layer for outputs destined for external parties or low-clearance users, and structured output validation for applications that parse model outputs into downstream decisions or workflows. For fine-tuned models, the developer must document whether fine-tuning altered the base model's built-in safety behaviors and what compensating controls are in place. Output filters must be applied after every model call, including intermediate steps in agentic chains.",
       "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -742,6 +850,9 @@
       "cross_layer_note": "Tool allow-lists defined here must be consistent with the agent authorization scope in the L1 policy (SRF-L1-DEV-004) and must be enforceable at the gateway layer (SRF-L4-DEV-002). A change to the L1 policy must trigger re-review of this control. Changes to this control must be reflected in gateway entitlement configuration.",
       "description": "For Agent-PaaS deployments, the agentic platform and framework provider must design and document a tool-execution authorization scheme that enforces least-privilege access for each tool the agent can invoke. Required design elements: an explicit allow-list of tools per agent role (no implicit allow-all), per-tool authorization checks that verify the agent's current session context and user delegation before execution, a confirmation gate for irreversible or high-consequence tool calls (as defined in the agent authorization policy at SRF-L1-DEV-004), and an audit trail linking each tool execution to the agent session, the human user or system that initiated the session, and the business process the agent is authorized to act within. Tool authorization must be re-checked at each step in a multi-step orchestration chain, not only at session start.",
       "accountable_persona": "agentic-platform-provider",
+      "accountable_by_model": {
+        "Agent-PaaS": "agentic-platform-provider"
+      },
       "operating_models": [
         "Agent-PaaS"
       ],
@@ -775,6 +886,12 @@
       "title": "Independent Validation of Application-Level Security Controls",
       "description": "Before production approval, the independent validation function must conduct adversarial testing of the application's security controls. Required scope: prompt injection attempts across at least the OWASP LLM Top 10 attack categories relevant to the architecture, output filter bypass attempts (including indirect injection via RAG retrieval), tool-execution authorization bypass for Agent-PaaS deployments, and chain-of-thought leakage tests for multi-step orchestrations. Testing must be performed by a team with no development accountability for the controls being tested. Findings must be documented with severity ratings, and any Critical or High findings must be remediated before production approval. Tier-1 models require external red-team involvement or independent security firm engagement.",
       "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -811,6 +928,12 @@
       "title": "Prompt Injection Detection Rate Monitoring",
       "description": "The application developer must monitor the rate of detected prompt injection attempts against the application in production. Detection rate is the proportion of inputs flagged by the injection detection layer (SRF-L3-DEV-001) relative to total inputs. A sustained elevation in detection rate is a signal of active attack or a shift in the user population that warrants investigation. A sudden drop in detection rate when attack volume is expected to be constant may indicate detector degradation. Both conditions are breach events. Tier-1 models require continuous monitoring; lower tiers follow the institution-defined cadence.",
       "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -848,6 +971,12 @@
       "title": "Output Filter Block-Rate Monitoring",
       "description": "The application developer must monitor the rate at which the output filter (SRF-L3-DEV-002) blocks or redacts model outputs in production. An elevated block rate signals model behavior drift, a shift in user inputs driving prohibited outputs, or a fine-tuning regression. A declining block rate over time may indicate filter degradation or evasion. Both are breach conditions. The block rate must be broken down by filter category (content safety, PII redaction, structured output validation) so that category-level anomalies are visible independently.",
       "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -885,6 +1014,9 @@
       "title": "Tool-Execution Authorization Failure Rate Monitoring",
       "description": "For Agent-PaaS deployments, the agentic platform provider must monitor the rate of tool-execution authorization failures: attempts by an agent to invoke a tool it is not authorized to call, or invocations that fail the per-call authorization check (SRF-L3-DEV-003). A rising authorization failure rate signals prompt injection driving out-of-scope tool calls, agent scope creep, or a misconfigured allow-list. Any attempt to invoke a tool outside the agent's allow-list is a Severity-1 event regardless of whether it succeeded. Authorization failures must be correlated with the originating session and user to support forensic review.",
       "accountable_persona": "agentic-platform-provider",
+      "accountable_by_model": {
+        "Agent-PaaS": "agentic-platform-provider"
+      },
       "operating_models": [
         "Agent-PaaS"
       ],
@@ -920,6 +1052,12 @@
       "title": "Effective Challenge of Application Security Control Thresholds",
       "description": "The independent validation or second-line risk function must annually challenge whether the application-level security control thresholds established in SRF-L3-MON-001, SRF-L3-MON-002, and SRF-L3-MON-003 remain appropriate. Challenge must assess: whether control limits reflect the current threat environment (updated OWASP LLM Top 10 categories, new injection techniques observed in the prior period), whether any Tier-1 application has operated outside its control limits without triggering a documented response, whether fine-tuning or model version changes since last validation have altered the output filter's effectiveness, and whether the agentic tool allow-lists remain appropriately scoped given changes to business processes since initial deployment.",
       "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -955,6 +1093,11 @@
       "title": "Platform-Level Guardrail Design and Configuration Baseline",
       "description": "The AI platform provider must design, configure, and document platform-level guardrails before any model is served in production. Platform guardrails operate below the application layer (SRF-L3-DEV-001/002) and provide a defense-in-depth layer that persists even when application controls are misconfigured or bypassed. Required elements: input guardrails that intercept and evaluate requests before they reach the model, output guardrails that evaluate model responses before returning them to the caller, a configuration baseline that specifies which guardrail policies are active per model tier, and a change-control process requiring re-validation when guardrail configuration changes. Guardrail configuration must be immutable to application-layer callers; applications may request guardrail policies but cannot disable them.",
       "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -995,6 +1138,12 @@
       "cross_layer_note": "Gateway authorization entitlements must reflect the agent authorization scope from the L1 policy (SRF-L1-DEV-004) and must enforce the tool allow-lists defined at L3 (SRF-L3-DEV-003). Any change to either upstream control must trigger re-review of gateway entitlement configuration. The L4 ECH review must verify alignment with current L1 and L3 versions.",
       "description": "The AI platform provider must design and document authentication and authorization controls for all LLM gateway and router endpoints before production deployment. Required elements: mutual authentication for all model API calls (service-to-service mTLS or equivalent), per-caller authorization that enforces model access entitlements (a caller authorized for Tier-3 models cannot invoke Tier-1 endpoints), rate limiting and quota enforcement per caller identity to prevent abuse, and audit logging of all gateway requests with caller identity, model invoked, and token usage. For Agent-PaaS, the gateway must distinguish agent-identity calls from human-identity calls and apply appropriate authorization policies to each. Gateway credentials must be rotated on a schedule defined by the institution's secrets management policy.",
       "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -1031,6 +1180,11 @@
       "title": "Confidential Compute Configuration for Tier-1 Models",
       "description": "Tier-1 AI models processing confidential or restricted data (as classified per SRF-L2-DEV-002) must be configured to run in confidential compute environments (e.g., AMD SEV-SNP, Intel TDX, or equivalent trusted execution environment) that provide hardware-enforced memory encryption and isolation. The platform provider must document the confidential compute configuration, generate a cryptographic attestation report at deployment, and store the attestation alongside the model artifact in the model registry. Attestation must be re-generated after any infrastructure change that could affect the trusted execution environment. This control applies to Tier-1 models only; lower tiers follow institution-defined policy.",
       "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -1066,6 +1220,12 @@
       "title": "Independent Validation of Platform Security Controls",
       "description": "Before a model is approved for production, the independent validation function must assess the effectiveness of the platform's guardrail configuration and gateway security controls. Required scope: guardrail bypass testing (attempts to reach the model with inputs that should be blocked, from the application layer), gateway authentication and authorization boundary testing (confirming callers cannot access model tiers above their entitlement), confidential compute attestation verification for Tier-1 models, and review of the guardrail change-control record since the last validation. Validation findings must include a tested bypass rate: the proportion of attempted guardrail bypasses that succeeded during testing. Any bypass success rate above zero for Critical guardrail categories is a blocking finding.",
       "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -1101,6 +1261,11 @@
       "title": "Guardrail Bypass Rate Monitoring",
       "description": "The AI platform provider must monitor the rate at which requests or responses bypass platform-level guardrails in production. A bypass occurs when an input that should have been intercepted reaches the model, or when a model output that should have been blocked is returned to the caller. Bypass rate is the proportion of guardrail evaluation events that result in a bypass verdict relative to total evaluations. Bypass events must be classified by guardrail category and severity. Zero-tolerance applies to Critical category bypasses (e.g., guardrails covering regulated content, PII in outputs, or financial advice prohibitions). Tier-defined thresholds apply to lower-severity categories. Bypass rate monitoring operates at the platform layer independently of application-layer output filter monitoring (SRF-L3-MON-002); both layers must report. Where model serving is operated by a distinct ai-model-serving vendor, that vendor is accountable for reporting guardrail evaluation events to the ai-platform-provider; the ai-platform-provider retains accountability for the aggregate bypass rate.",
       "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider"
+      },
       "persona_split_note": "Guardrail infrastructure is owned by ai-platform-provider. Where ai-model-serving is a distinct vendor, it must emit guardrail evaluation telemetry to the platform. Accountability for the bypass rate metric and breach response rests with ai-platform-provider.",
       "operating_models": [
         "AI-SaaS",
@@ -1136,9 +1301,15 @@
       "layer": "L4",
       "component": "LLM Routers & Gateways",
       "title": "Gateway Authentication Failure Rate Monitoring",
-      "description": "The AI platform provider must monitor the rate of authentication and authorization failures at all LLM gateway and router endpoints. Authentication failures (invalid credentials, expired tokens, missing credentials) and authorization failures (valid caller attempting to access an unauthorized model tier or endpoint) must be tracked separately. A sustained elevation in authentication failures may indicate credential stuffing, rotation failures, or misconfigured callers. A spike in authorization failures may indicate an application attempting to escalate model access beyond its entitlement, or an agent attempting to invoke a higher-tier model than its authorization permits. All authorization failures for Tier-1 model endpoints are Severity-1 events regardless of rate. Where ai-model-serving operates the inference endpoint directly, it is accountable for authentication failures at that endpoint; the ai-platform-provider is accountable for authorization failures at the routing and gateway layer.",
+      "description": "The AI platform provider must monitor the rate of authentication and authorization failures at all LLM gateway and router endpoints. Authentication failures (invalid credentials, expired tokens, missing credentials) and authorization failures (valid caller attempting to access an unauthorized model tier or endpoint) must be tracked separately. A sustained elevation in authentication failures may indicate credential stuffing, rotation failures, or misconfigured callers. A spike in authorization failures may indicate an application attempting to escalate model access beyond its entitlement, or an agent attempting to invoke a higher-tier model than its authorization permits. All authorization failures for Tier-1 model endpoints are Severity-1 events regardless of rate. Authentication failures at an inference endpoint run by a different party are outside this control. The owner is the AI Platform Provider on AI-SaaS, AI-PaaS, Agent-PaaS, and IaaS, for failures at the gateway and routing layer.",
       "accountable_persona": "ai-platform-provider",
-      "persona_split_note": "Authentication at the inference endpoint: ai-model-serving. Authorization at the gateway and routing layer: ai-platform-provider. Where the same vendor fills both roles, the split is internal. Where they are distinct vendors, each is accountable for their respective failure events.",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
+      "persona_split_note": "One owner per model: ai-platform-provider on AI-SaaS, AI-PaaS, Agent-PaaS, and IaaS. The control measures gateway authentication and authorization failures. Matrix.json marks L4 provider-managed on the first three models and customer-owned on IaaS. On IaaS the customer fills the AI Platform Provider role for the gateway it runs.",
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -1174,9 +1345,14 @@
       "layer": "L4",
       "component": "Compute Infrastructure",
       "title": "Confidential Compute Attestation Validity Monitoring",
-      "description": "For Tier-1 models deployed in confidential compute environments (SRF-L4-DEV-003), the AI platform provider must continuously monitor that the cryptographic attestation for each running instance remains valid. Attestation validity may lapse due to infrastructure patching, node migration, hypervisor updates, or certificate expiry. A Tier-1 model running without a valid attestation has lost its confidentiality guarantee and must be treated as an unprotected workload until attestation is re-established. Attestation status must be checked at model load, on a scheduled polling interval, and on any infrastructure event that could affect the trusted execution environment. Where ai-model-serving operates the compute instances directly, it is jointly accountable with ai-platform-provider for attestation validity; the ai-platform-provider retains accountability for reporting to L1 governance on breach.",
+      "description": "For Tier-1 models deployed in confidential compute environments (SRF-L4-DEV-003), the AI platform provider must continuously monitor that the cryptographic attestation for each running instance remains valid. Attestation validity may lapse due to infrastructure patching, node migration, hypervisor updates, or certificate expiry. A Tier-1 model running without a valid attestation has lost its confidentiality guarantee and must be treated as an unprotected workload until attestation is re-established. Attestation status must be checked at model load, on a scheduled polling interval, and on any infrastructure event that could affect the trusted execution environment. On AI-PaaS and Agent-PaaS, matrix.json marks L4 provider-managed, and the AI Platform Provider owns attestation monitoring. On IaaS the customer operates the instances. AI Model Serving owns instance attestation there: the persona text assigns it execution in confidential computing environments. accountable_by_model records that split. The single accountable_persona field is ai-platform-provider, the owner on the provider-managed models.",
       "accountable_persona": "ai-platform-provider",
-      "persona_split_note": "Where ai-model-serving operates compute instances, it is accountable for attestation at the instance level. ai-platform-provider is accountable for the monitoring system, aggregate validity status, and L1 governance escalation on breach. Joint accountability; ai-platform-provider is the primary for examiner purposes.",
+      "accountable_by_model": {
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-model-serving"
+      },
+      "persona_split_note": "AI-PaaS and Agent-PaaS: ai-platform-provider. IaaS: ai-model-serving. One owner on each model.",
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -1213,6 +1389,12 @@
       "title": "Effective Challenge of Platform Security Controls and Thresholds",
       "description": "The independent validation or second-line risk function must annually challenge whether the platform-level security controls and monitoring thresholds remain appropriate. Challenge must assess: whether the guardrail configuration baseline reflects the current model portfolio and threat environment, whether any guardrail bypass events in the prior period were dispositioned correctly and within SLA, whether gateway credential rotation has been executed on schedule, whether any Tier-1 model ran without valid confidential compute attestation during the prior period, and whether new operating models or model serving architectures introduced since last validation require additional platform controls not currently in scope.",
       "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-platform-provider",
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-platform-provider"
+      },
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -1248,6 +1430,11 @@
       "title": "Model Card Completeness and Security Disclosure",
       "description": "Before a foundation model is made available to institution consumers (via API, download, or marketplace), the model provider must publish a model card that meets the minimum completeness standard for financial services deployment. Required fields: intended use cases and explicitly out-of-scope use cases, known failure modes and documented evaluation results on safety benchmarks, training data description at the level of detail needed for MRM provenance review (SRF-L2-DEV-001 alignment), known limitations relevant to regulated use cases (credit, insurance, financial advice), security evaluation summary covering at minimum prompt injection resistance, jailbreak resistance, and data exfiltration risk, and the vulnerability disclosure process and contact (SRF-L5-MON-002 alignment). Model cards must be versioned and updated with each model release.",
       "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -1282,6 +1469,11 @@
       "title": "Model Artifact Signing and Supply-Chain Provenance",
       "description": "The model provider must cryptographically sign all model artifacts (weights, tokenizer, configuration files) before distribution. The signing key must be managed under the provider's documented key management policy, with the public key published in a verifiable trust store. The model provider must also publish a Software Bill of Materials (SBOM) or equivalent supply-chain provenance record for each model release, covering training framework versions, key dependencies, and any third-party components incorporated into the model architecture. This provenance record enables the ai-platform-provider to verify model integrity at load (SRF-L5-MON-001) and supports the institution's third-party risk management obligations under SR 26-2's inherited vendor management principles. When the contracting vendor is not a pre-trained model provider (vendor-risk category 2) but embeds or resells a model, this evidence is required as a sub-processor or OEM pass-through. The model provider remains accountable for producing the artifacts; the deployer demands them through the vendor under contract.",
       "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -1317,6 +1509,11 @@
       "title": "Pre-Release Security Evaluation Baseline",
       "description": "Before a foundation model is made available to institution consumers, the model provider must conduct and publish a security evaluation covering the model's behavior on categories of risk relevant to financial services deployment. Required evaluation categories: prompt injection resistance (resistance to direct and indirect injection attacks), jailbreak resistance across documented bypass techniques, tendency to produce ungrounded financial claims (hallucination in financial contexts), data exfiltration risk (tendency to reproduce training data verbatim), and behavior on agentic tool-use scenarios including tool-call refusal when out of scope. Evaluation methodology and benchmark datasets used must be disclosed. Results must be quantitative where possible and updated with each major model version.",
       "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -1351,12 +1548,11 @@
       "component": "Foundation Models",
       "title": "Independent Evaluation of Model Security Properties",
       "description": "Before institution deployment of a Tier-1 or Tier-2 model, the institution's independent validation function (or a commissioned third party) must conduct its own security evaluation of the foundation model, independent of the model provider's published evaluation (SRF-L5-DEV-003). This is required because the provider's evaluation is self-reported and may not cover the institution's specific deployment context, use case constraints, or threat model. The independent evaluation must cover: reproduction of key benchmark results from the provider's evaluation to validate claims, institution-specific red-teaming for the intended use case, and assessment of whether the model's known failure modes are adequately addressed by the application and platform controls (SRF-L3, SRF-L4). Findings must be incorporated into the model's validation report and linked to the model card.",
-      "accountable_persona": "model-provider",
-      "co_accountable_persona": "ai-system-governance",
-      "accountability_split": {
-        "model-provider": "Accountable for providing access, documentation, model artifacts, and cooperation sufficient to enable independent evaluation. A provider that withholds artifacts necessary for evaluation is in breach of this control.",
-        "ai-system-governance": "Accountable for commissioning the evaluation, ensuring it covers the required scope, and incorporating findings into the institution's validation report. Cannot delegate this accountability to the model-provider.",
-        "examiner_routing": "Findings about evaluation completeness or scope route to ai-system-governance. Findings about provider cooperation or artifact availability route to model-provider."
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
       },
       "operating_models": [
         "AI-PaaS",
@@ -1383,7 +1579,8 @@
         "param": "true",
         "window": "pre-production-approval",
         "breach_action": "block-tier-1-and-tier-2-model-production-approval"
-      }
+      },
+      "accountable_persona_note": "The control measures whether the institution commissioned an independent evaluation and put the findings in its validation report. AI System Governance owns that duty. The persona text in data/personas.json, taken from SRF v1.0 section 3.1, assigns AI System Governance evaluation of security-measure effectiveness and compliance with the institution's standards. The model provider's duty to publish its own pre-release evaluation stays on SRF-L5-DEV-003. This control has one owner on AI-PaaS, Agent-PaaS, and IaaS."
     },
     {
       "id": "SRF-L5-MON-001",
@@ -1393,10 +1590,15 @@
       "cross_layer_controls": [
         "SRF-L4-DEV-001"
       ],
-      "cross_layer_note": "Signing infrastructure accountability: model-provider (L5). Verification execution accountability: ai-platform-provider (L4). A verification failure finding is a joint incident: the model-provider must investigate signing infrastructure integrity; the ai-platform-provider must suspend the affected model version. Neither control substitutes for the other. Examiner findings route to the party accountable for the failed component.",
-      "description": "Every time a foundation model artifact is loaded into an inference environment, the ai-platform-provider must verify the cryptographic signature against the model provider's published trust store (SRF-L5-DEV-002). A load event that cannot be verified must be rejected; the model must not serve requests from an unsigned or unverifiable artifact. Signature verification must be logged with the model version, artifact hash, and verification result. This control detects supply-chain tampering: an attacker substituting a malicious model artifact for a legitimate one. Accountability for the signing infrastructure sits with the model-provider (L5); accountability for executing verification at load sits with the ai-platform-provider (L4). Both controls are required; neither substitutes for the other.",
-      "accountable_persona": "model-provider",
-      "implementing_persona_note": "Verification at load is executed by ai-platform-provider (L4). Model-provider is accountable for maintaining the signing infrastructure and published trust store that makes verification possible. Cross-layer dependency: this control and SRF-L4 platform controls are jointly required.",
+      "cross_layer_note": "Signing infrastructure is SRF-L5-DEV-002, owned by model-provider. Verification at load is this control. On a failed verification, this control's owner for the model in use suspends the load. The owner of SRF-L5-DEV-002 investigates the signing infrastructure.",
+      "description": "Every time a foundation model artifact is loaded into an inference environment, the ai-platform-provider must verify the cryptographic signature against the model provider's published trust store (SRF-L5-DEV-002). A load event that cannot be verified must be rejected; the model must not serve requests from an unsigned or unverifiable artifact. Signature verification must be logged with the model version, artifact hash, and verification result. This control detects supply-chain tampering: an attacker substituting a malicious model artifact for a legitimate one. Signing the artifact stays with the model provider on SRF-L5-DEV-002. This control's owner executes verification at load: the AI Platform Provider on AI-PaaS and Agent-PaaS, where matrix.json marks L4 provider-managed, and AI Model Serving on IaaS, where the customer runs the load and the persona text assigns load-time integrity to AI Model Serving. The two controls cover different work.",
+      "accountable_persona": "ai-platform-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "ai-platform-provider",
+        "Agent-PaaS": "ai-platform-provider",
+        "IaaS": "ai-model-serving"
+      },
+      "implementing_persona_note": "AI-PaaS and Agent-PaaS: ai-platform-provider. IaaS: ai-model-serving. One owner on each model. The single accountable_persona field is ai-platform-provider.",
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -1432,6 +1634,11 @@
       "title": "Vulnerability Disclosure SLA Adherence",
       "description": "The model provider must operate a public vulnerability disclosure program for foundation models used by financial institutions, with documented SLAs for acknowledgment and remediation. The institution must monitor the provider's disclosure feed and track open vulnerabilities against the SLA. Required SLA tiers: Critical vulnerabilities (active exploitation or CVSS >= 9.0 equivalent for AI risk): acknowledgment within 24 hours, remediation or documented mitigation within 7 days; High vulnerabilities: acknowledgment within 72 hours, remediation within 30 days. Institutions using a model with an open Critical vulnerability beyond SLA must treat the model as impaired and escalate to L1 governance. This control monitors both provider SLA adherence and the institution's response to disclosed vulnerabilities.",
       "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",
@@ -1466,8 +1673,13 @@
       "component": "Model Governance",
       "title": "Effective Challenge of Model Governance Standards",
       "description": "The institution's independent validation or second-line risk function must annually challenge whether the model governance requirements placed on foundation model providers remain appropriate and are being met. Challenge must assess: whether model cards for deployed models remain current and complete relative to the standard in SRF-L5-DEV-001, whether any model provider has missed vulnerability disclosure SLAs in the prior period and whether the institution's response was adequate, whether the model provider's published security evaluation methodology remains credible relative to the current threat environment, whether new model versions deployed in the prior year received independent evaluation per SRF-L5-VAL-001, and whether model signing and SBOM practices have been maintained across all model versions in use. Findings must be reported to the MRM head and factored into the institution's third-party model risk ratings.",
-      "accountable_persona": "model-provider",
-      "accountable_persona_note": "Challenge is conducted by the institution's ai-system-governance (L1) on behalf of MRM. Model-provider is the subject of the challenge. Accountability for commissioning and completing the challenge sits with the institution.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "accountable_persona_note": "The control measures whether the institution completed the annual challenge and reported findings to the head of model-risk management. AI System Governance owns commissioning and completing that challenge. The persona text assigns that evaluation and compliance duty to AI System Governance. The model provider is the subject of the challenge. The previous field value was model-provider, which contradicted this control's own statement of who completes the challenge. One owner on AI-PaaS, Agent-PaaS, and IaaS.",
       "operating_models": [
         "AI-PaaS",
         "Agent-PaaS",

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aisharedresponsibility.com/schemas/threats.schema.json",
+  "title": "Threat-to-accountability crosswalk",
+  "description": "Schema for data/threats.json obligation links. These rows are the ROCA Risk records. A link needs a basis and a source. derived_via_control is kept so a map can draw it dashed. It does not claim the legal text names the risk.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["threats"],
+  "properties": {
+    "threats": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/threat" }
+    }
+  },
+  "$defs": {
+    "threat": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["id", "related_controls", "obligations"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "related_controls": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "obligations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/obligationLink" }
+        }
+      }
+    },
+    "obligationLink": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requirement", "basis", "source"],
+      "properties": {
+        "requirement": {
+          "type": "string",
+          "minLength": 1,
+          "description": "An id from data/moral-regulatory-hierarchy.json requirements[]."
+        },
+        "basis": {
+          "type": "string",
+          "enum": ["official_text", "named_citation", "derived_via_control"]
+        },
+        "source": {
+          "type": "object",
+          "minProperties": 1,
+          "description": "For derived_via_control, source.controls lists the related control, the mapping key, and the citation string. For official_text, source.url and source.citation name the official text. For named_citation, source.citation plus source.url or source.document name the document."
+        }
+      }
+    }
+  }
+}

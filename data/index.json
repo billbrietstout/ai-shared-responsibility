@@ -68,6 +68,24 @@
    "related_page": "https://aisharedresponsibility.com/operating-models/"
   },
   {
+   "file": "sector-model-map.json",
+   "url": "https://aisharedresponsibility.com/data/sector-model-map.json",
+   "description": "Maps the 10 sector operating-model names (SaMD-Cloud, EHR-Embedded, Agent-Clinical, On-Premise, Agent-Ops, Program-Embedded, Vendor-Model, Shared-Service, OT-Edge, Product-Embedded) to one of the four SRF v1.0 models. Each row quotes the sector definition and the SRF definition it was matched to. Edit srf_model to change a row. The sector name stays on the control.",
+   "schema_keys": [
+    "srf_models",
+    "mappings",
+    "sector_model",
+    "srf_model",
+    "definition",
+    "definition_source",
+    "rationale",
+    "alternative"
+   ],
+   "record_count": 10,
+   "hand_maintained": true,
+   "related_page": "https://aisharedresponsibility.com/operating-models/"
+  },
+  {
    "file": "jurisdictions.json",
    "url": "https://aisharedresponsibility.com/data/jurisdictions.json",
    "description": "Controlled vocabulary for the jurisdiction that issues a regulation or standard. Levels: international (standards bodies), oecd (soft law), supranational (eu), national (us-federal, uk, china, singapore, canada, japan, australia, south-korea, brazil, india), multistate, subnational (us-california, us-colorado, us-new-york). Referenced by the jurisdiction field on each regulations.json item and materialized as srf.jurisdiction.* nodes in the ontology.",
@@ -84,7 +102,7 @@
   {
    "file": "regulations.json",
    "url": "https://aisharedresponsibility.com/data/regulations.json",
-   "description": "AI regulations and standards mapped to SRF layers and business verticals. Shared catalog: sector instruments apply to one vertical; cited cross-cutting instruments list the verticals that map them; uncited horizontal instruments may list all six. Includes EU AI Act, NIST AI RMF, ISO 42001, OECD AI Principles, national reference instruments (UK/China/Singapore/Canada/Japan/Australia/Korea/Brazil/India), SEC/OCC/FINRA finance anchors, California AB 2013, and sector instruments. Each item carries jurisdiction, optional mapping_key, depth, and applicable_verticals. depth full means the text was read against the primary source, so the item records last_verified; depth reference means it carries verification_status instead. lifecycle is absent for an instrument in force and set to draft or rescinded otherwise, and a rescinded item names its replacement in superseded_by.",
+   "description": "AI regulations and standards mapped to SRF layers and business verticals. Shared catalog: sector instruments apply to one vertical; cited cross-cutting instruments list the verticals that map them; uncited horizontal instruments may list all six. Includes EU AI Act, NIST AI RMF, ISO 42001, OECD AI Principles, national reference instruments (UK/China/Singapore/Canada/Japan/Australia/Korea/Brazil/India), SEC/OCC/FINRA finance anchors, California AB 2013, and sector instruments. Each item carries jurisdiction, optional mapping_key, depth, applicable_verticals, and source_kind (binding, voluntary_standard, or catalog). depth full means the text was read against the primary source, so the item records last_verified; depth reference means it carries verification_status instead. lifecycle is absent for an instrument in force and set to draft or rescinded otherwise, and a rescinded item names its replacement in superseded_by.",
    "schema_keys": [
     "updated",
     "stale_threshold_days",
@@ -101,7 +119,10 @@
     "verification_status",
     "last_verified",
     "lifecycle",
-    "superseded_by"
+    "superseded_by",
+    "source_kind",
+    "source_kind_note",
+    "current_obligation"
    ],
    "record_count": 61,
    "related_page": "https://aisharedresponsibility.com/regulations/"
@@ -122,7 +143,7 @@
     "moral_profile",
     "srf_layers"
    ],
-   "record_count": 39,
+   "record_count": 78,
    "hand_maintained": true,
    "related_page": "https://aisharedresponsibility.com/developers/schema/"
   },
@@ -137,6 +158,7 @@
     "title",
     "description",
     "accountable_persona",
+    "accountable_by_model",
     "operating_models",
     "mrm_stage",
     "mappings",
@@ -158,6 +180,7 @@
     "title",
     "description",
     "accountable_persona",
+    "accountable_by_model",
     "operating_models",
     "clinical_stage",
     "mappings",
@@ -179,6 +202,7 @@
     "title",
     "description",
     "accountable_persona",
+    "accountable_by_model",
     "operating_models",
     "lifecycle_stage",
     "mappings",
@@ -200,6 +224,7 @@
     "title",
     "description",
     "accountable_persona",
+    "accountable_by_model",
     "responsibility_split",
     "operating_models",
     "lifecycle_stage",
@@ -222,6 +247,7 @@
     "title",
     "description",
     "accountable_persona",
+    "accountable_by_model",
     "responsibility_split",
     "operating_models",
     "il_level",
@@ -245,6 +271,7 @@
     "title",
     "description",
     "accountable_persona",
+    "accountable_by_model",
     "responsibility_split",
     "operating_models",
     "ot_applicability",
@@ -284,7 +311,7 @@
   {
    "file": "threats.json",
    "url": "https://aisharedresponsibility.com/data/threats.json",
-   "description": "Threat-to-accountability crosswalk. Sixteen OWASP AI Exchange security-matrix threats plus fifteen OWASP GenAI Data Security (DSGAI 2026) data-plane failures the AI Exchange slug set does not name, each mapped to the SRF layer where it lands and the accountable persona per operating model. Includes external IDs (OWASP LLM Top 10 2025, MITRE ATLAS, BIML LLM24, DSGAI01 to DSGAI21) and related vertical control IDs. DSGAI07 and DSGAI08 have no rows: they are a control gap and a compliance outcome, not attack techniques. Threat definitions and severity belong to their external sources; this file adds who authorizes, who owns each finding, and who signs residual risk.",
+   "description": "Threat-to-accountability crosswalk. Sixteen OWASP AI Exchange security-matrix threats plus fifteen OWASP GenAI Data Security (DSGAI 2026) data-plane failures the AI Exchange slug set does not name, each mapped to the SRF layer where it lands and the accountable persona per operating model. Includes external IDs (OWASP LLM Top 10 2025, MITRE ATLAS, BIML LLM24, DSGAI01 to DSGAI21) and related vertical control IDs. DSGAI07 and DSGAI08 have no rows: they are a control gap and a compliance outcome, not attack techniques. Threat definitions and severity belong to their external sources; this file adds who authorizes, who owns each finding, and who signs residual risk. obligations[] links a threat to a requirement when a related control cites that requirement, and stores the basis and the citation.",
    "schema_keys": [
     "id",
     "name",
@@ -297,7 +324,8 @@
     "layer_rationale",
     "accountability",
     "mappings",
-    "related_controls"
+    "related_controls",
+    "obligations"
    ],
    "record_count": 31,
    "srf_version": "1.0",
