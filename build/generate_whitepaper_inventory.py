@@ -8,12 +8,15 @@ monitor fixture, which is about a megabyte and includes extracted text.
 Scopes:
   cited      papers the agentic catalog cites (the default)
   org        decision include, excluding cited research
-  research   arXiv papers added because a paper in the inventory cites them
-  all        every inventory record
+  research   included arXiv papers added because a paper in the inventory cites them
+  all        every included inventory record (org plus cited research)
 
 Cited research is never given a catalog code, so it cannot appear in
-the default scope. A metadata-only row, a duplicate, or a row marked
-for removal is not recorded as a catalog source.
+the default scope. A metadata-only row is not recorded as a catalog
+source. Monitor decisions delete_candidate and duplicate stay in the
+fixture and the monitor repo only; they are not written into the slim
+file the page loads. That matches the monitor site_inventory rule:
+included open papers only.
 
 Usage:
     python3 build/generate_whitepaper_inventory.py
@@ -97,6 +100,102 @@ def normalized_decision(value: object, wp_id: str) -> str:
     raise SystemExit(f"{wp_id}: unrecognized decision {value!r}")
 
 
+MONTH_NAMES = (
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+MONTH_LOOKUP = {
+    name.lower(): index + 1 for index, name in enumerate(MONTH_NAMES)
+}
+MONTH_LOOKUP.update(
+    {
+        "jan": 1,
+        "feb": 2,
+        "mar": 3,
+        "apr": 4,
+        "jun": 6,
+        "jul": 7,
+        "aug": 8,
+        "sep": 9,
+        "sept": 9,
+        "oct": 10,
+        "nov": 11,
+        "dec": 12,
+    }
+)
+
+
+def _year_from_two_digits(year: int) -> int:
+    # Inventory dates are recent AI-security papers; keep a Windows-style
+    # pivot so classic citations from the 1990s still parse.
+    return 2000 + year if year < 70 else 1900 + year
+
+
+def _format_ymd(year: int, month: int, day: int) -> str | None:
+    if month < 1 or month > 12 or day < 1 or day > 31:
+        return None
+    if year < 1000 or year > 9999:
+        return None
+    return f"{MONTH_NAMES[month - 1]} {day}, {year}"
+
+
+def format_published_date(value: object) -> str:
+    """Normalize common published-date strings to 'Month D, YYYY'.
+
+    Parses ISO (YYYY-MM-DD), M/D/YY, M/D/YYYY, and Month D, YYYY (including
+    common abbreviations). Keeps a trailing note after a leading ISO date.
+    Empty stays empty. Unrecognized values pass through unchanged.
+    """
+    raw = str(value or "").strip()
+    if not raw:
+        return ""
+
+    iso = re.match(r"^(\d{4})-(\d{2})-(\d{2})(.*)$", raw)
+    if iso:
+        formatted = _format_ymd(
+            int(iso.group(1)), int(iso.group(2)), int(iso.group(3))
+        )
+        if formatted is not None:
+            return formatted + iso.group(4)
+
+    slash = re.fullmatch(r"(\d{1,2})/(\d{1,2})/(\d{2}|\d{4})", raw)
+    if slash:
+        month = int(slash.group(1))
+        day = int(slash.group(2))
+        year_raw = slash.group(3)
+        year = (
+            _year_from_two_digits(int(year_raw))
+            if len(year_raw) == 2
+            else int(year_raw)
+        )
+        formatted = _format_ymd(year, month, day)
+        if formatted is not None:
+            return formatted
+
+    named = re.fullmatch(r"([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})", raw)
+    if named:
+        month = MONTH_LOOKUP.get(named.group(1).lower())
+        if month is not None:
+            formatted = _format_ymd(
+                int(named.group(3)), month, int(named.group(2))
+            )
+            if formatted is not None:
+                return formatted
+
+    return raw
+
+
+
 def is_research(paper: dict) -> bool:
     return CITED_RESEARCH_MARK in str(paper.get("legacy_sheet_row") or "")
 
@@ -156,7 +255,7 @@ def catalog_index(catalog: dict) -> tuple[dict, int]:
                 "t": str(src.get("title") or "").strip(),
                 "u": str(src.get("url") or "").strip(),
                 "o": str(src.get("org") or "").strip(),
-                "dt": str(src.get("date") or "").strip(),
+                "dt": format_published_date(src.get("date")),
             }
         )
         order += 1
@@ -200,6 +299,12 @@ def build_inventory(
                 f"{wp_id} is cited in the principles catalog but its "
                 f"monitor decision is {decision}"
             )
+        # Site-facing inventory matches monitor site_inventory.py:
+        # included open papers only. Closed delete-candidates and
+        # duplicates stay in the fixture for catalog checks, not here.
+        state = str(paper.get("state") or "open").strip().lower()
+        if decision != "include" or state != "open":
+            continue
         issue = paper.get("issue_number")
         if not isinstance(issue, int):
             raise SystemExit(f"{wp_id} is missing an integer issue_number")
@@ -208,7 +313,7 @@ def build_inventory(
             "i": wp_id,
             "t": str(paper.get("title") or "").strip(),
             "o": str(paper.get("source_org") or "").strip(),
-            "dt": str(paper.get("date_published") or "").strip(),
+            "dt": format_published_date(paper.get("date_published")),
             "u": str(paper.get("url") or "").strip(),
             "n": issue,
             "dec": decision,
@@ -299,13 +404,16 @@ def build_inventory(
         "version": 1,
         "updated": fixture.get("updated") or "",
         "description": (
-            "Slim index of the whitepaper monitor. A row with a catalog "
-            "code (c) is cited in the principles catalog. Cited research "
-            "(k = research) is not part of that default list. x = metadata "
-            "means principles have not been extracted. Those rows are not "
-            "sources of principles. ev is the monitor evidence tag, "
-            "paraphrased on the page. possibly_deployed is the monitor tag "
-            "tested, possibly deployed (needs review). It is not deployed."
+            "Slim index of included open papers from the whitepaper "
+            "monitor. A row with a catalog code (c) is cited in the "
+            "principles catalog. Cited research (k = research) is not "
+            "part of that default list. x = metadata means principles "
+            "have not been extracted. Those rows are not sources of "
+            "principles. delete_candidate and duplicate rows are omitted "
+            "here; they remain in the monitor export and the site "
+            "fixture. ev is the monitor evidence tag, paraphrased on "
+            "the page. possibly_deployed is the monitor tag tested, "
+            "possibly deployed (needs review). It is not deployed."
         ),
         "generated_from": [
             "build/fixtures/whitepapers.json",
@@ -318,7 +426,7 @@ def build_inventory(
             "dt": "date published, as the monitor recorded it",
             "u": "URL",
             "n": "monitor issue number",
-            "dec": "include, duplicate, or delete_candidate",
+            "dec": "include (delete_candidate and duplicate are not written)",
             "c": "catalog source codes for this monitor row, joined when two codes share a WP- id",
             "cs": "per-code catalog title, URL, organization, and date, in catalog order",
             "x": "extracted or metadata",

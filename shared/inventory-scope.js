@@ -42,8 +42,8 @@
   var CAPTION = {
     cited: "Papers the principles catalog cites. These are sources of the principles on this site.",
     org: "Included organization papers. Metadata only means principles have not been extracted. That row is not a source of principles.",
-    research: "Cited research. Metadata only and duplicate rows are not sources of principles.",
-    all: "Every inventory record. Metadata only, duplicate, and marked for removal are not sources of principles."
+    research: "Included cited research. Metadata only means principles have not been extracted. That row is not a source of principles.",
+    all: "Every included inventory record. Metadata only means principles have not been extracted. That row is not a source of principles."
   };
 
   function selected(name) {
@@ -51,9 +51,14 @@
     return input ? input.value : "";
   }
 
+  function isIncluded(paper) {
+    return !paper.dec || paper.dec === "include";
+  }
+
   function inScope(paper, scope) {
+    if (!isIncluded(paper)) return false;
     if (scope === "cited") return Array.isArray(paper.cs) && paper.cs.length > 0;
-    if (scope === "org") return paper.k === "org" && paper.dec === "include";
+    if (scope === "org") return paper.k === "org";
     if (scope === "research") return paper.k === "research";
     return true;
   }
@@ -94,24 +99,124 @@
 
   function matchesFind(paper, query) {
     if (!query) return true;
-    var hay = [paper.i, paper.c, paper.t, paper.o, paper.dt, paper.ev]
+    var hay = [
+      paper.i,
+      paper.c,
+      paper.t,
+      paper.o,
+      paper.dt,
+      formatPublishedDate(paper.dt),
+      paper.ev
+    ]
       .join(" ")
       .toLowerCase();
     return hay.indexOf(query) !== -1;
   }
 
   function recordLabel(paper) {
-    if (paper.dec === "duplicate") {
-      return "Duplicate. Not a source of principles.";
-    }
-    if (paper.dec === "delete_candidate") {
-      return "Marked for removal. Not a source of principles.";
-    }
     if (paper.c) return "Cited in principles.";
     if (paper.x === "extracted") {
       return "Principles extracted in the inventory. This page's principle list does not cite it.";
     }
     return "Metadata only. Not a source of principles.";
+  }
+
+  var MONTH_NAMES = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+  var MONTH_LOOKUP = {
+    january: 1,
+    february: 2,
+    march: 3,
+    april: 4,
+    may: 5,
+    june: 6,
+    july: 7,
+    august: 8,
+    september: 9,
+    october: 10,
+    november: 11,
+    december: 12,
+    jan: 1,
+    feb: 2,
+    mar: 3,
+    apr: 4,
+    jun: 6,
+    jul: 7,
+    aug: 8,
+    sep: 9,
+    sept: 9,
+    oct: 10,
+    nov: 11,
+    dec: 12
+  };
+
+  function yearFromTwoDigits(year) {
+    return year < 70 ? 2000 + year : 1900 + year;
+  }
+
+  function formatYmd(year, month, day) {
+    if (month < 1 || month > 12 || day < 1 || day > 31) return "";
+    if (year < 1000 || year > 9999) return "";
+    return MONTH_NAMES[month - 1] + " " + day + ", " + year;
+  }
+
+  // Normalize common published-date strings to "Month D, YYYY".
+  // Empty stays empty in data; the table shows an em dash.
+  function formatPublishedDate(value) {
+    var raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+
+    var iso = raw.match(/^(\d{4})-(\d{2})-(\d{2})(.*)$/);
+    if (iso) {
+      var isoFormatted = formatYmd(
+        Number(iso[1]),
+        Number(iso[2]),
+        Number(iso[3])
+      );
+      if (isoFormatted) return isoFormatted + iso[4];
+    }
+
+    var slash = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/);
+    if (slash) {
+      var yearRaw = slash[3];
+      var year =
+        yearRaw.length === 2
+          ? yearFromTwoDigits(Number(yearRaw))
+          : Number(yearRaw);
+      var slashFormatted = formatYmd(year, Number(slash[1]), Number(slash[2]));
+      if (slashFormatted) return slashFormatted;
+    }
+
+    var named = raw.match(/^([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})$/);
+    if (named) {
+      var month = MONTH_LOOKUP[named[1].toLowerCase()];
+      if (month) {
+        var namedFormatted = formatYmd(
+          Number(named[3]),
+          month,
+          Number(named[2])
+        );
+        if (namedFormatted) return namedFormatted;
+      }
+    }
+
+    return raw;
+  }
+
+  function displayDate(value) {
+    return formatPublishedDate(value) || "\u2014";
   }
 
   function evidenceLabel(paper) {
@@ -275,7 +380,7 @@
       tr.appendChild(cell(recordLabel(paper), "inv-record"));
       if (showEvidence) tr.appendChild(cell(evidenceLabel(paper)));
       tr.appendChild(cell(paper.o));
-      tr.appendChild(cell(paper.dt));
+      tr.appendChild(cell(displayDate(paper.dt)));
       tbody.appendChild(tr);
     });
     table.appendChild(tbody);
