@@ -1,0 +1,1849 @@
+{
+ "tm_schema_version": "0.1.0-draft",
+ "system": {
+  "id": "sys.r2r-agentic",
+  "name": "Agentic Record to Report (example)",
+  "description": "A financial close and reporting process run by an orchestration agent and five sub-agents. The orchestrator runs on a reasoning LLM from an AI Model Provider. Hard rules (period lock, materiality thresholds, late-adjustment approval, segregation of duties) are enforced by a policy service outside the model. Journal anomaly detection is a separate component that is not on the reasoning-LLM path.",
+  "operating_model": "Agent-PaaS",
+  "operating_model_note": "Example assumption. Bill to confirm.",
+  "as_of": "2026-11-16",
+  "snapshot_id": null,
+  "overlays_enabled": []
+ },
+ "snapshots": [
+  {
+   "id": "snap.nov16",
+   "name": "As built, Nov 16, 2026",
+   "as_of": "2026-11-16"
+  },
+  {
+   "id": "snap.dec01",
+   "name": "Planned December release",
+   "as_of": "2026-12-01"
+  }
+ ],
+ "stakeholders": [
+  {
+   "id": "stk.investors",
+   "name": "Investors and other users of the financial statements",
+   "kind": "affected_individuals",
+   "affected_by_component_ids": [
+    "cmp.step-reporting",
+    "cmp.step-consolidation"
+   ]
+  },
+  {
+   "id": "stk.employees-named",
+   "name": "Employees named in close workpapers or reports",
+   "kind": "affected_individuals",
+   "affected_by_component_ids": [
+    "cmp.step-recon",
+    "cmp.step-reporting"
+   ]
+  },
+  {
+   "id": "stk.privacy-authority",
+   "name": "Data protection or privacy authority (candidate, unverified)",
+   "kind": "relevant_authority",
+   "affected_by_component_ids": [
+    "cmp.workpapers"
+   ]
+  },
+  {
+   "id": "stk.securities-regulator",
+   "name": "Securities regulator, for public-company financial reporting (candidate, unverified)",
+   "kind": "relevant_authority",
+   "affected_by_component_ids": [
+    "cmp.step-adjustments",
+    "cmp.step-reporting",
+    "cmp.step-consolidation"
+   ]
+  },
+  {
+   "id": "stk.external-auditor",
+   "name": "External auditor (candidate; not an owner)",
+   "kind": "relevant_authority",
+   "vertical": "sox",
+   "affected_by_component_ids": [
+    "cmp.step-recon",
+    "cmp.step-adjustments",
+    "cmp.step-reporting"
+   ]
+  },
+  {
+   "id": "stk.audit-committee",
+   "name": "Audit committee, as the board body that oversees reporting (candidate, unverified)",
+   "kind": "relevant_authority",
+   "vertical": "sox",
+   "affected_by_component_ids": [
+    "cmp.step-reporting",
+    "cmp.step-adjustments"
+   ]
+  }
+ ],
+ "overlays": [
+  {
+   "id": "sox",
+   "name": "SOX-style financial reporting overlay",
+   "description": "Adds obligations and threats that apply when the company files public financial reports. All entries are unverified and need counsel.",
+   "status": "draft"
+  }
+ ],
+ "components": [
+  {
+   "id": "cmp.r2r-process",
+   "name": "Record to Report process",
+   "layer": "L1",
+   "type": "business_process",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance"
+  },
+  {
+   "id": "cmp.r2r-logic",
+   "name": "R2R orchestration logic (close calendar, routing, exceptions)",
+   "layer": "L1",
+   "type": "business_logic",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance",
+   "logic": {
+    "version": "1.0",
+    "approved_by": "R2R process owner (placeholder)",
+    "approved_on": "2026-10-01",
+    "change_control": "L1 approval for every version"
+   }
+  },
+  {
+   "id": "cmp.hard-rules",
+   "name": "Hard rules (period lock, materiality thresholds, late-adjustment approval, segregation of duties)",
+   "layer": "L1",
+   "type": "business_logic",
+   "owner": {
+    "status": "assigned",
+    "name": "Controller (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance",
+   "logic": {
+    "version": "2.0",
+    "approved_by": "Controller (placeholder)",
+    "approved_on": "2026-09-15",
+    "change_control": "L1 approval for every version"
+   }
+  },
+  {
+   "id": "cmp.step-journal",
+   "name": "1. Journal capture",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "General ledger owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-recon",
+   "name": "2. Account reconciliation",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Financial close lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-anomaly",
+   "name": "3. Anomaly review",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Financial close lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-adjustments",
+   "name": "4. Close adjustments",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Controller (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-consolidation",
+   "name": "5. Consolidation",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Consolidation lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-reporting",
+   "name": "6. Management and external reporting",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Financial reporting lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "multiplicity_overrides": [
+    {
+     "rule_id": "MD-02",
+     "lower": 0,
+     "upper": 2,
+     "reason": "Placeholder: a planned disclosure-review tool may realize this step alongside the reporting agent during the pilot."
+    }
+   ]
+  },
+  {
+   "id": "cmp.general-ledger",
+   "name": "General ledger",
+   "layer": "L2",
+   "type": "data_store",
+   "owner": {
+    "status": "assigned",
+    "name": "ERP data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Master Data Management"
+  },
+  {
+   "id": "cmp.workpapers",
+   "name": "Close workpapers",
+   "layer": "L2",
+   "type": "data_store",
+   "owner": {
+    "status": "assigned",
+    "name": "Financial close lead (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Master Data Management"
+  },
+  {
+   "id": "cmp.inbound-journals",
+   "name": "Inbound journal packages and subledger extracts",
+   "layer": "L2",
+   "type": "input_channel",
+   "owner": {
+    "status": "assigned",
+    "name": "General ledger owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "notes": "Untrusted input. Business-unit journal text enters the agents here."
+  },
+  {
+   "id": "cmp.anomaly-feed",
+   "name": "Prior-period and peer-metric feed for anomaly scoring",
+   "layer": "L2",
+   "type": "data_feed",
+   "owner": {
+    "status": "assigned",
+    "name": "Close analytics vendor (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "provider",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.orchestrator",
+   "name": "Close orchestration agent",
+   "layer": "L3",
+   "type": "orchestrator",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-journal",
+   "name": "Journal-capture agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-recon",
+   "name": "Reconciliation agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-adjustments",
+   "name": "Adjustments agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-consolidation",
+   "name": "Consolidation agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-reporting",
+   "name": "Reporting and narrative agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.anomaly-detect",
+   "name": "Journal anomaly detection component",
+   "layer": "L3",
+   "type": "ai_component",
+   "owner": {
+    "status": "assigned",
+    "name": "Close analytics lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "APIs & Fine-tuned Models"
+  },
+  {
+   "id": "cmp.flux-tool",
+   "name": "Shared flux-analysis tool",
+   "layer": "L3",
+   "type": "tool",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "APIs & Fine-tuned Models",
+   "notes": "A shared part used by the reconciliation and reporting agents."
+  },
+  {
+   "id": "cmp.policy-service",
+   "name": "Policy service (hard rules outside the model)",
+   "layer": "L3",
+   "type": "policy_service",
+   "owner": {
+    "status": "assigned",
+    "name": "Platform engineering lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Application Platforms"
+  },
+  {
+   "id": "cmp.model-settings",
+   "name": "Model settings (version, reasoning effort, fallback)",
+   "layer": "L3",
+   "type": "model_settings",
+   "owner": {
+    "status": "assigned",
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models",
+   "settings": {
+    "model_version": "pinned (example)",
+    "reasoning_effort": "high",
+    "fallback": "smaller model under load",
+    "change_approver": "R2R process owner (placeholder)"
+   },
+   "versions": [
+    {
+     "version": "2026-12",
+     "from": "2026-12-01",
+     "note": "New pinned model version (example).",
+     "set": {
+      "settings": {
+       "model_version": "new pinned version (example)",
+       "reasoning_effort": "high",
+       "fallback": "smaller model under load",
+       "change_approver": "R2R process owner (placeholder)"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp.agent-runtime",
+   "name": "Agent runtime",
+   "layer": "L4",
+   "type": "agent_runtime",
+   "owner": {
+    "status": "assigned",
+    "name": "Agent platform vendor (placeholder)",
+    "persona_id": "srf.role.agentic-platform-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Compute Infrastructure"
+  },
+  {
+   "id": "cmp.llm-gateway",
+   "name": "LLM gateway",
+   "layer": "L4",
+   "type": "gateway",
+   "owner": {
+    "status": "assigned",
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "LLM Routers & Gateways"
+  },
+  {
+   "id": "cmp.guardrails",
+   "name": "Guardrails and output filters",
+   "layer": "L4",
+   "type": "guardrail",
+   "owner": {
+    "status": "assigned",
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Guardrails & Safety Systems"
+  },
+  {
+   "id": "cmp.site-network",
+   "name": "Finance close network link",
+   "layer": "L4",
+   "type": "network",
+   "owner": {
+    "status": "assigned",
+    "name": "Network operations lead (placeholder)",
+    "persona_id": "srf.role.ai-platform-provider",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.site-edge",
+   "name": "Close-room records facility access host",
+   "layer": "L4",
+   "type": "edge_ot_host",
+   "owner": {
+    "status": "assigned",
+    "name": "Facilities operations lead (placeholder)",
+    "persona_id": "srf.role.ai-platform-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Compute Infrastructure"
+  },
+  {
+   "id": "cmp.reasoning-llm",
+   "name": "Reasoning LLM",
+   "layer": "L5",
+   "type": "model",
+   "owner": {
+    "status": "assigned",
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Foundation Models"
+  },
+  {
+   "id": "cmp.fallback-llm",
+   "name": "Fallback LLM (smaller, cheaper)",
+   "layer": "L5",
+   "type": "model",
+   "owner": {
+    "status": "assigned",
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Foundation Models"
+  }
+ ],
+ "relationships": [
+  {
+   "id": "rel.c1",
+   "from": "cmp.r2r-process",
+   "to": "cmp.step-journal",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c2",
+   "from": "cmp.r2r-process",
+   "to": "cmp.step-recon",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c3",
+   "from": "cmp.r2r-process",
+   "to": "cmp.step-anomaly",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c4",
+   "from": "cmp.r2r-process",
+   "to": "cmp.step-adjustments",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c5",
+   "from": "cmp.r2r-process",
+   "to": "cmp.step-consolidation",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c6",
+   "from": "cmp.r2r-process",
+   "to": "cmp.step-reporting",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c7",
+   "from": "cmp.r2r-process",
+   "to": "cmp.r2r-logic",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c8",
+   "from": "cmp.r2r-process",
+   "to": "cmp.hard-rules",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.r1",
+   "from": "cmp.orchestrator",
+   "to": "cmp.r2r-logic",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "logic_version": "1.0",
+   "l1_approval": {
+    "approved_by": "R2R process owner (placeholder)",
+    "approved_on": "2026-10-01",
+    "ref": "Example only. R2R logic v1.0 runbook (placeholder)"
+   }
+  },
+  {
+   "id": "rel.r2",
+   "from": "cmp.policy-service",
+   "to": "cmp.hard-rules",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "logic_version": "2.0",
+   "l1_approval": {
+    "approved_by": "Controller (placeholder)",
+    "approved_on": "2026-09-15"
+   }
+  },
+  {
+   "id": "rel.r3",
+   "from": "cmp.agent-journal",
+   "to": "cmp.step-journal",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "General ledger owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r4",
+   "from": "cmp.agent-recon",
+   "to": "cmp.step-recon",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Financial close lead (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r5",
+   "from": "cmp.anomaly-detect",
+   "to": "cmp.step-anomaly",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Financial close lead (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r6",
+   "from": "cmp.agent-adjustments",
+   "to": "cmp.step-adjustments",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Controller (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r7",
+   "from": "cmp.agent-consolidation",
+   "to": "cmp.step-consolidation",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Consolidation lead (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r8",
+   "from": "cmp.agent-reporting",
+   "to": "cmp.step-reporting",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Financial reporting lead (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.s6",
+   "from": "cmp.policy-service",
+   "to": "cmp.agent-adjustments",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s7",
+   "from": "cmp.policy-service",
+   "to": "cmp.agent-reporting",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.g1",
+   "from": "cmp.agent-recon",
+   "to": "cmp.flux-tool",
+   "type": "aggregation",
+   "cascade": "hard",
+   "note": "Shared flux-analysis tool. A part with two wholes uses aggregation, not composition."
+  },
+  {
+   "id": "rel.g2",
+   "from": "cmp.agent-reporting",
+   "to": "cmp.flux-tool",
+   "type": "aggregation",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.x1",
+   "from": "cmp.agent-journal",
+   "to": "cmp.general-ledger",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "write",
+   "carries": "journal entries"
+  },
+  {
+   "id": "rel.x2",
+   "from": "cmp.agent-recon",
+   "to": "cmp.general-ledger",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "read",
+   "carries": "account balances"
+  },
+  {
+   "id": "rel.x3",
+   "from": "cmp.agent-recon",
+   "to": "cmp.workpapers",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "write",
+   "carries": "reconciliations"
+  },
+  {
+   "id": "rel.x4",
+   "from": "cmp.agent-adjustments",
+   "to": "cmp.general-ledger",
+   "type": "access",
+   "cascade": "soft",
+   "access_mode": "write",
+   "carries": "close adjustments"
+  },
+  {
+   "id": "rel.x5",
+   "from": "cmp.agent-consolidation",
+   "to": "cmp.general-ledger",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "readwrite",
+   "carries": "consolidation entries and group balances"
+  },
+  {
+   "id": "rel.x6",
+   "from": "cmp.agent-reporting",
+   "to": "cmp.workpapers",
+   "type": "access",
+   "cascade": "soft",
+   "access_mode": "read",
+   "carries": "close commentary"
+  },
+  {
+   "id": "rel.f1",
+   "from": "cmp.inbound-journals",
+   "to": "cmp.agent-journal",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "untrusted journal package text"
+  },
+  {
+   "id": "rel.f2",
+   "from": "cmp.anomaly-feed",
+   "to": "cmp.anomaly-detect",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "prior-period and peer metrics"
+  },
+  {
+   "id": "rel.u1",
+   "from": "cmp.anomaly-feed",
+   "to": "cmp.workpapers",
+   "unclassified": true,
+   "note": "Does the anomaly feed update close workpapers directly? Type not yet known."
+  },
+  {
+   "id": "rel.t1",
+   "from": "cmp.step-journal",
+   "to": "cmp.step-recon",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t2",
+   "from": "cmp.step-recon",
+   "to": "cmp.step-anomaly",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t3",
+   "from": "cmp.step-anomaly",
+   "to": "cmp.step-adjustments",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t4",
+   "from": "cmp.step-adjustments",
+   "to": "cmp.step-consolidation",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t5",
+   "from": "cmp.step-consolidation",
+   "to": "cmp.step-reporting",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.i1",
+   "from": "obl.close-policy",
+   "to": "ctl.period-lock",
+   "type": "influence",
+   "cascade": "soft",
+   "note": "Obligation drives the control (motivation). This link does not cascade failures."
+  },
+  {
+   "id": "rel.s1",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s2",
+   "from": "cmp.reasoning-llm",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s3",
+   "from": "cmp.fallback-llm",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.s4",
+   "from": "cmp.model-settings",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s5",
+   "from": "cmp.policy-service",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s8",
+   "from": "cmp.guardrails",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "soft",
+   "provides": "controls"
+  },
+  {
+   "id": "rel.s9",
+   "from": "cmp.guardrails",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "soft",
+   "provides": "controls"
+  },
+  {
+   "id": "rel.a1",
+   "from": "cmp.agent-runtime",
+   "to": "cmp.orchestrator",
+   "type": "assignment",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f13",
+   "from": "cmp.orchestrator",
+   "to": "cmp.llm-gateway",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f14",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.reasoning-llm",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f15",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.fallback-llm",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f16",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-runtime",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "telemetry and decision logs"
+  },
+  {
+   "id": "rel.f17",
+   "from": "cmp.orchestrator",
+   "to": "cmp.site-edge",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "close-room access and records-release"
+  },
+  {
+   "id": "rel.s10",
+   "from": "cmp.site-network",
+   "to": "cmp.site-edge",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.d1",
+   "from": "cmp.reasoning-llm",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard",
+   "derived": true,
+   "derived_from": [
+    "rel.s2",
+    "rel.s1"
+   ],
+   "note": "The orchestrator depends on the reasoning LLM through the LLM gateway."
+  },
+  {
+   "id": "rel.f3",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-journal",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f8",
+   "from": "cmp.agent-journal",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c11",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-journal",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f4",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-recon",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f9",
+   "from": "cmp.agent-recon",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c12",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-recon",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f5",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-adjustments",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority",
+   "containment_control_ids": [
+    "ctl.late-adjustment"
+   ]
+  },
+  {
+   "id": "rel.f10",
+   "from": "cmp.agent-adjustments",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c13",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-adjustments",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f6",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-consolidation",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f11",
+   "from": "cmp.agent-consolidation",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c14",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-consolidation",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f7",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-reporting",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority",
+   "containment_control_ids": [
+    "ctl.disclosure-review"
+   ]
+  },
+  {
+   "id": "rel.f12",
+   "from": "cmp.agent-reporting",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c15",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-reporting",
+   "type": "composition",
+   "cascade": "hard"
+  }
+ ],
+ "obligations": [
+  {
+   "id": "obl.sox-icfr",
+   "title": "Maintain internal control over financial reporting (public companies)",
+   "instrument": "Sarbanes-Oxley Act (candidate)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The company is a US public company and R2R is in ICFR scope.",
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.gaap",
+   "title": "Prepare financial statements under the applicable accounting standard",
+   "instrument": "US GAAP or IFRS (candidates)",
+   "citation": null,
+   "instrument_type": "accounting_standard",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The company reports under the named standard. Needs counsel.",
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.close-policy",
+   "title": "Enforce the close calendar, period lock, materiality thresholds and late-adjustment approval",
+   "instrument": "Internal close and reporting policy (example)",
+   "citation": null,
+   "instrument_type": "internal_policy",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": null,
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.privacy",
+   "title": "Protect personal information that appears in close workpapers or reports",
+   "instrument": "CCPA or GDPR (candidates)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "Workpapers or reports hold personal data of individuals in scope. Needs counsel.",
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.sox-disclosure",
+   "title": "Maintain disclosure controls and procedures for reports filed with the securities regulator",
+   "instrument": "Sarbanes-Oxley disclosure-control provisions (candidate)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The company files reports with a securities regulator and the provision is in force. Needs counsel.",
+   "vertical": "sox",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.sox-certification",
+   "title": "Principal officers certify the periodic reports they sign",
+   "instrument": "Sarbanes-Oxley officer-certification provisions (candidate)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The company is a US public company. Needs counsel.",
+   "vertical": "sox",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.sec-reporting",
+   "title": "File required periodic reports on time and without a misleading statement or omission",
+   "instrument": "Securities Exchange Act reporting rules (candidate)",
+   "citation": null,
+   "instrument_type": "regulation",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The company is a reporting issuer in scope. Needs counsel.",
+   "vertical": "sox",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  }
+ ],
+ "controls": [
+  {
+   "id": "ctl.logic-change-approval",
+   "title": "L1 owner approves every version of the R2R orchestration logic",
+   "component_id": "cmp.r2r-logic",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.sox-icfr",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.sod",
+   "title": "No agent can approve its own output (segregation of duties)",
+   "component_id": "cmp.r2r-process",
+   "status": "planned",
+   "applies_to_children": true,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.sox-icfr",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.period-lock",
+   "title": "Period lock enforced by the policy service; postings after lock need a documented late-adjustment approval",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.late-adjustment",
+   "title": "Late-adjustment approval and materiality thresholds enforced by the policy service, not the agent",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.disclosure-review",
+   "title": "External-report narrative must be checked against ledger amounts by the policy service before release",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.input-isolation",
+   "title": "Treat inbound journal package text as data, never as instructions",
+   "component_id": "cmp.agent-journal",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.agent-identity",
+   "title": "Each agent has a scoped identity and least-privilege tool access",
+   "component_id": "cmp.agent-runtime",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.output-filter",
+   "title": "Output filtering before any report narrative leaves the close system",
+   "component_id": "cmp.guardrails",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.gaap",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.regression-tests",
+   "title": "Regression test set run before any model, prompt or setting change; L1 owner approves results",
+   "component_id": "cmp.model-settings",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.settings-approval",
+   "title": "L1 owner is named as the change approver for model settings",
+   "component_id": "cmp.model-settings",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.decision-log",
+   "title": "Log rule version, inputs, decision and authority for each step; check decisions against policy, not against the model's stated reasoning",
+   "component_id": "cmp.orchestrator",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.sox-icfr",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.entity-context",
+   "title": "Agent context limited to one reporting entity at a time during consolidation",
+   "component_id": "cmp.agent-consolidation",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.master-data-change",
+   "title": "Dual approval for changes to chart-of-accounts mappings used in consolidation",
+   "component_id": "cmp.general-ledger",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.anomaly-review",
+   "title": "Anomaly scores above a threshold go to a person before an adjustment is posted",
+   "component_id": "cmp.anomaly-detect",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.close-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.sox-disclosure",
+   "title": "Disclosure-control checklist completed in the policy service before an external report is released",
+   "component_id": "cmp.policy-service",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.sox-disclosure",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "sox"
+  },
+  {
+   "id": "ctl.sox-cert-pack",
+   "title": "Officer-certification package assembled from ledger and control evidence, not from model narrative alone",
+   "component_id": "cmp.step-reporting",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.sox-certification",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "sox"
+  },
+  {
+   "id": "ctl.sec-tie-out",
+   "title": "Amounts in the external report tied out to the ledger before filing",
+   "component_id": "cmp.agent-reporting",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.sec-reporting",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "sox"
+  }
+ ],
+ "threats": [
+  {
+   "id": "thr.spoofed-journal",
+   "title": "A crafted journal package makes the journal agent post an entry to the wrong account",
+   "risk": {
+    "asset": "General ledger integrity",
+    "actor": "External or business-unit submitter",
+    "failure_mode": "Untrusted journal text treated as a valid posting instruction",
+    "impact": "The ledger is misstated"
+   },
+   "target_component_id": "cmp.agent-journal",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.close-policy",
+    "obl.gaap"
+   ],
+   "control_ids": [
+    "ctl.input-isolation",
+    "ctl.period-lock"
+   ],
+   "accountable": {
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "General ledger owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.logic-tamper",
+   "title": "Unapproved edit to the orchestration logic skips anomaly review",
+   "risk": {
+    "asset": "Close completeness",
+    "actor": "Insider or compromised admin",
+    "failure_mode": "Step order changed without L1 approval",
+    "impact": "A close proceeds without the required review"
+   },
+   "target_component_id": "cmp.r2r-logic",
+   "failure_class": "logic",
+   "obligation_ids": [
+    "obl.close-policy",
+    "obl.sox-icfr"
+   ],
+   "control_ids": [
+    "ctl.logic-change-approval",
+    "ctl.decision-log"
+   ],
+   "accountable": {
+    "name": "R2R process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.securities-regulator"
+   ]
+  },
+  {
+   "id": "thr.llm-reinterprets",
+   "title": "Reasoning LLM reads 'keep the close on time' as permission to post after period lock",
+   "risk": {
+    "asset": "Period lock",
+    "actor": "None (model behavior)",
+    "failure_mode": "A schedule goal is read as a waiver of a hard rule",
+    "impact": "Entries are posted after the period is locked, without late-adjustment approval"
+   },
+   "target_component_id": "cmp.reasoning-llm",
+   "failure_class": "model_behavior",
+   "obligation_ids": [
+    "obl.close-policy",
+    "obl.sox-icfr"
+   ],
+   "control_ids": [
+    "ctl.period-lock",
+    "ctl.late-adjustment",
+    "ctl.output-filter"
+   ],
+   "accountable": {
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Financial close lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.silent-fallback",
+   "title": "Gateway falls back to a smaller model under load and reconciliation outcomes change",
+   "risk": {
+    "asset": "Reconciliations",
+    "actor": "None (settings)",
+    "failure_mode": "Fallback model used without an L1-approved change",
+    "impact": "Breaks are cleared or left open differently than under the pinned model"
+   },
+   "target_component_id": "cmp.model-settings",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.close-policy"
+   ],
+   "control_ids": [
+    "ctl.regression-tests",
+    "ctl.settings-approval"
+   ],
+   "accountable": {
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Financial close lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.authority-creep",
+   "title": "Orchestrator chains steps so a reconciliation proposal is treated as an approved adjustment",
+   "risk": {
+    "asset": "Segregation of duties",
+    "actor": "None (step order)",
+    "failure_mode": "A proposal is treated as an approval",
+    "impact": "An adjustment is posted by the same path that proposed it"
+   },
+   "target_component_id": "cmp.orchestrator",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.sox-icfr",
+    "obl.close-policy"
+   ],
+   "control_ids": [
+    "ctl.sod",
+    "ctl.late-adjustment",
+    "ctl.decision-log"
+   ],
+   "accountable": {
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Controller (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.materiality-persuasion",
+   "title": "A business unit argues the adjustments agent into a below-threshold treatment for a material item",
+   "risk": {
+    "asset": "Materiality thresholds",
+    "actor": "Internal business unit",
+    "failure_mode": "Agent accepts a verbal workaround as authority",
+    "impact": "A material item is not adjusted or disclosed"
+   },
+   "target_component_id": "cmp.agent-adjustments",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.close-policy",
+    "obl.gaap"
+   ],
+   "control_ids": [
+    "ctl.late-adjustment"
+   ],
+   "accountable": {
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.investors",
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Controller (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.narrative-mismatch",
+   "title": "Reporting agent writes a narrative that does not match the ledger amounts",
+   "risk": {
+    "asset": "Report accuracy",
+    "actor": "None (model behavior)",
+    "failure_mode": "Narrative is generated from prompts, not tied-out figures",
+    "impact": "A report misstates results"
+   },
+   "target_component_id": "cmp.agent-reporting",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.gaap",
+    "obl.close-policy"
+   ],
+   "control_ids": [
+    "ctl.disclosure-review",
+    "ctl.output-filter"
+   ],
+   "accountable": {
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.investors",
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Financial reporting lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.master-data-poison",
+   "title": "Chart-of-accounts mappings changed to move balances between entities",
+   "risk": {
+    "asset": "Consolidation mappings",
+    "actor": "Insider or compromised account",
+    "failure_mode": "Mappings changed without dual approval",
+    "impact": "Group results are misstated"
+   },
+   "target_component_id": "cmp.general-ledger",
+   "failure_class": "data",
+   "obligation_ids": [
+    "obl.close-policy",
+    "obl.gaap"
+   ],
+   "control_ids": [
+    "ctl.master-data-change"
+   ],
+   "accountable": {
+    "name": "ERP data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Consolidation lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.guardrail-outage",
+   "title": "Guardrail service is down and agents run without output filtering",
+   "risk": {
+    "asset": "Outbound reports",
+    "actor": "None (control loss)",
+    "failure_mode": "Agents continue when filters are unavailable",
+    "impact": "Unfiltered report narrative leaves the close system"
+   },
+   "target_component_id": "cmp.guardrails",
+   "failure_class": "control_loss",
+   "obligation_ids": [
+    "obl.gaap",
+    "obl.privacy"
+   ],
+   "control_ids": [
+    "ctl.output-filter"
+   ],
+   "accountable": {
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.investors",
+    "stk.privacy-authority"
+   ],
+   "business_response_owner": {
+    "name": "Financial reporting lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.anomaly-miss",
+   "title": "Anomaly component clears a journal pattern that prior-period metrics would have flagged",
+   "risk": {
+    "asset": "Anomaly review",
+    "actor": "None (model behavior)",
+    "failure_mode": "Score does not reflect the feed",
+    "impact": "An unusual journal is not reviewed"
+   },
+   "target_component_id": "cmp.anomaly-detect",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.close-policy"
+   ],
+   "control_ids": [
+    "ctl.anomaly-review"
+   ],
+   "accountable": {
+    "name": "Close analytics lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Financial close lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.sox-late-adjust",
+   "title": "Adjustments agent posts a late entry after period lock with no documented approval",
+   "risk": {
+    "asset": "Period lock and ICFR",
+    "actor": "None (step order)",
+    "failure_mode": "Lock check skipped or treated as optional",
+    "impact": "The filed amounts may not match the locked books"
+   },
+   "target_component_id": "cmp.agent-adjustments",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.sox-icfr",
+    "obl.sox-disclosure"
+   ],
+   "control_ids": [
+    "ctl.period-lock",
+    "ctl.late-adjustment",
+    "ctl.sox-disclosure"
+   ],
+   "accountable": {
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "vertical": "sox",
+   "stakeholder_ids": [
+    "stk.investors",
+    "stk.securities-regulator",
+    "stk.external-auditor"
+   ],
+   "business_response_owner": {
+    "name": "Controller (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.sox-invented-mdna",
+   "title": "Reporting agent invents an explanation in the narrative that is not supported by the ledger or workpapers",
+   "risk": {
+    "asset": "Periodic report disclosures",
+    "actor": "None (model behavior)",
+    "failure_mode": "Narrative includes unsupported claims",
+    "impact": "A filed report contains a misleading statement or omission"
+   },
+   "target_component_id": "cmp.agent-reporting",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.sec-reporting",
+    "obl.sox-certification"
+   ],
+   "control_ids": [
+    "ctl.sox-cert-pack",
+    "ctl.sec-tie-out",
+    "ctl.disclosure-review"
+   ],
+   "accountable": {
+    "name": "R2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "vertical": "sox",
+   "stakeholder_ids": [
+    "stk.investors",
+    "stk.securities-regulator"
+   ],
+   "business_response_owner": {
+    "name": "Financial reporting lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  }
+ ]
+}

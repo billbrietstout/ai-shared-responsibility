@@ -1,0 +1,1508 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aisharedresponsibility.com/schema/threat-model/0.1.0-draft",
+  "title": "SRF layer-by-layer threat model (draft 0.1.0)",
+  "description": "DRAFT, Nov 16, 2026 (PT). One system's components, typed relationships in one component graph, versions, stakeholders, obligations, controls and threats across the 5 CoSAI SRF v1.0 layers. Personas are the 8 SRF v1.0 personas. Operating models are the 4 SRF v1.0 operating models. Relationship types follow ArchiMate 4 (cited per Bill, Nov 16, 2026; definitions checked only against secondary sources). Not part of SRF v1.0.",
+  "type": "object",
+  "required": [
+    "tm_schema_version",
+    "system",
+    "components",
+    "relationships",
+    "obligations",
+    "controls",
+    "threats"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "tm_schema_version": {
+      "const": "0.1.0-draft"
+    },
+    "system": {
+      "$ref": "#/$defs/system"
+    },
+    "overlays": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/overlay"
+      }
+    },
+    "components": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/relationship"
+      }
+    },
+    "obligations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/obligation"
+      }
+    },
+    "controls": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/control"
+      }
+    },
+    "threats": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/threat"
+      }
+    },
+    "snapshots": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/snapshot"
+      }
+    },
+    "stakeholders": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/stakeholder"
+      }
+    },
+    "multiplicity_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/multiplicity_override"
+      },
+      "description": "Model-wide changes to the default multiplicity rules. A component's multiplicity_overrides and a multiplicity stated on a link take precedence."
+    }
+  },
+  "$defs": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+    },
+    "layer": {
+      "description": "SRF v1.0 layers: L1 AI Business & Usage, L2 AI Information, L3 AI Application, L4 AI Platform, L5 AI Model Provider.",
+      "enum": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L5"
+      ]
+    },
+    "operating_model": {
+      "description": "The 4 SRF v1.0 operating models only. Sector settings are deployment contexts, never operating models (OM-1).",
+      "enum": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ]
+    },
+    "persona_id": {
+      "description": "The 8 SRF v1.0 personas. srf.role.model-provider displays as 'AI Model Provider' (PER-2). Legal roles in a law are addressees of obligations, never personas (PER-3).",
+      "enum": [
+        "srf.role.ai-system-users",
+        "srf.role.ai-system-governance",
+        "srf.role.data-provider",
+        "srf.role.application-developer",
+        "srf.role.agentic-platform-provider",
+        "srf.role.ai-platform-provider",
+        "srf.role.ai-model-serving",
+        "srf.role.model-provider"
+      ]
+    },
+    "srf_component": {
+      "description": "Component names from the SRF v1.0 Section 3 matrix figure, as listed in site data layers.json.",
+      "enum": [
+        "Capabilities & Business Strategy",
+        "Processes & Governance",
+        "Business Units & Accountability",
+        "Master Data Management",
+        "Privacy Controls & Policies",
+        "AI Training Data",
+        "Agents & Orchestration Models",
+        "APIs & Fine-tuned Models",
+        "Application Platforms",
+        "Guardrails & Safety Systems",
+        "Compute Infrastructure",
+        "LLM Routers & Gateways",
+        "Model Distribution",
+        "Model Governance",
+        "Foundation Models"
+      ]
+    },
+    "id_component": {
+      "type": "string",
+      "pattern": "^cmp\\.[a-z0-9-]+$"
+    },
+    "id_relationship": {
+      "type": "string",
+      "pattern": "^rel\\.[a-z0-9-]+$"
+    },
+    "id_obligation": {
+      "type": "string",
+      "pattern": "^obl\\.[a-z0-9-]+$"
+    },
+    "id_control": {
+      "type": "string",
+      "pattern": "^ctl\\.[a-z0-9-]+$"
+    },
+    "id_threat": {
+      "type": "string",
+      "pattern": "^thr\\.[a-z0-9-]+$"
+    },
+    "id_overlay": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "system": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "operating_model",
+        "as_of"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "operating_model": {
+          "$ref": "#/$defs/operating_model"
+        },
+        "operating_model_note": {
+          "type": "string"
+        },
+        "as_of": {
+          "$ref": "#/$defs/date"
+        },
+        "overlays_enabled": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id_overlay"
+          }
+        },
+        "snapshot_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/id_snapshot"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When set, the cascade and gap checks run against this snapshot instead of as_of."
+        }
+      }
+    },
+    "overlay": {
+      "description": "A vertical obligation overlay on the horizontal baseline. Records tagged with the overlay id show only when the overlay is enabled.",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_overlay"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "approved"
+          ]
+        }
+      }
+    },
+    "owner": {
+      "description": "One accountable owner per component. 'none' and 'shared' are allowed as input so the gap is recorded and shown; the gap check flags both (PER-4).",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "name",
+            "persona_id",
+            "party"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "assigned"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "persona_id": {
+              "$ref": "#/$defs/persona_id"
+            },
+            "party": {
+              "enum": [
+                "customer",
+                "provider"
+              ]
+            },
+            "placeholder": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "none"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "names"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "shared"
+            },
+            "names": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 2
+            }
+          }
+        }
+      ]
+    },
+    "person": {
+      "description": "A single accountable person or role for a threat. Never more than one.",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "name",
+            "persona_id"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "persona_id": {
+              "$ref": "#/$defs/persona_id"
+            },
+            "placeholder": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "none",
+                "shared"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "component": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "layer",
+        "type",
+        "owner"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_component"
+        },
+        "name": {
+          "type": "string"
+        },
+        "layer": {
+          "$ref": "#/$defs/layer"
+        },
+        "type": {
+          "enum": [
+            "business_process",
+            "process_step",
+            "business_logic",
+            "data_store",
+            "data_feed",
+            "input_channel",
+            "orchestrator",
+            "sub_agent",
+            "ai_component",
+            "policy_service",
+            "model_settings",
+            "tool",
+            "agent_runtime",
+            "gateway",
+            "guardrail",
+            "platform",
+            "network",
+            "facility",
+            "edge_ot_host",
+            "location",
+            "model"
+          ],
+          "description": "network, facility, edge_ot_host and location are candidate L4 types (Bill, Nov 16, 2026: candidates). They are not SRF v1.0 components."
+        },
+        "srf_component": {
+          "$ref": "#/$defs/srf_component"
+        },
+        "operating_model": {
+          "$ref": "#/$defs/operating_model",
+          "description": "Set only when this component is delivered under a different operating model than the system."
+        },
+        "vertical": {
+          "$ref": "#/$defs/id_overlay"
+        },
+        "owner": {
+          "$ref": "#/$defs/owner"
+        },
+        "logic": {
+          "description": "For type business_logic: the approved version. L1 change control applies.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "approved_by": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "approved_on": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "change_control": {
+              "type": "string"
+            }
+          }
+        },
+        "settings": {
+          "description": "For type model_settings: settings that change L1 behavior. change_approver names the L1 person who signs off on changes.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "model_version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reasoning_effort": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fallback": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "change_approver": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "valid_from": {
+          "$ref": "#/$defs/date"
+        },
+        "valid_until": {
+          "$ref": "#/$defs/date"
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "version"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "from": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "until": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "note": {
+                "type": "string"
+              },
+              "set": {
+                "$ref": "#/$defs/component_set"
+              },
+              "removed": {
+                "type": "boolean"
+              }
+            }
+          },
+          "description": "Versioned states. Applied in order when their 'from' date is on or before the chosen date, or up to a snapshot's pin."
+        },
+        "multiplicity_overrides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/multiplicity_override"
+          },
+          "description": "Overrides of default multiplicity rules for this component as a target (or, for MD-03, its owner count)."
+        }
+      }
+    },
+    "relationship": {
+      "description": "A typed link between two components. Types are 9 of the 11 ArchiMate 3.2 relationship types, with ArchiMate's own definitions; association and specialization are left out. composition and aggregation form the containment graph (parent and child). serving, realization, assignment, access, flow and triggering form the dependency graph used for cascades. influence links an obligation to a control (motivation overlay) and does not cascade failures.",
+      "type": "object",
+      "required": [
+        "id",
+        "from",
+        "to"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_relationship"
+        },
+        "type": {
+          "enum": [
+            "composition",
+            "aggregation",
+            "assignment",
+            "realization",
+            "serving",
+            "access",
+            "flow",
+            "triggering",
+            "influence"
+          ],
+          "description": "All component links form one graph (Bill, Nov 16, 2026). Direction follows ArchiMate: composition/aggregation from whole to part; assignment from the assignee (for example a runtime) to what it executes; realization from the realizer (L3 component) to the more abstract element (L1 logic); serving from provider to consumer; access from the accessor to the data; flow and triggering from source to target; influence from obligation to control. Definitions follow ArchiMate 4 as reported by secondary sources; the official ArchiMate 4 text was not read."
+        },
+        "from": {
+          "type": "string",
+          "pattern": "^(cmp|obl)\\.[a-z0-9-]+$"
+        },
+        "to": {
+          "type": "string",
+          "pattern": "^(cmp|ctl)\\.[a-z0-9-]+$"
+        },
+        "cascade": {
+          "enum": [
+            "hard",
+            "soft"
+          ],
+          "description": "hard or soft. Dependency links: hard passes a failure on as a failure, soft turns it into impact. Parent-child links (composition, aggregation) roll impact up from part to whole: hard from a failed or impacted part, soft from a failed part only. Nothing travels from whole to part."
+        },
+        "multiplicity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower"
+          ],
+          "properties": {
+            "lower": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "upper": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          },
+          "description": "Allowed number of links of this type into the 'to' component. Takes precedence over the default rule for that link type and target. Without it, the default rules MD-01, MD-02 and MD-05 still apply."
+        },
+        "boundary": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "AI-SaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            },
+            "AI-PaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            },
+            "Agent-PaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            },
+            "IaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            }
+          },
+          "description": "Asserted per SRF operating model: does the link cross a customer-provider boundary? When absent, the tool derives it from the owners' party fields."
+        },
+        "logic_version": {
+          "type": "string",
+          "description": "For realization of L1 logic: the logic version the realizer runs."
+        },
+        "l1_approval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approved_by"
+          ],
+          "properties": {
+            "approved_by": {
+              "type": "string"
+            },
+            "approved_on": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "ref": {
+              "type": "string"
+            }
+          },
+          "description": "For realization: the L1 owner's approval that this component may run this logic version."
+        },
+        "access_mode": {
+          "enum": [
+            "read",
+            "write",
+            "readwrite"
+          ]
+        },
+        "provides": {
+          "enum": [
+            "function",
+            "controls"
+          ],
+          "description": "For serving: 'controls' means the consumer inherits the provider's controls."
+        },
+        "carries": {
+          "type": "string",
+          "description": "For flow: what passes along the link."
+        },
+        "containment_control_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id_control"
+          },
+          "description": "Controls on this link. In 'with controls' mode, an in-place control lowers a failure crossing this link to impact; it does not stop the cascade (Bill, Nov 16, 2026)."
+        },
+        "derived": {
+          "type": "boolean",
+          "description": "Approved by Bill, Nov 16, 2026. True if the link was inferred through a chain (an ArchiMate derivation) rather than drawn. A derived link must list derived_from. The cascade, the data flow view, inherited controls and multiplicity counts skip derived links, because the chain already carries them."
+        },
+        "vertical": {
+          "$ref": "#/$defs/id_overlay"
+        },
+        "note": {
+          "type": "string"
+        },
+        "unclassified": {
+          "type": "boolean",
+          "description": "Unclassified, needs review. The link's type is unknown or tentative. Association is not a stored type; use this flag instead. A link with no type is skipped by the cascade."
+        },
+        "valid_from": {
+          "$ref": "#/$defs/date"
+        },
+        "valid_until": {
+          "$ref": "#/$defs/date"
+        },
+        "versions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "version"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "version": {
+                "type": "string"
+              },
+              "from": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "until": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/date"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "note": {
+                "type": "string"
+              },
+              "set": {
+                "$ref": "#/$defs/relationship_set"
+              },
+              "removed": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "derived_from": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "$ref": "#/$defs/id_relationship"
+          },
+          "description": "The links, in order, that the derived link was inferred from."
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "not": {
+              "required": [
+                "unclassified"
+              ],
+              "properties": {
+                "unclassified": {
+                  "const": true
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "type",
+              "cascade"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "derived": {
+                "const": true
+              }
+            },
+            "required": [
+              "derived"
+            ]
+          },
+          "then": {
+            "required": [
+              "derived_from"
+            ]
+          }
+        }
+      ]
+    },
+    "obligation": {
+      "description": "A duty in a binding source (KIND-1). Every record stays 'unverified' until checked against an official source (PROV-1, JUR-2).",
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "instrument",
+        "instrument_type",
+        "strength",
+        "in_force",
+        "vertical",
+        "verification"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_obligation"
+        },
+        "title": {
+          "type": "string"
+        },
+        "instrument": {
+          "type": "string"
+        },
+        "citation": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "addressee_in_law": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "instrument_type": {
+          "enum": [
+            "law",
+            "regulation",
+            "supervisory_guidance",
+            "accounting_standard",
+            "standard",
+            "contract",
+            "internal_policy"
+          ]
+        },
+        "strength": {
+          "enum": [
+            "binding",
+            "voluntary",
+            "unknown"
+          ]
+        },
+        "in_force": {
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "applies_from": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "applies_until": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "applies_if": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vertical": {
+          "description": "'baseline' for the horizontal baseline, or an overlay id.",
+          "type": "string"
+        },
+        "verification": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "unverified",
+                "verified",
+                "verified_secondary"
+              ]
+            },
+            "method": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "checked_on": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "title"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              },
+              "accessed": {
+                "$ref": "#/$defs/date"
+              }
+            }
+          }
+        }
+      }
+    },
+    "control": {
+      "description": "Something a party does and can show evidence of (KIND-4). Acts on exactly one component (CH-4). Its owner is that component's owner.",
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "component_id",
+        "status",
+        "obligation_links"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_control"
+        },
+        "title": {
+          "type": "string"
+        },
+        "component_id": {
+          "$ref": "#/$defs/id_component"
+        },
+        "status": {
+          "enum": [
+            "in_place",
+            "planned",
+            "missing"
+          ]
+        },
+        "applies_to_children": {
+          "type": "boolean",
+          "description": "If true, parts reached by composition or aggregation inherit this control."
+        },
+        "catalog_control_id": {
+          "type": "string",
+          "description": "Optional link to a ROCA catalog control, for example srf.control.cross.*"
+        },
+        "vertical": {
+          "$ref": "#/$defs/id_overlay"
+        },
+        "obligation_links": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "obligation_id",
+              "basis",
+              "review_status"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "obligation_id": {
+                "$ref": "#/$defs/id_obligation"
+              },
+              "basis": {
+                "enum": [
+                  "official_text",
+                  "recital_text",
+                  "source_crosswalk",
+                  "derived_via_control",
+                  "editorial_inference"
+                ]
+              },
+              "review_status": {
+                "enum": [
+                  "proposed",
+                  "approved",
+                  "rejected"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "threat": {
+      "description": "One ROCA chain: Risk, Obligation, Control, Accountable. Exactly one accountable.",
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "risk",
+        "target_component_id",
+        "failure_class",
+        "obligation_ids",
+        "control_ids",
+        "accountable"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_threat"
+        },
+        "title": {
+          "type": "string"
+        },
+        "risk": {
+          "type": "object",
+          "required": [
+            "asset",
+            "actor",
+            "failure_mode",
+            "impact"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "asset": {
+              "type": "string"
+            },
+            "actor": {
+              "type": "string"
+            },
+            "failure_mode": {
+              "type": "string"
+            },
+            "impact": {
+              "type": "string"
+            }
+          }
+        },
+        "target_component_id": {
+          "$ref": "#/$defs/id_component"
+        },
+        "failure_class": {
+          "description": "logic: the logic is wrong and runs as written (L1 owns). execution: the logic is right and runs wrongly (the executing component's owner owns; impact lands at L1). data, model_behavior, control_loss: failures of a dependency.",
+          "enum": [
+            "logic",
+            "execution",
+            "data",
+            "model_behavior",
+            "control_loss"
+          ]
+        },
+        "vertical": {
+          "$ref": "#/$defs/id_overlay"
+        },
+        "obligation_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id_obligation"
+          }
+        },
+        "no_obligation": {
+          "description": "Required when obligation_ids is empty (CH-1).",
+          "type": "object",
+          "required": [
+            "reason"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "reason": {
+              "type": "string"
+            }
+          }
+        },
+        "control_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id_control"
+          }
+        },
+        "accountable": {
+          "$ref": "#/$defs/person"
+        },
+        "business_response_owner": {
+          "$ref": "#/$defs/person"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "stakeholder_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id_stakeholder"
+          },
+          "description": "Affected individuals and relevant authorities. Not owners."
+        }
+      }
+    },
+    "id_stakeholder": {
+      "type": "string",
+      "pattern": "^stk\\.[a-z0-9-]+$"
+    },
+    "id_snapshot": {
+      "type": "string",
+      "pattern": "^snap\\.[a-z0-9-]+$"
+    },
+    "snapshot": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "as_of"
+      ],
+      "additionalProperties": false,
+      "description": "A named state of the model: a date, plus optional pins that fix a record at one version ('base' means no versions applied).",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_snapshot"
+        },
+        "name": {
+          "type": "string"
+        },
+        "as_of": {
+          "$ref": "#/$defs/date"
+        },
+        "pins": {
+          "type": "object",
+          "propertyNames": {
+            "pattern": "^(cmp|rel)\\.[a-z0-9-]+$"
+          },
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "stakeholder": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "description": "Affected individuals or a relevant authority on an L1 threat model (Bill, Nov 16, 2026). Not a persona and never an owner, so there is no persona_id or party field.",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id_stakeholder"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "affected_individuals",
+            "relevant_authority"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "affected_by_component_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id_component"
+          }
+        },
+        "vertical": {
+          "$ref": "#/$defs/id_overlay"
+        }
+      }
+    },
+    "component_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "layer": {
+          "$ref": "#/$defs/layer"
+        },
+        "type": {
+          "enum": [
+            "business_process",
+            "process_step",
+            "business_logic",
+            "data_store",
+            "data_feed",
+            "input_channel",
+            "orchestrator",
+            "sub_agent",
+            "ai_component",
+            "policy_service",
+            "model_settings",
+            "tool",
+            "agent_runtime",
+            "gateway",
+            "guardrail",
+            "platform",
+            "network",
+            "facility",
+            "edge_ot_host",
+            "location",
+            "model"
+          ],
+          "description": "network, facility, edge_ot_host and location are candidate L4 types (Bill, Nov 16, 2026: candidates). They are not SRF v1.0 components."
+        },
+        "srf_component": {
+          "$ref": "#/$defs/srf_component"
+        },
+        "operating_model": {
+          "$ref": "#/$defs/operating_model",
+          "description": "Set only when this component is delivered under a different operating model than the system."
+        },
+        "owner": {
+          "$ref": "#/$defs/owner"
+        },
+        "logic": {
+          "description": "For type business_logic: the approved version. L1 change control applies.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "approved_by": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "approved_on": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "change_control": {
+              "type": "string"
+            }
+          }
+        },
+        "settings": {
+          "description": "For type model_settings: settings that change L1 behavior. change_approver names the L1 person who signs off on changes.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "model_version": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "reasoning_effort": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fallback": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "change_approver": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "multiplicity_overrides": {
+          "$ref": "#/$defs/component/properties/multiplicity_overrides"
+        }
+      },
+      "description": "Fields a component version changes."
+    },
+    "relationship_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "composition",
+            "aggregation",
+            "assignment",
+            "realization",
+            "serving",
+            "access",
+            "flow",
+            "triggering",
+            "influence"
+          ],
+          "description": "Direction follows ArchiMate: composition/aggregation from whole to part; assignment from the assignee (for example a runtime) to what it executes; realization from the realizer (L3 component) to the more abstract element (L1 logic); serving from provider to consumer; access from the accessor to the data; flow and triggering from source to target; influence from obligation to control. Definitions follow ArchiMate 4 as reported by secondary sources; the official ArchiMate 4 text was not read."
+        },
+        "cascade": {
+          "enum": [
+            "hard",
+            "soft"
+          ],
+          "description": "hard: a failure crosses this link as a failure. soft: it only degrades the target (impacted)."
+        },
+        "multiplicity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lower"
+          ],
+          "properties": {
+            "lower": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "upper": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1
+            }
+          },
+          "description": "Allowed number of links of this type into the 'to' component. For example, exactly one realizer of a logic version."
+        },
+        "boundary": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "AI-SaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            },
+            "AI-PaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            },
+            "Agent-PaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            },
+            "IaaS": {
+              "enum": [
+                "crosses",
+                "internal",
+                "unknown"
+              ]
+            }
+          },
+          "description": "Asserted per SRF operating model: does the link cross a customer-provider boundary? When absent, the tool derives it from the owners' party fields."
+        },
+        "logic_version": {
+          "type": "string",
+          "description": "For realization of L1 logic: the logic version the realizer runs."
+        },
+        "l1_approval": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "approved_by"
+          ],
+          "properties": {
+            "approved_by": {
+              "type": "string"
+            },
+            "approved_on": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/date"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "ref": {
+              "type": "string"
+            }
+          },
+          "description": "For realization: the L1 owner's approval that this component may run this logic version."
+        },
+        "access_mode": {
+          "enum": [
+            "read",
+            "write",
+            "readwrite"
+          ]
+        },
+        "provides": {
+          "enum": [
+            "function",
+            "controls"
+          ],
+          "description": "For serving: 'controls' means the consumer inherits the provider's controls."
+        },
+        "carries": {
+          "type": "string",
+          "description": "For flow: what passes along the link."
+        },
+        "containment_control_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/id_control"
+          },
+          "description": "Controls on this link. In 'with controls' mode, an in-place control lowers a failure crossing this link to impact; it does not stop the cascade (Bill, Nov 16, 2026)."
+        },
+        "note": {
+          "type": "string"
+        },
+        "derived": {
+          "$ref": "#/$defs/relationship/properties/derived"
+        },
+        "derived_from": {
+          "$ref": "#/$defs/relationship/properties/derived_from"
+        }
+      },
+      "description": "Fields a link version changes."
+    },
+    "multiplicity_override": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rule_id"
+      ],
+      "description": "Changes a default multiplicity rule (Approved by Bill, Nov 16, 2026: defaults apply automatically and users can override them). Every override is listed by gap check TM-G26; one without a reason is flagged low.",
+      "properties": {
+        "rule_id": {
+          "enum": [
+            "MD-01",
+            "MD-02",
+            "MD-03",
+            "MD-04",
+            "MD-05"
+          ],
+          "description": "MD-01 one realizer per L1 logic; MD-02 at most one realizer per L1 step; MD-03 one owner per component; MD-04 one accountable per threat; MD-05 one whole per composition part."
+        },
+        "lower": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "upper": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "off": {
+          "type": "boolean",
+          "description": "Switch the rule off for this scope."
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

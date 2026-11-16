@@ -1,0 +1,1855 @@
+{
+ "tm_schema_version": "0.1.0-draft",
+ "system": {
+  "id": "sys.h2r-agentic",
+  "name": "Agentic Hire to Retire (example)",
+  "description": "A hire-to-retire process run by an orchestration agent and five sub-agents. The orchestrator runs on a reasoning LLM from an AI Model Provider. Hard rules (offer authority, required postings, background-check gates, access revocation, segregation of duties) are enforced by a policy service outside the model. Background-check scoring is a separate component that is not on the reasoning-LLM path.",
+  "operating_model": "Agent-PaaS",
+  "operating_model_note": "Example assumption. Bill to confirm.",
+  "as_of": "2026-11-16",
+  "snapshot_id": null,
+  "overlays_enabled": []
+ },
+ "snapshots": [
+  {
+   "id": "snap.nov16",
+   "name": "As built, Nov 16, 2026",
+   "as_of": "2026-11-16"
+  },
+  {
+   "id": "snap.dec01",
+   "name": "Planned December release",
+   "as_of": "2026-12-01"
+  }
+ ],
+ "stakeholders": [
+  {
+   "id": "stk.applicants",
+   "name": "Applicants and candidates",
+   "kind": "affected_individuals",
+   "affected_by_component_ids": [
+    "cmp.step-sourcing",
+    "cmp.step-screening",
+    "cmp.step-background",
+    "cmp.step-offer"
+   ]
+  },
+  {
+   "id": "stk.employees",
+   "name": "Employees and former employees",
+   "kind": "affected_individuals",
+   "affected_by_component_ids": [
+    "cmp.step-onboarding",
+    "cmp.step-offboarding"
+   ]
+  },
+  {
+   "id": "stk.privacy-authority",
+   "name": "Data protection or privacy authority (candidate, unverified)",
+   "kind": "relevant_authority",
+   "affected_by_component_ids": [
+    "cmp.applicant-store",
+    "cmp.employee-master"
+   ]
+  },
+  {
+   "id": "stk.labor-authority",
+   "name": "Labor or employment standards authority (candidate, unverified)",
+   "kind": "relevant_authority",
+   "affected_by_component_ids": [
+    "cmp.step-offer",
+    "cmp.step-offboarding"
+   ]
+  },
+  {
+   "id": "stk.eeo-authority",
+   "name": "Equal employment opportunity authority (candidate, unverified)",
+   "kind": "relevant_authority",
+   "vertical": "employment",
+   "affected_by_component_ids": [
+    "cmp.step-screening",
+    "cmp.step-background",
+    "cmp.step-offer"
+   ]
+  },
+  {
+   "id": "stk.background-subjects",
+   "name": "Individuals who are the subject of an employment background check",
+   "kind": "affected_individuals",
+   "vertical": "employment",
+   "affected_by_component_ids": [
+    "cmp.step-background"
+   ]
+  }
+ ],
+ "overlays": [
+  {
+   "id": "employment",
+   "name": "Employment law overlay",
+   "description": "Adds obligations and threats that apply when the process is used to hire, screen, pay or terminate employees. All entries are unverified and need counsel.",
+   "status": "draft"
+  }
+ ],
+ "components": [
+  {
+   "id": "cmp.h2r-process",
+   "name": "Hire to Retire process",
+   "layer": "L1",
+   "type": "business_process",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance"
+  },
+  {
+   "id": "cmp.h2r-logic",
+   "name": "H2R orchestration logic (step order, routing, exceptions)",
+   "layer": "L1",
+   "type": "business_logic",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance",
+   "logic": {
+    "version": "1.0",
+    "approved_by": "H2R process owner (placeholder)",
+    "approved_on": "2026-10-01",
+    "change_control": "L1 approval for every version"
+   }
+  },
+  {
+   "id": "cmp.hard-rules",
+   "name": "Hard rules (offer authority, required postings, background-check gates, access revocation, segregation of duties)",
+   "layer": "L1",
+   "type": "business_logic",
+   "owner": {
+    "status": "assigned",
+    "name": "CHRO (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance",
+   "logic": {
+    "version": "2.0",
+    "approved_by": "CHRO (placeholder)",
+    "approved_on": "2026-09-15",
+    "change_control": "L1 approval for every version"
+   }
+  },
+  {
+   "id": "cmp.step-job-req",
+   "name": "1. Job requisition",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-sourcing",
+   "name": "2. Sourcing and posting",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-screening",
+   "name": "3. Screening",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-background",
+   "name": "4. Background check",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "HR compliance owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-offer",
+   "name": "5. Offer",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Compensation lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-onboarding",
+   "name": "6. Onboarding",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "HR operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.step-offboarding",
+   "name": "7. Offboarding",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "HR operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "multiplicity_overrides": [
+    {
+     "rule_id": "MD-02",
+     "lower": 0,
+     "upper": 2,
+     "reason": "Placeholder: a planned access-review tool may realize this step alongside the offboarding agent during the pilot."
+    }
+   ]
+  },
+  {
+   "id": "cmp.employee-master",
+   "name": "Employee master data",
+   "layer": "L2",
+   "type": "data_store",
+   "owner": {
+    "status": "assigned",
+    "name": "HR data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Master Data Management"
+  },
+  {
+   "id": "cmp.applicant-store",
+   "name": "Applicant tracking records",
+   "layer": "L2",
+   "type": "data_store",
+   "owner": {
+    "status": "assigned",
+    "name": "Talent data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Master Data Management"
+  },
+  {
+   "id": "cmp.inbound-apps",
+   "name": "Inbound applications and resumes",
+   "layer": "L2",
+   "type": "input_channel",
+   "owner": {
+    "status": "assigned",
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "notes": "Untrusted input. Applicant text enters the agents here."
+  },
+  {
+   "id": "cmp.background-feed",
+   "name": "Background-check data feed",
+   "layer": "L2",
+   "type": "data_feed",
+   "owner": {
+    "status": "assigned",
+    "name": "Background-check vendor (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "provider",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.orchestrator",
+   "name": "H2R orchestration agent",
+   "layer": "L3",
+   "type": "orchestrator",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-sourcing",
+   "name": "Sourcing agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-screening",
+   "name": "Screening agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-offer",
+   "name": "Offer agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-onboarding",
+   "name": "Onboarding agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.agent-offboarding",
+   "name": "Offboarding agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.background-check",
+   "name": "Background-check scoring component",
+   "layer": "L3",
+   "type": "ai_component",
+   "owner": {
+    "status": "assigned",
+    "name": "HR analytics lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "APIs & Fine-tuned Models"
+  },
+  {
+   "id": "cmp.extract-tool",
+   "name": "Shared resume and document extraction tool",
+   "layer": "L3",
+   "type": "tool",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "APIs & Fine-tuned Models",
+   "notes": "A shared part used by the sourcing and screening agents."
+  },
+  {
+   "id": "cmp.policy-service",
+   "name": "Policy service (hard rules outside the model)",
+   "layer": "L3",
+   "type": "policy_service",
+   "owner": {
+    "status": "assigned",
+    "name": "Platform engineering lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Application Platforms"
+  },
+  {
+   "id": "cmp.model-settings",
+   "name": "Model settings (version, reasoning effort, fallback)",
+   "layer": "L3",
+   "type": "model_settings",
+   "owner": {
+    "status": "assigned",
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models",
+   "settings": {
+    "model_version": "pinned (example)",
+    "reasoning_effort": "high",
+    "fallback": "smaller model under load",
+    "change_approver": "H2R process owner (placeholder)"
+   },
+   "versions": [
+    {
+     "version": "2026-12",
+     "from": "2026-12-01",
+     "note": "New pinned model version (example).",
+     "set": {
+      "settings": {
+       "model_version": "new pinned version (example)",
+       "reasoning_effort": "high",
+       "fallback": "smaller model under load",
+       "change_approver": "H2R process owner (placeholder)"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp.agent-runtime",
+   "name": "Agent runtime",
+   "layer": "L4",
+   "type": "agent_runtime",
+   "owner": {
+    "status": "assigned",
+    "name": "Agent platform vendor (placeholder)",
+    "persona_id": "srf.role.agentic-platform-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Compute Infrastructure"
+  },
+  {
+   "id": "cmp.llm-gateway",
+   "name": "LLM gateway",
+   "layer": "L4",
+   "type": "gateway",
+   "owner": {
+    "status": "assigned",
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "LLM Routers & Gateways"
+  },
+  {
+   "id": "cmp.guardrails",
+   "name": "Guardrails and output filters",
+   "layer": "L4",
+   "type": "guardrail",
+   "owner": {
+    "status": "assigned",
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Guardrails & Safety Systems"
+  },
+  {
+   "id": "cmp.site-network",
+   "name": "Corporate network link to badge systems",
+   "layer": "L4",
+   "type": "network",
+   "owner": {
+    "status": "assigned",
+    "name": "Network operations lead (placeholder)",
+    "persona_id": "srf.role.ai-platform-provider",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.site-edge",
+   "name": "Badge and access-control edge/OT host",
+   "layer": "L4",
+   "type": "edge_ot_host",
+   "owner": {
+    "status": "assigned",
+    "name": "Physical security OT lead (placeholder)",
+    "persona_id": "srf.role.ai-platform-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Compute Infrastructure"
+  },
+  {
+   "id": "cmp.reasoning-llm",
+   "name": "Reasoning LLM",
+   "layer": "L5",
+   "type": "model",
+   "owner": {
+    "status": "assigned",
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Foundation Models"
+  },
+  {
+   "id": "cmp.fallback-llm",
+   "name": "Fallback LLM (smaller, cheaper)",
+   "layer": "L5",
+   "type": "model",
+   "owner": {
+    "status": "assigned",
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Foundation Models"
+  }
+ ],
+ "relationships": [
+  {
+   "id": "rel.c1",
+   "from": "cmp.h2r-process",
+   "to": "cmp.step-job-req",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c2",
+   "from": "cmp.h2r-process",
+   "to": "cmp.step-sourcing",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c3",
+   "from": "cmp.h2r-process",
+   "to": "cmp.step-screening",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c4",
+   "from": "cmp.h2r-process",
+   "to": "cmp.step-background",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c5",
+   "from": "cmp.h2r-process",
+   "to": "cmp.step-offer",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c6",
+   "from": "cmp.h2r-process",
+   "to": "cmp.step-onboarding",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c7",
+   "from": "cmp.h2r-process",
+   "to": "cmp.step-offboarding",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c8",
+   "from": "cmp.h2r-process",
+   "to": "cmp.h2r-logic",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c9",
+   "from": "cmp.h2r-process",
+   "to": "cmp.hard-rules",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.r1",
+   "from": "cmp.orchestrator",
+   "to": "cmp.h2r-logic",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "logic_version": "1.0",
+   "l1_approval": {
+    "approved_by": "H2R process owner (placeholder)",
+    "approved_on": "2026-10-01",
+    "ref": "Example only. H2R logic v1.0 runbook (placeholder)"
+   }
+  },
+  {
+   "id": "rel.r2",
+   "from": "cmp.policy-service",
+   "to": "cmp.hard-rules",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "logic_version": "2.0",
+   "l1_approval": {
+    "approved_by": "CHRO (placeholder)",
+    "approved_on": "2026-09-15"
+   }
+  },
+  {
+   "id": "rel.r3",
+   "from": "cmp.orchestrator",
+   "to": "cmp.step-job-req",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "l1_approval": {
+    "approved_by": "Talent acquisition owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r4",
+   "from": "cmp.agent-sourcing",
+   "to": "cmp.step-sourcing",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Talent acquisition owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r5",
+   "from": "cmp.agent-screening",
+   "to": "cmp.step-screening",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Talent acquisition owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r6",
+   "from": "cmp.background-check",
+   "to": "cmp.step-background",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "HR compliance owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r7",
+   "from": "cmp.agent-offer",
+   "to": "cmp.step-offer",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Compensation lead (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r8",
+   "from": "cmp.agent-onboarding",
+   "to": "cmp.step-onboarding",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "HR operations owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r9",
+   "from": "cmp.agent-offboarding",
+   "to": "cmp.step-offboarding",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "HR operations owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.s6",
+   "from": "cmp.policy-service",
+   "to": "cmp.agent-offer",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s7",
+   "from": "cmp.policy-service",
+   "to": "cmp.agent-offboarding",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.g1",
+   "from": "cmp.agent-sourcing",
+   "to": "cmp.extract-tool",
+   "type": "aggregation",
+   "cascade": "hard",
+   "note": "Shared extraction tool. A part with two wholes uses aggregation, not composition."
+  },
+  {
+   "id": "rel.g2",
+   "from": "cmp.agent-screening",
+   "to": "cmp.extract-tool",
+   "type": "aggregation",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.x1",
+   "from": "cmp.agent-sourcing",
+   "to": "cmp.applicant-store",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "write",
+   "carries": "job postings and sourced candidates"
+  },
+  {
+   "id": "rel.x2",
+   "from": "cmp.agent-screening",
+   "to": "cmp.applicant-store",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "readwrite",
+   "carries": "applications and screening scores"
+  },
+  {
+   "id": "rel.x3",
+   "from": "cmp.agent-offer",
+   "to": "cmp.applicant-store",
+   "type": "access",
+   "cascade": "soft",
+   "access_mode": "read",
+   "carries": "selected candidate records"
+  },
+  {
+   "id": "rel.x4",
+   "from": "cmp.agent-onboarding",
+   "to": "cmp.employee-master",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "write",
+   "carries": "new hire records"
+  },
+  {
+   "id": "rel.x5",
+   "from": "cmp.agent-offboarding",
+   "to": "cmp.employee-master",
+   "type": "access",
+   "cascade": "soft",
+   "access_mode": "readwrite",
+   "carries": "termination and access-revocation records"
+  },
+  {
+   "id": "rel.f1",
+   "from": "cmp.inbound-apps",
+   "to": "cmp.agent-screening",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "untrusted applicant text"
+  },
+  {
+   "id": "rel.f2",
+   "from": "cmp.background-feed",
+   "to": "cmp.background-check",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "background-check data"
+  },
+  {
+   "id": "rel.u1",
+   "from": "cmp.background-feed",
+   "to": "cmp.applicant-store",
+   "unclassified": true,
+   "note": "Does the background-check feed update applicant records directly? Type not yet known."
+  },
+  {
+   "id": "rel.t1",
+   "from": "cmp.step-job-req",
+   "to": "cmp.step-sourcing",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t2",
+   "from": "cmp.step-sourcing",
+   "to": "cmp.step-screening",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t3",
+   "from": "cmp.step-screening",
+   "to": "cmp.step-background",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t4",
+   "from": "cmp.step-background",
+   "to": "cmp.step-offer",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t5",
+   "from": "cmp.step-offer",
+   "to": "cmp.step-onboarding",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t6",
+   "from": "cmp.step-onboarding",
+   "to": "cmp.step-offboarding",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.i1",
+   "from": "obl.hiring-policy",
+   "to": "ctl.offer-authority",
+   "type": "influence",
+   "cascade": "soft",
+   "note": "Obligation drives the control (motivation). This link does not cascade failures."
+  },
+  {
+   "id": "rel.s1",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s2",
+   "from": "cmp.reasoning-llm",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s3",
+   "from": "cmp.fallback-llm",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.s4",
+   "from": "cmp.model-settings",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s5",
+   "from": "cmp.policy-service",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s8",
+   "from": "cmp.guardrails",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "soft",
+   "provides": "controls"
+  },
+  {
+   "id": "rel.s9",
+   "from": "cmp.guardrails",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "soft",
+   "provides": "controls"
+  },
+  {
+   "id": "rel.a1",
+   "from": "cmp.agent-runtime",
+   "to": "cmp.orchestrator",
+   "type": "assignment",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f13",
+   "from": "cmp.orchestrator",
+   "to": "cmp.llm-gateway",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f14",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.reasoning-llm",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f15",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.fallback-llm",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f16",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-runtime",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "telemetry and decision logs"
+  },
+  {
+   "id": "rel.f17",
+   "from": "cmp.orchestrator",
+   "to": "cmp.site-edge",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "badge grant and revocation"
+  },
+  {
+   "id": "rel.s10",
+   "from": "cmp.site-network",
+   "to": "cmp.site-edge",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.d1",
+   "from": "cmp.reasoning-llm",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard",
+   "derived": true,
+   "derived_from": [
+    "rel.s2",
+    "rel.s1"
+   ],
+   "note": "The orchestrator depends on the reasoning LLM through the LLM gateway."
+  },
+  {
+   "id": "rel.f3",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-sourcing",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f8",
+   "from": "cmp.agent-sourcing",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c11",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-sourcing",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f4",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-screening",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f9",
+   "from": "cmp.agent-screening",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c12",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-screening",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f5",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-offer",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority",
+   "containment_control_ids": [
+    "ctl.offer-authority"
+   ]
+  },
+  {
+   "id": "rel.f10",
+   "from": "cmp.agent-offer",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c13",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-offer",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f6",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-onboarding",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f11",
+   "from": "cmp.agent-onboarding",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c14",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-onboarding",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f7",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-offboarding",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority",
+   "containment_control_ids": [
+    "ctl.access-revocation"
+   ]
+  },
+  {
+   "id": "rel.f12",
+   "from": "cmp.agent-offboarding",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c15",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-offboarding",
+   "type": "composition",
+   "cascade": "hard"
+  }
+ ],
+ "obligations": [
+  {
+   "id": "obl.privacy",
+   "title": "Protect personal information of applicants and employees",
+   "instrument": "CCPA or GDPR (candidates)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "Applicant or employee records hold personal data of individuals in scope. Needs counsel.",
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.hiring-policy",
+   "title": "Enforce offer authority, required postings, background-check gates and access revocation",
+   "instrument": "Internal hiring and workforce policy (example)",
+   "citation": null,
+   "instrument_type": "internal_policy",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": null,
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.employee-confidentiality",
+   "title": "Keep each employee's personnel data confidential",
+   "instrument": "Employment contracts and internal policy (example)",
+   "citation": null,
+   "instrument_type": "contract",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": null,
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.ee-nondiscrimination",
+   "title": "Do not discriminate in hiring, promotion or termination on a protected basis",
+   "instrument": "Federal equal employment opportunity law, such as Title VII (candidate)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The employer is in scope of the cited law. Needs counsel.",
+   "vertical": "employment",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.ee-fcra",
+   "title": "Give required notices when a background check is used in an employment decision",
+   "instrument": "Fair Credit Reporting Act, as applied to employment screening (candidate)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "A consumer report is used in an employment decision. Needs counsel.",
+   "vertical": "employment",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.ee-wage",
+   "title": "Pay wages due and keep required payroll records",
+   "instrument": "Federal and state wage and hour rules (candidates)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The worker is an employee in scope. Needs counsel.",
+   "vertical": "employment",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  }
+ ],
+ "controls": [
+  {
+   "id": "ctl.logic-change-approval",
+   "title": "L1 owner approves every version of the H2R orchestration logic",
+   "component_id": "cmp.h2r-logic",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.sod",
+   "title": "No agent can approve its own output (segregation of duties)",
+   "component_id": "cmp.h2r-process",
+   "status": "planned",
+   "applies_to_children": true,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.offer-authority",
+   "title": "Offer authority and pay bands enforced by the policy service, not the agent",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.access-revocation",
+   "title": "Access revocation deadline enforced by the policy service; a missed revoke is escalated",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.required-posting",
+   "title": "Required internal or external posting window enforced by the policy service",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.input-isolation",
+   "title": "Treat resume and application text as data, never as instructions",
+   "component_id": "cmp.agent-screening",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.agent-identity",
+   "title": "Each agent has a scoped identity and least-privilege tool access",
+   "component_id": "cmp.agent-runtime",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.output-filter",
+   "title": "Output filtering before any applicant or employee message is sent",
+   "component_id": "cmp.guardrails",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.employee-confidentiality",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.regression-tests",
+   "title": "Regression test set run before any model, prompt or setting change; L1 owner approves results",
+   "component_id": "cmp.model-settings",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.settings-approval",
+   "title": "L1 owner is named as the change approver for model settings",
+   "component_id": "cmp.model-settings",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.decision-log",
+   "title": "Log rule version, inputs, decision and authority for each step; check decisions against policy, not against the model's stated reasoning",
+   "component_id": "cmp.orchestrator",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.tenant-context",
+   "title": "Agent context limited to one applicant or employee at a time",
+   "component_id": "cmp.agent-screening",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.privacy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.master-data-change",
+   "title": "Dual approval for changes to employee bank details and tax identifiers",
+   "component_id": "cmp.employee-master",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.screen-review",
+   "title": "Screening scores below a confidence threshold, or in a disputed band, go to a person",
+   "component_id": "cmp.agent-screening",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.hiring-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.ee-fairness",
+   "title": "Screening criteria limited to the job-related factors named in the requisition; periodic review for adverse impact",
+   "component_id": "cmp.agent-screening",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.ee-nondiscrimination",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "employment"
+  },
+  {
+   "id": "ctl.ee-adverse-action",
+   "title": "Background-check notices generated from the policy service decision, not model text",
+   "component_id": "cmp.policy-service",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.ee-fcra",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "employment"
+  },
+  {
+   "id": "ctl.ee-wage-records",
+   "title": "Payroll and time records written only through the policy-approved interface",
+   "component_id": "cmp.employee-master",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.ee-wage",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "employment"
+  }
+ ],
+ "threats": [
+  {
+   "id": "thr.spoofed-resume",
+   "title": "A crafted resume makes the screening agent treat hidden instructions as ranking criteria",
+   "risk": {
+    "asset": "Hiring decisions",
+    "actor": "External applicant",
+    "failure_mode": "Untrusted resume text treated as instructions",
+    "impact": "A candidate is advanced or rejected for reasons that are not job-related"
+   },
+   "target_component_id": "cmp.agent-screening",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.hiring-policy",
+    "obl.privacy"
+   ],
+   "control_ids": [
+    "ctl.input-isolation",
+    "ctl.screen-review"
+   ],
+   "accountable": {
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants"
+   ],
+   "business_response_owner": {
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.logic-tamper",
+   "title": "Unapproved edit to the orchestration logic skips the background-check gate",
+   "risk": {
+    "asset": "Background-check gate",
+    "actor": "Insider or compromised admin",
+    "failure_mode": "Step order changed without L1 approval",
+    "impact": "An offer is released before the required check finishes"
+   },
+   "target_component_id": "cmp.h2r-logic",
+   "failure_class": "logic",
+   "obligation_ids": [
+    "obl.hiring-policy"
+   ],
+   "control_ids": [
+    "ctl.logic-change-approval",
+    "ctl.decision-log"
+   ],
+   "accountable": {
+    "name": "H2R process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants"
+   ]
+  },
+  {
+   "id": "thr.llm-reinterprets",
+   "title": "Reasoning LLM reads 'hire the best athlete we can find' as permission to ignore the posted requirements",
+   "risk": {
+    "asset": "Job-related screening",
+    "actor": "None (model behavior)",
+    "failure_mode": "A slogan is read as a waiver of posted criteria",
+    "impact": "Candidates are ranked on factors that are not in the requisition"
+   },
+   "target_component_id": "cmp.reasoning-llm",
+   "failure_class": "model_behavior",
+   "obligation_ids": [
+    "obl.hiring-policy"
+   ],
+   "control_ids": [
+    "ctl.required-posting",
+    "ctl.screen-review",
+    "ctl.output-filter"
+   ],
+   "accountable": {
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants"
+   ],
+   "business_response_owner": {
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.silent-fallback",
+   "title": "Gateway falls back to a smaller model under load and screening outcomes change",
+   "risk": {
+    "asset": "Screening decisions",
+    "actor": "None (settings)",
+    "failure_mode": "Fallback model used without an L1-approved change",
+    "impact": "Candidates are ranked differently than under the pinned model"
+   },
+   "target_component_id": "cmp.model-settings",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.hiring-policy"
+   ],
+   "control_ids": [
+    "ctl.regression-tests",
+    "ctl.settings-approval"
+   ],
+   "accountable": {
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants"
+   ],
+   "business_response_owner": {
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.authority-creep",
+   "title": "Orchestrator chains steps so the screening score is treated as offer approval",
+   "risk": {
+    "asset": "Offer authority",
+    "actor": "None (step order)",
+    "failure_mode": "A recommendation is treated as an approval",
+    "impact": "An offer goes out without the required authority"
+   },
+   "target_component_id": "cmp.orchestrator",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.hiring-policy"
+   ],
+   "control_ids": [
+    "ctl.sod",
+    "ctl.offer-authority",
+    "ctl.decision-log"
+   ],
+   "accountable": {
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants"
+   ],
+   "business_response_owner": {
+    "name": "Compensation lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.offer-persuasion",
+   "title": "A hiring manager argues the offer agent into pay above the approved band",
+   "risk": {
+    "asset": "Offer authority",
+    "actor": "Internal hiring manager",
+    "failure_mode": "Agent accepts a verbal workaround as authority",
+    "impact": "An offer is made outside the approved band"
+   },
+   "target_component_id": "cmp.agent-offer",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.hiring-policy"
+   ],
+   "control_ids": [
+    "ctl.offer-authority"
+   ],
+   "accountable": {
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants"
+   ],
+   "business_response_owner": {
+    "name": "Compensation lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.data-exposure",
+   "title": "Screening agent puts one applicant's data in another applicant's message",
+   "risk": {
+    "asset": "Applicant confidentiality",
+    "actor": "None (context mix-up)",
+    "failure_mode": "Agent context crosses applicants",
+    "impact": "Personal data disclosed to another candidate"
+   },
+   "target_component_id": "cmp.agent-screening",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.privacy",
+    "obl.employee-confidentiality"
+   ],
+   "control_ids": [
+    "ctl.tenant-context",
+    "ctl.output-filter"
+   ],
+   "accountable": {
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants",
+    "stk.privacy-authority"
+   ],
+   "business_response_owner": {
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.master-data-poison",
+   "title": "Employee bank details changed in master data to divert pay",
+   "risk": {
+    "asset": "Payroll details",
+    "actor": "Insider or compromised account",
+    "failure_mode": "Bank details changed without dual approval",
+    "impact": "Wages diverted"
+   },
+   "target_component_id": "cmp.employee-master",
+   "failure_class": "data",
+   "obligation_ids": [
+    "obl.hiring-policy",
+    "obl.privacy"
+   ],
+   "control_ids": [
+    "ctl.master-data-change"
+   ],
+   "accountable": {
+    "name": "HR data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.employees"
+   ],
+   "business_response_owner": {
+    "name": "HR operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.guardrail-outage",
+   "title": "Guardrail service is down and agents run without output filtering",
+   "risk": {
+    "asset": "Outbound messages",
+    "actor": "None (control loss)",
+    "failure_mode": "Agents continue when filters are unavailable",
+    "impact": "Unfiltered applicant or employee messages leave the system"
+   },
+   "target_component_id": "cmp.guardrails",
+   "failure_class": "control_loss",
+   "obligation_ids": [
+    "obl.privacy"
+   ],
+   "control_ids": [
+    "ctl.output-filter"
+   ],
+   "accountable": {
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.applicants",
+    "stk.privacy-authority"
+   ],
+   "business_response_owner": {
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.late-revoke",
+   "title": "Offboarding agent records a termination but does not revoke badge and system access in time",
+   "risk": {
+    "asset": "Access revocation",
+    "actor": "None (step failure)",
+    "failure_mode": "Revocation is late or skipped",
+    "impact": "A former employee retains access"
+   },
+   "target_component_id": "cmp.agent-offboarding",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.hiring-policy"
+   ],
+   "control_ids": [
+    "ctl.access-revocation"
+   ],
+   "accountable": {
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.employees"
+   ],
+   "business_response_owner": {
+    "name": "HR operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.ee-proxy-screen",
+   "title": "Screening agent uses a proxy for a protected characteristic as a ranking factor",
+   "risk": {
+    "asset": "Fair hiring",
+    "actor": "None (model behavior)",
+    "failure_mode": "A non-job-related proxy affects the score",
+    "impact": "Applicants are disadvantaged on a protected basis"
+   },
+   "target_component_id": "cmp.agent-screening",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.ee-nondiscrimination"
+   ],
+   "control_ids": [
+    "ctl.ee-fairness",
+    "ctl.screen-review"
+   ],
+   "accountable": {
+    "name": "H2R app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "vertical": "employment",
+   "stakeholder_ids": [
+    "stk.applicants",
+    "stk.eeo-authority"
+   ],
+   "business_response_owner": {
+    "name": "Talent acquisition owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.ee-no-notice",
+   "title": "Background-check component issues an adverse employment decision with no valid notice",
+   "risk": {
+    "asset": "Background-check notices",
+    "actor": "None (model behavior)",
+    "failure_mode": "Decision reasons come from model text",
+    "impact": "Notices that do not match the real reason, or no notice at all"
+   },
+   "target_component_id": "cmp.background-check",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.ee-fcra"
+   ],
+   "control_ids": [
+    "ctl.ee-adverse-action"
+   ],
+   "accountable": {
+    "name": "HR analytics lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "vertical": "employment",
+   "stakeholder_ids": [
+    "stk.applicants",
+    "stk.eeo-authority"
+   ],
+   "business_response_owner": {
+    "name": "HR compliance owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  }
+ ]
+}

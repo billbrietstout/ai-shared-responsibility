@@ -1,0 +1,1916 @@
+{
+  "tm_schema_version": "0.1.0-draft",
+  "system": {
+    "id": "sys.o2c-agentic",
+    "name": "Agentic Order to Cash (example)",
+    "description": "An order-to-cash process run by an orchestration agent and five sub-agents. The orchestrator runs on a reasoning LLM from an AI Model Provider. Hard rules (credit limits, discount authority, refund caps, segregation of duties) are enforced by a policy service outside the model.",
+    "operating_model": "Agent-PaaS",
+    "operating_model_note": "Example assumption. Bill to confirm.",
+    "as_of": "2026-11-16",
+    "snapshot_id": null,
+    "overlays_enabled": []
+  },
+  "snapshots": [
+    {
+      "id": "snap.nov16",
+      "name": "As built, Nov 16, 2026",
+      "as_of": "2026-11-16"
+    },
+    {
+      "id": "snap.dec01",
+      "name": "Planned December release",
+      "as_of": "2026-12-01"
+    },
+    {
+      "id": "snap.dec01-no-rules-update",
+      "name": "December release without the policy service update",
+      "as_of": "2026-12-01",
+      "pins": {
+        "rel.r2": "base"
+      }
+    }
+  ],
+  "stakeholders": [
+    {
+      "id": "stk.customer-contacts",
+      "name": "Individuals named in customer records (buyer and billing contacts)",
+      "kind": "affected_individuals",
+      "affected_by_component_ids": [
+        "cmp.step-order-capture",
+        "cmp.step-invoicing",
+        "cmp.step-collections"
+      ]
+    },
+    {
+      "id": "stk.consumer-debtors",
+      "name": "Consumer debtors, if any debts are consumer debts",
+      "kind": "affected_individuals",
+      "affected_by_component_ids": [
+        "cmp.step-collections"
+      ]
+    },
+    {
+      "id": "stk.privacy-authority",
+      "name": "Data protection or privacy authority (candidate, unverified)",
+      "kind": "relevant_authority",
+      "affected_by_component_ids": [
+        "cmp.step-invoicing"
+      ]
+    },
+    {
+      "id": "stk.securities-regulator",
+      "name": "Securities regulator, for public-company financial reporting (candidate, unverified)",
+      "kind": "relevant_authority",
+      "affected_by_component_ids": [
+        "cmp.step-invoicing",
+        "cmp.step-cash-app",
+        "cmp.step-pricing"
+      ]
+    },
+    {
+      "id": "stk.credit-applicants",
+      "name": "Credit applicants",
+      "kind": "affected_individuals",
+      "vertical": "banking",
+      "affected_by_component_ids": [
+        "cmp.step-credit"
+      ]
+    },
+    {
+      "id": "stk.bank-supervisor",
+      "name": "Bank supervisor or consumer finance regulator (candidate, unverified)",
+      "kind": "relevant_authority",
+      "vertical": "banking",
+      "affected_by_component_ids": [
+        "cmp.step-credit",
+        "cmp.step-order-capture"
+      ]
+    }
+  ],
+  "overlays": [
+    {
+      "id": "banking",
+      "name": "Banking overlay",
+      "description": "Adds obligations and threats that apply when the seller is a bank or lends to consumers. All entries are unverified and need counsel.",
+      "status": "draft"
+    }
+  ],
+  "components": [
+    {
+      "id": "cmp.o2c-process",
+      "name": "Order to Cash process",
+      "layer": "L1",
+      "type": "business_process",
+      "srf_component": "Processes & Governance",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C process owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.o2c-logic",
+      "name": "O2C orchestration logic (step order, routing, exceptions)",
+      "layer": "L1",
+      "type": "business_logic",
+      "srf_component": "Processes & Governance",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C process owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      },
+      "logic": {
+        "version": "1.4",
+        "approved_by": "O2C process owner (placeholder)",
+        "approved_on": "2026-10-01",
+        "change_control": "L1 approval for every version"
+      }
+    },
+    {
+      "id": "cmp.hard-rules",
+      "name": "Hard rules (credit limits, discount authority, refund caps, segregation of duties)",
+      "layer": "L1",
+      "type": "business_logic",
+      "srf_component": "Processes & Governance",
+      "owner": {
+        "status": "assigned",
+        "name": "Controller (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      },
+      "logic": {
+        "version": "2.0",
+        "approved_by": "Controller (placeholder)",
+        "approved_on": "2026-09-15",
+        "change_control": "L1 approval for every version"
+      }
+    },
+    {
+      "id": "cmp.step-order-capture",
+      "name": "1. Order capture",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "assigned",
+        "name": "Order management owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.step-credit",
+      "name": "2. Credit check",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "assigned",
+        "name": "Credit manager (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.step-pricing",
+      "name": "3. Pricing and quoting",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "assigned",
+        "name": "Deal desk lead (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.step-fulfillment",
+      "name": "4. Fulfillment release",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "shared",
+        "names": [
+          "Sales operations (placeholder)",
+          "Logistics (placeholder)"
+        ]
+      },
+      "notes": "Intentional gap for the example. Two teams claim this step."
+    },
+    {
+      "id": "cmp.step-invoicing",
+      "name": "5. Invoicing",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "assigned",
+        "name": "Controller (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.step-collections",
+      "name": "6. Collections",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "assigned",
+        "name": "Collections manager (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.step-cash-app",
+      "name": "7. Cash application",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "assigned",
+        "name": "AR lead (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.step-disputes",
+      "name": "8. Disputes, credits and refunds",
+      "layer": "L1",
+      "type": "process_step",
+      "owner": {
+        "status": "assigned",
+        "name": "Finance operations lead (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "party": "customer",
+        "placeholder": true
+      },
+      "multiplicity_overrides": [
+        {
+          "rule_id": "MD-02",
+          "lower": 0,
+          "upper": 2,
+          "reason": "Placeholder: a planned refund-review tool may realize this step alongside the disputes agent during the pilot."
+        }
+      ]
+    },
+    {
+      "id": "cmp.customer-master",
+      "name": "Customer master data (accounts, ship-to, bank details)",
+      "layer": "L2",
+      "type": "data_store",
+      "srf_component": "Master Data Management",
+      "owner": {
+        "status": "assigned",
+        "name": "Customer data owner (placeholder)",
+        "persona_id": "srf.role.data-provider",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.ledger",
+      "name": "Order and invoice ledger (ERP)",
+      "layer": "L2",
+      "type": "data_store",
+      "srf_component": "Master Data Management",
+      "owner": {
+        "status": "assigned",
+        "name": "ERP data owner (placeholder)",
+        "persona_id": "srf.role.data-provider",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.inbound-docs",
+      "name": "Inbound order documents (PO email, EDI)",
+      "layer": "L2",
+      "type": "input_channel",
+      "owner": {
+        "status": "assigned",
+        "name": "Order management owner (placeholder)",
+        "persona_id": "srf.role.data-provider",
+        "party": "customer",
+        "placeholder": true
+      },
+      "notes": "Untrusted input. Customer text enters the agents here."
+    },
+    {
+      "id": "cmp.credit-bureau",
+      "name": "Credit bureau data feed",
+      "layer": "L2",
+      "type": "data_feed",
+      "owner": {
+        "status": "assigned",
+        "name": "Credit bureau (placeholder vendor)",
+        "persona_id": "srf.role.data-provider",
+        "party": "provider",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.orchestrator",
+      "name": "O2C orchestration agent",
+      "layer": "L3",
+      "type": "orchestrator",
+      "srf_component": "Agents & Orchestration Models",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.agent-intake",
+      "name": "Order intake agent",
+      "layer": "L3",
+      "type": "sub_agent",
+      "srf_component": "Agents & Orchestration Models",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.agent-pricing",
+      "name": "Pricing agent",
+      "layer": "L3",
+      "type": "sub_agent",
+      "srf_component": "Agents & Orchestration Models",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.agent-invoicing",
+      "name": "Invoicing agent",
+      "layer": "L3",
+      "type": "sub_agent",
+      "srf_component": "Agents & Orchestration Models",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.agent-collections",
+      "name": "Collections agent",
+      "layer": "L3",
+      "type": "sub_agent",
+      "srf_component": "Agents & Orchestration Models",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.agent-disputes",
+      "name": "Disputes agent",
+      "layer": "L3",
+      "type": "sub_agent",
+      "srf_component": "Agents & Orchestration Models",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.credit-scoring",
+      "name": "Credit scoring component",
+      "layer": "L3",
+      "type": "ai_component",
+      "srf_component": "APIs & Fine-tuned Models",
+      "owner": {
+        "status": "assigned",
+        "name": "Credit analytics lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.cash-matching",
+      "name": "Cash matching component",
+      "layer": "L3",
+      "type": "ai_component",
+      "srf_component": "APIs & Fine-tuned Models",
+      "owner": {
+        "status": "none"
+      },
+      "notes": "Intentional gap for the example. Nobody owns it until the December release.",
+      "versions": [
+        {
+          "version": "2",
+          "from": "2026-12-01",
+          "note": "Owner named in the December release (example).",
+          "set": {
+            "owner": {
+              "status": "assigned",
+              "name": "AR lead (placeholder)",
+              "persona_id": "srf.role.application-developer",
+              "party": "customer",
+              "placeholder": true
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmp.policy-service",
+      "name": "Policy service (enforces hard rules outside the model)",
+      "layer": "L3",
+      "type": "policy_service",
+      "srf_component": "Application Platforms",
+      "owner": {
+        "status": "assigned",
+        "name": "Platform engineering lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.model-settings",
+      "name": "Model settings profile (model version pin, reasoning effort, fallback)",
+      "layer": "L3",
+      "type": "model_settings",
+      "srf_component": "Agents & Orchestration Models",
+      "owner": {
+        "status": "assigned",
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "party": "customer",
+        "placeholder": true
+      },
+      "settings": {
+        "model_version": "pinned (example)",
+        "reasoning_effort": "high",
+        "fallback": "smaller model under load",
+        "change_approver": null
+      },
+      "notes": "Intentional gap. These settings change L1 behavior, but no L1 approver is named until the December release.",
+      "versions": [
+        {
+          "version": "2026-12",
+          "from": "2026-12-01",
+          "note": "New pinned model version; fallback turned off; L1 approver named (example).",
+          "set": {
+            "settings": {
+              "model_version": "new pinned version (example)",
+              "reasoning_effort": "high",
+              "fallback": "none",
+              "change_approver": "O2C process owner (placeholder)"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "cmp.agent-runtime",
+      "name": "Agent runtime, tool sandbox and agent identities",
+      "layer": "L4",
+      "type": "agent_runtime",
+      "srf_component": "Compute Infrastructure",
+      "owner": {
+        "status": "assigned",
+        "name": "Agent platform vendor (placeholder)",
+        "persona_id": "srf.role.agentic-platform-provider",
+        "party": "provider",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.llm-gateway",
+      "name": "LLM gateway and router",
+      "layer": "L4",
+      "type": "gateway",
+      "srf_component": "LLM Routers & Gateways",
+      "owner": {
+        "status": "assigned",
+        "name": "Model serving team (placeholder)",
+        "persona_id": "srf.role.ai-model-serving",
+        "party": "provider",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.guardrails",
+      "name": "Guardrails and output filters",
+      "layer": "L4",
+      "type": "guardrail",
+      "srf_component": "Guardrails & Safety Systems",
+      "owner": {
+        "status": "assigned",
+        "name": "Model serving team (placeholder)",
+        "persona_id": "srf.role.ai-model-serving",
+        "party": "provider",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.warehouse-network",
+      "name": "Warehouse network link (site VPN)",
+      "layer": "L4",
+      "type": "network",
+      "owner": {
+        "status": "assigned",
+        "name": "Network operations lead (placeholder)",
+        "persona_id": "srf.role.ai-platform-provider",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.warehouse-edge",
+      "name": "Warehouse edge/OT host (label printers, conveyor release)",
+      "layer": "L4",
+      "type": "edge_ot_host",
+      "srf_component": "Compute Infrastructure",
+      "owner": {
+        "status": "assigned",
+        "name": "Warehouse OT lead (placeholder)",
+        "persona_id": "srf.role.ai-platform-provider",
+        "party": "customer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.reasoning-llm",
+      "name": "Reasoning LLM",
+      "layer": "L5",
+      "type": "model",
+      "srf_component": "Foundation Models",
+      "owner": {
+        "status": "assigned",
+        "name": "Model vendor (placeholder)",
+        "persona_id": "srf.role.model-provider",
+        "party": "provider",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "cmp.fallback-llm",
+      "name": "Fallback LLM (smaller, cheaper)",
+      "layer": "L5",
+      "type": "model",
+      "srf_component": "Foundation Models",
+      "owner": {
+        "status": "assigned",
+        "name": "Model vendor (placeholder)",
+        "persona_id": "srf.role.model-provider",
+        "party": "provider",
+        "placeholder": true
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "id": "rel.c1",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-order-capture",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c2",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-credit",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c3",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-pricing",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c4",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-fulfillment",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c5",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-invoicing",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c6",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-collections",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c7",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-cash-app",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c8",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.step-disputes",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c9",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.o2c-logic",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c10",
+      "type": "composition",
+      "from": "cmp.o2c-process",
+      "to": "cmp.hard-rules",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c11",
+      "type": "composition",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-intake",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c12",
+      "type": "composition",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-pricing",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c13",
+      "type": "composition",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-invoicing",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c14",
+      "type": "composition",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-collections",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.c15",
+      "type": "composition",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-disputes",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.r1",
+      "type": "realization",
+      "from": "cmp.orchestrator",
+      "to": "cmp.o2c-logic",
+      "cascade": "hard",
+      "multiplicity": {
+        "lower": 1,
+        "upper": 1
+      },
+      "logic_version": "1.4",
+      "l1_approval": {
+        "approved_by": "O2C process owner (placeholder)",
+        "approved_on": "2026-10-01",
+        "ref": "Example only. O2C logic v1.4 runbook (placeholder)"
+      }
+    },
+    {
+      "id": "rel.r2",
+      "type": "realization",
+      "from": "cmp.policy-service",
+      "to": "cmp.hard-rules",
+      "cascade": "hard",
+      "multiplicity": {
+        "lower": 1,
+        "upper": 1
+      },
+      "logic_version": "1.9",
+      "l1_approval": {
+        "approved_by": "Controller (placeholder)",
+        "approved_on": "2026-06-01"
+      },
+      "note": "Intentional gap. The policy service still runs v1.9; the approved hard rules are v2.0. Fixed in the December release.",
+      "versions": [
+        {
+          "version": "2",
+          "from": "2026-12-01",
+          "note": "Policy service updated to hard rules v2.0 (example).",
+          "set": {
+            "logic_version": "2.0",
+            "l1_approval": {
+              "approved_by": "Controller (placeholder)",
+              "approved_on": "2026-11-30"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "rel.r3",
+      "type": "realization",
+      "from": "cmp.agent-intake",
+      "to": "cmp.step-order-capture",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.r4",
+      "type": "realization",
+      "from": "cmp.credit-scoring",
+      "to": "cmp.step-credit",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.r5",
+      "type": "realization",
+      "from": "cmp.agent-pricing",
+      "to": "cmp.step-pricing",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.r6",
+      "type": "realization",
+      "from": "cmp.orchestrator",
+      "to": "cmp.step-fulfillment",
+      "cascade": "hard",
+      "multiplicity": {
+        "lower": 1,
+        "upper": 1
+      }
+    },
+    {
+      "id": "rel.r7",
+      "type": "realization",
+      "from": "cmp.agent-invoicing",
+      "to": "cmp.step-invoicing",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.r8",
+      "type": "realization",
+      "from": "cmp.agent-collections",
+      "to": "cmp.step-collections",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.r9",
+      "type": "realization",
+      "from": "cmp.cash-matching",
+      "to": "cmp.step-cash-app",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.r10",
+      "type": "realization",
+      "from": "cmp.agent-disputes",
+      "to": "cmp.step-disputes",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.s1",
+      "type": "serving",
+      "from": "cmp.llm-gateway",
+      "to": "cmp.orchestrator",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.s2",
+      "type": "serving",
+      "from": "cmp.reasoning-llm",
+      "to": "cmp.llm-gateway",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.s3",
+      "type": "serving",
+      "from": "cmp.fallback-llm",
+      "to": "cmp.llm-gateway",
+      "cascade": "soft"
+    },
+    {
+      "id": "rel.s4",
+      "type": "serving",
+      "from": "cmp.model-settings",
+      "to": "cmp.llm-gateway",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.s5",
+      "type": "serving",
+      "from": "cmp.policy-service",
+      "to": "cmp.orchestrator",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.s6",
+      "type": "serving",
+      "from": "cmp.policy-service",
+      "to": "cmp.agent-pricing",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.s7",
+      "type": "serving",
+      "from": "cmp.policy-service",
+      "to": "cmp.agent-disputes",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.s8",
+      "type": "serving",
+      "from": "cmp.guardrails",
+      "to": "cmp.orchestrator",
+      "cascade": "soft",
+      "provides": "controls"
+    },
+    {
+      "id": "rel.s9",
+      "type": "serving",
+      "from": "cmp.guardrails",
+      "to": "cmp.llm-gateway",
+      "cascade": "soft",
+      "provides": "controls"
+    },
+    {
+      "id": "rel.a1",
+      "type": "assignment",
+      "from": "cmp.agent-runtime",
+      "to": "cmp.orchestrator",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.x1",
+      "type": "access",
+      "from": "cmp.agent-intake",
+      "to": "cmp.customer-master",
+      "access_mode": "read",
+      "cascade": "hard",
+      "carries": "customer and ship-to records"
+    },
+    {
+      "id": "rel.x2",
+      "type": "access",
+      "from": "cmp.agent-invoicing",
+      "to": "cmp.customer-master",
+      "access_mode": "read",
+      "cascade": "hard",
+      "carries": "customer billing records"
+    },
+    {
+      "id": "rel.x3",
+      "type": "access",
+      "from": "cmp.agent-invoicing",
+      "to": "cmp.ledger",
+      "access_mode": "write",
+      "cascade": "hard",
+      "carries": "invoices"
+    },
+    {
+      "id": "rel.x4",
+      "type": "access",
+      "from": "cmp.cash-matching",
+      "to": "cmp.ledger",
+      "access_mode": "readwrite",
+      "cascade": "hard",
+      "carries": "payments and open items"
+    },
+    {
+      "id": "rel.x5",
+      "type": "access",
+      "from": "cmp.agent-collections",
+      "to": "cmp.ledger",
+      "access_mode": "read",
+      "cascade": "hard",
+      "carries": "open items"
+    },
+    {
+      "id": "rel.x6",
+      "type": "access",
+      "from": "cmp.agent-disputes",
+      "to": "cmp.customer-master",
+      "access_mode": "read",
+      "cascade": "soft",
+      "carries": "customer records"
+    },
+    {
+      "id": "rel.f1",
+      "type": "flow",
+      "from": "cmp.inbound-docs",
+      "to": "cmp.agent-intake",
+      "cascade": "hard",
+      "carries": "untrusted customer text"
+    },
+    {
+      "id": "rel.f2",
+      "type": "flow",
+      "from": "cmp.credit-bureau",
+      "to": "cmp.credit-scoring",
+      "cascade": "hard",
+      "carries": "credit data"
+    },
+    {
+      "id": "rel.f3",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-intake",
+      "cascade": "hard",
+      "carries": "instructions and delegated authority"
+    },
+    {
+      "id": "rel.f4",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-pricing",
+      "cascade": "hard",
+      "carries": "instructions and delegated authority",
+      "containment_control_ids": [
+        "ctl.discount-authority"
+      ]
+    },
+    {
+      "id": "rel.f5",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-invoicing",
+      "cascade": "hard",
+      "carries": "instructions and delegated authority"
+    },
+    {
+      "id": "rel.f6",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-collections",
+      "cascade": "hard",
+      "carries": "instructions and delegated authority"
+    },
+    {
+      "id": "rel.f7",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-disputes",
+      "cascade": "hard",
+      "carries": "instructions and delegated authority",
+      "containment_control_ids": [
+        "ctl.refund-caps"
+      ]
+    },
+    {
+      "id": "rel.f8",
+      "type": "flow",
+      "from": "cmp.agent-intake",
+      "to": "cmp.orchestrator",
+      "cascade": "soft",
+      "carries": "results"
+    },
+    {
+      "id": "rel.f9",
+      "type": "flow",
+      "from": "cmp.agent-pricing",
+      "to": "cmp.orchestrator",
+      "cascade": "soft",
+      "carries": "results"
+    },
+    {
+      "id": "rel.f10",
+      "type": "flow",
+      "from": "cmp.agent-invoicing",
+      "to": "cmp.orchestrator",
+      "cascade": "soft",
+      "carries": "results"
+    },
+    {
+      "id": "rel.f11",
+      "type": "flow",
+      "from": "cmp.agent-collections",
+      "to": "cmp.orchestrator",
+      "cascade": "soft",
+      "carries": "results"
+    },
+    {
+      "id": "rel.f12",
+      "type": "flow",
+      "from": "cmp.agent-disputes",
+      "to": "cmp.orchestrator",
+      "cascade": "soft",
+      "carries": "results"
+    },
+    {
+      "id": "rel.f13",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.llm-gateway",
+      "cascade": "soft",
+      "carries": "prompts and business context (customer data)"
+    },
+    {
+      "id": "rel.f14",
+      "type": "flow",
+      "from": "cmp.llm-gateway",
+      "to": "cmp.reasoning-llm",
+      "cascade": "soft",
+      "carries": "prompts and business context (customer data)"
+    },
+    {
+      "id": "rel.f15",
+      "type": "flow",
+      "from": "cmp.llm-gateway",
+      "to": "cmp.fallback-llm",
+      "cascade": "soft",
+      "carries": "prompts and business context (customer data)"
+    },
+    {
+      "id": "rel.f16",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.agent-runtime",
+      "cascade": "soft",
+      "carries": "telemetry and decision logs"
+    },
+    {
+      "id": "rel.f17",
+      "type": "flow",
+      "from": "cmp.orchestrator",
+      "to": "cmp.warehouse-edge",
+      "cascade": "hard",
+      "carries": "pick and ship release"
+    },
+    {
+      "id": "rel.s10",
+      "type": "serving",
+      "from": "cmp.warehouse-network",
+      "to": "cmp.warehouse-edge",
+      "cascade": "hard"
+    },
+    {
+      "id": "rel.u1",
+      "unclassified": true,
+      "from": "cmp.credit-bureau",
+      "to": "cmp.customer-master",
+      "note": "Does the bureau feed update customer master data directly? Type not yet known."
+    },
+    {
+      "id": "rel.d1",
+      "type": "serving",
+      "from": "cmp.reasoning-llm",
+      "to": "cmp.orchestrator",
+      "cascade": "hard",
+      "derived": true,
+      "derived_from": [
+        "rel.s2",
+        "rel.s1"
+      ],
+      "note": "The orchestrator depends on the reasoning LLM through the LLM gateway."
+    },
+    {
+      "id": "rel.t1",
+      "type": "triggering",
+      "from": "cmp.step-order-capture",
+      "to": "cmp.step-credit",
+      "cascade": "soft"
+    },
+    {
+      "id": "rel.t2",
+      "type": "triggering",
+      "from": "cmp.step-credit",
+      "to": "cmp.step-pricing",
+      "cascade": "soft"
+    },
+    {
+      "id": "rel.t3",
+      "type": "triggering",
+      "from": "cmp.step-pricing",
+      "to": "cmp.step-fulfillment",
+      "cascade": "soft"
+    },
+    {
+      "id": "rel.t4",
+      "type": "triggering",
+      "from": "cmp.step-fulfillment",
+      "to": "cmp.step-invoicing",
+      "cascade": "soft"
+    },
+    {
+      "id": "rel.t5",
+      "type": "triggering",
+      "from": "cmp.step-invoicing",
+      "to": "cmp.step-collections",
+      "cascade": "soft"
+    },
+    {
+      "id": "rel.t6",
+      "type": "triggering",
+      "from": "cmp.step-collections",
+      "to": "cmp.step-cash-app",
+      "cascade": "soft"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "obl.sox-icfr",
+      "title": "Maintain internal control over financial reporting (public companies)",
+      "instrument": "Sarbanes-Oxley Act (candidate)",
+      "citation": null,
+      "instrument_type": "law",
+      "strength": "binding",
+      "in_force": "unknown",
+      "applies_if": "The seller is a US public company and O2C is in ICFR scope.",
+      "vertical": "baseline",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.revenue-recognition",
+      "title": "Recognize revenue under the applicable accounting standard",
+      "instrument": "ASC 606 (candidate)",
+      "citation": null,
+      "instrument_type": "accounting_standard",
+      "strength": "unknown",
+      "in_force": "unknown",
+      "applies_if": "The seller reports under US GAAP.",
+      "vertical": "baseline",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.order-policy",
+      "title": "Verify customer and ship-to before releasing an order",
+      "instrument": "Internal order management policy (example)",
+      "citation": null,
+      "instrument_type": "internal_policy",
+      "strength": "binding",
+      "in_force": "unknown",
+      "applies_if": null,
+      "vertical": "baseline",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.debt-collection",
+      "title": "Do not use harassing or misleading collection practices",
+      "instrument": "Fair Debt Collection Practices Act (candidate)",
+      "citation": null,
+      "instrument_type": "law",
+      "strength": "binding",
+      "in_force": "unknown",
+      "applies_if": "The debts are consumer debts and the collector is in scope. Needs counsel.",
+      "vertical": "baseline",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.privacy",
+      "title": "Protect personal information of customer contacts",
+      "instrument": "CCPA or GDPR (candidates)",
+      "citation": null,
+      "instrument_type": "law",
+      "strength": "binding",
+      "in_force": "unknown",
+      "applies_if": "Customer records hold personal data of individuals in scope. Needs counsel.",
+      "vertical": "baseline",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.customer-confidentiality",
+      "title": "Keep each customer's data confidential",
+      "instrument": "Customer contracts (example)",
+      "citation": null,
+      "instrument_type": "contract",
+      "strength": "binding",
+      "in_force": "unknown",
+      "applies_if": null,
+      "vertical": "baseline",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.bank-adverse-action",
+      "title": "Give applicants a notice when credit is denied or changed",
+      "instrument": "Equal Credit Opportunity Act and Regulation B (candidates)",
+      "citation": null,
+      "instrument_type": "law",
+      "strength": "binding",
+      "in_force": "unknown",
+      "applies_if": "Credit decisions cover applicants in scope. Needs counsel.",
+      "vertical": "banking",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.bank-sanctions",
+      "title": "Screen new customers and payments against sanctions lists",
+      "instrument": "US sanctions program rules (candidate)",
+      "citation": null,
+      "instrument_type": "regulation",
+      "strength": "binding",
+      "in_force": "unknown",
+      "applies_if": null,
+      "vertical": "banking",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    },
+    {
+      "id": "obl.bank-model-risk",
+      "title": "Validate and monitor models used in credit decisions",
+      "instrument": "Supervisory model risk guidance, such as SR 11-7 (candidate)",
+      "citation": null,
+      "instrument_type": "supervisory_guidance",
+      "strength": "voluntary",
+      "in_force": "unknown",
+      "applies_if": "The seller is a supervised bank. Guidance, not law.",
+      "vertical": "banking",
+      "verification": {
+        "status": "unverified",
+        "method": "none",
+        "checked_on": null
+      }
+    }
+  ],
+  "controls": [
+    {
+      "id": "ctl.logic-change-approval",
+      "title": "L1 owner approves every version of the O2C orchestration logic",
+      "component_id": "cmp.o2c-logic",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.sox-icfr",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.sod",
+      "title": "No agent can approve its own output (segregation of duties)",
+      "component_id": "cmp.o2c-process",
+      "status": "planned",
+      "applies_to_children": true,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.sox-icfr",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.discount-authority",
+      "title": "Discount authority matrix enforced by the policy service, not the agent",
+      "component_id": "cmp.policy-service",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.revenue-recognition",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.refund-caps",
+      "title": "Refund and credit caps enforced by the policy service; dual approval above the cap",
+      "component_id": "cmp.policy-service",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.sox-icfr",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.credit-limits",
+      "title": "Credit limits enforced by the policy service; human approval above threshold",
+      "component_id": "cmp.policy-service",
+      "status": "planned",
+      "applies_to_children": false,
+      "obligation_links": []
+    },
+    {
+      "id": "ctl.shipto-verify",
+      "title": "Human approval for new or changed ship-to addresses",
+      "component_id": "cmp.step-order-capture",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.order-policy",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.input-isolation",
+      "title": "Treat PO email and EDI text as data, never as instructions",
+      "component_id": "cmp.agent-intake",
+      "status": "planned",
+      "applies_to_children": false,
+      "obligation_links": []
+    },
+    {
+      "id": "ctl.agent-identity",
+      "title": "Each agent has a scoped identity and least-privilege tool access",
+      "component_id": "cmp.agent-runtime",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": []
+    },
+    {
+      "id": "ctl.output-filter",
+      "title": "Output filtering before any customer message is sent",
+      "component_id": "cmp.guardrails",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.customer-confidentiality",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.regression-tests",
+      "title": "Regression test set (edge cases, persuasion attempts) run before any model, prompt or setting change; L1 owner approves results",
+      "component_id": "cmp.model-settings",
+      "status": "planned",
+      "applies_to_children": false,
+      "obligation_links": []
+    },
+    {
+      "id": "ctl.decision-log",
+      "title": "Log rule version, inputs, decision and authority for each step; check decisions against policy, not against the model's stated reasoning",
+      "component_id": "cmp.orchestrator",
+      "status": "planned",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.sox-icfr",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.collections-templates",
+      "title": "Approved collection message templates and contact limits",
+      "component_id": "cmp.agent-collections",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.debt-collection",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.match-threshold",
+      "title": "Matches below a confidence threshold go to a person",
+      "component_id": "cmp.cash-matching",
+      "status": "missing",
+      "applies_to_children": false,
+      "obligation_links": []
+    },
+    {
+      "id": "ctl.tenant-context",
+      "title": "Agent context limited to one customer at a time",
+      "component_id": "cmp.agent-invoicing",
+      "status": "planned",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.privacy",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.master-data-change",
+      "title": "Dual approval for changes to customer bank details and ship-to",
+      "component_id": "cmp.customer-master",
+      "status": "in_place",
+      "applies_to_children": false,
+      "obligation_links": [
+        {
+          "obligation_id": "obl.order-policy",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.bank-adverse-action",
+      "title": "Generate adverse action notices from the policy service decision, not model text",
+      "component_id": "cmp.policy-service",
+      "status": "planned",
+      "applies_to_children": false,
+      "vertical": "banking",
+      "obligation_links": [
+        {
+          "obligation_id": "obl.bank-adverse-action",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.bank-sanctions-screen",
+      "title": "Sanctions screening on every new customer before the first order ships",
+      "component_id": "cmp.step-order-capture",
+      "status": "planned",
+      "applies_to_children": false,
+      "vertical": "banking",
+      "obligation_links": [
+        {
+          "obligation_id": "obl.bank-sanctions",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    },
+    {
+      "id": "ctl.bank-model-validation",
+      "title": "Independent validation of the credit scoring component",
+      "component_id": "cmp.credit-scoring",
+      "status": "planned",
+      "applies_to_children": false,
+      "vertical": "banking",
+      "obligation_links": [
+        {
+          "obligation_id": "obl.bank-model-risk",
+          "basis": "editorial_inference",
+          "review_status": "proposed"
+        }
+      ]
+    }
+  ],
+  "threats": [
+    {
+      "id": "thr.spoofed-po",
+      "title": "Spoofed PO email makes the intake agent create an order to a drop address",
+      "risk": {
+        "asset": "Shipped goods and revenue",
+        "actor": "External fraudster",
+        "failure_mode": "Prompt-steered order creation from untrusted email text",
+        "impact": "Goods shipped without payment"
+      },
+      "target_component_id": "cmp.agent-intake",
+      "failure_class": "execution",
+      "obligation_ids": [
+        "obl.order-policy",
+        "obl.sox-icfr"
+      ],
+      "control_ids": [
+        "ctl.input-isolation",
+        "ctl.shipto-verify"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "Order management owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.logic-tamper",
+      "title": "Unapproved edit to the orchestration logic skips the credit step",
+      "risk": {
+        "asset": "O2C orchestration logic",
+        "actor": "Developer or platform admin",
+        "failure_mode": "Logic changed outside L1 change control",
+        "impact": "Orders ship without a credit check"
+      },
+      "target_component_id": "cmp.o2c-logic",
+      "failure_class": "logic",
+      "obligation_ids": [
+        "obl.sox-icfr"
+      ],
+      "stakeholder_ids": [
+        "stk.securities-regulator"
+      ],
+      "control_ids": [
+        "ctl.logic-change-approval",
+        "ctl.decision-log"
+      ],
+      "accountable": {
+        "name": "O2C process owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.llm-reinterprets",
+      "title": "Reasoning LLM reads \"VIP customers may get extended terms\" as permission to skip the credit check",
+      "risk": {
+        "asset": "Credit and discount decisions",
+        "actor": "None (model behavior)",
+        "failure_mode": "Model reinterprets L1 logic; its reasoning trace looks plausible",
+        "impact": "Off-policy credit or discounts"
+      },
+      "target_component_id": "cmp.reasoning-llm",
+      "failure_class": "model_behavior",
+      "obligation_ids": [
+        "obl.sox-icfr"
+      ],
+      "stakeholder_ids": [
+        "stk.securities-regulator"
+      ],
+      "control_ids": [
+        "ctl.discount-authority",
+        "ctl.refund-caps",
+        "ctl.credit-limits",
+        "ctl.decision-log",
+        "ctl.regression-tests"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "O2C process owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      },
+      "notes": "The AI Model Provider shapes how rules are read but is not accountable for O2C outcomes. Contract terms (version pinning, change notice) are an open item."
+    },
+    {
+      "id": "thr.silent-fallback",
+      "title": "Gateway falls back to a smaller model under load and decisions change",
+      "risk": {
+        "asset": "Consistent O2C decisions",
+        "actor": "None (load)",
+        "failure_mode": "Unapproved change to model settings",
+        "impact": "Same inputs give different credit, pricing or refund outcomes"
+      },
+      "target_component_id": "cmp.model-settings",
+      "failure_class": "execution",
+      "obligation_ids": [],
+      "no_obligation": {
+        "reason": "No binding duty identified yet. Recheck in the banking overlay (equal treatment)."
+      },
+      "stakeholder_ids": [
+        "stk.customer-contacts"
+      ],
+      "control_ids": [
+        "ctl.regression-tests"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "O2C process owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.authority-creep",
+      "title": "Orchestrator chains steps so one agent's output becomes another's approval",
+      "risk": {
+        "asset": "Segregation of duties",
+        "actor": "None (design flaw) or insider",
+        "failure_mode": "Agent output treated as approval",
+        "impact": "Unapproved orders, credits or write-offs"
+      },
+      "target_component_id": "cmp.orchestrator",
+      "failure_class": "execution",
+      "obligation_ids": [
+        "obl.sox-icfr"
+      ],
+      "stakeholder_ids": [
+        "stk.securities-regulator"
+      ],
+      "control_ids": [
+        "ctl.sod",
+        "ctl.agent-identity"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "O2C process owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.discount-persuasion",
+      "title": "Customer argues the pricing agent into an off-contract discount",
+      "risk": {
+        "asset": "Contract pricing",
+        "actor": "Customer",
+        "failure_mode": "Persuasion through a well-argued request",
+        "impact": "Revenue loss and misstated revenue"
+      },
+      "target_component_id": "cmp.agent-pricing",
+      "failure_class": "execution",
+      "obligation_ids": [
+        "obl.revenue-recognition"
+      ],
+      "stakeholder_ids": [
+        "stk.securities-regulator"
+      ],
+      "control_ids": [
+        "ctl.discount-authority"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "Deal desk lead (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.collections-abuse",
+      "title": "Collections agent sends misleading or harassing messages",
+      "risk": {
+        "asset": "Customer relationships and legal standing",
+        "actor": "None (model behavior)",
+        "failure_mode": "Off-template messages or contact at prohibited times",
+        "impact": "Complaints and legal exposure"
+      },
+      "target_component_id": "cmp.agent-collections",
+      "failure_class": "execution",
+      "obligation_ids": [
+        "obl.debt-collection"
+      ],
+      "stakeholder_ids": [
+        "stk.consumer-debtors",
+        "stk.customer-contacts"
+      ],
+      "control_ids": [
+        "ctl.collections-templates",
+        "ctl.output-filter"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "Collections manager (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.misapplied-cash",
+      "title": "Cash matching applies payments to the wrong invoices",
+      "risk": {
+        "asset": "Accounts receivable",
+        "actor": "None, or an insider hiding fraud",
+        "failure_mode": "Low-confidence matches posted automatically",
+        "impact": "Wrongful dunning or hidden fraud"
+      },
+      "target_component_id": "cmp.cash-matching",
+      "failure_class": "execution",
+      "obligation_ids": [
+        "obl.sox-icfr"
+      ],
+      "stakeholder_ids": [
+        "stk.customer-contacts",
+        "stk.securities-regulator"
+      ],
+      "control_ids": [
+        "ctl.match-threshold"
+      ],
+      "accountable": {
+        "status": "none"
+      }
+    },
+    {
+      "id": "thr.data-exposure",
+      "title": "Invoicing agent puts one customer's data in another customer's invoice",
+      "risk": {
+        "asset": "Customer data",
+        "actor": "None (context mix-up)",
+        "failure_mode": "Cross-customer context in one agent session",
+        "impact": "Breach of confidentiality"
+      },
+      "target_component_id": "cmp.agent-invoicing",
+      "failure_class": "execution",
+      "obligation_ids": [
+        "obl.customer-confidentiality",
+        "obl.privacy"
+      ],
+      "stakeholder_ids": [
+        "stk.customer-contacts",
+        "stk.privacy-authority"
+      ],
+      "control_ids": [
+        "ctl.tenant-context",
+        "ctl.output-filter"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.master-data-poison",
+      "title": "Customer bank details changed in master data to divert refunds",
+      "risk": {
+        "asset": "Customer master data",
+        "actor": "Insider or compromised account",
+        "failure_mode": "Unauthorized data change",
+        "impact": "Refunds and credits paid to the wrong account"
+      },
+      "target_component_id": "cmp.customer-master",
+      "failure_class": "data",
+      "obligation_ids": [
+        "obl.order-policy"
+      ],
+      "stakeholder_ids": [
+        "stk.customer-contacts"
+      ],
+      "control_ids": [
+        "ctl.master-data-change"
+      ],
+      "accountable": {
+        "name": "Customer data owner (placeholder)",
+        "persona_id": "srf.role.data-provider",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.guardrail-outage",
+      "title": "Guardrail service is down and agents run without output filtering",
+      "risk": {
+        "asset": "Outbound customer messages",
+        "actor": "None (outage)",
+        "failure_mode": "Inherited control unavailable",
+        "impact": "Unfiltered messages reach customers"
+      },
+      "target_component_id": "cmp.guardrails",
+      "failure_class": "control_loss",
+      "obligation_ids": [
+        "obl.customer-confidentiality"
+      ],
+      "stakeholder_ids": [
+        "stk.customer-contacts"
+      ],
+      "control_ids": [
+        "ctl.output-filter"
+      ],
+      "accountable": {
+        "name": "Model serving team (placeholder)",
+        "persona_id": "srf.role.ai-model-serving",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.bank-sanctions-skip",
+      "title": "Orchestrator releases a first order before sanctions screening finishes",
+      "risk": {
+        "asset": "Sanctions compliance",
+        "actor": "None (step order)",
+        "failure_mode": "Screening step skipped or run late",
+        "impact": "Dealing with a sanctioned party"
+      },
+      "target_component_id": "cmp.orchestrator",
+      "failure_class": "execution",
+      "vertical": "banking",
+      "obligation_ids": [
+        "obl.bank-sanctions"
+      ],
+      "stakeholder_ids": [
+        "stk.bank-supervisor"
+      ],
+      "control_ids": [
+        "ctl.bank-sanctions-screen"
+      ],
+      "accountable": {
+        "name": "O2C app team lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "Order management owner (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    },
+    {
+      "id": "thr.bank-credit-model",
+      "title": "Credit scoring component denies credit with no valid reason for the notice",
+      "risk": {
+        "asset": "Credit decisions",
+        "actor": "None (model behavior)",
+        "failure_mode": "Decision reasons come from model text",
+        "impact": "Notices that do not match the real reason"
+      },
+      "target_component_id": "cmp.credit-scoring",
+      "failure_class": "execution",
+      "vertical": "banking",
+      "obligation_ids": [
+        "obl.bank-adverse-action",
+        "obl.bank-model-risk"
+      ],
+      "stakeholder_ids": [
+        "stk.credit-applicants",
+        "stk.bank-supervisor"
+      ],
+      "control_ids": [
+        "ctl.bank-adverse-action",
+        "ctl.bank-model-validation",
+        "ctl.credit-limits"
+      ],
+      "accountable": {
+        "name": "Credit analytics lead (placeholder)",
+        "persona_id": "srf.role.application-developer",
+        "placeholder": true
+      },
+      "business_response_owner": {
+        "name": "Credit manager (placeholder)",
+        "persona_id": "srf.role.ai-system-governance",
+        "placeholder": true
+      }
+    }
+  ]
+}
