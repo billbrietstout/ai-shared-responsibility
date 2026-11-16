@@ -8,12 +8,15 @@ monitor fixture, which is about a megabyte and includes extracted text.
 Scopes:
   cited      papers the agentic catalog cites (the default)
   org        decision include, excluding cited research
-  research   arXiv papers added because a paper in the inventory cites them
-  all        every inventory record
+  research   included arXiv papers added because a paper in the inventory cites them
+  all        every included inventory record (org plus cited research)
 
 Cited research is never given a catalog code, so it cannot appear in
-the default scope. A metadata-only row, a duplicate, or a row marked
-for removal is not recorded as a catalog source.
+the default scope. A metadata-only row is not recorded as a catalog
+source. Monitor decisions delete_candidate and duplicate stay in the
+fixture and the monitor repo only; they are not written into the slim
+file the page loads. That matches the monitor site_inventory rule:
+included open papers only.
 
 Usage:
     python3 build/generate_whitepaper_inventory.py
@@ -200,6 +203,12 @@ def build_inventory(
                 f"{wp_id} is cited in the principles catalog but its "
                 f"monitor decision is {decision}"
             )
+        # Site-facing inventory matches monitor site_inventory.py:
+        # included open papers only. Closed delete-candidates and
+        # duplicates stay in the fixture for catalog checks, not here.
+        state = str(paper.get("state") or "open").strip().lower()
+        if decision != "include" or state != "open":
+            continue
         issue = paper.get("issue_number")
         if not isinstance(issue, int):
             raise SystemExit(f"{wp_id} is missing an integer issue_number")
@@ -299,13 +308,16 @@ def build_inventory(
         "version": 1,
         "updated": fixture.get("updated") or "",
         "description": (
-            "Slim index of the whitepaper monitor. A row with a catalog "
-            "code (c) is cited in the principles catalog. Cited research "
-            "(k = research) is not part of that default list. x = metadata "
-            "means principles have not been extracted. Those rows are not "
-            "sources of principles. ev is the monitor evidence tag, "
-            "paraphrased on the page. possibly_deployed is the monitor tag "
-            "tested, possibly deployed (needs review). It is not deployed."
+            "Slim index of included open papers from the whitepaper "
+            "monitor. A row with a catalog code (c) is cited in the "
+            "principles catalog. Cited research (k = research) is not "
+            "part of that default list. x = metadata means principles "
+            "have not been extracted. Those rows are not sources of "
+            "principles. delete_candidate and duplicate rows are omitted "
+            "here; they remain in the monitor export and the site "
+            "fixture. ev is the monitor evidence tag, paraphrased on "
+            "the page. possibly_deployed is the monitor tag tested, "
+            "possibly deployed (needs review). It is not deployed."
         ),
         "generated_from": [
             "build/fixtures/whitepapers.json",
@@ -318,7 +330,7 @@ def build_inventory(
             "dt": "date published, as the monitor recorded it",
             "u": "URL",
             "n": "monitor issue number",
-            "dec": "include, duplicate, or delete_candidate",
+            "dec": "include (delete_candidate and duplicate are not written)",
             "c": "catalog source codes for this monitor row, joined when two codes share a WP- id",
             "cs": "per-code catalog title, URL, organization, and date, in catalog order",
             "x": "extracted or metadata",

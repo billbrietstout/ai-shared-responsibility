@@ -73,11 +73,22 @@ class InventoryScopeTest(unittest.TestCase):
         self.assertEqual(counts["principles"], 170)
         self.assertEqual(counts["classic"], 87)
         self.assertEqual(len(set(row["i"] for row in org) & set(row["i"] for row in research)), 0)
-        self.assertEqual(counts["org"] + counts["research"] + (
-            counts["all"] - counts["org"] - counts["research"]
-        ), counts["all"])
+        # Slim inventory is include-only, so all == org + research.
+        self.assertEqual(counts["org"] + counts["research"], counts["all"])
         self.assertGreater(counts["all"], counts["org"])
         self.assertNotEqual(counts["org"], counts["research"])
+        self.assertTrue(all(row["dec"] == "include" for row in papers))
+        fixture_papers = self.fixture.get("papers") or []
+        retired = [
+            p
+            for p in fixture_papers
+            if str(p.get("decision") or "").lower()
+            in ("delete_candidate", "duplicate")
+        ]
+        self.assertGreater(len(retired), 0)
+        slim_ids = {row["i"] for row in papers}
+        for paper in retired:
+            self.assertNotIn(paper.get("wp_id"), slim_ids)
 
     def test_cited_research_is_not_a_principle_source(self):
         for row in self.inventory["papers"]:
@@ -190,6 +201,7 @@ class InventoryScopeTest(unittest.TestCase):
                     "wp_id": "WP-0001",
                     "title": "Old",
                     "decision": "include",
+                    "state": "open",
                     "source_org": "Org",
                     "url": "https://example.com/WP-0001",
                     "issue_number": 1,
@@ -198,6 +210,7 @@ class InventoryScopeTest(unittest.TestCase):
                     "wp_id": "WP-0180",
                     "title": "Cited",
                     "decision": "include",
+                    "state": "open",
                     "source_org": "Academic",
                     "url": "https://arxiv.org/abs/1206.6389",
                     "issue_number": 180,
@@ -211,6 +224,24 @@ class InventoryScopeTest(unittest.TestCase):
                     ],
                     "principles": ["Not extracted yet."],
                 },
+                {
+                    "wp_id": "WP-0090",
+                    "title": "Retired Zero Trust note",
+                    "decision": "delete_candidate",
+                    "state": "closed",
+                    "source_org": "Org",
+                    "url": "https://example.com/WP-0090",
+                    "issue_number": 90,
+                },
+                {
+                    "wp_id": "WP-0102",
+                    "title": "Duplicate Zero Trust note",
+                    "decision": "duplicate",
+                    "state": "closed",
+                    "source_org": "Org",
+                    "url": "https://example.com/WP-0102",
+                    "issue_number": 102,
+                },
             ],
         }
         built = self.mod.build_inventory(fixture, catalog, None)
@@ -218,6 +249,8 @@ class InventoryScopeTest(unittest.TestCase):
         self.assertEqual(built["counts"]["org"], 1)
         self.assertEqual(built["counts"]["research"], 1)
         self.assertEqual(built["counts"]["all"], 2)
+        ids = {row["i"] for row in built["papers"]}
+        self.assertEqual(ids, {"WP-0001", "WP-0180"})
         research = built["papers"][1]
         self.assertEqual(research["i"], "WP-0180")
         self.assertNotIn("c", research)
@@ -232,6 +265,7 @@ class InventoryScopeTest(unittest.TestCase):
             self.assertIn("not part of the default", html)
             self.assertNotIn("Research the monitor found", html)
             self.assertIn("not a source of principles", html.lower())
+            self.assertIn("marked for removal or as duplicates", html.lower())
             self.assertIn("paraphrase", html.lower())
             self.assertIn('value="possibly_deployed"', html)
             self.assertIn('value="deployed"', html)
