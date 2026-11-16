@@ -126,7 +126,10 @@ python3 scripts/validate_principles.py \
 
 Review `reports/principles-diff.md`. With approval, copy the candidate into
 `data/`, open a pull request against `develop`, and merge. Do not push
-straight to `develop` or `main`. Refresh the fixture when the monitor export
+straight to `develop` or `main`. Feature work lands on `develop` first.
+GitHub Pages publishes from `main`; never delete `main`, and promote with a
+`develop` → `main` pull request only when asked. See
+[`docs/branch-workflow.md`](docs/branch-workflow.md). Refresh the fixture when the monitor export
 changes:
 
 ```bash

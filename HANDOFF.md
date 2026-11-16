@@ -229,8 +229,9 @@ Do not answer SRF lookups from training memory.
 ## Suggested Project setup
 
 - **Workspace:** GitHub repo `billbrietstout/ai-shared-responsibility` (same tree as this folder)
-- **Default branch for PRs:** `develop`, then merge to `main` when the owner asks. Both currently match.
-- **Context files:** this `HANDOFF.md`; later add `ARCHITECTURE.md` and `build/README.md` if agents keep missing the generate/verify loop
+- **Default branch for PRs:** `develop`. Cut `cursor/…` or `feature/…` branches from `develop`. Do not commit or push on `main`. Do not delete `main` (GitHub Pages deploys from it; deleting it took the live site down on 16 Nov 2026).
+- **Promote to production:** when the owner asks, open a PR `develop` → `main` and merge it. Do not push commits straight to `main`.
+- **Context files:** this `HANDOFF.md`; `docs/branch-workflow.md`; later add `ARCHITECTURE.md` and `build/README.md` if agents keep missing the generate/verify loop
 - **Subscriptions to offer the owner:** PRs on this repo; CI on `main` and `develop`; a weekly regulation-staleness check
 - **Local agents:** required for browser verification of UI. Cloud agents can edit JSON/HTML and run the Python verifiers.
 
