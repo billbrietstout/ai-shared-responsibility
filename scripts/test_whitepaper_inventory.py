@@ -274,6 +274,34 @@ class InventoryScopeTest(unittest.TestCase):
         self.assertNotIn("security-principles.json\").write", source)
         self.assertIn("SLIM_REL", source)
 
+    def test_published_dates_normalize_to_month_d_yyyy(self):
+        fmt = self.mod.format_published_date
+        self.assertEqual(fmt(""), "")
+        self.assertEqual(fmt(None), "")
+        self.assertEqual(fmt("8/27/26"), "August 27, 2026")
+        self.assertEqual(fmt("8/19/26"), "August 19, 2026")
+        self.assertEqual(fmt("9/16/26"), "September 16, 2026")
+        self.assertEqual(fmt("4/15/2026"), "April 15, 2026")
+        self.assertEqual(fmt("2023-10-10"), "October 10, 2023")
+        self.assertEqual(
+            fmt("2023-10-10 (arXiv v1, from the arXiv API)"),
+            "October 10, 2023 (arXiv v1, from the arXiv API)",
+        )
+        self.assertEqual(fmt("September 29, 2026"), "September 29, 2026")
+        self.assertEqual(fmt("Sept 8, 2026"), "September 8, 2026")
+        self.assertEqual(fmt("2025/2026"), "2025/2026")
+        self.assertEqual(fmt("Not checked"), "Not checked")
+        by_id = {row["i"]: row for row in self.inventory["papers"]}
+        self.assertEqual(by_id["WP-0090"]["dt"], "August 27, 2026")
+        self.assertEqual(by_id["WP-0123"]["dt"], "September 29, 2026")
+        self.assertEqual(by_id["WP-0052"]["dt"], "")
+        self.assertEqual(by_id["WP-0055"]["dt"], "April 15, 2026")
+        for row in self.inventory["papers"]:
+            self.assertFalse(
+                re.fullmatch(r"\d{1,2}/\d{1,2}/\d{2,4}", row.get("dt") or ""),
+                row["i"],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
