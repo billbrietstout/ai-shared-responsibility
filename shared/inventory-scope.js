@@ -341,7 +341,9 @@
     table.appendChild(caption);
     var thead = document.createElement("thead");
     var headRow = document.createElement("tr");
-    var headers = ["ID", "Code", "Title", "Record"];
+    // ID (WP-) and catalog Code stay in the slim JSON and the find box;
+    // the table hides them so most rows do not look empty or cryptic.
+    var headers = ["Title", "Record"];
     if (showEvidence) headers.push("Evidence level");
     headers.push("Organization", "Date");
     headers.forEach(function (label) {
@@ -363,17 +365,6 @@
     }
     list.forEach(function (paper) {
       var tr = document.createElement("tr");
-      var idCell = document.createElement("td");
-      idCell.className = "inv-id";
-      idCell.appendChild(
-        makeLink(
-          "https://github.com/billbrietstout/ai-security-whitepaper-monitor/issues/" +
-            paper.n,
-          paper.i
-        )
-      );
-      tr.appendChild(idCell);
-      tr.appendChild(cell(paper.c || ""));
       var titleCell = document.createElement("td");
       titleCell.appendChild(makeLink(paper.u, paper.t || paper.i));
       tr.appendChild(titleCell);
