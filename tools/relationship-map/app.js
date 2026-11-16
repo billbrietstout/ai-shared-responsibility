@@ -145,6 +145,8 @@
   var detailsChain = document.getElementById("details-chain");
   var connectionsHeading = document.getElementById("connections-heading");
   var clearBtn = document.getElementById("clear-selection");
+  var mapPage = document.querySelector(".map-page");
+  var detailsEl = document.querySelector(".details");
 
   var graph = null;
   var renderer = null;
@@ -698,6 +700,63 @@
     return "hidden";
   }
 
+  var labelWidthCache = {};
+  var labelMeasureCtx = null;
+
+  function labelPixelWidth(text) {
+    var key = String(text || "");
+    if (Object.prototype.hasOwnProperty.call(labelWidthCache, key)) return labelWidthCache[key];
+    var width = key.length * 7;
+    if (!labelMeasureCtx) {
+      var canvas = document.createElement("canvas");
+      labelMeasureCtx = canvas.getContext("2d");
+    }
+    if (labelMeasureCtx) {
+      labelMeasureCtx.font = "12px sans-serif";
+      width = labelMeasureCtx.measureText(key).width;
+    }
+    labelWidthCache[key] = width;
+    return width;
+  }
+
+  /* Sigma draws the name to the right of the node. A topic on the right
+     edge, such as "Ephemeral Execution and Ephemeral Compute", then runs
+     off the canvas. Put the name on the side with room, and shrink it
+     only when neither side can hold the full 12px name. */
+  function labelPlacement(attrs) {
+    var side = (view === "focus" || !attrs || attrs.kind !== "persona") ? "right" : "left";
+    var size = 12;
+    if (!renderer || !attrs || attrs.x == null || attrs.y == null) return { side: side, size: size };
+    var dims = renderer.getDimensions();
+    if (!dims || !dims.width) return { side: side, size: size };
+    var point;
+    try {
+      point = renderer.graphToViewport({ x: attrs.x, y: attrs.y });
+    } catch (err) {
+      return { side: side, size: size };
+    }
+    if (!point || !isFinite(point.x)) return { side: side, size: size };
+    var text = attrs.label || "";
+    if (!text) return { side: side, size: size };
+    var full = labelPixelWidth(text);
+    var roomRight = dims.width - point.x;
+    var roomLeft = point.x;
+    var room = (side === "left" ? roomLeft : roomRight) - 28;
+    var altSide = side === "left" ? "right" : "left";
+    var altRoom = (altSide === "left" ? roomLeft : roomRight) - 28;
+    if (full > room && altRoom > room) {
+      side = altSide;
+      room = altRoom;
+    }
+    if (full > room && room > 0) {
+      var fitted = Math.floor(12 * room / full);
+      if (fitted < 1) fitted = 1;
+      if (fitted > 12) fitted = 12;
+      size = fitted;
+    }
+    return { side: side, size: size };
+  }
+
   function labelPlate(mode, kind) {
     if (mode === "hidden") return {};
     if (kind !== "layer" && kind !== "persona" && kind !== "model" && kind !== "policy" && kind !== "risk") {
@@ -727,13 +786,15 @@
       };
     }
     var showLabel = labelMode(key, attrs, hovered);
+    var place = showLabel === "hidden" ? null : labelPlacement(attrs);
     var z = key === selected ? 4 : (neighborMap[key] || hovered) ? 3 : (attrs.kind === "layer" || attrs.kind === "model" ? 2 : 1);
     return Object.assign({
       visibility: "visible",
       color: color,
       labelColor: palette.label,
       labelVisibility: showLabel,
-      labelPosition: view === "focus" || attrs.kind !== "persona" ? "right" : "left",
+      labelPosition: place ? place.side : ((view === "focus" || attrs.kind !== "persona") ? "right" : "left"),
+      labelSize: place ? place.size : 12,
       zIndex: z,
       size: key === selected ? attrs.size * 1.25 : attrs.size,
       highlighted: key === selected,
@@ -1428,6 +1489,65 @@
     return "";
   }
 
+  /* The details column starts beside the filters, well below the top of
+     the window, and used to stay 720px tall. Keep its box inside the
+     window: stick it under the nav on a wide screen, and dock it to the
+     bottom on a narrow screen while a node is open. */
+  function placeDetails() {
+    if (!detailsEl || !mapPage) return;
+    var narrow = window.matchMedia("(max-width: 800px)").matches;
+    var open = !!(detailsBody && !detailsBody.hidden);
+    mapPage.classList.toggle("is-node-open", narrow && open);
+    var cushion = 2;
+    if (narrow) {
+      detailsEl.style.top = "";
+      if (!open) {
+        detailsEl.style.maxHeight = "";
+        return;
+      }
+      var nav = document.querySelector(".nav");
+      var navBottom = 0;
+      if (nav) {
+        var navPos = window.getComputedStyle(nav).position;
+        if (navPos === "sticky" || navPos === "fixed") {
+          var navRect = nav.getBoundingClientRect();
+          if (navRect.bottom > 0) navBottom = navRect.bottom;
+        }
+      }
+      var limit = window.innerHeight - Math.max(navBottom, 0) - 12 - 12;
+      var cap = Math.min(limit, Math.round(window.innerHeight * 0.42));
+      var sheet = Math.floor(cap - cushion);
+      if (sheet < 0) sheet = 0;
+      var nextHeight = sheet + "px";
+      if (detailsEl.style.maxHeight !== nextHeight) detailsEl.style.maxHeight = nextHeight;
+      return;
+    }
+    var navEl = document.querySelector(".nav");
+    var stick = 16;
+    if (navEl) {
+      var pos = window.getComputedStyle(navEl).position;
+      if (pos === "sticky" || pos === "fixed") {
+        var bottom = navEl.getBoundingClientRect().bottom;
+        if (bottom > 0) stick = Math.round(bottom) + 16;
+      }
+    }
+    var topPx = stick + "px";
+    if (detailsEl.style.top !== topPx) detailsEl.style.top = topPx;
+    /* Cap the panel at the layout's bottom as well as the window. A
+       viewport-tall panel is as tall as this column once the map is
+       scrolled up, and then sticky lets it slide off the top. */
+    var layout = document.querySelector(".map-layout");
+    var layoutRect = layout ? layout.getBoundingClientRect() : null;
+    var anchor = stick;
+    if (layoutRect && layoutRect.top > stick) anchor = layoutRect.top;
+    var bottomEdge = window.innerHeight - cushion;
+    if (layoutRect && layoutRect.bottom - cushion < bottomEdge) bottomEdge = layoutRect.bottom - cushion;
+    var height = Math.floor(bottomEdge - anchor) - 8;
+    if (height < 0) height = 0;
+    var heightPx = height + "px";
+    if (detailsEl.style.maxHeight !== heightPx) detailsEl.style.maxHeight = heightPx;
+  }
+
   function renderDetails() {
     clearBtn.disabled = !selected && !root;
     if (view === "chain" && currentChain && root && graph.hasNode(root)) {
@@ -1452,6 +1572,7 @@
       detailsList.hidden = true;
       renderChainDetails(currentChain);
       detailsSummary.textContent = chainSentence(currentChain);
+      placeDetails();
       return;
     }
     detailsChain.hidden = true;
@@ -1469,6 +1590,7 @@
       detailsList.textContent = "";
       detailsModelNote.hidden = true;
       detailsModelNote.textContent = "";
+      placeDetails();
       return;
     }
     var attrs = graph.getNodeAttributes(selected);
@@ -1526,6 +1648,7 @@
     var summary = attrs.name + ". " + (KIND_LABEL[attrs.kind] || attrs.kind) + ". " + rows.length + " connections.";
     if (gap) summary += " " + gap;
     detailsSummary.textContent = summary;
+    placeDetails();
   }
 
   function countNodes(pred) {
@@ -2394,7 +2517,12 @@
   });
   window.addEventListener("resize", function () {
     if (view === "chain" && currentChain) drawChainLines();
+    placeDetails();
   });
+  window.addEventListener("scroll", placeDetails, { passive: true });
+  window.addEventListener("load", placeDetails);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeDetails);
+  placeDetails();
   fullBtn.addEventListener("click", function () { showFull(true); });
   startBtn.addEventListener("click", function () { showSearch(true); });
   document.querySelectorAll(".kind-filter input").forEach(function (box) {
