@@ -42,8 +42,8 @@
   var CAPTION = {
     cited: "Papers the principles catalog cites. These are sources of the principles on this site.",
     org: "Included organization papers. Metadata only means principles have not been extracted. That row is not a source of principles.",
-    research: "Cited research. Metadata only and duplicate rows are not sources of principles.",
-    all: "Every inventory record. Metadata only, duplicate, and marked for removal are not sources of principles."
+    research: "Included cited research. Metadata only means principles have not been extracted. That row is not a source of principles.",
+    all: "Every included inventory record. Metadata only means principles have not been extracted. That row is not a source of principles."
   };
 
   function selected(name) {
@@ -51,9 +51,14 @@
     return input ? input.value : "";
   }
 
+  function isIncluded(paper) {
+    return !paper.dec || paper.dec === "include";
+  }
+
   function inScope(paper, scope) {
+    if (!isIncluded(paper)) return false;
     if (scope === "cited") return Array.isArray(paper.cs) && paper.cs.length > 0;
-    if (scope === "org") return paper.k === "org" && paper.dec === "include";
+    if (scope === "org") return paper.k === "org";
     if (scope === "research") return paper.k === "research";
     return true;
   }
@@ -109,12 +114,6 @@
   }
 
   function recordLabel(paper) {
-    if (paper.dec === "duplicate") {
-      return "Duplicate. Not a source of principles.";
-    }
-    if (paper.dec === "delete_candidate") {
-      return "Marked for removal. Not a source of principles.";
-    }
     if (paper.c) return "Cited in principles.";
     if (paper.x === "extracted") {
       return "Principles extracted in the inventory. This page's principle list does not cite it.";
