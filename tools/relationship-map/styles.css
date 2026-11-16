@@ -557,8 +557,14 @@
   border: 1px solid var(--slate-200);
   background: var(--surface);
   padding: var(--sp-4);
-  max-height: 720px;
+  /* Beside the map, not a 720px block that runs off the window.
+     app.js sets top and max-height from the viewport. */
+  position: sticky;
+  top: 72px;
+  align-self: start;
+  max-height: calc(100dvh - 88px);
   overflow: auto;
+  overscroll-behavior: contain;
 }
 
 .details__bar {
@@ -566,7 +572,21 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--sp-3);
-  margin-bottom: var(--sp-3);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  margin: calc(-1 * var(--sp-4)) calc(-1 * var(--sp-4)) var(--sp-3);
+  padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  background: var(--surface);
+}
+
+.details__bar h2 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.details__bar button {
+  flex-shrink: 0;
 }
 
 .details h2 {
@@ -636,7 +656,28 @@
   }
 
   .details {
+    position: static;
+    top: auto;
     max-height: none;
+  }
+
+  /* The details column sits under the graph on a narrow screen, so it
+     leaves the window while the map is in view. Dock it to the bottom
+     while a node is open. The bar inside keeps Clear selection visible.
+     Extra padding keeps the map scrollable above that docked panel. */
+  .map-page.is-node-open {
+    padding-bottom: calc(42dvh + var(--sp-16));
+  }
+
+  .map-page.is-node-open .details {
+    position: fixed;
+    z-index: 40;
+    left: var(--page-pad);
+    right: var(--page-pad);
+    bottom: 12px;
+    width: auto;
+    max-height: min(42dvh, calc(100dvh - 96px));
+    overflow: auto;
   }
 }
 
