@@ -39,10 +39,10 @@ Every value below comes straight from the current `develop` YAML. Nothing was ad
 | Control | Personas on the control |
 |---|---|
 | `controlInputValidationAndSanitization` | Platform Provider, Model Serving, Agentic Provider, Application Developer |
-| `controlAdversarialTrainingAndTesting` | Model Provider, Application Developer |
+| `controlAdversarialTrainingAndTesting` | AI Model Provider, Application Developer |
 | `controlOutputValidationAndSanitization` | Model Serving, Application Developer |
 
-So the question "who answers for reducing prompt injection?" already has an answer for each control. The Application Developer handles input and output checks in the app. The Model Provider handles adversarial training. The Model Serving actor handles checks at the serving layer. What the data shows today is the full group of actors who do the work. Accountability is the next step: pick the one actor who answers for each control, the single owner, chosen from the personas already listed.
+So the question "who answers for reducing prompt injection?" already has an answer for each control. The Application Developer handles input and output checks in the app. The AI Model Provider handles adversarial training. The Model Serving actor handles checks at the serving layer. What the data shows today is the full group of actors who do the work. Accountability is the next step: pick the one actor who answers for each control, the single owner, chosen from the personas already listed.
 
 **Obligation link (already there where mappings are filled in).** The controls carry framework mappings that act as obligations:
 

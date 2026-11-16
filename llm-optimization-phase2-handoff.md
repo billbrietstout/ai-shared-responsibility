@@ -304,7 +304,7 @@ Use the persona data from `/data/personas.json` for descriptions and layer assig
 | `agentic-platform-provider` | Agentic Platform & Framework Providers | L3, L4 |
 | `ai-model-serving` | AI Model Serving | L4 |
 | `ai-platform-provider` | AI Platform Provider | L4 |
-| `model-provider` | Model Provider | L5 |
+| `model-provider` | AI Model Provider | L5 |
 
 **Token tip:** Item 3 is structured content writing, not mechanical substitution. Use **Sonnet** for this. The JSON-LD above for the framework is complete — paste it directly. Write the personas DefinedTermSet using the same pattern.
 
@@ -382,7 +382,7 @@ Follow the same HTML shell as other pages: `<!doctype html>`, `<site-nav current
 | Application Developer | `#persona-application-developer` | L3 persona. Integrates AI models into applications via APIs or embedded models. Accountable for application-level security, input validation, and output filtering. Full definition: /personas/#application-developer |
 | Agentic Platform Provider | `#persona-agentic-platform-provider` | L3/L4 persona. Provides development environments, frameworks, and orchestration runtimes for agentic AI. Full definition: /personas/#agentic-platform-provider |
 | AI Platform Provider | `#persona-ai-platform-provider` | L4 persona. Provides compute, APIs, and platform services for AI model hosting. Includes cloud providers and MLOps platforms. Full definition: /personas/#ai-platform-provider |
-| Model Provider | `#persona-model-provider` | L5 persona. Develops, trains, and tunes foundation models. Accountable for model security, model cards, and vulnerability disclosure. Full definition: /personas/#model-provider |
+| AI Model Provider | `#persona-model-provider` | L5 persona. Develops, trains, and tunes foundation models. Accountable for model security, model cards, and vulnerability disclosure. Full definition: /personas/#model-provider |
 
 #### Page design
 
