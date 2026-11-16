@@ -1,7 +1,7 @@
 {
   "$schema_version": "0.2",
   "srf_version": "1.0",
-  "updated": "2026-11-15",
+  "updated": "2026-11-16",
   "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers. obligations[] is a risk-to-obligation link. A derived_via_control link is stored only when a related control's citation matches a current obligation. That basis means the link was reached through the control, and the source lists the control id and the citation. basis official_text means the cited provision's wording covers the risk. The source then names the URL, the article and paragraph, and a short excerpt. No link is stored without one of those bases.",
   "id_convention": "AI Exchange entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Entries that exist only in the OWASP GenAI Data Security Risks taxonomy are keyed dsgaiNN (lowercase), matching the published DSGAI identifier. Threat names for AI Exchange rows are taken verbatim from the AI Exchange AI security matrix; names for DSGAI-only rows are taken verbatim from the DSGAI 2026 taxonomy. impact and attack_surface for DSGAI-only rows are derived from the published DSGAI summary, because that taxonomy does not use the AI Exchange field names. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. This file cites DSGAI identifiers; it does not copy DSGAI mitigation text. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json. DSGAI07 (governance, lifecycle, and classification as an enabling condition) and DSGAI08 (regulatory non-compliance as an outcome) have no rows: they are not attack techniques. Classification and provenance duties already sit on the Data Provider persona at L2.",
   "accountability_convention": "One accountable persona per threat per operating model. The responsibility object quotes the customer and provider cell values verbatim from /data/matrix.json for the threat's primary SRF layer. Where the matrix says shared, this file still names a single accountable lead and records the counterparty obligation in the note, because shared is not a valid final answer.",
@@ -276,6 +276,32 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L3-OPS-007",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.2 (malicious code protection at designated locations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-14-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L3-OPS-007",
+                "mapping_key": "nist_800_171",
+                "citation": "3.14.2"
+              }
+            ]
+          }
         }
       ]
     },
@@ -532,6 +558,45 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.1 (identify, report, and correct system flaws); SI.L2-3.14.2 (malicious code protection at designated locations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.1 (identify, report, and correct system flaws); SI.L2-3.14.2 (malicious code protection at designated locations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-14-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "nist_800_171",
+                "citation": "3.14.1"
+              }
+            ]
+          }
         }
       ]
     },
@@ -693,6 +758,45 @@
                 "control": "srf.control.healthcare.SRF-L3-DEV-003",
                 "mapping_key": "nist_ai_rmf",
                 "citation": "MEASURE 2.6 (safety risks are evaluated and documented); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.1 (identify, report, and correct system flaws); SI.L2-3.14.2 (malicious code protection at designated locations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.1 (identify, report, and correct system flaws); SI.L2-3.14.2 (malicious code protection at designated locations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-14-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "nist_800_171",
+                "citation": "3.14.1"
               }
             ]
           }
@@ -864,6 +968,45 @@
                 "control": "srf.control.insurance.SRF-L4-MON-003",
                 "mapping_key": "nist_ai_rmf",
                 "citation": "MEASURE 2.7 (security and resilience are evaluated); MEASURE 2.4 (the deployed AI system is monitored)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.cm-l2-3-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "cmmc_2_0",
+                "citation": "CM.L2-3.4.1 (baseline configurations and system inventories); CM.L2-3.4.2 (security configuration settings)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.cm-l2-3-4-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "cmmc_2_0",
+                "citation": "CM.L2-3.4.1 (baseline configurations and system inventories); CM.L2-3.4.2 (security configuration settings)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "nist_800_171",
+                "citation": "3.4.1"
               }
             ]
           }
@@ -1061,6 +1204,32 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L5-ACQ-003",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.3 (monitor security alerts and advisories and take action); SI.L3-3.14.1e (verify software integrity using root of trust mechanisms or cryptographic signatures - Level 3)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-14-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L5-ACQ-003",
+                "mapping_key": "nist_800_171",
+                "citation": "3.14.3"
+              }
+            ]
+          }
         }
       ]
     },
@@ -1245,6 +1414,84 @@
                 "control": "srf.control.healthcare.SRF-L2-DEV-001",
                 "mapping_key": "nist_ai_rmf",
                 "citation": "MAP 4.1 (legal and technology risks of third-party data and software are mapped); MEASURE 2.10 (privacy risk is examined and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.ra-l2-3-11-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-TEVV-009",
+                "mapping_key": "cmmc_2_0",
+                "citation": "RA.L2-3.11.1 (periodic risk assessments)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-514",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.514: De-identification standards"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.measure-2-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.finance.SRF-L2-DEV-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MEASURE 2.3 (performance is demonstrated for conditions similar to deployment); MAP 2.3 (data selection considerations are documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-11-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-TEVV-009",
+                "mapping_key": "nist_800_171",
+                "citation": "3.11.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
               }
             ]
           }
@@ -1443,6 +1690,45 @@
                 "control": "srf.control.healthcare.SRF-L5-VV-002",
                 "mapping_key": "nist_ai_rmf",
                 "citation": "MANAGE 3.1 (AI risks from third-party resources are monitored); MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L5-ACQ-003",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.3 (monitor security alerts and advisories and take action); SI.L3-3.14.1e (verify software integrity using root of trust mechanisms or cryptographic signatures - Level 3)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-14-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L5-ACQ-003",
+                "mapping_key": "nist_800_171",
+                "citation": "3.14.3"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.4d-ii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L1-ACQ-010",
+                "mapping_key": "m_25_22",
+                "citation": "Section 4(d)(ii) (Opportunity and Risk Re-Evaluation)"
               }
             ]
           }
@@ -1957,6 +2243,45 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-514",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.514: De-identification standards"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
+              }
+            ]
+          }
         }
       ]
     },
@@ -2281,6 +2606,45 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "cmmc-2-0.cm-l2-3-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "cmmc_2_0",
+                "citation": "CM.L2-3.4.1 (baseline configurations and system inventories); CM.L2-3.4.2 (security configuration settings)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.cm-l2-3-4-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "cmmc_2_0",
+                "citation": "CM.L2-3.4.1 (baseline configurations and system inventories); CM.L2-3.4.2 (security configuration settings)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L4-ACQ-002",
+                "mapping_key": "nist_800_171",
+                "citation": "3.4.1"
+              }
+            ]
+          }
         }
       ]
     },
@@ -2539,6 +2903,32 @@
                 "control": "srf.control.public-sector.SRF-L4-MON-006",
                 "mapping_key": "m_25_21",
                 "citation": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.4d-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "m_25_22",
+                "citation": "Section 4(d)(iii)(F) (Vendor Performance Requirements)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.4d-iii-f",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "m_25_22",
+                "citation": "Section 4(d)(iii)(F) (Vendor Performance Requirements)"
               }
             ]
           }
@@ -3290,6 +3680,58 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "cmmc-2-0.sc-l2-3-13-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "cmmc_2_0",
+                "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "nist_800_171",
+                "citation": "3.1.3"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.3d",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "m_25_22",
+                "citation": "Section 3(d)(iv) (Use of Government Data: contracts permanently prohibit training publicly or commercially available AI on nonpublic agency data absent consent)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.3d-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "m_25_22",
+                "citation": "Section 3(d)(iv) (Use of Government Data: contracts permanently prohibit training publicly or commercially available AI on nonpublic agency data absent consent)"
+              }
+            ]
+          }
         }
       ]
     },
@@ -3498,6 +3940,32 @@
                 "control": "srf.control.healthcare.SRF-L2-PMS-003",
                 "mapping_key": "nist_ai_rmf",
                 "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.annex-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.manufacturing.SRF-L2-DES-001",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 10 (data and data governance); Annex IV (technical documentation data section)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-3-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.manufacturing.SRF-L2-DES-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 3.1"
               }
             ]
           }
@@ -3894,6 +4362,32 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-ACQ-001",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 1.6"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-ACQ-001",
+                "mapping_key": "nist_800_171",
+                "citation": "3.1.3"
+              }
+            ]
+          }
         }
       ]
     },
@@ -4128,6 +4622,58 @@
                 "control": "srf.control.public-sector.SRF-L2-ACQ-001",
                 "mapping_key": "m_25_21",
                 "citation": "Section 4(b)(ii) (Complete AI Impact Assessment)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-514",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.514: De-identification standards"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.3d",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "m_25_22",
+                "citation": "Section 3(d) (Protect IP Rights and Use of Government Data)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
               }
             ]
           }
@@ -4944,6 +5490,32 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "cmmc-2-0.sc-l2-3-13-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "cmmc_2_0",
+                "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "nist_800_171",
+                "citation": "3.1.3"
+              }
+            ]
+          }
         }
       ]
     },
@@ -5371,6 +5943,58 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "cmmc-2-0.sc-l2-3-13-5",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "cmmc_2_0",
+                "citation": "AC.L2-3.1.3 (control the flow of CUI); SC.L2-3.13.5 (subnetworks for publicly accessible components)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-1-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-004",
+                "mapping_key": "nist_800_171",
+                "citation": "3.1.3"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.3d",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "m_25_22",
+                "citation": "Section 3(d)(iv) (Use of Government Data: contracts permanently prohibit training publicly or commercially available AI on nonpublic agency data absent consent)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.3d-iv",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-002",
+                "mapping_key": "m_25_22",
+                "citation": "Section 3(d)(iv) (Use of Government Data: contracts permanently prohibit training publicly or commercially available AI on nonpublic agency data absent consent)"
+              }
+            ]
+          }
         }
       ]
     },
@@ -5556,6 +6180,32 @@
                 "control": "srf.control.public-sector.SRF-L4-MON-006",
                 "mapping_key": "m_25_21",
                 "citation": "Section 4(b)(iii) (Conduct Ongoing Monitoring for Performance and Potential Adverse Impacts)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.4d-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "m_25_22",
+                "citation": "Section 4(d)(iii)(F) (Vendor Performance Requirements)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.4d-iii-f",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L4-MON-006",
+                "mapping_key": "m_25_22",
+                "citation": "Section 4(d)(iii)(F) (Vendor Performance Requirements)"
               }
             ]
           }
@@ -5778,6 +6428,58 @@
               }
             ]
           }
+        },
+        {
+          "requirement": "hipaa-security-rule.164-514",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "hipaa",
+                "citation": "45 CFR §164.514: De-identification standards"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-22.3d",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L2-ACQ-001",
+                "mapping_key": "m_25_22",
+                "citation": "Section 3(d) (Protect IP Rights and Use of Government Data)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.healthcare.SRF-L2-DEV-001",
+                "mapping_key": "onc_hti1",
+                "citation": "§170.315(b)(11)(iii): Training data description"
+              }
+            ]
+          }
         }
       ]
     },
@@ -5992,6 +6694,45 @@
                 "control": "srf.control.healthcare.SRF-L2-PMS-003",
                 "mapping_key": "nist_ai_rmf",
                 "citation": "MEASURE 2.7 (security and resilience are evaluated and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.1 (identify, report, and correct system flaws); SI.L2-3.14.2 (malicious code protection at designated locations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.si-l2-3-14-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "cmmc_2_0",
+                "citation": "SI.L2-3.14.1 (identify, report, and correct system flaws); SI.L2-3.14.2 (malicious code protection at designated locations)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-14-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L2-OPS-005",
+                "mapping_key": "nist_800_171",
+                "citation": "3.14.1"
               }
             ]
           }
