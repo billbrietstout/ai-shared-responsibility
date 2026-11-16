@@ -22,7 +22,7 @@
     { id: "data-provider",            name: "Data Provider",                layer: "L2", note: "Owns L2 AI Information: data provenance, quality, privacy, classification." },
     { id: "ai-system-users",          name: "AI System Users",              layer: "L1", note: "Uses the system. L1 accountability sits with AI System Governance under the org's acceptable-use policy." },
     { id: "ai-system-governance",     name: "AI System Governance",         layer: "L1", note: "Owns L1 AI Business & Usage: policy, compliance, acceptable-risk, incident governance." },
-    { id: "model-provider",           name: "Model Provider",               layer: "L5", note: "Owns L5 AI Model Provider: model architecture security, model cards, vulnerability disclosure." },
+    { id: "model-provider",           name: "AI Model Provider",            layer: "L5", note: "Owns L5 AI Model Provider: model architecture security, model cards, vulnerability disclosure." },
     { id: "ai-model-serving",         name: "AI Model Serving",             layer: "L4", note: "Serves models at L4. L4 accountability currently routes to AI Platform Provider." },
     { id: "ai-platform-provider",     name: "AI Platform Provider",         layer: "L4", note: "Owns L4 AI Platform: compute, gateways, guardrail infrastructure, platform IAM." }
   ];

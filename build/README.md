@@ -173,7 +173,7 @@ It is markup-safe: it skips text inside `<head>`, `<script>`, `<style>`, `<svg>`
 `<a>`, `<code>`, `<pre>`, links each term once per page, and never touches the
 glossary page. Review `git diff` before committing. Adjust the `DENY` set in the
 script to suppress terms you do not want auto-linked (for example the layer-name
-phrase "Model Provider" matching the persona term).
+phrase "AI Model Provider" matching the persona term).
 
 ## Page-level machine metadata (phase 2)
 
