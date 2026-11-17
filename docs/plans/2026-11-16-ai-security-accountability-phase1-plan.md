@@ -169,7 +169,7 @@ Each feature uses the handoff's rule: where the files do not support it, the gap
 
 (b) Visible strings in `tools/relationship-map/index.html` (title, lede, hero, search label, empty state, JSON-LD `name`), the card title and description in `tools/index.html`, and the homepage h1 and lede in `index.html`. Canonical id `srf.page.tools-relationship-map` stays. Layer and persona records stay.
 
-(c) Bill chose the name "AI Security & Accountability Explorer" on 2026-11-17. The URL stays `/tools/relationship-map/`. The homepage headline stays "AI Security Requires Accountability." Section 9 of the handoff also gives a subheadline, a supporting paragraph, and the closing line "From AI threats to accountable security." Those are copy, and they land in Phase 4. They do not require new data.
+(c) Bill chose the name "AI Security & Accountability Explorer" on November 16, 2026 (Pacific). The URL stays `/tools/relationship-map/`. The homepage headline stays "AI Security Requires Accountability." Section 9 of the handoff also gives a subheadline, a supporting paragraph, and the closing line "From AI threats to accountable security." Those are copy, and they land in Phase 4. They do not require new data.
 
 (d) Smallest test: change the map h1, the tools card, and the document title to "AI Security & Accountability Explorer", then load `/tools/relationship-map/` and `/tools/relationship-map/?risk=directpromptinjection`. The chain for that existing risk id still renders. Run `build/inject_page_metadata.py` and commit any marker drift. Do this in Phase 2 for the map and Phase 4 for the homepage.
 
@@ -217,11 +217,11 @@ Do not label the 229 unlinked controls, the 117 uncited requirements, or the 13 
 
 ### 6.7 Prevention, detection, response, and recovery
 
-(a) Not supported. (b) No control, threat, persona, or layer field uses those four words as a closed set. The stage fields in section 2 are vertical lifecycle stages. `framework/security-lifecycle/index.html` has a section titled "Detection, monitoring, and incident response" that points at incident-response playbooks and the threshold schema. That is a page section, not an owner on a control. (c) Mapping `mrm_stage`, `clinical_stage`, `insurance_stage`, `public_sector_stage`, or `lifecycle_stage` onto prevention, detection, response, or recovery would be an invented classification. Section 15 forbids invented accountability mappings. The same block applies to "monitoring," "intervention," and "containment" in section 7 of the handoff. (d) Bill asked for a field proposal on 2026-11-17. The proposal is in section 13. Phase 3 may show four filters only after that shape is accepted. Until a control stores `security_function`, the panel says the function is not classified. Do not render `mrm_stage` or the other stage fields under those headings. Do not fill the field in the same change that adds the key.
+(a) Not supported. (b) No control, threat, persona, or layer field uses those four words as a closed set. The stage fields in section 2 are vertical lifecycle stages. `framework/security-lifecycle/index.html` has a section titled "Detection, monitoring, and incident response" that points at incident-response playbooks and the threshold schema. That is a page section, not an owner on a control. (c) Mapping `mrm_stage`, `clinical_stage`, `insurance_stage`, `public_sector_stage`, or `lifecycle_stage` onto prevention, detection, response, or recovery would be an invented classification. Section 15 forbids invented accountability mappings. The same block applies to "monitoring," "intervention," and "containment" in section 7 of the handoff. (d) Bill asked for a field proposal on November 16, 2026 (Pacific). The proposal is in section 13. Phase 3 may show four filters only after that shape is accepted. Until a control stores `security_function`, the panel says the function is not classified. Do not render `mrm_stage` or the other stage fields under those headings. Do not fill the field in the same change that adds the key.
 
 ### 6.8 Navigation
 
-(a) Partially supported. Labels can change. New destinations that have no page cannot be added without a new URL or a choice among existing URLs. (b) `NAV_LINKS` and `FOOTER_LINKS` in `shared/components.js`. (c) A single "Resources" item would hide Regulations, Industries, Compare, and Data & agents. Those hrefs stay. The header proposal in section 13 moves Assess, Compare, and Data & agents to the footer. (d) Bill asked for destinations on 2026-11-17. The proposal is in section 13. It uses existing hrefs only. It does not add a route. Two labels stay out of the header because no page matches them: a browser of `attack-inventory.json`, and a supply-chain page. `/tools/vendor-risk/` stays a tool. It is not the supply-chain destination.
+(a) Partially supported. Labels can change. New destinations that have no page cannot be added without a new URL or a choice among existing URLs. (b) `NAV_LINKS` and `FOOTER_LINKS` in `shared/components.js`. (c) A single "Resources" item would hide Regulations, Industries, Compare, and Data & agents. Those hrefs stay. The header proposal in section 13 moves Assess, Compare, and Data & agents to the footer. (d) Bill asked for destinations on November 16, 2026 (Pacific). The proposal is in section 13. It uses existing hrefs only. It does not add a route. Two labels stay out of the header because no page matches them: a browser of `attack-inventory.json`, and a supply-chain page. `/tools/vendor-risk/` stays a tool. It is not the supply-chain destination.
 
 Regulatory and governance pages stay on their current URLs. Header labels for those pages are in the section 13 table.
 
@@ -384,7 +384,7 @@ Recommended gate: Bill sends this plan and the handoff to that review before Pha
 
 After Phases 2 to 4, the same review looks at the running pages. Phase 5 can run before that second review so the reviewer sees a checked build. A fix pass after the review is separate work and needs its own change. This plan does not pre-write those fixes.
 
-## 13. Decisions from 2026-11-17
+## 13. Decisions from November 16, 2026 (Pacific)
 
 Bill answered the open list. This section records the answers. It does not write JSON.
 
