@@ -1,0 +1,238 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Appendix E: Suggested Ways to Use this Document with an LLM-Based Assistant</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="top"><a href="index.html">SICI Guidebook (web edition)</a><span class="banner">Community of Interest discussion document, version SICI Guidebook 20261109_1200a.</span></header>
+<div class="status-strip">Work in progress. Not official guidance. For discussion only.</div>
+<main><nav class="crumbs"><a href="index.html">Home</a> › Appendix E</nav><div class="pn top"><a href="appendix-d.html">← Appendix D: Crosswalks</a><a href="appendix-f.html">Appendix F: Consolidated References →</a></div><p class="eo-notice">In accordance with Executive Order 14434, this document will refer to “Super Intelligence” (SI) rather than “Artificial Intelligence” (AI).</p><p class="fb"><a class="fb-link" href="mailto:aiciprof@nist.gov?subject=%5BSICI%20Guidebook%2020261109_1200a%5D%20Appendix%20E%3A%20feedback&amp;body=Page%3A%20Appendix%20E%3A%20Suggested%20Ways%20to%20Use%20this%20Document%20with%20an%20LLM-Based%20Assistant%0AVersion%3A%20SICI%20Guidebook%2020261109_1200a%0AWeb%20edition%20page%3A%20appendix-e.html%0A%0AFeedback%20shared%20with%20NIST%20will%20become%20part%20of%20the%20public%20record%20and%20may%20be%20subject%20to%20public%20disclosure.%0A%0AYour%20feedback%20%28bottom%20line%20up%20front%29%3A%0A%0A">Email us feedback on this page</a> <span class="fb-alt">or write to aiciprof@nist.gov and quote <code>SICI Guidebook 20261109_1200a, Appendix E</code></span><span class="fb-pub">Feedback shared with NIST will become part of the public record and may be subject to public disclosure.</span></p><p class="fb-ai">Using an LLM-based assistant? Give it the files in the <a href="../for-assistants/">for-assistants</a> folder rather than these pages, and come back here to check its answers.</p><h1>Appendix E: Suggested Ways to Use this Document with an LLM-Based Assistant</h1><blockquote>
+<p><strong>To the Reviewer:</strong> The use cases, prompts, and cautions in this appendix are based on the authors’ own trials and on early feedback. We would welcome prompts that have worked well for you, results that surprised you, problems you have encountered, and use cases we have not listed. We would particularly welcome reports from sector-specific or more economical LLM-based assistants.</p>
+</blockquote>
+<p>An <a class="gl" href="glossary.html#term-large-language-model-llm" title="Large language model (LLM): In this profile, an LLM is the whole system that the general public colloquially refers to (e.g., “Which LLM are you using to summarize your emails?”), not only the model at its core.">LLM-based assistant</a> can help readers find the parts of this document that apply to their situation, and this appendix helps them get more reliable answers from one. It expands on the guidance in Section 1.4, Using this Guidebook. It suggests ways to use an LLM-based assistant with this document, gives example prompts, and describes problems to watch for.</p>
+<p><strong>The uses and prompts in this appendix are illustrative examples, offered as starting points. They have not been systematically tested, results will vary between assistants and between versions of the same assistant, and we make no guarantee about the answers any assistant gives. Check what an assistant tells you against this profile, and above all against the sources it cites.</strong></p>
+<p>This profile is intended to lead readers to the sources it cites, not to replace them. Each reference entry says which part of a source applies and why, so that a reader, or an assistant, can go to that source and read it. The prompts below ask the assistant to name those sources and, where it can, to check its answers against them.</p>
+<p>Nothing in this appendix changes the status of the profile. The profile is guidance to inform professional judgment, not a checklist or a set of requirements. An assistant’s reading of it does not change that either.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;"><a href="#e.1-before-you-start">E.1 Before You Start</a></th>
+<th style="text-align: left;"><a href="#e.2-use-cases-and-example-prompts">E.2 Use Cases and Example Prompts</a></th>
+<th style="text-align: left;"><a href="#e.3-things-to-watch-for">E.3 Things to Watch For</a></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><a href="#e.1.1-give-the-assistant-the-whole-document">E.1.1 Give the assistant the whole document</a></td>
+<td style="text-align: left;"><a href="#e.2.1-which-practices-and-tasks-apply">E.2.1 Which Practices and Tasks apply</a></td>
+<td style="text-align: left;"><a href="#e.3.1-partial-reading">E.3.1 Partial reading</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#e.1.2-provide-the-knowledge-graph-too">E.1.2 Provide the knowledge graph too</a></td>
+<td style="text-align: left;"><a href="#e.2.2-what-a-task-would-involve,-and-which-references-to-read">E.2.2 What a Task would involve, and which References to read</a></td>
+<td style="text-align: left;"><a href="#e.3.2-losing-the-document-as-the-conversation-goes-on">E.3.2 Losing the document as the conversation goes on</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#e.1.3-provide-the-references-where-you-can">E.1.3 Provide the references where you can</a></td>
+<td style="text-align: left;"><a href="#e.2.3-which-items-address-a-specific-risk">E.2.3 Which items address a specific risk</a></td>
+<td style="text-align: left;"><a href="#e.3.3-filling-in-from-similar-documents">E.3.3 Filling in from similar documents</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#e.1.4-describe-your-situation">E.1.4 Describe your situation</a></td>
+<td style="text-align: left;"><a href="#e.2.4-learning-from-an-incident">E.2.4 Learning from an incident</a></td>
+<td style="text-align: left;"><a href="#e.3.4-the-profile’s-description-taken-for-the-source">E.3.4 The profile’s description taken for the source</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"><a href="#e.1.5-set-expectations-at-the-start">E.1.5 Set expectations at the start</a></td>
+<td style="text-align: left;"><a href="#e.2.5-trustworthiness-tensions">E.2.5 Trustworthiness tensions</a></td>
+<td style="text-align: left;"><a href="#e.3.5-guidance-presented-as-requirements">E.3.5 Guidance presented as requirements</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="#e.2.6-finding-current-or-related-references">E.2.6 Finding current or related references</a></td>
+<td style="text-align: left;"><a href="#e.3.6-items-stretched-beyond-their-context">E.3.6 Items stretched beyond their context</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="#e.2.7-comparing-with-your-existing-controls">E.2.7 Comparing with your existing controls</a></td>
+<td style="text-align: left;"><a href="#e.3.7-correct-content-under-the-wrong-item-number">E.3.7 Correct content under the wrong item number</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="#e.2.8-preparing-supplier-questions-or-a-leadership-briefing">E.2.8 Preparing supplier questions or a leadership briefing</a></td>
+<td style="text-align: left;"><a href="#e.3.8-content-that-is-not-in-the-document">E.3.8 Content that is not in the document</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="#e.2.9-evaluating-a-project-against-the-trustworthiness-characteristics">E.2.9 Evaluating a project against the trustworthiness characteristics</a></td>
+<td style="text-align: left;"><a href="#e.3.9-unfinished-sources-presented-as-settled">E.3.9 Unfinished sources presented as settled</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="#e.3.10-incomplete-parts-of-this-draft">E.3.10 Incomplete parts of this draft</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="#e.3.11-the-assistant-is-itself-an-si-system">E.3.11 The assistant is itself an SI system</a></td>
+</tr>
+<tr>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"><a href="#e.4-checking-an-answer">E.4 Checking an Answer</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="e.1-before-you-start">E.1 Before You Start</h3>
+
+<h4 id="e.1.1-give-the-assistant-the-whole-document">E.1.1 Give the assistant the whole document</h4>
+
+<p>Use the Markdown assistant-ready version, which is meant for this purpose. The HTML web edition is meant for reading. This document is long. Some assistants read only part of a long file, or summarize parts of it without saying so. Others may process it in pieces. Ask the assistant to confirm that it has read all 13 Practices and the appendices.</p>
+<h4 id="e.1.2-provide-the-knowledge-graph-too">E.1.2 Provide the knowledge graph too</h4>
+
+<p>This document is distributed together with a <a class="gl" href="glossary.html#term-knowledge-graph" title="Knowledge graph: In this profile, the YAML file distributed with the Markdown version of the document.">knowledge graph</a> in YAML format. Give the assistant both files. The knowledge graph lists every Practice, Task and Implementation by item number, together with the cross-references between them, their trustworthiness characteristics, AI RMF subcategories, references and <a href="appendix-b.html">Appendix B</a> scenarios. It helps an assistant check that it has seen every item and find items that refer to one another. The knowledge graph is generated from this document and adds nothing to it. Where the two differ, the document governs. If you received this document without the knowledge graph, you can obtain it from the same source as the latest version.</p>
+<h4 id="e.1.3-provide-the-references-where-you-can">E.1.3 Provide the references where you can</h4>
+
+<p>Many of the sources this profile cites are freely available. If you can give the assistant copies of the ones that matter to your question, or an assistant that can retrieve them, it can check what a source says rather than relying on the profile’s description of it. Tell the assistant which sources it has.</p>
+<h4 id="e.1.4-describe-your-situation">E.1.4 Describe your situation</h4>
+
+<p>This profile is deliberately sector-agnostic. How useful the answers are depends mostly on what the assistant is told about your organization, for example:</p>
+<ul>
+<li>your sector and role;  </li>
+<li>the SI system: what it does, what it is connected to, and who acts on its outputs;  </li>
+<li>the regulatory and contractual obligations that apply;  </li>
+<li>the policies and risk management processes you already have;  </li>
+<li>the people and resources available.</li>
+</ul>
+<p>You can describe this in the conversation, supply it as documents where your organization’s policy permits, or ask the assistant to question you before it makes recommendations. Some of this information may be sensitive. Consider what the assistant is permitted to receive and where that information will go.</p>
+<h4 id="e.1.5-set-expectations-at-the-start">E.1.5 Set expectations at the start</h4>
+
+<p>A short opening instruction can reduce the problems described in E.3. For example:</p>
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Please read the attached profile in full, including all 13 Practices and the appendices, and tell me if you could not, or if you read only part of it. Use the attached knowledge graph to check cross-references. In your answers, cite the item numbers you are drawing on, such as “Task 3.2” or “Implementation 5.2.2.” Where a point rests on a reference the profile cites, name the reference and the part of it the profile points to. If you have the reference itself, check the point against it and tell me whether you did; if you have only the profile’s description, say so. Keep the profile’s own wording, such as “should” and “consider,” rather than turning it into requirements. Mark clearly which points are your own suggestions rather than the profile’s. Tell me when you are applying an item to a situation it was not written for. Before you make recommendations, ask me any questions you need about my organization. If you are unsure what the profile says on a point, re-read the relevant entry rather than answering from memory, and quote it.</p>
+</blockquote>
+<h3 id="e.2-use-cases-and-example-prompts">E.2 Use Cases and Example Prompts</h3>
+
+<p>Text in square brackets is a placeholder for your own details.</p>
+<h4 id="e.2.1-which-practices-and-tasks-apply">E.2.1 Which Practices and Tasks apply</h4>
+
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>We are [organization type, size and sector]. We are [piloting / procuring / operating] [description of the SI system, what it reads, what it writes or influences, and who approves its outputs]. We are regulated by [regulator or framework], and our team is [size and expertise]. Which Practices and Tasks apply to us, and which should we look at first given our resources? Explain why for each, and name the references cited there that we should read first.</p>
+</blockquote>
+<p>The order in which the profile presents its Practices does not indicate priority. If an assistant proposes an order, that order is its judgment, so ask it to say what it based the order on.</p>
+<h4 id="e.2.2-what-a-task-would-involve,-and-which-references-to-read">E.2.2 What a Task would involve, and which References to read</h4>
+
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>What would [Task N.M] involve for us in practice, given [situation]? Which of the References listed under it, or under its Implementations, should we read first, and for what? For each, say which part of the source the profile points to and what we should expect to find there. If you can open the source, tell me whether it says what the profile describes.</p>
+</blockquote>
+<p>References can appear at the Practice, Task or Implementation level. Ask the assistant to say where each reference it names is listed.</p>
+<h4 id="e.2.3-which-items-address-a-specific-risk">E.2.3 Which items address a specific risk</h4>
+
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Which Practices, Tasks and Implementations address the risk that [specific risk, e.g., “an assistant-generated configuration introduces an unsafe change that our reviewers don’t catch”]? Include items that point to one another, and say which items address the risk directly and which only in part. For each, name the references the profile cites on this point.</p>
+</blockquote>
+<h4 id="e.2.4-learning-from-an-incident">E.2.4 Learning from an incident</h4>
+
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>[Description of the incident: what happened, what the SI system did, how people responded, and what the effects were.] Which items in this profile might have prevented or limited this? For each, explain what it would have changed, and name the references cited there that would help us understand this kind of failure. Also tell me whether any scenario in <a href="appendix-b.html">Appendix B</a> is similar.</p>
+</blockquote>
+<p>This can be useful input to a lessons-learned or after-action review. It works for incidents reported elsewhere as well as your own.</p>
+<p><strong>Incident details are often among the most sensitive information an organization holds.</strong> They may reveal vulnerabilities that have not yet been fixed, personal information, or matters subject to legal privilege, investigation, or reporting obligations. Before describing an incident to an assistant, check what your organization’s policy permits that assistant to receive, and where the information will be stored and used (see NIST SP 1353). Where in doubt, describe the incident in general terms, with identifying details removed, or use an incident reported publicly.</p>
+<h4 id="e.2.5-trustworthiness-tensions">E.2.5 Trustworthiness tensions</h4>
+
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>For [use case], which trustworthiness characteristics may be in tension, and where does this profile discuss those tensions? Quote the relevant entries, cite their item numbers, and name any references cited there that discuss the trade-off.</p>
+</blockquote>
+<p>Tensions are discussed in the “Trustworthiness Tensions to Balance” field of individual entries, and Appendix A.4 describes the patterns that recur across them.</p>
+<h4 id="e.2.6-finding-current-or-related-references">E.2.6 Finding current or related references</h4>
+
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Using the description this profile gives for [reference], find the current version, any successor document, and any closely related guidance for [sector]. Tell me which you were able to confirm and which you could not.</p>
+</blockquote>
+<p>This use requires an assistant that can search. References in this profile describe what part of a source applies, partly so that revised or superseded documents can be traced. An assistant that cannot search may still answer from memory. That memory reflects what was available up to the assistant’s <a class="gl" href="glossary.html#term-training-cutoff" title="Training cutoff: The most recent date covered by the data a model was trained on.">training cutoff</a>, and may be out of date.</p>
+<h4 id="e.2.7-comparing-with-your-existing-controls">E.2.7 Comparing with your existing controls</h4>
+
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Here is a summary of our existing [policy / procedure / control set] for [system or process]. Which items in this profile does it already address, which does it address only in part, and which does it not address? Base your comparison on what our documents actually say, and tell me where you are inferring. For the items it does not address, name the references the profile cites, so that we can read the source guidance.</p>
+</blockquote>
+<p>This is not a compliance assessment, because the profile has no conformance requirements. It can help identify where to look more closely. Internal policies and procedures may also be sensitive; the cautions in E.1 and E.2.4 apply.</p>
+<h4 id="e.2.8-preparing-supplier-questions-or-a-leadership-briefing">E.2.8 Preparing supplier questions or a leadership briefing</h4>
+
+<p><strong>Supplier questions:</strong></p>
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Based on the Practices and Tasks that apply to [system], draft questions we could ask our supplier about [topic, e.g., how model updates are delivered and disclosed]. For each question, cite the item and the reference it draws on.</p>
+</blockquote>
+<p><strong>Leadership briefing:</strong></p>
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Draft a one-page briefing for [audience] on which Practices are most relevant to [system] and why. Use the profile’s own wording, and cite item numbers and the references behind the key points, so that readers can check it.</p>
+</blockquote>
+<p>Check drafts like these against the cited items, and the sources behind them, before sending them. Problems described in E.3 are easy to miss in polished prose.</p>
+<h4 id="e.2.9-evaluating-a-project-against-the-trustworthiness-characteristics">E.2.9 Evaluating a project against the trustworthiness characteristics</h4>
+
+<p>Where E.2.7 starts from your controls, this starts from the trustworthiness characteristics. It works as three prompts in sequence, each building on the answers before it.</p>
+<p><strong>Step 1, evaluate:</strong></p>
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>I’m evaluating [project] against the trustworthiness characteristics in this profile. [The project documents are attached / Here is a description of the project.] [The reference documents in this folder are available to you.] For each characteristic, summarize what the project does well and where it may fall short, and cite the Practices, Tasks and Implementations that bear on it. Base the evaluation on what the project documents actually say, and tell me where you are inferring.</p>
+</blockquote>
+<p><strong>Step 2, recommend:</strong></p>
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Based on your evaluation, what should the [project] team do about the issues you found, and where can they look for more information? For each recommendation, name the references this profile cites that the team should read, and where in each to look. Say which points you checked against the source itself and which rest only on the profile’s description of it.</p>
+</blockquote>
+<p><strong>Step 3, summarize:</strong></p>
+<blockquote class="prompt"><span class="plabel">Example prompt (one click selects it)</span>
+<p>Based on your evaluation and recommendations so far, write a two-page executive summary (no more than about 900 words) of what the [project] team should do next, for [audience] who have not read your earlier answers. Put the most important actions first, and say briefly where the team can find more information on each. Don’t add new analysis beyond what you have already done.</p>
+</blockquote>
+<p>Telling the assistant which reference documents it has, as in the bracketed sentence, lets it check its pointers against them. The project documents in a use like this are often sensitive; the cautions in E.1 and E.2.4 apply. As with E.2.7, this is not a conformance assessment.</p>
+<h3 id="e.3-things-to-watch-for">E.3 Things to Watch For</h3>
+
+<h4 id="e.3.1-partial-reading">E.3.1 Partial reading</h4>
+
+<p>An assistant may read only part of the document, or skim long entries, without saying so in its answer. Ask what it read in full and what it skipped. If it lists only a few Practices for a broad question, ask whether it considered the others. This may occur even with assistants that have large context windows.</p>
+<h4 id="e.3.2-losing-the-document-as-the-conversation-goes-on">E.3.2 Losing the document as the conversation goes on</h4>
+
+<p>An assistant that read the whole document at the start may not keep all of it in view as a conversation grows longer. It may then answer from a partial memory of an entry, or reconstruct the missing parts, rather than read the text again. Its early answers can be accurate while later ones are not, so a check at the start of a conversation does not guarantee later answers. For important points later in a conversation, ask the assistant to quote the entry it is relying on, or to re-read it before answering. For a new question, consider starting a new conversation with the document attached again.</p>
+<h4 id="e.3.3-filling-in-from-similar-documents">E.3.3 Filling in from similar documents</h4>
+
+<p>An assistant may draw on other documents it knows: other profiles, earlier drafts of this one, or general guidance on the same topic. It may then present that material as if it came from this profile. Familiar-sounding text is not evidence that a point is in this document. Ask the assistant to quote the passage and cite its item number, and check it against the text.</p>
+<h4 id="e.3.4-the-profile’s-description-taken-for-the-source">E.3.4 The profile’s description taken for the source</h4>
+
+<p>Each reference entry in this profile describes, in a sentence or two, the part of a source that applies. An assistant without the source may present that description as what the source says, or stretch it into more than the description supports. The description is a pointer to the source, not a substitute for it. Ask the assistant whether it read the source or only the profile’s description, and read the source yourself for anything that matters.</p>
+<h4 id="e.3.5-guidance-presented-as-requirements">E.3.5 Guidance presented as requirements</h4>
+
+<p>This was the most common problem we observed. Assistants often turn “should” into “must” or “requires,” or describe the profile as mandating something. The profile does not create requirements. Any requirements that apply to your organization come from your regulators, contracts and policies. Wording such as “required by NIST” should not appear in material based on this profile.</p>
+<h4 id="e.3.6-items-stretched-beyond-their-context">E.3.6 Items stretched beyond their context</h4>
+
+<p>Instead of inventing content, assistants more often apply an item written for one situation to a different one without saying so. For example, an Implementation about reviewing SI-generated configurations before deployment may be applied to operators approving live recommendations. The underlying principle may still be useful, but the extension is the assistant’s, not the profile’s. Ask it to flag such extensions.</p>
+<h4 id="e.3.7-correct-content-under-the-wrong-item-number">E.3.7 Correct content under the wrong item number</h4>
+
+<p>An assistant may describe an item accurately but cite the wrong number, for example by attributing an Implementation’s content to its parent Task. When a point matters, check the cited entry.</p>
+<h4 id="e.3.8-content-that-is-not-in-the-document">E.3.8 Content that is not in the document</h4>
+
+<p>An assistant may add standards, figures, examples or regulatory claims that do not come from this profile. These may be useful, but they should be labeled as the assistant’s own and checked separately.</p>
+<h4 id="e.3.9-unfinished-sources-presented-as-settled">E.3.9 Unfinished sources presented as settled</h4>
+
+<p>References labeled Working Document are drafts, requests for comments, concept papers and similar work still under way. They are cited deliberately, but an assistant may present them as established guidance, or describe what they will eventually require. When an answer relies on a reference, ask the assistant for its label and its status as of this draft. Before acting on a Working Document, check whether it has since been published, revised or withdrawn.</p>
+<h4 id="e.3.10-incomplete-parts-of-this-draft">E.3.10 Incomplete parts of this draft</h4>
+
+<p>Some fields are still in progress in this draft, and an assistant may not notice. Ask it to say when the profile is silent on a point, rather than filling the gap.</p>
+<h4 id="e.3.11-the-assistant-is-itself-an-si-system">E.3.11 The assistant is itself an SI system</h4>
+
+<p>The assistant you use may be within the scope of this profile. Manage its risks accordingly, particularly if its outputs will inform configurations, procedures or operational decisions. Parts of the profile that are often most relevant include:</p>
+<ul>
+<li><a href="practice-12.html">Practice 12: Independently Verify SI-Generated Operational Logic and Artifacts Across Their Lifecycle</a>, for configurations, scripts and procedures an assistant drafts, and <a href="task-12.1.html">Task 12.1: Establish Governance and Accountability for SI-Generated Execution Artifacts</a>, for keeping track of what a draft is later used for.  </li>
+<li><a href="implementation-3.1.1.html">Implementation 3.1.1: Identify SI System Decision Points and Potential Outcomes of SI System Errors</a>, on how an assistant with no connection to operational systems can still introduce errors into them through the people who act on its output, and <a href="task-3.2.html">Task 3.2: Implement Independent Guardrails for SI Outputs</a>, on scaling checks to how directly an output reaches a physical process.  </li>
+<li><a href="task-6.3.html">Task 6.3: Identify and Control Dataflows Across the SI Supply Chain</a>, for what information is sent to an assistant hosted by another organization.  </li>
+<li><a href="task-3.7.html">Task 3.7: Govern and Mitigate Risks from Unauthorized, Transient, and “Shadow SI” Systems</a>, for assistants used without approval, and <a href="implementation-5.1.2.html">Implementation 5.1.2: Establish Unique Identities for SI Service Accounts and Agents</a>, for assistants that act on someone’s behalf.  </li>
+<li><a href="task-9.2.html">Task 9.2: Deliver Specialized Training on Human-SI Interaction and Automation Bias</a>, since a fluent, well-organized answer can be trusted more than it warrants.</li>
+</ul>
+<h3 id="e.4-checking-an-answer">E.4 Checking an Answer</h3>
+
+<p>The following steps take a few minutes and can catch many of the problems above:</p>
+<ol>
+<li>Pick the three or four items the answer relies on most. Read those entries in the document in full.  </li>
+<li>For the points that matter most, go to the references those entries cite and read the part they point to.  </li>
+<li>Ask the assistant to list which statements in its answer come from the profile, which from a source it read, and which are its own suggestions.  </li>
+<li>Ask it to repeat any “must” or “required” in the profile’s own wording.  </li>
+<li>Ask what it did not read, and whether any other Practices might apply.  </li>
+<li>For anything that will be shared or acted on, check the important points against the document and its sources.</li>
+</ol><div class="pn"><a href="appendix-d.html">← Appendix D: Crosswalks</a><a href="appendix-f.html">Appendix F: Consolidated References →</a></div></main>
+<footer><p>Web edition of the SICI Guidebook, generated from SICI Guidebook 20261109_1200a.</p><p class="si-disclosure">Any mention of commercial products is for information only; it does not imply recommendation or endorsement by NIST. These opinions, recommendations, findings, and conclusions do not necessarily reflect the views or policies of NIST or the United States Government.</p><p class="si-disclosure">This document was created with the assistance of Google Gemini (various versions) and Anthropic Claude (various versions). These were used to brainstorm ideas, critique writing, and suggest wording in accordance with the authors’ instructions. All content has been reviewed and verified by the authors for accuracy and originality in the context of a working draft.</p><p>Feedback: <a href="mailto:aiciprof@nist.gov">aiciprof@nist.gov</a>. Feedback shared with NIST will become part of the public record and may be subject to public disclosure.</p></footer>
+</body></html>
