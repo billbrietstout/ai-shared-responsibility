@@ -1,13 +1,13 @@
 /* Relationship map. Kind colors meet 3:1 against --surface in both schemes. */
 
 :root {
-  --map-layer: #166534;
-  --map-persona: #1d4ed8;
-  --map-model: #c2410c;
-  --map-control: #6d28d9;
-  --map-risk: #7c2d12;
-  --map-policy: #0f766e;
-  --map-topic: #be123c;
+  --map-layer: #334155;
+  --map-persona: #166534;
+  --map-model: #334155;
+  --map-control: #1e40af;
+  --map-risk: #9f1239;
+  --map-policy: #334155;
+  --map-topic: #334155;
   --map-edge: #475569;
   --map-dim: #94a3b8;
   --map-label: var(--ink);
@@ -15,13 +15,13 @@
 
 @media screen and (prefers-color-scheme: dark) {
   :root {
-    --map-layer: #4ade80;
-    --map-persona: #93c5fd;
-    --map-model: #fdba74;
-    --map-control: #d8b4fe;
-    --map-risk: #fde68a;
-    --map-policy: #5eead4;
-    --map-topic: #fda4af;
+    --map-layer: #cbd5e1;
+    --map-persona: #86efac;
+    --map-model: #cbd5e1;
+    --map-control: #93c5fd;
+    --map-risk: #fda4af;
+    --map-policy: #cbd5e1;
+    --map-topic: #cbd5e1;
     --map-edge: #cbd5e1;
     --map-dim: #64748b;
     --map-label: var(--ink);
@@ -52,6 +52,88 @@
 }
 
 .map-preview p {
+  max-width: 68ch;
+}
+
+.entry-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.entry-points button {
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--line, #cbd5e1);
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+
+.entry-points button[aria-pressed="true"] {
+  border-color: var(--map-control);
+  box-shadow: inset 0 0 0 1px var(--map-control);
+}
+
+.entry-gap__title,
+.entry-account__title,
+.layer-frames h2 {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--text-base);
+}
+
+.auth-principle {
+  font-weight: 650;
+  max-width: 68ch;
+}
+
+.illustrative {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  margin-bottom: var(--sp-4);
+}
+
+.illustrative th,
+.illustrative td {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  vertical-align: top;
+}
+
+.persona-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.persona-list button {
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--map-persona);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.layer-frames dl {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+}
+
+.layer-frames dt {
+  font-weight: 650;
+}
+
+.layer-frames dd {
+  margin: 0 0 var(--sp-2);
   max-width: 68ch;
 }
 

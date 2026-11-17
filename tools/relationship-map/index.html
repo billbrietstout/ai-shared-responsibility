@@ -4,10 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>Relationship map · AI Shared Responsibility</title>
+    <title>AI Security &amp; Accountability Explorer · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Start from one risk or one control. The chain is risk, obligation, control, and one accountable persona for the operating model you choose."
+      content="Explore how AI security threats connect to obligations, controls, and one accountable persona. A security-requirement catalog is not in the data yet."
     />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='5' cy='5' r='2' fill='%23166534'/%3E%3Ccircle cx='11' cy='11' r='2' fill='%231d4ed8'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -16,9 +16,9 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "SRF relationship map",
+  "name": "AI Security & Accountability Explorer",
   "url": "https://aisharedresponsibility.com/tools/relationship-map/",
-  "description": "Start from one risk or one control. The chain is risk, obligation, control, and one accountable persona for the operating model you choose.",
+  "description": "Explore how AI security threats connect to obligations, controls, and one accountable persona. A security-requirement catalog is not in the data yet.",
   "applicationCategory": "BusinessApplication",
   "isAccessibleForFree": true,
   "publisher": {
@@ -42,13 +42,16 @@
     <header class="page-hero" data-llm="summary">
       <div class="page-hero__inner map-hero__inner">
         <span class="page-hero__eyebrow">Tools</span>
-        <h1 class="page-hero__title">Relationship map</h1>
+        <h1 class="page-hero__title">AI Security &amp; Accountability Explorer</h1>
         <p class="page-hero__lede">
-          Start from one risk or one control. The chain is risk, then
-          obligation, then control, then one accountable persona for the
-          operating model you choose. The full graph of layers, personas,
-          models, controls, policy levels, and whitepaper topics is still
-          available.
+          Explore how AI security threats translate into security requirements,
+          technical controls, and accountable ownership.
+        </p>
+        <p class="page-hero__lede">
+          The records in this explorer use the word obligation. A separate
+          security-requirement catalog is not in the data yet. The chain is
+          threat, obligation, control, and one accountable persona for the
+          operating model you choose.
         </p>
       </div>
     </header>
@@ -69,6 +72,58 @@
           <h2 id="map-heading" class="visually-hidden">Map</h2>
 
           <div id="map-tools" class="map-tools">
+            <div class="entry-points" role="group" aria-label="Ways to start">
+              <button id="entry-threat" type="button" aria-pressed="false">Explore a threat</button>
+              <button id="entry-requirement" type="button" aria-pressed="false">Explore a security requirement</button>
+              <button id="entry-control" type="button" aria-pressed="false">Explore a control</button>
+              <button id="entry-account" type="button" aria-pressed="false">Explore accountability</button>
+            </div>
+            <aside id="entry-gap" class="callout entry-gap" hidden>
+              <h2 class="entry-gap__title">No security-requirement catalog</h2>
+              <p>
+                A security-requirement catalog is not in the data yet. This
+                explorer uses the word obligation for the records that exist.
+                Choose a threat or a control to see those obligations in the
+                chain. This list is not titled security requirements.
+              </p>
+            </aside>
+            <section id="entry-account-panel" class="entry-account" hidden data-llm="illustrative-only">
+              <p class="auth-principle">
+                Authorization establishes what an AI agent is allowed to do.
+                Security ownership establishes who is accountable for what
+                happens next.
+              </p>
+              <h2 class="entry-account__title">Illustrative only</h2>
+              <p>
+                These titles are examples from the handoff. They are not
+                personas in the SRF, and they are not links.
+              </p>
+              <table class="illustrative">
+                <caption>Illustrative security activities. Not persona records.</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Security activity</th>
+                    <th scope="col">Illustrative title</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Agent identity provisioning</td><td>Identity owner</td></tr>
+                  <tr><td>Tool authorization</td><td>Application security owner</td></tr>
+                  <tr><td>Runtime policy enforcement</td><td>AI platform security owner</td></tr>
+                  <tr><td>Detection of unauthorized actions</td><td>Security operations owner</td></tr>
+                  <tr><td>Incident containment</td><td>Incident response owner</td></tr>
+                  <tr><td>Model supply-chain assurance</td><td>AI supply-chain security owner</td></tr>
+                </tbody>
+              </table>
+              <h2 class="entry-account__title">Accountable personas</h2>
+              <p>Each name is one SRF persona. Choosing one lists the controls and threats that record that persona.</p>
+              <div id="persona-list" class="persona-list"></div>
+            </section>
+            <section class="layer-frames" aria-labelledby="layer-frames-heading" data-llm="security-domains">
+              <h2 id="layer-frames-heading">Security domains</h2>
+              <p>These sentences describe the five layers. The names on the records stay the same.</p>
+              <dl id="layer-frames"></dl>
+            </section>
             <form id="find-form" class="find-form" role="search">
               <label class="find-form__label" for="node-search">Find a risk or a control</label>
               <div class="find-form__row">
@@ -184,11 +239,11 @@
               <ul class="chain-legend" aria-label="Line types">
                 <li>
                   <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
-                  <span>Solid line. The record names this link.</span>
+                  <span>Solid line. The record names this link. A threat-to-control line has no basis field. An obligation line is solid when the basis is the official text.</span>
                 </li>
                 <li>
                   <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
-                  <span>Dashed line. The link was reached through a shared control, or it is an editorial judgment. It does not mean the legal text names the risk.</span>
+                  <span>Dashed line. Implements this obligation through a shared control. The legal text is not the source of the risk link.</span>
                 </li>
                 <li>
                   <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
