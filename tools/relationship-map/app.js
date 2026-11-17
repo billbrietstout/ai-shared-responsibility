@@ -74,6 +74,23 @@
   };
   var MODEL_ORDER = ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"];
   var LAYER_Y = { L1: 84, L2: 66, L3: 48, L4: 30, L5: 12 };
+  var LAYER_FRAME = {
+    L1: "Business and usage security. Business processes, acceptable use, authority, human oversight.",
+    L2: "Information and data security. Data protection, privacy, provenance, poisoning, exfiltration.",
+    L3: "AI application security. Agent identity, authorization, tool access, prompt injection, runtime behavior.",
+    L4: "AI platform security. Inference, orchestration, infrastructure, isolation, telemetry.",
+    L5: "AI model and supply-chain security. Model integrity, provenance, vulnerabilities, third-party dependencies."
+  };
+  var CORE_PERSONAS = [
+    "ai-system-users",
+    "ai-system-governance",
+    "data-provider",
+    "application-developer",
+    "agentic-platform-provider",
+    "ai-platform-provider",
+    "ai-model-serving",
+    "model-provider"
+  ];
   var LAYERS = ["L1", "L2", "L3", "L4", "L5"];
   var VERTICAL_RANK = {
     finance: 0,
@@ -94,13 +111,13 @@
     ["tapestry", "Tapestry", "/data/tapestry-controls.json"]
   ];
   var FALLBACK = {
-    layer: "#166534",
-    persona: "#1d4ed8",
-    model: "#c2410c",
-    control: "#6d28d9",
-    risk: "#7c2d12",
-    policy: "#0f766e",
-    topic: "#be123c",
+    layer: "#334155",
+    persona: "#166534",
+    model: "#334155",
+    control: "#1e40af",
+    risk: "#9f1239",
+    policy: "#334155",
+    topic: "#334155",
     edge: "#475569",
     dim: "#94a3b8",
     label: "#1a2332",
@@ -145,6 +162,10 @@
   var detailsChain = document.getElementById("details-chain");
   var connectionsHeading = document.getElementById("connections-heading");
   var clearBtn = document.getElementById("clear-selection");
+  var entryGap = document.getElementById("entry-gap");
+  var entryAccount = document.getElementById("entry-account-panel");
+  var personaList = document.getElementById("persona-list");
+  var layerFrames = document.getElementById("layer-frames");
   var mapPage = document.querySelector(".map-page");
   var detailsEl = document.querySelector(".details");
 
@@ -178,6 +199,8 @@
   var wide = false;
   var showTapestry = false;
   var modelFilter = "all";
+  var entry = "";
+  var personaPick = "";
   var focusSet = {};
   var neighborMap = {};
   var catalog = null;
@@ -552,6 +575,8 @@
           accountablePersona: control.accountable_persona || "",
           accountableByModel: control.accountable_by_model || {},
           mappings: control.mappings || {},
+          evidenceText: evidenceParts(control).short,
+          evidenceDetail: evidenceParts(control).detail,
           tapestry: tapestry,
           provenance: tapestry ? "proposed-extension" : (control.provenance || ""),
           x: 0,
@@ -916,7 +941,8 @@
       edges: [],
       dashed: 0,
       fallbacks: 0,
-      personaCount: 0
+      personaCount: 0,
+      columnNotes: {}
     };
   }
 
@@ -926,6 +952,41 @@
     chain.edges.push(edge);
     if (edge.style === "dashed") chain.dashed += 1;
     if (edge.style === "dotted") chain.fallbacks += 1;
+  }
+
+  function evidenceParts(control) {
+    var evidence = control && control.threshold && control.threshold.evidence;
+    if (!evidence || typeof evidence !== "object") {
+      return { short: "The evidence pointer is not recorded.", detail: "" };
+    }
+    if (JSON.stringify(evidence).indexOf("TBD") !== -1) {
+      return { short: "The evidence pointer is not recorded.", detail: "" };
+    }
+    var detail = evidence.description || "";
+    if (evidence.ocsf_class) detail = (detail ? detail + " " : "") + "Class: " + evidence.ocsf_class + ".";
+    return { short: "An evidence pointer is recorded on this control.", detail: detail };
+  }
+
+  function layerSentence(layerId) {
+    if (!layerId) return "";
+    var name = layerId;
+    if (graph && graph.hasNode("layer:" + layerId)) name = graph.getNodeAttribute("layer:" + layerId, "name");
+    var frame = LAYER_FRAME[layerId] || "";
+    return "Operates at " + name + ". " + frame;
+  }
+
+  function mappingLines(threat) {
+    var map = (threat && threat.mappings) || {};
+    var labels = {
+      owasp_llm_top10: "OWASP LLM Top 10",
+      mitre_atlas: "MITRE ATLAS",
+      biml_llm24: "BIML",
+      owasp_dsgai: "OWASP DSGAI"
+    };
+    return Object.keys(labels).map(function (key) {
+      if (!map[key]) return "";
+      return labels[key] + ": " + map[key];
+    }).filter(Boolean);
   }
 
   function riskCard(threat) {
@@ -948,6 +1009,9 @@
       name: threat.name,
       url: url,
       layer: threat.srf_layer || "",
+      affected: threat.affected_layers || [],
+      attackSurface: threat.attack_surface || "",
+      mappings: mappingLines(threat),
       owners: owners
     };
   }
@@ -962,7 +1026,9 @@
       vertical: attrs.vertical || "",
       url: "/" + attrs.vertical + "/controls/#" + attrs.ref,
       sectorModels: attrs.sectorModels || [],
-      fullId: attrs.fullId
+      fullId: attrs.fullId,
+      evidenceText: attrs.evidenceText || "",
+      evidenceDetail: attrs.evidenceDetail || ""
     };
   }
 
@@ -1134,7 +1200,7 @@
     });
     threats.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
     if (!threats.length) {
-      chain.gaps.push({ column: "risk", text: "No risk in the catalog links to this control." });
+      chain.gaps.push({ column: "risk", text: "No threat record names this control." });
     }
     threats.forEach(function (threat) { chain.risks.push(riskCard(threat)); });
     var cited = citationsForControl(attrs);
@@ -1197,6 +1263,58 @@
     return chain;
   }
 
+  function chainFromPersona(id) {
+    var chain = blankChain("persona");
+    var threats = [];
+    Object.keys(catalog.threats).forEach(function (threatId) {
+      var threat = catalog.threats[threatId];
+      var named = MODEL_ORDER.some(function (modelId) {
+        if (modelFilter !== "all" && modelId !== modelFilter) return false;
+        return ((threat.accountability || {})[modelId] || {}).accountable_persona === id;
+      });
+      if (named) threats.push(threat);
+    });
+    threats.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+    threats.forEach(function (threat) { chain.risks.push(riskCard(threat)); });
+    var nodes = [];
+    graph.forEachNode(function (nodeId, attrs) {
+      if (!controlInChain(attrs)) return;
+      var named = modelsFor(attrs).some(function (modelId) {
+        return (attrs.accountableByModel || {})[modelId] === id;
+      });
+      if (named) nodes.push({ id: nodeId, attrs: attrs });
+    });
+    nodes.sort(function (a, b) {
+      if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
+      return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
+    });
+    nodes.forEach(function (node) {
+      chain.controls.push(controlCard(node.id, node.attrs));
+      addEdge(chain, { from: node.id, to: "accountable:persona:" + id, style: "solid" });
+    });
+    if (!nodes.length) {
+      chain.gaps.push({
+        column: "control",
+        text: "No control records this persona in accountable_by_model."
+      });
+    }
+    chain.columnNotes.obligation = "Obligations stay on a threat or control chain. Choose one of those records to see them.";
+    chain.personaCards.push({
+      id: "accountable:persona:" + id,
+      controlId: "persona:" + id,
+      controlName: personaLabel(id),
+      lines: [{
+        model: modelFilter,
+        label: modelFilter === "all" ? "Selected models" : modelName(modelFilter),
+        personaId: id,
+        name: personaLabel(id),
+        missing: false
+      }],
+      sectorPersona: ""
+    });
+    return chain;
+  }
+
   function buildChain(nodeId) {
     if (!graph.hasNode(nodeId)) return null;
     var attrs = graph.getNodeAttributes(nodeId);
@@ -1253,7 +1371,7 @@
       ["Risk", chain.risks, "risk"],
       ["Obligation", chain.obligations, "obligation"],
       ["Control", chain.controls, "control"],
-      ["Accountable", chain.personaCards, "accountable"]
+      ["Accountable for", chain.personaCards, "accountable"]
     ];
     columns.forEach(function (column) {
       var wrap = makeEl("div", "chain-col");
@@ -1263,16 +1381,18 @@
         var pressed = chainFocus === item.id;
         var button = cardButton(item.id, pressed);
         if (column[2] === "risk") {
-          button.appendChild(makeEl("span", "chain-card__kicker", item.layer ? "Risk · " + item.layer : "Risk"));
+          button.appendChild(makeEl("span", "chain-card__kicker", item.layer ? "Threat record · " + item.layer : "Threat record"));
           button.appendChild(makeEl("span", "chain-card__title", item.name));
+          if (item.attackSurface) button.appendChild(makeEl("span", "chain-card__meta", "Attack surface: " + item.attackSurface));
         } else if (column[2] === "obligation") {
           var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
           if (item.citation && item.citation !== duty) button.appendChild(makeEl("span", "chain-card__kicker", item.citation));
           button.appendChild(makeEl("span", "chain-card__title", duty));
-          button.appendChild(makeEl("span", "chain-card__tag", item.instrumentLevel ? "Instrument-level" : (item.style === "dashed" ? "Dashed link" : "Solid link")));
+          button.appendChild(makeEl("span", "chain-card__tag", item.instrumentLevel ? "Instrument-level" : "Implements this obligation"));
         } else if (column[2] === "control") {
-          button.appendChild(makeEl("span", "chain-card__kicker", [item.layer, item.meta, item.ref].filter(Boolean).join(" · ")));
+          button.appendChild(makeEl("span", "chain-card__kicker", [item.layer ? "Operates at " + item.layer : "", item.meta, item.ref].filter(Boolean).join(" · ")));
           button.appendChild(makeEl("span", "chain-card__title", item.name));
+          if (item.evidenceText) button.appendChild(makeEl("span", "chain-card__meta", item.evidenceText));
           if (item.sectorModels.length) {
             button.appendChild(makeEl("span", "chain-card__meta", "Sector: " + item.sectorModels.map(function (row) {
               return row.name;
@@ -1290,6 +1410,9 @@
         }
         wrap.appendChild(button);
       });
+      if (!column[1].length && chain.columnNotes && chain.columnNotes[column[2]]) {
+        wrap.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column[2]]));
+      }
       chain.gaps.forEach(function (gap) {
         if (gap.column !== column[2]) return;
         var note = makeEl("p", "chain-gap");
@@ -1351,7 +1474,7 @@
       ["Risk", chain.risks, "risk"],
       ["Obligation", chain.obligations, "obligation"],
       ["Control", chain.controls, "control"],
-      ["Accountable", chain.personaCards, "accountable"]
+      ["Accountable for", chain.personaCards, "accountable"]
     ];
     sections.forEach(function (section) {
       var heading = makeEl("h3", "", section[0]);
@@ -1377,7 +1500,13 @@
         var li = makeEl("li", "");
         if (section[2] === "risk") {
           li.appendChild(makeEl("strong", "", item.name));
-          appendSentence(li, item.layer ? "Layer " + item.layer + "." : "");
+          appendSentence(li, layerSentence(item.layer));
+          if (item.affected && item.affected.length) {
+            appendSentence(li, "Also named on " + item.affected.join(", ") + ".");
+          }
+          if (item.attackSurface) appendSentence(li, "Attack surface: " + item.attackSurface + ".");
+          item.mappings.forEach(function (line) { appendSentence(li, line + "."); });
+          appendSentence(li, "Mitigates. This threat record names the control. The basis is not classified.");
           if (item.url) {
             var source = makeEl("p", "");
             source.appendChild(document.createTextNode("Source: "));
@@ -1397,9 +1526,9 @@
             appendSentence(li, "Instrument-level. The control cites this instrument, and no article record matched.");
             if (item.citationText) appendSentence(li, "Citation on the control: " + item.citationText);
           } else if (item.basis) {
-            appendSentence(li, basisSentence(item.basis));
+            appendSentence(li, "Implements this obligation. " + basisSentence(item.basis));
           } else if (item.citationText) {
-            appendSentence(li, "The control cites this obligation. Citation: " + item.citationText);
+            appendSentence(li, "Implements this obligation. The basis is not classified. Citation: " + item.citationText);
           }
           if (item.url) {
             var duty = makeEl("p", "");
@@ -1423,7 +1552,13 @@
           }
         } else if (section[2] === "control") {
           li.appendChild(makeEl("strong", "", item.name));
-          appendSentence(li, [item.meta, item.ref, item.layer].filter(Boolean).join(" · "));
+          appendSentence(li, layerSentence(item.layer));
+          appendSentence(li, [item.meta, item.ref].filter(Boolean).join(" · "));
+          if (item.evidenceText) appendSentence(li, item.evidenceText);
+          if (item.evidenceDetail) appendSentence(li, item.evidenceDetail);
+          if ((chain.startKind === "risk" || chain.startKind === "control") && chain.risks.length) {
+            appendSentence(li, "Mitigates. This threat record names the control. The basis is not classified.");
+          }
           var page = makeEl("p", "");
           page.appendChild(document.createTextNode("Source: "));
           page.appendChild(makeLink(item.url, "Control page"));
@@ -1862,8 +1997,12 @@
   }
 
   function renderSuggestions() {
-    var controlIds = suggestedIds();
-    var risks = riskIds();
+    if (entry === "requirement" || entry === "account") {
+      suggestionsWrap.hidden = true;
+      return;
+    }
+    var controlIds = entry === "threat" ? [] : suggestedIds();
+    var risks = entry === "control" ? [] : riskIds();
     suggestions.textContent = "";
     riskSuggestions.textContent = "";
     suggestionsWrap.hidden = !risks.length && !controlIds.length;
@@ -1980,6 +2119,71 @@
       graphEmpty.hidden = true;
       graphEmpty.textContent = "";
     }
+    syncEntry();
+  }
+
+  function syncEntry() {
+    ["threat", "requirement", "control", "account"].forEach(function (key) {
+      var button = document.getElementById("entry-" + key);
+      if (button) button.setAttribute("aria-pressed", entry === key ? "true" : "false");
+    });
+    if (entryGap) entryGap.hidden = entry !== "requirement";
+    if (entryAccount) entryAccount.hidden = entry !== "account";
+    var riskHeading = document.getElementById("risk-suggestions-heading");
+    var controlHeading = document.getElementById("suggestions-heading");
+    if (riskHeading) riskHeading.hidden = entry === "control";
+    if (controlHeading) controlHeading.hidden = entry === "threat";
+    if (personaList) {
+      Array.prototype.forEach.call(personaList.querySelectorAll("button"), function (button) {
+        button.setAttribute("aria-pressed", button.dataset.persona === personaPick ? "true" : "false");
+      });
+    }
+  }
+
+  function chooseEntry(next) {
+    entry = next;
+    if (next !== "account") personaPick = "";
+    if (view === "full") commit(true);
+    else showSearch(true);
+  }
+
+  function fillLayerFrames() {
+    if (!layerFrames || !graph) return;
+    layerFrames.textContent = "";
+    LAYERS.forEach(function (layerId) {
+      if (!graph.hasNode("layer:" + layerId)) return;
+      var name = graph.getNodeAttribute("layer:" + layerId, "name");
+      layerFrames.appendChild(makeEl("dt", "", name));
+      layerFrames.appendChild(makeEl("dd", "", LAYER_FRAME[layerId] || ""));
+    });
+  }
+
+  function fillPersonaList() {
+    if (!personaList) return;
+    personaList.textContent = "";
+    CORE_PERSONAS.forEach(function (id) {
+      if (!graph.hasNode("persona:" + id)) return;
+      var attrs = graph.getNodeAttributes("persona:" + id);
+      if (attrs.provenance === "proposed-extension") return;
+      var button = document.createElement("button");
+      button.type = "button";
+      button.dataset.persona = id;
+      button.textContent = attrs.name;
+      button.addEventListener("click", function () {
+        personaPick = id;
+        entry = "account";
+        view = "chain";
+        root = null;
+        selected = null;
+        chainFocus = "accountable:persona:" + id;
+        wide = false;
+        linkHits = null;
+        linkNote = "";
+        searchInput.value = "";
+        commit(true);
+      });
+      personaList.appendChild(button);
+    });
   }
 
   function currentQuery() {
@@ -1996,6 +2200,7 @@
     }
     if (modelFilter !== "all") params.set("model", modelFilter);
     if (showTapestry) params.set("tapestry", "1");
+    if (view === "chain" && personaPick && !root) params.set("persona", personaPick);
     return params.toString();
   }
 
@@ -2008,7 +2213,8 @@
   }
 
   function commit(push) {
-    currentChain = view === "chain" && root ? buildChain(root) : null;
+    if (view === "chain" && personaPick && !root) currentChain = chainFromPersona(personaPick);
+    else currentChain = view === "chain" && root ? buildChain(root) : null;
     if (view !== "chain") chainFocus = "";
     if (currentChain) renderChain(currentChain);
     else if (chainBoard) chainBoard.textContent = "";
@@ -2071,6 +2277,8 @@
     root = null;
     selected = null;
     chainFocus = "";
+    personaPick = "";
+    entry = "";
     view = params.get("view") === "full" ? "full" : "search";
     var controlParam = params.get("control");
     var riskParam = params.get("risk");
@@ -2098,6 +2306,17 @@
         chainFocus = opened;
         if (openedAttrs.tapestry || wide || params.get("neighbors") === "1") view = "focus";
         else view = "chain";
+        entry = openedAttrs.kind === "risk" ? "threat" : "control";
+      }
+    } else if (view !== "full") {
+      var asked = params.get("persona") || "";
+      if (CORE_PERSONAS.indexOf(asked) !== -1 && graph.hasNode("persona:" + asked)) {
+        var personaAttrs = graph.getNodeAttributes("persona:" + asked);
+        if (personaAttrs.provenance !== "proposed-extension") {
+          personaPick = asked;
+          entry = "account";
+          view = "chain";
+        }
       }
     } else if (view === "full") {
       var node = params.get("node");
@@ -2129,6 +2348,7 @@
     linkHits = null;
     linkNote = "";
     searchInput.value = "";
+    personaPick = "";
     if (attrs.tapestry) showTapestry = true;
     if (attrs.tapestry || (attrs.kind !== "risk" && attrs.kind !== "control") || options.neighbors) {
       view = "focus";
@@ -2183,6 +2403,7 @@
     selected = null;
     chainFocus = "";
     wide = false;
+    personaPick = "";
     linkHits = null;
     linkNote = "";
     searchInput.value = "";
@@ -2525,6 +2746,10 @@
   placeDetails();
   fullBtn.addEventListener("click", function () { showFull(true); });
   startBtn.addEventListener("click", function () { showSearch(true); });
+  document.getElementById("entry-threat").addEventListener("click", function () { chooseEntry("threat"); });
+  document.getElementById("entry-requirement").addEventListener("click", function () { chooseEntry("requirement"); });
+  document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
+  document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
   document.querySelectorAll(".kind-filter input").forEach(function (box) {
     box.addEventListener("change", function () {
       shown[box.dataset.kind] = box.checked;
@@ -2602,6 +2827,8 @@
     });
     var models = buildGraph(data);
     renderModelRadios(models);
+    fillLayerFrames();
+    fillPersonaList();
     renderModelNote();
     applyFromLocation();
     start();
