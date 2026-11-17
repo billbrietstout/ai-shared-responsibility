@@ -334,13 +334,34 @@
       matchers: {},
       sectorToSrf: {},
       byFull: {},
-      personaName: {}
+      personaName: {},
+      attacksByThreat: {},
+      emptyCrosswalk: []
     };
     ((data.sectorMap && data.sectorMap.mappings) || []).forEach(function (row) {
       if (row && row.sector_model && row.srf_model) next.sectorToSrf[row.sector_model] = row.srf_model;
     });
     ((data.threats && data.threats.threats) || []).forEach(function (threat) {
       if (threat && threat.id) next.threats[threat.id] = threat;
+    });
+    ((data.attacks && data.attacks.entries) || []).forEach(function (entry) {
+      if (!entry || !entry.id) return;
+      var row = {
+        id: entry.id,
+        name: entry.name || entry.id,
+        refs: (entry.taxonomy_refs || []).map(function (ref) {
+          return [ref.catalog, ref.id, ref.title_in_catalog].filter(Boolean).join(" ");
+        }).filter(Boolean)
+      };
+      var walk = entry.srf_crosswalk || [];
+      if (!walk.length) {
+        next.emptyCrosswalk.push(row);
+        return;
+      }
+      walk.forEach(function (threatId) {
+        if (!next.attacksByThreat[threatId]) next.attacksByThreat[threatId] = [];
+        next.attacksByThreat[threatId].push(row);
+      });
     });
     ((data.requirements && data.requirements.requirements) || []).forEach(function (req) {
       if (!req || !req.id) return;
@@ -454,6 +475,7 @@
         ref: persona.id,
         provenance: persona.provenance || "",
         tapestry: tapestry,
+        srfLayers: persona.srf_layers || [],
         x: 0,
         y: 0
       });
@@ -577,6 +599,7 @@
           mappings: control.mappings || {},
           evidenceText: evidenceParts(control).short,
           evidenceDetail: evidenceParts(control).detail,
+          crossLayerNote: control.cross_layer_note || "",
           tapestry: tapestry,
           provenance: tapestry ? "proposed-extension" : (control.provenance || ""),
           x: 0,
@@ -999,7 +1022,8 @@
         label: modelName(modelId),
         personaId: cell.accountable_persona || "",
         name: cell.accountable_persona ? personaLabel(cell.accountable_persona) : "",
-        gap: !!cell.no_linked_control_in_model
+        gap: !!cell.no_linked_control_in_model,
+        sharedContext: ((cell.responsibility || {}).customer === "shared" || (cell.responsibility || {}).provider === "shared")
       });
     });
     var url = typeof threat.ai_exchange === "string" && threat.ai_exchange.indexOf("http") === 0 ? threat.ai_exchange : "";
@@ -1012,6 +1036,7 @@
       affected: threat.affected_layers || [],
       attackSurface: threat.attack_surface || "",
       mappings: mappingLines(threat),
+      attacks: (catalog.attacksByThreat && catalog.attacksByThreat[threat.id]) || [],
       owners: owners
     };
   }
@@ -1028,7 +1053,8 @@
       sectorModels: attrs.sectorModels || [],
       fullId: attrs.fullId,
       evidenceText: attrs.evidenceText || "",
-      evidenceDetail: attrs.evidenceDetail || ""
+      evidenceDetail: attrs.evidenceDetail || "",
+      crossLayerNote: attrs.crossLayerNote || ""
     };
   }
 
@@ -1113,10 +1139,9 @@
   function pushControlGaps(chain, threat, controlCount) {
     function gapFor(modelId) {
       var label = modelName(modelId);
-      chain.gaps.push({ column: "control", text: "No linked control in " + label + "." });
       chain.gaps.push({
-        column: "accountable",
-        text: "No accountable persona is recorded for " + label + ", because no linked control applies in that model."
+        column: "control",
+        text: "Confirmed coverage gap. No linked control is recorded for this risk in " + label + ". The recorded persona stays visible. This is not a missing owner."
       });
     }
     if (modelFilter !== "all") {
@@ -1402,6 +1427,10 @@
           var one = item.lines.length === 1 ? item.lines[0] : null;
           button.appendChild(makeEl("span", "chain-card__kicker", one ? one.label : item.controlName));
           button.appendChild(makeEl("span", "chain-card__title", one ? (one.missing ? "No persona recorded" : one.name) : "One persona per model"));
+          if (one && !one.missing && one.personaId && graph.hasNode("persona:" + one.personaId)) {
+            var personaLayers = graph.getNodeAttribute("persona:" + one.personaId, "srfLayers") || [];
+            if (personaLayers.length) button.appendChild(makeEl("span", "chain-card__meta", "Layers recorded: " + personaLayers.join(", ")));
+          }
           if (!one) {
             item.lines.forEach(function (line) {
               button.appendChild(makeEl("span", "chain-owner", line.label + ": " + (line.missing ? "No persona recorded" : line.name)));
@@ -1502,10 +1531,22 @@
           li.appendChild(makeEl("strong", "", item.name));
           appendSentence(li, layerSentence(item.layer));
           if (item.affected && item.affected.length) {
-            appendSentence(li, "Also named on " + item.affected.join(", ") + ".");
+            appendSentence(li, "Affected layers recorded on this threat: " + item.affected.join(", ") + ".");
           }
           if (item.attackSurface) appendSentence(li, "Attack surface: " + item.attackSurface + ".");
           item.mappings.forEach(function (line) { appendSentence(li, line + "."); });
+          if (item.attacks && item.attacks.length) {
+            appendSentence(li, "Attack inventory rows whose crosswalk names this threat:");
+            var attackList = makeEl("ul", "");
+            item.attacks.forEach(function (attack) {
+              var line = attack.name + " (" + attack.id + ")";
+              if (attack.refs.length) line += ". " + attack.refs.join("; ");
+              attackList.appendChild(makeEl("li", "", line));
+            });
+            li.appendChild(attackList);
+          } else {
+            appendSentence(li, "No attack-inventory row names this threat in srf_crosswalk.");
+          }
           appendSentence(li, "Mitigates. This threat record names the control. The basis is not classified.");
           if (item.url) {
             var source = makeEl("p", "");
@@ -1516,8 +1557,9 @@
           item.owners.forEach(function (owner) {
             var sentence = "Risk owner in " + owner.label + ": " + (owner.name || "none recorded") + ". ";
             sentence += owner.gap
-              ? "No linked control in this model, so this risk owner is not matched to a control."
+              ? "Confirmed coverage gap. No linked control is recorded for this risk in this operating model."
               : "This is context. The accountable persona below is the one on the control.";
+            if (owner.sharedContext) sentence += " The matrix records shared responsibility as context. It does not add a second owner.";
             appendSentence(li, sentence);
           });
         } else if (section[2] === "obligation") {
@@ -1556,6 +1598,7 @@
           appendSentence(li, [item.meta, item.ref].filter(Boolean).join(" · "));
           if (item.evidenceText) appendSentence(li, item.evidenceText);
           if (item.evidenceDetail) appendSentence(li, item.evidenceDetail);
+          if (item.crossLayerNote) appendSentence(li, "Cross-layer note on this control: " + item.crossLayerNote);
           if ((chain.startKind === "risk" || chain.startKind === "control") && chain.risks.length) {
             appendSentence(li, "Mitigates. This threat record names the control. The basis is not classified.");
           }
@@ -1578,6 +1621,12 @@
               row.appendChild(document.createTextNode(". The control record names this persona for " + line.label + "."));
             }
             li.appendChild(row);
+            if (!line.missing && line.personaId && graph.hasNode("persona:" + line.personaId)) {
+              var recorded = graph.getNodeAttribute("persona:" + line.personaId, "srfLayers") || [];
+              if (recorded.length) {
+                appendSentence(li, "Layers recorded for " + line.name + ": " + recorded.join(", ") + ".");
+              }
+            }
           });
           var extra = item.sectorPersona && item.lines.every(function (line) { return line.personaId !== item.sectorPersona; });
           if (extra && personaLabel(item.sectorPersona) !== item.sectorPersona) {
@@ -1684,11 +1733,11 @@
   }
 
   function renderDetails() {
-    clearBtn.disabled = !selected && !root;
-    if (view === "chain" && currentChain && root && graph.hasNode(root)) {
-      var rootAttrs = graph.getNodeAttributes(root);
+    clearBtn.disabled = !selected && !root && !personaPick;
+    if (view === "chain" && currentChain && ((root && graph.hasNode(root)) || personaPick)) {
+      var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
       var focusedName = focusedChainName(currentChain);
-      detailsHeading.textContent = focusedName || rootAttrs.name;
+      detailsHeading.textContent = focusedName || (rootAttrs ? rootAttrs.name : personaLabel(personaPick));
       detailsEmpty.hidden = true;
       detailsBody.hidden = false;
       var focusKind = "";
@@ -1698,7 +1747,7 @@
         else if (chainFocus.indexOf("risk:") === 0) focusKind = "Risk";
         else focusKind = "Control";
       }
-      detailsKind.textContent = focusKind || (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind);
+      detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : "Accountable for");
       detailsMeta.hidden = true;
       detailsMeta.textContent = "";
       detailsModelNote.hidden = true;
@@ -2778,6 +2827,88 @@
   });
   window.addEventListener("popstate", applyFromLocation);
 
+  function renderCoverage() {
+    var body = document.getElementById("coverage-body");
+    if (!body || !catalog || !graph) return;
+    body.textContent = "";
+    function addList(items) {
+      var ul = makeEl("ul", "");
+      items.forEach(function (text) { ul.appendChild(makeEl("li", "", text)); });
+      body.appendChild(ul);
+    }
+    var confirmed = [];
+    Object.keys(catalog.threats).forEach(function (id) {
+      var threat = catalog.threats[id];
+      MODEL_ORDER.forEach(function (modelId) {
+        var cell = (threat.accountability || {})[modelId] || {};
+        if (!cell.no_linked_control_in_model) return;
+        confirmed.push(threat.name + " in " + modelId + " still names " + (personaLabel(cell.accountable_persona) || "a persona") + ". No linked control is recorded for that model.");
+      });
+    });
+    body.appendChild(makeEl("h3", "", "Confirmed coverage gap"));
+    addList(confirmed.length ? confirmed : ["No threat cell sets no_linked_control_in_model."]);
+
+    var named = {};
+    Object.keys(catalog.threats).forEach(function (id) {
+      (catalog.threats[id].related_controls || []).forEach(function (fullId) { named[fullId] = true; });
+    });
+    var controlCount = 0;
+    var unlinked = 0;
+    Object.keys(catalog.byFull).forEach(function (fullId) {
+      controlCount += 1;
+      if (!named[fullId]) unlinked += 1;
+    });
+    var cited = {};
+    Object.keys(catalog.threats).forEach(function (id) {
+      (catalog.threats[id].obligations || []).forEach(function (link) {
+        if (link.requirement) cited[link.requirement] = true;
+      });
+    });
+    var uncited = 0;
+    Object.keys(catalog.reqs).forEach(function (id) { if (!cited[id]) uncited += 1; });
+    var missing = [
+      unlinked + " of " + controlCount + " controls are not named by any threat record. That is a missing mapping, not a confirmed gap.",
+      uncited + " of " + Object.keys(catalog.reqs).length + " obligation records are not cited by a threat obligation link. That is a missing mapping, not a confirmed absence of a control."
+    ];
+    (catalog.emptyCrosswalk || []).forEach(function (row) {
+      missing.push(row.name + " (" + row.id + ") has an empty srf_crosswalk. That is a missing mapping.");
+    });
+    body.appendChild(makeEl("h3", "", "Missing mapping"));
+    addList(missing);
+
+    var unassessed = 0;
+    graph.forEachNode(function (id, attrs) {
+      if (attrs.kind === "control" && attrs.evidenceText === "The evidence pointer is not recorded.") unassessed += 1;
+    });
+    body.appendChild(makeEl("h3", "", "Unassessed"));
+    addList([
+      unassessed + " controls have no evidence pointer, or the pointer contains TBD. That is not a failed control.",
+      "Risk-to-control links have no basis field. The basis is not classified."
+    ]);
+
+    var multi = [];
+    function badOwner(value) {
+      return Array.isArray(value) || value === "Shared" || value === "shared";
+    }
+    graph.forEachNode(function (id, attrs) {
+      if (attrs.kind !== "control" || !attrs.accountableByModel) return;
+      Object.keys(attrs.accountableByModel).forEach(function (modelId) {
+        if (badOwner(attrs.accountableByModel[modelId])) multi.push(attrs.ref + " in " + modelId);
+      });
+    });
+    Object.keys(catalog.threats).forEach(function (id) {
+      var acc = catalog.threats[id].accountability || {};
+      Object.keys(acc).forEach(function (modelId) {
+        if (badOwner((acc[modelId] || {}).accountable_persona)) multi.push(catalog.threats[id].name + " in " + modelId);
+      });
+    });
+    body.appendChild(makeEl("h3", "", "Multiple accountable owners"));
+    addList(multi.length ? multi : ["This check found no cell with more than one accountable persona."]);
+
+    body.appendChild(makeEl("h3", "", "Prevention, detection, response, and recovery"));
+    body.appendChild(makeEl("p", "", "Not classified. No control stores a value for those four functions. Vertical lifecycle stages are a different field and are not shown here as those functions."));
+  }
+
   var scheme = window.matchMedia("(prefers-color-scheme: dark)");
   if (scheme.addEventListener) scheme.addEventListener("change", applyScheme);
   else if (scheme.addListener) scheme.addListener(applyScheme);
@@ -2792,7 +2923,8 @@
     fetchJson("/data/threats.json"),
     fetchJson("/data/moral-regulatory-hierarchy.json"),
     fetchJson("/data/regulations.json"),
-    fetchJson("/data/sector-model-map.json")
+    fetchJson("/data/sector-model-map.json"),
+    fetchJson("/data/attack-inventory.json")
   ]);
 
   Promise.all(loads).then(function (files) {
@@ -2806,6 +2938,7 @@
       requirements: files[6 + CONTROL_FILES.length],
       regulations: files[7 + CONTROL_FILES.length],
       sectorMap: files[8 + CONTROL_FILES.length],
+      attacks: files[9 + CONTROL_FILES.length],
       controlFiles: CONTROL_FILES.map(function (file, i) {
         return {
           slug: file[0],
@@ -2829,6 +2962,7 @@
     renderModelRadios(models);
     fillLayerFrames();
     fillPersonaList();
+    renderCoverage();
     renderModelNote();
     applyFromLocation();
     start();
