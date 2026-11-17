@@ -88,7 +88,7 @@
         font-size: var(--text-sm);
       }
 
-      /* ── Role entry list (below Decision Record CTA) ────────────── */
+      /* ── Role entry list (below the hero actions) ───────────────── */
       .role-list {
         list-style: none;
         margin: var(--sp-8) 0 0;
@@ -128,26 +128,91 @@
         white-space: nowrap;
       }
 
-      /* ── Decision Record CTA ────────────────────────────────────── */
-      .hero__decision {
-        margin-top: var(--sp-8);
+      /* ── Hero positioning and actions ───────────────────────────── */
+      .hero__subtitle {
+        font-size: var(--text-lg);
+        font-weight: 600;
+        color: var(--ink);
+        max-width: 62ch;
+        line-height: var(--leading-snug);
+        margin: 0 0 var(--sp-4);
+      }
+      .hero__closing {
+        font-size: var(--text-base);
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0 0 var(--sp-6);
+      }
+      .hero__actions {
         display: flex;
         align-items: center;
-        justify-content: space-between;
         flex-wrap: wrap;
-        gap: var(--sp-4);
-        background: var(--surface);
-        border: 1px solid var(--slate-200);
-        padding: var(--sp-4) var(--sp-5);
+        gap: var(--sp-3) var(--sp-5);
+        margin-bottom: var(--sp-3);
       }
-      .hero__decision-text {
+      .hero__secondary {
+        font-size: var(--text-sm);
+        font-weight: 700;
+        color: var(--cosai-blue);
+        text-decoration: none;
+        border-bottom: 1px solid var(--cosai-blue-soft);
+      }
+      .hero__secondary:hover { border-bottom-color: var(--cosai-blue); text-decoration: none; }
+      .hero__actions-note {
         font-size: var(--text-sm);
         color: var(--slate-600);
         line-height: var(--leading-normal);
         max-width: 62ch;
-        margin: 0;
+        margin: 0 0 var(--sp-6);
       }
-      .hero__decision-text strong { color: var(--ink); font-weight: 700; }
+
+      /* ── Authorization principle and illustrative rows ──────────── */
+      .hero__auth {
+        margin-top: var(--sp-8);
+        background: var(--surface);
+        border: 1px solid var(--slate-200);
+        padding: var(--sp-4) var(--sp-5);
+      }
+      .hero__auth-principle {
+        font-family: var(--font-serif);
+        font-size: var(--text-lg);
+        color: var(--ink);
+        line-height: var(--leading-snug);
+        max-width: 62ch;
+        margin: 0 0 var(--sp-4);
+      }
+      .hero__auth-title {
+        font-size: var(--text-xs);
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--slate-500);
+        margin: 0 0 var(--sp-1);
+      }
+      .hero__auth-note {
+        caption-side: top;
+        text-align: left;
+        font-size: var(--text-sm);
+        color: var(--slate-600);
+        margin: 0 0 var(--sp-3);
+      }
+      .hero__illustrative {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--text-sm);
+      }
+      .hero__illustrative th,
+      .hero__illustrative td {
+        text-align: left;
+        padding: var(--sp-2) var(--sp-3) var(--sp-2) 0;
+        border-top: 1px solid var(--slate-200);
+        vertical-align: top;
+      }
+      .hero__illustrative th {
+        font-size: var(--text-xs);
+        color: var(--slate-500);
+        font-weight: 700;
+      }
       .hero__primary {
         flex: none;
         display: inline-flex;
@@ -636,7 +701,7 @@
     <main id="main" data-llm="ai-shared-responsibility">
 
       <!-- ── Hero ──────────────────────────────────────────────────── -->
-      <section class="hero" data-llm="named-owner-per-activity">
+      <section class="hero" data-llm="ai-security-requires-accountability">
         <div class="hero__inner">
           <p class="hero__eyebrow">CoSAI · OASIS Open Project · V1.0</p>
           <p class="hero__provenance">
@@ -644,13 +709,31 @@
             <a href="https://www.coalitionforsecureai.org/" target="_blank" rel="noopener">CoSAI Shared Responsibility Framework</a>.
             Maintained by Bill Stout. Content CC BY 4.0; code Apache-2.0.
           </p>
-          <h1 class="hero__title">
-            Make <em>responsibility</em> clear before you scale AI.
-          </h1>
+          <h1 class="hero__title">AI Security Requires Accountability.</h1>
+          <p class="hero__subtitle">
+            Secure AI systems. Defend against emerging threats. Establish clear
+            security ownership.
+          </p>
           <p class="hero__lede">
-            The CoSAI SRF maps every obligation and control to exactly one accountable
-            party per activity, across each layer and operating model. It complements
-            NIST AI RMF, ISO/IEC 42001, and the EU AI Act by naming who is accountable.
+            AI introduces new attack surfaces, autonomous capabilities, and complex
+            dependencies across applications, platforms, models, and organizations.
+            AI Shared Responsibility provides a security architecture for understanding
+            threats, naming the obligations that apply, implementing controls, and
+            establishing exactly who is accountable.
+          </p>
+          <p class="hero__closing">From AI threats to accountable security.</p>
+
+          <div class="hero__actions">
+            <a class="hero__primary" href="/tools/relationship-map/">
+              Explore AI security accountability
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+            </a>
+            <a class="hero__secondary" href="/tools/decision-record/">Create a Decision Record</a>
+          </div>
+          <p class="hero__actions-note">
+            Start from a threat, a control, or an accountable persona and follow the
+            chain. After the trace, a Decision Record names one accountable persona per
+            layer for your deployment, records residual gaps, and captures sign-off.
           </p>
 
           <div class="hero__release">
@@ -659,16 +742,32 @@
             <a href="https://www.coalitionforsecureai.org/wp-content/uploads/2026/05/CoSAI-Shared-Responsibility-Framework.pdf" target="_blank" rel="noopener">Download V1.0 PDF →</a>
           </div>
 
-          <div class="hero__decision">
-            <p class="hero__decision-text">
-              Finish with a signed Accountability Decision Record: name one accountable
-              party (persona) per layer for this deployment, record residual gaps, and
-              capture attestation (sign-off).
+          <div class="hero__auth">
+            <p class="hero__auth-principle">
+              Authorization establishes what an AI agent is allowed to do. Security
+              ownership establishes who is accountable for what happens next.
             </p>
-            <a class="hero__primary" href="/tools/decision-record/">
-              Create a Decision Record
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-            </a>
+            <h2 class="hero__auth-title">Illustrative only</h2>
+            <table class="hero__illustrative">
+              <caption class="hero__auth-note">
+                These titles are examples. They are not personas in the SRF, and they
+                are not links.
+              </caption>
+              <thead>
+                <tr>
+                  <th scope="col">Security activity</th>
+                  <th scope="col">Illustrative title</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Agent identity provisioning</td><td>Identity owner</td></tr>
+                <tr><td>Tool authorization</td><td>Application security owner</td></tr>
+                <tr><td>Runtime policy enforcement</td><td>AI platform security owner</td></tr>
+                <tr><td>Detection of unauthorized actions</td><td>Security operations owner</td></tr>
+                <tr><td>Incident containment</td><td>Incident response owner</td></tr>
+                <tr><td>Model supply-chain assurance</td><td>AI supply-chain security owner</td></tr>
+              </tbody>
+            </table>
           </div>
 
           <ul class="role-list">

@@ -403,6 +403,27 @@ a:hover { text-decoration: none; }
   flex-shrink: 0;
 }
 
+/* Eight header labels do not fit beside the wordmark in --max-w, so above the
+   mobile breakpoint the links sit on their own row under the wordmark and the
+   Tools & Explorers button. Layout only; no color tokens change. */
+@media (min-width: 681px) {
+  .nav__inner {
+    flex-wrap: wrap;
+    height: auto;
+    row-gap: 0;
+    padding-top: var(--sp-2);
+  }
+  .nav__links {
+    order: 3;
+    flex: 1 0 100%;
+    flex-wrap: wrap;
+    margin-left: calc(-1 * var(--sp-2));
+  }
+  .nav__link {
+    padding: var(--sp-2);
+  }
+}
+
 /* Mobile nav toggle */
 .nav__toggle {
   display: none;

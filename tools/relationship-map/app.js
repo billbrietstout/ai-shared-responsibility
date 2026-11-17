@@ -35,12 +35,12 @@
  *                   matches a policy level (no control has this field today)
  *   risk-control    threats[].related_controls
  *
- * Chain edges are drawn in the chain view, not as extra graph edges:
- *   risk to obligation     threats[].obligations[] (dashed when the basis is
+ * Chain provenance is shown in the ROCA table (not as mesh lines):
+ *   risk to obligation     threats[].obligations[] (Shared control when the basis is
  *                          derived_via_control or editorial)
  *   obligation to control  the source control on that link, or a citation match
  *   instrument to control  a current-obligation citation with no article match
- *                          (marked instrument-level)
+ *                          (marked Instrument-level)
  *   control to persona     controls[].accountable_by_model for the chosen model
  *
  * A control is Tapestry when its file or record provenance is proposed-extension,
@@ -1374,87 +1374,121 @@
   }
 
   function cardButton(cardId, pressed) {
-    var button = makeEl("button", "chain-card");
+    var button = makeEl("button", "chain-item");
     button.type = "button";
     button.dataset.chainId = cardId;
     button.setAttribute("aria-pressed", pressed ? "true" : "false");
     return button;
   }
 
+  function obligationProvenance(item, chain) {
+    if (item.instrumentLevel) return "Instrument-level";
+    var style = "";
+    chain.edges.forEach(function (edge) {
+      if (edge.to === item.id || edge.from === item.id) {
+        if (edge.style === "dashed") style = "dashed";
+        else if (edge.style === "dotted" && !style) style = "dotted";
+        else if (edge.style === "solid" && !style) style = "solid";
+      }
+    });
+    if (style === "dashed") return "Shared control";
+    if (style === "dotted") return "Instrument-level";
+    return "Official text";
+  }
+
+  function appendGapNotes(parent, chain, column) {
+    chain.gaps.forEach(function (gap) {
+      if (gap.column !== column) return;
+      var note = makeEl("p", "chain-gap");
+      note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
+      note.appendChild(document.createTextNode(" " + gap.text));
+      parent.appendChild(note);
+    });
+  }
+
   function renderChain(chain) {
     chainBoard.textContent = "";
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("id", "chain-svg");
-    svg.setAttribute("class", "chain-svg");
-    svg.setAttribute("aria-hidden", "true");
-    chainBoard.appendChild(svg);
-    var columnsWrap = makeEl("div", "chain-columns");
-    chainBoard.appendChild(columnsWrap);
     if (modelFilter === "all") {
       chainModelNote.textContent = "All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.";
     } else {
       chainModelNote.textContent = "";
     }
-    var columns = [
-      ["Risk", chain.risks, "risk"],
-      ["Obligation", chain.obligations, "obligation"],
-      ["Control", chain.controls, "control"],
-      ["Accountable for", chain.personaCards, "accountable"]
-    ];
-    columns.forEach(function (column) {
-      var wrap = makeEl("div", "chain-col");
-      var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
-      wrap.appendChild(heading);
-      column[1].forEach(function (item) {
-        var pressed = chainFocus === item.id;
-        var button = cardButton(item.id, pressed);
-        if (column[2] === "risk") {
-          button.appendChild(makeEl("span", "chain-card__kicker", item.layer ? "Threat record · " + item.layer : "Threat record"));
-          button.appendChild(makeEl("span", "chain-card__title", item.name));
-          if (item.attackSurface) button.appendChild(makeEl("span", "chain-card__meta", "Attack surface: " + item.attackSurface));
-        } else if (column[2] === "obligation") {
-          var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
-          if (item.citation && item.citation !== duty) button.appendChild(makeEl("span", "chain-card__kicker", item.citation));
-          button.appendChild(makeEl("span", "chain-card__title", duty));
-          button.appendChild(makeEl("span", "chain-card__tag", item.instrumentLevel ? "Instrument-level" : "Implements this obligation"));
-        } else if (column[2] === "control") {
-          button.appendChild(makeEl("span", "chain-card__kicker", [item.layer ? "Operates at " + item.layer : "", item.meta, item.ref].filter(Boolean).join(" · ")));
-          button.appendChild(makeEl("span", "chain-card__title", item.name));
-          if (item.evidenceText) button.appendChild(makeEl("span", "chain-card__meta", item.evidenceText));
-          if (item.sectorModels.length) {
-            button.appendChild(makeEl("span", "chain-card__meta", "Sector: " + item.sectorModels.map(function (row) {
-              return row.name;
-            }).join(", ")));
-          }
+    var panel = makeEl("div", "roca");
+    var table = makeEl("table", "kv");
+    table.setAttribute("aria-label", "ROCA chain");
+
+    function addRow(letter, label, column, items, fillCell) {
+      var tr = document.createElement("tr");
+      var th = document.createElement("th");
+      th.scope = "row";
+      th.textContent = letter + ": " + label;
+      if (items.length) th.textContent += " (" + items.length + ")";
+      var td = document.createElement("td");
+      if (!items.length) {
+        if (chain.columnNotes && chain.columnNotes[column]) {
+          td.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column]));
         } else {
-          var one = item.lines.length === 1 ? item.lines[0] : null;
-          button.appendChild(makeEl("span", "chain-card__kicker", one ? one.label : item.controlName));
-          button.appendChild(makeEl("span", "chain-card__title", one ? (one.missing ? "No persona recorded" : one.name) : "One persona per model"));
-          if (one && !one.missing && one.personaId && graph.hasNode("persona:" + one.personaId)) {
-            var personaLayers = graph.getNodeAttribute("persona:" + one.personaId, "srfLayers") || [];
-            if (personaLayers.length) button.appendChild(makeEl("span", "chain-card__meta", "Layers recorded: " + personaLayers.join(", ")));
-          }
-          if (!one) {
-            item.lines.forEach(function (line) {
-              button.appendChild(makeEl("span", "chain-owner", line.label + ": " + (line.missing ? "No persona recorded" : line.name)));
-            });
-          }
+          td.appendChild(makeEl("p", "chain-card__meta", "Nothing is recorded for this step."));
         }
-        wrap.appendChild(button);
-      });
-      if (!column[1].length && chain.columnNotes && chain.columnNotes[column[2]]) {
-        wrap.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column[2]]));
+      } else {
+        var list = makeEl("ul", "roca-list");
+        items.forEach(function (item) {
+          var li = document.createElement("li");
+          var button = cardButton(item.id, chainFocus === item.id);
+          fillCell(button, item);
+          li.appendChild(button);
+          list.appendChild(li);
+        });
+        td.appendChild(list);
       }
-      chain.gaps.forEach(function (gap) {
-        if (gap.column !== column[2]) return;
-        var note = makeEl("p", "chain-gap");
-        note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
-        note.appendChild(document.createTextNode(" " + gap.text));
-        wrap.appendChild(note);
-      });
-      columnsWrap.appendChild(wrap);
+      appendGapNotes(td, chain, column);
+      tr.appendChild(th);
+      tr.appendChild(td);
+      table.appendChild(tr);
+    }
+
+    addRow("R", "Risk", "risk", chain.risks, function (button, item) {
+      button.appendChild(makeEl("span", "chain-card__title", item.name));
+      var meta = [];
+      if (item.layer) meta.push(item.layer);
+      if (item.attackSurface) meta.push("Attack surface: " + item.attackSurface);
+      if (meta.length) button.appendChild(makeEl("span", "chain-card__meta", meta.join(" · ")));
     });
-    requestAnimationFrame(drawChainLines);
+
+    addRow("O", "Obligations", "obligation", chain.obligations, function (button, item) {
+      var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
+      var line = makeEl("span", "chain-card__line");
+      line.appendChild(makeEl("span", "chain-card__title", duty));
+      line.appendChild(makeEl("span", "chain-pill", obligationProvenance(item, chain)));
+      button.appendChild(line);
+      if (item.citation && item.citation !== duty) {
+        button.appendChild(makeEl("span", "chain-card__meta", item.citation));
+      }
+    });
+
+    addRow("C", "Controls", "control", chain.controls, function (button, item) {
+      button.appendChild(makeEl("span", "chain-card__title", item.name));
+      var bits = [item.layer ? item.layer : "", item.ref].filter(Boolean);
+      if (bits.length) button.appendChild(makeEl("span", "chain-card__meta", bits.join(" · ")));
+    });
+
+    addRow("A", "Accountable", "accountable", chain.personaCards, function (button, item) {
+      var one = item.lines.length === 1 ? item.lines[0] : null;
+      if (one) {
+        button.appendChild(makeEl("span", "chain-card__title", one.missing ? "No persona recorded" : one.name));
+        button.appendChild(makeEl("span", "chain-card__meta", one.label + (item.controlName ? " · " + item.controlName : "")));
+      } else {
+        button.appendChild(makeEl("span", "chain-card__meta", item.controlName || "One persona per model"));
+        var owners = makeEl("span", "chain-owners");
+        item.lines.forEach(function (line) {
+          owners.appendChild(makeEl("span", "chain-owner", line.label + ": " + (line.missing ? "none" : line.name)));
+        });
+        button.appendChild(owners);
+      }
+    });
+
+    panel.appendChild(table);
+    chainBoard.appendChild(panel);
   }
 
   function chainCard(id) {
@@ -1466,29 +1500,7 @@
   }
 
   function drawChainLines() {
-    if (!currentChain || !chainBoard) return;
-    var svg = document.getElementById("chain-svg");
-    if (!svg) return;
-    while (svg.firstChild) svg.removeChild(svg.firstChild);
-    if (window.matchMedia("(max-width: 800px)").matches) return;
-    var origin = chainBoard.getBoundingClientRect();
-    svg.setAttribute("viewBox", "0 0 " + chainBoard.scrollWidth + " " + chainBoard.scrollHeight);
-    currentChain.edges.forEach(function (edge) {
-      var from = chainCard(edge.from);
-      var to = chainCard(edge.to);
-      if (!from || !to) return;
-      var ar = from.getBoundingClientRect();
-      var br = to.getBoundingClientRect();
-      var x1 = ar.right - origin.left;
-      var y1 = ar.top + ar.height / 2 - origin.top;
-      var x2 = br.left - origin.left;
-      var y2 = br.top + br.height / 2 - origin.top;
-      var mid = (x1 + x2) / 2;
-      var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", "M " + x1 + " " + y1 + " C " + mid + " " + y1 + ", " + mid + " " + y2 + ", " + x2 + " " + y2);
-      path.setAttribute("class", "chain-line chain-line--" + edge.style);
-      svg.appendChild(path);
-    });
+    /* Compact ROCA table replaces the column mesh; no line drawing. */
   }
 
   function appendSentence(parent, text) {
@@ -2146,7 +2158,7 @@
     } else if (view === "context") {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "Context lists the same records the mesh draws. Open a box to see its chain.";
+      helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
     } else if (view === "focus" && wide) {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
@@ -2158,11 +2170,11 @@
     } else if (view === "chain") {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "The map is showing this chain: risk, obligation, control, and the accountable persona.";
+      helpEl.textContent = "ROCA table for this record: Risk, Obligation, Control, and Accountable. Choose a row item for details.";
     } else {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "Type a risk or a control name, then choose a match. The map shows that chain: risk, obligation, control, and the accountable persona.";
+      helpEl.textContent = "Type a risk or a control name, then choose a match. The map shows a ROCA table: risk, obligation, control, and the accountable persona.";
     }
 
     if (view === "search") {
@@ -2459,13 +2471,18 @@
   function renderContext() {
     if (!contextBoard || !graph) return;
     contextBoard.textContent = "";
-    contextBoard.appendChild(makeEl("p", "context-intro", "These boxes are the records the link mesh draws all at once. Open a persona, a threat, or a control to see its chain. This view does not draw lines."));
+    contextBoard.appendChild(makeEl("p", "context-intro", "Layers run top to bottom, L1 to L5. Each band lists the personas recorded there and how many controls sit at that layer. Open a name to see its ROCA chain. This view does not draw the link mesh."));
+    var bands = makeEl("div", "context-bands");
     LAYERS.forEach(function (layerId) {
       if (!graph.hasNode("layer:" + layerId)) return;
-      var card = makeEl("section", "context-layer");
-      card.appendChild(makeEl("h3", "", graph.getNodeAttribute("layer:" + layerId, "name")));
-      if (LAYER_FRAME[layerId]) card.appendChild(makeEl("p", "context-meta", LAYER_FRAME[layerId]));
-      var modelRows = [];
+      var band = makeEl("section", "context-band");
+      var label = makeEl("div", "context-band__label");
+      label.appendChild(makeEl("span", "context-band__id", layerId));
+      label.appendChild(makeEl("span", "context-band__name", graph.getNodeAttribute("layer:" + layerId, "name").replace(/^L\d\s+/, "")));
+      if (LAYER_FRAME[layerId]) label.title = LAYER_FRAME[layerId];
+      band.appendChild(label);
+      var body = makeEl("div", "context-band__body");
+      var modelBits = [];
       graph.forEachEdge(function (edge, attrs, source, target) {
         if (!attrs || attrs.type !== "model-layer") return;
         var layerEnd = source.indexOf("layer:") === 0 ? source : target.indexOf("layer:") === 0 ? target : "";
@@ -2474,12 +2491,12 @@
         var modelId = modelEnd.slice(6);
         if (MODEL_ORDER.indexOf(modelId) === -1) return;
         if (modelFilter !== "all" && modelId !== modelFilter) return;
-        modelRows.push(modelName(modelId) + ": " + (respLabel[attrs.responsibility] || attrs.responsibility || ""));
+        modelBits.push({ id: modelId, text: (graph.getNodeAttribute("model:" + modelId, "label") || modelName(modelId)) + " " + (respLabel[attrs.responsibility] || attrs.responsibility || "") });
       });
-      modelRows.sort(function (a, b) {
-        return MODEL_ORDER.indexOf(a.split(":")[0]) - MODEL_ORDER.indexOf(b.split(":")[0]);
-      });
-      if (modelRows.length) card.appendChild(makeEl("p", "context-meta", "Operating model responsibility recorded on this layer: " + modelRows.join(". ") + "."));
+      modelBits.sort(function (a, b) { return MODEL_ORDER.indexOf(a.id) - MODEL_ORDER.indexOf(b.id); });
+      if (modelBits.length) {
+        body.appendChild(makeEl("p", "context-meta", modelBits.map(function (row) { return row.text; }).join(" · ")));
+      }
       var people = makeEl("div", "context-people");
       graph.forEachNode(function (id, attrs) {
         if (attrs.kind !== "persona") return;
@@ -2488,7 +2505,7 @@
         if (CORE_PERSONAS.indexOf(attrs.ref) === -1) return;
         people.appendChild(nodeButton(id, attrs.name));
       });
-      if (people.childNodes.length) card.appendChild(people);
+      if (people.childNodes.length) body.appendChild(people);
       var controls = [];
       graph.forEachNode(function (id, attrs) {
         if (attrs.kind !== "control" || attrs.layer !== layerId || !nodeAllowed(attrs)) return;
@@ -2499,20 +2516,19 @@
         var bn = graph.getNodeAttribute(b, "name");
         return an < bn ? -1 : an > bn ? 1 : 0;
       });
-      var details = makeEl("details", "context-controls");
-      details.appendChild(makeEl("summary", "", controls.length + (controls.length === 1 ? " control at this layer" : " controls at this layer")));
+      var details = makeEl("details", "context-controls-fold");
+      details.appendChild(makeEl("summary", "", controls.length + (controls.length === 1 ? " control" : " controls")));
       var wrap = makeEl("div", "context-controls");
       controls.forEach(function (id) {
         wrap.appendChild(nodeButton(id, graph.getNodeAttribute(id, "name")));
       });
       details.appendChild(wrap);
-      card.appendChild(details);
-      contextBoard.appendChild(card);
+      body.appendChild(details);
+      band.appendChild(body);
+      bands.appendChild(band);
     });
-    var threats = makeEl("section", "context-extra");
-    threats.appendChild(makeEl("h3", "", "Threat records"));
-    threats.appendChild(makeEl("p", "context-meta", "Each name opens the chain for that threat."));
-    var threatWrap = makeEl("div", "context-controls");
+    contextBoard.appendChild(bands);
+
     var riskIds = [];
     graph.forEachNode(function (id, attrs) {
       if (attrs.kind === "risk") riskIds.push(id);
@@ -2522,11 +2538,16 @@
       var bn = graph.getNodeAttribute(b, "name");
       return an < bn ? -1 : an > bn ? 1 : 0;
     });
+    var threats = makeEl("details", "context-extra context-extra--fold");
+    threats.appendChild(makeEl("summary", "", riskIds.length + (riskIds.length === 1 ? " threat record" : " threat records")));
+    threats.appendChild(makeEl("p", "context-meta", "Each name opens the ROCA chain for that threat."));
+    var threatWrap = makeEl("div", "context-controls");
     riskIds.forEach(function (id) { threatWrap.appendChild(nodeButton(id, graph.getNodeAttribute(id, "name"))); });
     threats.appendChild(threatWrap);
     contextBoard.appendChild(threats);
-    var extra = makeEl("section", "context-extra");
-    extra.appendChild(makeEl("h3", "", "Policy levels and whitepaper topics"));
+
+    var extra = makeEl("details", "context-extra context-extra--fold");
+    extra.appendChild(makeEl("summary", "", "Policy levels and whitepaper topics"));
     extra.appendChild(makeEl("p", "context-meta", "These names are in the data. No control record has a policy-level field, and whitepaper topics are not linked to controls, so they are not drawn as lines."));
     var names = makeEl("ul", "context-names");
     graph.forEachNode(function (id, attrs) {
@@ -2760,8 +2781,15 @@
     var SigmaCtor = window.Sigma && (window.Sigma.Sigma || window.Sigma);
     if (typeof SigmaCtor !== "function") throw new Error("Sigma did not load.");
     palette = readPalette();
-    var chainHidden = graphWrap.classList.contains("graph-wrap--chain");
-    if (chainHidden) graphWrap.classList.remove("graph-wrap--chain");
+    /* Chain and layer views hide the canvas. Reveal it briefly so Sigma can
+       measure a non-zero container, then restore the active view class. */
+    var held = [];
+    ["graph-wrap--chain", "graph-wrap--context"].forEach(function (name) {
+      if (graphWrap.classList.contains(name)) {
+        graphWrap.classList.remove(name);
+        held.push(name);
+      }
+    });
     renderer = new SigmaCtor(graph, graphEl, {
       settings: {
         enableNodeDrag: false,
@@ -2788,7 +2816,7 @@
       nodeReducer: nodeReducer,
       edgeReducer: edgeReducer
     });
-    if (chainHidden) graphWrap.classList.add("graph-wrap--chain");
+    held.forEach(function (name) { graphWrap.classList.add(name); });
     graphEl.style.backgroundColor = palette.stage;
 
     var ignoreStage = false;
@@ -2902,7 +2930,6 @@
     buttons[next].focus();
   });
   window.addEventListener("resize", function () {
-    if (view === "chain" && currentChain) drawChainLines();
     placeDetails();
   });
   window.addEventListener("scroll", placeDetails, { passive: true });
