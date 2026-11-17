@@ -15,7 +15,7 @@ This tree is intentionally **not** part of the CoSAI SRF site:
 
 | Directory | Source stamp | Notes |
 |---|---|---|
-| `20261109_1200a/` | 9 Nov 2026 (1200a) | Web edition (`pages/`), plus `for-assistants/` Markdown + YAML graph |
+| `20261109_1200a/` | 9 Nov 2026 (1200a) | Web edition (`pages/`), PDF print edition, plus `for-assistants/` Markdown + YAML graph |
 
 Live path once on `main`: `https://aisharedresponsibility.com/sici/20261109_1200a/`
 
