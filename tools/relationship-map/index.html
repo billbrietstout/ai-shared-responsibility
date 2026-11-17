@@ -172,7 +172,7 @@
             <div class="view-actions">
               <button id="widen-view" type="button" hidden>Widen the view</button>
               <button id="show-chain" type="button" hidden>Show the chain</button>
-              <button id="show-context" type="button">Show context</button>
+              <button id="show-context" type="button">Show layers</button>
               <button id="full-graph" type="button">Show every recorded link</button>
               <button id="start-one" type="button" hidden>Start from one risk or control</button>
             </div>
@@ -234,24 +234,14 @@
               id="graph"
               class="graph"
               role="img"
-              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
+              aria-label="ROCA chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
             ></div>
             <div id="context-board" class="context-board" hidden></div>
             <div id="chain" class="chain" hidden>
-              <ul class="chain-legend" aria-label="Line types">
-                <li>
-                  <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
-                  <span>Solid line. The record names this link. A threat-to-control line has no basis field. An obligation line is solid when the basis is the official text.</span>
-                </li>
-                <li>
-                  <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
-                  <span>Dashed line. Implements this obligation through a shared control. The legal text is not the source of the risk link.</span>
-                </li>
-                <li>
-                  <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
-                  <span>Instrument-level. The control cites the instrument, and no article record matched.</span>
-                </li>
-              </ul>
+              <p class="chain-legend" id="chain-legend">
+                ROCA reads top to bottom: Risk, Obligation, Control, Accountable.
+                Obligation tags mark how the record links: Official text, Shared control, or Instrument-level.
+              </p>
               <p id="chain-model-note" class="chain-model-note"></p>
               <div id="chain-board" class="chain-board" aria-label="Risk, obligation, control, and accountable"></div>
             </div>
