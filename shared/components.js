@@ -7,31 +7,49 @@
  * Apache-2.0
  */
 
+// Header labels and hrefs follow the navigation table Bill confirmed on
+// November 16, 2026 (docs/plans/2026-11-16-ai-security-accountability-phase1-plan.md,
+// section 13.4). Labels changed; every href is an existing URL.
 const NAV_LINKS = [
-  { id: "framework",   label: "Framework",   href: "/framework/" },
-  { id: "assess",      label: "Assess",      href: "/assess/" },
-  { id: "controls",    label: "Controls",    href: "/controls/" },
-  { id: "regulations", label: "Regulations", href: "/regulations/" },
-  { id: "industries",  label: "Industries",  href: "/industries/" },
-  { id: "compare",     label: "Compare",     href: "/compare/" },
-  { id: "developers",  label: "Data & agents",  href: "/developers/" },
-  { id: "about",       label: "About",       href: "/about/" },
+  { id: "framework",      label: "AI Security Framework",   href: "/framework/" },
+  { id: "threats",        label: "Threats",                 href: "/framework/security-lifecycle/" },
+  { id: "controls",       label: "Security Controls",       href: "/controls/" },
+  { id: "accountability", label: "Security Accountability", href: "/tools/relationship-map/" },
+  { id: "architecture",   label: "Architecture",            href: "/tools/layer-matrix/" },
+  { id: "industries",     label: "Industries",              href: "/industries/" },
+  { id: "regulations",    label: "Regulations",             href: "/regulations/" },
+  { id: "about",          label: "About",                   href: "/about/" },
 ];
 
+// Links that left the header stay reachable here. Hrefs are unchanged.
 const FOOTER_LINKS = [
-  { label: "Framework",   href: "/framework/" },
-  { label: "Assess",      href: "/assess/" },
-  { label: "Controls",    href: "/controls/" },
-  { label: "Regulations",  href: "/regulations/" },
-  { label: "Industries",   href: "/industries/" },
-  { label: "Compare",      href: "/compare/" },
-  { label: "Data & agents",  href: "/developers/" },
-  { label: "Presentation",href: "/presentation/unprompted-oct2026/" },
-  { label: "About",       href: "/about/" },
-  { label: "Changelog",   href: "/changelog/" },
-  { label: "llms.txt",    href: "/llms.txt" },
-  { label: "Source",      href: "https://github.com/billbrietstout/ai-shared-responsibility", external: true },
+  { label: "Personas",      href: "/personas/" },
+  { label: "Assess",        href: "/assess/" },
+  { label: "Compare",       href: "/compare/" },
+  { label: "Data & agents", href: "/developers/" },
+  { label: "Regulations",   href: "/regulations/" },
+  { label: "Presentation",  href: "/presentation/unprompted-oct2026/" },
+  { label: "About",         href: "/about/" },
+  { label: "Changelog",     href: "/changelog/" },
+  { label: "llms.txt",      href: "/llms.txt" },
+  { label: "Source",        href: "https://github.com/billbrietstout/ai-shared-responsibility", external: true },
 ];
+
+// Pick the one header link for this page: the longest href that prefixes the
+// current path (so /framework/security-lifecycle/ marks Threats, not the
+// framework overview), else the link whose id matches current="...".
+function activeNavId(current) {
+  const path = (typeof location !== "undefined" && location.pathname) || "";
+  let best = null;
+  for (const link of NAV_LINKS) {
+    if (path.startsWith(link.href) && (!best || link.href.length > best.href.length)) {
+      best = link;
+    }
+  }
+  if (best) return best.id;
+  const byId = NAV_LINKS.find((link) => link.id === current);
+  return byId ? byId.id : "";
+}
 
 /* --------------------------------------------------------------------------
    <site-nav current="page-id">
@@ -40,9 +58,10 @@ const FOOTER_LINKS = [
 class SiteNav extends HTMLElement {
   connectedCallback() {
     const current = this.getAttribute("current") || "";
+    const activeId = activeNavId(current);
 
     const links = NAV_LINKS.map((link) => {
-      const isActive = link.id === current;
+      const isActive = link.id === activeId;
       return `<li>
         <a
           class="nav__link${isActive ? " nav__link--active" : ""}"
@@ -74,7 +93,7 @@ class SiteNav extends HTMLElement {
           <ul class="nav__links" id="nav-links" role="list">${links}</ul>
           <div class="nav__cta">
             <a class="btn btn--ghost" href="/tools/">
-              Tools
+              Tools &amp; Explorers
             </a>
           </div>
         </div>
