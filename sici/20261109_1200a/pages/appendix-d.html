@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Appendix D: Crosswalks</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="top"><a href="index.html">SICI Guidebook (web edition)</a><span class="banner">Community of Interest discussion document, version SICI Guidebook 20261109_1200a.</span></header>
+<div class="status-strip">Work in progress. Not official guidance. For discussion only.</div>
+<main><nav class="crumbs"><a href="index.html">Home</a> › Appendix D</nav><div class="pn top"><a href="appendix-c.html">← Appendix C: Use Cases and Operational Scenarios</a><a href="appendix-e.html">Appendix E: Suggested Ways to Use this Document with an LLM-Based Assistant →</a></div><p class="eo-notice">In accordance with Executive Order 14434, this document will refer to “Super Intelligence” (SI) rather than “Artificial Intelligence” (AI).</p><p class="fb"><a class="fb-link" href="mailto:aiciprof@nist.gov?subject=%5BSICI%20Guidebook%2020261109_1200a%5D%20Appendix%20D%3A%20feedback&amp;body=Page%3A%20Appendix%20D%3A%20Crosswalks%0AVersion%3A%20SICI%20Guidebook%2020261109_1200a%0AWeb%20edition%20page%3A%20appendix-d.html%0A%0AFeedback%20shared%20with%20NIST%20will%20become%20part%20of%20the%20public%20record%20and%20may%20be%20subject%20to%20public%20disclosure.%0A%0AYour%20feedback%20%28bottom%20line%20up%20front%29%3A%0A%0A">Email us feedback on this page</a> <span class="fb-alt">or write to aiciprof@nist.gov and quote <code>SICI Guidebook 20261109_1200a, Appendix D</code></span><span class="fb-pub">Feedback shared with NIST will become part of the public record and may be subject to public disclosure.</span></p><p class="fb-ai">Using an LLM-based assistant? Give it the files in the <a href="../for-assistants/">for-assistants</a> folder rather than these pages, and come back here to check its answers.</p><h1>Appendix D: Crosswalks</h1><blockquote>
+<p><strong>To the Reviewer:</strong></p>
+<p>While SICI prioritizes operational workflows and entry points for critical infrastructure acquirers, owners, and operators, we recognize that systems engineering teams, software developers, and compliance auditors often organize risk management activities within formal lifecycle models.</p>
+<p>This appendix begins with D.1, which maps common control areas to the assumptions SI systems can break and to where this Guidebook can help. Crosswalks mapping SICI’s 13 Practices to established systems engineering standards (ISO/IEC/IEEE 15288, NIST SP 800-160) and AI management frameworks (ISO/IEC 42001, NIST AI RMF) remain under development. We welcome feedback on D.1, and on which specific lifecycle phases, decision gates, or sub-processes within these standards offer the greatest utility for your organization’s compliance and engineering workflows, and additional general resources that we should prioritize for crosswalking.</p>
+<p>We also welcome suggestions for sector-specific crosswalks that we can pass on to sector-specific organizations for their consideration.</p>
+</blockquote>
+<h3 id="d.1-existing-control-areas-and-the-assumptions-si-systems-can-break">D.1 Existing Control Areas and the Assumptions SI Systems Can Break</h3>
+
+<p>Organizations, auditors, and assessors can build on the controls they already apply to IT and OT systems when they approach SI systems. Those controls remain relevant, and for many of them what SI systems call for is an adjustment rather than a new control. However, many were designed around assumptions that SI systems do not always meet, so a control can be followed to the letter and still miss what it was meant to catch. The table below lists common control areas, the assumption each typically makes, how an SI system can break it, and where this profile suggests ways forward. It is illustrative rather than exhaustive, describes technical issues rather than interpreting any requirement, and is offered as voluntary considerations for those deciding how to apply their existing controls to SI systems.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Control area</th>
+<th style="text-align: left;">Typical assumption</th>
+<th style="text-align: left;">How SI systems can break it</th>
+<th style="text-align: left;">Where this profile helps</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Access management and access reviews</td>
+<td style="text-align: left;">Access is held by a person or a fixed system account, with stable permissions that a periodic review can check</td>
+<td style="text-align: left;">An <a class="gl" href="glossary.html#term-ai-agent" title="AI agent: An AI system that is given a goal and some authority to act, and that pursues the goal by deciding on and carrying out a series of steps itself, rather than only producing an output for a person to act on.">agent</a> composes requests to downstream services, delegates to sub-agents, or uses different permissions depending on its task, so a periodic review of accounts does not show what it actually did</td>
+<td style="text-align: left;"><a href="task-5.1.html">Task 5.1</a>, <a href="implementation-5.1.2.html">Implementation 5.1.2</a>, <a href="implementation-5.2.2.html">Implementation 5.2.2</a>, <a href="implementation-5.3.2.html">Implementation 5.3.2</a>, <a href="implementation-5.4.1.html">Implementation 5.4.1</a>, <a href="implementation-5.4.2.html">Implementation 5.4.2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Change management</td>
+<td style="text-align: left;">Behavior changes only through changes the organization approves</td>
+<td style="text-align: left;">Behavior shifts through <a class="gl" href="glossary.html#term-drift" title="Drift: In this profile, the difference between the data or conditions an SI system was trained or designed for and those it meets in use, arising from changes in, for example, its inputs, the operating environment, the equipment, the population served or the task.">drift</a>, changes in inputs, vendor model updates, or runtime adaptation, without any approved change</td>
+<td style="text-align: left;"><a href="task-7.5.html">Task 7.5</a>, <a href="implementation-7.4.1.html">Implementation 7.4.1</a>, <a href="implementation-6.2.2.html">Implementation 6.2.2</a>, <a href="implementation-7.3.3.html">Implementation 7.3.3</a>, <a href="implementation-2.3.4.html">Implementation 2.3.4</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Authorization and reassessment</td>
+<td style="text-align: left;">An assessment holds until a significant change is made</td>
+<td style="text-align: left;">The conditions that made the assessment valid can change with no change to the system itself</td>
+<td style="text-align: left;"><a href="task-3.9.html">Task 3.9</a>, <a href="implementation-3.9.2.html">Implementation 3.9.2</a>, <a href="implementation-3.9.5.html">Implementation 3.9.5</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Testing before release</td>
+<td style="text-align: left;">Passing tests before release predicts behavior in operation</td>
+<td style="text-align: left;">Performance depends on operating conditions and inputs that testing may not have covered, and can degrade gradually</td>
+<td style="text-align: left;"><a href="task-1.3.html">Task 1.3</a>, <a href="task-2.3.html">Task 2.3</a>, <a href="implementation-2.3.4.html">Implementation 2.3.4</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Separation of duties and review of changes</td>
+<td style="text-align: left;">The author of a change and its reviewer are different people who understand the change</td>
+<td style="text-align: left;">An SI system can author configuration, code or procedures, and a reviewer may accept output that looks correct but cannot be fully checked by reading it</td>
+<td style="text-align: left;"><a href="task-7.4.html">Task 7.4</a>, <a href="implementation-7.4.1.html">Implementation 7.4.1</a>, <a href="task-12.2.html">Task 12.2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Logging and audit trails</td>
+<td style="text-align: left;">Logs record what happened, and the record explains why</td>
+<td style="text-align: left;">An output may depend on prompts, retrieved material, model version and context that are not logged by default, and an AI system’s own account of its actions is not independent evidence</td>
+<td style="text-align: left;"><a href="task-10.1.html">Task 10.1</a>, <a href="implementation-10.1.2.html">Implementation 10.1.2</a>, <a href="task-10.2.html">Task 10.2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Incident investigation</td>
+<td style="text-align: left;">The cause of a failure can be found by tracing the logic that produced it</td>
+<td style="text-align: left;">Some SI systems cannot be replayed exactly, and <a class="gl" href="glossary.html#term-post-hoc-explanation" title="Post-hoc explanation: An explanation of an AI output generated afterward, typically by a separate tool that probes how outputs change with inputs (for example SHAP or LIME).">post-hoc explanations</a> are hypotheses rather than the actual cause</td>
+<td style="text-align: left;"><a href="task-8.1.html">Task 8.1</a>, <a href="task-4.6.html">Task 4.6</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Backup, fallback and recovery</td>
+<td style="text-align: left;">A failed component can be replaced by a backup that behaves the same way</td>
+<td style="text-align: left;">A fallback may not match the SI system’s behavior, and returning to automated operation may need re-validation, not only restoration</td>
+<td style="text-align: left;"><a href="implementation-2.2.1.html">Implementation 2.2.1</a>, <a href="implementation-3.2.3.html">Implementation 3.2.3</a>, <a href="task-11.4.html">Task 11.4</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Decommissioning and sanitization</td>
+<td style="text-align: left;">Removing a system removes its ability to act, and sanitizing its media removes its data</td>
+<td style="text-align: left;">Credentials, triggers and delegated authority can persist after the system is retired, and evidence held only in running state is lost at teardown</td>
+<td style="text-align: left;"><a href="task-7.6.html">Task 7.6</a>, <a href="task-13.2.html">Task 13.2</a>, <a href="task-13.3.html">Task 13.3</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Asset inventory</td>
+<td style="text-align: left;">Each system is a known asset with an owner, a version and a purpose</td>
+<td style="text-align: left;">SI capability arrives embedded in other products, as transient agents or as unsanctioned tools, and the model version behind a service can change without notice</td>
+<td style="text-align: left;"><a href="task-7.1.html">Task 7.1</a>, <a href="implementation-7.1.1.html">Implementation 7.1.1</a>, <a href="task-3.7.html">Task 3.7</a>, <a href="implementation-6.1.2.html">Implementation 6.1.2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Configuration management</td>
+<td style="text-align: left;">A system’s behavior is set by configuration that can be baselined and compared</td>
+<td style="text-align: left;">Behavior also depends on prompts, retrieved material, learned parameters and safety filters, which may not be under configuration control</td>
+<td style="text-align: left;"><a href="task-7.3.html">Task 7.3</a>, <a href="implementation-7.3.3.html">Implementation 7.3.3</a>, <a href="task-7.5.html">Task 7.5</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Records and retention</td>
+<td style="text-align: left;">The records worth keeping are known in advance, and retaining them preserves the evidence</td>
+<td style="text-align: left;">What explains an SI system’s action may be its prompt, context or model version, which are not records by default; some evidence exists only while the system runs</td>
+<td style="text-align: left;"><a href="task-10.1.html">Task 10.1</a>, <a href="implementation-10.1.3.html">Implementation 10.1.3</a>, <a href="implementation-7.6.2.html">Implementation 7.6.2</a>, <a href="task-13.3.html">Task 13.3</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Independence of redundant systems</td>
+<td style="text-align: left;">Redundant systems fail independently because they are separate</td>
+<td style="text-align: left;">Separate SI systems can share a <a class="gl" href="glossary.html#term-foundation-model" title="Foundation model: A large AI model trained on broad data that can be adapted to many different tasks, for example by fine-tuning.">foundation model</a>, training data, provider or hosting, and so fail together</td>
+<td style="text-align: left;"><a href="implementation-2.2.1.html">Implementation 2.2.1</a>, <a href="implementation-3.5.2.html">Implementation 3.5.2</a>, <a href="task-3.5.html">Task 3.5</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Monitoring and alerting</td>
+<td style="text-align: left;">Monitoring thresholds catch the failures that matter, and alerts reach someone who can act</td>
+<td style="text-align: left;">An SI system can fail plausibly, with outputs that look normal, and can generate more alerts than people can handle</td>
+<td style="text-align: left;"><a href="task-3.4.html">Task 3.4</a>, <a href="task-3.3.html">Task 3.3</a>, <a href="task-4.4.html">Task 4.4</a>, <a href="implementation-5.4.2.html">Implementation 5.4.2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Third-party and supplier assurance</td>
+<td style="text-align: left;">A supplier’s attestations and documentation describe the product that is delivered</td>
+<td style="text-align: left;">Model updates, retraining and changes in upstream providers can alter behavior after assurance was given</td>
+<td style="text-align: left;"><a href="task-6.1.html">Task 6.1</a>, <a href="task-6.2.html">Task 6.2</a>, <a href="implementation-6.1.2.html">Implementation 6.1.2</a>, <a href="implementation-6.1.5.html">Implementation 6.1.5</a>, <a href="implementation-6.2.2.html">Implementation 6.2.2</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Training and awareness</td>
+<td style="text-align: left;">Trained staff will recognize when a system is wrong</td>
+<td style="text-align: left;">Staff may <a class="gl" href="glossary.html#term-automation-bias" title="Automation bias: The tendency of people to trust an automated system’s output more than it warrants: accepting it without enough checking, or delaying stepping in when it is wrong.">over-trust</a> fluent or confident outputs, and manual skills can decay when an SI system takes over the work</td>
+<td style="text-align: left;"><a href="task-9.2.html">Task 9.2</a>, <a href="task-3.6.html">Task 3.6</a>, <a href="task-4.6.html">Task 4.6</a></td>
+</tr>
+<tr>
+<td style="text-align: left;">Incident reporting</td>
+<td style="text-align: left;">Reportable incidents are recognizable events with a clear cause</td>
+<td style="text-align: left;">SI-related failures can be gradual, ambiguous or near-misses, and those who notice them may face disincentives to report</td>
+<td style="text-align: left;"><a href="task-8.4.html">Task 8.4</a>, <a href="task-8.6.html">Task 8.6</a></td>
+</tr>
+</tbody>
+</table>
+<h4 id="d.1.1-worked-example:-access-reviews">D.1.1 Worked Example: Access Reviews</h4>
+
+<p>A periodic user access review typically checks that each account belongs to a current person or system, and that its permissions still match that role. The review assumes that access is held by an identifiable account, that its permissions are stable between reviews, and that reviewing the account reviews what can be done through it.</p>
+<p>An AI agent can break each of these assumptions. It may act through a service account shared with other functions, or through credentials issued for a single task. It may compose requests to several downstream services, delegate work to sub-agents or tools that hold their own permissions, and use different permissions depending on the task it is given. A review of the agent’s account can then show permissions that look appropriate, while not showing what the agent actually did with them, or what it could reach through the systems it called.</p>
+<p>The control’s intent, that access matches need and is reviewed, still applies. This profile suggests ways of meeting it for AI agents: giving each agent its own identity (<a href="implementation-5.1.2.html">Implementation 5.1.2: Establish Unique Identities for SI Service Accounts and Agents</a>), bounding its authority to a task and making it revocable (<a href="implementation-5.3.2.html">Implementation 5.3.2: Task-Bounded and Revocable Agent Authority</a>), authorizing individual actions at the time they are taken (<a href="implementation-5.2.2.html">Implementation 5.2.2: Action-Level, Context-Aware Authorization Policies</a>), and reviewing what agents actually did as well as what they were permitted to do (<a href="implementation-5.4.1.html">Implementation 5.4.1</a>, <a href="implementation-5.4.2.html">Implementation 5.4.2</a>). Which of these an organization needs depends on what its agents can reach and the consequences of misuse.</p>
+<h4 id="d.1.2-using-the-table">D.1.2 Using the table</h4>
+
+<p>The table is a starting point for conversations between those who own existing controls and those who build and operate SI systems. For a given control area, it can help identify whether the control’s assumption holds for a particular SI system and, where it does not, which items in this profile may help meet the control’s intent. Where an organization concludes that an item does not apply, recording the reasoning supports later review. Where an existing control or supervisory obligation already meets an item’s intent, recording that mapping, and any remaining difference, can avoid standing up a second governance process for the same system.</p><div class="pn"><a href="appendix-c.html">← Appendix C: Use Cases and Operational Scenarios</a><a href="appendix-e.html">Appendix E: Suggested Ways to Use this Document with an LLM-Based Assistant →</a></div></main>
+<footer><p>Web edition of the SICI Guidebook, generated from SICI Guidebook 20261109_1200a.</p><p class="si-disclosure">Any mention of commercial products is for information only; it does not imply recommendation or endorsement by NIST. These opinions, recommendations, findings, and conclusions do not necessarily reflect the views or policies of NIST or the United States Government.</p><p class="si-disclosure">This document was created with the assistance of Google Gemini (various versions) and Anthropic Claude (various versions). These were used to brainstorm ideas, critique writing, and suggest wording in accordance with the authors’ instructions. All content has been reviewed and verified by the authors for accuracy and originality in the context of a working draft.</p><p>Feedback: <a href="mailto:aiciprof@nist.gov">aiciprof@nist.gov</a>. Feedback shared with NIST will become part of the public record and may be subject to public disclosure.</p></footer>
+</body></html>
