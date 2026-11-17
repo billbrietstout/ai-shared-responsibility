@@ -169,9 +169,9 @@ Each feature uses the handoff's rule: where the files do not support it, the gap
 
 (b) Visible strings in `tools/relationship-map/index.html` (title, lede, hero, search label, empty state, JSON-LD `name`), the card title and description in `tools/index.html`, and the homepage h1 and lede in `index.html`. Canonical id `srf.page.tools-relationship-map` stays. Layer and persona records stay.
 
-(c) The handoff gives two map names. The primary name is "AI Security Traceability Explorer". The alternative is "AI Security & Accountability Explorer." This plan uses the primary name until Bill picks the other. The homepage headline he asked for is "AI Security Requires Accountability." Section 9 also gives a subheadline, a supporting paragraph, and the closing line "From AI threats to accountable security." Those are copy, and they land in Phase 4. They do not require new data.
+(c) Bill chose the name "AI Security & Accountability Explorer" on 2026-11-17. The URL stays `/tools/relationship-map/`. The homepage headline stays "AI Security Requires Accountability." Section 9 of the handoff also gives a subheadline, a supporting paragraph, and the closing line "From AI threats to accountable security." Those are copy, and they land in Phase 4. They do not require new data.
 
-(d) Smallest test: change the map h1, the tools card, and the document title, then load `/tools/relationship-map/` and `/tools/relationship-map/?risk=directpromptinjection`. The chain for that existing risk id still renders. Run `build/inject_page_metadata.py` and commit any marker drift. Do this in Phase 2 for the map and Phase 4 for the homepage. Do both only after the name in decision 1 is settled, if Bill wants the alternative.
+(d) Smallest test: change the map h1, the tools card, and the document title to "AI Security & Accountability Explorer", then load `/tools/relationship-map/` and `/tools/relationship-map/?risk=directpromptinjection`. The chain for that existing risk id still renders. Run `build/inject_page_metadata.py` and commit any marker drift. Do this in Phase 2 for the map and Phase 4 for the homepage.
 
 ### 6.2 Four entry points
 
@@ -217,24 +217,13 @@ Do not label the 229 unlinked controls, the 117 uncited requirements, or the 13 
 
 ### 6.7 Prevention, detection, response, and recovery
 
-(a) Not supported. (b) No control, threat, persona, or layer field uses those four words as a closed set. The stage fields in section 2 are vertical lifecycle stages. `framework/security-lifecycle/index.html` has a section titled "Detection, monitoring, and incident response" that points at incident-response playbooks and the threshold schema. That is a page section, not an owner on a control. (c) Mapping `mrm_stage`, `clinical_stage`, `insurance_stage`, `public_sector_stage`, or `lifecycle_stage` onto prevention, detection, response, or recovery would be an invented classification. Section 15 forbids invented accountability mappings. The same block applies to "monitoring," "intervention," and "containment" in section 7 of the handoff. (d) In Phase 3, a short panel states that prevention, detection, response, and recovery ownership is not a field on these records, and it names the stage fields that do exist so a reader can see they are something else. Do not render those stage values under P/D/R/R headings. Decision 3 is required before any owner is shown in those four columns.
+(a) Not supported. (b) No control, threat, persona, or layer field uses those four words as a closed set. The stage fields in section 2 are vertical lifecycle stages. `framework/security-lifecycle/index.html` has a section titled "Detection, monitoring, and incident response" that points at incident-response playbooks and the threshold schema. That is a page section, not an owner on a control. (c) Mapping `mrm_stage`, `clinical_stage`, `insurance_stage`, `public_sector_stage`, or `lifecycle_stage` onto prevention, detection, response, or recovery would be an invented classification. Section 15 forbids invented accountability mappings. The same block applies to "monitoring," "intervention," and "containment" in section 7 of the handoff. (d) Bill asked for a field proposal on 2026-11-17. The proposal is in section 13. Phase 3 may show four filters only after that shape is accepted. Until a control stores `security_function`, the panel says the function is not classified. Do not render `mrm_stage` or the other stage fields under those headings. Do not fill the field in the same change that adds the key.
 
 ### 6.8 Navigation
 
-(a) Partially supported. Labels can change. New destinations that have no page cannot be added without a new URL or a choice among existing URLs. (b) `NAV_LINKS` and `FOOTER_LINKS` in `shared/components.js`. Existing pages that are candidates are listed in the table below. (c) Several proposed labels have no single page. Collapsing Regulations, Industries, Compare, and Data & agents into one "Resources" item would hide URLs the handoff says to keep. (d) Phase 4 changes a label only where the href is unchanged. Leave the other proposed labels out of the nav until decision 4 assigns an existing href. Do not add routes.
+(a) Partially supported. Labels can change. New destinations that have no page cannot be added without a new URL or a choice among existing URLs. (b) `NAV_LINKS` and `FOOTER_LINKS` in `shared/components.js`. (c) A single "Resources" item would hide Regulations, Industries, Compare, and Data & agents. Those hrefs stay. The header proposal in section 13 moves Assess, Compare, and Data & agents to the footer. (d) Bill asked for destinations on 2026-11-17. The proposal is in section 13. It uses existing hrefs only. It does not add a route. Two labels stay out of the header because no page matches them: a browser of `attack-inventory.json`, and a supply-chain page. `/tools/vendor-risk/` stays a tool. It is not the supply-chain destination.
 
-| Proposed label | Existing href that can carry it | Phase 4 action |
-|---|---|---|
-| AI Security Framework | `/framework/` | Label may change. href stays. |
-| Threats & Attack Inventory | None. Data files are `/data/threats.json` and `/data/attack-inventory.json`. `/framework/security-lifecycle/` is a six-part essay, not an inventory browser. | Wait for decision 4. |
-| Security Controls | `/controls/` | Label may change. href stays. |
-| Security Accountability | Two candidates: `/personas/` and `/tools/relationship-map/`. | Wait for decision 4. |
-| AI Security Architecture | Two candidates: `/framework/` and `/tools/layer-matrix/`. | Wait for decision 4. `/framework/` cannot also be the only target of "AI Security Framework" unless Bill wants one item. |
-| AI Supply Chain | No page covers the supply chain. `/tools/vendor-risk/` is the vendor-risk tool. L5 is a layer inside the framework. | Wait for decision 4. Do not point this label at vendor risk unless Bill says that tool is the destination. |
-| Tools & Explorers | `/tools/` | The Tools button can take this label. href stays. |
-| Resources | No one href. Footer already links regulations, about, changelog, and source. | Keep the current footer links. Do not replace them with one item. |
-
-Regulatory and governance pages stay where they are. Their nav labels can say they are supporting material only after decision 4, and only as label text.
+Regulatory and governance pages stay on their current URLs. Header labels for those pages are in the section 13 table.
 
 ### 6.9 Color
 
@@ -244,7 +233,7 @@ Regulatory and governance pages stay where they are. Their nav labels can say th
 
 | Relationship | Supported now | Files and fields | Gap | Smallest change |
 |---|---|---|---|---|
-| Mitigates | Yes, as a label for an existing join | `threats[].related_controls`; knowledge-layer `mitigated_by` | No `basis`. The solid line means the threat file lists the control. | Label the existing risk-control line "Mitigates" and add the sentence "This threat record names the control. It has no direct, derived, or editorial basis field." |
+| Mitigates | Yes, as a label for an existing join | `threats[].related_controls`; knowledge-layer `mitigated_by` | The id list has no `basis`. Section 13 proposes an optional sibling object. Existing rows stay unclassified until Bill sets each value. | Label the line "Mitigates". When `related_control_basis` has no entry for that id, say "This threat record names the control. The basis is not classified." |
 | Prevents | No | None | Would reclassify controls. Stage fields are not this. | Do not draw it. |
 | Detects | No | None | Same. | Do not draw it. |
 | Responds to | No | Incident-response content is `/tools/ir-playbooks/` and `export/playbooks.json`. Those playbooks are not edges on a control in the map. | Linking a playbook to a control would be a new mapping. | Do not draw it. A later link needs Bill's assignment per control. |
@@ -309,7 +298,7 @@ Cosai-core persona ids the accountability entry may list, because they are the r
 | Which controls have no accountable persona? | None of the 286 lack `accountable_persona`. The 26 Tapestry controls lack `accountable_by_model` and are outside the SRF chain. | No confirmed gap inside the SRF chain. |
 | Which activities have multiple purported accountable owners? | None in `accountable_by_model` or in threat accountability. | Check returns no rows. |
 | Which controls have no supporting evidence? | 158 vertical evidence objects contain `TBD`. 26 Tapestry controls have no evidence object. | Unassessed pointer. Not a failed control. |
-| Which security activities lack detection or response ownership? | Cannot be answered. | Blocked. Decision 3. |
+| Which security activities lack detection or response ownership? | Cannot be answered until `security_function` values exist. Section 13.3 says how the question is answered after that, and that unclassified controls stay out of the set. | Blocked until Bill assigns values. |
 | Which dependencies cross organizational or vendor boundaries without clear accountability? | No dependency edge stores a vendor boundary. Threat cells do store `accountable_party` and a customer/provider `responsibility` pair, and they still name one persona. | Show the stored party as context. Do not invent a boundary gap. The seven `cross_layer_note` strings can be quoted on those control cards. |
 
 ## 11. Phases 2 to 5
@@ -324,7 +313,7 @@ Map and tools card only. Homepage waits for Phase 4.
 
 Implement:
 
-- Map title "AI Security Traceability Explorer", lede from section 10 of the handoff, tools-card text, and the document title. URL unchanged.
+- Map title "AI Security & Accountability Explorer", lede from section 10 of the handoff, tools-card text, and the document title. URL unchanged.
 - Four entry buttons. A and C open the existing risk and control search. B is the gap panel from section 6.2. D opens the persona list from section 6.2.
 - Chain as the default after a choice. Full graph stays on the existing button, with the existing kind filters.
 - Relationship labels from section 7 for Mitigates, Implements this obligation, Accountable for, and Operates at. Each label shows `basis` when present and the no-basis sentence when absent.
@@ -345,7 +334,7 @@ Where the files support it:
 - Cross-layer: show `srf_layers` and `affected_layers` as stored arrays.
 - Coverage panel with the three labels in section 6.5, plus the empty multiple-owner check.
 - Attack-inventory rows joined only by `srf_crosswalk`. Empty crosswalks listed as missing mappings. The 13 empty ids are `atk-agent-memory-poisoning`, `atk-hallucinated-package-squatting`, `atk-sandbox-escape`, `atk-deceptive-agent-self-report`, `atk-repudiation-log-tampering`, `atk-observability-plane-evasion`, `atk-approval-fatigue`, `atk-token-length-side-channel`, `atk-approval-gate-bypass`, `atk-deceptive-process-reporting`, `atk-deepfake-approver-impersonation`, `atk-malicious-llm-api-router`, `atk-computer-use-stale-action`.
-- Prevention, detection, response, and recovery panel that states the field is absent and names the stage fields that exist. No owner columns.
+- Prevention, detection, response, and recovery filters from section 13. A control with no `security_function` is "not classified." Stage fields stay on the control record and do not appear under those four headings. No second owner.
 
 Do not mark a control effective because a threat names it. Do not assign the illustrative titles in section 9.
 
@@ -353,15 +342,15 @@ Test in this phase: pick `model-provider` and AI-SaaS and confirm the four `no_l
 
 ### Phase 4: Homepage and navigation
 
-After decision 1 and decision 4.
+The map name is settled. The header hrefs are the proposal in section 13. Confirm that proposal before editing `shared/components.js`. Homepage buttons stay as in decision 7 until Bill picks one primary button.
 
 - Homepage h1 "AI Security Requires Accountability."
 - Subheadline: "Secure AI systems. Defend against emerging threats. Establish clear security ownership."
 - Supporting text from section 9 of the handoff, in the hero lede.
 - Closing line: "From AI threats to accountable security."
 - The authorization sentence in the hero or directly under it.
-- A link to `/tools/relationship-map/`. Keep the Decision Record link. Both destinations stay.
-- Nav label changes that keep the same href: Framework, Controls, and the Tools button, using the labels in section 6.8. Other proposed labels wait.
+- A link to `/tools/relationship-map/`. Keep the Decision Record link. Both destinations stay until decision 7 is a yes or a no.
+- Header and footer labels from the section 13 nav table. Every href in that table already exists. Do not add a supply-chain item. Do not point Threats at `/data/attack-inventory.json`.
 
 Governance, regulation, and industry pages stay linked. Their copy is supporting context. This phase does not rewrite those pages.
 
@@ -395,37 +384,135 @@ Recommended gate: Bill sends this plan and the handoff to that review before Pha
 
 After Phases 2 to 4, the same review looks at the running pages. Phase 5 can run before that second review so the reviewer sees a checked build. A fix pass after the review is separate work and needs its own change. This plan does not pre-write those fixes.
 
-## 13. Open decisions for Bill
+## 13. Decisions from 2026-11-17
 
-These block a feature. The plan does not pick an answer.
+Bill answered the open list. This section records the answers. It does not write JSON.
 
-1. Map name. Primary proposal is "AI Security Traceability Explorer". The alternative in the handoff is "AI Security & Accountability Explorer." The URL stays either way.
-2. Security requirements. No catalog exists. Which records, if any, may use that name? Until you name the rule, the UI keeps the word Obligation and leaves entry B as a gap panel. Do not treat NIST AI RMF, CIS, or ISO rows as security requirements by default. They stay obligations or mappings under their current `source_kind`.
-3. Prevention, detection, response, and recovery. No field exists. If you want the four columns, the new field needs an owner, a target (control, threat, or a new activity id), and a value you assign per record. The vertical stage fields stay as they are and are not a source for those values.
-4. Nav destinations for Threats & Attack Inventory, Security Accountability, AI Security Architecture, AI Supply Chain, and Resources. Phase 4 will not add pages and will not retarget an existing href until you name the href.
-5. Whether `related_controls` should gain a `basis` field. Until each ref has a value you assign, the UI says the threat record names the control and that no basis is stored. Do not bulk-label the 124 refs.
-6. Whether the six illustrative rows in section 7 of the handoff appear on the site. Default in this plan: they do not. The authorization sentence can appear without them.
-7. Homepage primary actions. This plan keeps the Decision Record link and adds a map link. Say if the map should be the only primary button.
-8. When the section 13 review runs. This plan asks for it before Phase 2, and again after the pages exist.
+### 13.1 Map name
+
+Settled. The visible name is "AI Security & Accountability Explorer." The path stays `/tools/relationship-map/`.
+
+### 13.2 Security requirements
+
+Still open. Bill asked for context before choosing. The handoff defines a security requirement as the security outcome that must be achieved. It defines an obligation as what the organization or the responsible party must do. The site has the second record. It does not have the first.
+
+What exists today:
+
+| Record | File | What it is | Count |
+|---|---|---|---|
+| Obligation text | `data/moral-regulatory-hierarchy.json` `requirements[]` | Article or subcategory text. The map calls these obligations. | 184. 67 are cited by a threat obligation link. |
+| Instrument class | `data/regulations.json` `source_kind` | `binding` 26, `voluntary_standard` 27, `catalog` 8. A catalog is not an obligation. NIST AI RMF is a voluntary standard, so the site treats its subcategories as current obligations under `docs/roca-data.md`. | 61 instruments |
+| Control citation | `controls[].mappings` | A string on a control. 775 values are `TBD...` or `N/A`. | On all 286 controls |
+| Control prose | `controls[].title` and `description` | What the control does. No separate requirement id. | 286 |
+
+None of these rows is stored as "the security outcome that must be achieved." Calling the NIST, CIS, or ISO strings security requirements would treat a standard or a citation as that outcome. This plan does not do that.
+
+Three rules Bill can pick. Entry B stays a gap panel until he picks one.
+
+- Rule A. No current record uses the name. The UI keeps the word Obligation.
+- Rule B. A new list, `security_requirements`, that Bill writes. Controls point at those ids only where he sets the pointer. The list starts empty. An empty list is not a coverage gap.
+- Rule C. He names specific instrument ids that the UI may show as security objectives while the stored type stays obligation. He has to name the ids. The plan will not default that list to NIST AI RMF, CIS, or ISO.
+
+### 13.3 Prevention, detection, response, and recovery
+
+Bill asked for a proposal. This is the shape. It is not applied to the control files in this change.
+
+Add an optional string on a vertical control:
+
+```json
+"security_function": "prevent"
+```
+
+Allowed values: `prevent`, `detect`, `respond`, `recover`. One value. The owner of that function is the persona already in `accountable_by_model` for the selected operating model. The function does not store a second persona. A control that does two of these jobs needs a later decision: Bill picks one primary value, or he splits the control. This change does not split any control.
+
+Absence of the key means the function is not classified. It does not mean the control fails at detection or response. `mrm_stage`, `clinical_stage`, `insurance_stage`, `public_sector_stage`, and `lifecycle_stage` stay as they are. They are not a source for `security_function`.
+
+Tapestry controls stay out of the SRF chain and do not get the key in this proposal.
+
+The map, once the key is allowed, shows four filters. Each filter lists controls whose stored value matches. A count of controls with no value is labeled "not classified." No value is written until Bill assigns it per control. Adding the key to the verifier, so a present value must be one of the four words, can land before any control carries the key.
+
+The question "which activities lack detection or response ownership" stays blocked until those values exist. After they exist, the answer is the set of controls with `detect` or `respond`, grouped by the persona already on `accountable_by_model`. Unclassified controls stay out of that set.
+
+### 13.4 Navigation
+
+Bill asked for hrefs. Every row below is an existing URL. Header text changes. Paths do not.
+
+| Header label | href | What the page is |
+|---|---|---|
+| AI Security Framework | `/framework/` | Framework overview. |
+| Threats | `/framework/security-lifecycle/` | Lifecycle essay and a sample of the 31-threat crosswalk. It links `/data/threats.json`. It does not list the 58 rows in `attack-inventory.json`. The header does not say "Attack Inventory" for that reason. |
+| Security Controls | `/controls/` | Control schemas. |
+| Security Accountability | `/tools/relationship-map/` | The explorer. `/personas/` stays available and moves to the footer. |
+| Architecture | `/tools/layer-matrix/` | Layer handoffs. |
+| Industries | `/industries/` | Unchanged destination. |
+| Regulations | `/regulations/` | Supporting material. The destination stays. |
+| About | `/about/` | Unchanged destination. |
+
+The Tools button becomes "Tools & Explorers" and still points at `/tools/`.
+
+Footer, hrefs unchanged: Personas `/personas/`, Assess `/assess/`, Compare `/compare/`, Data & agents `/developers/`, Presentation, Changelog, llms.txt, Source. Regulations and About can stay in the footer as well as the header.
+
+Left out of the header:
+
+- Attack inventory as its own browser. The file is `/data/attack-inventory.json`. Building a page for it is a new route. This proposal does not add one.
+- AI Supply Chain. No page is that subject. `/tools/vendor-risk/` stays on `/tools/`. The L5 subtitle on the map is the supply-chain sentence from section 8. It is not a nav item.
+- A single Resources item. The footer keeps the links that item would have hidden.
+
+Confirm this table before Phase 4 edits `shared/components.js`.
+
+### 13.5 Basis on risk-to-control links
+
+Bill said yes to a basis field. The 124 current refs stay unclassified. This proposal does not write a basis on any of them.
+
+Keep `related_controls` as an array of id strings. Readers already use that shape: the map, `build/generate_knowledge_layer.py`, and `build/verify_knowledge_layer.py`. Replacing the strings with objects would break those readers. Necessity for a new structure is not met if a sibling object can hold the basis.
+
+Optional sibling on the threat:
+
+```json
+"related_control_basis": {
+  "srf.control.finance.SRF-L3-DEV-001": {
+    "basis": "editorial",
+    "note": "Short reason Bill wrote for this pair."
+  }
+}
+```
+
+The id in the example is already in the `directpromptinjection` row. The `editorial` value in the example is a shape sample. It is not an assignment. Do not copy it onto the row.
+
+Allowed `basis` values, the same set the obligation links use where they apply: `official_text`, `derived_via_control`, `editorial`. `official_text` requires `url` and `citation`. `derived_via_control` requires the control id and the citation the derivation used. `editorial` requires `note` in Bill's words. A key that is not in `related_controls` is an error. A missing key means the basis is not classified. The map sentence for a missing key is "This threat record names the control. The basis is not classified."
+
+`schemas/threats.schema.json` can allow the object. The verifier can reject a bad key or a bad enum. Neither change fills the 124 refs.
+
+### 13.6 Illustrative persona rows
+
+Maybe. They stay off the site until Bill says to show them. The authorization sentence can ship without the table. If he later says yes, the six rows from section 9 render as a static note titled "Illustrative only." The titles are not links, and they are not persona ids. `application-developer`, `ai-platform-provider`, and `model-provider` are not substitutes for those titles.
+
+### 13.7 Homepage buttons
+
+Maybe. Until that is a yes or a no, Phase 4 keeps the Decision Record button and adds a map link. The map does not replace the Decision Record button.
+
+### 13.8 Still open
+
+When the Grok review in section 12 of this plan runs. The recommendation is still before Phase 2, and again after the pages exist. Bill has not set that time.
 
 ## 14. Files later phases may edit
 
 Phase 2: `tools/relationship-map/index.html`, `tools/relationship-map/app.js`, `tools/relationship-map/styles.css`, `tools/index.html`, and injector output if the drift gate rewrites markers.
 
-Phase 3: `tools/relationship-map/app.js` and `styles.css`. Read-only use of `data/attack-inventory.json`. No new keys in that file.
+Phase 3: `tools/relationship-map/app.js` and `styles.css`. Read-only use of `data/attack-inventory.json`. No new keys in that file. `schemas/threats.schema.json` and `build/verify_knowledge_layer.py` may allow `related_control_basis` and `security_function` and reject a bad value. They do not write basis values or function values.
 
-Phase 4: `index.html`, `shared/components.js`, and injector output. `shared/styles.css` stays on the current navy and blue tokens.
+Phase 4: `index.html`, `shared/components.js`, and injector output, after the section 13 nav table is confirmed. `shared/styles.css` stays on the current navy and blue tokens.
 
 Phase 5: no planned source edits. Failures get their own fix, still without new mappings.
 
-Files this plan will not have later phases edit unless a generator rewrites them: `data/*.json`, `schemas/*.json`, `export/*`, `data/layers.json`, `data/personas.json`, `data/threats.json`.
+Later phases still do not edit `data/layers.json`, `data/personas.json`, or `export/*` by hand. They do not add `security_function` or `related_control_basis` entries to `data/*.json` until Bill assigns each value. `data/threats.json` `related_controls` strings stay as they are.
 
 ## 15. Rules that bind Phases 2 to 5
 
 From section 15 of the handoff:
 
 1. Do not rewrite the SRF.
-2. Do not replace existing data structures unless a later phase shows, with a broken reader, why a new field is required. Decisions 2 and 3 are the only places a new field is even on the table, and both wait on Bill.
+2. Do not replace existing data structures. `related_controls` stays an array of strings. A basis, if stored, sits in the sibling object in section 13.5. `security_function` is an optional string on a control, added only when Bill assigns that control.
 3. Do not remove regulatory mappings.
 4. Do not turn the site into a GRC dashboard. The coverage panel lists record gaps and the field each gap came from.
 5. Do not equate compliance with security. Obligations keep their name.
