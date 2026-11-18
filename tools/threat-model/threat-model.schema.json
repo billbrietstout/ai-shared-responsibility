@@ -75,6 +75,27 @@
         "$ref": "#/$defs/multiplicity_override"
       },
       "description": "Model-wide changes to the default multiplicity rules. A component's multiplicity_overrides and a multiplicity stated on a link take precedence."
+    },
+    "edge_links": {
+      "type": "array",
+      "description": "Connections drawn in a scoped assessment. They are not ArchiMate relationships and they do not cascade.",
+      "items": {
+        "$ref": "#/$defs/edge_link"
+      }
+    },
+    "layer_results": {
+      "type": "array",
+      "description": "Rows for a scoped assessment. Absent on a holistic model. Optional and backward compatible.",
+      "items": {
+        "$ref": "#/$defs/layer_result"
+      }
+    },
+    "scope_notes": {
+      "type": "array",
+      "description": "Risk Map ids and sketch items that are not stored as catalog threat ids.",
+      "items": {
+        "$ref": "#/$defs/scope_note"
+      }
     }
   },
   "$defs": {
@@ -208,6 +229,20 @@
           "items": {
             "$ref": "#/$defs/id_overlay"
           }
+        },
+        "assessment_mode": {
+          "description": "holistic is the full L1 to L5 model. scoped assesses one layer. Absent means holistic.",
+          "enum": [
+            "holistic",
+            "scoped"
+          ]
+        },
+        "assessment_layer": {
+          "description": "The layer a scoped assessment covers. L2 is AI Information. L5 is AI Model Provider.",
+          "enum": [
+            "L2",
+            "L5"
+          ]
         },
         "snapshot_id": {
           "anyOf": [
@@ -489,9 +524,22 @@
             "facility",
             "edge_ot_host",
             "location",
-            "model"
+            "model",
+            "retrieval_corpus",
+            "vector_index",
+            "training_set",
+            "feature_store",
+            "lineage_record",
+            "data_set",
+            "base_weights",
+            "tuned_weights",
+            "model_version",
+            "model_card",
+            "evaluation",
+            "model_registry",
+            "edge_actor"
           ],
-          "description": "network, facility, edge_ot_host and location are candidate L4 types (Bill, Nov 16, 2026: candidates). They are not SRF v1.0 components."
+          "description": "network, facility, edge_ot_host and location are candidate L4 types (Bill, Nov 16, 2026: candidates). They are not SRF v1.0 components. retrieval_corpus through edge_actor are for a scoped assessment. An edge_actor is outside the assessed layer. It is not an L1 or L3 component."
         },
         "srf_component": {
           "$ref": "#/$defs/srf_component"
@@ -574,6 +622,29 @@
         },
         "notes": {
           "type": "string"
+        },
+        "edge_actor": {
+          "type": "boolean",
+          "description": "True when this box is outside the assessed layer. It is not an L1 or L3 component."
+        },
+        "edge_verb": {
+          "enum": [
+            "reads",
+            "writes",
+            "supplies",
+            "consumes"
+          ]
+        },
+        "locus": {
+          "description": "Internal or external trust boundary for this asset.",
+          "enum": [
+            "internal",
+            "external"
+          ]
+        },
+        "asset_kind": {
+          "type": "string",
+          "description": "Plain name of the asset kind in a scoped assessment, such as retrieval corpus or base weights."
         },
         "valid_from": {
           "$ref": "#/$defs/date"
@@ -1097,7 +1168,30 @@
         },
         "record_status": {
           "$ref": "#/$defs/record_status",
-          "description": "Placeholder or proposed on a control built by a starting point. A generated control is never verified."
+          "description": "Placeholder or proposed on a control built for a scoped assessment. A generated control is never verified."
+        },
+        "accountable": {
+          "$ref": "#/$defs/person",
+          "description": "Exactly one accountable owner. ROCA names one person."
+        },
+        "party": {
+          "description": "The side that owns this control. Taken from data/matrix.json for this layer and operating model, using the catalog party when the cell is shared.",
+          "enum": [
+            "customer",
+            "provider"
+          ]
+        },
+        "matrix_customer": {
+          "type": "string",
+          "description": "Customer cell from data/matrix.json for this layer and operating model."
+        },
+        "matrix_provider": {
+          "type": "string",
+          "description": "Provider cell from data/matrix.json for this layer and operating model."
+        },
+        "attestation_note": {
+          "type": "string",
+          "description": "Plain note when the customer relies on the provider's attestation. No attestation product names are invented."
         },
         "vertical": {
           "$ref": "#/$defs/id_overlay"
@@ -1405,9 +1499,22 @@
             "facility",
             "edge_ot_host",
             "location",
-            "model"
+            "model",
+            "retrieval_corpus",
+            "vector_index",
+            "training_set",
+            "feature_store",
+            "lineage_record",
+            "data_set",
+            "base_weights",
+            "tuned_weights",
+            "model_version",
+            "model_card",
+            "evaluation",
+            "model_registry",
+            "edge_actor"
           ],
-          "description": "network, facility, edge_ot_host and location are candidate L4 types (Bill, Nov 16, 2026: candidates). They are not SRF v1.0 components."
+          "description": "network, facility, edge_ot_host and location are candidate L4 types (Bill, Nov 16, 2026: candidates). They are not SRF v1.0 components. retrieval_corpus through edge_actor are for a scoped assessment. An edge_actor is outside the assessed layer. It is not an L1 or L3 component."
         },
         "srf_component": {
           "$ref": "#/$defs/srf_component"
@@ -1678,6 +1785,150 @@
         "reason": {
           "type": "string",
           "minLength": 1
+        }
+      }
+    },
+    "edge_link": {
+      "type": "object",
+      "description": "A scoped connection. Not an ArchiMate relationship and not a cascade link.",
+      "required": [
+        "id",
+        "from",
+        "to",
+        "verb",
+        "record_status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^edg\\.[a-z0-9-]+$"
+        },
+        "from": {
+          "$ref": "#/$defs/id_component"
+        },
+        "to": {
+          "$ref": "#/$defs/id_component"
+        },
+        "verb": {
+          "enum": [
+            "reads",
+            "writes",
+            "supplies",
+            "consumes"
+          ]
+        },
+        "record_status": {
+          "$ref": "#/$defs/record_status"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "layer_result": {
+      "type": "object",
+      "description": "One row of a scoped results table.",
+      "required": [
+        "asset_id",
+        "lifecycle_stage",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "asset_id": {
+          "$ref": "#/$defs/id_component"
+        },
+        "lifecycle_stage": {
+          "type": "string"
+        },
+        "threat_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "catalog_threat_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "risk_map_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "risk_map_status": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/record_status"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "control_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "party": {
+          "anyOf": [
+            {
+              "enum": [
+                "customer",
+                "provider"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "matrix_customer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "matrix_provider": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "attestation_note": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/record_status"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "scope_note": {
+      "type": "object",
+      "required": [
+        "id",
+        "status",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/record_status"
+        },
+        "reason": {
+          "type": "string"
         }
       }
     }

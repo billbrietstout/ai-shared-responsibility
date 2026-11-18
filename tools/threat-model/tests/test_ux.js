@@ -61,114 +61,53 @@ function run() {
     finding(j, "skip_link", "hard", !!w.document.querySelector('a.skip-link[href="#main"]'), "Skip link targets #main");
     finding(j, "site_chrome", "hard", !!(w.document.querySelector("site-nav") && w.document.querySelector("site-footer")), "Site nav and footer are present");
     finding(j, "hero_disclaimer", "hard", /not legal advice/i.test(text(w.document.querySelector(".callout--warn"))), "Warn callout states the prototype disclaimer");
-    finding(j, "lede_explains_start", "soft", /Start from the process, the data, or the AI Model Provider/i.test(text(w.document.querySelector(".page-hero__lede"))), "Hero lede names the three starting points", "Keep the lede aligned with Start from L1/L2/L5");
-    finding(j, "start_closed", "hard", !$("start-from").open, "Start from stays closed so the graph keeps room");
+    finding(j, "lede_explains_modes", "hard", /Holistic/.test(text(w.document.querySelector(".page-hero__lede"))) && /Scoped/.test(text(w.document.querySelector(".page-hero__lede"))), "Hero lede names Holistic and Scoped");
+    finding(j, "why_line", "hard", /on its own/.test(text($("mode-why"))) && /feed into the holistic view/.test(text($("mode-why"))), "The page says each layer can be assessed on its own and that scoped results feed the holistic view");
+    finding(j, "panel_closed", "hard", !$("assessment-mode").open, "Assessment panel stays closed so the graph keeps room");
     finding(j, "graph_visible", "hard", !!$("graph-svg") && !$("graph-wrap").classList.contains("starting"), "Default example graph is visible on load");
     finding(j, "example_count", "hard", $("example-pick").options.length === 11, "Example picker lists all eleven catalog models");
     finding(j, "glossary_present", "hard", /ROCA = Risk, Obligation, Control, Accountable/.test(text($("glossary"))), "ROCA glossary is visible under the filters");
     finding(j, "list_view_affordance", "hard", !!$("view-toggle") && /List view/.test(text($("view-toggle"))), "List view control is available for text access");
   });
 
-  journey("start_from_l2_dropdowns", (j) => {
-    $("start-from").open = true;
-    const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
+  journey("scoped_l2", (j) => {
+    const l2 = w.document.querySelector('input[name="assessment-mode"][value="L2"]');
     l2.checked = true;
     l2.dispatchEvent(new w.Event("change"));
-    finding(j, "panel_opens", "hard", $("graph-wrap").classList.contains("starting") && !$("start-panel").hidden, "Choosing L2 opens the Start panel and hides the graph chrome");
-    finding(j, "threat_and_control_named", "hard", /dsgai21/.test(text($("start-panel"))) && /controlRetrievalAndVectorSystemIntegrity/.test(text($("start-panel"))), "L2 start names the typical threat and candidate control");
-    const kinds = inputKindsFor("L2");
-    const freeText = kinds.filter((q) => q.kind === "text" || q.kind === "textarea");
-    finding(j, "no_free_text", "hard", freeText.length === 0, freeText.length ? ("L2 still has free-text fields: " + freeText.map((q) => q.id).join(", ")) : "L2 entry questions use fixed controls, not free text", "Keep data set, owner, reader, writer, and classification as selects");
-    ["dataName", "ownerName", "readerName", "writerName", "classification", "dataKind", "dataUse", "party", "lineage", "operatingModel"].forEach((id) => {
-      const el = $("start-q-" + id);
-      finding(j, "field_" + id, "hard", !!el && el.tagName === "SELECT", id + " is a <select>");
-    });
-    const dataOpts = Array.prototype.map.call($("start-q-dataName").options, (o) => o.value);
-    finding(j, "data_options_include_worked", "hard", dataOpts.indexOf("Refund policy knowledge base") >= 0, "Data set options include the worked seed");
-    finding(j, "data_options_include_catalog", "soft", dataOpts.indexOf("Customer master data") >= 0 && dataOpts.indexOf("Order and invoice ledger") >= 0, "Data set options include O2C catalog sets", "Add catalog data sets readers already know from examples");
-    const writerBlank = Array.prototype.some.call($("start-q-writerName").options, (o) => o.value === "" && /none/i.test(o.textContent));
-    finding(j, "writer_none_option", "hard", writerBlank, "Writer select offers a None option instead of a blank text box");
-    $("start-worked").click();
-    finding(j, "worked_seed_lands", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]') && text($("sys-name")).indexOf("Refund policy") >= 0, "Worked seed loads the policy knowledge base on the graph");
-    finding(j, "start_closes_after_seed", "hard", !$("start-from").open && !$("graph-wrap").classList.contains("starting"), "Start from closes after seed so the diagram returns");
+    finding(j, "policy_on_graph", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]') && /Refund policy/.test(text($("sys-name"))), "Scoped L2 draws the refund policy knowledge base");
+    finding(j, "edge_actor", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.edge-resolve"]'), "A reader outside the layer is an edge actor");
+    finding(j, "no_l1_band", "hard", !w.document.querySelector("#graph text.band-id"), "Scoped L2 does not draw L1 to L5 bands");
+    finding(j, "boundaries", "hard", !!w.document.querySelector("#graph .b-customer") && !!w.document.querySelector("#graph .b-provider") && /Internal/.test(text($("graph"))) && /External/.test(text($("graph"))), "Customer, provider, internal, and external boundaries are on the canvas");
+    const onlyLayer = w.TM_STATE.model.components.every((c) => c.edge_actor || c.layer === "L2");
+    finding(j, "only_l2_plus_edges", "hard", onlyLayer && w.TM_STATE.model.relationships.length === 0, "The model has L2 components plus edge actors, and no cascade links");
+    finding(j, "results_table", "hard", !!$("results-main") && /dsgai21/.test(text($("results-main"))) && /Customer/.test(text($("results-main"))), "Results table names the threat and the customer side");
+    finding(j, "one_owner", "hard", w.TM_STATE.model.controls.every((c) => w.TM.controlOwnerCount(c) === 1), "Each control has one owner");
+    finding(j, "panel_stays_closed", "hard", !$("assessment-mode").open, "Choosing Scoped does not force the panel open");
   });
 
-  journey("custom_l2_build", (j) => {
-    const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
-    $("start-from").open = true;
-    l2.checked = true;
-    l2.dispatchEvent(new w.Event("change"));
-    $("start-q-dataName").value = "Other retrieval corpus";
-    $("start-q-dataName").dispatchEvent(new w.Event("change"));
-    $("start-q-ownerName").value = "Data steward (placeholder)";
-    $("start-q-readerName").value = "Reading agent";
-    $("start-q-classification").value = "Confidential";
-    $("start-build").click();
-    finding(j, "custom_name_on_graph", "hard", text($("sys-name")).indexOf("Other retrieval corpus") >= 0, "Build from answers names the model after the chosen data set");
-    finding(j, "custom_node_present", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.l2-data"]'), "Custom L2 seed draws the data component");
-    const notes = (w.TM_STATE.model.components.find((c) => c.id === "cmp.l2-data") || {}).notes || "";
-    finding(j, "classification_recorded", "hard", /Confidential/.test(notes), "Chosen classification is recorded on the data component");
-  });
-
-  journey("example_after_seed", (j) => {
-    w.TM_UI.applySeed("L2", { worked: true });
-    finding(j, "example_cleared", "hard", $("example-pick").selectedIndex === -1, "Seed clears the Example selection so the next pick fires change");
+  journey("example_after_scoped", (j) => {
+    w.TM_UI.setAssessment("L2");
+    finding(j, "example_cleared", "hard", $("example-pick").selectedIndex === -1, "Scoped L2 clears the Example selection so the next pick fires change");
     $("example-pick").value = "o2c";
     $("example-pick").dispatchEvent(new w.Event("change"));
-    finding(j, "o2c_loads", "hard", /Order to Cash/.test(text($("sys-name"))) && !!w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]'), "Example picker restores a full catalog model after an L2 seed");
-    finding(j, "source_line", "soft", /example in the picker/i.test(text($("model-source"))), "Model source line says the picker loaded the example", "Keep model-source copy honest about seed vs catalog");
-    const focus = w.TM_UI.state.selected;
-    const focused = focus && w.TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
-    finding(j, "keeps_l2_focus", "hard", !!(focused && focused.layer === "L2"), "After L2 seed, Example pick keeps focus on an L2 component instead of the tall L1 band");
+    finding(j, "o2c_loads", "hard", /Order to Cash/.test(text($("sys-name"))) && !!w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]'), "Example picker restores the holistic catalog model");
+    finding(j, "source_line", "soft", /example in the picker/i.test(text($("model-source"))), "Model source line says the picker loaded the example");
+    finding(j, "no_forced_focus", "hard", w.TM_UI.state.selected === null, "Holistic example load does not keep a scoped selection");
+    finding(j, "cascade_available", "hard", /Cascade/.test(text(w.document.querySelector('.tab[data-tab="cascade"]'))), "Holistic restores the Cascade tab label");
   });
 
-  // Regression: choosing L2/L5 then an Example used to leave selected=null and
-  // show the tall L1 band. The UX eval must fail if that returns.
-  function assertExampleKeepsLayer(j, layer, exampleId) {
-    const radio = w.document.querySelector('input[name="start-from"][value="' + layer + '"]');
-    $("start-from").open = true;
-    radio.checked = true;
-    radio.dispatchEvent(new w.Event("change"));
-    finding(j, layer.toLowerCase() + "_panel_open", "hard", $("graph-wrap").classList.contains("starting"), layer + " radio opens the Start panel");
-    $("example-pick").value = exampleId;
-    $("example-pick").dispatchEvent(new w.Event("change"));
-    finding(j, layer.toLowerCase() + "_panel_closed", "hard", !$("graph-wrap").classList.contains("starting"), "Example closes the Start panel after " + layer);
-    const focus = w.TM_UI.state.selected;
-    finding(j, layer.toLowerCase() + "_has_selection", "hard", !!focus, "Example after " + layer + " selects a component (not an empty L1 scroll)", "Remember Start from layer on radio select so Example does not reset to L1");
-    const focused = focus && w.TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
-    finding(j, layer.toLowerCase() + "_not_l1", "hard", !!(focused && focused.layer !== "L1"), "Example after " + layer + " must not leave focus on an L1 component");
-    finding(j, layer.toLowerCase() + "_keeps_layer", "hard", !!(focused && focused.layer === layer), "Example after " + layer + " focuses a " + layer + " component");
-    const node = focus && w.document.querySelector('#graph .node[data-id="' + focus + '"]');
-    const stroke = node && node.querySelector("rect") && node.querySelector("rect").getAttribute("stroke-width");
-    finding(j, layer.toLowerCase() + "_node_selected", "hard", !!node && Number(stroke) >= 3, "Focused " + layer + " component is drawn selected on the graph");
-    finding(j, layer.toLowerCase() + "_source_names_layer", "soft", new RegExp("focused on " + layer).test(text($("model-source"))), "Source line says the Example is focused on " + layer);
-  }
-
-  journey("example_after_start_radio", (j) => {
-    assertExampleKeepsLayer(j, "L2", "o2c");
-    assertExampleKeepsLayer(j, "L5", "p2p");
-  });
-
-  journey("start_from_l5_dropdowns", (j) => {
-    const kinds = inputKindsFor("L5");
-    const freeText = kinds.filter((q) => q.kind === "text" || q.kind === "textarea");
-    finding(j, "no_free_text", "hard", freeText.length === 0, freeText.length ? ("L5 still has free-text fields: " + freeText.map((q) => q.id).join(", ")) : "L5 entry questions use fixed controls, not free text", "Keep weights and vendor model as selects");
-    $("start-from").open = true;
-    const l5 = w.document.querySelector('input[name="start-from"][value="L5"]');
-    l5.checked = true;
-    l5.dispatchEvent(new w.Event("change"));
-    ["weightsName", "vendorName", "update", "finetune", "operatingModel"].forEach((id) => {
-      finding(j, "field_" + id, "hard", !!$("start-q-" + id) && $("start-q-" + id).tagName === "SELECT", id + " is a <select>");
-    });
-    finding(j, "weights_none_option", "hard", Array.prototype.some.call($("start-q-weightsName").options, (o) => o.value === "" && /no local/i.test(o.textContent)), "Weights select offers No local weights file");
-    $("start-worked").click();
-    finding(j, "worked_seed_lands", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.weights"]') || !!w.document.querySelector('#graph .node[data-id="cmp.l5-weights"]') || /weights|model/i.test(text($("sys-name"))), "Worked L5 seed loads a model graph");
-  });
-
-  journey("l1_free_text_accepted", (j) => {
-    const kinds = inputKindsFor("L1");
-    const freeText = kinds.filter((q) => q.kind === "text" || q.kind === "textarea");
-    finding(j, "l1_keeps_free_text", "soft", freeText.length >= 1, "L1 still allows free text for process and step names (expected)", "Only convert L1 to dropdowns if a fixed process catalog is adopted");
+  journey("scoped_l5", (j) => {
+    w.TM_UI.setAssessment("L5");
+    finding(j, "weights_on_graph", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.base-weights"]'), "Scoped L5 draws the public-hub weights file");
+    finding(j, "edge_hub", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.edge-hub"]'), "The public hub is an edge actor");
+    finding(j, "no_realization", "hard", w.TM_STATE.model.relationships.every((r) => r.type !== "realization" && !r.cascade), "No realization or cascade links");
+    const table = text($("results-main"));
+    finding(j, "results_name_threat", "hard", /supplymodelpoison/.test(table) && /retire/.test(table) && /Placeholder/.test(table), "Results include the supply-chain threat and a Placeholder retire row");
+    $("om").value = "AI-SaaS";
+    $("om").dispatchEvent(new w.Event("change"));
+    const pin = w.TM_STATE.model.controls.find((c) => c.id === "ctl.pin-version");
+    finding(j, "saas_attestation", "hard", !!(pin && pin.party === "provider" && /attestation/.test(pin.attestation_note || "") && !/SOC|ISO/.test(pin.attestation_note || "")), "Under AI-SaaS a provider-side control says the customer relies on the provider's attestation");
+    finding(j, "keyboard_node", "hard", w.document.querySelector("#graph .node").getAttribute("tabindex") === "0", "Graph nodes are keyboard focusable");
   });
 
   journey("cascade_and_controls", (j) => {
@@ -205,26 +144,19 @@ function run() {
   });
 
   journey("l3_l4_guidance", (j) => {
-    $("start-from").open = true;
     const note = text($("start-l34"));
-    finding(j, "no_l3_l4_start", "hard", /No Start from for L3 or L4/.test(note), "Chrome explains there is no Start from for L3 or L4");
+    finding(j, "l3_l4_practice", "hard", /mature threat-modeling practice/.test(note), "The note says L3 and L4 already have a mature threat-modeling practice");
     ["owasp.org", "atlas.mitre.org", "secure-ai-tooling"].forEach((frag) => {
-      finding(j, "link_" + frag.replace(/\W+/g, "_"), "soft", ($("start-l34").innerHTML || "").indexOf(frag) >= 0, "L3/L4 note links out via " + frag, "Keep outside threat-model links current");
+      finding(j, "link_" + frag.replace(/\W+/g, "_"), "soft", ($("start-l34").innerHTML || "").indexOf(frag) >= 0, "L3/L4 note links out via " + frag);
     });
   });
 
   journey("heuristic_summary", (j) => {
     const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (s) => s.textContent).join("\n");
-    finding(j, "graph_flex_space", "hard", /#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "Graph scroll claims leftover viewport height (avoids cramped panes)");
-    finding(j, "start_form_select_width", "soft", /\.start-form input\[type="text"\],\s*\.start-form select/.test(css), "Start form styles cover select controls", "Keep start-form select styling when fields are dropdowns");
-    const l2Kinds = inputKindsFor("L2");
-    finding(j, "recognition_over_recall", "hard", l2Kinds.every((q) => q.kind !== "text"), "L2 prefers recognition (fixed options) over recall (free typing)");
-    $("start-from").open = true;
-    const l2radio = w.document.querySelector('input[name="start-from"][value="L2"]');
-    l2radio.checked = true;
-    l2radio.dispatchEvent(new w.Event("change"));
-    const ids = selectIdsInForm($("start-form"));
-    finding(j, "consistency_select_ids", "soft", ids.indexOf("dataName") >= 0 && ids.indexOf("classification") >= 0, "Start panel select ids stay start-q-* for scripts and tests", "Keep start-q-* ids stable for UX and cascade tests");
+    finding(j, "graph_flex_space", "hard", /#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "Graph scroll claims leftover viewport height");
+    finding(j, "results_stack", "hard", /table\.results td::before/.test(css), "Results rows stack on a narrow screen");
+    w.TM_UI.setAssessment("holistic");
+    finding(j, "holistic_has_cascade", "hard", !!w.document.querySelector("#graph text.band-id"), "Holistic still draws the five layer bands");
   });
 
   const scoreHard = report.findings.filter((f) => f.severity === "hard");
