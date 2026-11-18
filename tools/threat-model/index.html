@@ -24860,10 +24860,14 @@ if (typeof module !== "undefined") module.exports = TM;
       var id = $("example-pick").value;
       if (!id) return;
       // Prefer the last seed layer; fall back to an open Start from choice
-      // (reader selected L2/L5 but has not built a seed yet).
-      var keepLayer = seedFocusLayer || startLayer;
+      // (reader selected L2/L5 but has not built a seed yet); then to a
+      // Start from radio left checked from a prior Example pick.
+      var checkedStart = doc.querySelector('input[name="start-from"]:checked');
+      var keepLayer = seedFocusLayer || startLayer || (checkedStart && checkedStart.value) || null;
       STATE.exampleId = id;
       closeStart();
+      var startBox = $("start-from");
+      if (startBox) startBox.open = false;
       clearStartHash();
       load(EXAMPLE());
       setSource("Showing the example in the picker.");
@@ -24877,8 +24881,15 @@ if (typeof module !== "undefined") module.exports = TM;
           revealComponent(focusId);
           setSource("Showing the example in the picker, focused on " + keepLayer + ".");
         }
+        // Keep the Start from layer radio selected so the chrome still shows
+        // which layer the reader chose. Do not fire change (that would reopen
+        // the start panel).
+        var keepRadio = doc.querySelector('input[name="start-from"][value="' + keepLayer + '"]');
+        if (keepRadio) keepRadio.checked = true;
+        seedFocusLayer = keepLayer;
+      } else {
+        seedFocusLayer = null;
       }
-      seedFocusLayer = null;
     });
     Array.prototype.forEach.call(doc.querySelectorAll('input[name="start-from"]'), function (r) {
       r.addEventListener("change", function () { if (r.checked) openStart(r.value); });
