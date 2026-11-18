@@ -210,6 +210,26 @@ function run() {
     w.TM_UI.setAssessment("holistic");
   });
 
+  journey("drawer_beside_graph", (j) => {
+    const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (st) => st.textContent).join("\n");
+    finding(j, "css_offsets_graph", "hard", /@media \(min-width: 761px\)\s*\{[^}]*main\.drawer-open #graph-wrap > #graph-scroll[^}]*margin-right:\s*min\(var\(--drawer-w\)/.test(css), "On wide screens the open drawer narrows the graph area by its own width");
+    finding(j, "css_phone_padding", "hard", /main\.drawer-open #graph-scroll[^{]*\{[^}]*padding-bottom:\s*min\(50vh, 440px\)/.test(css), "On phones the graph keeps room to scroll above the bottom sheet");
+    ["holistic", "L2", "L5"].forEach((mode) => {
+      w.TM_UI.setAssessment(mode);
+      const sc = $("graph-scroll");
+      sc.scrollLeft = 7; sc.scrollTop = 11;
+      const node = w.document.querySelector("#graph .node");
+      let revealed = 0;
+      w.Element.prototype.scrollIntoView = function () { revealed++; };
+      node.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+      finding(j, mode + "_reveals_selected", "hard", revealed >= 1, mode + ": opening Details scrolls the selected box into view");
+      sc.scrollLeft = 99; sc.scrollTop = 98;
+      w.document.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+      finding(j, mode + "_restores_view", "hard", sc.scrollLeft === 7 && sc.scrollTop === 11 && w.document.querySelector("main").classList.contains("drawer-closed"), mode + ": closing Details restores the earlier view");
+    });
+    w.TM_UI.setAssessment("holistic");
+  });
+
   journey("heuristic_summary", (j) => {
     const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (s) => s.textContent).join("\n");
     finding(j, "graph_flex_space", "hard", /#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "Graph scroll claims leftover viewport height");

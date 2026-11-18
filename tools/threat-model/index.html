@@ -70,6 +70,13 @@
   #side { position:absolute; top:0; right:0; bottom:0; z-index:30; width:var(--drawer-w); max-width:90%; display:flex; flex-direction:column; min-height:0; min-width:0; background:var(--panel); border-left:1px solid var(--line); box-shadow:-8px 0 24px rgba(15,23,42,.18); overflow:hidden; transition:transform .18s ease; }
   main.drawer-closed #side { transform:translateX(105%); visibility:hidden; pointer-events:none; box-shadow:none; }
   main.drawer-closed #pane-handle { display:none; }
+  @media (min-width: 761px) {
+    main.drawer-open #graph-wrap > #view-bar,
+    main.drawer-open #graph-wrap > #rel-filters,
+    main.drawer-open #graph-wrap > #glossary,
+    main.drawer-open #graph-wrap > #graph-scroll,
+    main.drawer-open #graph-wrap > #results-wrap { margin-right:min(var(--drawer-w), 90%); }
+  }
   .drawer-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 10px; border-bottom:1px solid var(--line); }
   #drawer-title { font-size:14px; }
   .sheet-grip { display:none; }
@@ -142,6 +149,7 @@
     #graph-wrap.expanded #rel-filters { flex-wrap:nowrap; overflow-x:auto; }
     #graph-wrap.expanded #glossary { display:none; }
     #graph-scroll { min-height:52vh; }
+    main.drawer-open #graph-scroll, main.drawer-open #results-wrap { padding-bottom:min(50vh, 440px); }
     #pane-handle { display:none !important; }
     #side, main.drawer-closed #side {
       position:fixed; left:0; right:0; bottom:0; width:100% !important; max-width:100% !important; flex:none;
@@ -179,7 +187,7 @@
   #graph-wrap.scoped #graph-scroll { overflow-x:hidden; }
   .scoped-canvas { padding:10px; box-sizing:border-box; max-width:100%; }
   .sc-title { font-size:16px; margin:0 0 8px; }
-  .sc-cols { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; align-items:start; }
+  .sc-cols { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; align-items:start; }
   .grp { border:1.5px solid #64748b; border-radius:8px; padding:8px; min-width:0; }
   .grp h3 { font-size:13px; margin:0 0 2px; }
   .g-sub { font-size:12px; margin:0 0 8px; color:var(--muted); overflow-wrap:anywhere; }
@@ -23993,13 +24001,34 @@ if (typeof module !== "undefined") module.exports = TM;
       focusReturnTarget();
     }
   }
+  var savedScroll = null;
+  function rememberScroll() {
+    var sc = $("graph-scroll");
+    if (!drawerOpen && sc) savedScroll = { left: sc.scrollLeft, top: sc.scrollTop };
+  }
+  function restoreScroll() {
+    var sc = $("graph-scroll");
+    if (sc && savedScroll) { sc.scrollLeft = savedScroll.left; sc.scrollTop = savedScroll.top; }
+    savedScroll = null;
+  }
+  function revealSelected() {
+    var run = function () {
+      if (!drawerOpen || !STATE.selected) return;
+      var el = doc.querySelector('#graph .node[data-id="' + STATE.selected + '"]');
+      if (el && el.scrollIntoView) el.scrollIntoView({ block: "nearest", inline: "nearest" });
+    };
+    run();
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(function () { requestAnimationFrame(run); });
+  }
   function closeDrawer() {
     if (!drawerOpen) return;
     drawerOpen = false;
     pendingFocus = "return";
     render();
+    restoreScroll();
   }
   function openDetails() {
+    rememberScroll();
     returnFocusKind = "details";
     if (!drawerOpen) pendingFocus = "drawer";
     drawerOpen = true;
@@ -24409,21 +24438,25 @@ if (typeof module !== "undefined") module.exports = TM;
     if (STATE.tab !== "cascade") STATE.tab = "details";
     returnFocusId = id;
     returnFocusKind = "node";
+    rememberScroll();
     if (!drawerOpen) pendingFocus = "drawer";
     drawerOpen = true;
     render();
+    revealSelected();
   }
   function selectThreat(id) {
     STATE.selectedThreat = id;
     var t = TM.byId(STATE.model.threats)[id];
     STATE.selected = t ? t.target_component_id : null;
     STATE.tab = "threats";
+    rememberScroll();
     if (!drawerOpen) {
       if (STATE.selected) { returnFocusId = STATE.selected; returnFocusKind = "node"; }
       pendingFocus = "drawer";
       drawerOpen = true;
     }
     render();
+    revealSelected();
   }
 
   /* ---------- panels ---------- */
