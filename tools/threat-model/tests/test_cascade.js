@@ -899,6 +899,75 @@ test("UI: diagram fits by viewBox, and details open, close, and return focus", (
   assert.strictEqual(w.document.activeElement, $("open-drawer"));
 });
 
+test("a placeholder owner is not shown or exported as verified", () => {
+  assert.strictEqual(TM.statusWord({ record_status: "placeholder", placeholder: true }), "Placeholder");
+  assert.strictEqual(TM.statusWord({ record_status: "verified", placeholder: true, approved_by: "Bill Stout", approved_on: "2026-11-18" }), "Placeholder");
+  assert.notStrictEqual(TM.statusWord({ record_status: "verified", placeholder: true, approved_by: "Bill Stout", approved_on: "2026-11-18" }), "Verified");
+  const m = clone(example);
+  const owner = m.components.filter((c) => c.owner && c.owner.placeholder)[0];
+  owner.owner.record_status = "verified";
+  owner.owner.approved_by = "Bill Stout";
+  owner.owner.approved_on = "2026-11-18";
+  w.TM_UI.load(m);
+  const node = w.document.querySelector('#graph .node[data-id="' + owner.id + '"]');
+  assert.ok(node.textContent.indexOf("Placeholder") >= 0, node.textContent);
+  assert.ok(node.textContent.indexOf("Verified") < 0, node.textContent);
+  w.document.querySelector('.tab[data-tab="export"]').click();
+  const exported = JSON.parse(w.TM_EXPORT("json"));
+  const exOwner = exported.components.filter((c) => c.id === owner.id)[0].owner;
+  assert.strictEqual(exOwner.placeholder, true);
+  assert.notStrictEqual(TM.statusWord(exOwner), "Verified");
+  assert.ok(w.TM_EXPORT("yaml").indexOf("name: " + exOwner.name) >= 0);
+  w.TM_UI.load(example);
+  w.document.querySelector('.tab[data-tab="export"]').click();
+  const clean = JSON.parse(w.TM_EXPORT("json"));
+  clean.components.forEach((c) => {
+    if (!c.owner) return;
+    assert.notStrictEqual(c.owner.record_status, "verified", c.id);
+    assert.notStrictEqual(TM.statusWord(c.owner), "Verified", c.id);
+  });
+  Array.prototype.forEach.call(w.document.querySelectorAll("#graph .node"), (g) => {
+    assert.ok(g.textContent.indexOf("Placeholder") >= 0, g.getAttribute("data-id"));
+    assert.ok(g.textContent.indexOf("Verified") < 0, g.getAttribute("data-id") + " " + g.textContent);
+  });
+});
+
+test("a control-ownership gap stays visible on the canvas, in the drawer, and in the list", () => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((id) => {
+    const m = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
+    w.TM_UI.load(m);
+    const gaps = m.threats.filter((t) => t.control_ownership_gap === true);
+    const calm = m.threats.filter((t) => t.catalog_threat_id && !t.control_ownership_gap);
+    if (id === "r2r") assert.strictEqual(gaps.length, 0, "r2r has no control-ownership gap");
+    gaps.forEach((t) => {
+      const node = w.document.querySelector('#graph .node[data-id="' + t.target_component_id + '"]');
+      assert.ok(node && node.textContent.indexOf(TM.CONTROL_GAP_MARK) >= 0, id + " canvas " + t.id + " " + (node && node.textContent));
+      w.TM_UI.selectThreat(t.id);
+      const row = w.document.querySelector('[data-thr-row="' + t.id + '"]');
+      assert.ok(row.textContent.indexOf(TM.CONTROL_GAP_MARK) >= 0, id + " threat row " + t.id);
+      const roca = $("roca").textContent;
+      assert.ok(roca.indexOf(TM.CONTROL_GAP_MARK) >= 0, id + " drawer mark");
+      assert.ok(roca.indexOf(TM.CONTROL_GAP_LINE) >= 0, id + " drawer line");
+      assert.ok(roca.indexOf("Placeholder") >= 0, id + " accountable status");
+      assert.ok(roca.indexOf("Proposed") >= 0, id + " catalog status");
+      assert.ok(roca.indexOf("Verified") < 0, id + " drawer must not say Verified");
+    });
+    $("view-toggle").click();
+    gaps.forEach((t) => {
+      const row = w.document.querySelector('[data-lv-row="' + t.target_component_id + '"]');
+      assert.ok(row && row.textContent.indexOf(TM.CONTROL_GAP_MARK) >= 0, id + " list " + t.target_component_id);
+      assert.ok(row.textContent.indexOf("Placeholder") >= 0, id + " list status");
+    });
+    if (calm.length) {
+      w.TM_UI.selectThreat(calm[0].id);
+      const row = w.document.querySelector('[data-thr-row="' + calm[0].id + '"]');
+      assert.ok(row.textContent.indexOf(TM.CONTROL_GAP_MARK) < 0, id + " non-gap row shows a gap");
+    }
+    $("view-toggle").click();
+  });
+  w.TM_UI.load(example);
+});
+
 test("UI: list view selection opens details and close returns to that row", () => {
   w.TM_UI.load(example);
   $("view-toggle").click();

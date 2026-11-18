@@ -85,13 +85,107 @@ else:
     check("export files exist (run test_cascade.js first)", False, "missing out-export.*")
 
 bad = re.compile(r"\bsplit\w*|\bmodelling\b|\bbehaviour|\borganis|\blabelled\b|\bcolour|\bcentre\b|\banalyse\b", re.I)
-for root, _, files in os.walk(D):
+for root, dirs, files in os.walk(D):
+    dirs[:] = [d for d in dirs if d != "node_modules"]
     for f in files:
-        if f.startswith("out-export") or not f.endswith((".md", ".json", ".yaml", ".html", ".js", ".py")): continue
+        if f.startswith("out-export") or f == "package-lock.json" or not f.endswith((".md", ".json", ".yaml", ".html", ".js", ".py")): continue
         p = os.path.join(root, f)
         if p == os.path.abspath(__file__): continue
         hits = [m.group(0) for m in bad.finditer(open(p, encoding="utf8").read())]
         check("wording check: " + os.path.relpath(p, D), not hits, ", ".join(sorted(set(hits))))
+
+# Catalog agreement, status, and the control-ownership gap.
+# The side is accountable.party, copied from data/threats.json accountable_party
+# after checking that the catalog responsibility cells equal data/matrix.json.
+# The target component's owner party is not the threat's side.
+DATA = os.path.join(os.path.dirname(D), "..", "data")
+cat = json.load(open(os.path.join(DATA, "threats.json")))
+matrix = json.load(open(os.path.join(DATA, "matrix.json")))
+by_cat = {t["id"]: t for t in cat["threats"]}
+STATUS = {"verified", "placeholder", "proposed"}
+EX_IDS = ["case", "case-saas", "h2r", "i2r", "l2o", "o2c", "p2f", "p2p", "q2a", "r2f", "r2r"]
+
+def bare(pid):
+    return (pid or "").replace("srf.role.", "")
+
+def linked_owner_personas(model, threat):
+    comps = {c["id"]: c for c in model["components"]}
+    ctls = {c["id"]: c for c in model["controls"]}
+    out = []
+    for cid in threat.get("control_ids") or []:
+        comp = comps[ctls[cid]["component_id"]]
+        owner = comp.get("owner") or {}
+        if owner.get("status") == "assigned":
+            out.append(bare(owner.get("persona_id")))
+    return out
+
+verified_owners = 0
+gap_rows = []
+matched = 0
+for ex_id in EX_IDS:
+    model = json.load(open(os.path.join(D, "example-%s.json" % ex_id)))
+    om = model["system"]["operating_model"]
+    for comp in model["components"]:
+        owners = [comp.get("owner")]
+        for ver in comp.get("versions") or []:
+            if "owner" in (ver.get("set") or {}):
+                owners.append(ver["set"]["owner"])
+        for owner in owners:
+            st = owner.get("record_status")
+            check("owner %s %s has a status" % (ex_id, comp["id"]), st in STATUS, str(st))
+            if st == "verified":
+                verified_owners += 1
+                check("verified owner %s names approver and date" % comp["id"],
+                      bool(owner.get("approved_by")) and bool(owner.get("approved_on")))
+            if owner.get("placeholder") or owner.get("status") in ("none", "shared"):
+                check("placeholder owner %s is not verified" % comp["id"], st != "verified", st)
+    for obl in model["obligations"]:
+        check("obligation %s %s has a status" % (ex_id, obl["id"]), obl.get("record_status") in STATUS)
+        check("obligation %s stays placeholder" % obl["id"], obl.get("record_status") == "placeholder")
+    for ctl in model["controls"]:
+        for link in ctl.get("obligation_links") or []:
+            check("obligation link %s %s has a status" % (ex_id, link.get("obligation_id")), link.get("record_status") in STATUS)
+            check("obligation link stays placeholder", link.get("record_status") == "placeholder")
+    for threat in model["threats"]:
+        acc = threat.get("accountable") or {}
+        check("accountable %s %s has a status" % (ex_id, threat["id"]), acc.get("record_status") in STATUS, str(acc.get("record_status")))
+        if acc.get("record_status") == "verified":
+            verified_owners += 1
+        if acc.get("placeholder") or acc.get("status") in ("none", "shared"):
+            check("placeholder accountable %s is not verified" % threat["id"], acc.get("record_status") != "verified")
+        if threat.get("business_response_owner"):
+            check("response owner %s has a status" % threat["id"], threat["business_response_owner"].get("record_status") in STATUS)
+        check("no catalog_divergence on %s" % threat["id"], "catalog_divergence" not in threat)
+        cid = threat.get("catalog_threat_id")
+        if not cid:
+            check("unchecked threat has no match status", "catalog_match_status" not in threat)
+            continue
+        matched += 1
+        entry = by_cat[cid]
+        cell = entry["accountability"][om]
+        check("catalog responsibility matches the matrix for %s %s" % (ex_id, threat["id"]),
+              matrix["cells"][entry["srf_layer"]][om] == cell["responsibility"])
+        target = next(c for c in model["components"] if c["id"] == threat["target_component_id"])
+        check("layer matches catalog %s %s" % (ex_id, threat["id"]), target["layer"] == entry["srf_layer"],
+              "%s vs %s" % (target["layer"], entry["srf_layer"]))
+        check("persona matches catalog %s %s" % (ex_id, threat["id"]), bare(acc.get("persona_id")) == cell["accountable_persona"],
+              "%s vs %s" % (bare(acc.get("persona_id")), cell["accountable_persona"]))
+        check("side matches catalog %s %s" % (ex_id, threat["id"]), acc.get("party") == cell["accountable_party"],
+              "%s vs %s" % (acc.get("party"), cell["accountable_party"]))
+        check("catalog match is proposed %s %s" % (ex_id, threat["id"]), threat.get("catalog_match_status") == "proposed")
+        owns = cell["accountable_persona"] in linked_owner_personas(model, threat)
+        flagged = threat.get("control_ownership_gap") is True
+        check("gap flag matches ownership %s %s" % (ex_id, threat["id"]), flagged == (not owns),
+              "flagged %s owns %s" % (flagged, owns))
+        if flagged:
+            gap_rows.append((ex_id, threat["id"], cell["accountable_persona"]))
+
+check("35 catalog-matched threats were checked", matched == 35, str(matched))
+check("verified owner count in examples is 0", verified_owners == 0, str(verified_owners))
+check("ten control-ownership gaps, all thr.data-exposure",
+      len(gap_rows) == 10 and all(tid == "thr.data-exposure" for _, tid, _ in gap_rows)
+      and len({ex for ex, _, _ in gap_rows}) == 10,
+      str(gap_rows))
 
 print("\n%d failed" % fails)
 sys.exit(1 if fails else 0)

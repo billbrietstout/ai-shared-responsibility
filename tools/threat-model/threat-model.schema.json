@@ -78,6 +78,18 @@
     }
   },
   "$defs": {
+    "record_status": {
+      "description": "Verified means a named person approved this record on a stated date. Placeholder means a worked example. Proposed means an editorial match that is not yet approved. A placeholder record is never verified.",
+      "enum": [
+        "verified",
+        "placeholder",
+        "proposed"
+      ]
+    },
+    "approval_name": {
+      "type": "string",
+      "minLength": 1
+    },
     "date": {
       "type": "string",
       "format": "date",
@@ -279,7 +291,8 @@
             "status",
             "name",
             "persona_id",
-            "party"
+            "party",
+            "record_status"
           ],
           "additionalProperties": false,
           "properties": {
@@ -301,18 +314,15 @@
             },
             "placeholder": {
               "type": "boolean"
-            }
-          }
-        },
-        {
-          "type": "object",
-          "required": [
-            "status"
-          ],
-          "additionalProperties": false,
-          "properties": {
-            "status": {
-              "const": "none"
+            },
+            "record_status": {
+              "$ref": "#/$defs/record_status"
+            },
+            "approved_by": {
+              "$ref": "#/$defs/approval_name"
+            },
+            "approved_on": {
+              "$ref": "#/$defs/date"
             }
           }
         },
@@ -320,7 +330,30 @@
           "type": "object",
           "required": [
             "status",
-            "names"
+            "record_status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "const": "none"
+            },
+            "record_status": {
+              "$ref": "#/$defs/record_status"
+            },
+            "approved_by": {
+              "$ref": "#/$defs/approval_name"
+            },
+            "approved_on": {
+              "$ref": "#/$defs/date"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "status",
+            "names",
+            "record_status"
           ],
           "additionalProperties": false,
           "properties": {
@@ -333,6 +366,15 @@
                 "type": "string"
               },
               "minItems": 2
+            },
+            "record_status": {
+              "$ref": "#/$defs/record_status"
+            },
+            "approved_by": {
+              "$ref": "#/$defs/approval_name"
+            },
+            "approved_on": {
+              "$ref": "#/$defs/date"
             }
           }
         }
@@ -345,7 +387,8 @@
           "type": "object",
           "required": [
             "name",
-            "persona_id"
+            "persona_id",
+            "record_status"
           ],
           "additionalProperties": false,
           "properties": {
@@ -356,15 +399,32 @@
             "persona_id": {
               "$ref": "#/$defs/persona_id"
             },
+            "party": {
+              "description": "Customer or provider side for this accountable person. Set from data/threats.json accountable_party when the threat cites a catalog id. The component owner's party is a separate fact.",
+              "enum": [
+                "customer",
+                "provider"
+              ]
+            },
             "placeholder": {
               "type": "boolean"
+            },
+            "record_status": {
+              "$ref": "#/$defs/record_status"
+            },
+            "approved_by": {
+              "$ref": "#/$defs/approval_name"
+            },
+            "approved_on": {
+              "$ref": "#/$defs/date"
             }
           }
         },
         {
           "type": "object",
           "required": [
-            "status"
+            "status",
+            "record_status"
           ],
           "additionalProperties": false,
           "properties": {
@@ -373,6 +433,15 @@
                 "none",
                 "shared"
               ]
+            },
+            "record_status": {
+              "$ref": "#/$defs/record_status"
+            },
+            "approved_by": {
+              "$ref": "#/$defs/approval_name"
+            },
+            "approved_on": {
+              "$ref": "#/$defs/date"
             }
           }
         }
@@ -843,7 +912,8 @@
         "strength",
         "in_force",
         "vertical",
-        "verification"
+        "verification",
+        "record_status"
       ],
       "additionalProperties": false,
       "properties": {
@@ -922,6 +992,9 @@
         "vertical": {
           "description": "'baseline' for the horizontal baseline, or an overlay id.",
           "type": "string"
+        },
+        "record_status": {
+          "$ref": "#/$defs/record_status"
         },
         "verification": {
           "type": "object",
@@ -1024,12 +1097,16 @@
             "required": [
               "obligation_id",
               "basis",
-              "review_status"
+              "review_status",
+              "record_status"
             ],
             "additionalProperties": false,
             "properties": {
               "obligation_id": {
                 "$ref": "#/$defs/id_obligation"
+              },
+              "record_status": {
+                "$ref": "#/$defs/record_status"
               },
               "basis": {
                 "enum": [
@@ -1117,6 +1194,14 @@
             "null"
           ],
           "pattern": "^[a-z0-9]+$"
+        },
+        "catalog_match_status": {
+          "description": "Status of the catalog_threat_id match. Example matches are proposed editorial readings.",
+          "$ref": "#/$defs/record_status"
+        },
+        "control_ownership_gap": {
+          "description": "True when the accountable persona owns none of this threat's linked controls. The flag records the gap. It does not add a control or an owner.",
+          "type": "boolean"
         },
         "catalog_note": {
           "description": "Why there is no catalog match, or how close the match is.",
