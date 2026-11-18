@@ -10,7 +10,7 @@
 <style>
   :root {
     color-scheme: light;
-    --ink:#0f172a; --muted:#64748b; --line:#cbd5e1; --bad:#b91c1c; --drawer-w:420px; --zoom:1;
+    --ink:#0f172a; --muted:#64748b; --line:#cbd5e1; --bad:#b91c1c; --drawer-w:360px; --zoom:1;
     --bg:#fff; --bg-soft:#f8fafc; --panel:#fff; --glossary:#334155; --link:#1d4ed8; --tab:#2563eb;
     --handle:#e2e8f0; --handle-hot:#cbd5e1; --grid-line:#e2e8f0; --th-bg:#f1f5f9; --pill:#e2e8f0;
     --draft:#92400e; --band-ink:#0f172a; --band-muted:#475569; --node-ink:#0f172a; --node-muted:#475569;
@@ -19,50 +19,57 @@
   * { box-sizing: border-box; }
   html, body { height:100%; }
   body { margin:0; display:flex; flex-direction:column; min-height:100%; overflow:hidden; font: 14px/1.45 var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
-  site-nav, site-footer { flex:0 0 auto; }
-  site-footer .footer { padding:8px 16px; }
-  .page-hero { flex:0 0 auto; padding:10px var(--page-pad) 8px; background:var(--bg); }
+  site-nav, site-footer { flex:0 0 auto; display:block; }
+  site-footer .footer { padding:4px 16px; }
+  site-footer .footer__inner { gap:4px 16px; }
+  /* Canvas page: keep page-hero shell, but shrink it so the graph gets height. */
+  .page-hero { flex:0 0 auto; padding:6px var(--page-pad) 4px; background:var(--bg); border-bottom:1px solid var(--line); }
   .page-hero__inner { max-width: none; }
-  .page-hero__eyebrow { margin-bottom:4px; }
+  .page-hero__eyebrow { margin-bottom:2px; font-size:11px; letter-spacing:0.08em; }
   .page-hero__eyebrow a { color: inherit; }
-  .page-hero__title { margin:0 0 4px; font-size:clamp(1.25rem, 2.4vw, 1.75rem); line-height:1.2; }
-  .page-hero__lede { margin:0 0 8px; font-size:14px; max-width:68ch; line-height:1.4; }
-  .page-hero .callout { margin:0; max-width:78ch; padding:6px 10px; font-size:12px; }
-  .tool-chrome { flex:0 0 auto; padding:6px 16px 8px; border-bottom:1px solid var(--line); background:var(--bg-soft); }
-  .bar { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:6px; font-size:13px; }
+  .page-hero__title { margin:0 0 2px; font-size:clamp(1.05rem, 1.8vw, 1.35rem); line-height:1.2; font-family:var(--font-sans), system-ui, sans-serif; }
+  .page-hero__lede { margin:0 0 3px; font-size:12px; max-width:none; line-height:1.3; font-family:var(--font-sans), system-ui, sans-serif; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .page-hero .callout { margin:0; max-width:none; padding:2px 8px; font-size:11px; line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .tool-chrome { flex:0 0 auto; padding:3px 16px 4px; border-bottom:1px solid var(--line); background:var(--bg-soft); }
+  .bar { display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; margin-top:3px; font-size:12px; }
   #model-source:empty { display:none; }
-  #model-source { margin:0 0 4px; }
-  .bar label { display:flex; gap:6px; align-items:center; }
-  main { flex:1 1 auto; min-height:0; display:flex; align-items:stretch; }
+  #model-source { margin:0 0 2px; line-height:1.3; }
+  .bar label { display:flex; gap:4px; align-items:center; }
+  main { flex:1 1 auto; min-height:0; display:flex; align-items:stretch; overflow:hidden; }
   #graph-wrap { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
   #graph-scroll { flex:1 1 auto; min-height:0; min-width:0; overflow:auto; background:var(--bg); }
   #graph-scroll.is-fit { overflow-x:hidden; }
-  #graph { width:calc(var(--zoom) * 100%); }
-  #graph-wrap.view-list #graph { width:100%; }
+  /* Zoom multiplies native diagram width. Cap at the pane so wide models shrink;
+     never grow a short model past 1:1 box size at Fit (zoom 1). */
+  #graph { width:calc(var(--zoom) * var(--diagram-w, 100%)); max-width:calc(var(--zoom) * 100%); }
+  #graph-wrap.view-list #graph { width:100%; max-width:100%; }
   #graph svg { width:100%; height:auto; display:block; }
-  #rel-filters { padding:6px 10px; font-size:12px; display:flex; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line); background:var(--bg); }
-  .rf { display:flex; gap:4px; align-items:center; }
-  #glossary { padding:4px 10px 6px; font-size:12px; color:var(--glossary); border-bottom:1px solid var(--line); margin:0; background:var(--bg); }
-  #view-bar { padding:6px 10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; border-bottom:1px solid var(--line); font-size:12px; }
+  /* One scrolling filter row — wrapping ate most of the graph height. */
+  #rel-filters { flex:0 0 auto; padding:3px 10px; font-size:11px; display:flex; flex-wrap:nowrap; gap:8px; align-items:center; border-bottom:1px solid var(--line); background:var(--bg); overflow-x:auto; overflow-y:hidden; scrollbar-width:thin; }
+  #rel-filters > .muted, #rel-filters > .rf { flex:0 0 auto; white-space:nowrap; }
+  .rf { display:flex; gap:3px; align-items:center; flex:0 0 auto; white-space:nowrap; }
+  #glossary { flex:0 0 auto; padding:2px 10px 3px; font-size:11px; color:var(--glossary); border-bottom:1px solid var(--line); margin:0; background:var(--bg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  #view-bar { flex:0 0 auto; padding:4px 10px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; border-bottom:1px solid var(--line); font-size:12px; }
   .zoom-group { display:flex; gap:4px; align-items:center; margin-left:auto; }
   #zoom-label { min-width:3.2em; color:var(--muted); }
   #list-view table { margin:0; } #list-view h2 { font-size:14px; margin:10px 10px 2px; } #list-view .lv-wrap { padding:0 10px 10px; }
   a { color:var(--link); }
   .linkbtn { background:none; border:0; padding:0; color:var(--link); text-decoration:underline; cursor:pointer; font:inherit; text-align:left; }
   .pill.counsel { background:#fee2e2; color:#7f1d1d; font-weight:600; }
-  #pane-handle { flex:0 0 8px; cursor:col-resize; background:var(--handle); border-left:1px solid var(--line); border-right:1px solid var(--line); touch-action:none; position:relative; }
+  #pane-handle { flex:0 0 10px; align-self:stretch; cursor:col-resize; background:var(--handle); border-left:1px solid var(--line); border-right:1px solid var(--line); touch-action:none; position:relative; z-index:2; }
   #pane-handle::after { content:""; position:absolute; top:50%; left:2px; width:2px; height:28px; margin-top:-14px; border-radius:1px; background:var(--muted); }
   #pane-handle:hover, #pane-handle:focus { background:var(--handle-hot); }
   #pane-handle:focus-visible { outline:2px solid var(--focus); outline-offset:-2px; }
   #side { flex:0 0 var(--drawer-w); width:var(--drawer-w); max-width:70%; display:flex; flex-direction:column; min-height:0; min-width:0; background:var(--panel); border-left:1px solid var(--line); overflow:hidden; transition:flex-basis .18s ease, transform .18s ease; }
   main.drawer-closed #side { flex-basis:0; width:0; max-width:0; border-left:0; visibility:hidden; }
-  .drawer-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-bottom:1px solid var(--line); }
+  main.drawer-closed #pane-handle { display:none; }
+  .drawer-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 10px; border-bottom:1px solid var(--line); }
   #drawer-title { font-size:14px; }
   .sheet-grip { display:none; }
   nav.tabs { display:flex; flex-wrap:wrap; border-bottom:1px solid var(--line); }
   .tab { border:0; background:none; padding:9px 12px; cursor:pointer; font:inherit; color:inherit; border-bottom:3px solid transparent; }
   .tab[aria-selected="true"] { border-bottom-color:var(--tab); font-weight:600; }
-  #panel { padding:12px 14px; overflow:auto; flex:1; }
+  #panel { padding:10px 12px; overflow:auto; flex:1 1 auto; min-height:0; }
   .band-id { font-weight:700; font-size:15px; fill:var(--band-ink); }
   .band-name { font-size:11px; fill:var(--band-muted); }
   .nlabel { font-size:11px; fill:var(--node-ink); pointer-events:none; }
@@ -128,6 +135,8 @@
     }
     #view-hint { display:none; }
     .page-hero, .tool-chrome, .bar, #overlay-controls { width:100%; max-width:100%; }
+    .page-hero__lede, .page-hero .callout, #glossary { white-space:normal; overflow:visible; text-overflow:unset; }
+    #rel-filters { flex-wrap:wrap; overflow-x:visible; }
     .bar label { width:100%; max-width:100%; min-width:0; }
     .bar select, .bar input[type="date"] { flex:1 1 auto; width:0; min-width:0; max-width:100%; }
     main.drawer-closed #side { visibility:hidden; transform:translateY(110%); pointer-events:none; }
@@ -136,10 +145,10 @@
     .sheet-grip { display:block; position:absolute; top:6px; left:50%; width:36px; height:4px; margin:0; border-radius:2px; background:var(--muted); transform:translateX(-50%); }
     site-footer .footer { padding:12px 16px 24px; }
   }
-  #start-from { border:1px solid var(--line); border-radius:6px; margin:0; padding:6px 10px; max-width:100%; }
-  #start-from summary { font-weight:700; cursor:pointer; min-height:32px; }
-  .start-choices { display:flex; flex-wrap:wrap; gap:4px 16px; }
-  .start-choices label { display:flex; gap:6px; align-items:center; min-height:32px; max-width:100%; }
+  #start-from { border:1px solid var(--line); border-radius:6px; margin:0; padding:2px 8px; max-width:100%; background:var(--bg); }
+  #start-from summary { font-weight:700; cursor:pointer; min-height:26px; line-height:26px; font-size:12px; }
+  .start-choices { display:flex; flex-wrap:wrap; gap:4px 16px; padding:4px 0 6px; }
+  .start-choices label { display:flex; gap:6px; align-items:center; min-height:28px; max-width:100%; }
   #start-l34 { flex:1 0 100%; margin:4px 0; max-width:78ch; }
   #start-panel { padding:12px 14px 20px; }
   #start-panel h2 { font-size:16px; margin:14px 0 6px; }
@@ -211,13 +220,13 @@
       <button type="button" id="open-drawer" aria-controls="side" aria-expanded="false">Details</button>
     </div>
     <div id="rel-filters"></div>
-    <p id="glossary">ROCA = Risk, Obligation, Control, Accountable. Each filter in the row above uses a plain reading. Rest the pointer on a filter to see the ArchiMate term. Bill checked these nine relationship names against ArchiMate 4 by hand on November 18, 2026.</p>
+    <p id="glossary" title="Each filter uses a plain reading; rest the pointer on a filter for the ArchiMate term. Bill checked these nine relationship names against ArchiMate 4 by hand on November 18, 2026.">ROCA = Risk, Obligation, Control, Accountable. Hover a filter for its ArchiMate term.</p>
     <div id="start-panel" hidden></div>
     <div id="graph-scroll">
       <div id="graph"></div>
     </div>
   </section>
-  <div id="pane-handle" role="separator" aria-orientation="vertical" aria-label="Resize details pane" tabindex="0" aria-valuemin="280" aria-valuemax="720" aria-valuenow="420" hidden></div>
+  <div id="pane-handle" role="separator" aria-orientation="vertical" aria-label="Resize details pane" tabindex="0" aria-valuemin="280" aria-valuemax="720" aria-valuenow="360" hidden></div>
   <section id="side" data-llm="side" aria-label="Details" aria-hidden="true">
     <div class="drawer-bar">
       <span class="sheet-grip" aria-hidden="true"></span>
@@ -23933,7 +23942,7 @@ if (typeof module !== "undefined") module.exports = TM;
       var n = parseInt(localStorage.getItem(WIDTH_KEY), 10);
       if (n >= 280 && n <= 720) return n;
     } catch (e) {}
-    return 420;
+    return 360;
   }
   var drawerWidth = readDrawerWidth();
   function maxDrawer() {
@@ -24048,7 +24057,13 @@ if (typeof module !== "undefined") module.exports = TM;
     $("snap").innerHTML = '<option value="">Use the As of date</option>' + (STATE.model.snapshots || []).map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === s.snapshot_id ? " selected" : "") + ">" + esc(x.name + " (" + x.as_of + ")") + "</option>"; }).join("");
     renderOverlayToggles();
     $("mode").value = STATE.mode;
-    if ($("example-pick") && STATE.exampleId) $("example-pick").value = STATE.exampleId;
+    syncExamplePick();
+  }
+  function syncExamplePick() {
+    var pick = $("example-pick");
+    if (!pick) return;
+    if (STATE.exampleId) pick.value = STATE.exampleId;
+    else pick.selectedIndex = -1;
   }
 
   /* ---------- graph ---------- */
@@ -24118,6 +24133,8 @@ if (typeof module !== "undefined") module.exports = TM;
     var graphWrap = $("graph-wrap");
     if (graphWrap) graphWrap.classList.toggle("view-list", STATE.view === "list");
     var m = TM.active(STATE.model), L = layout(m), svg = [];
+    var graphEl = $("graph");
+    if (graphEl) graphEl.style.setProperty("--diagram-w", L.width + "px");
     var cas = currentCascade(), onPath = {};
     if (cas) cas.reached.forEach(function (n) { if (n.via) onPath[n.via.edge + "|" + n.via.from] = true; });
     svg.push('<svg xmlns="http://www.w3.org/2000/svg" id="graph-svg" viewBox="0 0 ' + L.width + ' ' + L.height + '" preserveAspectRatio="xMinYMin meet" role="group" aria-label="Component graph by SRF layer">');
@@ -24162,12 +24179,15 @@ if (typeof module !== "undefined") module.exports = TM;
       var gap = TM.ownerIsGap(c.owner);
       var sel = STATE.selected === c.id;
       var nameLines = wrap(c.name, 24);
-      var ol = (gap ? "\u26a0 " : "") + TM.ownerLabel(c.owner), maxc = st ? 22 : 32;
+      // Owner keeps the middle row alone. Cascade state shares the bottom row with
+      // Placeholder / Verified (right-aligned), so "impacted" never covers the owner.
+      var ol = (gap ? "\u26a0 " : "") + TM.ownerLabel(c.owner), maxc = 28;
       if (ol.length > maxc) ol = ol.slice(0, maxc - 1) + "\u2026";
       var statusText = TM.statusWord(c.owner);
       var controlGap = TM.componentControlGap(m, c.id);
+      var stateText = st ? st + (loweredIds[c.id] ? "\u2193" : "") : "";
       // The accessible name starts with the visible text, then adds the full name and owner.
-      var visible = nameLines.join(" ") + " " + ol + " " + statusText + (controlGap ? " " + TM.CONTROL_GAP_MARK : "") + (st ? " " + st + (loweredIds[c.id] ? "\u2193" : "") : "");
+      var visible = nameLines.join(" ") + " " + ol + " " + statusText + (controlGap ? " " + TM.CONTROL_GAP_MARK : "") + (stateText ? " " + stateText : "");
       var extra = [];
       if (nameLines.join(" ") !== c.name) extra.push("Full name: " + c.name);
       if (ol !== (gap ? "\u26a0 " : "") + TM.ownerLabel(c.owner)) extra.push("Owner: " + TM.ownerLabel(c.owner));
@@ -24180,7 +24200,7 @@ if (typeof module !== "undefined") module.exports = TM;
       svg.push('<text x="' + (p.x + 6) + '" y="' + (p.y + 40) + '" class="nowner">' + esc(ol) + "</text> ");
       svg.push('<text x="' + (p.x + 6) + '" y="' + (p.y + 52) + '" class="nstatus">' + esc(statusText) + "</text> ");
       if (controlGap) svg.push('<text x="' + (p.x + 6) + '" y="' + (p.y + 62) + '" class="ngap">' + esc(TM.CONTROL_GAP_MARK) + "</text> ");
-      if (st) svg.push('<text x="' + (p.x + NW - 4) + '" y="' + (p.y + 40) + '" class="nstate" text-anchor="end">' + st + (loweredIds[c.id] ? "\u2193" : "") + "</text>");
+      if (stateText) svg.push('<text x="' + (p.x + NW - 4) + '" y="' + (p.y + 52) + '" class="nstate" text-anchor="end">' + esc(stateText) + "</text>");
       svg.push("</g>");
     });
     svg.push("</svg>");
@@ -24676,13 +24696,26 @@ if (typeof module !== "undefined") module.exports = TM;
     });
     return a;
   }
+  function clearStartHash() {
+    if (!location.hash) return;
+    var parts = (location.hash.slice(1).match(/[^&]+/g) || []).filter(function (kv) {
+      return kv.slice(0, 6) !== "start=" && kv.slice(0, 5) !== "seed=";
+    });
+    var next = parts.length ? "#" + parts.join("&") : "";
+    if (next !== location.hash) {
+      if (history.replaceState) history.replaceState(null, "", location.pathname + location.search + next);
+      else location.hash = next;
+    }
+  }
   function applySeed(layer, answers) {
     var model = TM.seedStart(layer, answers);
     closeStart();
-    var radio = doc.querySelector('input[name="start-from"][value="' + layer + '"]');
-    if (radio) radio.checked = true;
     var startBox = $("start-from");
     if (startBox) startBox.open = false;
+    // Drop the catalog example id so the picker no longer looks like that example
+    // is loaded. A later pick then always fires change and replaces this seed.
+    STATE.exampleId = null;
+    clearStartHash();
     load(model);
     var seedId = "cmp.l1-step-1";
     if (layer === "L2") seedId = model.components.some(function (c) { return c.id === "cmp.policy-kb"; }) ? "cmp.policy-kb" : "cmp.l2-data";
@@ -24722,7 +24755,7 @@ if (typeof module !== "undefined") module.exports = TM;
   function init() {
     $("om").innerHTML = opts(TM.OPERATING_MODELS);
     var EXTRA_PLAIN = { unclassified: ["unclassified, needs review", "No type yet. Not used in the cascade until someone classifies it."], derived: ["derived (a shortcut for a chain)", "A derived link stands in for a chain of links. The cascade uses the chain."] };
-    $("rel-filters").innerHTML = '<span class="muted" title="Parent-child links roll impact up from a part to its whole. Every link below takes part in the one cascade.">Parent-child (rolls impact up):</span>' + ["composition", "aggregation"].concat(['|']).concat(TM.REL_TYPES.filter(function (t) { return TM.REL_INFO[t].kind === "dependency"; })).concat(["unclassified", "derived"]).map(function (t) {
+    $("rel-filters").innerHTML = '<span class="muted" title="Parent-child links roll impact up from a part to its whole. Every link below takes part in the one cascade.">Parent-child:</span>' + ["composition", "aggregation"].concat(['|']).concat(TM.REL_TYPES.filter(function (t) { return TM.REL_INFO[t].kind === "dependency"; })).concat(["unclassified", "derived"]).map(function (t) {
       if (t === "|") return '<span class="muted">Depends on:</span>';
       var sw = '<svg width="26" height="8" aria-hidden="true"><line x1="0" y1="4" x2="26" y2="4" stroke="' + REL_STYLE[t].color + '" stroke-width="2" stroke-dasharray="' + REL_STYLE[t].dash + '"/></svg>';
       var label = EXTRA_PLAIN[t] ? EXTRA_PLAIN[t][0] : TM.REL_INFO[t].plain;
@@ -24737,8 +24770,11 @@ if (typeof module !== "undefined") module.exports = TM;
     $("mode").addEventListener("change", function () { STATE.mode = $("mode").value; render(); });
     $("example-pick").innerHTML = EXAMPLE_CATALOG.map(function (e) { return '<option value="' + e.id + '">' + esc(e.name) + "</option>"; }).join("");
     $("example-pick").addEventListener("change", function () {
-      STATE.exampleId = $("example-pick").value;
+      var id = $("example-pick").value;
+      if (!id) return;
+      STATE.exampleId = id;
       closeStart();
+      clearStartHash();
       load(EXAMPLE());
       setSource("Showing the example in the picker.");
     });

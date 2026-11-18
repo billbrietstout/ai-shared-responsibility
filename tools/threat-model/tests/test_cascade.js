@@ -854,6 +854,7 @@ test("UI: link filters use the plain reading, with the ArchiMate term in the too
   assert.ok(lab.textContent.indexOf(TM.REL_INFO.realization.plain) >= 0);
   assert.strictEqual(lab.getAttribute("title"), "ArchiMate term: realization");
   assert.ok($("glossary").textContent.indexOf("ROCA = Risk, Obligation, Control, Accountable") === 0);
+  assert.ok(($("glossary").getAttribute("title") || "").indexOf("ArchiMate") >= 0);
 });
 test("UI: gap table lists every finding; overlay toggle changes the model", () => {
   w.document.querySelector('.tab[data-tab="gaps"]').click();
@@ -960,6 +961,28 @@ test("UI: SRF layers in sequence, L1 on top and L5 at the bottom (Bill's rule)",
   assert.deepStrictEqual(opts, want, "layer choices in the Edit form");
 });
 
+test("UI: canvas CSS keeps main/graph-scroll flex space and drawer close restores width classes", () => {
+  const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (s) => s.textContent).join("\n");
+  assert.ok(/main\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "main grows in the body column");
+  assert.ok(/main\s*\{[^}]*min-height:\s*0/.test(css), "main can shrink under site chrome");
+  assert.ok(/#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "graph-scroll takes leftover height");
+  assert.ok(/#rel-filters\s*\{[^}]*flex-wrap:\s*nowrap/.test(css), "filters stay on one row");
+  assert.ok(/#rel-filters\s*\{[^}]*overflow-x:\s*auto/.test(css), "filters scroll sideways instead of wrapping tall");
+  assert.ok(!$("start-from").open, "Start from stays closed by default");
+  w.TM_UI.applySeed("L1", { worked: true });
+  assert.ok(!$("start-from").open, "Start from closes after a seed");
+  const main = w.document.querySelector("main");
+  assert.ok(main.classList.contains("drawer-closed"));
+  assert.ok($("pane-handle").hidden, "resize handle hidden while Details closed");
+  w.TM_UI.selectComponent("cmp.l1-step-1");
+  assert.ok(main.classList.contains("drawer-open"));
+  assert.ok(!$("pane-handle").hidden, "resize handle shown while Details open");
+  $("drawer-close").click();
+  assert.ok(main.classList.contains("drawer-closed"));
+  assert.ok(!main.classList.contains("drawer-open"));
+  assert.ok($("pane-handle").hidden);
+});
+
 test("UI: diagram fits by viewBox, and details open, close, and return focus", () => {
   w.TM_UI.load(example);
   const main = w.document.querySelector("main");
@@ -975,6 +998,8 @@ test("UI: diagram fits by viewBox, and details open, close, and return focus", (
   assert.strictEqual(w.TM_UI.columnCount(11, 1280), 6);
   assert.strictEqual(w.TM_UI.columnCount(11, 900), 4);
   assert.strictEqual(w.TM_UI.columnCount(11, 390), 1);
+  const vbWide = svg.getAttribute("viewBox").match(/\S+/g);
+  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), vbWide[2] + "px");
   const node = w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]');
   node.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
   assert.ok(main.classList.contains("drawer-open"));
@@ -995,6 +1020,37 @@ test("UI: diagram fits by viewBox, and details open, close, and return focus", (
   assert.strictEqual(w.document.activeElement, $("drawer-close"));
   $("drawer-close").click();
   assert.strictEqual(w.document.activeElement, $("open-drawer"));
+});
+
+test("UI: a short L5 start keeps native diagram width instead of stretching to the pane", () => {
+  w.TM_UI.applySeed("L5", { worked: true });
+  const svg = $("graph-svg");
+  const parts = svg.getAttribute("viewBox").match(/\S+/g);
+  const diagramW = Number(parts[2]);
+  assert.ok(diagramW > 0 && diagramW < 900, "L5 seed viewBox stays narrow, got " + diagramW);
+  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), diagramW + "px");
+  assert.ok(w.document.querySelectorAll("#graph .node").length < 15);
+  w.TM_UI.load(example);
+  const wide = Number($("graph-svg").getAttribute("viewBox").match(/\S+/g)[2]);
+  assert.ok(wide > diagramW, "the full example is wider than the L5 seed");
+});
+
+test("UI: cascade state does not sit on the owner line", () => {
+  w.TM_UI.applySeed("L2", { worked: true });
+  $("mode").value = "worst";
+  $("mode").dispatchEvent(new w.Event("change"));
+  w.TM_UI.selectComponent("cmp.policy-kb");
+  const reached = Array.prototype.filter.call(w.document.querySelectorAll("#graph .node"), (n) => n.querySelector("text.nstate"));
+  assert.ok(reached.length >= 2, "seed cascade paints state on more than one node");
+  reached.forEach((node) => {
+    const owner = node.querySelector("text.nowner");
+    const state = node.querySelector("text.nstate");
+    const status = node.querySelector("text.nstatus");
+    assert.ok(owner && state && status, node.getAttribute("data-id"));
+    assert.notStrictEqual(owner.getAttribute("y"), state.getAttribute("y"), node.getAttribute("data-id") + ": owner and state must not share a row");
+    assert.strictEqual(state.getAttribute("y"), status.getAttribute("y"), node.getAttribute("data-id") + ": state shares the status row");
+    assert.ok(/impacted|failed|exposed/.test(state.textContent), state.textContent);
+  });
 });
 
 test("a placeholder owner is not shown or exported as verified", () => {
@@ -1107,14 +1163,39 @@ test("UI: Start from offers L1, L2, and L5, keeps the example picker, and seeds 
   $("start-worked").click();
   assert.ok(!$("graph-wrap").classList.contains("starting"));
   assert.ok(w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
   assert.strictEqual($("example-pick").options.length, 11);
+  assert.strictEqual($("example-pick").selectedIndex, -1, "seed clears the catalog selection so the next pick fires change");
+  assert.ok(!w.TM_UI.state.exampleId);
+  assert.ok(!radios[1].checked, "seed does not leave the Start from radio checked");
   $("example-pick").value = "o2c";
   $("example-pick").dispatchEvent(new w.Event("change"));
   assert.strictEqual($("sys-name").textContent, example.system.name);
-  assert.ok($("glossary").textContent.indexOf("November 18, 2026") >= 0);
+  assert.ok(!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.ok(($("glossary").getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
   assert.ok($("rel-filters").textContent.indexOf("part cannot exist alone") >= 0);
   assert.strictEqual(TM.REL_TYPES.length, 9);
   assert.ok(TM.REL_TYPES.indexOf("association") < 0 && TM.REL_TYPES.indexOf("specialization") < 0);
+});
+
+test("UI: after an L2 start seed, the Example picker loads a catalog example", () => {
+  w.TM_UI.applySeed("L2", { worked: true });
+  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.strictEqual($("example-pick").selectedIndex, -1);
+  $("example-pick").value = "p2p";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.ok(/Procure to Pay/.test($("sys-name").textContent), $("sys-name").textContent);
+  assert.strictEqual(w.TM_UI.state.exampleId, "p2p");
+  assert.ok(!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.orchestrator"]'));
+  assert.ok($("model-source").textContent.indexOf("example in the picker") >= 0);
+  w.TM_UI.applySeed("L2", { worked: true });
+  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
+  $("example-pick").value = "o2c";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.strictEqual($("sys-name").textContent, example.system.name);
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]'));
 });
 
 }
