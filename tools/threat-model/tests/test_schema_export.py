@@ -26,7 +26,7 @@ V = Draft202012Validator(schema, format_checker=FormatChecker())
 def errors(doc): return ["%s: %s" % (list(e.path), e.message[:160]) for e in V.iter_errors(doc)]
 
 examples = sorted(f[8:-5] for f in os.listdir(D) if f.startswith("example-") and f.endswith(".yaml"))
-check("five examples are present (o2c, p2p, h2r, r2r, case)", examples == ["case", "h2r", "o2c", "p2p", "r2r"], str(examples))
+check("six examples are present (o2c, p2p, h2r, r2r, case, case-saas)", examples == ["case", "case-saas", "h2r", "o2c", "p2p", "r2r"], str(examples))
 for ex_id in examples:
     yx = yaml.safe_load(open(os.path.join(D, "example-%s.yaml" % ex_id)))
     jx = json.load(open(os.path.join(D, "example-%s.json" % ex_id)))
@@ -75,6 +75,7 @@ if os.path.exists(ej) and os.path.exists(ey):
     xj = json.load(open(ej)); xy = yaml.safe_load(open(ey))
     check("prototype YAML export parses and equals its JSON export", xj == xy)
     check("prototype export equals the example", xj == j)
+    check("prototype export starts with the disclaimer", list(xj["system"].keys())[0] == "disclaimer" and open(ey).read().startswith("# Prototype. Every owner is a placeholder."))
     e = errors(xy); check("prototype export validates against the schema", not e, "; ".join(e[:5]))
 else:
     check("export files exist (run test_cascade.js first)", False, "missing out-export.*")

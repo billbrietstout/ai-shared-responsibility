@@ -3,6 +3,8 @@
 # unverified: no legal source was checked. Not legal advice.
 tm_schema_version: 0.1.0-draft
 system:
+  disclaimer: Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal
+    advice. Not part of CoSAI SRF v1.0.
   id: sys.case-agentic
   name: Agentic Case to Resolution (example)
   description: A customer-service case process run by an orchestration agent and five sub-agents. The
@@ -1120,14 +1122,14 @@ threats:
   control_ids:
   - ctl.input-isolation
   - ctl.id-gate
-  accountable: &id001
+  accountable:
     name: Case app team lead (placeholder)
     persona_id: srf.role.application-developer
     placeholder: true
   stakeholder_ids:
   - stk.customers
   - stk.privacy-authority
-  business_response_owner: &id002
+  business_response_owner:
     name: Contact center owner (placeholder)
     persona_id: srf.role.ai-system-governance
     placeholder: true
@@ -1161,21 +1163,28 @@ threats:
     impact: A remedy is issued above approved authority
   target_component_id: cmp.reasoning-llm
   failure_class: model_behavior
+  catalog_threat_id: null
+  catalog_note: No entry in /data/threats.json matches this threat. The catalog's model-behavior entries,
+    such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording
+    and no attacker is involved, so the threat is left unmapped.
   obligation_ids:
   - obl.case-policy
   control_ids:
   - ctl.refund-caps
   - ctl.output-filter
   accountable:
-    name: Model serving team (placeholder)
-    persona_id: srf.role.ai-model-serving
+    name: Model vendor (placeholder)
+    persona_id: srf.role.model-provider
     placeholder: true
   stakeholder_ids:
   - stk.customers
-  business_response_owner: &id003
+  business_response_owner:
     name: Case operations owner (placeholder)
     persona_id: srf.role.ai-system-governance
     placeholder: true
+  notes: 'Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule
+    /data/threats.json uses for model-behavior threats. The customer''s app team still owns the hard rules
+    in the policy service and the regression tests that catch the change.'
 - id: thr.silent-fallback
   title: Gateway falls back to a smaller model under load and triage or remedy decisions change
   risk:
@@ -1190,10 +1199,16 @@ threats:
   control_ids:
   - ctl.regression-tests
   - ctl.settings-approval
-  accountable: *id001
+  accountable:
+    name: Case app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.customers
-  business_response_owner: *id002
+  business_response_owner:
+    name: Contact center owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.authority-creep
   title: Orchestrator chains steps so an investigation note is treated as a remedy approval
   risk:
@@ -1209,10 +1224,16 @@ threats:
   - ctl.sod
   - ctl.refund-caps
   - ctl.decision-log
-  accountable: *id001
+  accountable:
+    name: Case app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.customers
-  business_response_owner: *id003
+  business_response_owner:
+    name: Case operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.refund-persuasion
   title: A customer argues the resolution agent into a refund above the approved cap
   risk:
@@ -1222,14 +1243,31 @@ threats:
     impact: A remedy is issued above approved authority
   target_component_id: cmp.agent-resolve
   failure_class: execution
+  catalog_threat_id: directpromptinjection
+  external_refs:
+  - source: owasp_ai_exchange
+    id: directpromptinjection
+    url: https://owaspai.org/go/directpromptinjection/
+  - source: owasp_llm_top10
+    id: LLM01:2025 Prompt Injection
+  - source: mitre_atlas
+    id: AML.T0051 LLM Prompt Injection
+  - source: biml_llm24
+    id: '[LLMtop10:5:prompt manipulation]'
   obligation_ids:
   - obl.case-policy
   control_ids:
   - ctl.refund-caps
-  accountable: *id001
+  accountable:
+    name: Case app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.customers
-  business_response_owner: *id003
+  business_response_owner:
+    name: Case operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.data-exposure
   title: Investigation agent puts one customer's case data in another customer's reply
   risk:
@@ -1239,17 +1277,29 @@ threats:
     impact: Another customer's case data is disclosed
   target_component_id: cmp.agent-investigate
   failure_class: execution
+  catalog_threat_id: dsgai11
+  external_refs:
+  - source: owasp_llm_top10
+    id: LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)
+  - source: owasp_dsgai
+    id: DSGAI11 Cross-Context & Multi-User Conversation Bleed
   obligation_ids:
   - obl.customer-confidentiality
   - obl.privacy
   control_ids:
   - ctl.tenant-context
   - ctl.output-filter
-  accountable: *id001
+  accountable:
+    name: Case app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.customers
   - stk.privacy-authority
-  business_response_owner: *id003
+  business_response_owner:
+    name: Case operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.master-data-poison
   title: Customer payout details changed in the profile to divert a refund
   risk:
@@ -1259,6 +1309,10 @@ threats:
     impact: A refund is diverted
   target_component_id: cmp.customer-profile
   failure_class: data
+  catalog_threat_id: dsgai05
+  external_refs:
+  - source: owasp_dsgai
+    id: DSGAI05 Data Integrity & Validation Failures
   obligation_ids:
   - obl.case-policy
   - obl.privacy
@@ -1270,7 +1324,10 @@ threats:
     placeholder: true
   stakeholder_ids:
   - stk.customers
-  business_response_owner: *id003
+  business_response_owner:
+    name: Case operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.guardrail-outage
   title: Guardrail service is down and agents run without output filtering
   risk:
@@ -1292,7 +1349,10 @@ threats:
   stakeholder_ids:
   - stk.customers
   - stk.privacy-authority
-  business_response_owner: *id002
+  business_response_owner:
+    name: Contact center owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.identity-miss
   title: Identity component marks a session as verified when the feed would not have supported it
   risk:
@@ -1331,7 +1391,10 @@ threats:
   control_ids:
   - ctl.cp-complaints
   - ctl.mandatory-escalation
-  accountable: *id001
+  accountable:
+    name: Case app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   vertical: consumer-protection
   stakeholder_ids:
   - stk.customers
@@ -1356,9 +1419,15 @@ threats:
   - ctl.cp-disclosure
   - ctl.cp-fair-deal
   - ctl.output-filter
-  accountable: *id001
+  accountable:
+    name: Case app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   vertical: consumer-protection
   stakeholder_ids:
   - stk.customers
   - stk.consumer-authority
-  business_response_owner: *id003
+  business_response_owner:
+    name: Case operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true

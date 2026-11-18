@@ -3,6 +3,8 @@
 # unverified: no legal source was checked. Not legal advice.
 tm_schema_version: 0.1.0-draft
 system:
+  disclaimer: Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal
+    advice. Not part of CoSAI SRF v1.0.
   id: sys.p2p-agentic
   name: Agentic Procure to Pay (example)
   description: A procure-to-pay process run by an orchestration agent and five sub-agents. The orchestrator
@@ -1129,7 +1131,7 @@ threats:
   - ctl.three-way-match
   - ctl.input-isolation
   - ctl.master-data-change
-  accountable: &id001
+  accountable:
     name: P2P app team lead (placeholder)
     persona_id: srf.role.application-developer
     placeholder: true
@@ -1170,6 +1172,10 @@ threats:
     impact: Payment without a matching receipt
   target_component_id: cmp.reasoning-llm
   failure_class: model_behavior
+  catalog_threat_id: null
+  catalog_note: No entry in /data/threats.json matches this threat. The catalog's model-behavior entries,
+    such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording
+    and no attacker is involved, so the threat is left unmapped.
   obligation_ids:
   - obl.p2p-policy
   - obl.sox-icfr
@@ -1177,15 +1183,18 @@ threats:
   - ctl.three-way-match
   - ctl.output-filter
   accountable:
-    name: Model serving team (placeholder)
-    persona_id: srf.role.ai-model-serving
+    name: Model vendor (placeholder)
+    persona_id: srf.role.model-provider
     placeholder: true
   stakeholder_ids:
   - stk.securities-regulator
-  business_response_owner: &id002
+  business_response_owner:
     name: Procurement operations owner (placeholder)
     persona_id: srf.role.ai-system-governance
     placeholder: true
+  notes: 'Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule
+    /data/threats.json uses for model-behavior threats. The customer''s app team still owns the hard rules
+    in the policy service and the regression tests that catch the change.'
 - id: thr.silent-fallback
   title: Gateway falls back to a smaller model under load and buying decisions change
   risk:
@@ -1200,10 +1209,16 @@ threats:
   control_ids:
   - ctl.regression-tests
   - ctl.settings-approval
-  accountable: *id001
+  accountable:
+    name: P2P app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.requesters
-  business_response_owner: *id002
+  business_response_owner:
+    name: Procurement operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.authority-creep
   title: Orchestrator chains steps so one agent's output becomes another's approval
   risk:
@@ -1220,10 +1235,16 @@ threats:
   - ctl.sod
   - ctl.approval-threshold
   - ctl.decision-log
-  accountable: *id001
+  accountable:
+    name: P2P app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.securities-regulator
-  business_response_owner: *id002
+  business_response_owner:
+    name: Procurement operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.threshold-persuasion
   title: Requester argues the requisition agent into breaking one purchase into several smaller ones to
     stay under the approval threshold
@@ -1234,16 +1255,33 @@ threats:
     impact: A purchase proceeds without the required approval
   target_component_id: cmp.agent-requisition
   failure_class: execution
+  catalog_threat_id: directpromptinjection
+  external_refs:
+  - source: owasp_ai_exchange
+    id: directpromptinjection
+    url: https://owaspai.org/go/directpromptinjection/
+  - source: owasp_llm_top10
+    id: LLM01:2025 Prompt Injection
+  - source: mitre_atlas
+    id: AML.T0051 LLM Prompt Injection
+  - source: biml_llm24
+    id: '[LLMtop10:5:prompt manipulation]'
   obligation_ids:
   - obl.p2p-policy
   control_ids:
   - ctl.approval-threshold
   - ctl.input-isolation
-  accountable: *id001
+  accountable:
+    name: P2P app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.requesters
   - stk.securities-regulator
-  business_response_owner: *id002
+  business_response_owner:
+    name: Procurement operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.data-exposure
   title: Invoice-match agent puts one supplier's pricing in another supplier's message
   risk:
@@ -1253,12 +1291,21 @@ threats:
     impact: Confidential pricing disclosed to a competitor
   target_component_id: cmp.agent-invoice
   failure_class: execution
+  catalog_threat_id: dsgai11
+  external_refs:
+  - source: owasp_llm_top10
+    id: LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)
+  - source: owasp_dsgai
+    id: DSGAI11 Cross-Context & Multi-User Conversation Bleed
   obligation_ids:
   - obl.supplier-confidentiality
   control_ids:
   - ctl.tenant-context
   - ctl.output-filter
-  accountable: *id001
+  accountable:
+    name: P2P app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.supplier-contacts
   business_response_owner:
@@ -1274,6 +1321,10 @@ threats:
     impact: Supplier payments diverted
   target_component_id: cmp.vendor-master
   failure_class: data
+  catalog_threat_id: dsgai05
+  external_refs:
+  - source: owasp_dsgai
+    id: DSGAI05 Data Integrity & Validation Failures
   obligation_ids:
   - obl.p2p-policy
   control_ids:
@@ -1309,7 +1360,10 @@ threats:
   stakeholder_ids:
   - stk.supplier-contacts
   - stk.privacy-authority
-  business_response_owner: *id002
+  business_response_owner:
+    name: Procurement operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.eligibility-miss
   title: Vendor eligibility component clears a vendor that the watchlist would have flagged
   risk:
@@ -1346,11 +1400,17 @@ threats:
   - obl.ps-debarment
   control_ids:
   - ctl.ps-debarment
-  accountable: *id001
+  accountable:
+    name: P2P app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   vertical: public-sector
   stakeholder_ids:
   - stk.procurement-authority
-  business_response_owner: *id002
+  business_response_owner:
+    name: Procurement operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.ps-sole-source
   title: Sourcing agent treats a single quote as a competed award with no documented exception
   risk:
@@ -1365,7 +1425,10 @@ threats:
   control_ids:
   - ctl.ps-competition
   - ctl.decision-log
-  accountable: *id001
+  accountable:
+    name: P2P app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   vertical: public-sector
   stakeholder_ids:
   - stk.procurement-authority
