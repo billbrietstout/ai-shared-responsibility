@@ -66,62 +66,62 @@ components:
     layer: L1
     type: business_process
     srf_component: Processes & Governance
-    owner: {status: assigned, name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.o2c-logic
     name: O2C orchestration logic (step order, routing, exceptions)
     layer: L1
     type: business_logic
     srf_component: Processes & Governance
-    owner: {status: assigned, name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
     logic: {version: '1.4', approved_by: O2C process owner (placeholder), approved_on: '2026-10-01', change_control: L1 approval for every version}
   - id: cmp.hard-rules
     name: Hard rules (credit limits, discount authority, refund caps, segregation of duties)
     layer: L1
     type: business_logic
     srf_component: Processes & Governance
-    owner: {status: assigned, name: Controller (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: Controller (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
     logic: {version: '2.0', approved_by: Controller (placeholder), approved_on: '2026-09-15', change_control: L1 approval for every version}
   - id: cmp.step-order-capture
     name: 1. Order capture
     layer: L1
     type: process_step
-    owner: {status: assigned, name: Order management owner (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: Order management owner (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.step-credit
     name: 2. Credit check
     layer: L1
     type: process_step
-    owner: {status: assigned, name: Credit manager (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: Credit manager (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.step-pricing
     name: 3. Pricing and quoting
     layer: L1
     type: process_step
-    owner: {status: assigned, name: Deal desk lead (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: Deal desk lead (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.step-fulfillment
     name: 4. Fulfillment release
     layer: L1
     type: process_step
-    owner: {status: shared, names: [Sales operations (placeholder), Logistics (placeholder)]}
+    owner: {status: shared, names: [Sales operations (placeholder), Logistics (placeholder)], record_status: placeholder}
     notes: Intentional gap for the example. Two teams claim this step.
   - id: cmp.step-invoicing
     name: 5. Invoicing
     layer: L1
     type: process_step
-    owner: {status: assigned, name: Controller (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: Controller (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.step-collections
     name: 6. Collections
     layer: L1
     type: process_step
-    owner: {status: assigned, name: Collections manager (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: Collections manager (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.step-cash-app
     name: 7. Cash application
     layer: L1
     type: process_step
-    owner: {status: assigned, name: AR lead (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: AR lead (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.step-disputes
     name: 8. Disputes, credits and refunds
     layer: L1
     type: process_step
-    owner: {status: assigned, name: Finance operations lead (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true}
+    owner: {status: assigned, name: Finance operations lead (placeholder), persona_id: srf.role.ai-system-governance, party: customer, placeholder: true, record_status: placeholder}
     # Example of overriding a default multiplicity rule (MD-02). The tool lists every override (TM-G26).
     multiplicity_overrides:
       - rule_id: MD-02
@@ -134,92 +134,92 @@ components:
     layer: L2
     type: data_store
     srf_component: Master Data Management
-    owner: {status: assigned, name: Customer data owner (placeholder), persona_id: srf.role.data-provider, party: customer, placeholder: true}
+    owner: {status: assigned, name: Customer data owner (placeholder), persona_id: srf.role.data-provider, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.ledger
     name: Order and invoice ledger (ERP)
     layer: L2
     type: data_store
     srf_component: Master Data Management
-    owner: {status: assigned, name: ERP data owner (placeholder), persona_id: srf.role.data-provider, party: customer, placeholder: true}
+    owner: {status: assigned, name: ERP data owner (placeholder), persona_id: srf.role.data-provider, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.inbound-docs
     name: Inbound order documents (PO email, EDI)
     layer: L2
     type: input_channel
-    owner: {status: assigned, name: Order management owner (placeholder), persona_id: srf.role.data-provider, party: customer, placeholder: true}
+    owner: {status: assigned, name: Order management owner (placeholder), persona_id: srf.role.data-provider, party: customer, placeholder: true, record_status: placeholder}
     notes: Untrusted input. Customer text enters the agents here.
   - id: cmp.credit-bureau
     name: Credit bureau data feed
     layer: L2
     type: data_feed
-    owner: {status: assigned, name: Credit bureau (placeholder vendor), persona_id: srf.role.data-provider, party: provider, placeholder: true}
+    owner: {status: assigned, name: Credit bureau (placeholder vendor), persona_id: srf.role.data-provider, party: provider, placeholder: true, record_status: placeholder}
   # ---------------- L3 AI Application ----------------
   - id: cmp.orchestrator
     name: O2C orchestration agent
     layer: L3
     type: orchestrator
     srf_component: Agents & Orchestration Models
-    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.agent-intake
     name: Order intake agent
     layer: L3
     type: sub_agent
     srf_component: Agents & Orchestration Models
-    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.agent-pricing
     name: Pricing agent
     layer: L3
     type: sub_agent
     srf_component: Agents & Orchestration Models
-    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.agent-invoicing
     name: Invoicing agent
     layer: L3
     type: sub_agent
     srf_component: Agents & Orchestration Models
-    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.agent-collections
     name: Collections agent
     layer: L3
     type: sub_agent
     srf_component: Agents & Orchestration Models
-    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.agent-disputes
     name: Disputes agent
     layer: L3
     type: sub_agent
     srf_component: Agents & Orchestration Models
-    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.credit-scoring
     name: Credit scoring component
     layer: L3
     type: ai_component
     srf_component: APIs & Fine-tuned Models
-    owner: {status: assigned, name: Credit analytics lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: Credit analytics lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.cash-matching
     name: Cash matching component
     layer: L3
     type: ai_component
     srf_component: APIs & Fine-tuned Models
-    owner: {status: none}
+    owner: {status: none, record_status: placeholder}
     notes: Intentional gap for the example. Nobody owns it until the December release.
     versions:
       - version: '2'
         from: '2026-12-01'
         note: Owner named in the December release (example).
         set:
-          owner: {status: assigned, name: AR lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+          owner: {status: assigned, name: AR lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.policy-service
     name: Policy service (enforces hard rules outside the model)
     layer: L3
     type: policy_service
     srf_component: Application Platforms
-    owner: {status: assigned, name: Platform engineering lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: Platform engineering lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.model-settings
     name: Model settings profile (model version pin, reasoning effort, fallback)
     layer: L3
     type: model_settings
     srf_component: Agents & Orchestration Models
-    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true}
+    owner: {status: assigned, name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: customer, placeholder: true, record_status: placeholder}
     settings: {model_version: pinned (example), reasoning_effort: high, fallback: smaller model under load, change_approver: null}
     notes: Intentional gap. These settings change L1 behavior, but no L1 approver is named until the December release.
     versions:
@@ -234,44 +234,44 @@ components:
     layer: L4
     type: agent_runtime
     srf_component: Compute Infrastructure
-    owner: {status: assigned, name: Agent platform vendor (placeholder), persona_id: srf.role.agentic-platform-provider, party: provider, placeholder: true}
+    owner: {status: assigned, name: Agent platform vendor (placeholder), persona_id: srf.role.agentic-platform-provider, party: provider, placeholder: true, record_status: placeholder}
   - id: cmp.llm-gateway
     name: LLM gateway and router
     layer: L4
     type: gateway
     srf_component: LLM Routers & Gateways
-    owner: {status: assigned, name: Model serving team (placeholder), persona_id: srf.role.ai-model-serving, party: provider, placeholder: true}
+    owner: {status: assigned, name: Model serving team (placeholder), persona_id: srf.role.ai-model-serving, party: provider, placeholder: true, record_status: placeholder}
   - id: cmp.guardrails
     name: Guardrails and output filters
     layer: L4
     type: guardrail
     srf_component: Guardrails & Safety Systems
-    owner: {status: assigned, name: Model serving team (placeholder), persona_id: srf.role.ai-model-serving, party: provider, placeholder: true}
+    owner: {status: assigned, name: Model serving team (placeholder), persona_id: srf.role.ai-model-serving, party: provider, placeholder: true, record_status: placeholder}
   # Candidate L4 component types (network, facility, edge/OT host, location). Not SRF v1.0 components.
   - id: cmp.warehouse-network
     name: Warehouse network link (site VPN)
     layer: L4
     type: network
-    owner: {status: assigned, name: Network operations lead (placeholder), persona_id: srf.role.ai-platform-provider, party: customer, placeholder: true}
+    owner: {status: assigned, name: Network operations lead (placeholder), persona_id: srf.role.ai-platform-provider, party: customer, placeholder: true, record_status: placeholder}
   - id: cmp.warehouse-edge
     name: Warehouse edge/OT host (label printers, conveyor release)
     layer: L4
     type: edge_ot_host
     srf_component: Compute Infrastructure
-    owner: {status: assigned, name: Warehouse OT lead (placeholder), persona_id: srf.role.ai-platform-provider, party: customer, placeholder: true}
+    owner: {status: assigned, name: Warehouse OT lead (placeholder), persona_id: srf.role.ai-platform-provider, party: customer, placeholder: true, record_status: placeholder}
   # ---------------- L5 AI Model Provider ----------------
   - id: cmp.reasoning-llm
     name: Reasoning LLM
     layer: L5
     type: model
     srf_component: Foundation Models
-    owner: {status: assigned, name: Model vendor (placeholder), persona_id: srf.role.model-provider, party: provider, placeholder: true}
+    owner: {status: assigned, name: Model vendor (placeholder), persona_id: srf.role.model-provider, party: provider, placeholder: true, record_status: placeholder}
   - id: cmp.fallback-llm
     name: Fallback LLM (smaller, cheaper)
     layer: L5
     type: model
     srf_component: Foundation Models
-    owner: {status: assigned, name: Model vendor (placeholder), persona_id: srf.role.model-provider, party: provider, placeholder: true}
+    owner: {status: assigned, name: Model vendor (placeholder), persona_id: srf.role.model-provider, party: provider, placeholder: true, record_status: placeholder}
 relationships:
   # Relationship types are 9 of the 11 ArchiMate 3.2 types (see DESIGN.md).
   # Containment graph (parent and child): composition, aggregation.
@@ -400,6 +400,7 @@ obligations:
     applies_if: The seller is a US public company and O2C is in ICFR scope.
     vertical: baseline
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   - id: obl.revenue-recognition
     title: Recognize revenue under the applicable accounting standard
     instrument: ASC 606 (candidate)
@@ -410,6 +411,7 @@ obligations:
     applies_if: The seller reports under US GAAP.
     vertical: baseline
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   - id: obl.order-policy
     title: Verify customer and ship-to before releasing an order
     instrument: Internal order management policy (example)
@@ -420,6 +422,7 @@ obligations:
     applies_if: null
     vertical: baseline
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   - id: obl.debt-collection
     title: Do not use harassing or misleading collection practices
     instrument: Fair Debt Collection Practices Act (candidate)
@@ -430,6 +433,7 @@ obligations:
     applies_if: The debts are consumer debts and the collector is in scope. Needs counsel.
     vertical: baseline
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   - id: obl.privacy
     title: Protect personal information of customer contacts
     instrument: CCPA or GDPR (candidates)
@@ -440,6 +444,7 @@ obligations:
     applies_if: Customer records hold personal data of individuals in scope. Needs counsel.
     vertical: baseline
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   - id: obl.customer-confidentiality
     title: Keep each customer's data confidential
     instrument: Customer contracts (example)
@@ -450,6 +455,7 @@ obligations:
     applies_if: null
     vertical: baseline
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   # Banking overlay. Unverified. Needs counsel.
   - id: obl.bank-adverse-action
     title: Give applicants a notice when credit is denied or changed
@@ -461,6 +467,7 @@ obligations:
     applies_if: Credit decisions cover applicants in scope. Needs counsel.
     vertical: banking
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   - id: obl.bank-sanctions
     title: Screen new customers and payments against sanctions lists
     instrument: US sanctions program rules (candidate)
@@ -471,6 +478,7 @@ obligations:
     applies_if: null
     vertical: banking
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
   - id: obl.bank-model-risk
     title: Validate and monitor models used in credit decisions
     instrument: Supervisory model risk guidance, such as SR 11-7 (candidate)
@@ -481,31 +489,32 @@ obligations:
     applies_if: The seller is a supervised bank. Guidance, not law.
     vertical: banking
     verification: {status: unverified, method: none, checked_on: null}
+    record_status: placeholder
 controls:
   - id: ctl.logic-change-approval
     title: L1 owner approves every version of the O2C orchestration logic
     component_id: cmp.o2c-logic
     status: in_place
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.sod
     title: No agent can approve its own output (segregation of duties)
     component_id: cmp.o2c-process
     status: planned
     applies_to_children: true
-    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.discount-authority
     title: Discount authority matrix enforced by the policy service, not the agent
     component_id: cmp.policy-service
     status: in_place
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.revenue-recognition, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.revenue-recognition, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.refund-caps
     title: Refund and credit caps enforced by the policy service; dual approval above the cap
     component_id: cmp.policy-service
     status: in_place
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.credit-limits
     title: Credit limits enforced by the policy service; human approval above threshold
     component_id: cmp.policy-service
@@ -517,7 +526,7 @@ controls:
     component_id: cmp.step-order-capture
     status: in_place
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.order-policy, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.order-policy, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.input-isolation
     title: Treat PO email and EDI text as data, never as instructions
     component_id: cmp.agent-intake
@@ -535,7 +544,7 @@ controls:
     component_id: cmp.guardrails
     status: in_place
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.customer-confidentiality, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.customer-confidentiality, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.regression-tests
     title: Regression test set (edge cases, persuasion attempts) run before any model, prompt or setting change; L1 owner approves results
     component_id: cmp.model-settings
@@ -547,13 +556,13 @@ controls:
     component_id: cmp.orchestrator
     status: planned
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.sox-icfr, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.collections-templates
     title: Approved collection message templates and contact limits
     component_id: cmp.agent-collections
     status: in_place
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.debt-collection, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.debt-collection, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.match-threshold
     title: Matches below a confidence threshold go to a person
     component_id: cmp.cash-matching
@@ -565,34 +574,34 @@ controls:
     component_id: cmp.agent-invoicing
     status: planned
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.privacy, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.privacy, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.master-data-change
     title: Dual approval for changes to customer bank details and ship-to
     component_id: cmp.customer-master
     status: in_place
     applies_to_children: false
-    obligation_links: [{obligation_id: obl.order-policy, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.order-policy, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.bank-adverse-action
     title: Generate adverse action notices from the policy service decision, not model text
     component_id: cmp.policy-service
     status: planned
     applies_to_children: false
     vertical: banking
-    obligation_links: [{obligation_id: obl.bank-adverse-action, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.bank-adverse-action, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.bank-sanctions-screen
     title: Sanctions screening on every new customer before the first order ships
     component_id: cmp.step-order-capture
     status: planned
     applies_to_children: false
     vertical: banking
-    obligation_links: [{obligation_id: obl.bank-sanctions, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.bank-sanctions, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
   - id: ctl.bank-model-validation
     title: Independent validation of the credit scoring component
     component_id: cmp.credit-scoring
     status: planned
     applies_to_children: false
     vertical: banking
-    obligation_links: [{obligation_id: obl.bank-model-risk, basis: editorial_inference, review_status: proposed}]
+    obligation_links: [{obligation_id: obl.bank-model-risk, basis: editorial_inference, review_status: proposed, record_status: placeholder}]
 threats:
   - id: thr.spoofed-po
     title: Spoofed PO email makes the intake agent create an order to a drop address
@@ -600,6 +609,7 @@ threats:
     target_component_id: cmp.agent-intake
     failure_class: execution
     catalog_threat_id: indirectpromptinjection
+    catalog_match_status: proposed
     external_refs:
       - {id: indirectpromptinjection, source: owasp_ai_exchange, url: 'https://owaspai.org/go/indirectpromptinjection/'}
       - {id: 'LLM01:2025 Prompt Injection', source: owasp_llm_top10}
@@ -607,8 +617,8 @@ threats:
       - {id: '[LLMtop10:5:prompt manipulation]', source: biml_llm24}
     obligation_ids: [obl.order-policy, obl.sox-icfr]
     control_ids: [ctl.input-isolation, ctl.shipto-verify]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
-    business_response_owner: {name: Order management owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: provider, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: Order management owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
   - id: thr.logic-tamper
     title: Unapproved edit to the orchestration logic skips the credit step
     risk: {asset: O2C orchestration logic, actor: Developer or platform admin, failure_mode: Logic changed outside L1 change control, impact: Orders ship without a credit check}
@@ -617,7 +627,7 @@ threats:
     obligation_ids: [obl.sox-icfr]
     stakeholder_ids: [stk.securities-regulator]
     control_ids: [ctl.logic-change-approval, ctl.decision-log]
-    accountable: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
   - id: thr.llm-reinterprets
     title: Reasoning LLM reads "VIP customers may get extended terms" as permission to skip the credit check
     risk: {asset: Credit and discount decisions, actor: None (model behavior), failure_mode: Model reinterprets L1 logic; its reasoning trace looks plausible, impact: Off-policy credit or discounts}
@@ -628,8 +638,8 @@ threats:
     obligation_ids: [obl.sox-icfr]
     stakeholder_ids: [stk.securities-regulator]
     control_ids: [ctl.discount-authority, ctl.refund-caps, ctl.credit-limits, ctl.decision-log, ctl.regression-tests]
-    accountable: {name: Model vendor (placeholder), persona_id: srf.role.model-provider, placeholder: true}
-    business_response_owner: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: Model vendor (placeholder), persona_id: srf.role.model-provider, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
     notes: 'Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule /data/threats.json uses for model-behavior threats. The customer''s app team still owns the hard rules in the policy service and the regression tests that catch the change. Contract terms (version pinning, change notice) are an open item.'
   - id: thr.silent-fallback
     title: Gateway falls back to a smaller model under load and decisions change
@@ -640,8 +650,8 @@ threats:
     no_obligation: {reason: No binding duty identified yet. Recheck in the banking overlay (equal treatment).}
     stakeholder_ids: [stk.customer-contacts]
     control_ids: [ctl.regression-tests]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
-    business_response_owner: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
   - id: thr.authority-creep
     title: Orchestrator chains steps so one agent's output becomes another's approval
     risk: {asset: Segregation of duties, actor: None (design flaw) or insider, failure_mode: Agent output treated as approval, impact: 'Unapproved orders, credits or write-offs'}
@@ -650,14 +660,15 @@ threats:
     obligation_ids: [obl.sox-icfr]
     stakeholder_ids: [stk.securities-regulator]
     control_ids: [ctl.sod, ctl.agent-identity]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
-    business_response_owner: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
   - id: thr.discount-persuasion
     title: Customer argues the pricing agent into an off-contract discount
     risk: {asset: Contract pricing, actor: Customer, failure_mode: Persuasion through a well-argued request, impact: Revenue loss and misstated revenue}
     target_component_id: cmp.agent-pricing
     failure_class: execution
     catalog_threat_id: directpromptinjection
+    catalog_match_status: proposed
     external_refs:
       - {id: directpromptinjection, source: owasp_ai_exchange, url: 'https://owaspai.org/go/directpromptinjection/'}
       - {id: 'LLM01:2025 Prompt Injection', source: owasp_llm_top10}
@@ -666,8 +677,8 @@ threats:
     obligation_ids: [obl.revenue-recognition]
     stakeholder_ids: [stk.securities-regulator]
     control_ids: [ctl.discount-authority]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
-    business_response_owner: {name: Deal desk lead (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, party: provider, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: Deal desk lead (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
   - id: thr.collections-abuse
     title: Collections agent sends misleading or harassing messages
     risk: {asset: Customer relationships and legal standing, actor: None (model behavior), failure_mode: Off-template messages or contact at prohibited times, impact: Complaints and legal exposure}
@@ -676,8 +687,8 @@ threats:
     obligation_ids: [obl.debt-collection]
     stakeholder_ids: [stk.consumer-debtors, stk.customer-contacts]
     control_ids: [ctl.collections-templates, ctl.output-filter]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
-    business_response_owner: {name: Collections manager (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: Collections manager (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
   - id: thr.misapplied-cash
     title: Cash matching applies payments to the wrong invoices
     risk: {asset: Accounts receivable, actor: 'None, or an insider hiding fraud', failure_mode: Low-confidence matches posted automatically, impact: Wrongful dunning or hidden fraud}
@@ -686,32 +697,36 @@ threats:
     obligation_ids: [obl.sox-icfr]
     stakeholder_ids: [stk.customer-contacts, stk.securities-regulator]
     control_ids: [ctl.match-threshold]
-    accountable: {status: none}
+    accountable: {status: none, record_status: placeholder}
   - id: thr.data-exposure
     title: Invoicing agent puts one customer's data in another customer's invoice
     risk: {asset: Customer data, actor: None (context mix-up), failure_mode: Cross-customer context in one agent session, impact: Breach of confidentiality}
-    target_component_id: cmp.agent-invoicing
+    target_component_id: cmp.agent-runtime
     failure_class: execution
     catalog_threat_id: dsgai11
+    catalog_match_status: proposed
     external_refs:
       - {id: 'LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)', source: owasp_llm_top10}
       - {id: DSGAI11 Cross-Context & Multi-User Conversation Bleed, source: owasp_dsgai}
     obligation_ids: [obl.customer-confidentiality, obl.privacy]
     stakeholder_ids: [stk.customer-contacts, stk.privacy-authority]
     control_ids: [ctl.tenant-context, ctl.output-filter]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
+    accountable: {name: AI Platform Provider (placeholder), persona_id: srf.role.ai-platform-provider, party: provider, placeholder: true, record_status: placeholder}
+    control_ownership_gap: true
+    notes: "The site catalog places this threat at L4. The accountable persona is the AI Platform Provider on the provider side. The target is the agent runtime, the L4 component that runs the agents. No component in this example is owned by the AI Platform Provider. Linked controls stay on their current components."
   - id: thr.master-data-poison
     title: Customer bank details changed in master data to divert refunds
     risk: {asset: Customer master data, actor: Insider or compromised account, failure_mode: Unauthorized data change, impact: Refunds and credits paid to the wrong account}
     target_component_id: cmp.customer-master
     failure_class: data
     catalog_threat_id: dsgai05
+    catalog_match_status: proposed
     external_refs:
       - {id: DSGAI05 Data Integrity & Validation Failures, source: owasp_dsgai}
     obligation_ids: [obl.order-policy]
     stakeholder_ids: [stk.customer-contacts]
     control_ids: [ctl.master-data-change]
-    accountable: {name: Customer data owner (placeholder), persona_id: srf.role.data-provider, placeholder: true}
+    accountable: {name: Customer data owner (placeholder), persona_id: srf.role.data-provider, party: customer, placeholder: true, record_status: placeholder}
   - id: thr.guardrail-outage
     title: Guardrail service is down and agents run without output filtering
     risk: {asset: Outbound customer messages, actor: None (outage), failure_mode: Inherited control unavailable, impact: Unfiltered messages reach customers}
@@ -720,7 +735,7 @@ threats:
     obligation_ids: [obl.customer-confidentiality]
     stakeholder_ids: [stk.customer-contacts]
     control_ids: [ctl.output-filter]
-    accountable: {name: Model serving team (placeholder), persona_id: srf.role.ai-model-serving, placeholder: true}
+    accountable: {name: Model serving team (placeholder), persona_id: srf.role.ai-model-serving, placeholder: true, record_status: placeholder}
   - id: thr.bank-sanctions-skip
     title: Orchestrator releases a first order before sanctions screening finishes
     risk: {asset: Sanctions compliance, actor: None (step order), failure_mode: Screening step skipped or run late, impact: Dealing with a sanctioned party}
@@ -730,8 +745,8 @@ threats:
     obligation_ids: [obl.bank-sanctions]
     stakeholder_ids: [stk.bank-supervisor]
     control_ids: [ctl.bank-sanctions-screen]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
-    business_response_owner: {name: Order management owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: Order management owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
   - id: thr.bank-credit-model
     title: Credit scoring component denies credit with no valid reason for the notice
     risk: {asset: Credit decisions, actor: None (model behavior), failure_mode: Decision reasons come from model text, impact: Notices that do not match the real reason}
@@ -741,5 +756,5 @@ threats:
     obligation_ids: [obl.bank-adverse-action, obl.bank-model-risk]
     stakeholder_ids: [stk.credit-applicants, stk.bank-supervisor]
     control_ids: [ctl.bank-adverse-action, ctl.bank-model-validation, ctl.credit-limits]
-    accountable: {name: Credit analytics lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
-    business_response_owner: {name: Credit manager (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
+    accountable: {name: Credit analytics lead (placeholder), persona_id: srf.role.application-developer, placeholder: true, record_status: placeholder}
+    business_response_owner: {name: Credit manager (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true, record_status: placeholder}
