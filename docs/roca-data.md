@@ -2,6 +2,8 @@
 
 ROCA is Risk, Obligation, Control, Accountable. It is not a RACI chart. This file records the data fields the relationship map reads. Bill can change any choice listed here.
 
+The explorer at `/tools/relationship-map/` draws those fields as four columns. It does not draw the full link mesh. `?view=full` opens the chain when the query can build one, and the empty start state otherwise. `?tapestry=1` does not add Tapestry records to that chain.
+
 ## Instrument source kind
 
 `data/regulations.json` tags each instrument with `source_kind`:
