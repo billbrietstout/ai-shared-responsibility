@@ -122,18 +122,31 @@ function run() {
     finding(j, "keeps_l2_focus", "hard", !!(focused && focused.layer === "L2"), "After L2 seed, Example pick keeps focus on an L2 component instead of the tall L1 band");
   });
 
-  journey("example_after_l2_radio", (j) => {
-    const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
+  // Regression: choosing L2/L5 then an Example used to leave selected=null and
+  // show the tall L1 band. The UX eval must fail if that returns.
+  function assertExampleKeepsLayer(j, layer, exampleId) {
+    const radio = w.document.querySelector('input[name="start-from"][value="' + layer + '"]');
     $("start-from").open = true;
-    l2.checked = true;
-    l2.dispatchEvent(new w.Event("change"));
-    finding(j, "panel_open", "hard", $("graph-wrap").classList.contains("starting"), "L2 radio opens the Start panel");
-    $("example-pick").value = "o2c";
+    radio.checked = true;
+    radio.dispatchEvent(new w.Event("change"));
+    finding(j, layer.toLowerCase() + "_panel_open", "hard", $("graph-wrap").classList.contains("starting"), layer + " radio opens the Start panel");
+    $("example-pick").value = exampleId;
     $("example-pick").dispatchEvent(new w.Event("change"));
+    finding(j, layer.toLowerCase() + "_panel_closed", "hard", !$("graph-wrap").classList.contains("starting"), "Example closes the Start panel after " + layer);
     const focus = w.TM_UI.state.selected;
+    finding(j, layer.toLowerCase() + "_has_selection", "hard", !!focus, "Example after " + layer + " selects a component (not an empty L1 scroll)", "Remember Start from layer on radio select so Example does not reset to L1");
     const focused = focus && w.TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
-    finding(j, "radio_keeps_l2", "hard", !!(focused && focused.layer === "L2"), "Choosing L2 then an Example (no seed) still focuses an L2 component", "Remember Start from layer on radio select, not only after seed");
-    finding(j, "source_names_layer", "soft", /focused on L2/.test(text($("model-source"))), "Source line says the Example is focused on L2");
+    finding(j, layer.toLowerCase() + "_not_l1", "hard", !!(focused && focused.layer !== "L1"), "Example after " + layer + " must not leave focus on an L1 component");
+    finding(j, layer.toLowerCase() + "_keeps_layer", "hard", !!(focused && focused.layer === layer), "Example after " + layer + " focuses a " + layer + " component");
+    const node = focus && w.document.querySelector('#graph .node[data-id="' + focus + '"]');
+    const stroke = node && node.querySelector("rect") && node.querySelector("rect").getAttribute("stroke-width");
+    finding(j, layer.toLowerCase() + "_node_selected", "hard", !!node && Number(stroke) >= 3, "Focused " + layer + " component is drawn selected on the graph");
+    finding(j, layer.toLowerCase() + "_source_names_layer", "soft", new RegExp("focused on " + layer).test(text($("model-source"))), "Source line says the Example is focused on " + layer);
+  }
+
+  journey("example_after_start_radio", (j) => {
+    assertExampleKeepsLayer(j, "L2", "o2c");
+    assertExampleKeepsLayer(j, "L5", "p2p");
   });
 
   journey("start_from_l5_dropdowns", (j) => {
