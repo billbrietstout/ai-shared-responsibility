@@ -1,5 +1,7 @@
 Implementation Handoff: AI Security & Accountability Experience
 
+Note, November 18, 2026: the explorer no longer draws the full link mesh. A URL with `view=full`, with or without `node`, opens the four-column chain when the query can build one, and the empty start state otherwise. It does not show an error. `tapestry=1` does not open a mesh. It still includes proposed-extension records in the layer view. Tapestry records stay out of an SRF chain. The text below is the November 16 handoff and still mentions the mesh.
+
 Project: AI Shared Responsibility
 Website: https://aisharedresponsibility.com
 Primary target: https://aisharedresponsibility.com/tools/relationship-map/

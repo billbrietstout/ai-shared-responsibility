@@ -141,7 +141,7 @@
                 <button class="find-form__submit" type="submit">Find</button>
               </div>
               <p id="map-help" class="map-help">
-                Type a risk or a control name, then choose a match. The map shows that chain: risk, obligation, control, and the accountable persona.
+                Type a risk or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.
               </p>
               <p id="search-note" class="search-note" aria-live="polite"></p>
               <div id="suggestions-wrap">
@@ -173,57 +173,8 @@
               <button id="widen-view" type="button" hidden>Widen the view</button>
               <button id="show-chain" type="button" hidden>Show the chain</button>
               <button id="show-context" type="button">Show layers</button>
-              <button id="full-graph" type="button">Show every recorded link</button>
               <button id="start-one" type="button" hidden>Start from one risk or control</button>
             </div>
-
-            <fieldset class="kind-filters" id="kind-filters" hidden>
-              <legend>Show kinds</legend>
-              <div class="kind-filters__list">
-                <label class="kind-filter">
-                  <input type="checkbox" data-kind="layer" checked />
-                  <span class="swatch" data-swatch="layer" aria-hidden="true"></span>
-                  <span>Layer</span>
-                  <span class="kind-count" data-count-for="layer"></span>
-                </label>
-                <label class="kind-filter">
-                  <input type="checkbox" data-kind="persona" checked />
-                  <span class="swatch" data-swatch="persona" aria-hidden="true"></span>
-                  <span>Persona</span>
-                  <span class="kind-count" data-count-for="persona"></span>
-                </label>
-                <label class="kind-filter">
-                  <input type="checkbox" data-kind="model" checked />
-                  <span class="swatch" data-swatch="model" aria-hidden="true"></span>
-                  <span>Operating model</span>
-                  <span class="kind-count" data-count-for="model"></span>
-                </label>
-                <label class="kind-filter">
-                  <input type="checkbox" data-kind="risk" checked />
-                  <span class="swatch" data-swatch="risk" aria-hidden="true"></span>
-                  <span>Risk</span>
-                  <span class="kind-count" data-count-for="risk"></span>
-                </label>
-                <label class="kind-filter">
-                  <input type="checkbox" data-kind="control" checked />
-                  <span class="swatch" data-swatch="control" aria-hidden="true"></span>
-                  <span>Control</span>
-                  <span class="kind-count" data-count-for="control"></span>
-                </label>
-                <label class="kind-filter">
-                  <input type="checkbox" data-kind="policy" checked />
-                  <span class="swatch" data-swatch="policy" aria-hidden="true"></span>
-                  <span>Policy level</span>
-                  <span class="kind-count" data-count-for="policy"></span>
-                </label>
-                <label class="kind-filter">
-                  <input type="checkbox" data-kind="topic" checked />
-                  <span class="swatch" data-swatch="topic" aria-hidden="true"></span>
-                  <span>Whitepaper topic</span>
-                  <span class="kind-count" data-count-for="topic"></span>
-                </label>
-              </div>
-            </fieldset>
           </div>
 
           <p id="map-status" class="map-status" role="status">Loading map data.</p>
@@ -234,14 +185,24 @@
               id="graph"
               class="graph"
               role="img"
-              aria-label="ROCA chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
+              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
             ></div>
             <div id="context-board" class="context-board" hidden></div>
             <div id="chain" class="chain" hidden>
-              <p class="chain-legend" id="chain-legend">
-                ROCA reads top to bottom: Risk, Obligation, Control, Accountable.
-                Obligation tags mark how the record links: Official text, Shared control, or Instrument-level.
-              </p>
+              <ul class="chain-legend" id="chain-legend" aria-label="Line types">
+                <li>
+                  <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
+                  <span>Solid. The record names this link. An obligation line is solid when the basis is the official text.</span>
+                </li>
+                <li>
+                  <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
+                  <span>Dashed. Shared control. The legal text does not name the risk.</span>
+                </li>
+                <li>
+                  <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
+                  <span>Dotted. Instrument-level. No article record matched.</span>
+                </li>
+              </ul>
               <p id="chain-model-note" class="chain-model-note"></p>
               <div id="chain-board" class="chain-board" aria-label="Risk, obligation, control, and accountable"></div>
             </div>

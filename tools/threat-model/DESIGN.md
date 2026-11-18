@@ -462,7 +462,7 @@ Bill decided to keep this a separate tool (decision i). The prototype now lives 
   - the "gaps" text, from the high and medium findings
   - a pointer to the exported threat model version that the approver signed off
   Neither tool was changed.
-- **Relationship map** (`/tools/relationship-map/`, on develop only). That map shows how catalog records connect (layers, personas, controls). This tool shows how one system's components connect. They answer different questions, so they stay separate.
+- **Relationship map** (`/tools/relationship-map/`). The explorer shows one chain in four columns: Risk, Obligation, Control, and Accountable. Show layers lists personas and controls by L1 to L5. It does not draw the full link mesh. This tool shows how one system's components connect. They answer different questions, so they stay separate.
 
 ## Choices taken from the architecture frameworks review
 

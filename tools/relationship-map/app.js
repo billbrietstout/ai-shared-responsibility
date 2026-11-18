@@ -35,13 +35,19 @@
  *                   matches a policy level (no control has this field today)
  *   risk-control    threats[].related_controls
  *
- * Chain provenance is shown in the ROCA table (not as mesh lines):
- *   risk to obligation     threats[].obligations[] (Shared control when the basis is
+ * Chain provenance is drawn on the four-column board:
+ *   risk to obligation     threats[].obligations[] (dashed when the basis is
  *                          derived_via_control or editorial)
  *   obligation to control  the source control on that link, or a citation match
- *   instrument to control  a current-obligation citation with no article match
- *                          (marked Instrument-level)
+ *                          (solid). A current-obligation citation with no article
+ *                          match is dotted and marked Instrument-level.
  *   control to persona     controls[].accountable_by_model for the chosen model
+ *
+ * ?view=full and ?view=full&node= do not open a link mesh. They open this
+ * board when the query names a risk, control, persona, or node that can build
+ * a chain, and the empty start state otherwise. ?tapestry=1 does not open a
+ * mesh either. It still includes proposed-extension records in the layer view.
+ * Tapestry records stay out of an SRF chain.
  *
  * A control is Tapestry when its file or record provenance is proposed-extension,
  * or when every operating model it names is a proposed-extension model.
@@ -145,10 +151,8 @@
   var modelList = document.getElementById("model-filter-list");
   var modelNote = document.getElementById("model-note");
   var tapestryInput = document.getElementById("show-tapestry");
-  var kindFilters = document.getElementById("kind-filters");
   var widenBtn = document.getElementById("widen-view");
   var chainBtn = document.getElementById("show-chain");
-  var fullBtn = document.getElementById("full-graph");
   var contextBtn = document.getElementById("show-context");
   var contextBoard = document.getElementById("context-board");
   var startBtn = document.getElementById("start-one");
@@ -185,15 +189,6 @@
     tapestryControls: 0,
     tapestryPersonas: 0,
     mappedFromSector: 0
-  };
-  var shown = {
-    layer: true,
-    persona: true,
-    model: true,
-    risk: true,
-    control: true,
-    policy: true,
-    topic: true
   };
   var view = "search";
   var root = null;
@@ -243,12 +238,6 @@
 
   function unit(n, one, many) {
     return n + " " + (n === 1 ? one : many);
-  }
-
-  function listPhrase(parts) {
-    if (!parts.length) return "";
-    if (parts.length === 1) return parts[0];
-    return parts.slice(0, -1).join(", ") + ", and " + parts[parts.length - 1];
   }
 
   function outsideFilter(attrs) {
@@ -671,10 +660,6 @@
     });
   }
 
-  function kindShown(kind) {
-    return shown[kind] !== false;
-  }
-
   function nodeAllowed(attrs) {
     if (!attrs) return false;
     if (attrs.tapestry && !showTapestry) return false;
@@ -688,16 +673,12 @@
     if (!graph || !graph.hasNode(id)) return false;
     var attrs = graph.getNodeAttributes(id);
     if (!nodeAllowed(attrs)) return false;
-    if (view === "search" || view === "chain") return false;
-    if (view === "focus") return !!focusSet[id];
-    return kindShown(attrs.kind);
+    if (view !== "focus") return false;
+    return !!focusSet[id];
   }
 
-  function edgeVisible(source, target, type) {
-    if (!nodeVisible(source) || !nodeVisible(target)) return false;
-    if (view === "full" && !selected && (String(type).indexOf("control-") === 0 || type === "risk-control")) return false;
-    if (view === "full" && selected && source !== selected && target !== selected) return false;
-    return true;
+  function edgeVisible(source, target) {
+    return nodeVisible(source) && nodeVisible(target);
   }
 
   function rebuildFocus() {
@@ -1376,121 +1357,90 @@
   }
 
   function cardButton(cardId, pressed) {
-    var button = makeEl("button", "chain-item");
+    var button = makeEl("button", "chain-card");
     button.type = "button";
     button.dataset.chainId = cardId;
     button.setAttribute("aria-pressed", pressed ? "true" : "false");
     return button;
   }
 
-  function obligationProvenance(item, chain) {
-    if (item.instrumentLevel) return "Instrument-level";
-    var style = "";
-    chain.edges.forEach(function (edge) {
-      if (edge.to === item.id || edge.from === item.id) {
-        if (edge.style === "dashed") style = "dashed";
-        else if (edge.style === "dotted" && !style) style = "dotted";
-        else if (edge.style === "solid" && !style) style = "solid";
-      }
-    });
-    if (style === "dashed") return "Shared control";
-    if (style === "dotted") return "Instrument-level";
-    return "Official text";
-  }
-
-  function appendGapNotes(parent, chain, column) {
-    chain.gaps.forEach(function (gap) {
-      if (gap.column !== column) return;
-      var note = makeEl("p", "chain-gap");
-      note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
-      note.appendChild(document.createTextNode(" " + gap.text));
-      parent.appendChild(note);
-    });
-  }
-
   function renderChain(chain) {
     chainBoard.textContent = "";
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("id", "chain-svg");
+    svg.setAttribute("class", "chain-svg");
+    svg.setAttribute("aria-hidden", "true");
+    chainBoard.appendChild(svg);
+    var columnsWrap = makeEl("div", "chain-columns");
+    chainBoard.appendChild(columnsWrap);
     if (modelFilter === "all") {
       chainModelNote.textContent = "All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.";
     } else {
       chainModelNote.textContent = "";
     }
-    var panel = makeEl("div", "roca");
-    var table = makeEl("table", "kv");
-    table.setAttribute("aria-label", "ROCA chain");
-
-    function addRow(letter, label, column, items, fillCell) {
-      var tr = document.createElement("tr");
-      var th = document.createElement("th");
-      th.scope = "row";
-      th.textContent = letter + ": " + label;
-      if (items.length) th.textContent += " (" + items.length + ")";
-      var td = document.createElement("td");
-      if (!items.length) {
-        if (chain.columnNotes && chain.columnNotes[column]) {
-          td.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column]));
+    var columns = [
+      ["Risk", chain.risks, "risk"],
+      ["Obligation", chain.obligations, "obligation"],
+      ["Control", chain.controls, "control"],
+      ["Accountable", chain.personaCards, "accountable"]
+    ];
+    columns.forEach(function (column) {
+      var wrap = makeEl("div", "chain-col");
+      var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
+      wrap.appendChild(heading);
+      column[1].forEach(function (item) {
+        var pressed = chainFocus === item.id;
+        var button = cardButton(item.id, pressed);
+        if (column[2] === "risk") {
+          button.appendChild(makeEl("span", "chain-card__kicker", item.layer ? "Threat record · " + item.layer : "Threat record"));
+          button.appendChild(makeEl("span", "chain-card__title", item.name));
+          if (item.attackSurface) button.appendChild(makeEl("span", "chain-card__meta", "Attack surface: " + item.attackSurface));
+        } else if (column[2] === "obligation") {
+          var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
+          if (item.citation && item.citation !== duty) button.appendChild(makeEl("span", "chain-card__kicker", item.citation));
+          button.appendChild(makeEl("span", "chain-card__title", duty));
+          button.appendChild(makeEl("span", "chain-card__tag", item.instrumentLevel ? "Instrument-level" : "Implements this obligation"));
+        } else if (column[2] === "control") {
+          button.appendChild(makeEl("span", "chain-card__kicker", [item.layer ? "Operates at " + item.layer : "", item.meta, item.ref].filter(Boolean).join(" · ")));
+          button.appendChild(makeEl("span", "chain-card__title", item.name));
+          if (item.evidenceText) button.appendChild(makeEl("span", "chain-card__meta", item.evidenceText));
+          if (item.sectorModels.length) {
+            button.appendChild(makeEl("span", "chain-card__meta", "Sector: " + item.sectorModels.map(function (row) {
+              return row.name;
+            }).join(", ")));
+          }
         } else {
-          td.appendChild(makeEl("p", "chain-card__meta", "Nothing is recorded for this step."));
+          var one = item.lines.length === 1 ? item.lines[0] : null;
+          button.appendChild(makeEl("span", "chain-card__kicker", one ? one.label : item.controlName));
+          button.appendChild(makeEl("span", "chain-card__title", one ? (one.missing ? "No persona recorded" : one.name) : "One persona per model"));
+          if (one && !one.missing && one.personaId && graph.hasNode("persona:" + one.personaId)) {
+            var personaLayers = graph.getNodeAttribute("persona:" + one.personaId, "srfLayers") || [];
+            if (personaLayers.length) button.appendChild(makeEl("span", "chain-card__meta", "Layers recorded: " + personaLayers.join(", ")));
+          }
+          if (!one) {
+            item.lines.forEach(function (line) {
+              button.appendChild(makeEl("span", "chain-owner", line.label + ": " + (line.missing ? "No persona recorded" : line.name)));
+            });
+          }
         }
-      } else {
-        var list = makeEl("ul", "roca-list");
-        items.forEach(function (item) {
-          var li = document.createElement("li");
-          var button = cardButton(item.id, chainFocus === item.id);
-          fillCell(button, item);
-          li.appendChild(button);
-          list.appendChild(li);
-        });
-        td.appendChild(list);
+        wrap.appendChild(button);
+      });
+      if (!column[1].length && chain.columnNotes && chain.columnNotes[column[2]]) {
+        wrap.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column[2]]));
       }
-      appendGapNotes(td, chain, column);
-      tr.appendChild(th);
-      tr.appendChild(td);
-      table.appendChild(tr);
-    }
-
-    addRow("R", "Risk", "risk", chain.risks, function (button, item) {
-      button.appendChild(makeEl("span", "chain-card__title", item.name));
-      var meta = [];
-      if (item.layer) meta.push(item.layer);
-      if (item.attackSurface) meta.push("Attack surface: " + item.attackSurface);
-      if (meta.length) button.appendChild(makeEl("span", "chain-card__meta", meta.join(" · ")));
+      chain.gaps.forEach(function (gap) {
+        if (gap.column !== column[2]) return;
+        var note = makeEl("p", "chain-gap");
+        note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
+        note.appendChild(document.createTextNode(" " + gap.text));
+        wrap.appendChild(note);
+      });
+      columnsWrap.appendChild(wrap);
     });
-
-    addRow("O", "Obligations", "obligation", chain.obligations, function (button, item) {
-      var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
-      var line = makeEl("span", "chain-card__line");
-      line.appendChild(makeEl("span", "chain-card__title", duty));
-      line.appendChild(makeEl("span", "chain-pill", obligationProvenance(item, chain)));
-      button.appendChild(line);
-      if (item.citation && item.citation !== duty) {
-        button.appendChild(makeEl("span", "chain-card__meta", item.citation));
-      }
+    requestAnimationFrame(function () {
+      drawChainLines();
+      requestAnimationFrame(drawChainLines);
     });
-
-    addRow("C", "Controls", "control", chain.controls, function (button, item) {
-      button.appendChild(makeEl("span", "chain-card__title", item.name));
-      var bits = [item.layer ? item.layer : "", item.ref].filter(Boolean);
-      if (bits.length) button.appendChild(makeEl("span", "chain-card__meta", bits.join(" · ")));
-    });
-
-    addRow("A", "Accountable", "accountable", chain.personaCards, function (button, item) {
-      var one = item.lines.length === 1 ? item.lines[0] : null;
-      if (one) {
-        button.appendChild(makeEl("span", "chain-card__title", one.missing ? "No persona recorded" : one.name));
-        button.appendChild(makeEl("span", "chain-card__meta", one.label + (item.controlName ? " · " + item.controlName : "")));
-      } else {
-        button.appendChild(makeEl("span", "chain-card__meta", item.controlName || "One persona per model"));
-        var owners = makeEl("span", "chain-owners");
-        item.lines.forEach(function (line) {
-          owners.appendChild(makeEl("span", "chain-owner", line.label + ": " + (line.missing ? "none" : line.name)));
-        });
-        button.appendChild(owners);
-      }
-    });
-
-    panel.appendChild(table);
-    chainBoard.appendChild(panel);
   }
 
   function chainCard(id) {
@@ -1502,7 +1452,34 @@
   }
 
   function drawChainLines() {
-    /* Compact ROCA table replaces the column mesh; no line drawing. */
+    if (!currentChain || !chainBoard) return;
+    var svg = document.getElementById("chain-svg");
+    if (!svg) return;
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (window.matchMedia("(max-width: 800px)").matches) return;
+    var origin = chainBoard.getBoundingClientRect();
+    var width = chainBoard.clientWidth;
+    var height = chainBoard.scrollHeight;
+    if (!width || !height) return;
+    svg.setAttribute("viewBox", "0 0 " + width + " " + height);
+    svg.setAttribute("width", String(width));
+    svg.setAttribute("height", String(height));
+    currentChain.edges.forEach(function (edge) {
+      var from = chainCard(edge.from);
+      var to = chainCard(edge.to);
+      if (!from || !to) return;
+      var ar = from.getBoundingClientRect();
+      var br = to.getBoundingClientRect();
+      var x1 = ar.right - origin.left;
+      var y1 = ar.top + ar.height / 2 - origin.top;
+      var x2 = br.left - origin.left;
+      var y2 = br.top + br.height / 2 - origin.top;
+      var mid = (x1 + x2) / 2;
+      var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", "M " + x1 + " " + y1 + " C " + mid + " " + y1 + ", " + mid + " " + y2 + ", " + x2 + " " + y2);
+      path.setAttribute("class", "chain-line chain-line--" + edge.style);
+      svg.appendChild(path);
+    });
   }
 
   function appendSentence(parent, text) {
@@ -1520,7 +1497,7 @@
       ["Risk", chain.risks, "risk"],
       ["Obligation", chain.obligations, "obligation"],
       ["Control", chain.controls, "control"],
-      ["Accountable for", chain.personaCards, "accountable"]
+      ["Accountable", chain.personaCards, "accountable"]
     ];
     sections.forEach(function (section) {
       var heading = makeEl("h3", "", section[0]);
@@ -1698,11 +1675,16 @@
     if (!detailsEl || !mapPage) return;
     var narrow = window.matchMedia("(max-width: 800px)").matches;
     var open = !!(detailsBody && !detailsBody.hidden);
-    mapPage.classList.toggle("is-node-open", narrow && open);
+    /* On a phone the chain is the page. A docked details sheet would cover
+       the stacked columns, so the sheet stays in normal flow while a chain
+       is open. The neighbor graph still docks, because that canvas needs
+       the details beside it. */
+    var dock = narrow && open && !document.body.classList.contains("chain-open");
+    mapPage.classList.toggle("is-node-open", dock);
     var cushion = 2;
     if (narrow) {
       detailsEl.style.top = "";
-      if (!open) {
+      if (!dock) {
         detailsEl.style.maxHeight = "";
         return;
       }
@@ -1764,7 +1746,7 @@
         else if (chainFocus.indexOf("risk:") === 0) focusKind = "Risk";
         else focusKind = "Control";
       }
-      detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : "Accountable for");
+      detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : "Accountable");
       detailsMeta.hidden = true;
       detailsMeta.textContent = "";
       detailsModelNote.hidden = true;
@@ -1783,9 +1765,7 @@
     if (!selected || !graph.hasNode(selected)) {
       detailsHeading.textContent = "Node details";
       detailsEmpty.hidden = false;
-      detailsEmpty.textContent = view === "full"
-        ? "Select a node to see its name, kind, and connections."
-        : "Select a risk or a control to see the chain, with sources and links.";
+      detailsEmpty.textContent = "Select a risk or a control to see the chain, with sources and links.";
       detailsBody.hidden = true;
       detailsSummary.textContent = "";
       detailsList.textContent = "";
@@ -1820,7 +1800,6 @@
       if (!graph.hasNode(otherId)) return;
       var other = graph.getNodeAttributes(otherId);
       if (!nodeAllowed(other)) return;
-      if (view === "full" && !kindShown(other.kind)) return;
       rows.push({
         id: otherId,
         kind: other.kind,
@@ -1865,19 +1844,6 @@
   function publish() {
     var allowed = countNodes(function (id, attrs) { return nodeAllowed(attrs); });
     var visible = countNodes(nodeVisible);
-    KIND_ORDER.forEach(function (kind) {
-      var slot = document.querySelector('[data-count-for="' + kind + '"]');
-      if (slot) slot.textContent = "(" + (allowed[kind] || 0) + ")";
-    });
-    var parts = [
-      unit(visible.layer || 0, "layer", "layers"),
-      unit(visible.persona || 0, "persona", "personas"),
-      unit(visible.model || 0, "operating model", "operating models"),
-      unit(visible.risk || 0, "risk", "risks"),
-      unit(visible.control || 0, "control", "controls"),
-      unit(visible.policy || 0, "policy level", "policy levels"),
-      unit(visible.topic || 0, "whitepaper topic", "whitepaper topics")
-    ];
     var text = "";
     if (view === "chain" && currentChain) {
       text = chainSentence(currentChain);
@@ -1907,8 +1873,10 @@
           ? "Showing this " + rootKind + " and 1 node next to it."
           : "Showing this " + rootKind + " and " + beside + " nodes next to it.";
       }
+    } else if (view === "context") {
+      text = "Layers run from L1 to L5. Open a name to see its chain.";
     } else {
-      text = "Showing " + listPhrase(parts) + ".";
+      text = "Choose a risk or a control to see its chain.";
     }
     statusEl.textContent = text;
     graphEl.setAttribute("aria-label", text);
@@ -2007,7 +1975,7 @@
     var ids = [];
     graph.forEachNode(function (id, attrs) {
       if (!nodeAllowed(attrs)) return;
-      if (view !== "full" && attrs.kind !== "control" && attrs.kind !== "risk") return;
+      if (attrs.kind !== "control" && attrs.kind !== "risk") return;
       if (attrs.search.indexOf(q) === -1) return;
       ids.push(id);
     });
@@ -2040,10 +2008,8 @@
       searchNote.textContent = "";
       return ids;
     }
-    var noun = view === "full"
-      ? (ids.length === 1 ? "node matches." : "nodes match.")
-      : (ids.length === 1 ? "record matches." : "records match.");
-    var line = ids.length ? ids.length + " " + noun : (view === "full" ? "No matching node." : "No matching risk or control.");
+    var noun = ids.length === 1 ? "record matches." : "records match.";
+    var line = ids.length ? ids.length + " " + noun : "No matching risk or control.";
     if (ids.length > shownIds.length) line += " Showing the first " + shownIds.length + ".";
     searchNote.textContent = line;
     return ids;
@@ -2103,9 +2069,6 @@
     document.querySelectorAll('input[name="operating-model"]').forEach(function (radio) {
       radio.checked = radio.value === modelFilter;
     });
-    document.querySelectorAll(".kind-filter input").forEach(function (box) {
-      box.checked = shown[box.dataset.kind] !== false;
-    });
   }
 
   function updateChrome() {
@@ -2139,25 +2102,21 @@
     widenBtn.textContent = view === "focus" && wide ? "Show only the nodes next to this " + rootWord : "Widen the view";
     widenBtn.setAttribute("aria-pressed", view === "focus" && wide ? "true" : "false");
     chainBtn.hidden = !(view === "focus" && chainable);
-    fullBtn.hidden = view === "full";
     if (contextBtn) contextBtn.hidden = view === "context";
     startBtn.hidden = view === "search";
     startBtn.textContent = "Start from one risk or control";
-    kindFilters.hidden = view !== "full";
     var chainOn = view === "chain" && !!currentChain;
+    if (mapPage) mapPage.classList.toggle("is-chain", chainOn);
+    document.body.classList.toggle("chain-open", chainOn);
     var contextOn = view === "context";
     chainEl.hidden = !chainOn;
     if (contextBoard) contextBoard.hidden = !contextOn;
     graphWrap.classList.toggle("graph-wrap--chain", chainOn);
     graphWrap.classList.toggle("graph-wrap--context", contextOn);
-    gestureEl.hidden = chainOn || contextOn;
+    gestureEl.hidden = view !== "focus";
     if (contextOn) renderContext();
 
-    if (view === "full") {
-      findLabel.textContent = "Find a node";
-      searchInput.placeholder = "Layer, persona, risk, or control name";
-      helpEl.textContent = "Type a name, then choose Find. The map moves to that node and keeps the nodes next to it in view.";
-    } else if (view === "context") {
+    if (view === "context") {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
       helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
@@ -2172,11 +2131,11 @@
     } else if (view === "chain") {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "ROCA table for this record: Risk, Obligation, Control, and Accountable. Choose a row item for details.";
+      helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
     } else {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "Type a risk or a control name, then choose a match. The map shows a ROCA table: risk, obligation, control, and the accountable persona.";
+      helpEl.textContent = "Type a risk or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.";
     }
 
     if (view === "search") {
@@ -2218,8 +2177,7 @@
   function chooseEntry(next) {
     entry = next;
     if (next !== "account") personaPick = "";
-    if (view === "full") commit(true);
-    else showSearch(true);
+    showSearch(true);
   }
 
   function fillLayerFrames() {
@@ -2263,10 +2221,7 @@
 
   function currentQuery() {
     var params = new URLSearchParams();
-    if (view === "full") {
-      params.set("view", "full");
-      if (selected && graph.hasNode(selected)) params.set("node", selected);
-    } else if (view === "context") {
+    if (view === "context") {
       params.set("view", "context");
     } else if ((view === "focus" || view === "chain") && root && graph.hasNode(root)) {
       var attrs = graph.getNodeAttributes(root);
@@ -2342,6 +2297,34 @@
     return hit;
   }
 
+  /* view=full used to select a node on the link mesh. The mesh is gone.
+     Open the chain when this id can build one. Otherwise leave the empty
+     start state and do not report an error. */
+  function openChainFromNode(node) {
+    if (!node || !graph.hasNode(node)) {
+      view = "search";
+      return;
+    }
+    var attrs = graph.getNodeAttributes(node);
+    if (attrs.kind === "persona" && CORE_PERSONAS.indexOf(attrs.ref) !== -1 && attrs.provenance !== "proposed-extension") {
+      personaPick = attrs.ref;
+      entry = "account";
+      view = "chain";
+      chainFocus = "accountable:persona:" + attrs.ref;
+      return;
+    }
+    if ((attrs.kind === "risk" || attrs.kind === "control") && buildChain(node)) {
+      root = node;
+      selected = node;
+      chainFocus = node;
+      view = "chain";
+      wide = false;
+      entry = attrs.kind === "risk" ? "threat" : "control";
+      return;
+    }
+    view = "search";
+  }
+
   function applyFromLocation() {
     if (!graph) return;
     var params = new URLSearchParams(location.search);
@@ -2357,10 +2340,10 @@
     personaPick = "";
     entry = "";
     var viewParam = params.get("view");
-    view = viewParam === "full" ? "full" : viewParam === "context" ? "context" : "search";
+    view = viewParam === "context" ? "context" : "search";
     var controlParam = params.get("control");
     var riskParam = params.get("risk");
-    if (view !== "full" && (riskParam || controlParam)) {
+    if (riskParam || controlParam) {
       var opened = "";
       if (riskParam) {
         opened = resolveRisk(riskParam);
@@ -2386,7 +2369,7 @@
         else view = "chain";
         entry = openedAttrs.kind === "risk" ? "threat" : "control";
       }
-    } else if (view !== "full") {
+    } else {
       var asked = params.get("persona") || "";
       if (CORE_PERSONAS.indexOf(asked) !== -1 && graph.hasNode("persona:" + asked)) {
         var personaAttrs = graph.getNodeAttributes("persona:" + asked);
@@ -2394,19 +2377,14 @@
           personaPick = asked;
           entry = "account";
           view = "chain";
+          chainFocus = "accountable:persona:" + asked;
         }
       }
-    } else if (view === "full") {
-      var node = params.get("node");
-      if (node && graph.hasNode(node)) {
-        if (graph.getNodeAttribute(node, "tapestry")) showTapestry = true;
-        if (nodeAllowed(graph.getNodeAttributes(node))) selected = node;
-      }
     }
+    if (viewParam === "full" && !root && !personaPick) openChainFromNode(params.get("node"));
     commit(false);
     if (!renderer) return;
     if (view === "focus") frameFocus();
-    else if (view === "full" && selected) frameSelection(selected);
     else if (view !== "chain") frameAll();
   }
 
@@ -2441,25 +2419,9 @@
     focusDetails(moveFocus);
   }
 
-  function selectInFull(id, moveFocus) {
-    if (!graph.hasNode(id)) return;
-    var kind = graph.getNodeAttribute(id, "kind");
-    if (!kindShown(kind)) {
-      shown[kind] = true;
-      var box = document.querySelector('input[data-kind="' + kind + '"]');
-      if (box) box.checked = true;
-    }
-    if (graph.getNodeAttribute(id, "tapestry")) showTapestry = true;
-    selected = id;
-    commit(true);
-    if (renderer) frameSelection(id);
-    focusDetails(moveFocus);
-  }
-
   function activateNode(id, moveFocus) {
     if (!graph || !graph.hasNode(id)) return;
-    if (view === "full") selectInFull(id, moveFocus);
-    else openControl(id, moveFocus, {});
+    openControl(id, moveFocus, {});
   }
 
   function nodeButton(id, label) {
@@ -2572,19 +2534,6 @@
     commit(push);
   }
 
-  function showFull(push) {
-    view = "full";
-    root = null;
-    selected = null;
-    chainFocus = "";
-    wide = false;
-    linkHits = null;
-    linkNote = "";
-    searchInput.value = "";
-    commit(push);
-    if (renderer) frameAll();
-  }
-
   function showSearch(push) {
     view = "search";
     root = null;
@@ -2642,7 +2591,6 @@
     if (id !== "all" && !coreIds[id]) id = "all";
     if (id === modelFilter) return;
     modelFilter = id;
-    if (view === "full" && selected && !nodeAllowed(graph.getNodeAttributes(selected))) selected = null;
     commit(push);
     if (renderer && view === "focus" && root && nodeAllowed(graph.getNodeAttributes(root))) frameFocus();
   }
@@ -2655,8 +2603,6 @@
       selected = null;
       wide = false;
       view = "search";
-    } else if (view === "full" && selected && !nodeAllowed(graph.getNodeAttributes(selected))) {
-      selected = null;
     }
     commit(push);
     if (renderer && view === "focus") frameFocus();
@@ -2723,9 +2669,7 @@
   function frameSelection(id) {
     var ids = [id];
     graph.forEachNeighbor(id, function (neighbor) {
-      if (nodeVisible(neighbor) || (view === "full" && nodeAllowed(graph.getNodeAttributes(neighbor)) && kindShown(graph.getNodeAttribute(neighbor, "kind")))) {
-        ids.push(neighbor);
-      }
+      if (nodeVisible(neighbor)) ids.push(neighbor);
     });
     frameNodeIds(ids, 0.55, false);
   }
@@ -2827,8 +2771,6 @@
       if (view === "focus" && focusSet[event.node]) {
         selected = event.node;
         commit(true);
-      } else if (view === "full") {
-        selectInFull(event.node, false);
       }
       setTimeout(function () { ignoreStage = false; }, 0);
     }
@@ -2855,7 +2797,6 @@
         publish();
         renderDetails();
         if (view === "focus") frameFocus();
-        else if (view === "full" && selected) frameSelection(selected);
         statusEl.dataset.ready = "true";
       });
     });
@@ -2933,12 +2874,17 @@
   });
   window.addEventListener("resize", function () {
     placeDetails();
+    drawChainLines();
   });
   window.addEventListener("scroll", placeDetails, { passive: true });
   window.addEventListener("load", placeDetails);
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeDetails);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () {
+      placeDetails();
+      drawChainLines();
+    });
+  }
   placeDetails();
-  fullBtn.addEventListener("click", function () { showFull(true); });
   if (contextBtn) contextBtn.addEventListener("click", function () { showContext(true); });
   if (contextBoard) {
     contextBoard.addEventListener("click", function (event) {
@@ -2968,13 +2914,6 @@
   document.getElementById("entry-requirement").addEventListener("click", function () { chooseEntry("requirement"); });
   document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
   document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
-  document.querySelectorAll(".kind-filter input").forEach(function (box) {
-    box.addEventListener("change", function () {
-      shown[box.dataset.kind] = box.checked;
-      if (view === "full" && selected && !kindShown(graph.getNodeAttribute(selected, "kind"))) selected = null;
-      commit(false);
-    });
-  });
   clearBtn.addEventListener("click", function () { clearSelection(true); });
   document.addEventListener("keydown", function (event) {
     if (event.key !== "Escape") return;
