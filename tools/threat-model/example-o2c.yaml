@@ -3,6 +3,7 @@
 # unverified: no legal source was checked. Not legal advice.
 tm_schema_version: 0.1.0-draft
 system:
+  disclaimer: "Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal advice. Not part of CoSAI SRF v1.0."
   id: sys.o2c-agentic
   name: Agentic Order to Cash (example)
   description: >-
@@ -598,6 +599,12 @@ threats:
     risk: {asset: Shipped goods and revenue, actor: External fraudster, failure_mode: Prompt-steered order creation from untrusted email text, impact: Goods shipped without payment}
     target_component_id: cmp.agent-intake
     failure_class: execution
+    catalog_threat_id: indirectpromptinjection
+    external_refs:
+      - {id: indirectpromptinjection, source: owasp_ai_exchange, url: 'https://owaspai.org/go/indirectpromptinjection/'}
+      - {id: 'LLM01:2025 Prompt Injection', source: owasp_llm_top10}
+      - {id: AML.T0051 LLM Prompt Injection, source: mitre_atlas}
+      - {id: '[LLMtop10:5:prompt manipulation]', source: biml_llm24}
     obligation_ids: [obl.order-policy, obl.sox-icfr]
     control_ids: [ctl.input-isolation, ctl.shipto-verify]
     accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
@@ -616,12 +623,14 @@ threats:
     risk: {asset: Credit and discount decisions, actor: None (model behavior), failure_mode: Model reinterprets L1 logic; its reasoning trace looks plausible, impact: Off-policy credit or discounts}
     target_component_id: cmp.reasoning-llm
     failure_class: model_behavior
+    catalog_threat_id: null
+    catalog_note: No entry in /data/threats.json matches this threat. The catalog's model-behavior entries, such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording and no attacker is involved, so the threat is left unmapped.
     obligation_ids: [obl.sox-icfr]
     stakeholder_ids: [stk.securities-regulator]
     control_ids: [ctl.discount-authority, ctl.refund-caps, ctl.credit-limits, ctl.decision-log, ctl.regression-tests]
-    accountable: {name: O2C app team lead (placeholder), persona_id: srf.role.application-developer, placeholder: true}
+    accountable: {name: Model vendor (placeholder), persona_id: srf.role.model-provider, placeholder: true}
     business_response_owner: {name: O2C process owner (placeholder), persona_id: srf.role.ai-system-governance, placeholder: true}
-    notes: The AI Model Provider shapes how rules are read but is not accountable for O2C outcomes. Contract terms (version pinning, change notice) are an open item.
+    notes: 'Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule /data/threats.json uses for model-behavior threats. The customer''s app team still owns the hard rules in the policy service and the regression tests that catch the change. Contract terms (version pinning, change notice) are an open item.'
   - id: thr.silent-fallback
     title: Gateway falls back to a smaller model under load and decisions change
     risk: {asset: Consistent O2C decisions, actor: None (load), failure_mode: Unapproved change to model settings, impact: 'Same inputs give different credit, pricing or refund outcomes'}
@@ -648,6 +657,12 @@ threats:
     risk: {asset: Contract pricing, actor: Customer, failure_mode: Persuasion through a well-argued request, impact: Revenue loss and misstated revenue}
     target_component_id: cmp.agent-pricing
     failure_class: execution
+    catalog_threat_id: directpromptinjection
+    external_refs:
+      - {id: directpromptinjection, source: owasp_ai_exchange, url: 'https://owaspai.org/go/directpromptinjection/'}
+      - {id: 'LLM01:2025 Prompt Injection', source: owasp_llm_top10}
+      - {id: AML.T0051 LLM Prompt Injection, source: mitre_atlas}
+      - {id: '[LLMtop10:5:prompt manipulation]', source: biml_llm24}
     obligation_ids: [obl.revenue-recognition]
     stakeholder_ids: [stk.securities-regulator]
     control_ids: [ctl.discount-authority]
@@ -677,6 +692,10 @@ threats:
     risk: {asset: Customer data, actor: None (context mix-up), failure_mode: Cross-customer context in one agent session, impact: Breach of confidentiality}
     target_component_id: cmp.agent-invoicing
     failure_class: execution
+    catalog_threat_id: dsgai11
+    external_refs:
+      - {id: 'LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)', source: owasp_llm_top10}
+      - {id: DSGAI11 Cross-Context & Multi-User Conversation Bleed, source: owasp_dsgai}
     obligation_ids: [obl.customer-confidentiality, obl.privacy]
     stakeholder_ids: [stk.customer-contacts, stk.privacy-authority]
     control_ids: [ctl.tenant-context, ctl.output-filter]
@@ -686,6 +705,9 @@ threats:
     risk: {asset: Customer master data, actor: Insider or compromised account, failure_mode: Unauthorized data change, impact: Refunds and credits paid to the wrong account}
     target_component_id: cmp.customer-master
     failure_class: data
+    catalog_threat_id: dsgai05
+    external_refs:
+      - {id: DSGAI05 Data Integrity & Validation Failures, source: owasp_dsgai}
     obligation_ids: [obl.order-policy]
     stakeholder_ids: [stk.customer-contacts]
     control_ids: [ctl.master-data-change]

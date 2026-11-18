@@ -1,6 +1,7 @@
 {
  "tm_schema_version": "0.1.0-draft",
  "system": {
+  "disclaimer": "Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal advice. Not part of CoSAI SRF v1.0.",
   "id": "sys.r2r-agentic",
   "name": "Agentic Record to Report (example)",
   "description": "A financial close and reporting process run by an orchestration agent and five sub-agents. The orchestrator runs on a reasoning LLM from an AI Model Provider. Hard rules (period lock, materiality thresholds, late-adjustment approval, segregation of duties) are enforced by a policy service outside the model. Journal anomaly detection is a separate component that is not on the reasoning-LLM path.",
@@ -1520,6 +1521,8 @@
    },
    "target_component_id": "cmp.reasoning-llm",
    "failure_class": "model_behavior",
+   "catalog_threat_id": null,
+   "catalog_note": "No entry in /data/threats.json matches this threat. The catalog's model-behavior entries, such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording and no attacker is involved, so the threat is left unmapped.",
    "obligation_ids": [
     "obl.close-policy",
     "obl.sox-icfr"
@@ -1530,8 +1533,8 @@
     "ctl.output-filter"
    ],
    "accountable": {
-    "name": "Model serving team (placeholder)",
-    "persona_id": "srf.role.ai-model-serving",
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
     "placeholder": true
    },
    "stakeholder_ids": [
@@ -1541,7 +1544,8 @@
     "name": "Financial close lead (placeholder)",
     "persona_id": "srf.role.ai-system-governance",
     "placeholder": true
-   }
+   },
+   "notes": "Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule /data/threats.json uses for model-behavior threats. The customer's app team still owns the hard rules in the policy service and the regression tests that catch the change."
   },
   {
    "id": "thr.silent-fallback",
@@ -1620,6 +1624,26 @@
    },
    "target_component_id": "cmp.agent-adjustments",
    "failure_class": "execution",
+   "catalog_threat_id": "directpromptinjection",
+   "external_refs": [
+    {
+     "source": "owasp_ai_exchange",
+     "id": "directpromptinjection",
+     "url": "https://owaspai.org/go/directpromptinjection/"
+    },
+    {
+     "source": "owasp_llm_top10",
+     "id": "LLM01:2025 Prompt Injection"
+    },
+    {
+     "source": "mitre_atlas",
+     "id": "AML.T0051 LLM Prompt Injection"
+    },
+    {
+     "source": "biml_llm24",
+     "id": "[LLMtop10:5:prompt manipulation]"
+    }
+   ],
    "obligation_ids": [
     "obl.close-policy",
     "obl.gaap"
@@ -1687,6 +1711,13 @@
    },
    "target_component_id": "cmp.general-ledger",
    "failure_class": "data",
+   "catalog_threat_id": "dsgai05",
+   "external_refs": [
+    {
+     "source": "owasp_dsgai",
+     "id": "DSGAI05 Data Integrity & Validation Failures"
+    }
+   ],
    "obligation_ids": [
     "obl.close-policy",
     "obl.gaap"

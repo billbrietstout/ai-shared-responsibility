@@ -13,9 +13,10 @@ Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's d
 | `example-h2r.yaml` / `example-h2r.json` | Agentic Hire to Retire (H2R) |
 | `example-r2r.yaml` / `example-r2r.json` | Agentic Record to Report (R2R, financial close) |
 | `example-case.yaml` / `example-case.json` | Agentic Case to Resolution (customer service) |
-| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the five; O2C is the default. No build step, no network calls |
-| `tests/test_cascade.js` | 65 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the five examples, the example picker and the UI (jsdom) |
-| `tests/test_schema_export.py` | 48 checks: schema, every example, export, rejection cases, and a wording check |
+| `example-case-saas.yaml` / `example-case-saas.json` | Case to Resolution on a managed AI service desk (AI-SaaS). Shows the L5 N/A customer case |
+| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the six; O2C is the default. No build step, no network calls |
+| `tests/test_cascade.js` | 73 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the six examples, catalog links, the example picker and the UI (jsdom) |
+| `tests/test_schema_export.py` | 55 checks: schema, every example, export, the export disclaimer, rejection cases, and a wording check |
 
 ## Decisions by Bill, Nov 16, 2026
 
@@ -42,6 +43,22 @@ Source: "Decisions by Bill, Nov 16, 2026" in `drafts/architecture-frameworks-srf
 `drafts/architecture-frameworks-srf.md` (decision 11) still records the separate graphs as approved. This file follows Bill's later decision to merge them. I did not edit that file.
 
 Bill's decision 8 (raise the v1.0 layer-name differences with the workstream: not yet) and decision 9 (recheck COBIT 7 after Nov 19) do not change the tool.
+
+## Decisions by Bill, Nov 17, 2026
+
+Bill answered Part 1 of the Nov 17 publication plan. Items 7 to 11 of that plan are not approved and were not done. The tool stays off `/tools/`, the sitemap and the navigation.
+
+| # | Item | What changed |
+|---|---|---|
+| 2 | Cite outside threat sources | Optional `catalog_threat_id` and `external_refs` on each threat. Filled only where a real match exists in `/data/threats.json`; `external_refs` copies that entry's IDs. See "Catalog links" |
+| 3 | Per-obligation provenance | Each obligation in the Threats tab shows "Unverified, needs counsel". `citation` stays null |
+| 4 | Disclaimer where readers look | `system.disclaimer` is the first field of every JSON and YAML export, the YAML export starts with it as a comment, and the Threats tab ends with it. The sentence matches the page header |
+| 5 | Accessibility | The graph SVG is a group, not an image, so its focusable nodes are no longer nested in an image (`nested-interactive`). Each node's accessible name starts with its visible text (`label-content-name-mismatch`). A List view shows every component by layer as text. The two text areas have labels |
+| 6 | Explain ROCA and the link words | A one-line glossary under the filters. Each link filter shows its plain reading; the ArchiMate term is in the tooltip |
+| Q1 | Who is accountable for the reasoning-LLM threat | The AI Model Provider persona (`srf.role.model-provider`) on the provider side, as in `/data/threats.json`. The Agent-PaaS examples name "Model vendor (placeholder)" and the AI-SaaS example names the SaaS vendor's model provider. In each, the accountable is also the owner of the reasoning LLM, so TM-G06 no longer fires for this threat |
+| Q5 | Is Agent-PaaS right for the examples | Kept, and an AI-SaaS example was added: Case to Resolution on a managed AI service desk. See "Example business processes" |
+| Q2 | ArchiMate 4 text | Not used. See "Relationship types" |
+| Part 2 | Evidence for L2 and L5 starting points | Listed in "Evidence for L2 and L5 starting points", and as help text on L2 and L5 components in the Component tab |
 
 ## Purpose
 
@@ -141,6 +158,8 @@ Approved by Bill (decision 2). The tool uses 9 of the 11 ArchiMate relationship 
 - The Open Group's specification pages require sign-in.
 - The publisher's sample PDFs of the v4 specification and Pocket Guide state that use with generative AI tools is not permitted without written permission, so I did not open them.
 
+**Nov 17, 2026.** Bill supplied a copy of the ArchiMate 4 specification. Its copyright notice does not permit using the publication in connection with generative AI tools without written permission from The Open Group. Checking the definitions with an AI assistant falls under that, so the copy was not used. No flag was cleared. Clearing them needs a person to compare the 9 definitions by hand, or written permission.
+
 Two secondary sources list all 11 ArchiMate 4 relationship types with short definitions: Linked.Archi's ArchiMate 4.0 guide, which cites specification chapter 5, and Archyno's "ArchiMate relationships" article. Their wording matches the ArchiMate 3.2 reference card for every type below, except that Linked.Archi reports a wider Assignment in v4. So the table uses the 3.2 reference-card wording, which is official, and flags every type as **not verified against the official ArchiMate 4 text**.
 
 | Type | Definition (ArchiMate 3.2 reference card wording) | In ArchiMate 4? | Graph | Plain name from the chat | Direction (`from` to `to`) |
@@ -225,7 +244,7 @@ In "with controls" mode, the discount authority and refund cap controls sit on t
 
 ## Example business processes
 
-The prototype includes five worked examples. Use the Example selector in the tool; Order to Cash stays the default. Each of the four added examples is modeled the same way as O2C: an orchestration agent and five sub-agents run on a reasoning LLM from an AI Model Provider; hard rules are enforced by a policy service outside the model; one separate AI component sits off the reasoning-LLM path. Every owner is a placeholder. Every obligation is unverified and is not legal advice. One vertical overlay is included in each example and is off by default.
+The prototype includes six worked examples. Use the Example selector in the tool; Order to Cash stays the default. Each of the four added examples is modeled the same way as O2C: an orchestration agent and five sub-agents run on a reasoning LLM from an AI Model Provider; hard rules are enforced by a policy service outside the model; one separate AI component sits off the reasoning-LLM path. Every owner is a placeholder. Every obligation is unverified and is not legal advice. One vertical overlay is included in each example and is off by default.
 
 | Example | Components | Relationships | Threats | Overlay (off by default) |
 |---|---|---|---|---|
@@ -234,6 +253,15 @@ The prototype includes five worked examples. Use the Example selector in the too
 | Hire to Retire (H2R) | 31 | 67 | 12 | Employment law |
 | Record to Report (R2R) | 30 | 65 | 12 | SOX-style financial reporting |
 | Case to Resolution | 31 | 68 | 12 | Consumer protection |
+| Case to Resolution, AI-SaaS | 31 | 68 | 12 | Consumer protection |
+
+**AI-SaaS example (Bill, Nov 17, 2026, Q5).** Case to Resolution fits AI-SaaS best: many contact centers buy a managed AI service desk rather than build agents. The example keeps the Agent-PaaS case's components, links and threats, and changes the operating model and the owners:
+
+- The SaaS vendor builds and runs the agents, the policy service, the model settings, the runtime and the gateway. Those owners are on the provider side.
+- The reasoning LLM and the fallback model come from the vendor's own AI Model Provider.
+- The customer keeps the L1 process, the hard-rule values it sets in the service, its own L2 data, and the business response.
+- Under AI-SaaS, SRF §3.2.1 shows the customer's L5 cell as N/A. The Component tab says so for both models, and TM-G17 reports it as info. The customer cannot test or pin the model; its levers are the hard rules, the L1 response and change-notice terms in the contract.
+- A reasoning-LLM failure reaches the same 21 components as in the Agent-PaaS version. Only the owners change, so the per-owner view names the vendor's teams.
 
 A failure at the L5 reasoning LLM, in the worst case:
 
@@ -409,10 +437,13 @@ With the banking overlay off, the Nov 16 state gives 30 findings (3 high, 16 med
 - **Cascade tab**: impact by layer, impact by owner, the path for each reached component, the components a control lowered, and the stakeholders reached. A drop-down in the header picks worst case or "with controls in place." A green border and a down arrow mark a lowered component.
 - **Snapshot selector**: picks a snapshot, or uses the As of date. The cascade and gap views follow it.
 - **Data flow tab**: the matrix, the moves and the paths described above.
-- **Threats tab**: the threat list and the full ROCA chain for the selected threat, with its stakeholders.
+- **Threats tab**: the threat list and the full ROCA chain for the selected threat, with its stakeholders. A Catalog row shows the matching `/data/threats.json` entry and its outside IDs, or says there is no match and why. Each obligation shows "Unverified, needs counsel". The tab ends with the disclaimer.
+- **List view**: a button above the graph swaps the graph for a text list of every component, grouped L1 at the top down to L5, with type, owner and cascade state. Selecting a name selects the component.
+- **Link filters and glossary**: each filter shows the plain reading from `REL_INFO.plain`; the ArchiMate term is in the tooltip. One line under the filters says "ROCA = Risk, Obligation, Control, Accountable."
 - **Gaps tab**: every finding, sorted by severity, with a link to the component, and the default multiplicity rules in force.
 - **Edit tab**: add a component or a relationship (with an "unclassified, needs review" option), delete a component, import JSON, and reset to the example.
-- **Export tab**: JSON or YAML of the whole model, with a download link.
+- **Export tab**: JSON or YAML of the whole model, with a download link. `system.disclaimer` comes first, and the YAML starts with the same sentence as a comment.
+- **Evidence help**: the Component tab lists the evidence to ask for on L2 and L5 components. See "Evidence for L2 and L5 starting points".
 - **Deep links**: `#select=cmp.x`, `#threat=thr.x`, `&tab=cascade`, `&mode=controls`, `&overlay=banking`, `&owners=1`, `&snapshot=snap.x`.
 
 Limits: YAML import is not supported (JSON only). Edits are not saved between sessions; export to keep them. The edit forms do not add versions; add them in JSON. The layout is a simple grid per layer, so a large model needs the type filters.
@@ -459,15 +490,55 @@ Choices that are mine, not the review's:
 
 ## Open questions for Bill
 
-1. Is the L3 app team, not the model vendor, accountable for the reasoning LLM threat?
-2. Can you get access to the official ArchiMate 4 text, so the 9 definitions can be checked and the "not verified in v4" flags removed?
+1. Settled Nov 17, 2026: the AI Model Provider on the provider side is accountable for the reasoning-LLM threat.
+2. Still open. Bill's copy of the ArchiMate 4 text restricts use with generative AI tools, so the flags stay until a person checks the 9 definitions or written permission is given.
 3. Is delegation enough as a flow that carries authority, or does it need its own scope and expiry?
 4. Should model settings be one component, as built, or attributes on the gateway's serving link?
-5. Is Agent-PaaS right for the examples?
+5. Settled Nov 17, 2026: keep Agent-PaaS and add one AI-SaaS example (Case to Resolution).
 6. Which banking obligations should be checked first: adverse action notices, sanctions screening, or model risk?
 7. Should versions add up by date, as built, or should each version be a full copy of the record?
 8. Should a soft parent-child link roll up only failures, as built?
 9. Should derived links stay out of the cascade unless a user asks for them, as built?
+
+## Catalog links
+
+A threat carries `catalog_threat_id` only where a real entry in `/data/threats.json` describes the same failure. `external_refs` copies that entry's IDs as published (OWASP AI Exchange, OWASP Top 10 for LLM Applications 2025, MITRE ATLAS, OWASP GenAI Data Security Risks 2026, BIML). No ID was added that the catalog does not already hold. A test checks that each match exists and that the IDs equal the catalog's.
+
+| Example threats | Catalog entry | Why it matches |
+|---|---|---|
+| `thr.spoofed-po` (O2C), `thr.spoofed-resume` (H2R) | `indirectpromptinjection` | Untrusted email or resume text steers the agent as if it were instructions |
+| `thr.discount-persuasion`, `thr.threshold-persuasion`, `thr.offer-persuasion`, `thr.materiality-persuasion`, `thr.refund-persuasion` | `directpromptinjection` | A user argues the agent past a rule. The AI Exchange describes direct prompt injection as social engineering of a generative AI |
+| `thr.data-exposure` (O2C, P2P, H2R, both Case examples) | `dsgai11` | Agent context crosses customers, suppliers or applicants |
+| `thr.master-data-poison` (all six) | `dsgai05` | A tampered record (bank or payout details, account mappings) passes with no integrity check |
+| `thr.llm-reinterprets` (all six) | none (`null`) | The catalog's model-behavior entries assume an attacker. Here the model misreads plain business wording. `catalog_note` says so |
+
+Left unmapped on purpose, because the catalog has no entry for the same failure: the spoofed invoice, journal and case threats (untrusted text treated as a valid claim, which is a validation failure more than an injection), authority creep, logic tampering, silent fallback, guardrail outage, the separate scoring components, and the overlay threats. Authority creep is close to OWASP LLM06 Excessive Agency, but the only catalog entry that cites LLM06 (`dsgai06`) is about data exchange between tools, so it was not used.
+
+## Evidence for L2 and L5 starting points
+
+Bill, Nov 17, 2026: these sources can support an L2 or L5 threat model. The layer, SRF A.7.2 and CoSAI Risk Map columns are inference, not SRF text. Risk Map control IDs are from `risk-map/yaml/controls.yaml` in the CoSAI secure-ai-tooling repository (commit 622605a).
+
+| Evidence source | Layer | SRF evidence it supports | CoSAI Risk Map controls it supports (inference) |
+|---|---|---|---|
+| Benchmarks and evaluations, including bias evaluations and red-team results | L5 (and L3 safety tests) | A.7.2 L5 "Red Team Reports". A.7.1 Assessment ("Tests, evaluations, audits"). Section 3.1.6 asks the AI Model Provider for model cards that detail benchmarks | `controlAdversarialTrainingAndTesting`, `controlRedTeaming` |
+| Model scanners, including Hugging Face Hub scan results (malware, pickle import and secrets scans) | L5 model artifacts; L4 when the scan runs in a model registry | A.7.2 L4 "Model Registry". A.7.1 Assessment | `controlModelAndDataIntegrityManagement`, `controlModelRegistryIntegrity`, `controlSecureByDefaultMLTooling` |
+| Unwanted-data checks on datasets (personal data, toxic content, copyrighted material, child sexual abuse material) | L2 | A.7.2 L2 "DPIAs" and "Dataset Cards" | `controlTrainingDataSanitization`, `controlTrainingDataManagement`, `controlModelPrivacyEnhancingTechnologies` |
+| Vendor data-scrubbing reports | L2 for the customer's own data; L5 for the provider's training data | A.7.2 L2 "Data Lineage". A.7.2 L5 and A.7.4 "Training Data Docs" | `controlTrainingDataSanitization`, `controlTrainingDataManagement` |
+| Model cards | L5 | A.7.2 L5 and A.7.4 "Model Cards" | `controlModelAndDataInventoryManagement`, `controlModelRegistryIntegrity` |
+| Dataset cards | L2 | A.7.2 L2 "Dataset Cards" | `controlModelAndDataInventoryManagement`, `controlTrainingDataManagement` |
+
+Hugging Face features, checked against the Hugging Face Hub documentation on Nov 17, 2026 (PT):
+
+- **Malware scanning** (`huggingface.co/docs/hub/security-malware`): every repository file under 2 GB is scanned at each commit.
+- **Pickle scanning** (`huggingface.co/docs/hub/security-pickle`): the Hub's scanner runs ClamAV and a pickle import scan, which lists the imports in each pickled file and flags suspicious ones. The page says the scan is not foolproof.
+- **Secrets scanning** (`huggingface.co/docs/hub/security-secrets`): TruffleHog runs on each push and emails the owner about verified secrets.
+- **Third-party scanners**: Protect AI's Guardian (`security-protectai`) and JFrog (`security-jfrog`) scan files and show results on the Hub.
+- **Model cards and dataset cards** (`model-cards`, `datasets-cards`): the README.md file in each model or dataset repository.
+
+How to use these at each start:
+
+- **L2 start**: for each data set, ask for its dataset card, its unwanted-data check results and, when a vendor cleaned it, the vendor's scrubbing report. A missing item is a candidate gap on that component.
+- **L5 start**: for each model, ask for its model card, its benchmark, evaluation and red-team results, and its scanner results. A scan result covers one file at one commit. Record the version it covers, and recheck when the version changes.
 
 ## SRF text versus inference
 
@@ -487,6 +558,8 @@ Taken from Bill's rules and site data, not from SRF v1.0 text:
 - "Agentic Platform and Framework Providers" follows the v1.0 heading. Site `personas.json` (v0.7) writes "&".
 - The 15 `srf_component` names come from site `layers.json` (v0.7) and the SRF figure, as recorded in `drafts/components-proposed.csv`. I did not check them against the figure image.
 - The Required test is WDW-1, WDW-2 and WDW-9 from `RULES.md`.
+- Model-behavior threats belong to the AI Model Provider on the provider side. This follows `/data/threats.json` (for example `evasion`) and Bill's Nov 17 answer to Q1. SRF v1.0 section 3.1.6 gives the AI Model Provider "Model security, safety, and performance validation."
+- The SRF v1.0 evidence lists used in "Evidence for L2 and L5 starting points": A.7.1 categories, A.7.2 evidence by layer, and A.7.4 vendor evidence.
 
 Inference (mine, or from the architecture frameworks review), except where Bill approved the item above:
 
@@ -500,6 +573,8 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 - the controls on links
 - the versioned-state design, the data flow view design, and the stakeholder fields
 - the example stakeholders and the candidate L4 examples
+- each `catalog_threat_id` match (see "Catalog links")
+- which layer, A.7.2 item and CoSAI Risk Map control each evidence source supports
 
 ## Unverified
 
@@ -507,6 +582,7 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 - The ArchiMate 4 definitions of all 9 relationship types. Two secondary sources list all 9 in ArchiMate 4; the official v4 text was not read.
 - Which relevant authorities apply to the example. Each is a candidate.
 - Every example owner is a placeholder.
+- Each catalog match is an editorial reading of the example threat against the catalog entry. Nobody outside this project has reviewed it.
 
 ## How to run the tests
 
@@ -517,4 +593,4 @@ NODE_PATH=/path/to/node_modules node tests/test_cascade.js
 python3 tests/test_schema_export.py   # needs PyYAML and jsonschema
 ```
 
-`test_cascade.js` (65 tests) writes `tests/out-export.json` and `tests/out-export.yaml`. Then `test_schema_export.py` (48 checks) checks that both validate and match, and that every example validates.
+`test_cascade.js` (73 tests) writes `tests/out-export.json` and `tests/out-export.yaml`. Then `test_schema_export.py` (55 checks) checks that both validate and match, and that every example validates.

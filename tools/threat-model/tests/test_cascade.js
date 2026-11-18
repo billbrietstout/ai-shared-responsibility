@@ -390,6 +390,74 @@ test("embedded P2P, H2R, R2R and Case examples equal their JSON files", () => {
   });
 });
 
+test("catalog_threat_id points at a real /data/threats.json entry, and external_refs copy its mappings", () => {
+  const cat = JSON.parse(fs.readFileSync(path.join(DIR, "..", "..", "data", "threats.json"), "utf8"));
+  const byId = {}; cat.threats.forEach((x) => { byId[x.id] = x; });
+  let mapped = 0;
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+    const m = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
+    m.threats.forEach((t) => {
+      if (!t.catalog_threat_id) return;
+      mapped++;
+      const x = byId[t.catalog_threat_id];
+      assert.ok(x, id + " " + t.id + ": " + t.catalog_threat_id + " is in the catalog");
+      const want = [];
+      if (x.ai_exchange) want.push({ source: "owasp_ai_exchange", id: x.id, url: x.ai_exchange });
+      ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai", "biml_llm24"].forEach((k) => { if (x.mappings[k]) want.push({ source: k, id: x.mappings[k] }); });
+      assert.deepStrictEqual(t.external_refs, want, id + " " + t.id);
+    });
+    const llm = m.threats.filter((t) => t.id === "thr.llm-reinterprets")[0];
+    assert.strictEqual(llm.catalog_threat_id, null, id + ": reasoning-LLM threat has no catalog match");
+    assert.ok(llm.catalog_note, id + ": the missing match is explained");
+  });
+  assert.ok(mapped >= 16, "mapped threats: " + mapped);
+});
+test("Q1: the reasoning-LLM threat is owned by the AI Model Provider (provider side) in every example", () => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+    const m = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
+    const t = m.threats.filter((x) => x.id === "thr.llm-reinterprets")[0];
+    assert.strictEqual(t.accountable.persona_id, "srf.role.model-provider", id);
+    const target = m.components.filter((c) => c.id === t.target_component_id)[0];
+    assert.strictEqual(target.layer, "L5");
+    assert.strictEqual(target.owner.persona_id, "srf.role.model-provider", id);
+    assert.strictEqual(target.owner.party, "provider", id);
+    assert.ok(!TM.gaps(m).some((g) => g.rule === "TM-G06" && g.refs.indexOf("thr.llm-reinterprets") >= 0), id + ": no accountable-versus-owner gap");
+  });
+});
+test("Q5: AI-SaaS example shows the L5 N/A customer case and cascades like the Agent-PaaS version", () => {
+  const saas = JSON.parse(fs.readFileSync(path.join(DIR, "example-case-saas.json"), "utf8"));
+  const agent = JSON.parse(fs.readFileSync(path.join(DIR, "example-case.json"), "utf8"));
+  assert.strictEqual(saas.system.operating_model, "AI-SaaS");
+  assert.strictEqual(TM.MATRIX.L5["AI-SaaS"], "N/A");
+  assert.deepStrictEqual(JSON.parse(w.document.getElementById("example-data-case-saas").textContent), saas, "embedded equals file");
+  const g = TM.gaps(saas).filter((x) => x.rule === "TM-G17" && x.severity === "info");
+  assert.ok(g.some((x) => x.refs.indexOf("cmp.reasoning-llm") >= 0), "L5 N/A is reported for the reasoning LLM");
+  assert.ok(!TM.gaps(saas).some((x) => x.rule === "TM-G17" && x.severity === "medium"), "no provider owner on a customer-owned layer");
+  // the vendor runs L3: every L3 owner is on the provider side
+  saas.components.filter((c) => c.layer === "L3").forEach((c) => assert.strictEqual(c.owner.party, "provider", c.id));
+  // the customer keeps L1 and its own L2 data
+  saas.components.filter((c) => c.layer === "L1").forEach((c) => assert.strictEqual(c.owner.party, "customer", c.id));
+  const a = TM.cascade(saas, "cmp.reasoning-llm"), b = TM.cascade(agent, "cmp.reasoning-llm");
+  assert.deepStrictEqual(plain(Object.keys(a.nodes).sort()), plain(Object.keys(b.nodes).sort()), "same blast radius; only owners change");
+  assert.strictEqual(st(a, "cmp.policy-service"), "not reached");
+  assert.strictEqual(st(a, "cmp.step-identity"), "not reached");
+  assert.ok(a.byOwner["SaaS vendor app team (placeholder)"], "per-owner view names the vendor");
+  w.TM_UI.load(saas);
+  w.TM_UI.selectComponent("cmp.reasoning-llm");
+  assert.ok(w.document.getElementById("panel").textContent.indexOf("N/A: the SRF matrix gives the customer no duty at this layer under AI-SaaS") >= 0);
+  assert.ok(w.document.getElementById("panel").textContent.indexOf("Model cards") >= 0, "L5 evidence help");
+  w.TM_UI.load(example);
+});
+test("exports and example files carry the disclaimer", () => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+    const m = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
+    assert.strictEqual(m.system.disclaimer, TM.DISCLAIMER, id);
+    assert.strictEqual(Object.keys(m.system)[0], "disclaimer", id + ": disclaimer is the first system field");
+  });
+  const h = w.document.querySelector("header .draft").textContent;
+  assert.strictEqual(h, TM.DISCLAIMER, "header sentence and export sentence match");
+});
+
 const EXAMPLE_SPEC = {
   p2p: {
     overlay: "public-sector", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
@@ -473,9 +541,10 @@ const EXAMPLE_SPEC = {
 function uiTests() {
 // ---------- UI ----------
 const $ = (id) => w.document.getElementById(id);
-test("example picker lists five examples, defaults to O2C, and loads the others", () => {
+test("example picker lists six examples, defaults to O2C, and loads the others", () => {
   const sel = w.document.getElementById("example-pick");
-  assert.strictEqual(sel.options.length, 5);
+  assert.strictEqual(sel.options.length, 6);
+  assert.ok(Array.prototype.some.call(sel.options, (o) => o.value === "case-saas"), "AI-SaaS example in the picker");
   assert.strictEqual(sel.value, "o2c");
   assert.strictEqual(w.document.getElementById("sys-name").textContent, example.system.name);
   sel.value = "p2p";
@@ -513,7 +582,52 @@ test("UI: selecting a threat shows the ROCA chain and its stakeholders", () => {
   assert.ok($("roca").textContent.indexOf("Not personas and not owners") >= 0);
   w.TM_UI.selectThreat("thr.llm-reinterprets");
   assert.ok($("roca").textContent.indexOf("A: Accountable") >= 0);
-  assert.ok($("roca").textContent.indexOf("unverified") >= 0);
+  assert.ok($("roca").textContent.indexOf("Unverified, needs counsel") >= 0, "per-obligation counsel label");
+  assert.ok($("roca").textContent.indexOf("Model vendor (placeholder)") >= 0 && $("roca").textContent.indexOf("AI Model Provider") >= 0, "Q1: AI Model Provider is accountable");
+  assert.ok($("roca").textContent.indexOf("No match in /data/threats.json") >= 0, "no catalog match is stated");
+  assert.strictEqual($("threats-disclaimer").textContent, TM.DISCLAIMER, "Threats tab footer disclaimer");
+  w.TM_UI.selectThreat("thr.master-data-poison");
+  assert.ok($("roca").textContent.indexOf("dsgai05") >= 0 && $("catalog-refs").textContent.indexOf("DSGAI05") >= 0);
+});
+test("UI: every obligation in the Threats tab carries the counsel label, and no citation is filled", () => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+    const m = JSON.parse(w.document.getElementById(id === "o2c" ? "example-data" : "example-data-" + id).textContent);
+    m.obligations.forEach((o) => { assert.strictEqual(o.verification.status, "unverified", id + " " + o.id); assert.ok(!o.citation, id + " " + o.id + " citation stays empty"); });
+  });
+  w.TM_UI.load(example);
+  w.TM_UI.selectThreat("thr.spoofed-po");
+  const pills = w.document.querySelectorAll("#roca .pill.counsel").length;
+  const obls = TM.active(example).threats.filter((t) => t.id === "thr.spoofed-po")[0].obligation_ids.length;
+  assert.strictEqual(pills, obls);
+});
+test("UI: list view shows every component as text, L1 at the top down to L5", () => {
+  w.TM_UI.load(example);
+  $("view-toggle").click();
+  assert.strictEqual($("view-toggle").getAttribute("aria-pressed"), "true");
+  const rows = w.document.querySelectorAll("#list-view button[data-lv]");
+  assert.strictEqual(rows.length, TM.active(example).components.length);
+  const heads = Array.prototype.map.call(w.document.querySelectorAll("#list-view h2"), (h) => h.textContent.slice(0, 2));
+  assert.deepStrictEqual(heads, ["L1", "L2", "L3", "L4", "L5"]);
+  w.document.querySelector('#list-view button[data-lv="cmp.reasoning-llm"]').click();
+  assert.strictEqual(w.TM_STATE.selected, "cmp.reasoning-llm");
+  $("view-toggle").click();
+  assert.ok(w.document.getElementById("graph-svg"), "back to the graph");
+});
+test("UI: graph accessibility: the SVG is a group, and each node's name starts with its visible text", () => {
+  w.TM_UI.load(example);
+  w.TM_UI.selectComponent("cmp.reasoning-llm");
+  const svg = w.document.getElementById("graph-svg");
+  assert.notStrictEqual(svg.getAttribute("role"), "img");
+  Array.prototype.forEach.call(w.document.querySelectorAll("#graph .node"), (g) => {
+    const vis = Array.prototype.map.call(g.querySelectorAll("text"), (t) => t.childNodes[0] ? t.childNodes[0].textContent : "").join(" ");
+    assert.ok(g.getAttribute("aria-label").indexOf(vis) === 0, g.getAttribute("data-id") + ": " + g.getAttribute("aria-label") + " / " + vis);
+  });
+});
+test("UI: link filters use the plain reading, with the ArchiMate term in the tooltip; ROCA glossary shown", () => {
+  const lab = w.document.querySelector('#rel-filters input[data-rel="realization"]').closest("label");
+  assert.ok(lab.textContent.indexOf(TM.REL_INFO.realization.plain) >= 0);
+  assert.strictEqual(lab.getAttribute("title"), "ArchiMate term: realization");
+  assert.ok($("glossary").textContent.indexOf("ROCA = Risk, Obligation, Control, Accountable") === 0);
 });
 test("UI: gap table lists every finding; overlay toggle changes the model", () => {
   w.document.querySelector('.tab[data-tab="gaps"]').click();
@@ -575,7 +689,7 @@ test("UI: export JSON and YAML", () => {
   assert.deepStrictEqual(JSON.parse($("export-text").value), example);
   $("exp-yaml").click();
   const y = $("export-text").value;
-  assert.ok(y.indexOf("tm_schema_version: 0.1.0-draft") === 0);
+  assert.ok(y.indexOf("# " + TM.DISCLAIMER + "\ntm_schema_version: 0.1.0-draft") === 0, "YAML export starts with the disclaimer");
   fs.writeFileSync(path.join(__dirname, "out-export.yaml"), y);
   fs.writeFileSync(path.join(__dirname, "out-export.json"), w.TM_EXPORT("json"));
 });

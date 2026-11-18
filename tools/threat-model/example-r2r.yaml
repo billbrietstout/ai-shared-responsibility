@@ -3,6 +3,8 @@
 # unverified: no legal source was checked. Not legal advice.
 tm_schema_version: 0.1.0-draft
 system:
+  disclaimer: Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal
+    advice. Not part of CoSAI SRF v1.0.
   id: sys.r2r-agentic
   name: Agentic Record to Report (example)
   description: A financial close and reporting process run by an orchestration agent and five sub-agents.
@@ -1100,7 +1102,7 @@ threats:
   control_ids:
   - ctl.input-isolation
   - ctl.period-lock
-  accountable: &id001
+  accountable:
     name: R2R app team lead (placeholder)
     persona_id: srf.role.application-developer
     placeholder: true
@@ -1140,6 +1142,10 @@ threats:
     impact: Entries are posted after the period is locked, without late-adjustment approval
   target_component_id: cmp.reasoning-llm
   failure_class: model_behavior
+  catalog_threat_id: null
+  catalog_note: No entry in /data/threats.json matches this threat. The catalog's model-behavior entries,
+    such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording
+    and no attacker is involved, so the threat is left unmapped.
   obligation_ids:
   - obl.close-policy
   - obl.sox-icfr
@@ -1148,15 +1154,18 @@ threats:
   - ctl.late-adjustment
   - ctl.output-filter
   accountable:
-    name: Model serving team (placeholder)
-    persona_id: srf.role.ai-model-serving
+    name: Model vendor (placeholder)
+    persona_id: srf.role.model-provider
     placeholder: true
   stakeholder_ids:
   - stk.securities-regulator
-  business_response_owner: &id002
+  business_response_owner:
     name: Financial close lead (placeholder)
     persona_id: srf.role.ai-system-governance
     placeholder: true
+  notes: 'Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule
+    /data/threats.json uses for model-behavior threats. The customer''s app team still owns the hard rules
+    in the policy service and the regression tests that catch the change.'
 - id: thr.silent-fallback
   title: Gateway falls back to a smaller model under load and reconciliation outcomes change
   risk:
@@ -1171,10 +1180,16 @@ threats:
   control_ids:
   - ctl.regression-tests
   - ctl.settings-approval
-  accountable: *id001
+  accountable:
+    name: R2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.securities-regulator
-  business_response_owner: *id002
+  business_response_owner:
+    name: Financial close lead (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.authority-creep
   title: Orchestrator chains steps so a reconciliation proposal is treated as an approved adjustment
   risk:
@@ -1191,7 +1206,10 @@ threats:
   - ctl.sod
   - ctl.late-adjustment
   - ctl.decision-log
-  accountable: *id001
+  accountable:
+    name: R2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.securities-regulator
   business_response_owner:
@@ -1208,12 +1226,26 @@ threats:
     impact: A material item is not adjusted or disclosed
   target_component_id: cmp.agent-adjustments
   failure_class: execution
+  catalog_threat_id: directpromptinjection
+  external_refs:
+  - source: owasp_ai_exchange
+    id: directpromptinjection
+    url: https://owaspai.org/go/directpromptinjection/
+  - source: owasp_llm_top10
+    id: LLM01:2025 Prompt Injection
+  - source: mitre_atlas
+    id: AML.T0051 LLM Prompt Injection
+  - source: biml_llm24
+    id: '[LLMtop10:5:prompt manipulation]'
   obligation_ids:
   - obl.close-policy
   - obl.gaap
   control_ids:
   - ctl.late-adjustment
-  accountable: *id001
+  accountable:
+    name: R2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.investors
   - stk.securities-regulator
@@ -1236,7 +1268,10 @@ threats:
   control_ids:
   - ctl.disclosure-review
   - ctl.output-filter
-  accountable: *id001
+  accountable:
+    name: R2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.investors
   - stk.securities-regulator
@@ -1253,6 +1288,10 @@ threats:
     impact: Group results are misstated
   target_component_id: cmp.general-ledger
   failure_class: data
+  catalog_threat_id: dsgai05
+  external_refs:
+  - source: owasp_dsgai
+    id: DSGAI05 Data Integrity & Validation Failures
   obligation_ids:
   - obl.close-policy
   - obl.gaap
@@ -1312,7 +1351,10 @@ threats:
     placeholder: true
   stakeholder_ids:
   - stk.securities-regulator
-  business_response_owner: *id002
+  business_response_owner:
+    name: Financial close lead (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.sox-late-adjust
   title: Adjustments agent posts a late entry after period lock with no documented approval
   risk:
@@ -1329,7 +1371,10 @@ threats:
   - ctl.period-lock
   - ctl.late-adjustment
   - ctl.sox-disclosure
-  accountable: *id001
+  accountable:
+    name: R2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   vertical: sox
   stakeholder_ids:
   - stk.investors
@@ -1356,7 +1401,10 @@ threats:
   - ctl.sox-cert-pack
   - ctl.sec-tie-out
   - ctl.disclosure-review
-  accountable: *id001
+  accountable:
+    name: R2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   vertical: sox
   stakeholder_ids:
   - stk.investors

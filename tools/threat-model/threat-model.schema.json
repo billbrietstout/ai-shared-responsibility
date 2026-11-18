@@ -169,6 +169,10 @@
       ],
       "additionalProperties": false,
       "properties": {
+        "disclaimer": {
+          "type": "string",
+          "description": "The prototype disclaimer. The tool writes it at the top of every JSON and YAML export."
+        },
         "id": {
           "type": "string"
         },
@@ -1072,6 +1076,49 @@
             "model_behavior",
             "control_loss"
           ]
+        },
+        "catalog_threat_id": {
+          "description": "The id of the matching entry in /data/threats.json, set only where a real match exists. null means the catalog was checked and has no match; say why in catalog_note.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-z0-9]+$"
+        },
+        "catalog_note": {
+          "description": "Why there is no catalog match, or how close the match is.",
+          "type": "string"
+        },
+        "external_refs": {
+          "description": "Outside threat IDs, copied from the matching /data/threats.json entry. source is a key of that file's sources object.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "source",
+              "id"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "source": {
+                "enum": [
+                  "owasp_ai_exchange",
+                  "owasp_llm_top10",
+                  "mitre_atlas",
+                  "owasp_dsgai",
+                  "biml_llm24"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
+          }
         },
         "vertical": {
           "$ref": "#/$defs/id_overlay"

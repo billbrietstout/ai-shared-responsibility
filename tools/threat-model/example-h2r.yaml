@@ -3,6 +3,8 @@
 # unverified: no legal source was checked. Not legal advice.
 tm_schema_version: 0.1.0-draft
 system:
+  disclaimer: Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal
+    advice. Not part of CoSAI SRF v1.0.
   id: sys.h2r-agentic
   name: Agentic Hire to Retire (example)
   description: A hire-to-retire process run by an orchestration agent and five sub-agents. The orchestrator
@@ -1105,19 +1107,30 @@ threats:
     impact: A candidate is advanced or rejected for reasons that are not job-related
   target_component_id: cmp.agent-screening
   failure_class: execution
+  catalog_threat_id: indirectpromptinjection
+  external_refs:
+  - source: owasp_ai_exchange
+    id: indirectpromptinjection
+    url: https://owaspai.org/go/indirectpromptinjection/
+  - source: owasp_llm_top10
+    id: LLM01:2025 Prompt Injection
+  - source: mitre_atlas
+    id: AML.T0051 LLM Prompt Injection
+  - source: biml_llm24
+    id: '[LLMtop10:5:prompt manipulation]'
   obligation_ids:
   - obl.hiring-policy
   - obl.privacy
   control_ids:
   - ctl.input-isolation
   - ctl.screen-review
-  accountable: &id002
+  accountable:
     name: H2R app team lead (placeholder)
     persona_id: srf.role.application-developer
     placeholder: true
   stakeholder_ids:
   - stk.applicants
-  business_response_owner: &id001
+  business_response_owner:
     name: Talent acquisition owner (placeholder)
     persona_id: srf.role.ai-system-governance
     placeholder: true
@@ -1150,6 +1163,10 @@ threats:
     impact: Candidates are ranked on factors that are not in the requisition
   target_component_id: cmp.reasoning-llm
   failure_class: model_behavior
+  catalog_threat_id: null
+  catalog_note: No entry in /data/threats.json matches this threat. The catalog's model-behavior entries,
+    such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording
+    and no attacker is involved, so the threat is left unmapped.
   obligation_ids:
   - obl.hiring-policy
   control_ids:
@@ -1157,12 +1174,18 @@ threats:
   - ctl.screen-review
   - ctl.output-filter
   accountable:
-    name: Model serving team (placeholder)
-    persona_id: srf.role.ai-model-serving
+    name: Model vendor (placeholder)
+    persona_id: srf.role.model-provider
     placeholder: true
   stakeholder_ids:
   - stk.applicants
-  business_response_owner: *id001
+  business_response_owner:
+    name: Talent acquisition owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+  notes: 'Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule
+    /data/threats.json uses for model-behavior threats. The customer''s app team still owns the hard rules
+    in the policy service and the regression tests that catch the change.'
 - id: thr.silent-fallback
   title: Gateway falls back to a smaller model under load and screening outcomes change
   risk:
@@ -1177,10 +1200,16 @@ threats:
   control_ids:
   - ctl.regression-tests
   - ctl.settings-approval
-  accountable: *id002
+  accountable:
+    name: H2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.applicants
-  business_response_owner: *id001
+  business_response_owner:
+    name: Talent acquisition owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.authority-creep
   title: Orchestrator chains steps so the screening score is treated as offer approval
   risk:
@@ -1196,7 +1225,10 @@ threats:
   - ctl.sod
   - ctl.offer-authority
   - ctl.decision-log
-  accountable: *id002
+  accountable:
+    name: H2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.applicants
   business_response_owner:
@@ -1212,11 +1244,25 @@ threats:
     impact: An offer is made outside the approved band
   target_component_id: cmp.agent-offer
   failure_class: execution
+  catalog_threat_id: directpromptinjection
+  external_refs:
+  - source: owasp_ai_exchange
+    id: directpromptinjection
+    url: https://owaspai.org/go/directpromptinjection/
+  - source: owasp_llm_top10
+    id: LLM01:2025 Prompt Injection
+  - source: mitre_atlas
+    id: AML.T0051 LLM Prompt Injection
+  - source: biml_llm24
+    id: '[LLMtop10:5:prompt manipulation]'
   obligation_ids:
   - obl.hiring-policy
   control_ids:
   - ctl.offer-authority
-  accountable: *id002
+  accountable:
+    name: H2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.applicants
   business_response_owner:
@@ -1232,17 +1278,29 @@ threats:
     impact: Personal data disclosed to another candidate
   target_component_id: cmp.agent-screening
   failure_class: execution
+  catalog_threat_id: dsgai11
+  external_refs:
+  - source: owasp_llm_top10
+    id: LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)
+  - source: owasp_dsgai
+    id: DSGAI11 Cross-Context & Multi-User Conversation Bleed
   obligation_ids:
   - obl.privacy
   - obl.employee-confidentiality
   control_ids:
   - ctl.tenant-context
   - ctl.output-filter
-  accountable: *id002
+  accountable:
+    name: H2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.applicants
   - stk.privacy-authority
-  business_response_owner: *id001
+  business_response_owner:
+    name: Talent acquisition owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.master-data-poison
   title: Employee bank details changed in master data to divert pay
   risk:
@@ -1252,6 +1310,10 @@ threats:
     impact: Wages diverted
   target_component_id: cmp.employee-master
   failure_class: data
+  catalog_threat_id: dsgai05
+  external_refs:
+  - source: owasp_dsgai
+    id: DSGAI05 Data Integrity & Validation Failures
   obligation_ids:
   - obl.hiring-policy
   - obl.privacy
@@ -1287,7 +1349,10 @@ threats:
   stakeholder_ids:
   - stk.applicants
   - stk.privacy-authority
-  business_response_owner: *id001
+  business_response_owner:
+    name: Talent acquisition owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.late-revoke
   title: Offboarding agent records a termination but does not revoke badge and system access in time
   risk:
@@ -1301,7 +1366,10 @@ threats:
   - obl.hiring-policy
   control_ids:
   - ctl.access-revocation
-  accountable: *id002
+  accountable:
+    name: H2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   stakeholder_ids:
   - stk.employees
   business_response_owner:
@@ -1322,12 +1390,18 @@ threats:
   control_ids:
   - ctl.ee-fairness
   - ctl.screen-review
-  accountable: *id002
+  accountable:
+    name: H2R app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
   vertical: employment
   stakeholder_ids:
   - stk.applicants
   - stk.eeo-authority
-  business_response_owner: *id001
+  business_response_owner:
+    name: Talent acquisition owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
 - id: thr.ee-no-notice
   title: Background-check component issues an adverse employment decision with no valid notice
   risk:
