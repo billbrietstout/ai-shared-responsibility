@@ -6,24 +6,40 @@
 <meta name="color-scheme" content="light dark" />
 <title>SRF layer-by-layer threat model (prototype)</title>
 <style>
-  :root { --ink:#0f172a; --muted:#64748b; --line:#cbd5e1; --bad:#b91c1c; }
+  :root { --ink:#0f172a; --muted:#64748b; --line:#cbd5e1; --bad:#b91c1c; --drawer-w:420px; --zoom:1; }
   * { box-sizing: border-box; }
-  body { margin:0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:#fff; }
-  header { padding:10px 16px; border-bottom:1px solid var(--line); background:#f8fafc; }
+  html, body { height:100%; }
+  body { margin:0; display:flex; flex-direction:column; min-height:100%; overflow:hidden; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:#fff; }
+  header { flex:0 0 auto; padding:10px 16px; border-bottom:1px solid var(--line); background:#f8fafc; }
   header h1 { font-size:18px; margin:0 0 2px; }
   .draft { color:#92400e; font-size:12px; }
   .bar { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:8px; font-size:13px; }
   .bar label { display:flex; gap:6px; align-items:center; }
-  main { display:grid; grid-template-columns: minmax(0,1.35fr) minmax(360px,1fr); gap:0; height: calc(100vh - 118px); }
-  #graph-wrap { overflow:auto; border-right:1px solid var(--line); }
-  #rel-filters { padding:6px 10px; font-size:12px; display:flex; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line); position:sticky; top:0; background:#fff; z-index:1; }
+  main { flex:1 1 auto; min-height:0; display:flex; align-items:stretch; }
+  #graph-wrap { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
+  #graph-scroll { flex:1 1 auto; min-height:0; min-width:0; overflow:auto; }
+  #graph-scroll.is-fit { overflow-x:hidden; }
+  #graph { width:calc(var(--zoom) * 100%); }
+  #graph-wrap.view-list #graph { width:100%; }
+  #graph svg { width:100%; height:auto; display:block; }
+  #rel-filters { padding:6px 10px; font-size:12px; display:flex; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line); background:#fff; }
   .rf { display:flex; gap:4px; align-items:center; }
   #glossary { padding:4px 10px 6px; font-size:12px; color:#334155; border-bottom:1px solid var(--line); margin:0; }
-  #view-bar { padding:6px 10px; display:flex; gap:8px; align-items:center; border-bottom:1px solid var(--line); font-size:12px; }
+  #view-bar { padding:6px 10px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; border-bottom:1px solid var(--line); font-size:12px; }
+  .zoom-group { display:flex; gap:4px; align-items:center; margin-left:auto; }
+  #zoom-label { min-width:3.2em; color:var(--muted); }
   #list-view table { margin:0; } #list-view h2 { font-size:14px; margin:10px 10px 2px; } #list-view .lv-wrap { padding:0 10px 10px; }
   .linkbtn { background:none; border:0; padding:0; color:#1d4ed8; text-decoration:underline; cursor:pointer; font:inherit; text-align:left; }
   .pill.counsel { background:#fee2e2; color:#7f1d1d; font-weight:600; }
-  #side { display:flex; flex-direction:column; min-height:0; }
+  #pane-handle { flex:0 0 8px; cursor:col-resize; background:#e2e8f0; border-left:1px solid var(--line); border-right:1px solid var(--line); touch-action:none; position:relative; }
+  #pane-handle::after { content:""; position:absolute; top:50%; left:2px; width:2px; height:28px; margin-top:-14px; border-radius:1px; background:#64748b; }
+  #pane-handle:hover, #pane-handle:focus { background:#cbd5e1; }
+  #pane-handle:focus-visible { outline:2px solid #2563eb; outline-offset:-2px; }
+  #side { flex:0 0 var(--drawer-w); width:var(--drawer-w); max-width:70%; display:flex; flex-direction:column; min-height:0; min-width:0; background:#fff; border-left:1px solid var(--line); overflow:hidden; transition:flex-basis .18s ease, transform .18s ease; }
+  main.drawer-closed #side { flex-basis:0; width:0; max-width:0; border-left:0; visibility:hidden; }
+  .drawer-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 10px; border-bottom:1px solid var(--line); }
+  #drawer-title { font-size:14px; }
+  .sheet-grip { display:none; }
   nav.tabs { display:flex; flex-wrap:wrap; border-bottom:1px solid var(--line); }
   .tab { border:0; background:none; padding:9px 12px; cursor:pointer; font:inherit; border-bottom:3px solid transparent; }
   .tab[aria-selected="true"] { border-bottom-color:#2563eb; font-weight:600; }
@@ -51,7 +67,28 @@
   .form { display:grid; gap:6px; max-width:420px; } .form label { display:grid; gap:2px; font-size:12px; }
   textarea { width:100%; font: 12px/1.35 ui-monospace, Menlo, monospace; }
   button { font:inherit; padding:4px 10px; cursor:pointer; } .danger { color:var(--bad); }
-  @media (max-width: 900px) { main { grid-template-columns: 1fr; height:auto; } #graph-wrap { max-height:60vh; } }
+  #drawer-scrim { display:none; position:fixed; inset:0; background:rgba(15,23,42,.45); border:0; padding:0; z-index:35; }
+  @media (max-width: 760px) {
+    body { overflow:auto; height:auto; min-height:100%; }
+    main { display:block; min-height:70vh; }
+    #graph-wrap { min-height:70vh; }
+    #graph-scroll { min-height:52vh; }
+    #pane-handle { display:none !important; }
+    #side, main.drawer-closed #side {
+      position:fixed; left:0; right:0; bottom:0; width:100% !important; max-width:100% !important; flex:none;
+      height:min(50vh, 440px); z-index:40; border-left:0; border-top:1px solid var(--line);
+      border-radius:14px 14px 0 0; box-shadow:0 -8px 28px rgba(15,23,42,.22);
+      visibility:visible; transform:translateY(0);
+    }
+    #view-hint { display:none; }
+    header, .bar, #overlay-controls { width:100%; max-width:100%; }
+    .bar label { width:100%; max-width:100%; min-width:0; }
+    .bar select, .bar input[type="date"] { flex:1 1 auto; width:0; min-width:0; max-width:100%; }
+    main.drawer-closed #side { visibility:hidden; transform:translateY(110%); pointer-events:none; }
+    main.drawer-open #drawer-scrim { display:block; }
+    .drawer-bar { position:relative; padding-top:16px; }
+    .sheet-grip { display:block; position:absolute; top:6px; left:50%; width:36px; height:4px; margin:0; border-radius:2px; background:#cbd5e1; transform:translateX(-50%); }
+  }
 </style>
     <!-- llm:meta -->
     <meta name="llm:type" content="tool" />
@@ -74,14 +111,32 @@
     <button id="clear">Clear selection</button>
   </div>
 </header>
-<main>
+<main id="workspace" class="drawer-closed">
   <section id="graph-wrap" aria-label="Component graph" data-llm="component-graph">
-    <div id="view-bar"><button type="button" id="view-toggle" aria-pressed="false">List view</button> <span class="muted" id="view-hint">The list shows every component by layer, with its owner, as text.</span></div>
+    <div id="view-bar">
+      <button type="button" id="view-toggle" aria-pressed="false">List view</button>
+      <span class="muted" id="view-hint">The list shows every component by layer, with its owner, as text.</span>
+      <span class="zoom-group" role="group" aria-label="Diagram zoom">
+        <button type="button" id="zoom-out">Zoom out</button>
+        <button type="button" id="zoom-in">Zoom in</button>
+        <button type="button" id="zoom-fit" aria-label="Fit the diagram to the pane">Fit</button>
+        <span id="zoom-label">100%</span>
+      </span>
+      <button type="button" id="open-drawer" aria-controls="side" aria-expanded="false">Details</button>
+    </div>
     <div id="rel-filters"></div>
     <p id="glossary">ROCA = Risk, Obligation, Control, Accountable. Each link filter uses a plain reading; point at it to see the ArchiMate term.</p>
-    <div id="graph"></div>
+    <div id="graph-scroll">
+      <div id="graph"></div>
+    </div>
   </section>
-  <section id="side" data-llm="side">
+  <div id="pane-handle" role="separator" aria-orientation="vertical" aria-label="Resize details pane" tabindex="0" aria-valuemin="280" aria-valuemax="720" aria-valuenow="420" hidden></div>
+  <section id="side" data-llm="side" aria-label="Details" aria-hidden="true">
+    <div class="drawer-bar">
+      <span class="sheet-grip" aria-hidden="true"></span>
+      <strong id="drawer-title">Details</strong>
+      <button type="button" id="drawer-close" aria-controls="side">Close</button>
+    </div>
     <nav class="tabs" role="tablist">
       <button class="tab" data-tab="details" role="tab">Component</button>
       <button class="tab" data-tab="cascade" role="tab">Cascade</button>
@@ -94,6 +149,7 @@
     <div id="panel" role="tabpanel"></div>
   </section>
 </main>
+<button type="button" id="drawer-scrim" tabindex="-1" aria-label="Close details" hidden></button>
 <script type="application/json" id="example-data">
 {
  "tm_schema_version": "0.1.0-draft",
@@ -12278,9 +12334,124 @@ if (typeof module !== "undefined") module.exports = TM;
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function compName(id) { var c = TM.byId(STATE.model.components)[id]; return c ? c.name : id; }
 
+  var drawerOpen = false, pendingFocus = null, returnFocusId = null, returnFocusKind = "details";
+  var zoom = 1, currentCols = 0, lastPaneW = 0, reflowQueued = false;
+  var ZOOMS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
+  var WIDTH_KEY = "srf.threat-model.drawer-width";
+  function isNarrow() {
+    try { return !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches); }
+    catch (e) { return false; }
+  }
+  function readDrawerWidth() {
+    try {
+      var n = parseInt(localStorage.getItem(WIDTH_KEY), 10);
+      if (n >= 280 && n <= 720) return n;
+    } catch (e) {}
+    return 420;
+  }
+  var drawerWidth = readDrawerWidth();
+  function maxDrawer() {
+    var main = $("workspace"), w = main ? main.clientWidth : 0;
+    if (!w) return 720;
+    return Math.max(280, Math.min(720, Math.round(w * 0.7)));
+  }
+  function setDrawerWidth(px) {
+    var max = maxDrawer(), n = Math.round(px);
+    if (n < 280) n = 280;
+    if (n > max) n = max;
+    drawerWidth = n;
+    doc.documentElement.style.setProperty("--drawer-w", n + "px");
+    var handle = $("pane-handle");
+    if (handle) {
+      handle.setAttribute("aria-valuenow", String(n));
+      handle.setAttribute("aria-valuemax", String(max));
+    }
+    try { localStorage.setItem(WIDTH_KEY, String(n)); } catch (err) {}
+    queueReflow();
+  }
+  function applyZoom() {
+    var sc = $("graph-scroll");
+    if (sc) {
+      sc.style.setProperty("--zoom", String(zoom));
+      sc.classList.toggle("is-fit", zoom === 1);
+    }
+    var lab = $("zoom-label");
+    if (lab) lab.textContent = Math.round(zoom * 100) + "%";
+    var list = STATE.view === "list";
+    var zi = $("zoom-in"), zo = $("zoom-out"), zf = $("zoom-fit");
+    if (zo) zo.disabled = list || zoom <= ZOOMS[0];
+    if (zi) zi.disabled = list || zoom >= ZOOMS[ZOOMS.length - 1];
+    if (zf) zf.disabled = list;
+  }
+  function stepZoom(dir) {
+    var i, best = 0;
+    for (i = 0; i < ZOOMS.length; i++) if (Math.abs(ZOOMS[i] - zoom) < Math.abs(ZOOMS[best] - zoom)) best = i;
+    var n = best + dir;
+    if (n < 0) n = 0;
+    if (n >= ZOOMS.length) n = ZOOMS.length - 1;
+    zoom = ZOOMS[n];
+    applyZoom();
+  }
+  function applyChrome() {
+    var main = $("workspace");
+    if (main) {
+      main.classList.toggle("drawer-open", drawerOpen);
+      main.classList.toggle("drawer-closed", !drawerOpen);
+    }
+    var side = $("side");
+    if (side) side.setAttribute("aria-hidden", drawerOpen ? "false" : "true");
+    var narrow = isNarrow();
+    var handle = $("pane-handle");
+    if (handle) handle.hidden = !drawerOpen || narrow;
+    var opener = $("open-drawer");
+    if (opener) {
+      opener.hidden = drawerOpen;
+      opener.setAttribute("aria-expanded", drawerOpen ? "true" : "false");
+    }
+    var scrim = $("drawer-scrim");
+    if (scrim) scrim.hidden = !(drawerOpen && narrow);
+    var graphWrap = $("graph-wrap");
+    if (graphWrap) graphWrap.classList.toggle("view-list", STATE.view === "list");
+    applyZoom();
+  }
+  function focusReturnTarget() {
+    var el = null;
+    if (returnFocusKind === "node" && returnFocusId) {
+      if (STATE.view === "list") el = doc.querySelector('#list-view button[data-lv="' + returnFocusId + '"]');
+      if (!el) el = doc.querySelector('#graph .node[data-id="' + returnFocusId + '"]');
+    }
+    if (!el) el = $("open-drawer");
+    if (el && el.focus) el.focus();
+  }
+  function settleFocus() {
+    if (pendingFocus === "drawer") {
+      pendingFocus = null;
+      var btn = $("drawer-close");
+      if (btn) btn.focus();
+    } else if (pendingFocus === "return") {
+      pendingFocus = null;
+      focusReturnTarget();
+    }
+  }
+  function closeDrawer() {
+    if (!drawerOpen) return;
+    drawerOpen = false;
+    pendingFocus = "return";
+    render();
+  }
+  function openDetails() {
+    returnFocusKind = "details";
+    if (!drawerOpen) pendingFocus = "drawer";
+    drawerOpen = true;
+    render();
+  }
   function load(model) {
     STATE.model = clone(model);
     STATE.selected = null; STATE.selectedThreat = null;
+    drawerOpen = false;
+    pendingFocus = null;
+    returnFocusId = null;
+    returnFocusKind = "details";
     syncHeader(); render();
   }
   function syncHeader() {
@@ -12296,20 +12467,59 @@ if (typeof module !== "undefined") module.exports = TM;
 
   /* ---------- graph ---------- */
   var NW = 150, NH = 46, GX = 14, PERROW = 6, LABELW = 150, BAND_PAD = 18, ROWH = NH + 22;
+  function paneWidth() {
+    var el = $("graph-scroll") || $("graph-wrap");
+    return el ? el.clientWidth : 0;
+  }
+  function maxInLayer(m) {
+    var maxN = 1;
+    TM.LAYERS.forEach(function (L) {
+      var n = 0;
+      m.components.forEach(function (c) { if (c.layer === L.id) n++; });
+      if (n > maxN) maxN = n;
+    });
+    return maxN;
+  }
+  function columnCount(maxInLayer, paneW) {
+    var cap = Math.max(1, maxInLayer || 1);
+    if (!paneW || paneW < 80) return Math.min(PERROW, cap);
+    var fit = Math.floor((paneW - (LABELW + 20)) / (NW + GX));
+    if (fit < 1) fit = 1;
+    if (fit > cap) fit = cap;
+    return fit;
+  }
   function layout(m) {
+    var cols = columnCount(maxInLayer(m), paneWidth());
+    currentCols = cols;
+    lastPaneW = paneWidth();
     var pos = {}, y = 10, bands = [];
     TM.LAYERS.forEach(function (L) {
       var cs = m.components.filter(function (c) { return c.layer === L.id; });
-      var rows = Math.max(1, Math.ceil(cs.length / PERROW));
+      var rows = Math.max(1, Math.ceil(cs.length / cols));
       var h = rows * ROWH + BAND_PAD;
       bands.push({ id: L.id, name: L.name, y: y, h: h });
       cs.forEach(function (c, i) {
-        var r = Math.floor(i / PERROW), k = i % PERROW;
+        var r = Math.floor(i / cols), k = i % cols;
         pos[c.id] = { x: LABELW + 10 + k * (NW + GX), y: y + BAND_PAD / 2 + 8 + r * ROWH };
       });
       y += h + 6;
     });
-    return { pos: pos, bands: bands, width: LABELW + 20 + PERROW * (NW + GX), height: y + 4 };
+    return { pos: pos, bands: bands, cols: cols, width: LABELW + 20 + cols * (NW + GX), height: y + 4 };
+  }
+  function queueReflow() {
+    if (reflowQueued) return;
+    reflowQueued = true;
+    var run = function () {
+      reflowQueued = false;
+      if (!STATE.model || STATE.view === "list") return;
+      var w = paneWidth();
+      if (lastPaneW && Math.abs(w - lastPaneW) < 8) return;
+      var cols = columnCount(maxInLayer(TM.active(STATE.model)), w);
+      if (cols !== currentCols) renderGraph();
+      else lastPaneW = w;
+    };
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+    else run();
   }
   function wrap(text, n) {
     var words = String(text).match(/\S+/g) || [], lines = [], cur = "";
@@ -12319,10 +12529,12 @@ if (typeof module !== "undefined") module.exports = TM;
     return lines;
   }
   function renderGraph() {
+    var graphWrap = $("graph-wrap");
+    if (graphWrap) graphWrap.classList.toggle("view-list", STATE.view === "list");
     var m = TM.active(STATE.model), L = layout(m), svg = [];
     var cas = currentCascade(), onPath = {};
     if (cas) cas.reached.forEach(function (n) { if (n.via) onPath[n.via.edge + "|" + n.via.from] = true; });
-    svg.push('<svg xmlns="http://www.w3.org/2000/svg" id="graph-svg" width="' + L.width + '" height="' + L.height + '" role="group" aria-label="Component graph by SRF layer">');
+    svg.push('<svg xmlns="http://www.w3.org/2000/svg" id="graph-svg" viewBox="0 0 ' + L.width + ' ' + L.height + '" preserveAspectRatio="xMinYMin meet" role="group" aria-label="Component graph by SRF layer">');
     svg.push("<defs>");
     Object.keys(REL_STYLE).forEach(function (t) {
       svg.push('<marker id="arr-' + t + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="' + REL_STYLE[t].color + '"/></marker>');
@@ -12422,8 +12634,27 @@ if (typeof module !== "undefined") module.exports = TM;
     if (STATE.selected) return TM.cascade(STATE.model, STATE.selected, { mode: STATE.mode });
     return null;
   }
-  function selectComponent(id) { STATE.selected = id; STATE.selectedThreat = null; if (STATE.tab !== "cascade") STATE.tab = "details"; render(); }
-  function selectThreat(id) { STATE.selectedThreat = id; var t = TM.byId(STATE.model.threats)[id]; STATE.selected = t ? t.target_component_id : null; STATE.tab = "threats"; render(); }
+  function selectComponent(id) {
+    STATE.selected = id; STATE.selectedThreat = null;
+    if (STATE.tab !== "cascade") STATE.tab = "details";
+    returnFocusId = id;
+    returnFocusKind = "node";
+    if (!drawerOpen) pendingFocus = "drawer";
+    drawerOpen = true;
+    render();
+  }
+  function selectThreat(id) {
+    STATE.selectedThreat = id;
+    var t = TM.byId(STATE.model.threats)[id];
+    STATE.selected = t ? t.target_component_id : null;
+    STATE.tab = "threats";
+    if (!drawerOpen) {
+      if (STATE.selected) { returnFocusId = STATE.selected; returnFocusKind = "node"; }
+      pendingFocus = "drawer";
+      drawerOpen = true;
+    }
+    render();
+  }
 
   /* ---------- panels ---------- */
   function ctlRow(c, extra) {
@@ -12654,12 +12885,14 @@ if (typeof module !== "undefined") module.exports = TM;
   window.TM_EXPORT = doExport;
 
   function render() {
+    applyChrome();
     renderGraph();
     var tabs = { details: detailsHTML, cascade: cascadeHTML, threats: threatsHTML, dataflow: dataflowHTML, gaps: gapsHTML, edit: editHTML, "export": exportHTML };
     Array.prototype.forEach.call(doc.querySelectorAll(".tab"), function (b) { b.setAttribute("aria-selected", b.getAttribute("data-tab") === STATE.tab ? "true" : "false"); });
     $("panel").innerHTML = tabs[STATE.tab]();
     $("gap-count").textContent = String(TM.gaps(STATE.model).filter(function (g) { return g.severity === "high" || g.severity === "medium"; }).length);
     wirePanel();
+    settleFocus();
   }
   function wirePanel() {
     Array.prototype.forEach.call($("panel").querySelectorAll("[data-thr]"), function (a) { a.addEventListener("click", function (e) { e.preventDefault(); selectThreat(a.getAttribute("data-thr")); }); });
@@ -12778,8 +13011,55 @@ if (typeof module !== "undefined") module.exports = TM;
       $("view-toggle").setAttribute("aria-pressed", STATE.view === "list" ? "true" : "false");
       $("view-toggle").textContent = STATE.view === "list" ? "Graph view" : "List view";
       $("rel-filters").hidden = STATE.view === "list";
+      $("glossary").hidden = STATE.view === "list";
       renderGraph();
+      applyZoom();
     });
+    $("zoom-out").addEventListener("click", function () { stepZoom(-1); });
+    $("zoom-in").addEventListener("click", function () { stepZoom(1); });
+    $("zoom-fit").addEventListener("click", function () {
+      zoom = 1;
+      applyZoom();
+      var sc = $("graph-scroll");
+      if (sc) sc.scrollTo(0, 0);
+    });
+    $("open-drawer").addEventListener("click", openDetails);
+    $("drawer-close").addEventListener("click", closeDrawer);
+    var scrim = $("drawer-scrim");
+    if (scrim) scrim.addEventListener("click", closeDrawer);
+    doc.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && drawerOpen) { e.preventDefault(); closeDrawer(); }
+    });
+    var handle = $("pane-handle");
+    handle.addEventListener("pointerdown", function (e) {
+      if (e.button !== undefined && e.button !== 0) return;
+      e.preventDefault();
+      if (handle.setPointerCapture) handle.setPointerCapture(e.pointerId);
+      var startX = e.clientX, startW = drawerWidth;
+      function move(ev) { setDrawerWidth(startW + (startX - ev.clientX)); }
+      function up() {
+        handle.removeEventListener("pointermove", move);
+        handle.removeEventListener("pointerup", up);
+        handle.removeEventListener("pointercancel", up);
+      }
+      handle.addEventListener("pointermove", move);
+      handle.addEventListener("pointerup", up);
+      handle.addEventListener("pointercancel", up);
+    });
+    handle.addEventListener("keydown", function (e) {
+      var step = e.shiftKey ? 48 : 16;
+      if (e.key === "ArrowLeft") { e.preventDefault(); setDrawerWidth(drawerWidth + step); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); setDrawerWidth(drawerWidth - step); }
+      else if (e.key === "Home") { e.preventDefault(); setDrawerWidth(maxDrawer()); }
+      else if (e.key === "End") { e.preventDefault(); setDrawerWidth(280); }
+    });
+    if (typeof ResizeObserver === "function") new ResizeObserver(function () { queueReflow(); }).observe($("graph-scroll"));
+    if (window.matchMedia) {
+      var mq = window.matchMedia("(max-width: 760px)");
+      var onMq = function () { applyChrome(); queueReflow(); };
+      if (mq.addEventListener) mq.addEventListener("change", onMq);
+    }
+    doc.documentElement.style.setProperty("--drawer-w", drawerWidth + "px");
     $("owner-ov").addEventListener("change", function () { STATE.ownerOverlay = $("owner-ov").checked; renderGraph(); });
     $("clear").addEventListener("click", function () { STATE.selected = null; STATE.selectedThreat = null; render(); });
     // Optional deep link: #example=p2p or #select=cmp.x or #threat=thr.x, plus &tab=cascade&mode=controls&overlay=banking
@@ -12795,10 +13075,14 @@ if (typeof module !== "undefined") module.exports = TM;
     }
     if (hp.owners === "1") { STATE.ownerOverlay = true; $("owner-ov").checked = true; }
     if (hp.threat) selectThreat(hp.threat); else if (hp.select) selectComponent(hp.select);
-    if (hp.tab) { STATE.tab = hp.tab; render(); }
+    if (hp.tab) {
+      STATE.tab = hp.tab;
+      if (!drawerOpen) { pendingFocus = "drawer"; drawerOpen = true; returnFocusKind = "details"; }
+      render();
+    }
     syncHeader();
   }
-  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE };
+  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE, columnCount: columnCount };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();
 
