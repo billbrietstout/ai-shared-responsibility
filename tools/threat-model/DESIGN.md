@@ -1,6 +1,6 @@
 # SRF layer-by-layer threat model tool: design
 
-Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's decisions and again to add four more example processes. Later the same day, Bill asked that this prototype be committed under `tools/threat-model/` in the site repo. It is not listed on `tools/index.html` or in the site navigation, and it is not part of CoSAI SRF v1.0. Bill approved the items marked **Approved by Bill** below. No item is still "proposed, pending Bill"; the open questions are listed at the end. Example owners are placeholders. Every obligation is unverified and is not legal advice.
+Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's decisions and again to add four more example processes. Later the same day, Bill asked that this prototype be committed under `tools/threat-model/` in the site repo. It is listed on `tools/index.html`, in `sitemap.xml`, and in `llms.txt`. It is not in the site header, and it is not part of CoSAI SRF v1.0. Bill approved the items marked **Approved by Bill** below. No item is still "proposed, pending Bill"; the open questions are listed at the end. Example owners are placeholders. Every obligation is unverified and is not legal advice.
 
 ## Files
 
@@ -451,7 +451,7 @@ Limits: YAML import is not supported (JSON only). Edits are not saved between se
 
 ## Fit with the site
 
-Bill decided to keep this a separate tool (decision i). The prototype now lives at `tools/threat-model/` so the page can load at `/tools/threat-model/`. It is not listed on `tools/index.html` or in the site navigation. The points below describe possible links only. The Decision Record and the other site tools were not changed.
+Bill decided to keep this a separate tool (decision i). The prototype now lives at `tools/threat-model/` so the page can load at `/tools/threat-model/`. It is listed on the Tools page. It is not in the site header. The page follows the system light or dark color scheme. The points below describe possible links only. The Decision Record and the other site tools were not changed.
 
 - **"Who does what" view.** That view is catalog-level: for an operating model and a persona, it shows which catalog controls are Required. This tool is instance-level: one system, its components and its owners. They meet at two points:
   - A control here can carry `catalog_control_id`, so its status could come from the view's data rather than from local obligation links.
