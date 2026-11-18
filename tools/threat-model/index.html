@@ -24047,6 +24047,9 @@ if (typeof module !== "undefined") module.exports = TM;
     pendingFocus = null;
     returnFocusId = null;
     returnFocusKind = "details";
+    // Catalog loads (picker, reset, import) drop the Start from focus layer unless
+    // the Example picker handler re-applies it right after load.
+    seedFocusLayer = null;
     syncHeader(); render();
   }
   function syncHeader() {
@@ -24633,6 +24636,9 @@ if (typeof module !== "undefined") module.exports = TM;
   }
 
   var startLayer = null;
+  // Layer the last Start from seed focused. Used so picking an Example after L2/L5
+  // scrolls to that layer instead of leaving the tall L1 band filling the pane.
+  var seedFocusLayer = null;
   function setSource(text) { var el = $("model-source"); if (el) el.textContent = text; }
   function closeStart() {
     startLayer = null;
@@ -24641,6 +24647,25 @@ if (typeof module !== "undefined") module.exports = TM;
     var panel = $("start-panel");
     if (panel) { panel.hidden = true; panel.innerHTML = ""; }
     Array.prototype.forEach.call(doc.querySelectorAll('input[name="start-from"]'), function (r) { r.checked = false; });
+  }
+  function firstComponentAtLayer(model, layer) {
+    if (!model || !layer) return null;
+    var hit = null;
+    (model.components || []).forEach(function (c) {
+      if (!hit && c.layer === layer) hit = c.id;
+    });
+    return hit;
+  }
+  function revealComponent(id) {
+    if (!id || STATE.view === "list") return;
+    var node = doc.querySelector('#graph .node[data-id="' + id + '"]');
+    var sc = $("graph-scroll");
+    if (!node || !sc) return;
+    var nr = node.getBoundingClientRect();
+    var sr = sc.getBoundingClientRect();
+    var next = sc.scrollTop + (nr.top - sr.top) - Math.max(12, (sr.height - nr.height) / 3);
+    if (next < 0) next = 0;
+    sc.scrollTop = next;
   }
   function startPanelHTML(layer) {
     var g = TM.STARTS[layer];
@@ -24717,6 +24742,7 @@ if (typeof module !== "undefined") module.exports = TM;
     STATE.exampleId = null;
     clearStartHash();
     load(model);
+    seedFocusLayer = layer;
     var seedId = "cmp.l1-step-1";
     if (layer === "L2") seedId = model.components.some(function (c) { return c.id === "cmp.policy-kb"; }) ? "cmp.policy-kb" : "cmp.l2-data";
     if (layer === "L5") seedId = model.components.some(function (c) { return c.id === "cmp.base-weights"; }) ? "cmp.base-weights" : "cmp.l5-vendor";
@@ -24727,6 +24753,7 @@ if (typeof module !== "undefined") module.exports = TM;
     pendingFocus = null;
     setSource("Showing a " + TM.STARTS[layer].label + " start. The example picker still loads a worked example.");
     render();
+    revealComponent(seedId);
     return model;
   }
   function openStart(layer) {
@@ -24772,11 +24799,23 @@ if (typeof module !== "undefined") module.exports = TM;
     $("example-pick").addEventListener("change", function () {
       var id = $("example-pick").value;
       if (!id) return;
+      var keepLayer = seedFocusLayer;
       STATE.exampleId = id;
       closeStart();
       clearStartHash();
       load(EXAMPLE());
       setSource("Showing the example in the picker.");
+      if (keepLayer && keepLayer !== "L1") {
+        var focusId = firstComponentAtLayer(STATE.model, keepLayer);
+        if (focusId) {
+          STATE.selected = focusId;
+          STATE.tab = "cascade";
+          drawerOpen = false;
+          render();
+          revealComponent(focusId);
+        }
+      }
+      seedFocusLayer = null;
     });
     Array.prototype.forEach.call(doc.querySelectorAll('input[name="start-from"]'), function (r) {
       r.addEventListener("change", function () { if (r.checked) openStart(r.value); });
@@ -24874,7 +24913,7 @@ if (typeof module !== "undefined") module.exports = TM;
     }
     syncHeader();
   }
-  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE, columnCount: columnCount, applySeed: applySeed, openStart: openStart, closeStart: closeStart };
+  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE, columnCount: columnCount, applySeed: applySeed, openStart: openStart, closeStart: closeStart, firstComponentAtLayer: firstComponentAtLayer, revealComponent: revealComponent };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();
 
