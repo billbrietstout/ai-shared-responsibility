@@ -1198,6 +1198,19 @@ test("UI: after an L2 start seed, the Example picker loads a catalog example", (
   assert.ok(w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]'));
 });
 
+test("UI: after an L2 start, picking an Example keeps focus on an L2 component", () => {
+  w.TM_UI.applySeed("L2", { worked: true });
+  $("example-pick").value = "o2c";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.strictEqual($("sys-name").textContent, example.system.name);
+  const focus = w.TM_UI.state.selected;
+  assert.ok(focus, "an L2 component stays selected");
+  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
+  assert.ok(comp, focus);
+  assert.strictEqual(comp.layer, "L2", "focus stays on AI Information, not the L1 band");
+  assert.strictEqual(focus, w.TM_UI.firstComponentAtLayer(w.TM_UI.state.model, "L2"));
+});
+
 }
 function finish() { console.log("\n" + pass + " passed, " + fail + " failed"); process.exit(fail ? 1 : 0); }
 if (w.document.readyState === "loading") w.document.addEventListener("DOMContentLoaded", () => { uiTests(); finish(); });
