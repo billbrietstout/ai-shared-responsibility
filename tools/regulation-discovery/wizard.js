@@ -861,16 +861,11 @@
   function cloneState(s) { return JSON.parse(JSON.stringify(s)); }
 
   // ─── 7. PDF export ───────────────────────────────────────────────────────
+  // Keeps every character the PDF font can print and turns the rest into
+  // plain ASCII (see /shared/pdf-text.js), so nothing prints as "?".
   function pdfSafe(str) {
-    return String(str == null ? '' : str)
-      .replace(/≤/g, '<=')
-      .replace(/≥/g, '>=')
-      .replace(/–/g, '-')
-      .replace(/[‘’]/g, "'")
-      .replace(/[“”]/g, '"')
-      .replace(/…/g, '...')
-      // eslint-disable-next-line no-control-regex
-      .replace(/[^\x00-\x7F]/g, '?');
+    if (window.CoSAIPdfText) return window.CoSAIPdfText.safe(str);
+    return String(str == null ? '' : str);
   }
 
   function generatePDF() {
