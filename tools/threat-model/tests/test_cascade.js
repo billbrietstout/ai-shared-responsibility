@@ -1219,11 +1219,13 @@ test("UI: choosing L2 then an Example (without seeding) keeps focus on L2", () =
   $("example-pick").value = "o2c";
   $("example-pick").dispatchEvent(new w.Event("change"));
   assert.ok(!$("graph-wrap").classList.contains("starting"), "Example closes the Start panel");
+  assert.ok(!$("start-from").open, "Example collapses Start from details");
   assert.strictEqual($("sys-name").textContent, example.system.name);
   const focus = w.TM_UI.state.selected;
   const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
   assert.ok(comp, focus);
   assert.strictEqual(comp.layer, "L2", "L2 radio alone is enough to keep Example focus off L1");
+  assert.ok(l2.checked, "L2 radio stays selected so layer selection remains");
   assert.ok(/focused on L2/.test($("model-source").textContent), $("model-source").textContent);
 });
 
@@ -1238,6 +1240,24 @@ test("UI: choosing L5 then an Example (without seeding) keeps focus on L5", () =
   assert.ok(comp, focus);
   assert.strictEqual(comp.layer, "L5", "L5 radio alone keeps Example focus on the model band");
   assert.strictEqual(focus, w.TM_UI.firstComponentAtLayer(w.TM_UI.state.model, "L5"));
+  assert.ok(l5.checked, "L5 radio stays selected so layer selection remains");
+});
+
+test("UI: a later Example pick still uses the kept Start from layer radio", () => {
+  const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
+  l2.checked = true;
+  l2.dispatchEvent(new w.Event("change"));
+  $("example-pick").value = "o2c";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.ok(l2.checked);
+  $("example-pick").value = "p2p";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  const focus = w.TM_UI.state.selected;
+  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
+  assert.ok(comp, focus);
+  assert.strictEqual(comp.layer, "L2", "second Example pick still lands on L2");
+  assert.ok(l2.checked, "L2 radio remains after the second Example");
+  assert.ok(/Procure to Pay/.test($("sys-name").textContent), $("sys-name").textContent);
 });
 
 test("UI: cancelling Start from clears the Example focus layer", () => {
@@ -1246,6 +1266,7 @@ test("UI: cancelling Start from clears the Example focus layer", () => {
   l2.dispatchEvent(new w.Event("change"));
   $("start-cancel").click();
   assert.ok(!$("graph-wrap").classList.contains("starting"));
+  assert.ok(!l2.checked, "cancel clears the L2 radio");
   $("example-pick").value = "p2p";
   $("example-pick").dispatchEvent(new w.Event("change"));
   assert.strictEqual(w.TM_UI.state.selected, null, "cancel abandons L2 focus for the next Example pick");

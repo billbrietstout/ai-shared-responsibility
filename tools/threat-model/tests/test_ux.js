@@ -142,11 +142,18 @@ function run() {
     const stroke = node && node.querySelector("rect") && node.querySelector("rect").getAttribute("stroke-width");
     finding(j, layer.toLowerCase() + "_node_selected", "hard", !!node && Number(stroke) >= 3, "Focused " + layer + " component is drawn selected on the graph");
     finding(j, layer.toLowerCase() + "_source_names_layer", "soft", new RegExp("focused on " + layer).test(text($("model-source"))), "Source line says the Example is focused on " + layer);
+    finding(j, layer.toLowerCase() + "_radio_remains", "hard", !!radio.checked && !$("start-from").open, layer + " radio stays selected and Start from stays collapsed", "Keep the Start from layer radio after Example so layer selection remains");
   }
 
   journey("example_after_start_radio", (j) => {
     assertExampleKeepsLayer(j, "L2", "o2c");
-    assertExampleKeepsLayer(j, "L5", "p2p");
+    // Second Example while L2 radio still checked must keep L2 focus.
+    $("example-pick").value = "p2p";
+    $("example-pick").dispatchEvent(new w.Event("change"));
+    const focus2 = w.TM_UI.state.selected;
+    const focused2 = focus2 && w.TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus2)[0];
+    finding(j, "second_example_keeps_l2", "hard", !!(focused2 && focused2.layer === "L2"), "A later Example pick still uses the kept L2 radio");
+    assertExampleKeepsLayer(j, "L5", "o2c");
   });
 
   journey("start_from_l5_dropdowns", (j) => {
