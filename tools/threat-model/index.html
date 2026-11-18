@@ -37,8 +37,10 @@
   #graph-wrap { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
   #graph-scroll { flex:1 1 auto; min-height:0; min-width:0; overflow:auto; background:var(--bg); }
   #graph-scroll.is-fit { overflow-x:hidden; }
-  #graph { width:calc(var(--zoom) * 100%); }
-  #graph-wrap.view-list #graph { width:100%; }
+  /* Zoom multiplies native diagram width. Cap at the pane so wide models shrink;
+     never grow a short model past 1:1 box size at Fit (zoom 1). */
+  #graph { width:calc(var(--zoom) * var(--diagram-w, 100%)); max-width:calc(var(--zoom) * 100%); }
+  #graph-wrap.view-list #graph { width:100%; max-width:100%; }
   #graph svg { width:100%; height:auto; display:block; }
   #rel-filters { padding:6px 10px; font-size:12px; display:flex; flex-wrap:wrap; gap:10px; border-bottom:1px solid var(--line); background:var(--bg); }
   .rf { display:flex; gap:4px; align-items:center; }
@@ -24118,6 +24120,8 @@ if (typeof module !== "undefined") module.exports = TM;
     var graphWrap = $("graph-wrap");
     if (graphWrap) graphWrap.classList.toggle("view-list", STATE.view === "list");
     var m = TM.active(STATE.model), L = layout(m), svg = [];
+    var graphEl = $("graph");
+    if (graphEl) graphEl.style.setProperty("--diagram-w", L.width + "px");
     var cas = currentCascade(), onPath = {};
     if (cas) cas.reached.forEach(function (n) { if (n.via) onPath[n.via.edge + "|" + n.via.from] = true; });
     svg.push('<svg xmlns="http://www.w3.org/2000/svg" id="graph-svg" viewBox="0 0 ' + L.width + ' ' + L.height + '" preserveAspectRatio="xMinYMin meet" role="group" aria-label="Component graph by SRF layer">');

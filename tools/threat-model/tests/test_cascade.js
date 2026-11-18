@@ -975,6 +975,8 @@ test("UI: diagram fits by viewBox, and details open, close, and return focus", (
   assert.strictEqual(w.TM_UI.columnCount(11, 1280), 6);
   assert.strictEqual(w.TM_UI.columnCount(11, 900), 4);
   assert.strictEqual(w.TM_UI.columnCount(11, 390), 1);
+  const vbWide = svg.getAttribute("viewBox").split(/\s+/);
+  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), vbWide[2] + "px");
   const node = w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]');
   node.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
   assert.ok(main.classList.contains("drawer-open"));
@@ -995,6 +997,19 @@ test("UI: diagram fits by viewBox, and details open, close, and return focus", (
   assert.strictEqual(w.document.activeElement, $("drawer-close"));
   $("drawer-close").click();
   assert.strictEqual(w.document.activeElement, $("open-drawer"));
+});
+
+test("UI: a short L5 start keeps native diagram width instead of stretching to the pane", () => {
+  w.TM_UI.applySeed("L5", { worked: true });
+  const svg = $("graph-svg");
+  const parts = svg.getAttribute("viewBox").split(/\s+/);
+  const diagramW = Number(parts[2]);
+  assert.ok(diagramW > 0 && diagramW < 900, "L5 seed viewBox stays narrow, got " + diagramW);
+  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), diagramW + "px");
+  assert.ok(w.document.querySelectorAll("#graph .node").length < 15);
+  w.TM_UI.load(example);
+  const wide = Number($("graph-svg").getAttribute("viewBox").split(/\s+/)[2]);
+  assert.ok(wide > diagramW, "the full example is wider than the L5 seed");
 });
 
 test("a placeholder owner is not shown or exported as verified", () => {
