@@ -620,7 +620,7 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 
 ## Start from
 
-A reader can start a model at L1 (the process it carries out today), L2 (AI Information), or L5 (AI Model Provider). The choice sits above the example picker. L3 and L4 are not starting points. A note between the L2 and L5 choices says there is no Start from for those layers, that established threat models already cover the application and the platform, and points to the OWASP Top 10 for LLM Applications, the OWASP AI Exchange, MITRE ATLAS, and the CoSAI Risk Map.
+A reader can start a model at L1 (the process it carries out today), L2 (AI Information), or L5 (AI Model Provider). The choice sits above the example picker. L3 and L4 are not starting points. A note between the L2 and L5 choices says there is no Start from for those layers, that established threat models already cover the application and the platform, and points to the OWASP Top 10 for LLM Applications, the OWASP AI Exchange, MITRE ATLAS, and the CoSAI Risk Map. After an L2 or L5 seed, picking an Example loads that catalog model and keeps focus on the first component at the same layer, so the tall L1 band does not hide the layer the reader just started from.
 
 Each start shows entry questions, the catalog threats named for that layer, candidate CoSAI Risk Map controls, and the cascade rules. The answers build components and links in the existing model. The cascade function is unchanged. L2 entry fields use fixed dropdown choices (data set, owner, reader, writer, classification) so a reader picks from the worked examples instead of typing free text.
 
