@@ -187,5 +187,52 @@ check("ten control-ownership gaps, all thr.data-exposure",
       and len({ex for ex, _, _ in gap_rows}) == 10,
       str(gap_rows))
 
+design = open(os.path.join(D, "DESIGN.md"), encoding="utf8").read()
+schema_text = open(os.path.join(D, "threat-model.schema.json"), encoding="utf8").read()
+check("schema names ArchiMate 4 relationship types", "ArchiMate 4 relationship types" in schema_text)
+check("schema no longer says ArchiMate 3.2 relationship types", "ArchiMate 3.2 relationship" not in schema_text)
+check("the unverified v4 mark is gone from the schema and DESIGN.md",
+      "not verified in v4" not in schema_text and "not verified in v4" not in design)
+check("DESIGN.md records Bill's composition wording",
+      "an element combines one or more other concepts, where the existence of those concepts depends on that of the element" in design.lower())
+check("DESIGN.md cites Bill's November 18 sheet and his two groups",
+      "2026-11-18-archimate4-check-sheet-bill-filled.md" in design
+      and "Dependency relationship" in design and "Other relationship" in design)
+check("association and specialization stay out of the schema enum",
+      '"association"' not in schema_text and '"specialization"' not in schema_text)
+check("derivation stays unchecked in DESIGN.md", "Whether v4 still allows derived relationships" in design)
+
+ALLOWED = {"proposed", "placeholder"}
+def status_problems(obj, where, out):
+    if isinstance(obj, dict):
+        for key in ("record_status", "catalog_match_status"):
+            if key in obj and obj[key] not in ALLOWED:
+                out.append("%s %s=%s" % (where, key, obj[key]))
+        if obj.get("review_status") == "approved":
+            out.append(where + " review_status approved")
+        ver = obj.get("verification") or {}
+        if ver and ver.get("status") != "unverified":
+            out.append(where + " verification " + str(ver.get("status")))
+        for k, v in obj.items():
+            status_problems(v, where + "." + k, out)
+    elif isinstance(obj, list):
+        for i, v in enumerate(obj):
+            status_problems(v, where + "[%d]" % i, out)
+
+for name in ("out-seed-L1.json", "out-seed-L2.json", "out-seed-L5.json", "out-seed-L2-custom.json"):
+    path = os.path.join(T, name)
+    if not os.path.exists(path):
+        check(name + " exists (run test_cascade.js first)", False)
+        continue
+    doc = json.load(open(path))
+    e = errors(doc)
+    check(name + " validates", not e, "; ".join(e[:6]))
+    problems = []
+    status_problems(doc, name, problems)
+    check(name + " statuses are Proposed or Placeholder, and obligations stay unverified", not problems, "; ".join(problems[:6]))
+    missing = [t["id"] for t in doc["threats"] if t.get("catalog_threat_id") and t["catalog_threat_id"] not in by_cat]
+    linked = [t["id"] for t in doc["threats"] if t.get("control_ids")]
+    check(name + " threat ids exist and no threat-to-control link was added", not missing and not linked, str(missing or linked))
+
 print("\n%d failed" % fails)
 sys.exit(1 if fails else 0)

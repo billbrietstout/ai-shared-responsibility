@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark" />
+<meta name="description" content="Prototype for one AI system across the five SRF layers. Start from the process, the data, or the AI Model Provider and see how a failure spreads. Separate from the threat model prompt pack. Every owner is a placeholder. Not part of CoSAI SRF v1.0.">
 <title>SRF layer-by-layer threat model (prototype)</title>
+<link rel="stylesheet" href="/shared/styles.css">
 <style>
   :root {
     color-scheme: light;
@@ -16,8 +18,10 @@
   }
   * { box-sizing: border-box; }
   html, body { height:100%; }
-  body { margin:0; display:flex; flex-direction:column; min-height:100%; overflow:hidden; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
-  header { flex:0 0 auto; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--bg-soft); }
+  body { margin:0; display:flex; flex-direction:column; min-height:100%; overflow:hidden; font: 14px/1.45 var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
+  site-nav, site-footer { flex:0 0 auto; }
+  site-footer .footer { padding:8px 16px; }
+  header.tool-head { flex:0 0 auto; padding:10px 16px; border-bottom:1px solid var(--line); background:var(--bg-soft); }
   header h1 { font-size:18px; margin:0 0 2px; }
   .draft { color:var(--draft); font-size:12px; }
   .bar { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:8px; font-size:13px; }
@@ -123,6 +127,28 @@
     main.drawer-open #drawer-scrim { display:block; }
     .drawer-bar { position:relative; padding-top:16px; }
     .sheet-grip { display:block; position:absolute; top:6px; left:50%; width:36px; height:4px; margin:0; border-radius:2px; background:var(--muted); transform:translateX(-50%); }
+    site-footer .footer { padding:12px 16px 24px; }
+  }
+  #model-source { margin:2px 0 0; }
+  #start-from { border:1px solid var(--line); border-radius:6px; margin:8px 0 0; padding:8px 10px; max-width:100%; }
+  #start-from summary { font-weight:700; cursor:pointer; min-height:32px; }
+  .start-choices { display:flex; flex-wrap:wrap; gap:4px 16px; }
+  .start-choices label { display:flex; gap:6px; align-items:center; min-height:32px; max-width:100%; }
+  #start-l34 { margin:6px 0 0; max-width:78ch; }
+  #start-panel { padding:12px 14px 20px; }
+  #start-panel h2 { font-size:16px; margin:14px 0 6px; }
+  #start-panel h3 { font-size:14px; margin:12px 0 4px; }
+  .start-actions { display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
+  .start-form { display:grid; gap:8px; }
+  .start-form label { display:grid; gap:2px; font-size:13px; max-width:640px; }
+  .start-form input[type="text"], .start-form select, .start-form textarea { width:100%; max-width:640px; min-height:32px; }
+  #graph-wrap.starting #view-bar,
+  #graph-wrap.starting #rel-filters,
+  #graph-wrap.starting #glossary,
+  #graph-wrap.starting #graph-scroll { display:none; }
+  #graph-wrap.starting #start-panel { display:block; flex:1 1 auto; min-height:0; overflow:auto; }
+  @media (max-width: 760px) {
+    #start-from, .start-choices, #start-l34 { width:100%; }
   }
 </style>
     <!-- llm:meta -->
@@ -132,9 +158,22 @@
     <!-- /llm:meta -->
   </head>
 <body>
-<header data-llm="summary">
+<a class="skip-link" href="#workspace">Skip to content</a>
+<script type="module" src="/shared/components.js"></script>
+<site-nav current="tools"></site-nav>
+<header class="tool-head" data-llm="summary">
   <h1>SRF layer-by-layer threat model <span class="muted" style="font-weight:400">(<span id="sys-name"></span>)</span></h1>
   <div class="draft"><strong>Prototype.</strong> Every owner is a placeholder. Every obligation is unverified. This is not legal advice. Not part of CoSAI SRF v1.0.</div>
+  <p id="model-source" class="small muted"></p>
+  <details id="start-from" open>
+    <summary>Start from</summary>
+    <div class="start-choices" role="radiogroup" aria-label="Start from">
+      <label><input type="radio" name="start-from" value="L1"> L1 process (what it does today)</label>
+      <label><input type="radio" name="start-from" value="L2"> L2 AI Information (data)</label>
+      <label><input type="radio" name="start-from" value="L5"> L5 AI Model Provider (model)</label>
+    </div>
+    <p id="start-l34" class="small">Established threat models already cover the application layer (L3) and the platform layer (L4). For those layers, use the <a href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications</a>, the <a href="https://owaspai.org/">OWASP AI Exchange</a>, <a href="https://atlas.mitre.org/">MITRE ATLAS</a>, and the <a href="https://github.com/cosai-oasis/secure-ai-tooling/tree/main/risk-map">CoSAI Risk Map</a>.    </p>
+  </details>
   <div class="bar">
     <label>Example <select id="example-pick"></select></label>
     <label>Operating model <select id="om"></select></label>
@@ -160,7 +199,8 @@
       <button type="button" id="open-drawer" aria-controls="side" aria-expanded="false">Details</button>
     </div>
     <div id="rel-filters"></div>
-    <p id="glossary">ROCA = Risk, Obligation, Control, Accountable. Each filter in the row above uses a plain reading. Rest the pointer on a filter to see the ArchiMate term.</p>
+    <p id="glossary">ROCA = Risk, Obligation, Control, Accountable. Each filter in the row above uses a plain reading. Rest the pointer on a filter to see the ArchiMate term. Bill checked these nine relationship names against ArchiMate 4 by hand on November 18, 2026.</p>
+    <div id="start-panel" hidden></div>
     <div id="graph-scroll">
       <div id="graph"></div>
     </div>
@@ -22537,11 +22577,12 @@ var TM = (function () {
     "srf.role.ai-model-serving": { name: "AI Model Serving", layers: ["L4"] },
     "srf.role.model-provider": { name: "AI Model Provider", layers: ["L5"] }
   };
-  // 9 of the 11 ArchiMate 3.2 relationship types. "plain" is the plain-language reading shown in the tool.
+  // 9 ArchiMate 4 relationship types. Bill checked the definitions by hand on November 18, 2026.
+  // "plain" is the plain-language reading shown in the tool.
   var REL_INFO = {
     // One component graph (Bill, Nov 16, 2026: merge the parent-child and dependency graphs). "kind" only groups the
     // types for display and for the parent-child checks; every component link is in the same cascade.
-    composition: { graph: "component", kind: "parent-child", plain: "is made of (parent of)" },
+    composition: { graph: "component", kind: "parent-child", plain: "is made of (part cannot exist alone)" },
     aggregation: { graph: "component", kind: "parent-child", plain: "groups a shared part (parent of)" },
     assignment: { graph: "component", kind: "dependency", plain: "executes (runtime or performer)" },
     realization: { graph: "component", kind: "dependency", plain: "runs the logic of (executes-logic-of)" },
@@ -23101,6 +23142,37 @@ var TM = (function () {
     if (unv.length) add("TM-G13", "info", unv.length + " of " + m.obligations.length + " obligations are unverified, so no control can be Required yet.", unv.map(function (o) { return o.id; }));
     var ph = m.components.filter(function (c) { return c.owner && c.owner.placeholder; });
     if (ph.length) add("TM-G15", "info", ph.length + " component owners are placeholders.", ph.map(function (c) { return c.id; }));
+    /* A provider version with no customer approval. This is a gap check, not a change to the cascade. */
+    var gapDate = (m.system && m.system.as_of) || "";
+    (model.components || []).forEach(function (raw) {
+      if (!raw || raw.layer !== "L5" || !(raw.versions || []).length) return;
+      var open = raw.versions.filter(function (v) {
+        if (v.customer_approved !== false) return false;
+        if (v.from && v.from > gapDate) return false;
+        if (v.until && v.until <= gapDate) return false;
+        return true;
+      });
+      if (!open.length) return;
+      var serves = (model.relationships || []).some(function (r) { return r.type === "serving" && r.from === raw.id; });
+      if (!serves) return;
+      var seen = {}, queue = [raw.id], hitsL1 = false, guard = 0;
+      while (queue.length && guard++ < 1000) {
+        var u = queue.shift();
+        if (seen[u]) continue;
+        seen[u] = true;
+        (model.relationships || []).forEach(function (r) {
+          if (r.from !== u) return;
+          if (r.type === "serving" || r.type === "flow" || r.type === "assignment") queue.push(r.to);
+          if (r.type === "realization") {
+            var dest = null;
+            (model.components || []).forEach(function (c) { if (c.id === r.to) dest = c; });
+            if (dest && dest.layer === "L1") hitsL1 = true;
+          }
+        });
+      }
+      if (!hitsL1) return;
+      add("TM-G28", "medium", raw.name + " version " + open.map(function (v) { return v.version; }).join(", ") + " has no customer approval. A serving link leaves this model, and a component downstream runs L1 logic.", [raw.id]);
+    });
     var order = { high: 0, medium: 1, low: 2, info: 3 };
     out.sort(function (a, b) { return order[a.severity] - order[b.severity] || (a.rule < b.rule ? -1 : a.rule > b.rule ? 1 : 0); });
     return out;
@@ -23138,13 +23210,672 @@ var TM = (function () {
     }).join("\n");
   }
 
+  /* Starting points. Answers seed components and links. The cascade rules are unchanged. */
+  var COSAI_CONTROL_SOURCE = "CoSAI Risk Map controls.yaml, commit 622605a, github.com/cosai-oasis/secure-ai-tooling. Not in this site's control data.";
+  var COSAI_RISK_SOURCE = "CoSAI Risk Map, commit 622605a, github.com/cosai-oasis/secure-ai-tooling. Not in /data/threats.json, so it is not stored as a catalog threat id.";
+  var CATALOG_SIDE = {
+    datapoison: { "AI-SaaS": ["data-provider", "provider"], "AI-PaaS": ["data-provider", "customer"], "Agent-PaaS": ["data-provider", "customer"], "IaaS": ["data-provider", "customer"] },
+    dsgai21: { "AI-SaaS": ["data-provider", "provider"], "AI-PaaS": ["data-provider", "customer"], "Agent-PaaS": ["data-provider", "customer"], "IaaS": ["data-provider", "customer"] },
+    dsgai05: { "AI-SaaS": ["data-provider", "provider"], "AI-PaaS": ["data-provider", "customer"], "Agent-PaaS": ["data-provider", "customer"], "IaaS": ["data-provider", "customer"] },
+    supplymodelpoison: { "AI-SaaS": ["model-provider", "provider"], "AI-PaaS": ["model-provider", "provider"], "Agent-PaaS": ["model-provider", "provider"], "IaaS": ["model-provider", "customer"] }
+  };
+  var CATALOG_REFS = {
+    datapoison: [
+      { source: "owasp_ai_exchange", id: "datapoison", url: "https://owaspai.org/go/datapoison/" },
+      { source: "owasp_llm_top10", id: "LLM04:2025 Data and Model Poisoning" },
+      { source: "mitre_atlas", id: "AML.T0020 Poison Training Data" },
+      { source: "owasp_dsgai", id: "DSGAI04 Data, Model & Artifact Poisoning" },
+      { source: "biml_llm24", id: "[LLMtop10:6:poison in the data]" }
+    ],
+    dsgai21: [
+      { source: "owasp_llm_top10", id: "LLM04:2025 Data and Model Poisoning (runtime retrieval corpus)" },
+      { source: "owasp_dsgai", id: "DSGAI21 Disinformation & Integrity Attacks via Data Poisoning" }
+    ],
+    dsgai05: [
+      { source: "owasp_dsgai", id: "DSGAI05 Data Integrity & Validation Failures" }
+    ],
+    supplymodelpoison: [
+      { source: "owasp_ai_exchange", id: "supplymodelpoison", url: "https://owaspai.org/go/supplymodelpoison/" },
+      { source: "owasp_llm_top10", id: "LLM03:2025 Supply Chain" },
+      { source: "mitre_atlas", id: "AML.T0010.003 ML Supply Chain Compromise: Model" },
+      { source: "owasp_dsgai", id: "DSGAI04 Data, Model & Artifact Poisoning" },
+      { source: "biml_llm24", id: "[LLMtop10:6:poison in the data]" }
+    ]
+  };
+  function roleId(short) { return "srf.role." + short; }
+  function phOwner(name, short, party) {
+    return { status: "assigned", name: name, persona_id: roleId(short), party: party, placeholder: true, record_status: "placeholder" };
+  }
+  function phPerson(name, short, party) {
+    return { name: name, persona_id: roleId(short), party: party, placeholder: true, record_status: "placeholder" };
+  }
+  function phLink(rel) { rel.record_status = rel.record_status || "placeholder"; return rel; }
+  function linesOf(text) {
+    var rows = [], rest = String(text || ""), i;
+    while (rest.length) {
+      i = rest.indexOf("\n");
+      if (i < 0) { rows.push(rest); break; }
+      rows.push(rest.slice(0, i));
+      rest = rest.slice(i + 1);
+    }
+    return rows.map(function (s) { return s.replace(/^\s+|\s+$/g, ""); }).filter(function (s) { return s.length > 0; });
+  }
+  function shell(id, name, om, asOf, description) {
+    return {
+      tm_schema_version: "0.1.0-draft",
+      system: {
+        disclaimer: DISCLAIMER,
+        id: id,
+        name: name,
+        description: description,
+        operating_model: om,
+        as_of: asOf,
+        snapshot_id: null,
+        overlays_enabled: []
+      },
+      stakeholders: [],
+      components: [],
+      relationships: [],
+      obligations: [],
+      controls: [],
+      threats: []
+    };
+  }
+  function catalogThreat(id, title, target, failure, om, asset, actor, mode, impact, note, obligationId) {
+    var side = CATALOG_SIDE[id][om];
+    var t = {
+      id: "thr." + id + "-seed",
+      title: title,
+      risk: { asset: asset, actor: actor, failure_mode: mode, impact: impact },
+      target_component_id: target,
+      failure_class: failure,
+      catalog_threat_id: id,
+      catalog_match_status: "proposed",
+      catalog_note: note,
+      external_refs: clone(CATALOG_REFS[id]),
+      control_ids: [],
+      control_ownership_gap: true,
+      accountable: phPerson(side[0] === "data-provider" ? "Data Provider (placeholder)" : "AI Model Provider (placeholder)", side[0], side[1])
+    };
+    if (obligationId) t.obligation_ids = [obligationId];
+    else {
+      t.obligation_ids = [];
+      t.no_obligation = { reason: "No obligation was checked for this starting point. This is not a finding that none applies." };
+    }
+    return t;
+  }
+
+  var STARTS = {
+    L1: {
+      label: "L1 process (what it does today)",
+      when: "Use this when the system is the process you run today. Name that process and its steps. The example picker still loads a full worked example.",
+      questions: [
+        { id: "processName", label: "What process does this system carry out today?", kind: "text", value: "Resolve a customer refund" },
+        { id: "steps", label: "List the steps, one per line.", kind: "textarea", value: "Case intake\nResolution and remedy\nClosure" },
+        { id: "operatingModel", label: "Operating model", kind: "om", value: "Agent-PaaS" },
+        { id: "ownerName", label: "Who owns the steps?", kind: "text", value: "Process owner (placeholder)" }
+      ],
+      threats: [],
+      threatNote: "Part 2 does not name a catalog threat for an L1 start. This seed does not add one. Load an example to see the threats already on that process.",
+      controls: [],
+      rules: [
+        "A failed step reaches the next step on a hard trigger.",
+        "A failed or impacted step rolls impact up to the process on a hard parent link.",
+        "When an L3 component runs an L1 step, the failure lands as impact on that step."
+      ]
+    },
+    L2: {
+      label: "L2 AI Information (data)",
+      when: "Use this when the risk sits in data the system learns from, retrieves, or writes: a retrieval corpus, a training set, master data, or a feed.",
+      questions: [
+        { id: "dataName", label: "Which data set does the AI read, retrieve, learn from, or write to?", kind: "text", value: "Refund policy knowledge base" },
+        { id: "dataKind", label: "What kind of data component is it?", kind: "select", value: "data_store", options: [["data_store", "Stored data"], ["data_feed", "A feed"], ["input_channel", "An input channel"]] },
+        { id: "dataUse", label: "How is it used? This sets the link.", kind: "select", value: "retrieval", options: [["retrieval", "Retrieval at run time"], ["training", "Training or tuning"], ["record", "A record the agent writes"]] },
+        { id: "ownerName", label: "Who supplies it, and who owns it?", kind: "text", value: "Support content owner (placeholder)" },
+        { id: "party", label: "Which side is that owner on?", kind: "select", value: "customer", options: [["customer", "Customer"], ["provider", "Provider"]] },
+        { id: "readerName", label: "Which agent reads it?", kind: "text", value: "Resolution agent" },
+        { id: "writerName", label: "Which agent writes it? Leave this blank if none do.", kind: "text", value: "" },
+        { id: "classification", label: "What classification does it carry?", kind: "text", value: "Internal policy" },
+        { id: "lineage", label: "Is there a lineage record?", kind: "select", value: "no", options: [["yes", "Yes"], ["no", "No"]] },
+        { id: "operatingModel", label: "Operating model. This sets the L2 customer cell.", kind: "om", value: "Agent-PaaS" }
+      ],
+      threats: [
+        { id: "datapoison", name: "Data poisoning of train or fine-tune data", riskMap: "riskDataPoisoning" },
+        { id: "dsgai21", name: "Disinformation and integrity attacks via data poisoning (runtime retrieval)", riskMap: "riskRetrievalVectorStorePoisoning" },
+        { id: "dsgai05", name: "Data integrity and validation failures", riskMap: null },
+        { id: "devdataleak", name: "Development-time data leak", riskMap: "riskExcessiveDataHandling" },
+        { id: "dsgai09", name: "Multimodal capture and cross-channel leakage", riskMap: "riskSensitiveDataDisclosure" },
+        { id: "dsgai10", name: "Synthetic data, anonymization, and transformation pitfalls", riskMap: "riskInferredSensitiveData" },
+        { id: "dsgai19", name: "Human review and labeler overexposure", riskMap: null }
+      ],
+      extraRiskMap: ["riskUnauthorizedTrainingData", "riskPromptResponseCachePoisoning"],
+      threatNote: "The site id is the only id stored on a threat. A Risk Map id is Proposed. It is not in /data/threats.json.",
+      controls: [
+        "controlTrainingDataManagement",
+        "controlTrainingDataSanitization",
+        "controlModelAndDataInventoryManagement",
+        "controlModelAndDataIntegrityManagement",
+        "controlModelAndDataAccessControls",
+        "controlRetrievalAndVectorSystemIntegrity",
+        "controlUserDataManagement",
+        "controlModelPrivacyEnhancingTechnologies"
+      ],
+      rules: [
+        "A tampered store reaches every reader on an access link. A hard link fails the reader. A soft link impacts the reader.",
+        "A writer with write access, or read and write access, spreads tampering back into the store.",
+        "Put the integrity control on the access link, as containment. Do not put it on the data component. With controls in place, a hard failure of the reader is lowered to impact.",
+        "Training-time poisoning is a flow from the training set to the L5 model. The model then follows the usual path through the platform and the application to the process."
+      ]
+    },
+    L5: {
+      label: "L5 AI Model Provider (model)",
+      when: "Use this when you are choosing or changing a model: a new vendor, a new version, a fine-tune, or an open-weight file from a hub.",
+      questions: [
+        { id: "weightsName", label: "Name the weights file or base model, if you have one.", kind: "text", value: "Public-hub weights file" },
+        { id: "vendorName", label: "Name the vendor model, including any fallback, embedding model, or reranker.", kind: "text", value: "Vendor reasoning model" },
+        { id: "update", label: "How does a new version reach production?", kind: "select", value: "auto", options: [["pinned", "Pinned"], ["auto", "The provider updates it with no customer approval"], ["gateway", "A gateway routes it"]] },
+        { id: "finetune", label: "Is it fine-tuned on data you hold?", kind: "select", value: "yes", options: [["yes", "Yes"], ["no", "No"]] },
+        { id: "operatingModel", label: "Operating model. This sets the L5 customer cell.", kind: "om", value: "Agent-PaaS" }
+      ],
+      cellNote: "N/A: rely on evidence the provider gives you. Model evaluation: test the model yourself before use. Shared: the contract names each party's duties. Customer-owned: you own the model.",
+      threats: [
+        { id: "supplymodelpoison", name: "Supply-chain model poisoning", riskMap: "riskModelSourceTampering" },
+        { id: "devmodelpoison", name: "Direct development-environment model poisoning", riskMap: "riskDataPoisoning or riskModelSourceTampering" },
+        { id: "evasion", name: "Evasion", riskMap: "riskModelEvasion" },
+        { id: "disclosureinoutput", name: "Disclosure in output", riskMap: "riskSensitiveDataDisclosure" },
+        { id: "modelinversionandmembership", name: "Model inversion and membership inference", riskMap: "riskInferredSensitiveData" },
+        { id: "modelexfiltration", name: "Model exfiltration (input and output harvesting)", riskMap: "riskModelExfiltration" },
+        { id: "devmodelleak", name: "Direct development-time model leak", riskMap: "riskModelExfiltration" }
+      ],
+      extraRiskMap: ["riskMaliciousLoaderDeserialization", "riskAdapterPEFTInjection", "riskEvaluationBenchmarkManipulation", "riskCovertChannelsInModelOutputs"],
+      threatNote: "Under Agent-PaaS the catalog names the AI Model Provider on the provider side for the first five, and the AI Platform Provider on the provider side for the last two. A silent model change has no catalog match. The worked examples say the same about an LLM that reinterprets a business rule.",
+      controls: [
+        "controlModelRegistryIntegrity",
+        "controlModelAndDataIntegrityManagement",
+        "controlAdversarialTrainingAndTesting",
+        "controlRedTeaming",
+        "controlModelAndDataExecutionIntegrity",
+        "controlIncidentResponseManagement"
+      ],
+      rules: [
+        "A failed model reaches the gateway on a serving link, then the application, then the L1 step as impact.",
+        "A provider version with no customer approval is a gap when a serving link leaves that model and a later component runs L1 logic. This reuses the L1 approval check. It does not change how the cascade runs.",
+        "A soft serving link does not fail what sits downstream. If the gateway sends live traffic to a fallback, record that link as hard while the fallback is in use.",
+        "Mark a serving link that crosses from the provider to the customer."
+      ]
+    }
+  };
+
+  function seedL1(a) {
+    var steps = linesOf(a.steps);
+    if (!steps.length) steps = ["Unnamed step"];
+    var om = a.operatingModel;
+    var name = String(a.processName || "Process").replace(/^\s+|\s+$/g, "") || "Process";
+    var who = String(a.ownerName || "Process owner (placeholder)").replace(/^\s+|\s+$/g, "") || "Process owner (placeholder)";
+    var m = shell("sys.start-l1", "Process start: " + name, om, "2026-11-18",
+      "Starting point L1. The process and its steps, as named here. No catalog threat is attached.");
+    m.components.push({
+      id: "cmp.l1-process", name: name, layer: "L1", type: "business_process",
+      owner: phOwner(who, "ai-system-governance", "customer"),
+      description: "The process this system carries out today."
+    });
+    steps.forEach(function (step, i) {
+      var n = i + 1;
+      m.components.push({
+        id: "cmp.l1-step-" + n, name: step, layer: "L1", type: "process_step",
+        owner: phOwner(who, "ai-system-governance", "customer")
+      });
+      m.relationships.push(phLink({
+        id: "rel.l1-part-" + n, type: "composition", cascade: "hard",
+        from: "cmp.l1-process", to: "cmp.l1-step-" + n
+      }));
+      if (i > 0) m.relationships.push(phLink({
+        id: "rel.l1-next-" + n, type: "triggering", cascade: "hard",
+        from: "cmp.l1-step-" + i, to: "cmp.l1-step-" + n
+      }));
+    });
+    return m;
+  }
+
+  function disclosureObligation() {
+    return {
+      id: "obl.disclosures",
+      title: "Required disclosures to the consumer before a refund decision",
+      instrument: "Consumer protection overlay (candidate)",
+      citation: null,
+      instrument_type: "law",
+      strength: "unknown",
+      in_force: "unknown",
+      applies_if: "The case can change what the consumer is told or paid. Needs counsel.",
+      vertical: "baseline",
+      record_status: "placeholder",
+      verification: { status: "unverified", method: "none", checked_on: null }
+    };
+  }
+
+  function seedL2Sketch() {
+    var m = shell("sys.start-l2", "Refund policy knowledge base", "Agent-PaaS", "2026-11-18",
+      "Worked L2 seed. A refund policy knowledge base is indexed and retrieved by the resolution agent. The policy service still enforces the refund cap, because it is not on the retrieval path. The integrity control sits on the access link, not on the policy pages.");
+    var content = phOwner("Support content owner (placeholder)", "data-provider", "customer");
+    var platform = phOwner("Platform team (placeholder)", "ai-platform-provider", "provider");
+    var app = phOwner("Case app team (placeholder)", "application-developer", "customer");
+    var gov = phOwner("Support process owner (placeholder)", "ai-system-governance", "customer");
+    m.stakeholders.push({
+      id: "stk.refund-customers",
+      name: "Customers asking for a refund",
+      kind: "affected_individuals",
+      affected_by_component_ids: ["cmp.step-resolution"]
+    });
+    m.components.push(
+      { id: "cmp.case-process", name: "Resolve a customer refund", layer: "L1", type: "business_process", owner: gov },
+      { id: "cmp.step-resolution", name: "Resolution and remedy", layer: "L1", type: "process_step", owner: gov },
+      {
+        id: "cmp.policy-kb", name: "Refund policy knowledge base", layer: "L2", type: "data_store",
+        srf_component: "Master Data Management", owner: content,
+        description: "Retrieval corpus of refund policy pages. Stored as data_store. The schema has no retrieval_corpus type.",
+        notes: "Classification: internal policy. No lineage record in this seed."
+      },
+      {
+        id: "cmp.vector-index", name: "Policy vector index", layer: "L2", type: "data_store", owner: platform,
+        description: "Index of the policy pages. The platform team owns the index."
+      },
+      { id: "cmp.agent-resolve", name: "Resolution agent", layer: "L3", type: "sub_agent", owner: app },
+      { id: "cmp.agent-escalate", name: "Escalation agent", layer: "L3", type: "sub_agent", owner: app },
+      {
+        id: "cmp.policy-service", name: "Refund cap policy service", layer: "L3", type: "policy_service", owner: app,
+        notes: "Enforces the real refund cap. Not on the retrieval path."
+      }
+    );
+    m.relationships.push(
+      phLink({ id: "rel.part-resolution", type: "composition", cascade: "hard", from: "cmp.case-process", to: "cmp.step-resolution" }),
+      phLink({ id: "rel.flow-index", type: "flow", cascade: "hard", from: "cmp.policy-kb", to: "cmp.vector-index", carries: "policy pages" }),
+      phLink({
+        id: "rel.access-resolve", type: "access", cascade: "hard", access_mode: "read",
+        from: "cmp.agent-resolve", to: "cmp.vector-index", carries: "retrieved policy text",
+        containment_control_ids: ["ctl.approved-pages"]
+      }),
+      phLink({
+        id: "rel.access-escalate", type: "access", cascade: "soft", access_mode: "read",
+        from: "cmp.agent-escalate", to: "cmp.vector-index", carries: "retrieved policy text"
+      }),
+      phLink({ id: "rel.realize-resolve", type: "realization", cascade: "hard", from: "cmp.agent-resolve", to: "cmp.step-resolution" })
+    );
+    m.obligations.push(disclosureObligation());
+    m.controls.push({
+      id: "ctl.approved-pages",
+      title: "Only approved, versioned policy pages are indexed",
+      component_id: "cmp.agent-resolve",
+      status: "in_place",
+      applies_to_children: false,
+      catalog_control_id: "controlRetrievalAndVectorSystemIntegrity",
+      record_status: "proposed",
+      obligation_links: []
+    });
+    var threat = catalogThreat(
+      "dsgai21",
+      "An outdated or poisoned policy page tells the resolution agent the refund cap is $5,000",
+      "cmp.policy-kb", "data", "Agent-PaaS",
+      "Refund policy pages", "Person who can edit a page the agent retrieves",
+      "The retrieved page states a refund cap the policy service does not use",
+      "The resolution step is harmed. The policy service still enforces the real cap.",
+      "Proposed match to dsgai21. The Risk Map id riskRetrievalVectorStorePoisoning is not in /data/threats.json, so it is not the catalog id. No control id is linked from this threat.",
+      "obl.disclosures"
+    );
+    threat.accountable = phPerson("Support content owner (placeholder)", "data-provider", "customer");
+    threat.stakeholder_ids = ["stk.refund-customers"];
+    m.threats.push(threat);
+    return m;
+  }
+
+  function seedL2Custom(a) {
+    var om = a.operatingModel;
+    var use = a.dataUse === "training" || a.dataUse === "record" ? a.dataUse : "retrieval";
+    var kind = a.dataKind === "data_feed" || a.dataKind === "input_channel" ? a.dataKind : "data_store";
+    var dataName = String(a.dataName || "Data set").replace(/^\s+|\s+$/g, "") || "Data set";
+    var reader = String(a.readerName || "Reading agent").replace(/^\s+|\s+$/g, "") || "Reading agent";
+    var writer = String(a.writerName || "").replace(/^\s+|\s+$/g, "");
+    var who = String(a.ownerName || "Data owner (placeholder)").replace(/^\s+|\s+$/g, "") || "Data owner (placeholder)";
+    var party = a.party === "provider" ? "provider" : "customer";
+    var cat = use === "training" ? "datapoison" : use === "record" ? "dsgai05" : "dsgai21";
+    var side = CATALOG_SIDE[cat][om];
+    var m = shell("sys.start-l2", "Data start: " + dataName, om, "2026-11-18",
+      "Starting point L2, built from the answers. The integrity control is on the access link when the use is retrieval or a written record, and on the flow to the model when the use is training. It is not on the data component.");
+    m.stakeholders.push({
+      id: "stk.l2-people", name: "People the data is about", kind: "affected_individuals",
+      affected_by_component_ids: ["cmp.l2-step"]
+    });
+    m.components.push(
+      { id: "cmp.l2-process", name: "Process that uses " + dataName, layer: "L1", type: "business_process", owner: phOwner("Process owner (placeholder)", "ai-system-governance", "customer") },
+      { id: "cmp.l2-step", name: "Step that uses " + dataName, layer: "L1", type: "process_step", owner: phOwner("Process owner (placeholder)", "ai-system-governance", "customer") },
+      {
+        id: "cmp.l2-data", name: dataName, layer: "L2", type: kind,
+        owner: phOwner(who, "data-provider", party),
+        notes: "Classification: " + String(a.classification || "not stated") + ". Lineage record: " + (a.lineage === "yes" ? "yes" : "no") + "."
+      },
+      { id: "cmp.l2-reader", name: reader, layer: "L3", type: "sub_agent", owner: phOwner(reader + " owner (placeholder)", "application-developer", "customer") }
+    );
+    m.relationships.push(
+      phLink({ id: "rel.l2-part", type: "composition", cascade: "hard", from: "cmp.l2-process", to: "cmp.l2-step" }),
+      phLink({ id: "rel.l2-realize", type: "realization", cascade: "hard", from: "cmp.l2-reader", to: "cmp.l2-step" })
+    );
+    if (use === "training") {
+      m.components.push({ id: "cmp.l2-model", name: dataName + " model", layer: "L5", type: "model", owner: phOwner("AI Model Provider (placeholder)", "model-provider", om === "IaaS" ? "customer" : "provider") });
+      m.relationships.push(phLink({
+        id: "rel.l2-flow", type: "flow", cascade: "hard", from: "cmp.l2-data", to: "cmp.l2-model", carries: "training rows",
+        containment_control_ids: ["ctl.l2-integrity"]
+      }));
+      m.controls.push({
+        id: "ctl.l2-integrity",
+        title: "Check the training set before it flows into the model",
+        component_id: "cmp.l2-model",
+        status: "in_place", applies_to_children: false,
+        catalog_control_id: "controlTrainingDataSanitization",
+        record_status: "proposed", obligation_links: []
+      });
+    } else {
+      var accessor = writer && use === "record" ? "cmp.l2-writer" : "cmp.l2-reader";
+      if (writer) {
+        m.components.push({ id: "cmp.l2-writer", name: writer, layer: "L3", type: "sub_agent", owner: phOwner(writer + " owner (placeholder)", "application-developer", "customer") });
+      }
+      m.relationships.push(phLink({
+        id: "rel.l2-access", type: "access", cascade: "hard",
+        access_mode: use === "record" ? "readwrite" : "read",
+        from: accessor, to: "cmp.l2-data",
+        containment_control_ids: ["ctl.l2-integrity"]
+      }));
+      m.controls.push({
+        id: "ctl.l2-integrity",
+        title: "Check integrity on the access link before the data is used",
+        component_id: accessor,
+        status: "in_place", applies_to_children: false,
+        catalog_control_id: use === "record" ? "controlModelAndDataIntegrityManagement" : "controlRetrievalAndVectorSystemIntegrity",
+        record_status: "proposed", obligation_links: []
+      });
+    }
+    m.obligations.push(disclosureObligation());
+    var threat = catalogThreat(
+      cat,
+      use === "training" ? "Poisoned training data reaches the model" : use === "record" ? "A record is written with no integrity check" : "A poisoned or outdated page is retrieved",
+      "cmp.l2-data", "data", om,
+      dataName, "Person who can change the data",
+      "The data is wrong and a later component uses it",
+      "The step that depends on the data is harmed.",
+      "Proposed match to " + cat + ". Risk Map ids named beside this start are not in /data/threats.json. No control id is linked from this threat.",
+      "obl.disclosures"
+    );
+    if (party === side[1]) threat.accountable = phPerson(who, side[0], side[1]);
+    threat.stakeholder_ids = ["stk.l2-people"];
+    m.threats.push(threat);
+    return m;
+  }
+
+  function seedL5Sketch() {
+    var weightsOwner = phOwner("ML platform team (placeholder)", "model-provider", "customer");
+    var dataOwner = phOwner("Data steward (placeholder)", "data-provider", "customer");
+    var vendorOwner = phOwner("Model vendor (placeholder)", "model-provider", "provider");
+    var app = phOwner("Invoice app team (placeholder)", "application-developer", "customer");
+    var gov = phOwner("Invoice process owner (placeholder)", "ai-system-governance", "customer");
+    var platform = phOwner("Gateway team (placeholder)", "ai-platform-provider", "customer");
+    var m = shell("sys.start-l5", "Weights file and a vendor model that updates silently", "Agent-PaaS", "2026-12-02",
+      "Worked L5 seed. An open-weight file is fine-tuned in house under IaaS, so that L5 component is customer-owned. A vendor model on Agent-PaaS moves to version v2026-12 with no customer approval. The load check sits on the flow from the weights file to the tuned model, not on the weights file.");
+    m.stakeholders.push({
+      id: "stk.invoice-parties", name: "People named on invoices", kind: "affected_individuals",
+      affected_by_component_ids: ["cmp.step-invoice"]
+    });
+    m.components.push(
+      { id: "cmp.invoice-process", name: "Match an invoice", layer: "L1", type: "business_process", owner: gov },
+      { id: "cmp.step-invoice", name: "Invoice match", layer: "L1", type: "process_step", owner: gov },
+      {
+        id: "cmp.finetune-set", name: "Invoice-match fine-tune set", layer: "L2", type: "data_store",
+        operating_model: "IaaS", owner: dataOwner,
+        description: "Training data for the in-house model. Stored as data_store. The schema has no training_data type."
+      },
+      {
+        id: "cmp.base-weights", name: "Public-hub weights file", layer: "L5", type: "model",
+        operating_model: "IaaS", owner: weightsOwner,
+        notes: "Open-weight file from a public hub. A pickled file can run code when it is loaded. This component is customer-owned because its operating model is IaaS."
+      },
+      {
+        id: "cmp.tuned-model", name: "In-house tuned model", layer: "L5", type: "model",
+        operating_model: "IaaS", owner: weightsOwner
+      },
+      {
+        id: "cmp.vendor-model", name: "Vendor reasoning model", layer: "L5", type: "model", owner: vendorOwner,
+        notes: "Version v2026-12 is in effect. The customer did not approve it.",
+        versions: [
+          { version: "v2026-11", from: "2026-11-01", until: "2026-12-01", customer_approved: true, note: "Pinned version the customer approved." },
+          { version: "v2026-12", from: "2026-12-01", customer_approved: false, note: "Provider update. No customer approval." }
+        ]
+      },
+      { id: "cmp.gateway", name: "Model gateway", layer: "L4", type: "gateway", owner: platform },
+      { id: "cmp.agent-match", name: "Invoice match agent", layer: "L3", type: "sub_agent", owner: app }
+    );
+    m.relationships.push(
+      phLink({ id: "rel.part-invoice", type: "composition", cascade: "hard", from: "cmp.invoice-process", to: "cmp.step-invoice" }),
+      phLink({ id: "rel.flow-tune", type: "flow", cascade: "hard", from: "cmp.finetune-set", to: "cmp.tuned-model", carries: "fine-tune rows" }),
+      phLink({
+        id: "rel.flow-weights", type: "flow", cascade: "hard", from: "cmp.base-weights", to: "cmp.tuned-model", carries: "model weights",
+        containment_control_ids: ["ctl.safetensors"]
+      }),
+      phLink({ id: "rel.serve-tuned", type: "serving", cascade: "hard", from: "cmp.tuned-model", to: "cmp.gateway" }),
+      phLink({
+        id: "rel.serve-vendor", type: "serving", cascade: "hard", from: "cmp.vendor-model", to: "cmp.gateway",
+        boundary: { "Agent-PaaS": "crosses" },
+        containment_control_ids: ["ctl.pin-version"],
+        note: "Crosses the customer-provider boundary. The pin control is planned, so it does not lower the cascade."
+      }),
+      phLink({ id: "rel.serve-agent", type: "serving", cascade: "hard", from: "cmp.gateway", to: "cmp.agent-match" }),
+      phLink({ id: "rel.realize-match", type: "realization", cascade: "hard", from: "cmp.agent-match", to: "cmp.step-invoice" })
+    );
+    m.controls.push(
+      {
+        id: "ctl.safetensors",
+        title: "Load only safetensors with a verified hash and signature",
+        component_id: "cmp.tuned-model",
+        status: "in_place", applies_to_children: false,
+        catalog_control_id: "controlModelRegistryIntegrity",
+        record_status: "proposed", obligation_links: []
+      },
+      {
+        id: "ctl.pin-version",
+        title: "Pin the model version and run regression evaluations before the switch",
+        component_id: "cmp.agent-match",
+        status: "planned", applies_to_children: false,
+        record_status: "proposed", obligation_links: []
+      }
+    );
+    var weights = catalogThreat(
+      "supplymodelpoison",
+      "A poisoned weights file, or a pickled file that runs code on load, reaches the tuned model",
+      "cmp.base-weights", "model_behavior", "IaaS",
+      "Model weights", "Person who can publish a file the team downloads",
+      "The file is not the model the team meant to load",
+      "The tuned model and the invoice step are harmed.",
+      "Proposed match to supplymodelpoison. The Risk Map id riskMaliciousLoaderDeserialization is not in /data/threats.json, so it is not the catalog id. No control id is linked from this threat.",
+      null
+    );
+    weights.accountable = phPerson("ML platform team (placeholder)", "model-provider", "customer");
+    weights.stakeholder_ids = ["stk.invoice-parties"];
+    var silent = {
+      id: "thr.silent-update",
+      title: "Discount reasoning changes after the vendor model updates with no approval",
+      risk: {
+        asset: "Invoice match decisions",
+        actor: "Model vendor, shipping a new version",
+        failure_mode: "Version v2026-12 replaces the pinned version with no customer approval",
+        impact: "The invoice step runs on reasoning the customer did not accept"
+      },
+      target_component_id: "cmp.vendor-model",
+      failure_class: "model_behavior",
+      catalog_threat_id: null,
+      catalog_note: "No match in /data/threats.json. A silent version change is not a catalog entry. The worked examples record the same miss for an LLM that reinterprets a business rule.",
+      obligation_ids: [],
+      no_obligation: { reason: "No obligation was checked for a silent version change. This is not a finding that none applies." },
+      control_ids: [],
+      control_ownership_gap: true,
+      accountable: phPerson("Model vendor (placeholder)", "model-provider", "provider"),
+      stakeholder_ids: ["stk.invoice-parties"]
+    };
+    m.threats.push(weights, silent);
+    return m;
+  }
+
+  function seedL5Custom(a) {
+    var om = a.operatingModel;
+    var weightsName = String(a.weightsName || "").replace(/^\s+|\s+$/g, "");
+    var vendorName = String(a.vendorName || "").replace(/^\s+|\s+$/g, "") || "Model";
+    var party = om === "IaaS" ? "customer" : "provider";
+    var auto = a.update === "auto";
+    var m = shell("sys.start-l5", "Model start: " + vendorName, om, auto ? "2026-12-02" : "2026-11-18",
+      "Starting point L5, built from the answers. The customer cell for L5 under " + om + " is " + (MATRIX.L5[om] || "unknown") + ".");
+    var modelOwner = phOwner("Model owner (placeholder)", "model-provider", party);
+    m.stakeholders.push({
+      id: "stk.l5-people", name: "People the model decision affects", kind: "affected_individuals",
+      affected_by_component_ids: ["cmp.l5-step"]
+    });
+    m.components.push(
+      { id: "cmp.l5-process", name: "Process that calls the model", layer: "L1", type: "business_process", owner: phOwner("Process owner (placeholder)", "ai-system-governance", "customer") },
+      { id: "cmp.l5-step", name: "Step the model can change", layer: "L1", type: "process_step", owner: phOwner("Process owner (placeholder)", "ai-system-governance", "customer") },
+      { id: "cmp.l5-gateway", name: "Model gateway", layer: "L4", type: "gateway", owner: phOwner("Gateway team (placeholder)", "ai-platform-provider", party) },
+      { id: "cmp.l5-agent", name: "Application that calls the model", layer: "L3", type: "sub_agent", owner: phOwner("App team (placeholder)", "application-developer", "customer") },
+      { id: "cmp.l5-vendor", name: vendorName, layer: "L5", type: "model", owner: modelOwner }
+    );
+    if (auto) {
+      m.components[m.components.length - 1].versions = [
+        { version: "v2026-12", from: "2026-12-01", customer_approved: false, note: "Provider update. No customer approval." }
+      ];
+      m.components[m.components.length - 1].notes = "This version has no customer approval.";
+    }
+    m.relationships.push(
+      phLink({ id: "rel.l5-part", type: "composition", cascade: "hard", from: "cmp.l5-process", to: "cmp.l5-step" }),
+      phLink({
+        id: "rel.l5-serve", type: "serving", cascade: a.update === "pinned" ? "soft" : "hard",
+        from: "cmp.l5-vendor", to: "cmp.l5-gateway",
+        note: a.update === "pinned" ? "Pinned. Recorded as soft until you say the gateway sends it live traffic." : "Serving link from the model."
+      }),
+      phLink({ id: "rel.l5-agent", type: "serving", cascade: "hard", from: "cmp.l5-gateway", to: "cmp.l5-agent" }),
+      phLink({ id: "rel.l5-realize", type: "realization", cascade: "hard", from: "cmp.l5-agent", to: "cmp.l5-step" })
+    );
+    if (weightsName) {
+      m.components.push({ id: "cmp.l5-weights", name: weightsName, layer: "L5", type: "model", owner: phOwner("ML platform team (placeholder)", "model-provider", om === "IaaS" ? "customer" : party) });
+      m.relationships.push(phLink({
+        id: "rel.l5-weights", type: "flow", cascade: "hard", from: "cmp.l5-weights", to: "cmp.l5-vendor", carries: "model weights",
+        containment_control_ids: ["ctl.l5-load"]
+      }));
+      m.controls.push({
+        id: "ctl.l5-load",
+        title: "Load only safetensors with a verified hash and signature",
+        component_id: "cmp.l5-vendor",
+        status: "in_place", applies_to_children: false,
+        catalog_control_id: "controlModelRegistryIntegrity",
+        record_status: "proposed", obligation_links: []
+      });
+      var weightsThreat = catalogThreat(
+        "supplymodelpoison",
+        "A weights file from outside the team is loaded",
+        "cmp.l5-weights", "model_behavior", om === "IaaS" ? "IaaS" : om,
+        weightsName, "Person who can publish the file",
+        "The loaded file is not the model the team chose",
+        "The step that calls the model is harmed.",
+        "Proposed match to supplymodelpoison. riskMaliciousLoaderDeserialization is not in /data/threats.json. No control id is linked from this threat.",
+        null
+      );
+      if ((om === "IaaS" ? "customer" : party) === CATALOG_SIDE.supplymodelpoison[om === "IaaS" ? "IaaS" : om][1]) {
+        weightsThreat.accountable = phPerson("ML platform team (placeholder)", "model-provider", CATALOG_SIDE.supplymodelpoison[om][1]);
+      }
+      weightsThreat.stakeholder_ids = ["stk.l5-people"];
+      m.threats.push(weightsThreat);
+    }
+    if (a.finetune === "yes") {
+      m.components.push({ id: "cmp.l5-tune", name: "Fine-tune set", layer: "L2", type: "data_store", owner: phOwner("Data steward (placeholder)", "data-provider", "customer") });
+      m.relationships.push(phLink({ id: "rel.l5-tune", type: "flow", cascade: "hard", from: "cmp.l5-tune", to: "cmp.l5-vendor", carries: "fine-tune rows" }));
+    }
+    if (auto) {
+      m.controls.push({
+        id: "ctl.l5-pin",
+        title: "Pin the model version and run regression evaluations before the switch",
+        component_id: "cmp.l5-agent",
+        status: "planned", applies_to_children: false,
+        record_status: "proposed", obligation_links: []
+      });
+      var serve = null;
+      m.relationships.forEach(function (r) { if (r.id === "rel.l5-serve") serve = r; });
+      serve.containment_control_ids = ["ctl.l5-pin"];
+      m.threats.push({
+        id: "thr.silent-update",
+        title: "The model version changes with no customer approval",
+        risk: {
+          asset: "Decisions the model changes",
+          actor: "Model provider, shipping a new version",
+          failure_mode: "A new version is in production with no customer approval",
+          impact: "The step runs on behavior the customer did not accept"
+        },
+        target_component_id: "cmp.l5-vendor",
+        failure_class: "model_behavior",
+        catalog_threat_id: null,
+        catalog_note: "No match in /data/threats.json. A silent version change is not a catalog entry.",
+        obligation_ids: [],
+        no_obligation: { reason: "No obligation was checked for a silent version change. This is not a finding that none applies." },
+        control_ids: [],
+        control_ownership_gap: true,
+        accountable: phPerson("Model owner (placeholder)", "model-provider", party),
+        stakeholder_ids: ["stk.l5-people"]
+      });
+    }
+    if (!m.threats.length) {
+      m.threats.push({
+        id: "thr.model-gap",
+        title: "The model can change the step, and no catalog threat was selected from the answers",
+        risk: {
+          asset: "The step the model serves",
+          actor: "Not named",
+          failure_mode: "Model behavior changes the step",
+          impact: "The step outcome changes"
+        },
+        target_component_id: "cmp.l5-vendor",
+        failure_class: "model_behavior",
+        catalog_threat_id: null,
+        catalog_note: "No match in /data/threats.json. The answers did not select a catalog threat.",
+        obligation_ids: [],
+        no_obligation: { reason: "No obligation was checked. This is not a finding that none applies." },
+        control_ids: [],
+        control_ownership_gap: true,
+        accountable: phPerson("Model owner (placeholder)", "model-provider", party),
+        stakeholder_ids: ["stk.l5-people"]
+      });
+    }
+    return m;
+  }
+
+  function isL2Sketch(a) {
+    if (a.worked === true) return true;
+    if (a.worked === false) return false;
+    return a.dataName === "Refund policy knowledge base" && a.dataUse === "retrieval" && a.dataKind === "data_store" && a.operatingModel === "Agent-PaaS" && a.party === "customer" && a.readerName === "Resolution agent" && !String(a.writerName || "").replace(/^\s+|\s+$/g, "");
+  }
+  function isL5Sketch(a) {
+    if (a.worked === true) return true;
+    if (a.worked === false) return false;
+    return a.weightsName === "Public-hub weights file" && a.vendorName === "Vendor reasoning model" && a.update === "auto" && a.finetune === "yes" && a.operatingModel === "Agent-PaaS";
+  }
+  function seedStart(layer, answers) {
+    var a = {};
+    ((STARTS[layer] && STARTS[layer].questions) || []).forEach(function (q) { a[q.id] = q.value; });
+    if (answers) Object.keys(answers).forEach(function (k) { a[k] = answers[k]; });
+    if (OPERATING_MODELS.indexOf(a.operatingModel) < 0) a.operatingModel = "Agent-PaaS";
+    if (layer === "L1") return seedL1(a);
+    if (layer === "L2") return isL2Sketch(a) ? seedL2Sketch() : seedL2Custom(a);
+    if (layer === "L5") return isL5Sketch(a) ? seedL5Sketch() : seedL5Custom(a);
+    return null;
+  }
+
   return {
     LAYERS: LAYERS, OPERATING_MODELS: OPERATING_MODELS, MATRIX: MATRIX, PERSONAS: PERSONAS, DISCLAIMER: DISCLAIMER,
     REL_TYPES: REL_TYPES, REL_INFO: REL_INFO, DEFAULT_MULTIPLICITY: DEFAULT_MULTIPLICITY, multiplicityRule: multiplicityRule, isParentChild: isParentChild, boundary: boundary, resolve: resolve, dataFlows: dataFlows, CANDIDATE_L4_TYPES: CANDIDATE_L4_TYPES, COMPONENT_TYPES: COMPONENT_TYPES, CASCADE_RULES: CASCADE_RULES,
     active: active, byId: byId, ownerLabel: ownerLabel, ownerIsGap: ownerIsGap, personaName: personaName, layerName: layerName,
     shownStatus: shownStatus, statusWord: statusWord, componentControlGap: componentControlGap,
     CONTROL_GAP_MARK: CONTROL_GAP_MARK, CONTROL_GAP_LINE: CONTROL_GAP_LINE,
-    cascade: cascade, pathTo: pathTo, controlsFor: controlsFor, controlStatus: controlStatus, gaps: gaps, toYAML: toYAML
+    cascade: cascade, pathTo: pathTo, controlsFor: controlsFor, controlStatus: controlStatus, gaps: gaps, toYAML: toYAML,
+    seedStart: seedStart, STARTS: STARTS, COSAI_CONTROL_SOURCE: COSAI_CONTROL_SOURCE, COSAI_RISK_SOURCE: COSAI_RISK_SOURCE, CATALOG_REFS: CATALOG_REFS
   };
 })();
 if (typeof module !== "undefined") module.exports = TM;
@@ -23514,7 +24245,8 @@ if (typeof module !== "undefined") module.exports = TM;
   function ctlRow(c, extra) {
     var s = TM.controlStatus(STATE.model, c.id);
     var links = (c.obligation_links || []).map(function (link) { return statusBadge(link); }).join(" ");
-    return "<li><b>" + esc(c.title) + '</b> <span class="pill st-' + c.status + '">' + c.status.replace("_", " ") + '</span> <span class="pill req">' + esc(s.label) + "</span>" +
+    return "<li><b>" + esc(c.title) + "</b> " + (c.record_status ? statusBadge(c) + " " : "") + '<span class="pill st-' + c.status + '">' + c.status.replace("_", " ") + '</span> <span class="pill req">' + esc(s.label) + "</span>" +
+      (c.catalog_control_id ? ' <span class="muted">CoSAI Risk Map id ' + esc(c.catalog_control_id) + ". Proposed. Not in this site's control data.</span>" : "") +
       (links ? " " + links : "") +
       (extra ? ' <span class="muted">' + extra + "</span>" : "") +
       (s.reasons.length ? '<div class="muted small">Why not Required: ' + esc(s.reasons.join("; ")) + "</div>" : "") + "</li>";
@@ -23554,7 +24286,7 @@ if (typeof module !== "undefined") module.exports = TM;
     if (c.settings) h.push("<tr><th>Settings</th><td>Model version: " + esc(c.settings.model_version) + "<br>Reasoning effort: " + esc(c.settings.reasoning_effort) + "<br>Fallback: " + esc(c.settings.fallback) + "<br>L1 change approver: " + (c.settings.change_approver ? esc(c.settings.change_approver) : '<span class="bad">none</span>') + "</td></tr>");
     if (c.notes) h.push("<tr><th>Notes</th><td>" + esc(c.notes) + "</td></tr>");
     var raw = TM.byId(STATE.model.components)[c.id];
-    h.push("<tr><th>State</th><td>Version in this view: <b>" + esc(c.state_version) + "</b>" + ((raw.versions || []).length ? '<ul class="small">' + raw.versions.map(function (v) { return "<li>" + esc(v.version) + (v.from ? " from " + esc(v.from) : "") + (v.until ? " until " + esc(v.until) : "") + (v.note ? ": " + esc(v.note) : "") + "</li>"; }).join("") + "</ul>" : ' <span class="muted">(no versions)</span>') + "</td></tr>");
+    h.push("<tr><th>State</th><td>Version in this view: <b>" + esc(c.state_version) + "</b>" + ((raw.versions || []).length ? '<ul class="small">' + raw.versions.map(function (v) { return "<li>" + esc(v.version) + (v.from ? " from " + esc(v.from) : "") + (v.until ? " until " + esc(v.until) : "") + (v.customer_approved === false ? " (no customer approval)" : "") + (v.note ? ": " + esc(v.note) : "") + "</li>"; }).join("") + "</ul>" : ' <span class="muted">(no versions)</span>') + "</td></tr>");
     if (TM.CANDIDATE_L4_TYPES.indexOf(c.type) >= 0) h.push('<tr><th>Candidate</th><td>Candidate L4 type. Not an SRF v1.0 component.</td></tr>');
     if ((c.multiplicity_overrides || []).length) h.push('<tr><th>Multiplicity overrides</th><td>' + c.multiplicity_overrides.map(function (o) { return esc(o.rule_id + ": " + (o.off ? "off" : o.lower + ".." + (o.upper == null ? "*" : o.upper)) + (o.reason ? ". " + o.reason : ". No reason recorded.")); }).join("<br>") + "</td></tr>");
     h.push("</table>");
@@ -23568,6 +24300,7 @@ if (typeof module !== "undefined") module.exports = TM;
       if (r.logic_version) extra.push("logic v" + r.logic_version);
       if (r.l1_approval) extra.push("L1 approval: " + r.l1_approval.approved_by + (r.l1_approval.approved_on ? ", " + r.l1_approval.approved_on : ""));
       if (r.access_mode) extra.push(r.access_mode);
+      if ((r.containment_control_ids || []).length) extra.push("control on this link: " + r.containment_control_ids.join(", "));
       if (r.provides === "controls") extra.push("provides controls");
       if (r.carries) extra.push("carries " + r.carries);
       if (r.state_version && r.state_version !== "base") extra.push("version " + r.state_version);
@@ -23867,6 +24600,111 @@ if (typeof module !== "undefined") module.exports = TM;
     });
   }
 
+  var startLayer = null;
+  function setSource(text) { var el = $("model-source"); if (el) el.textContent = text; }
+  function closeStart() {
+    startLayer = null;
+    var wrap = $("graph-wrap");
+    if (wrap) wrap.classList.remove("starting");
+    var panel = $("start-panel");
+    if (panel) { panel.hidden = true; panel.innerHTML = ""; }
+    Array.prototype.forEach.call(doc.querySelectorAll('input[name="start-from"]'), function (r) { r.checked = false; });
+  }
+  function startPanelHTML(layer) {
+    var g = TM.STARTS[layer];
+    var h = ["<h2>" + esc(g.label) + "</h2><p>" + esc(g.when) + "</p>", '<form class="start-form" id="start-form">'];
+    g.questions.forEach(function (q) {
+      h.push("<label>" + esc(q.label));
+      if (q.kind === "textarea") h.push('<textarea id="start-q-' + q.id + '" rows="4">' + esc(q.value) + "</textarea>");
+      else if (q.kind === "om") {
+        h.push('<select id="start-q-' + q.id + '">' + TM.OPERATING_MODELS.map(function (m) {
+          return "<option" + (m === q.value ? " selected" : "") + ">" + esc(m) + "</option>";
+        }).join("") + "</select>");
+      } else if (q.kind === "select") {
+        h.push('<select id="start-q-' + q.id + '">' + q.options.map(function (o) {
+          return '<option value="' + esc(o[0]) + '"' + (o[0] === q.value ? " selected" : "") + ">" + esc(o[1]) + "</option>";
+        }).join("") + "</select>");
+      } else h.push('<input type="text" id="start-q-' + q.id + '" value="' + esc(q.value) + '">');
+      h.push("</label>");
+    });
+    h.push('<p id="start-cell" class="small"></p>');
+    h.push('<div class="start-actions"><button type="button" id="start-worked">Use the worked seed</button><button type="button" id="start-build">Build from these answers</button><button type="button" id="start-cancel">Back to the diagram</button></div></form>');
+    h.push("<h3>Typical threats</h3><p class=\"small\">" + esc(g.threatNote) + "</p>");
+    if (g.threats && g.threats.length) {
+      h.push('<ul class="small">');
+      g.threats.forEach(function (t) {
+        h.push("<li><code>" + esc(t.id) + "</code> " + esc(t.name) + ". " + (t.riskMap ? "Risk Map <code>" + esc(t.riskMap) + '</code> <span class="badge badge-proposed">Proposed</span>. ' + esc(TM.COSAI_RISK_SOURCE) : "The plan names no exact Risk Map id.") + "</li>");
+      });
+      h.push("</ul>");
+      if (g.extraRiskMap && g.extraRiskMap.length) h.push('<p class="small">Also named in the plan, and not in /data/threats.json: ' + g.extraRiskMap.map(function (id) { return "<code>" + esc(id) + "</code>"; }).join(", ") + '. <span class="badge badge-proposed">Proposed</span>. ' + esc(TM.COSAI_RISK_SOURCE) + "</p>");
+    }
+    h.push("<h3>Candidate controls</h3>");
+    if (!g.controls || !g.controls.length) h.push('<p class="small">This start does not add a control.</p>');
+    else {
+      h.push('<ul class="small">');
+      g.controls.forEach(function (id) { h.push("<li><code>" + esc(id) + '</code> <span class="badge badge-proposed">Proposed</span>. ' + esc(TM.COSAI_CONTROL_SOURCE) + "</li>"); });
+      h.push("</ul>");
+    }
+    h.push("<h3>How a failure spreads</h3>");
+    g.rules.forEach(function (rule) { h.push('<p class="small">' + esc(rule) + "</p>"); });
+    if (g.cellNote) h.push('<p class="small">' + esc(g.cellNote) + "</p>");
+    return h.join("");
+  }
+  function updateStartCell(layer) {
+    var omEl = $("start-q-operatingModel"), cell = $("start-cell");
+    if (!omEl || !cell) return;
+    var mv = TM.MATRIX[layer] && TM.MATRIX[layer][omEl.value];
+    cell.textContent = layer + " customer cell under " + omEl.value + ": " + (mv || "not set") + ".";
+  }
+  function readStartAnswers(layer) {
+    var a = { worked: false };
+    TM.STARTS[layer].questions.forEach(function (q) {
+      var el = $("start-q-" + q.id);
+      a[q.id] = el ? el.value : q.value;
+    });
+    return a;
+  }
+  function applySeed(layer, answers) {
+    var model = TM.seedStart(layer, answers);
+    closeStart();
+    var radio = doc.querySelector('input[name="start-from"][value="' + layer + '"]');
+    if (radio) radio.checked = true;
+    var startBox = $("start-from");
+    if (startBox) startBox.open = false;
+    load(model);
+    var seedId = "cmp.l1-step-1";
+    if (layer === "L2") seedId = model.components.some(function (c) { return c.id === "cmp.policy-kb"; }) ? "cmp.policy-kb" : "cmp.l2-data";
+    if (layer === "L5") seedId = model.components.some(function (c) { return c.id === "cmp.base-weights"; }) ? "cmp.base-weights" : "cmp.l5-vendor";
+    STATE.selected = seedId;
+    STATE.selectedThreat = null;
+    STATE.tab = "cascade";
+    drawerOpen = false;
+    pendingFocus = null;
+    setSource("Showing a " + TM.STARTS[layer].label + " start. The example picker still loads a worked example.");
+    render();
+    return model;
+  }
+  function openStart(layer) {
+    startLayer = layer;
+    var wrap = $("graph-wrap");
+    if (wrap) wrap.classList.add("starting");
+    var panel = $("start-panel");
+    panel.hidden = false;
+    panel.innerHTML = startPanelHTML(layer);
+    updateStartCell(layer);
+    var omEl = $("start-q-operatingModel");
+    if (omEl) omEl.addEventListener("change", function () { updateStartCell(layer); });
+    $("start-worked").addEventListener("click", function () { applySeed(layer, { worked: true }); });
+    $("start-build").addEventListener("click", function () { applySeed(layer, readStartAnswers(layer)); });
+    $("start-cancel").addEventListener("click", function () {
+      closeStart();
+      var back = doc.querySelector('input[name="start-from"][value="' + layer + '"]');
+      if (back) back.focus();
+    });
+    var first = panel.querySelector("input, select, textarea");
+    if (first) first.focus();
+  }
+
   function init() {
     $("om").innerHTML = opts(TM.OPERATING_MODELS);
     var EXTRA_PLAIN = { unclassified: ["unclassified, needs review", "No type yet. Not used in the cascade until someone classifies it."], derived: ["derived (a shortcut for a chain)", "A derived link stands in for a chain of links. The cascade uses the chain."] };
@@ -23886,7 +24724,12 @@ if (typeof module !== "undefined") module.exports = TM;
     $("example-pick").innerHTML = EXAMPLE_CATALOG.map(function (e) { return '<option value="' + e.id + '">' + esc(e.name) + "</option>"; }).join("");
     $("example-pick").addEventListener("change", function () {
       STATE.exampleId = $("example-pick").value;
+      closeStart();
       load(EXAMPLE());
+      setSource("Showing the example in the picker.");
+    });
+    Array.prototype.forEach.call(doc.querySelectorAll('input[name="start-from"]'), function (r) {
+      r.addEventListener("change", function () { if (r.checked) openStart(r.value); });
     });
     $("view-toggle").addEventListener("click", function () {
       STATE.view = STATE.view === "list" ? "graph" : "list";
@@ -23910,7 +24753,15 @@ if (typeof module !== "undefined") module.exports = TM;
     var scrim = $("drawer-scrim");
     if (scrim) scrim.addEventListener("click", closeDrawer);
     doc.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && drawerOpen) { e.preventDefault(); closeDrawer(); }
+      if (e.key !== "Escape") return;
+      if (drawerOpen) { e.preventDefault(); closeDrawer(); return; }
+      if ($("graph-wrap") && $("graph-wrap").classList.contains("starting")) {
+        e.preventDefault();
+        var layer = startLayer;
+        closeStart();
+        var back = layer && doc.querySelector('input[name="start-from"][value="' + layer + '"]');
+        if (back) back.focus();
+      }
     });
     var handle = $("pane-handle");
     handle.addEventListener("pointerdown", function (e) {
@@ -23956,18 +24807,28 @@ if (typeof module !== "undefined") module.exports = TM;
       if (known) STATE.model.system.overlays_enabled = [hp.overlay];
     }
     if (hp.owners === "1") { STATE.ownerOverlay = true; $("owner-ov").checked = true; }
-    if (hp.threat) selectThreat(hp.threat); else if (hp.select) selectComponent(hp.select);
-    if (hp.tab) {
+    if ((hp.start === "L1" || hp.start === "L2" || hp.start === "L5") && (hp.seed === "1" || hp.seed === "worked")) {
+      applySeed(hp.start, { worked: true });
+    } else if (hp.start === "L1" || hp.start === "L2" || hp.start === "L5") {
+      var startRadio = doc.querySelector('input[name="start-from"][value="' + hp.start + '"]');
+      if (startRadio) startRadio.checked = true;
+      openStart(hp.start);
+    } else {
+      setSource("Showing the example in the picker.");
+      if (hp.threat) selectThreat(hp.threat); else if (hp.select) selectComponent(hp.select);
+    }
+    if (hp.tab && !(hp.start && (hp.seed === "1" || hp.seed === "worked"))) {
       STATE.tab = hp.tab;
       if (!drawerOpen) { pendingFocus = "drawer"; drawerOpen = true; returnFocusKind = "details"; }
       render();
     }
     syncHeader();
   }
-  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE, columnCount: columnCount };
+  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE, columnCount: columnCount, applySeed: applySeed, openStart: openStart, closeStart: closeStart };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();
 
 </script>
+<site-footer></site-footer>
 </body>
 </html>
