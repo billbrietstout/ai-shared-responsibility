@@ -24050,7 +24050,13 @@ if (typeof module !== "undefined") module.exports = TM;
     $("snap").innerHTML = '<option value="">Use the As of date</option>' + (STATE.model.snapshots || []).map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === s.snapshot_id ? " selected" : "") + ">" + esc(x.name + " (" + x.as_of + ")") + "</option>"; }).join("");
     renderOverlayToggles();
     $("mode").value = STATE.mode;
-    if ($("example-pick") && STATE.exampleId) $("example-pick").value = STATE.exampleId;
+    syncExamplePick();
+  }
+  function syncExamplePick() {
+    var pick = $("example-pick");
+    if (!pick) return;
+    if (STATE.exampleId) pick.value = STATE.exampleId;
+    else pick.selectedIndex = -1;
   }
 
   /* ---------- graph ---------- */
@@ -24683,13 +24689,26 @@ if (typeof module !== "undefined") module.exports = TM;
     });
     return a;
   }
+  function clearStartHash() {
+    if (!location.hash) return;
+    var parts = (location.hash.slice(1).match(/[^&]+/g) || []).filter(function (kv) {
+      return kv.slice(0, 6) !== "start=" && kv.slice(0, 5) !== "seed=";
+    });
+    var next = parts.length ? "#" + parts.join("&") : "";
+    if (next !== location.hash) {
+      if (history.replaceState) history.replaceState(null, "", location.pathname + location.search + next);
+      else location.hash = next;
+    }
+  }
   function applySeed(layer, answers) {
     var model = TM.seedStart(layer, answers);
     closeStart();
-    var radio = doc.querySelector('input[name="start-from"][value="' + layer + '"]');
-    if (radio) radio.checked = true;
     var startBox = $("start-from");
     if (startBox) startBox.open = false;
+    // Drop the catalog example id so the picker no longer looks like that example
+    // is loaded. A later pick then always fires change and replaces this seed.
+    STATE.exampleId = null;
+    clearStartHash();
     load(model);
     var seedId = "cmp.l1-step-1";
     if (layer === "L2") seedId = model.components.some(function (c) { return c.id === "cmp.policy-kb"; }) ? "cmp.policy-kb" : "cmp.l2-data";
@@ -24744,8 +24763,11 @@ if (typeof module !== "undefined") module.exports = TM;
     $("mode").addEventListener("change", function () { STATE.mode = $("mode").value; render(); });
     $("example-pick").innerHTML = EXAMPLE_CATALOG.map(function (e) { return '<option value="' + e.id + '">' + esc(e.name) + "</option>"; }).join("");
     $("example-pick").addEventListener("change", function () {
-      STATE.exampleId = $("example-pick").value;
+      var id = $("example-pick").value;
+      if (!id) return;
+      STATE.exampleId = id;
       closeStart();
+      clearStartHash();
       load(EXAMPLE());
       setSource("Showing the example in the picker.");
     });

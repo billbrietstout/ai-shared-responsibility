@@ -1140,14 +1140,39 @@ test("UI: Start from offers L1, L2, and L5, keeps the example picker, and seeds 
   $("start-worked").click();
   assert.ok(!$("graph-wrap").classList.contains("starting"));
   assert.ok(w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
   assert.strictEqual($("example-pick").options.length, 11);
+  assert.strictEqual($("example-pick").selectedIndex, -1, "seed clears the catalog selection so the next pick fires change");
+  assert.ok(!w.TM_UI.state.exampleId);
+  assert.ok(!radios[1].checked, "seed does not leave the Start from radio checked");
   $("example-pick").value = "o2c";
   $("example-pick").dispatchEvent(new w.Event("change"));
   assert.strictEqual($("sys-name").textContent, example.system.name);
+  assert.ok(!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
   assert.ok($("glossary").textContent.indexOf("November 18, 2026") >= 0);
   assert.ok($("rel-filters").textContent.indexOf("part cannot exist alone") >= 0);
   assert.strictEqual(TM.REL_TYPES.length, 9);
   assert.ok(TM.REL_TYPES.indexOf("association") < 0 && TM.REL_TYPES.indexOf("specialization") < 0);
+});
+
+test("UI: after an L2 start seed, the Example picker loads a catalog example", () => {
+  w.TM_UI.applySeed("L2", { worked: true });
+  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.strictEqual($("example-pick").selectedIndex, -1);
+  $("example-pick").value = "p2p";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.ok(/Procure to Pay/.test($("sys-name").textContent), $("sys-name").textContent);
+  assert.strictEqual(w.TM_UI.state.exampleId, "p2p");
+  assert.ok(!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.orchestrator"]'));
+  assert.ok($("model-source").textContent.indexOf("example in the picker") >= 0);
+  w.TM_UI.applySeed("L2", { worked: true });
+  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
+  $("example-pick").value = "o2c";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.strictEqual($("sys-name").textContent, example.system.name);
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]'));
 });
 
 }
