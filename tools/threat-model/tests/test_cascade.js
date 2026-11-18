@@ -1012,6 +1012,24 @@ test("UI: a short L5 start keeps native diagram width instead of stretching to t
   assert.ok(wide > diagramW, "the full example is wider than the L5 seed");
 });
 
+test("UI: cascade state does not sit on the owner line", () => {
+  w.TM_UI.applySeed("L2", { worked: true });
+  $("mode").value = "worst";
+  $("mode").dispatchEvent(new w.Event("change"));
+  w.TM_UI.selectComponent("cmp.policy-kb");
+  const reached = Array.prototype.filter.call(w.document.querySelectorAll("#graph .node"), (n) => n.querySelector("text.nstate"));
+  assert.ok(reached.length >= 2, "seed cascade paints state on more than one node");
+  reached.forEach((node) => {
+    const owner = node.querySelector("text.nowner");
+    const state = node.querySelector("text.nstate");
+    const status = node.querySelector("text.nstatus");
+    assert.ok(owner && state && status, node.getAttribute("data-id"));
+    assert.notStrictEqual(owner.getAttribute("y"), state.getAttribute("y"), node.getAttribute("data-id") + ": owner and state must not share a row");
+    assert.strictEqual(state.getAttribute("y"), status.getAttribute("y"), node.getAttribute("data-id") + ": state shares the status row");
+    assert.ok(/impacted|failed|exposed/.test(state.textContent), state.textContent);
+  });
+});
+
 test("a placeholder owner is not shown or exported as verified", () => {
   assert.strictEqual(TM.statusWord({ record_status: "placeholder", placeholder: true }), "Placeholder");
   assert.strictEqual(TM.statusWord({ record_status: "verified", placeholder: true, approved_by: "Bill Stout", approved_on: "2026-11-18" }), "Placeholder");

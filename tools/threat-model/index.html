@@ -24166,12 +24166,15 @@ if (typeof module !== "undefined") module.exports = TM;
       var gap = TM.ownerIsGap(c.owner);
       var sel = STATE.selected === c.id;
       var nameLines = wrap(c.name, 24);
-      var ol = (gap ? "\u26a0 " : "") + TM.ownerLabel(c.owner), maxc = st ? 22 : 32;
+      // Owner keeps the middle row alone. Cascade state shares the bottom row with
+      // Placeholder / Verified (right-aligned), so "impacted" never covers the owner.
+      var ol = (gap ? "\u26a0 " : "") + TM.ownerLabel(c.owner), maxc = 28;
       if (ol.length > maxc) ol = ol.slice(0, maxc - 1) + "\u2026";
       var statusText = TM.statusWord(c.owner);
       var controlGap = TM.componentControlGap(m, c.id);
+      var stateText = st ? st + (loweredIds[c.id] ? "\u2193" : "") : "";
       // The accessible name starts with the visible text, then adds the full name and owner.
-      var visible = nameLines.join(" ") + " " + ol + " " + statusText + (controlGap ? " " + TM.CONTROL_GAP_MARK : "") + (st ? " " + st + (loweredIds[c.id] ? "\u2193" : "") : "");
+      var visible = nameLines.join(" ") + " " + ol + " " + statusText + (controlGap ? " " + TM.CONTROL_GAP_MARK : "") + (stateText ? " " + stateText : "");
       var extra = [];
       if (nameLines.join(" ") !== c.name) extra.push("Full name: " + c.name);
       if (ol !== (gap ? "\u26a0 " : "") + TM.ownerLabel(c.owner)) extra.push("Owner: " + TM.ownerLabel(c.owner));
@@ -24184,7 +24187,7 @@ if (typeof module !== "undefined") module.exports = TM;
       svg.push('<text x="' + (p.x + 6) + '" y="' + (p.y + 40) + '" class="nowner">' + esc(ol) + "</text> ");
       svg.push('<text x="' + (p.x + 6) + '" y="' + (p.y + 52) + '" class="nstatus">' + esc(statusText) + "</text> ");
       if (controlGap) svg.push('<text x="' + (p.x + 6) + '" y="' + (p.y + 62) + '" class="ngap">' + esc(TM.CONTROL_GAP_MARK) + "</text> ");
-      if (st) svg.push('<text x="' + (p.x + NW - 4) + '" y="' + (p.y + 40) + '" class="nstate" text-anchor="end">' + st + (loweredIds[c.id] ? "\u2193" : "") + "</text>");
+      if (stateText) svg.push('<text x="' + (p.x + NW - 4) + '" y="' + (p.y + 52) + '" class="nstate" text-anchor="end">' + esc(stateText) + "</text>");
       svg.push("</g>");
     });
     svg.push("</svg>");
