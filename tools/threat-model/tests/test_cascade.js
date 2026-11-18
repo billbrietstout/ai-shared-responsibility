@@ -1077,12 +1077,17 @@ test("UI: Start from offers L1, L2, and L5, keeps the example picker, and seeds 
   const radios = w.document.querySelectorAll('input[name="start-from"]');
   assert.strictEqual(radios.length, 3);
   assert.deepStrictEqual(Array.prototype.map.call(radios, (r) => r.value), ["L1", "L2", "L5"]);
-  const note = $("start-l34").innerHTML;
+  const note = $("start-l34");
+  assert.ok(note.textContent.indexOf("No Start from for L3 or L4") >= 0);
+  assert.ok(note.textContent.indexOf("application layer (L3)") >= 0);
+  assert.ok(note.textContent.indexOf("platform layer (L4)") >= 0);
   ["https://genai.owasp.org/llm-top-10/", "https://owaspai.org/", "https://atlas.mitre.org/", "https://github.com/cosai-oasis/secure-ai-tooling/tree/main/risk-map"].forEach((url) => {
-    assert.ok(note.indexOf(url) >= 0, url);
+    assert.ok(note.innerHTML.indexOf(url) >= 0, url);
   });
-  assert.ok($("start-l34").textContent.indexOf("application layer (L3)") >= 0);
-  assert.ok($("start-l34").textContent.indexOf("platform layer (L4)") >= 0);
+  const choices = Array.from($("start-from").querySelector(".start-choices").children);
+  assert.strictEqual(choices.indexOf(radios[1].closest("label")), 1);
+  assert.strictEqual(choices.indexOf(note), 2);
+  assert.strictEqual(choices.indexOf(radios[2].closest("label")), 3);
   assert.ok(w.document.querySelector("a.skip-link").getAttribute("href") === "#workspace");
   assert.ok(w.document.querySelector("site-nav"));
   assert.ok(w.document.querySelector("site-footer"));
