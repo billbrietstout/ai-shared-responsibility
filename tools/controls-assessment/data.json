@@ -6,7 +6,7 @@
     "badge": "AICM ALIGNED",
     "pdfFilename": "CoSAI-Controls-Assessment-AICM.pdf",
     "storageKey": "cosai-wizard:controls-assessment:v2",
-    "version": 2,
+    "version": 3,
     "sources": [
       "CoSAI AI Shared Responsibility Framework, V1.0 (2026)",
       "CSA AICM v1.0.3",
@@ -31,14 +31,23 @@
       },
       {
         "key": "deployment",
-        "label": "Deployment model",
+        "label": "SRF operating model",
         "multiple": false,
+        "help": "Choose the CoSAI SRF v1.0 operating model for the AI system you are assessing. If parts of the system run under different models, choose the model for the component you are assessing and assess the other components separately.",
+        "help_link": { "href": "/operating-models/", "text": "Read the full operating model definitions" },
+        "definitions_source": "CoSAI Shared Responsibility Framework v1.0, Appendix A.2 (Operating Model Specifications)",
         "options": [
-          { "value": "saas",    "label": "SaaS / Third-party hosted" },
-          { "value": "paas",    "label": "PaaS / Cloud platform" },
-          { "value": "onprem",  "label": "On-premises" },
-          { "value": "hybrid",  "label": "Hybrid" }
-        ]
+          { "value": "AI-SaaS",    "label": "AI-SaaS",    "description": "Fully managed AI applications delivered as complete business solutions where the provider manages the entire stack from infrastructure through application delivery." },
+          { "value": "AI-PaaS",    "label": "AI-PaaS",    "description": "Managed AI platform services that provide infrastructure, tools, and pre-trained models as building blocks for developing custom AI applications." },
+          { "value": "Agent-PaaS", "label": "Agent-PaaS", "description": "Specialized platforms for building and orchestrating autonomous AI agent systems." },
+          { "value": "IaaS",       "label": "IaaS",       "description": "Organizations manage AI applications and platforms on cloud infrastructure, with maximum control and responsibility across all layers." }
+        ],
+        "legacy_values": {
+          "saas":   { "to": "AI-SaaS", "was": "SaaS / Third-party hosted", "note": "Your saved assessment said \"SaaS / Third-party hosted.\" It now reads AI-SaaS." },
+          "paas":   { "to": "AI-PaaS", "was": "PaaS / Cloud platform", "note": "Your saved assessment said \"PaaS / Cloud platform.\" It now reads AI-PaaS. If the platform is for building and running AI agents, choose Agent-PaaS instead." },
+          "onprem": { "to": "IaaS", "shown_as": "IaaS (self-hosted)", "was": "On-premises", "note": "Your saved assessment said \"On-premises.\" The SRF has no on-premises model. It now reads IaaS (self-hosted), the closest SRF model, because you run the application, platform, and model layers. On premises you also run the infrastructure that an IaaS provider would run. Confirm this choice or change it." },
+          "hybrid": { "to": null, "was": "Hybrid", "note": "Your saved assessment said \"Hybrid.\" The SRF has no hybrid model. It sets the operating model for each component. Choose the model for the component you are assessing." }
+        }
       },
       {
         "key": "stage",

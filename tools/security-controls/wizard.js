@@ -30,6 +30,7 @@
       l1: {}, l2: {}, l3: {}, l4: {}, l5: {},
       owasp: {},
       completedPhases: [],
+      migrated: {},
     };
   }
 
@@ -110,16 +111,102 @@
                       data-handler="${handler}">${o.label}</button>`;
           })
           .join('');
+        const help = field.help
+          ? `<p class="form-help" id="help-${field.key}">${esc(field.help)}${field.help_link
+            ? ` <a href="${esc(field.help_link.href)}">${esc(field.help_link.text)}</a>.` : ''}</p>`
+          : '';
+        const defs = field.options.some((o) => o.description)
+          ? `<dl class="form-defs">${field.options
+            .filter((o) => o.description)
+            .map((o) => `<dt>${esc(o.label)}</dt><dd>${esc(o.description)}</dd>`)
+            .join('')}</dl>${field.definitions_source
+            ? `<p class="form-source">Definitions: ${esc(field.definitions_source)}.</p>` : ''}`
+          : '';
+        const note = field.legacy_values
+          ? `<p class="form-note" id="note-${field.key}" role="status" hidden></p>`
+          : '';
         return `
           <div class="form-row">
             <label class="form-label" id="lbl-${field.key}">${field.label}</label>
+            ${help}
             <div class="btn-group" role="${field.multiple ? 'group' : 'radiogroup'}"
-                 aria-labelledby="lbl-${field.key}" data-group="${field.key}">${opts}</div>
+                 aria-labelledby="lbl-${field.key}"${field.help ? ` aria-describedby="help-${field.key}"` : ''}
+                 data-group="${field.key}">${opts}</div>
+            ${note}
+            ${defs}
           </div>`;
       })
       .join('');
     const intro = document.getElementById('context-intro');
     if (intro) intro.textContent = DATA.context.intro;
+  }
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // Saved or imported assessments from before version 3 used deployment
+  // values (saas, paas, onprem, hybrid) that are not SRF v1.0 operating
+  // models. data.json legacy_values says how each one maps. The mapping is
+  // recorded in state.migrated so the note, the PDF, and the export all say
+  // what changed. A value that is neither current nor legacy is cleared.
+  function migrateLegacyValues() {
+    if (!state.migrated || typeof state.migrated !== 'object') state.migrated = {};
+    DATA.context.fields.forEach((field) => {
+      if (field.multiple) return;
+      const val = state[field.key];
+      if (val == null || val === '') return;
+      if (field.options.some((o) => o.value === val)) return;
+      const legacy = field.legacy_values && field.legacy_values[val];
+      if (legacy) {
+        state[field.key] = legacy.to;
+        state.migrated[field.key] = { from: val, was: legacy.was, to: legacy.to };
+      } else if (field.legacy_values) {
+        state[field.key] = null;
+        state.migrated[field.key] = { from: val, was: String(val), to: null };
+      }
+    });
+  }
+
+  function legacyNote(field, rec) {
+    const legacy = field.legacy_values && field.legacy_values[rec.from];
+    if (legacy) return legacy.note;
+    return 'Your saved assessment had "' + rec.was + '", which is not an SRF operating model. Choose one.';
+  }
+
+  function renderMigrationNotes() {
+    DATA.context.fields.forEach((field) => {
+      const el = document.getElementById('note-' + field.key);
+      if (!el) return;
+      const rec = state.migrated && state.migrated[field.key];
+      el.hidden = !rec;
+      el.textContent = rec ? legacyNote(field, rec) : '';
+    });
+  }
+
+  // Display label for a single-select context value. A value mapped from a
+  // legacy answer can carry its own label, such as "IaaS (self-hosted)".
+  function contextLabel(key) {
+    const field = DATA.context.fields.find((f) => f.key === key);
+    const val = state[key];
+    if (!field || val == null || val === '') return null;
+    const rec = state.migrated && state.migrated[key];
+    const legacy = rec && field.legacy_values && field.legacy_values[rec.from];
+    if (legacy && legacy.shown_as && legacy.to === val) return legacy.shown_as;
+    const opt = field.options.find((o) => o.value === val);
+    return opt ? opt.label : String(val);
+  }
+
+  function operatingModelLine() {
+    const rec = state.migrated && state.migrated.deployment;
+    const label = contextLabel('deployment');
+    if (label) {
+      return 'SRF operating model: ' + label + (rec ? ' (mapped from saved answer "' + rec.was + '")' : '');
+    }
+    if (rec) return 'SRF operating model: not chosen (saved answer "' + rec.was + '" has no SRF equivalent)';
+    return null;
   }
 
   function phaseLabel(p) {
@@ -277,6 +364,10 @@
     btn.classList.add('sel');
     btn.setAttribute('aria-checked', 'true');
     state[key] = val;
+    if (state.migrated && state.migrated[key]) {
+      delete state.migrated[key];
+      renderMigrationNotes();
+    }
     persist();
     updateLivePanel();
   }
@@ -431,6 +522,7 @@
       if (!raw) return;
       const parsed = JSON.parse(raw);
       hydrate(parsed);
+      persist();
     } catch (e) {
       console.warn('wizard: failed to restore state', e);
     }
@@ -441,6 +533,8 @@
     Object.assign(state, emptyState(), snapshot);
     if (!Array.isArray(state.completedPhases)) state.completedPhases = [];
     if (!Array.isArray(state.datasensitivity)) state.datasensitivity = [];
+    migrateLegacyValues();
+    renderMigrationNotes();
 
     // Re-apply context selections.
     DATA.context.fields.forEach((field) => {
@@ -555,6 +649,7 @@
     if (!confirm('Clear all answers and start over?')) return;
     Object.assign(state, emptyState());
     try { localStorage.removeItem(STORAGE_KEY); } catch (_) { /* noop */ }
+    renderMigrationNotes();
     // reset DOM
     document.querySelectorAll('.btn-opt').forEach((b) => {
       b.classList.remove('sel');
@@ -851,7 +946,7 @@
 
     const ctxLines = [
       state.aitype ? 'AI Type: ' + state.aitype : null,
-      state.deployment ? 'Deployment: ' + state.deployment : null,
+      operatingModelLine(),
       state.stage ? 'Stage: ' + state.stage : null,
       state.datasensitivity && state.datasensitivity.length ? 'Data sensitivity: ' + state.datasensitivity.join(', ') : null,
     ].filter(Boolean);
