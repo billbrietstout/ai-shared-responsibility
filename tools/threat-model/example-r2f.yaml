@@ -1,0 +1,1415 @@
+# Illustrative example: agentic Request to Fulfill (internal IT requests).
+# Distinct from Incident to Resolution, which tracks a customer-reported break. APQC match is partial.
+# DRAFT, Nov 18, 2026 (PT). Every owner is a placeholder. Every obligation is
+# unverified: no legal source was checked. Not legal advice.
+tm_schema_version: 0.1.0-draft
+system:
+  disclaimer: Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal advice. Not part of CoSAI SRF v1.0.
+  id: sys.r2f-agentic
+  name: Agentic Request to Fulfill (example)
+  description: Illustrative example. An employee asks internal IT for access, equipment, or a standard change, and the process fulfills the request or refuses it. Incident to Resolution tracks a customer-reported product or service break and the customer notice. Request to Fulfill changes an internal entitlement or completes an internal request. An orchestration agent and five sub-agents run on a reasoning LLM from an AI Model Provider. Hard rules (no self-approval, privilege caps, a production change window, and segregation of duties) are enforced by a policy service outside the model. Entitlement is scored by a separate component that is not on the reasoning-LLM path. Every owner is a placeholder.
+  operating_model: Agent-PaaS
+  operating_model_note: Example assumption. Bill to confirm.
+  as_of: '2026-11-16'
+  snapshot_id: null
+  overlays_enabled: []
+  apqc_pcf:
+  - number: '8.0'
+    version: v8.0
+    name: Manage Information Technology (IT)
+    match: partial
+    note: Partial match. The fact check did not give an element ID for this number.
+  - number: '8.1'
+    version: v8.0
+    name: Develop and manage IT customer relationships
+    match: partial
+    element_id: '20608'
+  - number: 8.1.5.3
+    version: v8.0
+    name: Maintain IT services catalog
+    match: partial
+    element_id: '20635'
+  - number: 8.3.8.3
+    version: v8.0
+    name: Manage IT user authorization
+    match: partial
+    element_id: '20759'
+    note: Access requests.
+  - number: 8.7.8.3
+    version: v8.0
+    name: Manage IT user requests
+    match: partial
+    element_id: '20925'
+snapshots:
+- id: snap.nov16
+  name: As built, Nov 16, 2026
+  as_of: '2026-11-16'
+- id: snap.dec01
+  name: Planned December release
+  as_of: '2026-12-01'
+stakeholders:
+- id: stk.r2f-workers
+  name: Employees and contractors named in requests
+  kind: affected_individuals
+  affected_by_component_ids:
+  - cmp.r2f-step-request
+  - cmp.r2f-step-entitlement
+  - cmp.r2f-step-plan
+  - cmp.r2f-step-fulfill
+  - cmp.r2f-step-exception
+- id: stk.r2f-named
+  name: Other people named on a worker record
+  kind: affected_individuals
+  affected_by_component_ids:
+  - cmp.r2f-step-entitlement
+  - cmp.r2f-step-fulfill
+- id: stk.r2f-privacy-authority
+  name: Data protection or privacy authority (candidate, unverified)
+  kind: relevant_authority
+  affected_by_component_ids:
+  - cmp.r2f-directory
+  - cmp.r2f-history
+- id: stk.r2f-audit
+  name: Internal audit function (candidate; not an owner)
+  kind: relevant_authority
+  affected_by_component_ids:
+  - cmp.r2f-step-close
+  - cmp.r2f-step-exception
+- id: stk.r2f-access-authority
+  name: Authority for privileged access (candidate, unverified)
+  kind: relevant_authority
+  affected_by_component_ids:
+  - cmp.r2f-step-fulfill
+  - cmp.r2f-step-exception
+  vertical: privileged-access
+- id: stk.r2f-privileged
+  name: Workers who would receive privilege above their role
+  kind: affected_individuals
+  affected_by_component_ids:
+  - cmp.r2f-step-fulfill
+  - cmp.r2f-step-exception
+  vertical: privileged-access
+overlays:
+- id: privileged-access
+  name: Privileged access overlay
+  description: Adds obligations and threats for privilege above the role and for production changes outside the window. All entries are unverified and need counsel.
+  status: draft
+components:
+- id: cmp.r2f-process
+  name: Request to Fulfill process
+  layer: L1
+  type: business_process
+  owner:
+    status: assigned
+    name: IT process owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+  srf_component: Processes & Governance
+- id: cmp.r2f-logic
+  name: Request orchestration logic (step order, routing, exceptions)
+  layer: L1
+  type: business_logic
+  owner:
+    status: assigned
+    name: IT process owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+  srf_component: Processes & Governance
+  logic:
+    version: '1.0'
+    approved_by: IT process owner (placeholder)
+    approved_on: '2026-10-01'
+    change_control: L1 approval for every version
+- id: cmp.hard-rules
+  name: Hard rules (no self-approval, privilege caps, production change window, segregation of duties)
+  layer: L1
+  type: business_logic
+  owner:
+    status: assigned
+    name: IT control owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+  srf_component: Processes & Governance
+  logic:
+    version: '2.0'
+    approved_by: IT control owner (placeholder)
+    approved_on: '2026-09-15'
+    change_control: L1 approval for every version
+- id: cmp.r2f-step-request
+  name: 1. Request intake
+  layer: L1
+  type: process_step
+  owner:
+    status: assigned
+    name: Service desk owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+- id: cmp.r2f-step-entitlement
+  name: 2. Entitlement score
+  layer: L1
+  type: process_step
+  owner:
+    status: assigned
+    name: Identity owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+- id: cmp.r2f-step-classify
+  name: 3. Classification
+  layer: L1
+  type: process_step
+  owner:
+    status: assigned
+    name: Request triage owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+- id: cmp.r2f-step-plan
+  name: 4. Fulfillment plan
+  layer: L1
+  type: process_step
+  owner:
+    status: assigned
+    name: Request operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+- id: cmp.r2f-step-fulfill
+  name: 5. Privileged fulfillment
+  layer: L1
+  type: process_step
+  owner:
+    status: assigned
+    name: Access owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+- id: cmp.r2f-step-exception
+  name: 6. Exception approval
+  layer: L1
+  type: process_step
+  owner:
+    status: assigned
+    name: Change owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+  multiplicity_overrides:
+  - rule_id: MD-02
+    lower: 0
+    upper: 2
+    reason: 'Placeholder: a planned change-calendar tool may realize this step alongside the exception agent during the pilot.'
+- id: cmp.r2f-step-close
+  name: 7. Closure and review
+  layer: L1
+  type: process_step
+  owner:
+    status: assigned
+    name: IT quality lead (placeholder)
+    persona_id: srf.role.ai-system-governance
+    party: customer
+    placeholder: true
+- id: cmp.r2f-directory
+  name: Worker and entitlement directory
+  layer: L2
+  type: data_store
+  owner:
+    status: assigned
+    name: Directory data owner (placeholder)
+    persona_id: srf.role.data-provider
+    party: customer
+    placeholder: true
+  srf_component: Master Data Management
+- id: cmp.r2f-history
+  name: Request history
+  layer: L2
+  type: data_store
+  owner:
+    status: assigned
+    name: Request data owner (placeholder)
+    persona_id: srf.role.data-provider
+    party: customer
+    placeholder: true
+  srf_component: Master Data Management
+- id: cmp.r2f-inbound
+  name: Request form and chat text
+  layer: L2
+  type: input_channel
+  owner:
+    status: assigned
+    name: Service desk owner (placeholder)
+    persona_id: srf.role.data-provider
+    party: customer
+    placeholder: true
+  notes: Untrusted input. Request text enters the agents here.
+- id: cmp.r2f-feed
+  name: Identity directory feed
+  layer: L2
+  type: data_feed
+  owner:
+    status: assigned
+    name: Identity directory vendor (placeholder)
+    persona_id: srf.role.data-provider
+    party: provider
+    placeholder: true
+- id: cmp.orchestrator
+  name: Request orchestration agent
+  layer: L3
+  type: orchestrator
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Agents & Orchestration Models
+- id: cmp.r2f-agent-request
+  name: Request agent
+  layer: L3
+  type: sub_agent
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Agents & Orchestration Models
+- id: cmp.r2f-agent-classify
+  name: Classification agent
+  layer: L3
+  type: sub_agent
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Agents & Orchestration Models
+- id: cmp.r2f-agent-plan
+  name: Fulfillment-plan agent
+  layer: L3
+  type: sub_agent
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Agents & Orchestration Models
+- id: cmp.r2f-agent-fulfill
+  name: Fulfillment agent
+  layer: L3
+  type: sub_agent
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Agents & Orchestration Models
+- id: cmp.r2f-agent-exception
+  name: Exception agent
+  layer: L3
+  type: sub_agent
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Agents & Orchestration Models
+- id: cmp.r2f-entitlement-score
+  name: Entitlement score
+  layer: L3
+  type: ai_component
+  owner:
+    status: assigned
+    name: Identity analytics lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: APIs & Fine-tuned Models
+- id: cmp.r2f-cmdb-tool
+  name: Shared directory lookup tool
+  layer: L3
+  type: tool
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: APIs & Fine-tuned Models
+  notes: A shared part used by the request and fulfillment-plan agents.
+- id: cmp.policy-service
+  name: Policy service (hard rules outside the model)
+  layer: L3
+  type: policy_service
+  owner:
+    status: assigned
+    name: IT platform lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Application Platforms
+- id: cmp.model-settings
+  name: Model settings (version, reasoning effort, fallback)
+  layer: L3
+  type: model_settings
+  owner:
+    status: assigned
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    party: customer
+    placeholder: true
+  srf_component: Agents & Orchestration Models
+  settings:
+    model_version: pinned (example)
+    reasoning_effort: high
+    fallback: smaller model under load
+    change_approver: IT process owner (placeholder)
+  versions:
+  - version: 2026-12
+    from: '2026-12-01'
+    note: New pinned model version (example).
+    set:
+      settings:
+        model_version: new pinned version (example)
+        reasoning_effort: high
+        fallback: smaller model under load
+        change_approver: IT process owner (placeholder)
+- id: cmp.agent-runtime
+  name: Agent runtime
+  layer: L4
+  type: agent_runtime
+  owner:
+    status: assigned
+    name: Agent platform vendor (placeholder)
+    persona_id: srf.role.agentic-platform-provider
+    party: provider
+    placeholder: true
+  srf_component: Compute Infrastructure
+- id: cmp.llm-gateway
+  name: LLM gateway
+  layer: L4
+  type: gateway
+  owner:
+    status: assigned
+    name: Model serving team (placeholder)
+    persona_id: srf.role.ai-model-serving
+    party: provider
+    placeholder: true
+  srf_component: LLM Routers & Gateways
+- id: cmp.guardrails
+  name: Guardrails and output filters
+  layer: L4
+  type: guardrail
+  owner:
+    status: assigned
+    name: Model serving team (placeholder)
+    persona_id: srf.role.ai-model-serving
+    party: provider
+    placeholder: true
+  srf_component: Guardrails & Safety Systems
+- id: cmp.site-network
+  name: IT operations network link
+  layer: L4
+  type: network
+  owner:
+    status: assigned
+    name: Network operations lead (placeholder)
+    persona_id: srf.role.ai-platform-provider
+    party: customer
+    placeholder: true
+- id: cmp.site-edge
+  name: Endpoint management host
+  layer: L4
+  type: edge_ot_host
+  owner:
+    status: assigned
+    name: Endpoint operations lead (placeholder)
+    persona_id: srf.role.ai-platform-provider
+    party: customer
+    placeholder: true
+  srf_component: Compute Infrastructure
+- id: cmp.reasoning-llm
+  name: Reasoning LLM
+  layer: L5
+  type: model
+  owner:
+    status: assigned
+    name: Model vendor (placeholder)
+    persona_id: srf.role.model-provider
+    party: provider
+    placeholder: true
+  srf_component: Foundation Models
+- id: cmp.fallback-llm
+  name: Fallback LLM (smaller, cheaper)
+  layer: L5
+  type: model
+  owner:
+    status: assigned
+    name: Model vendor (placeholder)
+    persona_id: srf.role.model-provider
+    party: provider
+    placeholder: true
+  srf_component: Foundation Models
+relationships:
+- id: rel.c1
+  from: cmp.r2f-process
+  to: cmp.r2f-step-request
+  type: composition
+  cascade: hard
+- id: rel.c2
+  from: cmp.r2f-process
+  to: cmp.r2f-step-entitlement
+  type: composition
+  cascade: hard
+- id: rel.c3
+  from: cmp.r2f-process
+  to: cmp.r2f-step-classify
+  type: composition
+  cascade: hard
+- id: rel.c4
+  from: cmp.r2f-process
+  to: cmp.r2f-step-plan
+  type: composition
+  cascade: hard
+- id: rel.c5
+  from: cmp.r2f-process
+  to: cmp.r2f-step-fulfill
+  type: composition
+  cascade: hard
+- id: rel.c6
+  from: cmp.r2f-process
+  to: cmp.r2f-step-exception
+  type: composition
+  cascade: hard
+- id: rel.c7
+  from: cmp.r2f-process
+  to: cmp.r2f-step-close
+  type: composition
+  cascade: hard
+- id: rel.c8
+  from: cmp.r2f-process
+  to: cmp.r2f-logic
+  type: composition
+  cascade: hard
+- id: rel.c9
+  from: cmp.r2f-process
+  to: cmp.hard-rules
+  type: composition
+  cascade: hard
+- id: rel.r1
+  from: cmp.orchestrator
+  to: cmp.r2f-logic
+  type: realization
+  cascade: hard
+  multiplicity:
+    lower: 1
+    upper: 1
+  logic_version: '1.0'
+  l1_approval:
+    approved_by: IT process owner (placeholder)
+    approved_on: '2026-10-01'
+    ref: Example only. Request logic v1.0 runbook (placeholder)
+- id: rel.r2
+  from: cmp.policy-service
+  to: cmp.hard-rules
+  type: realization
+  cascade: hard
+  multiplicity:
+    lower: 1
+    upper: 1
+  logic_version: '2.0'
+  l1_approval:
+    approved_by: IT control owner (placeholder)
+    approved_on: '2026-09-15'
+- id: rel.r3
+  from: cmp.r2f-agent-request
+  to: cmp.r2f-step-request
+  type: realization
+  cascade: hard
+  l1_approval:
+    approved_by: Service desk owner (placeholder)
+    approved_on: '2026-10-01'
+- id: rel.r4
+  from: cmp.r2f-entitlement-score
+  to: cmp.r2f-step-entitlement
+  type: realization
+  cascade: hard
+  l1_approval:
+    approved_by: Identity owner (placeholder)
+    approved_on: '2026-10-01'
+- id: rel.r5
+  from: cmp.r2f-agent-classify
+  to: cmp.r2f-step-classify
+  type: realization
+  cascade: hard
+  l1_approval:
+    approved_by: Request triage owner (placeholder)
+    approved_on: '2026-10-01'
+- id: rel.r6
+  from: cmp.r2f-agent-plan
+  to: cmp.r2f-step-plan
+  type: realization
+  cascade: hard
+  l1_approval:
+    approved_by: Request operations owner (placeholder)
+    approved_on: '2026-10-01'
+- id: rel.r7
+  from: cmp.r2f-agent-fulfill
+  to: cmp.r2f-step-fulfill
+  type: realization
+  cascade: hard
+  l1_approval:
+    approved_by: Access owner (placeholder)
+    approved_on: '2026-10-01'
+- id: rel.r8
+  from: cmp.r2f-agent-exception
+  to: cmp.r2f-step-exception
+  type: realization
+  cascade: hard
+  l1_approval:
+    approved_by: Change owner (placeholder)
+    approved_on: '2026-10-01'
+- id: rel.r9
+  from: cmp.orchestrator
+  to: cmp.r2f-step-close
+  type: realization
+  cascade: hard
+  multiplicity:
+    lower: 1
+    upper: 1
+  l1_approval:
+    approved_by: IT quality lead (placeholder)
+    approved_on: '2026-10-01'
+- id: rel.s6
+  from: cmp.policy-service
+  to: cmp.r2f-agent-fulfill
+  type: serving
+  cascade: hard
+- id: rel.s7
+  from: cmp.policy-service
+  to: cmp.r2f-agent-exception
+  type: serving
+  cascade: hard
+- id: rel.g1
+  from: cmp.r2f-agent-request
+  to: cmp.r2f-cmdb-tool
+  type: aggregation
+  cascade: hard
+  note: Shared knowledge-retrieval tool. A part with two wholes uses aggregation, not composition.
+- id: rel.g2
+  from: cmp.r2f-agent-plan
+  to: cmp.r2f-cmdb-tool
+  type: aggregation
+  cascade: hard
+- id: rel.x1
+  from: cmp.r2f-agent-request
+  to: cmp.r2f-directory
+  type: access
+  cascade: hard
+  access_mode: read
+  carries: worker and entitlement fields
+- id: rel.x2
+  from: cmp.r2f-agent-request
+  to: cmp.r2f-history
+  type: access
+  cascade: hard
+  access_mode: write
+  carries: new requests
+- id: rel.x3
+  from: cmp.r2f-agent-classify
+  to: cmp.r2f-history
+  type: access
+  cascade: hard
+  access_mode: readwrite
+  carries: classification and routing
+- id: rel.x4
+  from: cmp.r2f-agent-plan
+  to: cmp.r2f-history
+  type: access
+  cascade: hard
+  access_mode: readwrite
+  carries: fulfillment plan notes
+- id: rel.x5
+  from: cmp.r2f-agent-fulfill
+  to: cmp.r2f-history
+  type: access
+  cascade: soft
+  access_mode: write
+  carries: fulfillment records
+- id: rel.x6
+  from: cmp.r2f-entitlement-score
+  to: cmp.r2f-directory
+  type: access
+  cascade: soft
+  access_mode: read
+  carries: entitlement fields
+- id: rel.f1
+  from: cmp.r2f-inbound
+  to: cmp.r2f-agent-request
+  type: flow
+  cascade: hard
+  carries: untrusted request text
+- id: rel.f2
+  from: cmp.r2f-feed
+  to: cmp.r2f-entitlement-score
+  type: flow
+  cascade: hard
+  carries: identity directory data
+- id: rel.u1
+  from: cmp.r2f-feed
+  to: cmp.r2f-directory
+  unclassified: true
+  note: Does the identity-verification feed update customer profile data directly? Type not yet known.
+- id: rel.t1
+  from: cmp.r2f-step-request
+  to: cmp.r2f-step-entitlement
+  type: triggering
+  cascade: soft
+- id: rel.t2
+  from: cmp.r2f-step-entitlement
+  to: cmp.r2f-step-classify
+  type: triggering
+  cascade: soft
+- id: rel.t3
+  from: cmp.r2f-step-classify
+  to: cmp.r2f-step-plan
+  type: triggering
+  cascade: soft
+- id: rel.t4
+  from: cmp.r2f-step-plan
+  to: cmp.r2f-step-fulfill
+  type: triggering
+  cascade: soft
+- id: rel.t5
+  from: cmp.r2f-step-fulfill
+  to: cmp.r2f-step-exception
+  type: triggering
+  cascade: soft
+- id: rel.t6
+  from: cmp.r2f-step-exception
+  to: cmp.r2f-step-close
+  type: triggering
+  cascade: soft
+- id: rel.i1
+  from: obl.r2f-policy
+  to: ctl.r2f-privilege-cap
+  type: influence
+  cascade: soft
+  note: Obligation drives the control (motivation). This link does not cascade failures.
+- id: rel.s1
+  from: cmp.llm-gateway
+  to: cmp.orchestrator
+  type: serving
+  cascade: hard
+- id: rel.s2
+  from: cmp.reasoning-llm
+  to: cmp.llm-gateway
+  type: serving
+  cascade: hard
+- id: rel.s3
+  from: cmp.fallback-llm
+  to: cmp.llm-gateway
+  type: serving
+  cascade: soft
+- id: rel.s4
+  from: cmp.model-settings
+  to: cmp.llm-gateway
+  type: serving
+  cascade: hard
+- id: rel.s5
+  from: cmp.policy-service
+  to: cmp.orchestrator
+  type: serving
+  cascade: hard
+- id: rel.s8
+  from: cmp.guardrails
+  to: cmp.orchestrator
+  type: serving
+  cascade: soft
+  provides: controls
+- id: rel.s9
+  from: cmp.guardrails
+  to: cmp.llm-gateway
+  type: serving
+  cascade: soft
+  provides: controls
+- id: rel.a1
+  from: cmp.agent-runtime
+  to: cmp.orchestrator
+  type: assignment
+  cascade: hard
+- id: rel.f13
+  from: cmp.orchestrator
+  to: cmp.llm-gateway
+  type: flow
+  cascade: soft
+  carries: prompts and business context
+- id: rel.f14
+  from: cmp.llm-gateway
+  to: cmp.reasoning-llm
+  type: flow
+  cascade: soft
+  carries: prompts and business context
+- id: rel.f15
+  from: cmp.llm-gateway
+  to: cmp.fallback-llm
+  type: flow
+  cascade: soft
+  carries: prompts and business context
+- id: rel.f16
+  from: cmp.orchestrator
+  to: cmp.agent-runtime
+  type: flow
+  cascade: soft
+  carries: telemetry and decision logs
+- id: rel.f17
+  from: cmp.orchestrator
+  to: cmp.site-edge
+  type: flow
+  cascade: hard
+  carries: fulfillment action start and stop
+- id: rel.s10
+  from: cmp.site-network
+  to: cmp.site-edge
+  type: serving
+  cascade: hard
+- id: rel.d1
+  from: cmp.reasoning-llm
+  to: cmp.orchestrator
+  type: serving
+  cascade: hard
+  derived: true
+  derived_from:
+  - rel.s2
+  - rel.s1
+  note: The orchestrator depends on the reasoning LLM through the LLM gateway.
+- id: rel.f3
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-request
+  type: flow
+  cascade: hard
+  carries: instructions and delegated authority
+- id: rel.f8
+  from: cmp.r2f-agent-request
+  to: cmp.orchestrator
+  type: flow
+  cascade: soft
+  carries: results
+- id: rel.c11
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-request
+  type: composition
+  cascade: hard
+- id: rel.f4
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-classify
+  type: flow
+  cascade: hard
+  carries: instructions and delegated authority
+- id: rel.f9
+  from: cmp.r2f-agent-classify
+  to: cmp.orchestrator
+  type: flow
+  cascade: soft
+  carries: results
+- id: rel.c12
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-classify
+  type: composition
+  cascade: hard
+- id: rel.f5
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-plan
+  type: flow
+  cascade: hard
+  carries: instructions and delegated authority
+- id: rel.f10
+  from: cmp.r2f-agent-plan
+  to: cmp.orchestrator
+  type: flow
+  cascade: soft
+  carries: results
+- id: rel.c13
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-plan
+  type: composition
+  cascade: hard
+- id: rel.f6
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-fulfill
+  type: flow
+  cascade: hard
+  carries: instructions and delegated authority
+  containment_control_ids:
+  - ctl.r2f-privilege-cap
+- id: rel.f11
+  from: cmp.r2f-agent-fulfill
+  to: cmp.orchestrator
+  type: flow
+  cascade: soft
+  carries: results
+- id: rel.c14
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-fulfill
+  type: composition
+  cascade: hard
+- id: rel.f7
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-exception
+  type: flow
+  cascade: hard
+  carries: instructions and delegated authority
+  containment_control_ids:
+  - ctl.r2f-exception-gate
+- id: rel.f12
+  from: cmp.r2f-agent-exception
+  to: cmp.orchestrator
+  type: flow
+  cascade: soft
+  carries: results
+- id: rel.c15
+  from: cmp.orchestrator
+  to: cmp.r2f-agent-exception
+  type: composition
+  cascade: hard
+obligations:
+- id: obl.r2f-privacy
+  title: Protect personal information in worker and request records
+  instrument: Privacy law (candidate)
+  citation: null
+  instrument_type: law
+  strength: binding
+  in_force: unknown
+  applies_if: Directory or request records hold personal data of individuals in scope. Needs counsel.
+  vertical: baseline
+  verification:
+    status: unverified
+    method: none
+    checked_on: null
+- id: obl.r2f-policy
+  title: Score entitlement, keep privilege caps, and require an approver outside the change window
+  instrument: Internal request-handling policy (example)
+  citation: null
+  instrument_type: internal_policy
+  strength: binding
+  in_force: unknown
+  applies_if: null
+  vertical: baseline
+  verification:
+    status: unverified
+    method: none
+    checked_on: null
+- id: obl.r2f-confidentiality
+  title: Keep each worker's access record confidential
+  instrument: Employment terms (example)
+  citation: null
+  instrument_type: contract
+  strength: binding
+  in_force: unknown
+  applies_if: null
+  vertical: baseline
+  verification:
+    status: unverified
+    method: none
+    checked_on: null
+- id: obl.r2f-above-role
+  title: Do not grant privilege above the worker's role without the named approver
+  instrument: Privileged-access rules (candidate)
+  citation: null
+  instrument_type: internal_policy
+  strength: binding
+  in_force: unknown
+  applies_if: The request asks for privilege above the role. Needs counsel.
+  vertical: privileged-access
+  verification:
+    status: unverified
+    method: none
+    checked_on: null
+- id: obl.r2f-change-window
+  title: Do not make a production change outside the window without an approved exception
+  instrument: Production change rules (candidate)
+  citation: null
+  instrument_type: internal_policy
+  strength: binding
+  in_force: unknown
+  applies_if: The change would run in production outside the window. Needs counsel.
+  vertical: privileged-access
+  verification:
+    status: unverified
+    method: none
+    checked_on: null
+- id: obl.r2f-self
+  title: Do not let a requester approve their own privileged request
+  instrument: Segregation rules for access (candidate)
+  citation: null
+  instrument_type: internal_policy
+  strength: binding
+  in_force: unknown
+  applies_if: The requester is also the approver. Needs counsel.
+  vertical: privileged-access
+  verification:
+    status: unverified
+    method: none
+    checked_on: null
+controls:
+- id: ctl.r2f-logic-approval
+  title: L1 owner approves every version of the request orchestration logic
+  component_id: cmp.r2f-logic
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-sod
+  title: No agent can approve its own fulfillment (segregation of duties)
+  component_id: cmp.r2f-process
+  status: planned
+  applies_to_children: true
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-privilege-cap
+  title: Privilege cap enforced by the policy service; dual approval above the cap
+  component_id: cmp.policy-service
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-exception-gate
+  title: Exception path required outside the change window; the agent cannot approve its own exception
+  component_id: cmp.policy-service
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-gate
+  title: Entitlement score must pass, or a documented exception must be on file, before fulfillment
+  component_id: cmp.policy-service
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-input
+  title: Treat request text as data, never as instructions
+  component_id: cmp.r2f-agent-classify
+  status: planned
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-agent-identity
+  title: Each agent has a scoped identity and least-privilege tool access
+  component_id: cmp.agent-runtime
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-output-filter
+  title: Output filtering before any access change is applied
+  component_id: cmp.guardrails
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-confidentiality
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-regression
+  title: Regression test set run before any model, prompt or setting change; L1 owner approves results
+  component_id: cmp.model-settings
+  status: planned
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-settings-approval
+  title: L1 owner is named as the change approver for model settings
+  component_id: cmp.model-settings
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-decision-log
+  title: Log rule version, inputs, decision and authority for each request
+  component_id: cmp.orchestrator
+  status: planned
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-context
+  title: Agent context limited to one requester at a time
+  component_id: cmp.r2f-agent-fulfill
+  status: planned
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-confidentiality
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-master-change
+  title: Dual approval for changes to entitlement records
+  component_id: cmp.r2f-directory
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-threshold
+  title: Entitlement scores below a confidence threshold go to a person
+  component_id: cmp.r2f-cmdb-tool
+  status: in_place
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-policy
+    basis: editorial_inference
+    review_status: proposed
+- id: ctl.r2f-ov-1
+  title: Privilege above the role blocked until a named approver agrees
+  component_id: cmp.policy-service
+  status: planned
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-above-role
+    basis: editorial_inference
+    review_status: proposed
+  vertical: privileged-access
+- id: ctl.r2f-ov-2
+  title: Production changes outside the window blocked until the exception is approved
+  component_id: cmp.policy-service
+  status: planned
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-change-window
+    basis: editorial_inference
+    review_status: proposed
+  vertical: privileged-access
+- id: ctl.r2f-ov-3
+  title: Requester cannot approve their own privileged request
+  component_id: cmp.r2f-agent-exception
+  status: planned
+  applies_to_children: false
+  obligation_links:
+  - obligation_id: obl.r2f-self
+    basis: editorial_inference
+    review_status: proposed
+  vertical: privileged-access
+threats:
+- id: thr.spoofed-request
+  title: A crafted request makes the intake agent open a ticket for the wrong worker
+  risk:
+    asset: Request integrity
+    actor: Employee or attacker
+    failure_mode: Untrusted request text treated as a verified claim
+    impact: A request is opened on another worker's identity
+  target_component_id: cmp.r2f-agent-request
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-policy
+  - obl.r2f-privacy
+  control_ids:
+  - ctl.r2f-input
+  - ctl.r2f-gate
+  accountable: &id002
+    name: IT app team lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
+  stakeholder_ids: &id001
+  - stk.r2f-workers
+  - stk.r2f-privacy-authority
+  business_response_owner:
+    name: Service desk owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.logic-tamper
+  title: Unapproved edit to the orchestration logic skips the entitlement score
+  risk:
+    asset: Entitlement score
+    actor: Insider or compromised admin
+    failure_mode: Step order changed without L1 approval
+    impact: Fulfillment proceeds with no entitlement score
+  target_component_id: cmp.r2f-logic
+  failure_class: logic
+  obligation_ids:
+  - obl.r2f-policy
+  control_ids:
+  - ctl.r2f-logic-approval
+  - ctl.r2f-decision-log
+  accountable:
+    name: IT process owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+  stakeholder_ids:
+  - stk.r2f-workers
+- id: thr.llm-reinterprets
+  title: Reasoning LLM reads 'the user is locked out' as permission to skip the approver
+  risk:
+    asset: Privilege cap
+    actor: None (model behavior)
+    failure_mode: A lockout note is read as a waiver of the approver rule
+    impact: Privilege is granted with no approver
+  target_component_id: cmp.reasoning-llm
+  failure_class: model_behavior
+  obligation_ids:
+  - obl.r2f-policy
+  control_ids:
+  - ctl.r2f-privilege-cap
+  - ctl.r2f-output-filter
+  accountable:
+    name: Model vendor (placeholder)
+    persona_id: srf.role.model-provider
+    placeholder: true
+  stakeholder_ids: *id001
+  catalog_threat_id: null
+  catalog_note: No entry in /data/threats.json matches this threat. The catalog's model-behavior entries, such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording and no attacker is involved, so the threat is left unmapped.
+  business_response_owner:
+    name: Access owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+  notes: 'Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule /data/threats.json uses for model-behavior threats. The hard rules stay in the policy service, outside the model.'
+- id: thr.silent-fallback
+  title: Gateway falls back to a smaller model under load and fulfillment decisions change
+  risk:
+    asset: Fulfillment decisions
+    actor: None (settings)
+    failure_mode: Fallback model used without an L1-approved change
+    impact: Requests are classed or fulfilled differently than under the pinned model
+  target_component_id: cmp.model-settings
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-policy
+  control_ids:
+  - ctl.r2f-regression
+  - ctl.r2f-settings-approval
+  accountable: *id002
+  stakeholder_ids:
+  - stk.r2f-workers
+  business_response_owner:
+    name: Service desk owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.authority-creep
+  title: Orchestrator chains steps so a plan note is treated as fulfillment approval
+  risk:
+    asset: Segregation of duties
+    actor: None (step order)
+    failure_mode: A recommendation is treated as an approval
+    impact: Access is granted without the required authority
+  target_component_id: cmp.orchestrator
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-policy
+  control_ids:
+  - ctl.r2f-sod
+  - ctl.r2f-privilege-cap
+  - ctl.r2f-decision-log
+  accountable: *id002
+  stakeholder_ids:
+  - stk.r2f-workers
+  business_response_owner:
+    name: Access owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.privilege-persuasion
+  title: A requester argues the fulfillment agent into privilege above the cap
+  risk:
+    asset: Privilege cap
+    actor: Employee
+    failure_mode: Agent accepts a verbal workaround as authority
+    impact: Privilege above the cap is granted
+  target_component_id: cmp.r2f-agent-fulfill
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-policy
+  control_ids:
+  - ctl.r2f-privilege-cap
+  accountable: *id002
+  stakeholder_ids:
+  - stk.r2f-workers
+  catalog_threat_id: directpromptinjection
+  external_refs:
+  - source: owasp_ai_exchange
+    id: directpromptinjection
+    url: https://owaspai.org/go/directpromptinjection/
+  - source: owasp_llm_top10
+    id: LLM01:2025 Prompt Injection
+  - source: mitre_atlas
+    id: AML.T0051 LLM Prompt Injection
+  - source: biml_llm24
+    id: '[LLMtop10:5:prompt manipulation]'
+  business_response_owner:
+    name: Access owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.data-exposure
+  title: Plan agent puts one worker's access detail in another worker's ticket
+  risk:
+    asset: Worker confidentiality
+    actor: None (context mix-up)
+    failure_mode: Agent context crosses workers
+    impact: Another worker's access detail is disclosed
+  target_component_id: cmp.r2f-agent-plan
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-confidentiality
+  - obl.r2f-privacy
+  control_ids:
+  - ctl.r2f-context
+  - ctl.r2f-output-filter
+  accountable: *id002
+  stakeholder_ids: *id001
+  catalog_threat_id: dsgai11
+  external_refs:
+  - source: owasp_llm_top10
+    id: LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)
+  - source: owasp_dsgai
+    id: DSGAI11 Cross-Context & Multi-User Conversation Bleed
+  business_response_owner:
+    name: Request operations owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.master-data-poison
+  title: Entitlement record changed so a worker looks eligible for privilege they do not hold
+  risk:
+    asset: Entitlement records
+    actor: Insider or compromised account
+    failure_mode: Entitlement fields changed without dual approval
+    impact: Fulfillment uses a false eligibility
+  target_component_id: cmp.r2f-directory
+  failure_class: data
+  obligation_ids:
+  - obl.r2f-policy
+  - obl.r2f-privacy
+  control_ids:
+  - ctl.r2f-master-change
+  accountable:
+    name: Directory data owner (placeholder)
+    persona_id: srf.role.data-provider
+    placeholder: true
+  stakeholder_ids:
+  - stk.r2f-workers
+  catalog_threat_id: dsgai05
+  external_refs:
+  - source: owasp_dsgai
+    id: DSGAI05 Data Integrity & Validation Failures
+  business_response_owner:
+    name: Identity owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.guardrail-outage
+  title: Guardrail service is down and agents run without output filtering
+  risk:
+    asset: Access changes
+    actor: None (control loss)
+    failure_mode: Output filter unavailable
+    impact: An access change is applied with no filter
+  target_component_id: cmp.guardrails
+  failure_class: control_loss
+  obligation_ids:
+  - obl.r2f-confidentiality
+  - obl.r2f-privacy
+  control_ids:
+  - ctl.r2f-output-filter
+  accountable:
+    name: Model serving team (placeholder)
+    persona_id: srf.role.ai-model-serving
+    placeholder: true
+  stakeholder_ids: *id001
+  business_response_owner:
+    name: Service desk owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.entitlement-miss
+  title: Entitlement component marks a worker as eligible when the directory would not have
+  risk:
+    asset: Entitlement decision
+    actor: None (scoring error)
+    failure_mode: Score passes a worker the directory does not support
+    impact: Fulfillment starts for an ineligible worker
+  target_component_id: cmp.r2f-entitlement-score
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-policy
+  control_ids:
+  - ctl.r2f-threshold
+  - ctl.r2f-gate
+  accountable:
+    name: Identity analytics lead (placeholder)
+    persona_id: srf.role.application-developer
+    placeholder: true
+  stakeholder_ids:
+  - stk.r2f-workers
+  business_response_owner:
+    name: Identity owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+- id: thr.privilege-grant
+  title: Orchestrator grants privilege above the role with no named approver
+  risk:
+    asset: Privilege above the role
+    actor: None (step order)
+    failure_mode: Fulfillment runs without the approver the rule names
+    impact: A worker receives privilege above the role
+  target_component_id: cmp.orchestrator
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-above-role
+  - obl.r2f-self
+  control_ids:
+  - ctl.r2f-ov-1
+  - ctl.r2f-ov-3
+  - ctl.r2f-exception-gate
+  accountable: *id002
+  stakeholder_ids:
+  - stk.r2f-privileged
+  - stk.r2f-access-authority
+  business_response_owner:
+    name: Access owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+  vertical: privileged-access
+- id: thr.change-window
+  title: Fulfillment agent applies a production change outside the window
+  risk:
+    asset: Production change window
+    actor: None (model text)
+    failure_mode: The agent treats urgency as an exception
+    impact: A production change runs outside the window
+  target_component_id: cmp.r2f-agent-fulfill
+  failure_class: execution
+  obligation_ids:
+  - obl.r2f-change-window
+  control_ids:
+  - ctl.r2f-ov-2
+  - ctl.r2f-output-filter
+  accountable: *id002
+  stakeholder_ids:
+  - stk.r2f-workers
+  - stk.r2f-access-authority
+  business_response_owner:
+    name: Change owner (placeholder)
+    persona_id: srf.role.ai-system-governance
+    placeholder: true
+  vertical: privileged-access
