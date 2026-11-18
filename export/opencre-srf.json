@@ -12,7 +12,7 @@
     "proposed_cre_links": "CRE IDs and names verified against https://opencre.org/rest/v1/root_cres on 2026-07-12, reproduced verbatim. Links are proposals for review with the OpenCRE maintainers, not published mappings. Sections without an assignment await a working session; none carry guessed CREs."
   },
   "counts": {
-    "documents": 38,
+    "documents": 40,
     "proposed_cre_links": 3
   },
   "documents": [
@@ -82,7 +82,7 @@
       "section": "L5 AI Model Provider",
       "sectionID": "srf.layer.L5",
       "hyperlink": "https://aisharedresponsibility.com/framework/#L5",
-      "description": "Foundation models, model governance, and supply-chain provenance. Accountable for model architecture security, model cards, vulnerability disclosure, and governance of model distribution. Responsibility assignment depends on licensing and deployment approach.",
+      "description": "Foundation models, model governance, and model-artifact supply-chain provenance (weights, training data, BoAIM or SBOM, signing). Accountable for model architecture security, model cards, vulnerability disclosure, and governance of model distribution. Enterprise third-party risk for vendors that are not model providers is L1, scored at the vendor's home layer. Responsibility assignment depends on licensing and deployment approach.",
       "tags": [
         "subtype:layer",
         "source:cosai-srf"
@@ -235,6 +235,30 @@
     {
       "doctype": "Standard",
       "name": "CoSAI AI Shared Responsibility Framework",
+      "section": "Sovereign Participant Node",
+      "sectionID": "srf.role.sovereign-participant-node",
+      "hyperlink": "https://aisharedresponsibility.com/personas/#sovereign-participant-node",
+      "description": "A national government, cultural community, enterprise, hospital, or other institution participating in Project Tapestry as a self-governing node. Retains full control of its own data, source identities, training processes, model updates, configurations, evaluations, and derivatives unless it explicitly and voluntarily contributes an artifact to the Shared Commons. May perform Contributed CPT locally and submit only the resulting model-weight update without disclosing underlying data.",
+      "tags": [
+        "subtype:persona",
+        "source:cosai-srf"
+      ]
+    },
+    {
+      "doctype": "Standard",
+      "name": "CoSAI AI Shared Responsibility Framework",
+      "section": "Consortium Core Coordinator",
+      "sectionID": "srf.role.consortium-core-coordinator",
+      "hyperlink": "https://aisharedresponsibility.com/personas/#consortium-core-coordinator",
+      "description": "The accountable party for the Shared Commons: the shared base model, shared training infrastructure, shared protocols and interoperability specifications, public governance rules, and certification marks. Distinct from any single participant node. Accountable for keeping Shared Commons artifacts open and independently usable, and for preventing capture of the commons by any participant, vendor, or operator.",
+      "tags": [
+        "subtype:persona",
+        "source:cosai-srf"
+      ]
+    },
+    {
+      "doctype": "Standard",
+      "name": "CoSAI AI Shared Responsibility Framework",
       "section": "AI-Enabled SaaS responsibility for L1 AI Business & Usage",
       "sectionID": "srf.opmodel.ai-saas/assigns_responsibility/srf.layer.L1",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#AI-SaaS",
@@ -250,7 +274,7 @@
       "section": "AI Platform as a Service responsibility for L1 AI Business & Usage",
       "sectionID": "srf.opmodel.ai-paas/assigns_responsibility/srf.layer.L1",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#AI-PaaS",
-      "description": "Responsibility for L1 AI Business & Usage under AI Platform as a Service: customer \"customer-owned\", provider \"N/A\".",
+      "description": "Responsibility for L1 AI Business & Usage under AI Platform as a Service: customer \"customer-owned\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -262,7 +286,7 @@
       "section": "Agentic Platform as a Service responsibility for L1 AI Business & Usage",
       "sectionID": "srf.opmodel.agent-paas/assigns_responsibility/srf.layer.L1",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#Agent-PaaS",
-      "description": "Responsibility for L1 AI Business & Usage under Agentic Platform as a Service: customer \"customer-owned\", provider \"N/A\".",
+      "description": "Responsibility for L1 AI Business & Usage under Agentic Platform as a Service: customer \"customer-owned\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -274,7 +298,7 @@
       "section": "Infrastructure as a Service responsibility for L1 AI Business & Usage",
       "sectionID": "srf.opmodel.iaas/assigns_responsibility/srf.layer.L1",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#IaaS",
-      "description": "Responsibility for L1 AI Business & Usage under Infrastructure as a Service: customer \"customer-owned\", provider \"N/A\".",
+      "description": "Responsibility for L1 AI Business & Usage under Infrastructure as a Service: customer \"customer-owned\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -298,7 +322,7 @@
       "section": "AI Platform as a Service responsibility for L2 AI Information",
       "sectionID": "srf.opmodel.ai-paas/assigns_responsibility/srf.layer.L2",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#AI-PaaS",
-      "description": "Responsibility for L2 AI Information under AI Platform as a Service: customer \"shared\", provider \"shared\".",
+      "description": "Responsibility for L2 AI Information under AI Platform as a Service: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -310,7 +334,7 @@
       "section": "Agentic Platform as a Service responsibility for L2 AI Information",
       "sectionID": "srf.opmodel.agent-paas/assigns_responsibility/srf.layer.L2",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#Agent-PaaS",
-      "description": "Responsibility for L2 AI Information under Agentic Platform as a Service: customer \"shared\", provider \"shared\".",
+      "description": "Responsibility for L2 AI Information under Agentic Platform as a Service: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -322,7 +346,7 @@
       "section": "Infrastructure as a Service responsibility for L2 AI Information",
       "sectionID": "srf.opmodel.iaas/assigns_responsibility/srf.layer.L2",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#IaaS",
-      "description": "Responsibility for L2 AI Information under Infrastructure as a Service: customer \"customer-owned\", provider \"N/A\".",
+      "description": "Responsibility for L2 AI Information under Infrastructure as a Service: customer \"customer-owned\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -334,7 +358,7 @@
       "section": "AI-Enabled SaaS responsibility for L3 AI Application",
       "sectionID": "srf.opmodel.ai-saas/assigns_responsibility/srf.layer.L3",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#AI-SaaS",
-      "description": "Responsibility for L3 AI Application under AI-Enabled SaaS: customer \"N/A\", provider \"provider-managed\".",
+      "description": "Responsibility for L3 AI Application under AI-Enabled SaaS: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -346,7 +370,7 @@
       "section": "AI Platform as a Service responsibility for L3 AI Application",
       "sectionID": "srf.opmodel.ai-paas/assigns_responsibility/srf.layer.L3",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#AI-PaaS",
-      "description": "Responsibility for L3 AI Application under AI Platform as a Service: customer \"customer-owned\", provider \"shared\".",
+      "description": "Responsibility for L3 AI Application under AI Platform as a Service: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -370,7 +394,7 @@
       "section": "Infrastructure as a Service responsibility for L3 AI Application",
       "sectionID": "srf.opmodel.iaas/assigns_responsibility/srf.layer.L3",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#IaaS",
-      "description": "Responsibility for L3 AI Application under Infrastructure as a Service: customer \"customer-owned\", provider \"N/A\".",
+      "description": "Responsibility for L3 AI Application under Infrastructure as a Service: customer \"customer-owned\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -382,7 +406,7 @@
       "section": "AI-Enabled SaaS responsibility for L4 AI Platform",
       "sectionID": "srf.opmodel.ai-saas/assigns_responsibility/srf.layer.L4",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#AI-SaaS",
-      "description": "Responsibility for L4 AI Platform under AI-Enabled SaaS: customer \"N/A\", provider \"provider-managed\".",
+      "description": "Responsibility for L4 AI Platform under AI-Enabled SaaS: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -394,7 +418,7 @@
       "section": "AI Platform as a Service responsibility for L4 AI Platform",
       "sectionID": "srf.opmodel.ai-paas/assigns_responsibility/srf.layer.L4",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#AI-PaaS",
-      "description": "Responsibility for L4 AI Platform under AI Platform as a Service: customer \"N/A\", provider \"provider-managed\".",
+      "description": "Responsibility for L4 AI Platform under AI Platform as a Service: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -406,7 +430,7 @@
       "section": "Agentic Platform as a Service responsibility for L4 AI Platform",
       "sectionID": "srf.opmodel.agent-paas/assigns_responsibility/srf.layer.L4",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#Agent-PaaS",
-      "description": "Responsibility for L4 AI Platform under Agentic Platform as a Service: customer \"N/A\", provider \"provider-managed\".",
+      "description": "Responsibility for L4 AI Platform under Agentic Platform as a Service: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -418,7 +442,7 @@
       "section": "Infrastructure as a Service responsibility for L4 AI Platform",
       "sectionID": "srf.opmodel.iaas/assigns_responsibility/srf.layer.L4",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#IaaS",
-      "description": "Responsibility for L4 AI Platform under Infrastructure as a Service: customer \"customer-owned\", provider \"shared\".",
+      "description": "Responsibility for L4 AI Platform under Infrastructure as a Service: customer \"customer-owned\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -454,7 +478,7 @@
       "section": "Agentic Platform as a Service responsibility for L5 AI Model Provider",
       "sectionID": "srf.opmodel.agent-paas/assigns_responsibility/srf.layer.L5",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#Agent-PaaS",
-      "description": "Responsibility for L5 AI Model Provider under Agentic Platform as a Service: customer \"shared\", provider \"shared\".",
+      "description": "Responsibility for L5 AI Model Provider under Agentic Platform as a Service: customer \"shared\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
@@ -466,7 +490,7 @@
       "section": "Infrastructure as a Service responsibility for L5 AI Model Provider",
       "sectionID": "srf.opmodel.iaas/assigns_responsibility/srf.layer.L5",
       "hyperlink": "https://aisharedresponsibility.com/operating-models/#IaaS",
-      "description": "Responsibility for L5 AI Model Provider under Infrastructure as a Service: customer \"customer-owned\", provider \"N/A\".",
+      "description": "Responsibility for L5 AI Model Provider under Infrastructure as a Service: customer \"customer-owned\", provider \"provider-managed\".",
       "tags": [
         "subtype:matrix-relation",
         "source:cosai-srf"
