@@ -1211,6 +1211,46 @@ test("UI: after an L2 start, picking an Example keeps focus on an L2 component",
   assert.strictEqual(focus, w.TM_UI.firstComponentAtLayer(w.TM_UI.state.model, "L2"));
 });
 
+test("UI: choosing L2 then an Example (without seeding) keeps focus on L2", () => {
+  const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
+  l2.checked = true;
+  l2.dispatchEvent(new w.Event("change"));
+  assert.ok($("graph-wrap").classList.contains("starting"));
+  $("example-pick").value = "o2c";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.ok(!$("graph-wrap").classList.contains("starting"), "Example closes the Start panel");
+  assert.strictEqual($("sys-name").textContent, example.system.name);
+  const focus = w.TM_UI.state.selected;
+  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
+  assert.ok(comp, focus);
+  assert.strictEqual(comp.layer, "L2", "L2 radio alone is enough to keep Example focus off L1");
+  assert.ok(/focused on L2/.test($("model-source").textContent), $("model-source").textContent);
+});
+
+test("UI: choosing L5 then an Example (without seeding) keeps focus on L5", () => {
+  const l5 = w.document.querySelector('input[name="start-from"][value="L5"]');
+  l5.checked = true;
+  l5.dispatchEvent(new w.Event("change"));
+  $("example-pick").value = "o2c";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  const focus = w.TM_UI.state.selected;
+  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
+  assert.ok(comp, focus);
+  assert.strictEqual(comp.layer, "L5", "L5 radio alone keeps Example focus on the model band");
+  assert.strictEqual(focus, w.TM_UI.firstComponentAtLayer(w.TM_UI.state.model, "L5"));
+});
+
+test("UI: cancelling Start from clears the Example focus layer", () => {
+  const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
+  l2.checked = true;
+  l2.dispatchEvent(new w.Event("change"));
+  $("start-cancel").click();
+  assert.ok(!$("graph-wrap").classList.contains("starting"));
+  $("example-pick").value = "p2p";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.strictEqual(w.TM_UI.state.selected, null, "cancel abandons L2 focus for the next Example pick");
+});
+
 }
 function finish() { console.log("\n" + pass + " passed, " + fail + " failed"); process.exit(fail ? 1 : 0); }
 if (w.document.readyState === "loading") w.document.addEventListener("DOMContentLoaded", () => { uiTests(); finish(); });
