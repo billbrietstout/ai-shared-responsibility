@@ -164,6 +164,32 @@
   table.results th, table.results td { text-align:left; vertical-align:top; padding:4px 6px; border-bottom:1px solid var(--grid-line); }
   table.results th button { background:none; border:0; padding:4px 0; min-height:32px; font:inherit; font-weight:700; color:inherit; cursor:pointer; text-align:left; }
   table.results th button:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+  #example-wrap[hidden], #cascade-wrap[hidden], .zoom-group[hidden] { display:none !important; }
+  #graph-wrap.scoped #graph { width:100%; max-width:100%; }
+  #graph-wrap.scoped #graph-scroll { overflow-x:hidden; }
+  .scoped-canvas { padding:10px; box-sizing:border-box; max-width:100%; }
+  .sc-title { font-size:16px; margin:0 0 8px; }
+  .sc-cols { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:10px; align-items:start; }
+  .grp { border:1.5px solid #64748b; border-radius:8px; padding:8px; min-width:0; }
+  .grp h3 { font-size:13px; margin:0 0 2px; }
+  .g-sub { font-size:12px; margin:0 0 8px; color:var(--muted); overflow-wrap:anywhere; }
+  .grp.b-customer { background:#dbeafe; border-color:#1d4ed8; }
+  .grp.b-provider { background:#dcfce7; border-color:#15803d; }
+  .grp.b-outside { background:#f1f5f9; border-style:dashed; }
+  .cards { display:grid; gap:6px; }
+  .grp .node { display:flex; flex-direction:column; gap:2px; background:#fff; color:#0f172a; border:1px solid #64748b; border-radius:6px; padding:6px 8px; font-size:12px; overflow-wrap:anywhere; cursor:pointer; min-width:0; }
+  .grp .node.sel { border-width:3px; }
+  .grp .node:focus-visible { outline:2px solid var(--focus); outline-offset:2px; }
+  .n-kind, .n-meta, .n-link { font-size:11px; color:#475569; }
+  .n-name { font-weight:700; font-size:13px; }
+  @media (prefers-color-scheme: dark) {
+    .grp.b-customer { background:#1e3a5f; border-color:#93c5fd; }
+    .grp.b-provider { background:#14352a; border-color:#86efac; }
+    .grp.b-outside { background:#1e293b; border-color:#94a3b8; }
+    .grp .node { background:#0f172a; color:#e2e8f0; border-color:#94a3b8; }
+    .n-kind, .n-meta, .n-link { color:#cbd5e1; }
+  }
+  @media (max-width: 900px) { .sc-cols { grid-template-columns:minmax(0, 1fr); } }
   #graph-wrap.scoped #rel-filters,
   #graph-wrap.scoped #glossary,
   #graph-wrap.scoped #view-hint { display:none !important; }
@@ -203,7 +229,7 @@
   <div class="page-hero__inner">
     <span class="page-hero__eyebrow"><a href="/tools/">Tools</a> / Layer-by-layer threat model</span>
     <h1 class="page-hero__title">SRF layer-by-layer threat model <span class="muted" style="font-weight:400">(<span id="sys-name"></span>)</span></h1>
-    <p class="page-hero__lede">Holistic draws the whole system from L1 and shows how a failure spreads. Scoped assesses L2 or the AI Model Provider on its own.</p>
+    <p class="page-hero__lede">Draw who owns what at each layer, then see how a failure in one layer reaches the others.</p>
     <div class="callout callout--warn draft" role="note">Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal advice. Not part of CoSAI SRF v1.0.</div>
   </div>
 </header>
@@ -220,12 +246,12 @@
     </div>
   </details>
   <div class="bar">
-    <label>Example <select id="example-pick"></select></label>
+    <label id="example-wrap">Example <select id="example-pick"></select></label>
     <label>Operating model <select id="om"></select></label>
     <label>As of <input type="date" id="as-of"></label>
     <label>Snapshot <select id="snap"></select></label>
     <span id="overlay-controls"></span>
-    <label>Cascade <select id="mode"><option value="worst">Worst case (ignore controls)</option><option value="controls">With controls in place</option></select></label>
+    <label id="cascade-wrap">Cascade <select id="mode"><option value="worst">Worst case (ignore controls)</option><option value="controls">With controls in place</option></select></label>
     <label><input type="checkbox" id="owner-ov"> Ownership overlay (color by owner; red = zero owners, or two or more)</label>
     <button id="clear">Clear selection</button>
   </div>
@@ -24044,8 +24070,8 @@ if (typeof module !== "undefined") module.exports = TM;
   function sideCell(row) {
     if (!row.control_id) return "—";
     var label = row.party === "provider" ? "Provider" : row.party === "customer" ? "Customer" : "—";
-    var matrix = "Matrix: customer " + (row.matrix_customer || "—") + ", provider " + (row.matrix_provider || "—");
-    return label + ". " + matrix + "." + (row.attestation_note ? " " + row.attestation_note : "");
+    var own = row.party === "provider" ? row.matrix_provider : row.matrix_customer;
+    return label + (own ? " (" + own + ")" : "") + (row.attestation_note ? ". " + row.attestation_note : "");
   }
   function threatCell(row) {
     if (!row.catalog_threat_id) return "No catalog threat.";
@@ -24057,8 +24083,9 @@ if (typeof module !== "undefined") module.exports = TM;
     if (!c || !c.accountable || !c.accountable.name) return "—";
     return c.accountable.name + ", " + TM.personaName(c.accountable.persona_id);
   }
+  function hasContent(row) { return !!(row.catalog_threat_id || row.control_id); }
   function resultsTableHTML(domId) {
-    var rows = resultRows();
+    var rows = resultRows().filter(hasContent);
     var h = ['<table class="results" id="' + domId + '"><thead><tr>'];
     [["asset", "Asset"], ["stage", "Lifecycle stage"], ["threat", "Threat"], ["control", "Control"], ["owner", "Owner"], ["side", "Side"], ["status", "Status"]].forEach(function (col) {
       h.push('<th scope="col"><button type="button" data-sort="' + col[0] + '">' + col[1] + "</button></th>");
@@ -24086,11 +24113,14 @@ if (typeof module !== "undefined") module.exports = TM;
     var lead = $("results-lead");
     if (lead) {
       var layer = STATE.model.system.assessment_layer;
-      lead.textContent = layer === "L5"
-        ? "Under AI-SaaS the customer cell is N/A, and the customer relies on the provider's attestation. These results feed the holistic view."
-        : "These results feed the holistic view.";
+      lead.textContent = layer === "L5" && STATE.model.system.operating_model === "AI-SaaS"
+        ? "Under AI-SaaS the customer has no direct role at L5 and relies on the provider's attestation."
+        : "";
     }
-    box.innerHTML = resultsTableHTML("results-main");
+    var empty = resultRows().filter(function (r) { return !hasContent(r); }).map(function (r) { return r.lifecycle_stage; });
+    var seenStage = {};
+    empty = empty.filter(function (x) { if (seenStage[x]) return false; seenStage[x] = true; return true; });
+    box.innerHTML = resultsTableHTML("results-main") + (empty.length ? '<p class="small" id="results-none">Stages with no catalog threat (Placeholder): ' + esc(empty.join(", ")) + ".</p>" : "");
     Array.prototype.forEach.call(box.querySelectorAll("button[data-sort]"), function (b) {
       b.addEventListener("click", function () {
         var map = { asset: "asset", stage: "stage", threat: "threat", control: "control", owner: "owner", side: "side", status: "status" };
@@ -24100,6 +24130,13 @@ if (typeof module !== "undefined") module.exports = TM;
         renderResults();
       });
     });
+  }
+  var CUSTOMER_PLAIN = { "customer-owned": "the customer owns it", "shared": "the customer shares it with the provider", "model-evaluation": "the customer evaluates the model", "N/A": "the customer has no direct role and relies on the provider's attestation" };
+  var PROVIDER_PLAIN = { "provider-managed": "the provider manages it" };
+  function boundaryPlain(layer, om) {
+    var cell = TM.SRF_CELLS[layer] && TM.SRF_CELLS[layer][om];
+    if (!cell) return om + ": no matrix entry.";
+    return om + ": " + (CUSTOMER_PLAIN[cell.customer] || cell.customer) + "; " + (PROVIDER_PLAIN[cell.provider] || cell.provider) + ".";
   }
   function renderScopedGraph() {
     var graphWrap = $("graph-wrap");
@@ -24111,107 +24148,59 @@ if (typeof module !== "undefined") module.exports = TM;
     var inLayer = m.components.filter(function (c) { return !c.edge_actor; });
     var actors = m.components.filter(function (c) { return !!c.edge_actor; });
     var customer = inLayer.filter(function (c) { return c.owner && c.owner.party === "customer"; });
-    var provider = inLayer.filter(function (c) { return !(c.owner && c.owner.party === "customer"); });
-    var NW = 110, NH = 68, GAP = 6, COLS = 4, colW = COLS * (NW + GAP) + 10, left = 8, top = 16;
-    function cellLines(list) {
-      var seen = {}, lines = [];
+    var provider = inLayer.filter(function (c) { return customer.indexOf(c) < 0; });
+    var names = {};
+    m.components.forEach(function (c) { names[c.id] = c.name; });
+    function links(c) {
+      var out = [];
+      (m.edge_links || []).forEach(function (e) {
+        if (e.from === c.id && names[e.to]) out.push(e.verb + " " + names[e.to]);
+        else if (e.to === c.id && names[e.from] && !c.edge_actor) out.push(names[e.from] + " " + e.verb + " it");
+      });
+      return out;
+    }
+    function card(c) {
+      var owner = TM.ownerLabel(c.owner);
+      var kind = c.asset_kind || c.type;
+      var where = c.locus === "external" ? "External" : "Internal";
+      var side = c.owner && c.owner.party === "provider" ? "Provider" : "Customer";
+      var status = TM.statusWord(c.owner);
+      var meta = c.edge_actor ? (c.edge_verb || "") : side + ", " + where.toLowerCase();
+      var extra = links(c);
+      var visible = c.name + ". " + owner + ". " + meta + ". " + status;
+      var h = '<div class="node' + (STATE.selected === c.id ? " sel" : "") + '" data-id="' + esc(c.id) + '" tabindex="0" role="button" aria-label="' + esc(visible + ". " + kind) + '">';
+      h += '<span class="n-kind">' + esc(kind) + (c.edge_actor ? "" : " \u00b7 " + esc(where)) + "</span>";
+      h += '<span class="n-name">' + esc(c.name) + "</span>";
+      h += '<span class="n-owner">' + esc(owner) + "</span>";
+      h += '<span class="n-meta">' + esc(meta) + " \u00b7 " + esc(status) + "</span>";
+      extra.forEach(function (t) { h += '<span class="n-link">' + esc(t) + "</span>"; });
+      return h + "</div>";
+    }
+    function group(cls, title, sub, list, empty) {
+      var h = '<section class="grp ' + cls + '" aria-label="' + esc(title) + '"><h3>' + esc(title) + "</h3>";
+      if (sub) h += '<p class="g-sub">' + esc(sub) + "</p>";
+      h += '<div class="cards">' + (list.length ? list.map(card).join("") : '<p class="g-sub">' + esc(empty) + "</p>") + "</div></section>";
+      return h;
+    }
+    function boundaryText(list) {
+      var seen = {}, out = [];
       list.forEach(function (c) {
         var om = c.operating_model || m.system.operating_model;
-        var cell = TM.SRF_CELLS[layer] && TM.SRF_CELLS[layer][om];
-        var text = om + ": customer " + (cell ? cell.customer : "—") + ", provider " + (cell ? cell.provider : "—");
-        if (!seen[text]) { seen[text] = true; lines.push(text); }
+        if (!seen[om]) { seen[om] = true; out.push(boundaryPlain(layer, om)); }
       });
-      if (!lines.length) lines.push("No asset on this side.");
-      return lines;
+      return out.join(" ");
     }
-    function rowsOf(n) { return n ? Math.ceil(n / COLS) : 0; }
-    function groupHeight(list) {
-      return 16 + cellLines(list).length * 13 + 14 + (list.length ? rowsOf(list.length) * (NH + GAP) : 12) + 8;
-    }
-    var narrow = paneWidth() > 0 && paneWidth() < 820;
-    if (narrow) { NW = 280; COLS = 1; colW = NW + 24; }
-    var edgeCols = narrow ? 1 : 3;
-    var edgeW = narrow ? colW : edgeCols * (NW + GAP) + 10;
-    var hCust = groupHeight(customer);
-    var hProv = groupHeight(provider);
-    var hEdge = 30 + Math.ceil(Math.max(actors.length, 1) / edgeCols) * (NH + GAP);
-    var boxH = Math.max(hCust, hProv, hEdge, 120);
-    var width = narrow ? left * 2 + colW : left + colW * 2 + 8 + edgeW + left;
-    var height = narrow ? top + hCust + 8 + hProv + 8 + hEdge + 10 : top + boxH + 10;
-    var pos = {};
-    function place(list, x, y) {
-      list.forEach(function (c, i) {
-        var col = i % COLS, row = Math.floor(i / COLS);
-        pos[c.id] = { x: x + col * (NW + GAP), y: y + row * (NH + GAP) };
-      });
-      return Math.max(rowsOf(list.length), 0) * (NH + GAP);
-    }
-    function layoutColumn(list, x, y0) {
-      var lines = cellLines(list);
-      var lineY = y0;
-      var y = y0 + lines.length * 13 + 4;
-      var locusY = y;
-      y += 14;
-      if (list.length) place(list, x, y);
-      return { lines: lines, lineY: lineY, locusY: locusY };
-    }
-    var custY = top, provY = narrow ? top + hCust + 8 : top, edgeY = narrow ? provY + hProv + 8 : top;
-    var custX = left, provX = narrow ? left : left + colW + 8, edgeX = narrow ? left : left + colW * 2 + 16;
-    var cust = layoutColumn(customer, custX + 6, custY + 16);
-    var prov = layoutColumn(provider, provX + 6, provY + 16);
-    actors.forEach(function (c, i) {
-      var col = i % edgeCols, row = Math.floor(i / edgeCols);
-      pos[c.id] = { x: edgeX + 6 + col * (NW + GAP), y: edgeY + 26 + row * (NH + GAP) };
-    });
     var graphEl = $("graph");
-    if (graphEl) graphEl.style.setProperty("--diagram-w", width + "px");
-    var svg = [];
-    svg.push('<svg xmlns="http://www.w3.org/2000/svg" id="graph-svg" viewBox="0 0 ' + width + ' ' + height + '" preserveAspectRatio="xMinYMin meet" role="group" aria-label="Scoped ' + layer + ' ' + esc(layerName) + ' with edge actors and trust boundaries">');
-    svg.push('<text x="' + left + '" y="16" class="b-label">' + layer + " " + esc(layerName) + "</text>");
-    function boundary(x, y, w, h, title, info, cls) {
-      svg.push('<rect class="' + cls + '" x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="8" stroke-width="1.5"/>');
-      svg.push('<text class="b-label" x="' + (x + 8) + '" y="' + (y + 18) + '">' + esc(title) + "</text>");
-      info.lines.forEach(function (line, i) {
-        svg.push('<text class="b-sub" x="' + (x + 8) + '" y="' + (info.lineY + 12 + i * 13) + '">' + esc(line) + "</text>");
-      });
-      svg.push('<text class="b-sub" x="' + (x + 8) + '" y="' + (info.locusY + 10) + '">Internal and external are marked on each card</text>');
-    }
-    boundary(custX, custY, colW, narrow ? hCust : boxH, "Customer", cust, "b-customer");
-    boundary(provX, provY, colW, narrow ? hProv : boxH, "Provider", prov, "b-provider");
-    svg.push('<rect class="b-outside" x="' + edgeX + '" y="' + edgeY + '" width="' + edgeW + '" height="' + (narrow ? hEdge : boxH) + '" rx="8" stroke-width="1.5"/>');
-    svg.push('<text class="b-label" x="' + (edgeX + 8) + '" y="' + (edgeY + 16) + '">Outside this layer</text>');
-    (m.edge_links || []).forEach(function (e) {
-      var a = pos[e.from], b = pos[e.to];
-      if (!a || !b) return;
-      var x1 = a.x + NW / 2, y1 = a.y + NH / 2, x2 = b.x + NW / 2, y2 = b.y + NH / 2;
-      svg.push('<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="#64748b" stroke-width="1.2"/>');
-      svg.push('<text class="s-meta" x="' + ((x1 + x2) / 2) + '" y="' + (((y1 + y2) / 2) - 4) + '" text-anchor="middle">' + esc(e.verb) + "</text>");
-    });
-    function drawNode(c) {
-      var p = pos[c.id];
-      if (!p) return;
-      var sel = STATE.selected === c.id;
-      var nameLines = wrap(c.name, 16);
-      var owner = TM.ownerLabel(c.owner);
-      if (owner.length > 26) owner = owner.slice(0, 25) + "\u2026";
-      var meta = c.edge_actor ? (c.edge_verb || "") : ((c.owner && c.owner.party === "provider" ? "Provider" : "Customer") + " · " + (c.locus === "external" ? "external" : "internal"));
-      var kind = c.asset_kind || c.type;
-      var visible = nameLines.join(" ") + " " + owner + " " + meta + " " + TM.statusWord(c.owner);
-      svg.push('<g class="node" data-id="' + esc(c.id) + '" tabindex="0" role="button" aria-label="' + esc(visible + ". " + kind) + '">');
-      svg.push('<rect class="node-box" x="' + p.x + '" y="' + p.y + '" width="' + NW + '" height="' + NH + '" rx="6" stroke-width="' + (sel ? 3 : 1) + '"/>');
-      svg.push('<text class="s-meta" x="' + (p.x + 6) + '" y="' + (p.y + 14) + '">' + esc(kind) + "</text>");
-      nameLines.forEach(function (line, i) {
-        svg.push('<text class="s-name" x="' + (p.x + 6) + '" y="' + (p.y + 30 + i * 14) + '">' + esc(line) + "</text>");
-      });
-      svg.push('<text class="s-owner" x="' + (p.x + 6) + '" y="' + (p.y + 54) + '">' + esc(owner) + "</text>");
-      svg.push('<text class="s-meta" x="' + (p.x + 6) + '" y="' + (p.y + 66) + '">' + esc(meta + " · " + TM.statusWord(c.owner)) + "</text>");
-      svg.push("</g>");
-    }
-    inLayer.forEach(drawNode);
-    actors.forEach(drawNode);
-    svg.push("</svg>");
-    $("graph").innerHTML = svg.join("");
-    Array.prototype.forEach.call($("graph").querySelectorAll(".node"), function (g) {
+    if (graphEl) graphEl.style.removeProperty("--diagram-w");
+    var h = '<div class="scoped-canvas" role="group" aria-label="Scoped ' + layer + " " + esc(layerName) + ' with edge actors and trust boundaries">';
+    h += '<h2 class="sc-title">' + layer + " " + esc(layerName) + "</h2>";
+    h += '<div class="sc-cols">';
+    h += group("b-customer", "Customer side", boundaryText(customer.length ? customer : inLayer), customer, "No asset on this side.");
+    h += group("b-provider", "Provider side", boundaryText(provider.length ? provider : inLayer), provider, "No asset on this side.");
+    h += group("b-outside", "Outside this layer", "Other layers and outside parties. Not assessed here.", actors, "None.");
+    h += "</div></div>";
+    graphEl.innerHTML = h;
+    Array.prototype.forEach.call(graphEl.querySelectorAll(".node"), function (g) {
       g.addEventListener("click", function () { selectComponent(g.getAttribute("data-id")); });
       g.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectComponent(g.getAttribute("data-id")); } });
     });
@@ -24640,6 +24629,8 @@ if (typeof module !== "undefined") module.exports = TM;
     if (wrap) wrap.classList.toggle("scoped", scoped);
     var results = $("results-wrap");
     if (results) results.hidden = !scoped;
+    ["example-wrap", "cascade-wrap", "zoom-group"].forEach(function (id) { var el = $(id); if (el) el.hidden = scoped; });
+    var zg = doc.querySelector(".zoom-group"); if (zg) zg.hidden = scoped;
     if ($("rel-filters")) $("rel-filters").hidden = STATE.view === "list" || scoped;
     var cascadeTab = doc.querySelector('.tab[data-tab="cascade"]');
     if (cascadeTab) cascadeTab.textContent = scoped ? "Results" : "Cascade";
@@ -24777,8 +24768,8 @@ if (typeof module !== "undefined") module.exports = TM;
     syncModeRadios(mode);
     load(model);
     setSource(mode === "L5"
-      ? "Scoped: L5 AI Model Provider. Weights stay on IaaS. The vendor model follows the operating model. Results feed the holistic view."
-      : "Scoped: L2 AI Information. Refund policy knowledge base. Results feed the holistic view.");
+      ? "Scoped: L5 AI Model Provider. Weights stay on IaaS. The vendor model follows the operating model."
+      : "Scoped: L2 AI Information. Refund policy knowledge base.");
   }
   function rememberPanel() {
     var box = $("assessment-mode");

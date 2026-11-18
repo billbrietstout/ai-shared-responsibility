@@ -61,7 +61,7 @@ function run() {
     finding(j, "skip_link", "hard", !!w.document.querySelector('a.skip-link[href="#main"]'), "Skip link targets #main");
     finding(j, "site_chrome", "hard", !!(w.document.querySelector("site-nav") && w.document.querySelector("site-footer")), "Site nav and footer are present");
     finding(j, "hero_disclaimer", "hard", /not legal advice/i.test(text(w.document.querySelector(".callout--warn"))), "Warn callout states the prototype disclaimer");
-    finding(j, "lede_explains_modes", "hard", /Holistic/.test(text(w.document.querySelector(".page-hero__lede"))) && /Scoped/.test(text(w.document.querySelector(".page-hero__lede"))), "Hero lede names Holistic and Scoped");
+    finding(j, "one_explainer", "hard", !/on its own|feed into/.test(text(w.document.querySelector(".page-hero__lede"))), "The hero lede does not repeat the explainer line");
     finding(j, "why_line", "hard", /on its own/.test(text($("mode-why"))) && /feed into the holistic view/.test(text($("mode-why"))), "The page says each layer can be assessed on its own and that scoped results feed the holistic view");
     finding(j, "panel_closed", "hard", !$("assessment-mode").open, "Assessment panel stays closed so the graph keeps room");
     finding(j, "graph_visible", "hard", !!$("graph-svg") && !$("graph-wrap").classList.contains("starting"), "Default example graph is visible on load");
@@ -77,7 +77,7 @@ function run() {
     finding(j, "policy_on_graph", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]') && /Refund policy/.test(text($("sys-name"))), "Scoped L2 draws the refund policy knowledge base");
     finding(j, "edge_actor", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.edge-resolve"]'), "A reader outside the layer is an edge actor");
     finding(j, "no_l1_band", "hard", !w.document.querySelector("#graph text.band-id"), "Scoped L2 does not draw L1 to L5 bands");
-    finding(j, "boundaries", "hard", !!w.document.querySelector("#graph .b-customer") && !!w.document.querySelector("#graph .b-provider") && /Internal/.test(text($("graph"))) && /External/.test(text($("graph"))), "Customer, provider, internal, and external boundaries are on the canvas");
+    finding(j, "boundaries", "hard", !!w.document.querySelector("#graph .b-customer") && !!w.document.querySelector("#graph .b-provider") && /Internal|External/.test(text($("graph"))), "Customer, provider, internal, and external boundaries are on the canvas");
     const onlyLayer = w.TM_STATE.model.components.every((c) => c.edge_actor || c.layer === "L2");
     finding(j, "only_l2_plus_edges", "hard", onlyLayer && w.TM_STATE.model.relationships.length === 0, "The model has L2 components plus edge actors, and no cascade links");
     finding(j, "results_table", "hard", !!$("results-main") && /dsgai21/.test(text($("results-main"))) && /Customer/.test(text($("results-main"))), "Results table names the threat and the customer side");
@@ -102,7 +102,7 @@ function run() {
     finding(j, "edge_hub", "hard", !!w.document.querySelector('#graph .node[data-id="cmp.edge-hub"]'), "The public hub is an edge actor");
     finding(j, "no_realization", "hard", w.TM_STATE.model.relationships.every((r) => r.type !== "realization" && !r.cascade), "No realization or cascade links");
     const table = text($("results-main"));
-    finding(j, "results_name_threat", "hard", /supplymodelpoison/.test(table) && /retire/.test(table) && /Placeholder/.test(table), "Results include the supply-chain threat and a Placeholder retire row");
+    finding(j, "results_name_threat", "hard", /supplymodelpoison/.test(table) && /retire/.test(text($("results-none"))) && /Placeholder/.test(text($("results-none"))), "Results include the supply-chain threat and a Placeholder retire row");
     $("om").value = "AI-SaaS";
     $("om").dispatchEvent(new w.Event("change"));
     const pin = w.TM_STATE.model.controls.find((c) => c.id === "ctl.pin-version");

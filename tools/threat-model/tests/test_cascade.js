@@ -1095,18 +1095,25 @@ test("UI: diagram fits by viewBox, and details open, close, and return focus", (
   assert.strictEqual(w.document.activeElement, $("open-drawer"));
 });
 
-test("UI: a scoped L5 diagram stays narrower than the full example", () => {
+test("UI: a scoped L5 canvas is HTML cards that wrap, with no SVG and no fixed width", () => {
   w.TM_UI.setAssessment("L5");
-  const svg = $("graph-svg");
-  const parts = svg.getAttribute("viewBox").match(/\S+/g);
-  const diagramW = Number(parts[2]);
-  assert.ok(diagramW > 400 && diagramW < 1400, "L5 viewBox stays a scoped diagram, got " + diagramW);
-  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), diagramW + "px");
+  assert.ok(!$("graph-svg"));
+  assert.ok($("graph").querySelector(".scoped-canvas"));
+  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), "");
   assert.ok(w.document.querySelectorAll("#graph .node").length < 15);
   assert.ok(w.document.querySelector("#graph .node[data-id='cmp.edge-hub']"));
+  assert.ok($("example-wrap").hidden && $("cascade-wrap").hidden, "Example and Cascade controls are hidden when scoped");
+  assert.ok(!/IaaS: customer customer/.test($("graph").textContent));
+  assert.ok(/IaaS: the customer owns it; the provider manages it\./.test($("graph").textContent));
+  assert.ok(!/Under AI-SaaS/.test($("results-lead").textContent), "attestation note only under AI-SaaS");
+  $("om").value = "AI-SaaS";
+  $("om").dispatchEvent(new w.Event("change"));
+  assert.ok(/Under AI-SaaS/.test($("results-lead").textContent));
+  $("om").value = "Agent-PaaS";
+  $("om").dispatchEvent(new w.Event("change"));
   w.TM_UI.setAssessment("holistic");
-  const wide = Number($("graph-svg").getAttribute("viewBox").match(/\S+/g)[2]);
-  assert.ok(wide > 400, "holistic diagram still lays out, got " + wide);
+  assert.ok(!$("example-wrap").hidden && !$("cascade-wrap").hidden);
+  assert.ok($("graph-svg"));
   assert.ok(w.document.querySelector("#graph text.band-id"), "holistic bands return");
 });
 
@@ -1260,8 +1267,8 @@ test("UI: scoped L5 shows edge actors, boundaries, and a results table, then Hol
   assert.ok(!w.document.querySelector('#graph text.band-id'));
   const table = $("results-main").textContent;
   assert.ok(/supplymodelpoison/.test(table));
-  assert.ok(/retire/.test(table));
-  assert.ok(/Placeholder/.test(table));
+  assert.ok(/retire/.test($("results-none").textContent) && /Placeholder/.test($("results-none").textContent));
+  assert.ok(($("results-main").querySelectorAll("tbody tr").length) < w.TM_STATE.model.layer_results.length, "no-threat rows are collapsed into one line");
   assert.ok(/Provider/.test($("graph").textContent) && /Customer/.test($("graph").textContent));
   w.document.querySelector('.tab[data-tab="export"]').click();
   $("exp-json").click();

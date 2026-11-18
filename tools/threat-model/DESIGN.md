@@ -621,6 +621,8 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 
 ## Assessment modes
 
+The scoped canvas is plain HTML, not SVG: three groups (Customer side, Provider side, Outside this layer) of wrapping cards that stack to one column under 900 px, so nothing clips or scrolls sideways. Edge links show as short text on the cards instead of drawn lines. Boundary text uses plain words for the matrix values (for example, "IaaS: the customer owns it; the provider manages it."). The Example picker, Cascade selector and Worst case are hidden when scoped. Results rows with no catalog threat or control collapse into one "Stages with no catalog threat (Placeholder)" line; the export keeps every row. The AI-SaaS attestation note shows only under AI-SaaS.
+
 The page has three modes. Holistic is the eleven examples. It starts at L1 and keeps the cascade. Scoped: L2 AI Information and Scoped: L5 AI Model Provider assess that layer on its own. A scoped assessment's results feed the holistic view: the results table is the record you bring back when you return to Holistic. L3 and L4 already have a mature threat-modeling practice. The note between the two scoped choices points to the OWASP Top 10 for LLM Applications, the OWASP AI Exchange, MITRE ATLAS, and the CoSAI Risk Map. Picking an example returns to Holistic and loads that example with no extra focus.
 
 The L1 question form from the earlier starting-point work is not a separate mode. Holistic already is that full model.
