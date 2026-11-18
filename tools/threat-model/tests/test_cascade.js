@@ -854,6 +854,7 @@ test("UI: link filters use the plain reading, with the ArchiMate term in the too
   assert.ok(lab.textContent.indexOf(TM.REL_INFO.realization.plain) >= 0);
   assert.strictEqual(lab.getAttribute("title"), "ArchiMate term: realization");
   assert.ok($("glossary").textContent.indexOf("ROCA = Risk, Obligation, Control, Accountable") === 0);
+  assert.ok(($("glossary").getAttribute("title") || "").indexOf("ArchiMate") >= 0);
 });
 test("UI: gap table lists every finding; overlay toggle changes the model", () => {
   w.document.querySelector('.tab[data-tab="gaps"]').click();
@@ -958,6 +959,28 @@ test("UI: SRF layers in sequence, L1 on top and L5 at the bottom (Bill's rule)",
   w.document.querySelector('.tab[data-tab="edit"]').click();
   const opts = Array.prototype.map.call(w.document.querySelectorAll('#f-comp [name="layer"] option'), (o) => o.value);
   assert.deepStrictEqual(opts, want, "layer choices in the Edit form");
+});
+
+test("UI: canvas CSS keeps main/graph-scroll flex space and drawer close restores width classes", () => {
+  const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (s) => s.textContent).join("\n");
+  assert.ok(/main\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "main grows in the body column");
+  assert.ok(/main\s*\{[^}]*min-height:\s*0/.test(css), "main can shrink under site chrome");
+  assert.ok(/#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "graph-scroll takes leftover height");
+  assert.ok(/#rel-filters\s*\{[^}]*flex-wrap:\s*nowrap/.test(css), "filters stay on one row");
+  assert.ok(/#rel-filters\s*\{[^}]*overflow-x:\s*auto/.test(css), "filters scroll sideways instead of wrapping tall");
+  assert.ok(!$("start-from").open, "Start from stays closed by default");
+  w.TM_UI.applySeed("L1", { worked: true });
+  assert.ok(!$("start-from").open, "Start from closes after a seed");
+  const main = w.document.querySelector("main");
+  assert.ok(main.classList.contains("drawer-closed"));
+  assert.ok($("pane-handle").hidden, "resize handle hidden while Details closed");
+  w.TM_UI.selectComponent("cmp.l1-step-1");
+  assert.ok(main.classList.contains("drawer-open"));
+  assert.ok(!$("pane-handle").hidden, "resize handle shown while Details open");
+  $("drawer-close").click();
+  assert.ok(main.classList.contains("drawer-closed"));
+  assert.ok(!main.classList.contains("drawer-open"));
+  assert.ok($("pane-handle").hidden);
 });
 
 test("UI: diagram fits by viewBox, and details open, close, and return focus", () => {
@@ -1149,7 +1172,7 @@ test("UI: Start from offers L1, L2, and L5, keeps the example picker, and seeds 
   $("example-pick").dispatchEvent(new w.Event("change"));
   assert.strictEqual($("sys-name").textContent, example.system.name);
   assert.ok(!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
-  assert.ok($("glossary").textContent.indexOf("November 18, 2026") >= 0);
+  assert.ok(($("glossary").getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
   assert.ok($("rel-filters").textContent.indexOf("part cannot exist alone") >= 0);
   assert.strictEqual(TM.REL_TYPES.length, 9);
   assert.ok(TM.REL_TYPES.indexOf("association") < 0 && TM.REL_TYPES.indexOf("specialization") < 0);
