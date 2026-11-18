@@ -454,8 +454,13 @@ test("exports and example files carry the disclaimer", () => {
     assert.strictEqual(m.system.disclaimer, TM.DISCLAIMER, id);
     assert.strictEqual(Object.keys(m.system)[0], "disclaimer", id + ": disclaimer is the first system field");
   });
-  const h = w.document.querySelector("header .draft").textContent;
+  const h = w.document.querySelector("header.page-hero .draft").textContent;
   assert.strictEqual(h, TM.DISCLAIMER, "header sentence and export sentence match");
+  assert.ok(w.document.querySelector("header.page-hero"));
+  assert.ok(w.document.querySelector(".page-hero__eyebrow"));
+  assert.ok(w.document.querySelector(".page-hero__lede"));
+  assert.ok(w.document.querySelector("header.page-hero .callout.callout--warn"));
+  assert.ok(w.document.querySelector(".tool-chrome"));
 });
 
 const EXAMPLE_SPEC = {
@@ -1088,7 +1093,8 @@ test("UI: Start from offers L1, L2, and L5, keeps the example picker, and seeds 
   assert.strictEqual(choices.indexOf(radios[1].closest("label")), 1);
   assert.strictEqual(choices.indexOf(note), 2);
   assert.strictEqual(choices.indexOf(radios[2].closest("label")), 3);
-  assert.ok(w.document.querySelector("a.skip-link").getAttribute("href") === "#workspace");
+  assert.ok(w.document.querySelector("a.skip-link").getAttribute("href") === "#main");
+  assert.ok(w.document.getElementById("main"));
   assert.ok(w.document.querySelector("site-nav"));
   assert.ok(w.document.querySelector("site-footer"));
   assert.ok(w.document.querySelector('meta[name="description"]').getAttribute("content").length > 40);
