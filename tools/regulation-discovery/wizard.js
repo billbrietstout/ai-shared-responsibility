@@ -865,7 +865,7 @@
     return String(str == null ? '' : str)
       .replace(/≤/g, '<=')
       .replace(/≥/g, '>=')
-      .replace(/[–:]/g, '-')
+      .replace(/–/g, '-')
       .replace(/[‘’]/g, "'")
       .replace(/[“”]/g, '"')
       .replace(/…/g, '...')

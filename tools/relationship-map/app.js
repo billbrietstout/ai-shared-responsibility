@@ -404,7 +404,8 @@
       addNode("layer:" + layer.id, {
         kind: "layer",
         name: layer.id + " " + layer.name,
-        label: layer.id + " " + layer.short,
+        // L5 shows its full SRF name, "AI Model Provider". The other layers keep their short labels.
+        label: layer.id + " " + (layer.id === "L5" ? layer.name : layer.short),
         ref: layer.id,
         x: 22,
         y: LAYER_Y[layer.id] || 0
@@ -632,7 +633,8 @@
       var dy = 1.35;
       var rows = Math.max(1, Math.ceil(ids.length / cols));
       var originY = (LAYER_Y[layerId] || 0) - ((rows - 1) * dy) / 2;
-      placeGrid(ids, 46, originY, cols, 2.15, dy);
+      // x = 49 leaves room for the longest layer label, "L5 AI Model Provider".
+      placeGrid(ids, 49, originY, cols, 2.15, dy);
     });
 
     var riskIds = Object.keys(catalog.threats);

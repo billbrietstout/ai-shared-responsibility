@@ -62,6 +62,11 @@
     var v = (layer.operating_models || {})[state.model];
     return v || "N/A";
   }
+  // L5 shows its full SRF name, "AI Model Provider". The other layers keep their short labels.
+  function layerLabel(layer) {
+    return layer.id === "L5" ? layer.name : layer.short;
+  }
+
   function layerTier(layer) {
     return TIER[layerDefault(layer)] || TIER["N/A"];
   }
@@ -258,7 +263,7 @@
       var row = el("div", "rec-row");
       var lcell = el("span", "rec-cell rec-cell--layer");
       lcell.appendChild(el("strong", null, layer.id));
-      lcell.appendChild(document.createTextNode(" " + layer.short));
+      lcell.appendChild(document.createTextNode(" " + layerLabel(layer)));
       lcell.appendChild(el("small", "rec-cell__sup", tier.label));
       row.appendChild(lcell);
 
@@ -421,7 +426,7 @@
     DATA.layers.forEach(function (layer) {
       var tier = layerTier(layer);
       setF(10, "bold", navy); text(layer.id, M, y);
-      setF(9, "normal", slate); text(layer.short + " · " + tier.label, M + 24, y);
+      setF(9, "normal", slate); text(layerLabel(layer) + " · " + tier.label, M + 24, y);
       var owner = resolveOwner(layer.id);
       var unresolved = layerUnresolved(layer);
       setF(10, unresolved ? "bolditalic" : "normal", unresolved ? [185, 28, 28] : navy);
