@@ -382,8 +382,8 @@ test("L1 step owners map to AI System Governance (approved)", () => {
 });
 
 
-test("embedded P2P, H2R, R2R and Case examples equal their JSON files", () => {
-  ["p2p", "h2r", "r2r", "case"].forEach((id) => {
+test("embedded P2P, H2R, R2R, Case and the five new examples equal their JSON files", () => {
+  ["p2p", "h2r", "r2r", "case", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((id) => {
     const embedded = JSON.parse(w.document.getElementById("example-data-" + id).textContent);
     const file = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
     assert.deepStrictEqual(embedded, file, id);
@@ -394,7 +394,7 @@ test("catalog_threat_id points at a real /data/threats.json entry, and external_
   const cat = JSON.parse(fs.readFileSync(path.join(DIR, "..", "..", "data", "threats.json"), "utf8"));
   const byId = {}; cat.threats.forEach((x) => { byId[x.id] = x; });
   let mapped = 0;
-  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((id) => {
     const m = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
     m.threats.forEach((t) => {
       if (!t.catalog_threat_id) return;
@@ -413,7 +413,7 @@ test("catalog_threat_id points at a real /data/threats.json entry, and external_
   assert.ok(mapped >= 16, "mapped threats: " + mapped);
 });
 test("Q1: the reasoning-LLM threat is owned by the AI Model Provider (provider side) in every example", () => {
-  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((id) => {
     const m = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
     const t = m.threats.filter((x) => x.id === "thr.llm-reinterprets")[0];
     assert.strictEqual(t.accountable.persona_id, "srf.role.model-provider", id);
@@ -449,7 +449,7 @@ test("Q5: AI-SaaS example shows the L5 N/A customer case and cascades like the A
   w.TM_UI.load(example);
 });
 test("exports and example files carry the disclaimer", () => {
-  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((id) => {
     const m = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
     assert.strictEqual(m.system.disclaimer, TM.DISCLAIMER, id);
     assert.strictEqual(Object.keys(m.system)[0], "disclaimer", id + ": disclaimer is the first system field");
@@ -490,10 +490,50 @@ const EXAMPLE_SPEC = {
     process: "cmp.case-process", logic: "cmp.case-logic",
     lowered: ["cmp.agent-resolve", "cmp.agent-escalate"],
     loweredSteps: ["cmp.step-resolve", "cmp.step-escalate"]
+  },
+  l2o: {
+    overlay: "marketing-consent", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
+    agents: ["cmp.l2o-agent-capture", "cmp.l2o-agent-qualify", "cmp.l2o-agent-proposal", "cmp.l2o-agent-quote", "cmp.l2o-agent-handoff"],
+    isolatedStep: "cmp.l2o-step-consent", isolatedComp: "cmp.l2o-consent-check",
+    process: "cmp.l2o-process", logic: "cmp.l2o-logic",
+    lowered: ["cmp.l2o-agent-quote", "cmp.l2o-agent-handoff"],
+    loweredSteps: ["cmp.l2o-step-quote", "cmp.l2o-step-handoff"]
+  },
+  i2r: {
+    overlay: "customer-notice", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
+    agents: ["cmp.i2r-agent-report", "cmp.i2r-agent-classify", "cmp.i2r-agent-diagnose", "cmp.i2r-agent-restore", "cmp.i2r-agent-notice"],
+    isolatedStep: "cmp.i2r-step-safety", isolatedComp: "cmp.i2r-safety-score",
+    process: "cmp.i2r-process", logic: "cmp.i2r-logic",
+    lowered: ["cmp.i2r-agent-restore", "cmp.i2r-agent-notice"],
+    loweredSteps: ["cmp.i2r-step-restore", "cmp.i2r-step-notice"]
+  },
+  q2a: {
+    overlay: "retrieval-limits", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
+    agents: ["cmp.q2a-agent-ask", "cmp.q2a-agent-retrieve", "cmp.q2a-agent-draft", "cmp.q2a-agent-cite", "cmp.q2a-agent-handoff"],
+    isolatedStep: "cmp.q2a-step-entitlement", isolatedComp: "cmp.q2a-entitlement",
+    process: "cmp.q2a-process", logic: "cmp.q2a-logic",
+    lowered: ["cmp.q2a-agent-cite", "cmp.q2a-agent-handoff"],
+    loweredSteps: ["cmp.q2a-step-cite", "cmp.q2a-step-handoff"]
+  },
+  r2f: {
+    overlay: "privileged-access", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
+    agents: ["cmp.r2f-agent-request", "cmp.r2f-agent-classify", "cmp.r2f-agent-plan", "cmp.r2f-agent-fulfill", "cmp.r2f-agent-exception"],
+    isolatedStep: "cmp.r2f-step-entitlement", isolatedComp: "cmp.r2f-entitlement-score",
+    process: "cmp.r2f-process", logic: "cmp.r2f-logic",
+    lowered: ["cmp.r2f-agent-fulfill", "cmp.r2f-agent-exception"],
+    loweredSteps: ["cmp.r2f-step-fulfill", "cmp.r2f-step-exception"]
+  },
+  p2f: {
+    overlay: "product-hold", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
+    agents: ["cmp.p2f-agent-demand", "cmp.p2f-agent-allocate", "cmp.p2f-agent-replenish", "cmp.p2f-agent-release", "cmp.p2f-agent-exception"],
+    isolatedStep: "cmp.p2f-step-eligibility", isolatedComp: "cmp.p2f-lot-check",
+    process: "cmp.p2f-process", logic: "cmp.p2f-logic",
+    lowered: ["cmp.p2f-agent-release", "cmp.p2f-agent-exception"],
+    loweredSteps: ["cmp.p2f-step-release", "cmp.p2f-step-exception"]
   }
 };
 
-["p2p", "h2r", "r2r", "case"].forEach((exId) => {
+["p2p", "h2r", "r2r", "case", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((exId) => {
   const spec = EXAMPLE_SPEC[exId];
   const ex = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + exId + ".json"), "utf8"));
   test(exId + ": reasoning LLM failure reaches the orchestrator and sub-agents, not the policy service or isolated step", () => {
@@ -527,6 +567,7 @@ const EXAMPLE_SPEC = {
     assert.ok(ex.controls.every((c) => !/^Required/.test(TM.controlStatus(ex, c.id).label)), "nothing Required");
     assert.ok(ex.obligations.every((o) => o.verification && o.verification.status === "unverified"));
     assert.ok(ex.components.filter((c) => c.owner && c.owner.status === "assigned").every((c) => c.owner.placeholder));
+    assert.ok(ex.components.every((c) => c.owner && c.owner.status === "assigned" && !c.owner.names), "one assigned owner");
     ex.components.filter((c) => c.layer === "L1" && c.type === "process_step" && c.owner && c.owner.status === "assigned")
       .forEach((c) => assert.strictEqual(c.owner.persona_id, "srf.role.ai-system-governance", c.id));
   });
@@ -538,13 +579,68 @@ const EXAMPLE_SPEC = {
   });
 });
 
+test("new examples store the fact-checked APQC rows, and the six older examples do not", () => {
+  const read = (id) => JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+    assert.ok(!read(id).system.apqc_pcf, id + " has no APQC field");
+  });
+  function rows(id) { return read(id).system.apqc_pcf; }
+  function key(r) { return r.number + "/" + (r.element_id || "") + "/" + r.version + "/" + r.match; }
+  const expect = {
+    l2o: [
+      "3.0//v8.0/clean", "3.3/20008/v8.0/clean", "3.5/10105/v8.0/clean",
+      "3.5.1/10182/v8.0/clean", "3.5.3/11779/v8.0/clean", "3.5.4/10185/v8.0/clean"
+    ],
+    i2r: [
+      "6.0//v8.0/partial", "6.2/10379/v8.0/partial", "6.2.2/10388/v8.0/partial",
+      "6.2.3/10389/v8.0/partial", "6.2.5/12840/v8.0/partial"
+    ],
+    q2a: [
+      "13.5/11073/v7.4/none", "13.5.1/11095/v8.0/none", "13.5.2/11096/v8.0/none",
+      "13.5.3/20965/v8.0/none", "13.5.4/20969/v8.0/none", "8.4.4/20779/v8.0/none",
+      "8.7.5.3/20898/v8.0/none", "6.2.2/10388/v8.0/none", "7.7.2/10523/v8.0/none"
+    ],
+    r2f: [
+      "8.0//v8.0/partial", "8.1/20608/v8.0/partial", "8.1.5.3/20635/v8.0/partial",
+      "8.3.8.3/20759/v8.0/partial", "8.7.8.3/20925/v8.0/partial"
+    ],
+    p2f: [
+      "4.0//v8.0/partial", "4.1/10215/v7.4/partial", "4.2/10216/v7.4/partial",
+      "4.3/10217/v7.4/partial", "4.4/10219/v7.4/partial", "4.4.5/21617/v8.0/partial"
+    ]
+  };
+  Object.keys(expect).forEach((id) => {
+    assert.deepStrictEqual(rows(id).map(key), expect[id], id);
+    rows(id).forEach((r) => assert.ok(r.name && r.note !== "", id + " " + r.number));
+  });
+  const handoff = rows("l2o").filter((r) => r.number === "3.5.4")[0];
+  assert.ok(/one owner/.test(handoff.note) && /Sales operations owner/.test(handoff.note));
+  const l2o = read("l2o");
+  const step = l2o.components.filter((c) => c.id === "cmp.l2o-step-handoff")[0];
+  assert.strictEqual(step.owner.status, "assigned");
+  assert.strictEqual(step.owner.name, "Sales operations owner (placeholder)");
+  assert.ok(/same elements that fit Case to Resolution/.test(rows("i2r")[0].note));
+  const p43 = rows("p2f").filter((r) => r.number === "4.3")[0];
+  assert.strictEqual(p43.name, "Produce/Assemble/Test product");
+  assert.strictEqual(p43.version, "v7.4");
+  const q = read("q2a");
+  assert.strictEqual(q.system.operating_model, "AI-SaaS");
+  assert.ok(q.components.filter((c) => c.layer === "L3").every((c) => c.owner.party === "provider"));
+  assert.ok(q.components.filter((c) => c.layer === "L1").every((c) => c.owner.party === "customer"));
+  assert.ok(!q.components.some((c) => c.id === "cmp.case-process"));
+  const g = TM.gaps(q).filter((x) => x.rule === "TM-G17");
+  assert.ok(g.some((x) => x.severity === "info" && x.refs.indexOf("cmp.reasoning-llm") >= 0));
+  assert.ok(!g.some((x) => x.severity === "medium"));
+});
+
 function uiTests() {
 // ---------- UI ----------
 const $ = (id) => w.document.getElementById(id);
-test("example picker lists six examples, defaults to O2C, and loads the others", () => {
+test("example picker lists eleven examples, defaults to O2C, and loads the others", () => {
   const sel = w.document.getElementById("example-pick");
-  assert.strictEqual(sel.options.length, 6);
-  assert.ok(Array.prototype.some.call(sel.options, (o) => o.value === "case-saas"), "AI-SaaS example in the picker");
+  assert.strictEqual(sel.options.length, 11);
+  assert.ok(Array.prototype.some.call(sel.options, (o) => o.value === "case-saas"), "AI-SaaS case example in the picker");
+  assert.ok(Array.prototype.some.call(sel.options, (o) => o.value === "q2a"), "Question to Answer in the picker");
   assert.strictEqual(sel.value, "o2c");
   assert.strictEqual(w.document.getElementById("sys-name").textContent, example.system.name);
   sel.value = "p2p";
@@ -555,6 +651,38 @@ test("example picker lists six examples, defaults to O2C, and loads the others",
   sel.dispatchEvent(new w.Event("change"));
   assert.strictEqual(w.document.getElementById("sys-name").textContent, example.system.name);
   assert.ok(w.document.querySelector('#overlay-controls input[data-overlay="banking"]'));
+});
+
+test("UI: APQC rows show version and match quality, and partial or none is not called exact", () => {
+  const read = (id) => JSON.parse(fs.readFileSync(path.join(DIR, "example-" + id + ".json"), "utf8"));
+  w.TM_UI.load(read("q2a"));
+  w.document.querySelector('.tab[data-tab="details"]').click();
+  const qText = $("apqc-pcf").textContent;
+  assert.ok(qText.indexOf("13.5 / 11073 / v7.4") >= 0, qText);
+  assert.ok(qText.indexOf("No match") >= 0);
+  assert.ok(qText.indexOf("Clean match") < 0);
+  assert.ok(qText.indexOf("Partial match, not exact") < 0);
+  w.TM_UI.load(read("i2r"));
+  w.document.querySelector('.tab[data-tab="details"]').click();
+  const iText = $("apqc-pcf").textContent;
+  assert.ok(iText.indexOf("Partial match, not exact") >= 0);
+  assert.ok(iText.indexOf("Same PCF element as Case to Resolution") >= 0);
+  assert.ok(iText.indexOf("Clean match") < 0);
+  w.TM_UI.load(read("l2o"));
+  w.TM_UI.selectComponent("cmp.l2o-process");
+  const lText = $("apqc-pcf").textContent;
+  assert.ok(lText.indexOf("3.5.4 / 10185 / v8.0") >= 0);
+  assert.ok(lText.indexOf("Clean match") >= 0);
+  assert.ok(lText.indexOf("Partial match") < 0);
+  w.TM_UI.load(read("p2f"));
+  w.document.querySelector('.tab[data-tab="details"]').click();
+  const pText = $("apqc-pcf").textContent;
+  assert.ok(pText.indexOf("4.3 / 10217 / v7.4") >= 0);
+  assert.ok(pText.indexOf("Produce/Assemble/Test product") >= 0);
+  assert.ok(pText.indexOf("produce/manufacture/deliver") < 0);
+  w.TM_UI.load(example);
+  w.document.querySelector('.tab[data-tab="details"]').click();
+  assert.ok(!$("apqc-pcf"), "O2C has no APQC list");
 });
 
 test("UI: graph renders one node per active component", () => {
@@ -590,7 +718,7 @@ test("UI: selecting a threat shows the ROCA chain and its stakeholders", () => {
   assert.ok($("roca").textContent.indexOf("dsgai05") >= 0 && $("catalog-refs").textContent.indexOf("DSGAI05") >= 0);
 });
 test("UI: every obligation in the Threats tab carries the counsel label, and no citation is filled", () => {
-  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas"].forEach((id) => {
+  ["o2c", "p2p", "h2r", "r2r", "case", "case-saas", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((id) => {
     const m = JSON.parse(w.document.getElementById(id === "o2c" ? "example-data" : "example-data-" + id).textContent);
     m.obligations.forEach((o) => { assert.strictEqual(o.verification.status, "unverified", id + " " + o.id); assert.ok(!o.citation, id + " " + o.id + " citation stays empty"); });
   });

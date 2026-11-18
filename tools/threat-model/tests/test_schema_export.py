@@ -26,7 +26,7 @@ V = Draft202012Validator(schema, format_checker=FormatChecker())
 def errors(doc): return ["%s: %s" % (list(e.path), e.message[:160]) for e in V.iter_errors(doc)]
 
 examples = sorted(f[8:-5] for f in os.listdir(D) if f.startswith("example-") and f.endswith(".yaml"))
-check("six examples are present (o2c, p2p, h2r, r2r, case, case-saas)", examples == ["case", "case-saas", "h2r", "o2c", "p2p", "r2r"], str(examples))
+check("eleven examples are present", examples == ["case", "case-saas", "h2r", "i2r", "l2o", "o2c", "p2f", "p2p", "q2a", "r2f", "r2r"], str(examples))
 for ex_id in examples:
     yx = yaml.safe_load(open(os.path.join(D, "example-%s.yaml" % ex_id)))
     jx = json.load(open(os.path.join(D, "example-%s.json" % ex_id)))
@@ -67,6 +67,10 @@ bad_doc = copy.deepcopy(y); bad_doc["multiplicity_rules"] = [{"rule_id": "MD-99"
 check("an override must name a default rule MD-01 to MD-05", bool(errors(bad_doc)))
 bad_doc = copy.deepcopy(y); bad_doc["multiplicity_rules"] = [{"rule_id": "MD-04", "off": True, "reason": "test"}]
 check("a model-wide multiplicity rule change validates", not errors(bad_doc), "; ".join(errors(bad_doc)[:3]))
+bad_doc = copy.deepcopy(y); bad_doc["system"]["apqc_pcf"] = [{"number": "3.5.4", "element_id": "10185", "version": "v8.0", "name": "Manage sales orders", "match": "exact"}]
+check("an APQC match value of exact is rejected", bool(errors(bad_doc)))
+bad_doc["system"]["apqc_pcf"][0]["match"] = "partial"
+check("an optional apqc_pcf row validates, and O2C has no APQC field", not errors(bad_doc) and "apqc_pcf" not in y["system"], "; ".join(errors(bad_doc)[:3]))
 check("example has a derived link and a multiplicity override",
       any(r.get("derived") for r in y["relationships"]) and any(c.get("multiplicity_overrides") for c in y["components"]))
 
