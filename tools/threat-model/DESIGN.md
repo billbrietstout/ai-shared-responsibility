@@ -51,13 +51,13 @@ Bill's decision 8 (raise the v1.0 layer-name differences with the workstream: no
 
 ## Decisions by Bill, Nov 17, 2026
 
-Bill answered Part 1 of the Nov 17 publication plan. The page is listed on `/tools/`, in the sitemap, and in `llms.txt`. On November 18, 2026 the page gained the site header and footer, a skip link, a meta description, and a Start from choice for L1, L2, and L5. Items 8 to 11 of that plan were not part of this change.
+Bill answered Part 1 of the Nov 17 publication plan. The page is listed on `/tools/`, in the sitemap, and in `llms.txt`. On November 18, 2026 the page gained the site header and footer, a skip link, a meta description, and a Start from choice for L1, L2, and L5. The title block later used the shared `page-hero` shell (eyebrow, title, lede, and a `callout--warn`), with Start from and the example controls in a toolbar under it. Start from stays closed until a reader opens it, so the graph keeps room under the site header and footer. Items 8 to 11 of that plan were not part of this change.
 
 | # | Item | What changed |
 |---|---|---|
 | 2 | Cite outside threat sources | Optional `catalog_threat_id` and `external_refs` on each threat. Filled only where a real match exists in `/data/threats.json`; `external_refs` copies that entry's IDs. See "Catalog links" |
 | 3 | Per-obligation provenance | Each obligation in the Threats tab shows "Unverified, needs counsel". `citation` stays null |
-| 4 | Disclaimer where readers look | `system.disclaimer` is the first field of every JSON and YAML export, the YAML export starts with it as a comment, and the Threats tab ends with it. The sentence matches the page header |
+| 4 | Disclaimer where readers look | `system.disclaimer` is the first field of every JSON and YAML export, the YAML export starts with it as a comment, and the Threats tab ends with it. The sentence matches the warn callout in the page hero |
 | 5 | Accessibility | The graph SVG is a group, not an image, so its focusable nodes are no longer nested in an image (`nested-interactive`). Each node's accessible name starts with its visible text (`label-content-name-mismatch`). A List view shows every component by layer as text. The two text areas have labels |
 | 6 | Explain ROCA and the link words | A one-line glossary under the filters. Each link filter shows its plain reading; the ArchiMate term is in the tooltip |
 | Q1 | Who is accountable for the reasoning-LLM threat | The AI Model Provider persona (`srf.role.model-provider`) on the provider side, as in `/data/threats.json`. The Agent-PaaS examples name "Model vendor (placeholder)" and the AI-SaaS example names the SaaS vendor's model provider. In each, the accountable is also the owner of the reasoning LLM, so TM-G06 no longer fires for this threat |
