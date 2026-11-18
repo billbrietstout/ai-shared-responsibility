@@ -317,7 +317,7 @@
       var row = el("div", "rec-row");
       var lcell = el("span", "rec-cell rec-cell--layer");
       lcell.appendChild(el("strong", null, layer.id));
-      lcell.appendChild(document.createTextNode(" " + layer.short));
+      lcell.appendChild(document.createTextNode(" " + recordLayerLabel(layer)));
       row.appendChild(lcell);
 
       var owner = resolveOwner(layer.id);
@@ -595,7 +595,7 @@
     doc.line(M, y, W - M, y); y += 14;
     DATA.layers.forEach(function (layer) {
       setF(10, "bold", navy); text(layer.id, M, y);
-      setF(9, "normal", slate); text(layer.short, M + 24, y);
+      setF(9, "normal", slate); text(recordLayerLabel(layer), M + 24, y);
       var owner = resolveOwner(layer.id);
       setF(10, layerUnresolved(layer) ? "bolditalic" : "normal", layerUnresolved(layer) ? [185, 28, 28] : navy);
       var ol = doc.splitTextToSize(owner, W - M - (M + 150));
@@ -731,6 +731,14 @@
     if (!btn) return;
     if (on) btn.hidden = false;
     else btn.hidden = true;
+  }
+
+  // The record and its PDF use the short layer labels from data/layers.json,
+  // except L5. Its short label is "Model Provider", but the SRF persona and
+  // layer name to print on a signed record is "AI Model Provider" (layer.name).
+  // layers.json is unchanged because other tools read the short label.
+  function recordLayerLabel(layer) {
+    return layer.id === "L5" ? layer.name : layer.short;
   }
 
   function wireButtons() {
