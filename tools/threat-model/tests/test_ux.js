@@ -122,6 +122,20 @@ function run() {
     finding(j, "keeps_l2_focus", "hard", !!(focused && focused.layer === "L2"), "After L2 seed, Example pick keeps focus on an L2 component instead of the tall L1 band");
   });
 
+  journey("example_after_l2_radio", (j) => {
+    const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
+    $("start-from").open = true;
+    l2.checked = true;
+    l2.dispatchEvent(new w.Event("change"));
+    finding(j, "panel_open", "hard", $("graph-wrap").classList.contains("starting"), "L2 radio opens the Start panel");
+    $("example-pick").value = "o2c";
+    $("example-pick").dispatchEvent(new w.Event("change"));
+    const focus = w.TM_UI.state.selected;
+    const focused = focus && w.TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
+    finding(j, "radio_keeps_l2", "hard", !!(focused && focused.layer === "L2"), "Choosing L2 then an Example (no seed) still focuses an L2 component", "Remember Start from layer on radio select, not only after seed");
+    finding(j, "source_names_layer", "soft", /focused on L2/.test(text($("model-source"))), "Source line says the Example is focused on L2");
+  });
+
   journey("start_from_l5_dropdowns", (j) => {
     const kinds = inputKindsFor("L5");
     const freeText = kinds.filter((q) => q.kind === "text" || q.kind === "textarea");
