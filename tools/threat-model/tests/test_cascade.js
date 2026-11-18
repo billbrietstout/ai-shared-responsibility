@@ -679,7 +679,7 @@ test("each starting point seeds a schema-shaped model, Proposed or Placeholder o
   const l1 = TM.seedStart("L1");
   const l2 = TM.seedStart("L2");
   const l5 = TM.seedStart("L5");
-  const custom = TM.seedStart("L2", { worked: false, dataName: "Other corpus", dataUse: "retrieval" });
+  const custom = TM.seedStart("L2", { worked: false, dataName: "Other retrieval corpus", dataUse: "retrieval" });
   [l1, l2, l5, custom].forEach((m) => {
     assert.strictEqual(m.tm_schema_version, "0.1.0-draft");
     assert.ok(TM.OPERATING_MODELS.indexOf(m.system.operating_model) >= 0);
