@@ -151,6 +151,65 @@ function run() {
     });
   });
 
+  function esc(name) { w.document.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true })); }
+  function tab(shift) { return w.document.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Tab", shiftKey: !!shift, bubbles: true, cancelable: true })); }
+  function overlayChecks(j, label) {
+    const main = w.document.querySelector("main");
+    const wrap = $("graph-wrap");
+    const expand = $("expand-graph");
+    finding(j, label + "_drawer_closed_default", "hard", main.classList.contains("drawer-closed") && $("side").getAttribute("aria-hidden") === "true", label + ": Details is closed by default");
+    finding(j, label + "_overlay_closed_default", "hard", !wrap.classList.contains("expanded") && !wrap.hasAttribute("role"), label + ": the overlay is closed by default");
+    expand.focus();
+    expand.click();
+    finding(j, label + "_overlay_opens", "hard", wrap.classList.contains("expanded") && wrap.getAttribute("role") === "dialog" && wrap.getAttribute("aria-modal") === "true", label + ": Expand graph opens a modal dialog");
+    finding(j, label + "_focus_in", "hard", wrap.contains(w.document.activeElement) && w.document.activeElement === $("overlay-close"), label + ": focus moves into the overlay");
+    finding(j, label + "_zoom_controls", "hard", !$("zoom-in").closest("[hidden]") && !$("zoom-out").closest("[hidden]") && !$("zoom-fit").closest("[hidden]"), label + ": the overlay has Zoom in, Zoom out and Fit");
+    let stays = true;
+    for (let i = 0; i < 40; i++) { tab(false); if (!wrap.contains(w.document.activeElement)) stays = false; }
+    for (let i = 0; i < 40; i++) { tab(true); if (!wrap.contains(w.document.activeElement)) stays = false; }
+    const items = Array.prototype.filter.call(wrap.querySelectorAll("a[href], button, input, select, textarea, [tabindex='0']"), (el) => !el.disabled && !el.closest("[hidden]") && !el.closest("#side") && !el.closest("#results-wrap"));
+    items[items.length - 1].focus();
+    tab(false);
+    const wrapsForward = w.document.activeElement === items[0];
+    tab(true);
+    const wrapsBack = w.document.activeElement === items[items.length - 1];
+    finding(j, label + "_focus_trap", "hard", stays && wrapsForward && wrapsBack && items.length > 3, label + ": Tab wraps from the last control to the first, and Shift+Tab back, inside the overlay");
+    const node = w.document.querySelector("#graph .node");
+    node.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+    finding(j, label + "_click_opens_drawer", "hard", main.classList.contains("drawer-open") && wrap.contains($("side")), label + ": a click opens Details as a drawer inside the overlay");
+    finding(j, label + "_tabs_kept", "hard", Array.prototype.map.call(w.document.querySelectorAll("nav.tabs .tab"), (b) => b.getAttribute("data-tab")).join(",") === "details,cascade,threats,dataflow,gaps,edit,export", label + ": the Details tabs are unchanged");
+    $("drawer-close").click();
+    finding(j, label + "_close_button_drawer", "hard", main.classList.contains("drawer-closed") && wrap.classList.contains("expanded"), label + ": Close hides Details and leaves the overlay open");
+    node.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+    esc();
+    finding(j, label + "_esc_drawer_first", "hard", main.classList.contains("drawer-closed") && wrap.classList.contains("expanded"), label + ": Esc closes the drawer first and keeps the overlay");
+    esc();
+    finding(j, label + "_esc_closes_overlay", "hard", !wrap.classList.contains("expanded") && !wrap.hasAttribute("aria-modal"), label + ": a second Esc closes the overlay");
+    finding(j, label + "_focus_returns", "hard", w.document.activeElement === expand, label + ": focus returns to Expand graph");
+    expand.click();
+    $("overlay-close").click();
+    finding(j, label + "_close_button_overlay", "hard", !wrap.classList.contains("expanded") && w.document.activeElement === expand, label + ": Close exits the overlay and returns focus");
+    node.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+    finding(j, label + "_page_drawer_opens", "hard", main.classList.contains("drawer-open"), label + ": a click opens the drawer on the normal page too");
+    esc();
+    finding(j, label + "_page_drawer_esc", "hard", main.classList.contains("drawer-closed"), label + ": Esc closes the drawer on the normal page");
+  }
+
+  journey("graph_overlay", (j) => {
+    w.TM_UI.setAssessment("holistic");
+    w.TM_UI.load(JSON.parse(fs.readFileSync(path.join(DIR, "example-o2c.json"), "utf8")));
+    overlayChecks(j, "holistic");
+    finding(j, "holistic_filters_in_overlay", "hard", (function () { $("expand-graph").click(); const ok = !$("rel-filters").hidden && $("rel-filters").querySelectorAll("input").length > 3; $("overlay-close").click(); return ok; })(), "Holistic: the relationship filters are in the overlay");
+    w.TM_UI.setAssessment("L2");
+    overlayChecks(j, "scoped_l2");
+    w.TM_UI.setAssessment("L5");
+    overlayChecks(j, "scoped_l5");
+    $("expand-graph").click();
+    finding(j, "scoped_overlay_cards", "hard", !!w.document.querySelector("#graph .scoped-canvas") && !$("graph-svg"), "Scoped: the HTML card canvas is what expands");
+    $("overlay-close").click();
+    w.TM_UI.setAssessment("holistic");
+  });
+
   journey("heuristic_summary", (j) => {
     const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (s) => s.textContent).join("\n");
     finding(j, "graph_flex_space", "hard", /#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "Graph scroll claims leftover viewport height");
