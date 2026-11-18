@@ -734,6 +734,55 @@ test("UI: SRF layers in sequence, L1 on top and L5 at the bottom (Bill's rule)",
   assert.deepStrictEqual(opts, want, "layer choices in the Edit form");
 });
 
+test("UI: diagram fits by viewBox, and details open, close, and return focus", () => {
+  w.TM_UI.load(example);
+  const main = w.document.querySelector("main");
+  assert.ok(main.classList.contains("drawer-closed"));
+  assert.strictEqual($("side").getAttribute("aria-hidden"), "true");
+  assert.strictEqual($("open-drawer").hidden, false);
+  const svg = $("graph-svg");
+  assert.ok(/^0 0 \d+ \d+$/.test(svg.getAttribute("viewBox")), svg.getAttribute("viewBox"));
+  assert.strictEqual(svg.getAttribute("width"), null);
+  assert.strictEqual(svg.getAttribute("role"), "group");
+  assert.strictEqual(w.TM_UI.columnCount(11, 0), 6, "headless fallback keeps 6 boxes on a row");
+  assert.strictEqual(w.TM_UI.columnCount(11, 1366), 7);
+  assert.strictEqual(w.TM_UI.columnCount(11, 1280), 6);
+  assert.strictEqual(w.TM_UI.columnCount(11, 900), 4);
+  assert.strictEqual(w.TM_UI.columnCount(11, 390), 1);
+  const node = w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]');
+  node.dispatchEvent(new w.MouseEvent("click", { bubbles: true }));
+  assert.ok(main.classList.contains("drawer-open"));
+  assert.strictEqual($("side").getAttribute("aria-hidden"), "false");
+  assert.strictEqual(w.document.activeElement, $("drawer-close"));
+  assert.ok($("panel").textContent.indexOf("Reasoning LLM") >= 0, "details show the clicked component");
+  $("drawer-close").click();
+  assert.ok(main.classList.contains("drawer-closed"));
+  assert.strictEqual(w.document.activeElement.getAttribute("data-id"), "cmp.reasoning-llm");
+  w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]').dispatchEvent(new w.KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+  assert.ok(main.classList.contains("drawer-open"));
+  assert.strictEqual(w.document.activeElement, $("drawer-close"));
+  w.document.dispatchEvent(new w.KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
+  assert.ok(main.classList.contains("drawer-closed"));
+  assert.strictEqual(w.document.activeElement.getAttribute("data-id"), "cmp.reasoning-llm");
+  $("open-drawer").click();
+  assert.ok(main.classList.contains("drawer-open"));
+  assert.strictEqual(w.document.activeElement, $("drawer-close"));
+  $("drawer-close").click();
+  assert.strictEqual(w.document.activeElement, $("open-drawer"));
+});
+
+test("UI: list view selection opens details and close returns to that row", () => {
+  w.TM_UI.load(example);
+  $("view-toggle").click();
+  w.document.querySelector('#list-view button[data-lv="cmp.orchestrator"]').click();
+  assert.ok(w.document.querySelector("main").classList.contains("drawer-open"));
+  assert.strictEqual(w.TM_STATE.selected, "cmp.orchestrator");
+  $("drawer-close").click();
+  assert.strictEqual(w.document.activeElement.getAttribute("data-lv"), "cmp.orchestrator");
+  $("view-toggle").click();
+  assert.ok($("graph-svg"));
+});
+
 }
 function finish() { console.log("\n" + pass + " passed, " + fail + " failed"); process.exit(fail ? 1 : 0); }
 if (w.document.readyState === "loading") w.document.addEventListener("DOMContentLoaded", () => { uiTests(); finish(); });

@@ -15,7 +15,7 @@ Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's d
 | `example-case.yaml` / `example-case.json` | Agentic Case to Resolution (customer service) |
 | `example-case-saas.yaml` / `example-case-saas.json` | Case to Resolution on a managed AI service desk (AI-SaaS). Shows the L5 N/A customer case |
 | `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the six; O2C is the default. No build step, no network calls |
-| `tests/test_cascade.js` | 73 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the six examples, catalog links, the example picker and the UI (jsdom) |
+| `tests/test_cascade.js` | 75 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the six examples, catalog links, the example picker, the pane layout and the UI (jsdom) |
 | `tests/test_schema_export.py` | 55 checks: schema, every example, export, the export disclaimer, rejection cases, and a wording check |
 
 ## Decisions by Bill, Nov 16, 2026
@@ -431,7 +431,8 @@ With the banking overlay off, the Nov 16 state gives 30 findings (3 high, 16 med
 `index.html` is one file with inline CSS and JavaScript. It makes no network calls and loads no libraries.
 
 - **Layer order** (Bill's rule, Nov 16, 2026): every view that shows SRF layers lists them in sequence, L1 on top and L5 at the bottom. That covers the graph bands, the cascade's impact-by-layer table, the data flow matrix (rows top to bottom, columns left to right) and the layer list in the Edit form. The tool already followed the rule; a test now checks it.
-- **Graph**: an SVG with one band per layer. Each node shows its name and owner. A dashed red border marks an ownership gap. Edge color and dash show the type, and a thin line marks a soft link. A small circle marks a link that crosses the customer-provider boundary. Checkboxes hide link types.
+- **Graph**: an SVG with one band per layer. Each node shows its name and owner. A dashed red border marks an ownership gap. Edge color and dash show the type, and a thin line marks a soft link. A small circle marks a link that crosses the customer-provider boundary. Checkboxes hide link types. The SVG has a viewBox and scales to the width of the graph pane, so Fit does not scroll sideways. Zoom out, Zoom in and Fit change that scale. A layer wraps onto another row when the next box would not fit at full size.
+- **Details pane**: closed until a component is chosen or Details is pressed. It then opens beside the diagram. Close, or Esc, hides it and returns focus to the component that was chosen, or to Details if that button opened the pane. A handle between the panes sets the details width. The browser stores that width. On a narrow screen the details open as a sheet from the bottom, and the diagram uses the full width.
 - **Ownership overlay**: colors nodes by owner. A red fill marks a component with zero owners, or with two or more.
 - **Component tab**: layer, type, owner and persona, the SRF matrix value for that layer under the operating model, the version shown and the version list, and a note on candidate L4 types. Also lists the relationships (with cascade, version, approval and boundary) and the local and inherited controls with their Required or Recommended label.
 - **Cascade tab**: impact by layer, impact by owner, the path for each reached component, the components a control lowered, and the stakeholders reached. A drop-down in the header picks worst case or "with controls in place." A green border and a down arrow mark a lowered component.
@@ -446,7 +447,7 @@ With the banking overlay off, the Nov 16 state gives 30 findings (3 high, 16 med
 - **Evidence help**: the Component tab lists the evidence to ask for on L2 and L5 components. See "Evidence for L2 and L5 starting points".
 - **Deep links**: `#select=cmp.x`, `#threat=thr.x`, `&tab=cascade`, `&mode=controls`, `&overlay=banking`, `&owners=1`, `&snapshot=snap.x`.
 
-Limits: YAML import is not supported (JSON only). Edits are not saved between sessions; export to keep them. The edit forms do not add versions; add them in JSON. The layout is a simple grid per layer, so a large model needs the type filters.
+Limits: YAML import is not supported (JSON only). Edits are not saved between sessions; export to keep them. The edit forms do not add versions; add them in JSON. Each layer is still a grid of boxes. A large model wraps onto more rows. The stored details width is the only layout value kept between sessions.
 
 ## Fit with the site
 
