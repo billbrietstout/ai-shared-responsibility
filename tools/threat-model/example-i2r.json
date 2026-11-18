@@ -1,0 +1,1954 @@
+{
+ "tm_schema_version": "0.1.0-draft",
+ "system": {
+  "disclaimer": "Prototype. Every owner is a placeholder. Every obligation is unverified. This is not legal advice. Not part of CoSAI SRF v1.0.",
+  "id": "sys.i2r-agentic",
+  "name": "Agentic Incident to Resolution (example)",
+  "description": "Illustrative example. A customer reports a break in a product or service. The process classifies it, plans the restoration, and sends the customer notice. Case to Resolution works one customer's account remedy: refund, goodwill, and complaint handling. Incident to Resolution works the break, the restoration, and the notice to affected customers. A case may open an incident, and an incident may spawn account cases. Refund caps and complaint clocks stay on Case to Resolution. The APQC elements on this example are the same elements that fit Case to Resolution, and the match is partial. An orchestration agent and five sub-agents run on a reasoning LLM from an AI Model Provider. Hard rules (a safety incident stays with a person, customer notice before the status is marked restored, a restoration change window, and segregation of duties) are enforced by a policy service outside the model. Safety and severity are scored by a separate component that is not on the reasoning-LLM path. Every owner is a placeholder.",
+  "operating_model": "Agent-PaaS",
+  "operating_model_note": "Example assumption. Bill to confirm.",
+  "as_of": "2026-11-16",
+  "snapshot_id": null,
+  "overlays_enabled": [],
+  "apqc_pcf": [
+   {
+    "number": "6.0",
+    "version": "v8.0",
+    "name": "Manage Customer Service",
+    "match": "partial",
+    "note": "Partial match. 6.0, 6.2, 6.2.2, 6.2.3, and 6.2.5 are the same elements that fit Case to Resolution. This example uses them for a reported product or service break. The fact check did not give an element ID for this number."
+   },
+   {
+    "number": "6.2",
+    "version": "v8.0",
+    "name": "Plan and manage customer service contacts",
+    "match": "partial",
+    "element_id": "10379",
+    "note": "Same PCF element as Case to Resolution. Partial match for this example: a reported product or service break, not an account remedy."
+   },
+   {
+    "number": "6.2.2",
+    "version": "v8.0",
+    "name": "Manage customer service problems, requests, and inquiries",
+    "match": "partial",
+    "element_id": "10388",
+    "note": "Same PCF element as Case to Resolution. Partial match for this example: a reported product or service break, not an account remedy."
+   },
+   {
+    "number": "6.2.3",
+    "version": "v8.0",
+    "name": "Manage customer complaints",
+    "match": "partial",
+    "element_id": "10389",
+    "note": "Same PCF element as Case to Resolution. Partial match for this example: a reported product or service break, not an account remedy."
+   },
+   {
+    "number": "6.2.5",
+    "version": "v8.0",
+    "name": "Report incidents and risks to regulatory bodies",
+    "match": "partial",
+    "element_id": "12840",
+    "note": "Same PCF element as Case to Resolution. Partial match for this example: a reported product or service break, not an account remedy."
+   }
+  ]
+ },
+ "snapshots": [
+  {
+   "id": "snap.nov16",
+   "name": "As built, Nov 16, 2026",
+   "as_of": "2026-11-16"
+  },
+  {
+   "id": "snap.dec01",
+   "name": "Planned December release",
+   "as_of": "2026-12-01"
+  }
+ ],
+ "stakeholders": [
+  {
+   "id": "stk.i2r-customers",
+   "name": "Customers affected by the reported break",
+   "kind": "affected_individuals",
+   "affected_by_component_ids": [
+    "cmp.i2r-step-report",
+    "cmp.i2r-step-safety",
+    "cmp.i2r-step-diagnose",
+    "cmp.i2r-step-restore",
+    "cmp.i2r-step-notice"
+   ]
+  },
+  {
+   "id": "stk.i2r-named",
+   "name": "Other people named on an affected account",
+   "kind": "affected_individuals",
+   "affected_by_component_ids": [
+    "cmp.i2r-step-safety",
+    "cmp.i2r-step-notice"
+   ]
+  },
+  {
+   "id": "stk.i2r-privacy-authority",
+   "name": "Data protection or privacy authority (candidate, unverified)",
+   "kind": "relevant_authority",
+   "affected_by_component_ids": [
+    "cmp.i2r-affected",
+    "cmp.i2r-history"
+   ]
+  },
+  {
+   "id": "stk.i2r-quality",
+   "name": "Internal incident quality function (candidate; not an owner)",
+   "kind": "relevant_authority",
+   "affected_by_component_ids": [
+    "cmp.i2r-step-review",
+    "cmp.i2r-step-notice"
+   ]
+  },
+  {
+   "id": "stk.i2r-notice-authority",
+   "name": "Authority for customer notice of a service break (candidate, unverified)",
+   "kind": "relevant_authority",
+   "affected_by_component_ids": [
+    "cmp.i2r-step-notice",
+    "cmp.i2r-step-restore"
+   ],
+   "vertical": "customer-notice"
+  },
+  {
+   "id": "stk.i2r-notified",
+   "name": "Customers who must receive a notice before status is marked restored",
+   "kind": "affected_individuals",
+   "affected_by_component_ids": [
+    "cmp.i2r-step-notice",
+    "cmp.i2r-step-restore"
+   ],
+   "vertical": "customer-notice"
+  }
+ ],
+ "overlays": [
+  {
+   "id": "customer-notice",
+   "name": "Customer notice overlay",
+   "description": "Adds obligations and threats for notice to affected customers before a status is marked restored. All entries are unverified and need counsel.",
+   "status": "draft"
+  }
+ ],
+ "components": [
+  {
+   "id": "cmp.i2r-process",
+   "name": "Incident to Resolution process",
+   "layer": "L1",
+   "type": "business_process",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance"
+  },
+  {
+   "id": "cmp.i2r-logic",
+   "name": "Incident orchestration logic (step order, routing, exceptions)",
+   "layer": "L1",
+   "type": "business_logic",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance",
+   "logic": {
+    "version": "1.0",
+    "approved_by": "Incident process owner (placeholder)",
+    "approved_on": "2026-10-01",
+    "change_control": "L1 approval for every version"
+   }
+  },
+  {
+   "id": "cmp.hard-rules",
+   "name": "Hard rules (safety incidents stay with a person, customer notice before restored status, restoration change window, segregation of duties)",
+   "layer": "L1",
+   "type": "business_logic",
+   "owner": {
+    "status": "assigned",
+    "name": "Customer operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Processes & Governance",
+   "logic": {
+    "version": "2.0",
+    "approved_by": "Customer operations owner (placeholder)",
+    "approved_on": "2026-09-15",
+    "change_control": "L1 approval for every version"
+   }
+  },
+  {
+   "id": "cmp.i2r-step-report",
+   "name": "1. Incident report",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Contact operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.i2r-step-safety",
+   "name": "2. Safety and severity score",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Safety owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.i2r-step-classify",
+   "name": "3. Classification",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident triage owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.i2r-step-diagnose",
+   "name": "4. Diagnosis",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.i2r-step-restore",
+   "name": "5. Restoration plan",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Restoration owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.i2r-step-notice",
+   "name": "6. Customer notice",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Customer communications owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   },
+   "multiplicity_overrides": [
+    {
+     "rule_id": "MD-02",
+     "lower": 0,
+     "upper": 2,
+     "reason": "Placeholder: a planned status-page tool may realize this step alongside the notice agent during the pilot."
+    }
+   ]
+  },
+  {
+   "id": "cmp.i2r-step-review",
+   "name": "7. Closure and review",
+   "layer": "L1",
+   "type": "process_step",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident quality lead (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.i2r-affected",
+   "name": "Affected customer and product records",
+   "layer": "L2",
+   "type": "data_store",
+   "owner": {
+    "status": "assigned",
+    "name": "Customer data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Master Data Management"
+  },
+  {
+   "id": "cmp.i2r-history",
+   "name": "Incident history",
+   "layer": "L2",
+   "type": "data_store",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Master Data Management"
+  },
+  {
+   "id": "cmp.i2r-inbound",
+   "name": "Report chat, email and form text",
+   "layer": "L2",
+   "type": "input_channel",
+   "owner": {
+    "status": "assigned",
+    "name": "Contact operations owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "notes": "Untrusted input. Customer report text enters the agents here."
+  },
+  {
+   "id": "cmp.i2r-telemetry",
+   "name": "Product telemetry feed",
+   "layer": "L2",
+   "type": "data_feed",
+   "owner": {
+    "status": "assigned",
+    "name": "Telemetry vendor (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "party": "provider",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.orchestrator",
+   "name": "Incident orchestration agent",
+   "layer": "L3",
+   "type": "orchestrator",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.i2r-agent-report",
+   "name": "Report agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.i2r-agent-classify",
+   "name": "Classification agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.i2r-agent-diagnose",
+   "name": "Diagnosis agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.i2r-agent-restore",
+   "name": "Restoration agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.i2r-agent-notice",
+   "name": "Notice agent",
+   "layer": "L3",
+   "type": "sub_agent",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models"
+  },
+  {
+   "id": "cmp.i2r-safety-score",
+   "name": "Safety and severity score",
+   "layer": "L3",
+   "type": "ai_component",
+   "owner": {
+    "status": "assigned",
+    "name": "Safety analytics lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "APIs & Fine-tuned Models"
+  },
+  {
+   "id": "cmp.i2r-product-tool",
+   "name": "Shared product-knowledge tool",
+   "layer": "L3",
+   "type": "tool",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "APIs & Fine-tuned Models",
+   "notes": "A shared part used by the report and diagnosis agents."
+  },
+  {
+   "id": "cmp.policy-service",
+   "name": "Policy service (hard rules outside the model)",
+   "layer": "L3",
+   "type": "policy_service",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident platform lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Application Platforms"
+  },
+  {
+   "id": "cmp.model-settings",
+   "name": "Model settings (version, reasoning effort, fallback)",
+   "layer": "L3",
+   "type": "model_settings",
+   "owner": {
+    "status": "assigned",
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Agents & Orchestration Models",
+   "settings": {
+    "model_version": "pinned (example)",
+    "reasoning_effort": "high",
+    "fallback": "smaller model under load",
+    "change_approver": "Incident process owner (placeholder)"
+   },
+   "versions": [
+    {
+     "version": "2026-12",
+     "from": "2026-12-01",
+     "note": "New pinned model version (example).",
+     "set": {
+      "settings": {
+       "model_version": "new pinned version (example)",
+       "reasoning_effort": "high",
+       "fallback": "smaller model under load",
+       "change_approver": "Incident process owner (placeholder)"
+      }
+     }
+    }
+   ]
+  },
+  {
+   "id": "cmp.agent-runtime",
+   "name": "Agent runtime",
+   "layer": "L4",
+   "type": "agent_runtime",
+   "owner": {
+    "status": "assigned",
+    "name": "Agent platform vendor (placeholder)",
+    "persona_id": "srf.role.agentic-platform-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Compute Infrastructure"
+  },
+  {
+   "id": "cmp.llm-gateway",
+   "name": "LLM gateway",
+   "layer": "L4",
+   "type": "gateway",
+   "owner": {
+    "status": "assigned",
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "LLM Routers & Gateways"
+  },
+  {
+   "id": "cmp.guardrails",
+   "name": "Guardrails and output filters",
+   "layer": "L4",
+   "type": "guardrail",
+   "owner": {
+    "status": "assigned",
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Guardrails & Safety Systems"
+  },
+  {
+   "id": "cmp.site-network",
+   "name": "Customer-status network link",
+   "layer": "L4",
+   "type": "network",
+   "owner": {
+    "status": "assigned",
+    "name": "Network operations lead (placeholder)",
+    "persona_id": "srf.role.ai-platform-provider",
+    "party": "customer",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "cmp.site-edge",
+   "name": "Status-notice edge host",
+   "layer": "L4",
+   "type": "edge_ot_host",
+   "owner": {
+    "status": "assigned",
+    "name": "Status-page lead (placeholder)",
+    "persona_id": "srf.role.ai-platform-provider",
+    "party": "customer",
+    "placeholder": true
+   },
+   "srf_component": "Compute Infrastructure"
+  },
+  {
+   "id": "cmp.reasoning-llm",
+   "name": "Reasoning LLM",
+   "layer": "L5",
+   "type": "model",
+   "owner": {
+    "status": "assigned",
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Foundation Models"
+  },
+  {
+   "id": "cmp.fallback-llm",
+   "name": "Fallback LLM (smaller, cheaper)",
+   "layer": "L5",
+   "type": "model",
+   "owner": {
+    "status": "assigned",
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
+    "party": "provider",
+    "placeholder": true
+   },
+   "srf_component": "Foundation Models"
+  }
+ ],
+ "relationships": [
+  {
+   "id": "rel.c1",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-step-report",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c2",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-step-safety",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c3",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-step-classify",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c4",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-step-diagnose",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c5",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-step-restore",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c6",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-step-notice",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c7",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-step-review",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c8",
+   "from": "cmp.i2r-process",
+   "to": "cmp.i2r-logic",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.c9",
+   "from": "cmp.i2r-process",
+   "to": "cmp.hard-rules",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.r1",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-logic",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "logic_version": "1.0",
+   "l1_approval": {
+    "approved_by": "Incident process owner (placeholder)",
+    "approved_on": "2026-10-01",
+    "ref": "Example only. Incident logic v1.0 runbook (placeholder)"
+   }
+  },
+  {
+   "id": "rel.r2",
+   "from": "cmp.policy-service",
+   "to": "cmp.hard-rules",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "logic_version": "2.0",
+   "l1_approval": {
+    "approved_by": "Customer operations owner (placeholder)",
+    "approved_on": "2026-09-15"
+   }
+  },
+  {
+   "id": "rel.r3",
+   "from": "cmp.i2r-agent-report",
+   "to": "cmp.i2r-step-report",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Contact operations owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r4",
+   "from": "cmp.i2r-safety-score",
+   "to": "cmp.i2r-step-safety",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Safety owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r5",
+   "from": "cmp.i2r-agent-classify",
+   "to": "cmp.i2r-step-classify",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Incident triage owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r6",
+   "from": "cmp.i2r-agent-diagnose",
+   "to": "cmp.i2r-step-diagnose",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Incident operations owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r7",
+   "from": "cmp.i2r-agent-restore",
+   "to": "cmp.i2r-step-restore",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Restoration owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r8",
+   "from": "cmp.i2r-agent-notice",
+   "to": "cmp.i2r-step-notice",
+   "type": "realization",
+   "cascade": "hard",
+   "l1_approval": {
+    "approved_by": "Customer communications owner (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.r9",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-step-review",
+   "type": "realization",
+   "cascade": "hard",
+   "multiplicity": {
+    "lower": 1,
+    "upper": 1
+   },
+   "l1_approval": {
+    "approved_by": "Incident quality lead (placeholder)",
+    "approved_on": "2026-10-01"
+   }
+  },
+  {
+   "id": "rel.s6",
+   "from": "cmp.policy-service",
+   "to": "cmp.i2r-agent-restore",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s7",
+   "from": "cmp.policy-service",
+   "to": "cmp.i2r-agent-notice",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.g1",
+   "from": "cmp.i2r-agent-report",
+   "to": "cmp.i2r-product-tool",
+   "type": "aggregation",
+   "cascade": "hard",
+   "note": "Shared knowledge-retrieval tool. A part with two wholes uses aggregation, not composition."
+  },
+  {
+   "id": "rel.g2",
+   "from": "cmp.i2r-agent-diagnose",
+   "to": "cmp.i2r-product-tool",
+   "type": "aggregation",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.x1",
+   "from": "cmp.i2r-agent-report",
+   "to": "cmp.i2r-affected",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "read",
+   "carries": "affected customer and product fields"
+  },
+  {
+   "id": "rel.x2",
+   "from": "cmp.i2r-agent-report",
+   "to": "cmp.i2r-history",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "write",
+   "carries": "new incident reports"
+  },
+  {
+   "id": "rel.x3",
+   "from": "cmp.i2r-agent-classify",
+   "to": "cmp.i2r-history",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "readwrite",
+   "carries": "classification and severity"
+  },
+  {
+   "id": "rel.x4",
+   "from": "cmp.i2r-agent-diagnose",
+   "to": "cmp.i2r-history",
+   "type": "access",
+   "cascade": "hard",
+   "access_mode": "readwrite",
+   "carries": "diagnosis notes"
+  },
+  {
+   "id": "rel.x5",
+   "from": "cmp.i2r-agent-restore",
+   "to": "cmp.i2r-history",
+   "type": "access",
+   "cascade": "soft",
+   "access_mode": "write",
+   "carries": "restoration and notice records"
+  },
+  {
+   "id": "rel.x6",
+   "from": "cmp.i2r-safety-score",
+   "to": "cmp.i2r-affected",
+   "type": "access",
+   "cascade": "soft",
+   "access_mode": "read",
+   "carries": "product and safety fields"
+  },
+  {
+   "id": "rel.f1",
+   "from": "cmp.i2r-inbound",
+   "to": "cmp.i2r-agent-report",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "untrusted report text"
+  },
+  {
+   "id": "rel.f2",
+   "from": "cmp.i2r-telemetry",
+   "to": "cmp.i2r-safety-score",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "product telemetry"
+  },
+  {
+   "id": "rel.u1",
+   "from": "cmp.i2r-telemetry",
+   "to": "cmp.i2r-affected",
+   "unclassified": true,
+   "note": "Does the identity-verification feed update customer profile data directly? Type not yet known."
+  },
+  {
+   "id": "rel.t1",
+   "from": "cmp.i2r-step-report",
+   "to": "cmp.i2r-step-safety",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t2",
+   "from": "cmp.i2r-step-safety",
+   "to": "cmp.i2r-step-classify",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t3",
+   "from": "cmp.i2r-step-classify",
+   "to": "cmp.i2r-step-diagnose",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t4",
+   "from": "cmp.i2r-step-diagnose",
+   "to": "cmp.i2r-step-restore",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t5",
+   "from": "cmp.i2r-step-restore",
+   "to": "cmp.i2r-step-notice",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.t6",
+   "from": "cmp.i2r-step-notice",
+   "to": "cmp.i2r-step-review",
+   "type": "triggering",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.i1",
+   "from": "obl.i2r-policy",
+   "to": "ctl.i2r-change-window",
+   "type": "influence",
+   "cascade": "soft",
+   "note": "Obligation drives the control (motivation). This link does not cascade failures."
+  },
+  {
+   "id": "rel.s1",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s2",
+   "from": "cmp.reasoning-llm",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s3",
+   "from": "cmp.fallback-llm",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "soft"
+  },
+  {
+   "id": "rel.s4",
+   "from": "cmp.model-settings",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s5",
+   "from": "cmp.policy-service",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.s8",
+   "from": "cmp.guardrails",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "soft",
+   "provides": "controls"
+  },
+  {
+   "id": "rel.s9",
+   "from": "cmp.guardrails",
+   "to": "cmp.llm-gateway",
+   "type": "serving",
+   "cascade": "soft",
+   "provides": "controls"
+  },
+  {
+   "id": "rel.a1",
+   "from": "cmp.agent-runtime",
+   "to": "cmp.orchestrator",
+   "type": "assignment",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f13",
+   "from": "cmp.orchestrator",
+   "to": "cmp.llm-gateway",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f14",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.reasoning-llm",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f15",
+   "from": "cmp.llm-gateway",
+   "to": "cmp.fallback-llm",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "prompts and business context"
+  },
+  {
+   "id": "rel.f16",
+   "from": "cmp.orchestrator",
+   "to": "cmp.agent-runtime",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "telemetry and decision logs"
+  },
+  {
+   "id": "rel.f17",
+   "from": "cmp.orchestrator",
+   "to": "cmp.site-edge",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "status notice start and stop"
+  },
+  {
+   "id": "rel.s10",
+   "from": "cmp.site-network",
+   "to": "cmp.site-edge",
+   "type": "serving",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.d1",
+   "from": "cmp.reasoning-llm",
+   "to": "cmp.orchestrator",
+   "type": "serving",
+   "cascade": "hard",
+   "derived": true,
+   "derived_from": [
+    "rel.s2",
+    "rel.s1"
+   ],
+   "note": "The orchestrator depends on the reasoning LLM through the LLM gateway."
+  },
+  {
+   "id": "rel.f3",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-report",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f8",
+   "from": "cmp.i2r-agent-report",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c11",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-report",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f4",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-classify",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f9",
+   "from": "cmp.i2r-agent-classify",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c12",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-classify",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f5",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-diagnose",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority"
+  },
+  {
+   "id": "rel.f10",
+   "from": "cmp.i2r-agent-diagnose",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c13",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-diagnose",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f6",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-restore",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority",
+   "containment_control_ids": [
+    "ctl.i2r-change-window"
+   ]
+  },
+  {
+   "id": "rel.f11",
+   "from": "cmp.i2r-agent-restore",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c14",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-restore",
+   "type": "composition",
+   "cascade": "hard"
+  },
+  {
+   "id": "rel.f7",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-notice",
+   "type": "flow",
+   "cascade": "hard",
+   "carries": "instructions and delegated authority",
+   "containment_control_ids": [
+    "ctl.i2r-notice-gate"
+   ]
+  },
+  {
+   "id": "rel.f12",
+   "from": "cmp.i2r-agent-notice",
+   "to": "cmp.orchestrator",
+   "type": "flow",
+   "cascade": "soft",
+   "carries": "results"
+  },
+  {
+   "id": "rel.c15",
+   "from": "cmp.orchestrator",
+   "to": "cmp.i2r-agent-notice",
+   "type": "composition",
+   "cascade": "hard"
+  }
+ ],
+ "obligations": [
+  {
+   "id": "obl.i2r-privacy",
+   "title": "Protect personal information of customers named in incidents",
+   "instrument": "Privacy law (candidate)",
+   "citation": null,
+   "instrument_type": "law",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "Incident records hold personal data of individuals in scope. Needs counsel.",
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.i2r-policy",
+   "title": "Score safety, keep the restoration window, and send notice before restored status",
+   "instrument": "Internal incident-handling policy (example)",
+   "citation": null,
+   "instrument_type": "internal_policy",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": null,
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.i2r-confidentiality",
+   "title": "Keep each customer's incident data confidential",
+   "instrument": "Customer contracts (example)",
+   "citation": null,
+   "instrument_type": "contract",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": null,
+   "vertical": "baseline",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.i2r-notice-before",
+   "title": "Tell affected customers about the break before status is marked restored",
+   "instrument": "Customer notice rules (candidate)",
+   "citation": null,
+   "instrument_type": "regulation",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The break is in scope of a customer notice rule. Needs counsel.",
+   "vertical": "customer-notice",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.i2r-known-impact",
+   "title": "Include the known impact in the customer notice",
+   "instrument": "Customer notice rules (candidate)",
+   "citation": null,
+   "instrument_type": "regulation",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "A notice is sent about a break with a known impact. Needs counsel.",
+   "vertical": "customer-notice",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  },
+  {
+   "id": "obl.i2r-safety-hold",
+   "title": "Keep a safety incident with a person until the safety hold is cleared",
+   "instrument": "Product safety notice rules (candidate)",
+   "citation": null,
+   "instrument_type": "regulation",
+   "strength": "binding",
+   "in_force": "unknown",
+   "applies_if": "The incident is scored as a safety incident. Needs counsel.",
+   "vertical": "customer-notice",
+   "verification": {
+    "status": "unverified",
+    "method": "none",
+    "checked_on": null
+   }
+  }
+ ],
+ "controls": [
+  {
+   "id": "ctl.i2r-logic-approval",
+   "title": "L1 owner approves every version of the incident orchestration logic",
+   "component_id": "cmp.i2r-logic",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-sod",
+   "title": "No agent can approve its own restoration or notice (segregation of duties)",
+   "component_id": "cmp.i2r-process",
+   "status": "planned",
+   "applies_to_children": true,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-change-window",
+   "title": "Restoration change window enforced by the policy service; a person approves work outside the window",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-notice-gate",
+   "title": "Customer notice required before status is marked restored; the agent cannot skip the notice",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-gate",
+   "title": "A safety score must pass, or a documented handoff to a person must be on file, before diagnosis continues",
+   "component_id": "cmp.policy-service",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-input",
+   "title": "Treat customer report text as data, never as instructions",
+   "component_id": "cmp.i2r-agent-classify",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-agent-identity",
+   "title": "Each agent has a scoped identity and least-privilege tool access",
+   "component_id": "cmp.agent-runtime",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-output-filter",
+   "title": "Output filtering before any customer notice is sent",
+   "component_id": "cmp.guardrails",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-confidentiality",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-regression",
+   "title": "Regression test set run before any model, prompt or setting change; L1 owner approves results",
+   "component_id": "cmp.model-settings",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-settings-approval",
+   "title": "L1 owner is named as the change approver for model settings",
+   "component_id": "cmp.model-settings",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-decision-log",
+   "title": "Log rule version, inputs, decision and authority for each step",
+   "component_id": "cmp.orchestrator",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-context",
+   "title": "Agent context limited to one incident at a time",
+   "component_id": "cmp.i2r-agent-restore",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-confidentiality",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-master-change",
+   "title": "Dual approval for changes to affected-customer contact fields",
+   "component_id": "cmp.i2r-affected",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-threshold",
+   "title": "Safety scores below a confidence threshold go to a person",
+   "component_id": "cmp.i2r-product-tool",
+   "status": "in_place",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-policy",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ]
+  },
+  {
+   "id": "ctl.i2r-ov-1",
+   "title": "Notice to affected customers sent before status is marked restored",
+   "component_id": "cmp.policy-service",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-notice-before",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "customer-notice"
+  },
+  {
+   "id": "ctl.i2r-ov-2",
+   "title": "Known impact included in the notice; the model cannot omit it",
+   "component_id": "cmp.policy-service",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-known-impact",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "customer-notice"
+  },
+  {
+   "id": "ctl.i2r-ov-3",
+   "title": "Safety hold stays in place until a person clears it",
+   "component_id": "cmp.i2r-agent-notice",
+   "status": "planned",
+   "applies_to_children": false,
+   "obligation_links": [
+    {
+     "obligation_id": "obl.i2r-safety-hold",
+     "basis": "editorial_inference",
+     "review_status": "proposed"
+    }
+   ],
+   "vertical": "customer-notice"
+  }
+ ],
+ "threats": [
+  {
+   "id": "thr.spoofed-report",
+   "title": "A crafted report makes the intake agent open an incident on the wrong product",
+   "risk": {
+    "asset": "Incident integrity",
+    "actor": "External reporter or attacker",
+    "failure_mode": "Untrusted report text treated as a verified claim",
+    "impact": "An incident is opened against the wrong product or account"
+   },
+   "target_component_id": "cmp.i2r-agent-report",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-policy",
+    "obl.i2r-privacy"
+   ],
+   "control_ids": [
+    "ctl.i2r-input",
+    "ctl.i2r-gate"
+   ],
+   "accountable": {
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers",
+    "stk.i2r-privacy-authority"
+   ],
+   "business_response_owner": {
+    "name": "Contact operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.logic-tamper",
+   "title": "Unapproved edit to the orchestration logic skips the safety score",
+   "risk": {
+    "asset": "Safety score",
+    "actor": "Insider or compromised admin",
+    "failure_mode": "Step order changed without L1 approval",
+    "impact": "Diagnosis proceeds on a safety incident with no score"
+   },
+   "target_component_id": "cmp.i2r-logic",
+   "failure_class": "logic",
+   "obligation_ids": [
+    "obl.i2r-policy"
+   ],
+   "control_ids": [
+    "ctl.i2r-logic-approval",
+    "ctl.i2r-decision-log"
+   ],
+   "accountable": {
+    "name": "Incident process owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers"
+   ]
+  },
+  {
+   "id": "thr.llm-reinterprets",
+   "title": "Reasoning LLM reads 'restore service now' as permission to skip the customer notice",
+   "risk": {
+    "asset": "Customer notice",
+    "actor": "None (model behavior)",
+    "failure_mode": "A service slogan is read as a waiver of the notice rule",
+    "impact": "Status is marked restored before affected customers are told"
+   },
+   "target_component_id": "cmp.reasoning-llm",
+   "failure_class": "model_behavior",
+   "obligation_ids": [
+    "obl.i2r-policy"
+   ],
+   "control_ids": [
+    "ctl.i2r-change-window",
+    "ctl.i2r-output-filter"
+   ],
+   "accountable": {
+    "name": "Model vendor (placeholder)",
+    "persona_id": "srf.role.model-provider",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers",
+    "stk.i2r-privacy-authority"
+   ],
+   "catalog_threat_id": null,
+   "catalog_note": "No entry in /data/threats.json matches this threat. The catalog's model-behavior entries, such as evasion and prompt injection, assume an attacker. Here the model misreads plain business wording and no attacker is involved, so the threat is left unmapped.",
+   "business_response_owner": {
+    "name": "Customer communications owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   },
+   "notes": "Accountable: the AI Model Provider on the provider side (Bill, Nov 17, 2026), the same rule /data/threats.json uses for model-behavior threats. The hard rules stay in the policy service, outside the model."
+  },
+  {
+   "id": "thr.silent-fallback",
+   "title": "Gateway falls back to a smaller model under load and severity or notice text changes",
+   "risk": {
+    "asset": "Severity and notice",
+    "actor": "None (settings)",
+    "failure_mode": "Fallback model used without an L1-approved change",
+    "impact": "Incidents are classed or described differently than under the pinned model"
+   },
+   "target_component_id": "cmp.model-settings",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-policy"
+   ],
+   "control_ids": [
+    "ctl.i2r-regression",
+    "ctl.i2r-settings-approval"
+   ],
+   "accountable": {
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers"
+   ],
+   "business_response_owner": {
+    "name": "Contact operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.authority-creep",
+   "title": "Orchestrator chains steps so a diagnosis note is treated as restoration approval",
+   "risk": {
+    "asset": "Segregation of duties",
+    "actor": "None (step order)",
+    "failure_mode": "A recommendation is treated as an approval",
+    "impact": "A restoration is released without the required authority"
+   },
+   "target_component_id": "cmp.orchestrator",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-policy"
+   ],
+   "control_ids": [
+    "ctl.i2r-sod",
+    "ctl.i2r-change-window",
+    "ctl.i2r-decision-log"
+   ],
+   "accountable": {
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers"
+   ],
+   "business_response_owner": {
+    "name": "Restoration owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.restore-persuasion",
+   "title": "A reporter argues the restoration agent into skipping the customer notice",
+   "risk": {
+    "asset": "Customer notice",
+    "actor": "External reporter",
+    "failure_mode": "Agent accepts a verbal workaround as authority",
+    "impact": "Status is marked restored with no notice"
+   },
+   "target_component_id": "cmp.i2r-agent-restore",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-policy"
+   ],
+   "control_ids": [
+    "ctl.i2r-change-window"
+   ],
+   "accountable": {
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers"
+   ],
+   "catalog_threat_id": "directpromptinjection",
+   "external_refs": [
+    {
+     "source": "owasp_ai_exchange",
+     "id": "directpromptinjection",
+     "url": "https://owaspai.org/go/directpromptinjection/"
+    },
+    {
+     "source": "owasp_llm_top10",
+     "id": "LLM01:2025 Prompt Injection"
+    },
+    {
+     "source": "mitre_atlas",
+     "id": "AML.T0051 LLM Prompt Injection"
+    },
+    {
+     "source": "biml_llm24",
+     "id": "[LLMtop10:5:prompt manipulation]"
+    }
+   ],
+   "business_response_owner": {
+    "name": "Restoration owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.data-exposure",
+   "title": "Diagnosis agent puts one customer's incident detail in another customer's notice",
+   "risk": {
+    "asset": "Customer confidentiality",
+    "actor": "None (context mix-up)",
+    "failure_mode": "Agent context crosses customers",
+    "impact": "Another customer's incident detail is disclosed"
+   },
+   "target_component_id": "cmp.i2r-agent-diagnose",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-confidentiality",
+    "obl.i2r-privacy"
+   ],
+   "control_ids": [
+    "ctl.i2r-context",
+    "ctl.i2r-output-filter"
+   ],
+   "accountable": {
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers",
+    "stk.i2r-privacy-authority"
+   ],
+   "catalog_threat_id": "dsgai11",
+   "external_refs": [
+    {
+     "source": "owasp_llm_top10",
+     "id": "LLM02:2025 Sensitive Information Disclosure (cross-session and cross-tenant bleed)"
+    },
+    {
+     "source": "owasp_dsgai",
+     "id": "DSGAI11 Cross-Context & Multi-User Conversation Bleed"
+    }
+   ],
+   "business_response_owner": {
+    "name": "Incident operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.master-data-poison",
+   "title": "Affected-customer contact fields changed so the notice goes to the wrong person",
+   "risk": {
+    "asset": "Customer contact fields",
+    "actor": "Insider or compromised account",
+    "failure_mode": "Contact fields changed without dual approval",
+    "impact": "The notice is sent to the wrong person"
+   },
+   "target_component_id": "cmp.i2r-affected",
+   "failure_class": "data",
+   "obligation_ids": [
+    "obl.i2r-policy",
+    "obl.i2r-privacy"
+   ],
+   "control_ids": [
+    "ctl.i2r-master-change"
+   ],
+   "accountable": {
+    "name": "Customer data owner (placeholder)",
+    "persona_id": "srf.role.data-provider",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers"
+   ],
+   "catalog_threat_id": "dsgai05",
+   "external_refs": [
+    {
+     "source": "owasp_dsgai",
+     "id": "DSGAI05 Data Integrity & Validation Failures"
+    }
+   ],
+   "business_response_owner": {
+    "name": "Customer communications owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.guardrail-outage",
+   "title": "Guardrail service is down and agents run without output filtering",
+   "risk": {
+    "asset": "Customer notices",
+    "actor": "None (control loss)",
+    "failure_mode": "Output filter unavailable",
+    "impact": "A customer notice goes out with no filter"
+   },
+   "target_component_id": "cmp.guardrails",
+   "failure_class": "control_loss",
+   "obligation_ids": [
+    "obl.i2r-confidentiality",
+    "obl.i2r-privacy"
+   ],
+   "control_ids": [
+    "ctl.i2r-output-filter"
+   ],
+   "accountable": {
+    "name": "Model serving team (placeholder)",
+    "persona_id": "srf.role.ai-model-serving",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers",
+    "stk.i2r-privacy-authority"
+   ],
+   "business_response_owner": {
+    "name": "Contact operations owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.safety-miss",
+   "title": "Safety component marks a report as routine when the telemetry would not have",
+   "risk": {
+    "asset": "Safety decision",
+    "actor": "None (scoring error)",
+    "failure_mode": "Score clears a report the feed does not support",
+    "impact": "A safety incident stays on the agent path"
+   },
+   "target_component_id": "cmp.i2r-safety-score",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-policy"
+   ],
+   "control_ids": [
+    "ctl.i2r-threshold",
+    "ctl.i2r-gate"
+   ],
+   "accountable": {
+    "name": "Safety analytics lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-customers"
+   ],
+   "business_response_owner": {
+    "name": "Safety owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   }
+  },
+  {
+   "id": "thr.notice-skip",
+   "title": "Orchestrator marks status restored before the required customer notice",
+   "risk": {
+    "asset": "Customer notice",
+    "actor": "None (step order)",
+    "failure_mode": "Restored status is set while notice is still due",
+    "impact": "Affected customers are not told before the status changes"
+   },
+   "target_component_id": "cmp.orchestrator",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-notice-before"
+   ],
+   "control_ids": [
+    "ctl.i2r-ov-1",
+    "ctl.i2r-notice-gate"
+   ],
+   "accountable": {
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-notified",
+    "stk.i2r-notice-authority"
+   ],
+   "business_response_owner": {
+    "name": "Customer communications owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   },
+   "vertical": "customer-notice"
+  },
+  {
+   "id": "thr.notice-omit",
+   "title": "Notice agent sends a status note and omits a known impact",
+   "risk": {
+    "asset": "Known impact",
+    "actor": "None (model text)",
+    "failure_mode": "Impact text comes from model language, or is omitted",
+    "impact": "The customer does not receive the known impact"
+   },
+   "target_component_id": "cmp.i2r-agent-notice",
+   "failure_class": "execution",
+   "obligation_ids": [
+    "obl.i2r-known-impact",
+    "obl.i2r-safety-hold"
+   ],
+   "control_ids": [
+    "ctl.i2r-ov-2",
+    "ctl.i2r-ov-3",
+    "ctl.i2r-output-filter"
+   ],
+   "accountable": {
+    "name": "Incident app team lead (placeholder)",
+    "persona_id": "srf.role.application-developer",
+    "placeholder": true
+   },
+   "stakeholder_ids": [
+    "stk.i2r-notified",
+    "stk.i2r-notice-authority"
+   ],
+   "business_response_owner": {
+    "name": "Customer communications owner (placeholder)",
+    "persona_id": "srf.role.ai-system-governance",
+    "placeholder": true
+   },
+   "vertical": "customer-notice"
+  }
+ ]
+}

@@ -14,9 +14,14 @@ Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's d
 | `example-r2r.yaml` / `example-r2r.json` | Agentic Record to Report (R2R, financial close) |
 | `example-case.yaml` / `example-case.json` | Agentic Case to Resolution (customer service) |
 | `example-case-saas.yaml` / `example-case-saas.json` | Case to Resolution on a managed AI service desk (AI-SaaS). Shows the L5 N/A customer case |
-| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the six; O2C is the default. No build step, no network calls |
-| `tests/test_cascade.js` | 75 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the six examples, catalog links, the example picker, the pane layout and the UI (jsdom) |
-| `tests/test_schema_export.py` | 55 checks: schema, every example, export, the export disclaimer, rejection cases, and a wording check |
+| `example-l2o.yaml` / `example-l2o.json` | Agentic Lead to Order (marketing and sales). Hands an accepted quote to O2C |
+| `example-i2r.yaml` / `example-i2r.json` | Agentic Incident to Resolution (a customer-reported product or service break). Partial overlap with Case |
+| `example-q2a.yaml` / `example-q2a.json` | Question to Answer on a managed assistant (AI-SaaS, retrieval). Not the service-desk example |
+| `example-r2f.yaml` / `example-r2f.json` | Agentic Request to Fulfill (internal IT requests) |
+| `example-p2f.yaml` / `example-p2f.json` | Agentic Plan to Fulfill (supply and logistics). Hands allocated stock to O2C |
+| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the eleven; O2C is the default. No build step, no network calls |
+| `tests/test_cascade.js` | 97 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the eleven examples, catalog links, APQC rows, the example picker, the pane layout and the UI (jsdom) |
+| `tests/test_schema_export.py` | 87 checks: schema, every example, export, the export disclaimer, rejection cases, the optional APQC field, and a wording check |
 
 ## Decisions by Bill, Nov 16, 2026
 
@@ -244,7 +249,7 @@ In "with controls" mode, the discount authority and refund cap controls sit on t
 
 ## Example business processes
 
-The prototype includes six worked examples. Use the Example selector in the tool; Order to Cash stays the default. Each of the four added examples is modeled the same way as O2C: an orchestration agent and five sub-agents run on a reasoning LLM from an AI Model Provider; hard rules are enforced by a policy service outside the model; one separate AI component sits off the reasoning-LLM path. Every owner is a placeholder. Every obligation is unverified and is not legal advice. One vertical overlay is included in each example and is off by default.
+The prototype includes eleven worked examples. Use the Example selector in the tool; Order to Cash stays the default. Each added example is modeled the same way as O2C: an orchestration agent and five sub-agents run on a reasoning LLM from an AI Model Provider; hard rules are enforced by a policy service outside the model; one separate AI component sits off the reasoning-LLM path. Every owner is a placeholder. Every obligation is unverified and is not legal advice. One vertical overlay is included in each example and is off by default. The five examples added Nov 18, 2026 are illustrative in the same way: the disclaimer, placeholder owners, and unverified obligations. They are the only examples that carry `system.apqc_pcf`.
 
 | Example | Components | Relationships | Threats | Overlay (off by default) |
 |---|---|---|---|---|
@@ -254,8 +259,15 @@ The prototype includes six worked examples. Use the Example selector in the tool
 | Record to Report (R2R) | 30 | 65 | 12 | SOX-style financial reporting |
 | Case to Resolution | 31 | 68 | 12 | Consumer protection |
 | Case to Resolution, AI-SaaS | 31 | 68 | 12 | Consumer protection |
+| Lead to Order | 31 | 68 | 12 | Marketing consent |
+| Incident to Resolution | 31 | 68 | 12 | Customer notice |
+| Question to Answer, AI-SaaS | 31 | 68 | 12 | Retrieval limits |
+| Request to Fulfill | 31 | 68 | 12 | Privileged access |
+| Plan to Fulfill | 31 | 68 | 12 | Product hold |
 
-**AI-SaaS example (Bill, Nov 17, 2026, Q5).** Case to Resolution fits AI-SaaS best: many contact centers buy a managed AI service desk rather than build agents. The example keeps the Agent-PaaS case's components, links and threats, and changes the operating model and the owners:
+**AI-SaaS examples.** Case to Resolution on an AI service desk (Bill, Nov 17, 2026, Q5) keeps the Agent-PaaS case's components, links and threats, and changes the operating model and the owners. Question to Answer, added Nov 18, is a second AI-SaaS example. It answers a customer or an employee from approved documents. It does not open a case, issue a refund, or change an account. The customer's L5 cell is N/A in both.
+
+Case to Resolution on the service desk:
 
 - The SaaS vendor builds and runs the agents, the policy service, the model settings, the runtime and the gateway. Those owners are on the provider side.
 - The reasoning LLM and the fallback model come from the vendor's own AI Model Provider.
@@ -269,10 +281,25 @@ A failure at the L5 reasoning LLM, in the worst case:
 - **H2R**: the same pattern. It does not reach the policy service or the background-check step. 21 components are reached.
 - **R2R**: the same pattern. It does not reach the policy service or the anomaly review step. 20 components are reached.
 - **Case to Resolution**: the same pattern. It does not reach the policy service or the identity verification step. 21 components are reached.
+- **Lead to Order, Incident to Resolution, Question to Answer, Request to Fulfill, and Plan to Fulfill**: the same pattern. 21 components are reached. The step kept off the reasoning-LLM path is consent for Lead to Order, safety scoring for Incident to Resolution, entitlement for Question to Answer and for Request to Fulfill, and lot eligibility for Plan to Fulfill.
 
-In "with controls" mode, each new example lowers two authority-limited agents from failed to impacted (invoice match and payment; offer and offboarding; close adjustments and reporting; resolution and escalation). The L1 steps those agents realize are no longer reached through them. The agents stay in the blast radius. A control does not stop the cascade.
+In "with controls" mode, each of those examples lowers two authority-limited agents from failed to impacted (invoice match and payment; offer and offboarding; close adjustments and reporting; resolution and escalation; quote and handoff; restoration and notice; citation and handoff; privileged fulfillment and exception; shipment release and exception). The L1 steps those agents realize are no longer reached through them. The agents stay in the blast radius. A control does not stop the cascade.
 
-The four new examples also use aggregation (a shared tool that is a part of two agents) and an influence link from an obligation to a control. Those two types were not used in the O2C example. Influence is a motivation link; it does not cascade failures.
+The four examples added Nov 16 also use aggregation (a shared tool that is a part of two agents) and an influence link from an obligation to a control. Those two types were not used in the O2C example. The five examples added Nov 18 use the same two types. Influence is a motivation link; it does not cascade failures.
+
+## APQC PCF rows
+
+`system.apqc_pcf` is optional. A row stores the PCF number, the element ID when the Nov 18, 2026 fact check gave one, the version (`v8.0` or `v7.4`), the element name, and `match` (`clean`, `partial`, or `none`). The details pane prints each row as number / element ID / version. Partial is labeled "Partial match, not exact." None is labeled "No match." The six earlier examples have no `apqc_pcf` field.
+
+| Example | Match | Rows stored |
+|---|---|---|
+| Lead to Order | clean, v8.0 | 3.0 (no element ID); 3.3 / 20008; 3.5 / 10105; 3.5.1 / 10182; 3.5.3 / 11779; 3.5.4 / 10185. 3.5.4 is shared with Order to Cash. The hand-off step has one owner, Sales operations owner (placeholder). |
+| Incident to Resolution | partial, v8.0 | 6.0 (no element ID); 6.2 / 10379; 6.2.2 / 10388; 6.2.3 / 10389; 6.2.5 / 12840. These are the same elements as Case to Resolution. |
+| Question to Answer | none | 13.5 / 11073 is v7.4. Closest v8.0 candidates: 13.5.1 / 11095, 13.5.2 / 11096, 13.5.3 / 20965, 13.5.4 / 20969, 8.4.4 / 20779, 8.7.5.3 / 20898, 6.2.2 / 10388, 7.7.2 / 10523. |
+| Request to Fulfill | partial, v8.0 | 8.0 (no element ID); 8.1 / 20608; 8.1.5.3 / 20635; 8.3.8.3 / 20759; 8.7.8.3 / 20925. |
+| Plan to Fulfill | partial | 4.0 is v8.0 with no element ID. 4.1 / 10215, 4.2 / 10216, 4.3 / 10217, and 4.4 / 10219 are v7.4 IDs. 4.3 keeps the v7.4 name Produce/Assemble/Test product. 4.4.5 / 21617 is v8.0. |
+
+No other PCF numbers are stored. Order to Cash still runs order capture before quoting. APQC lists quotes (3.5.3) before sales orders (3.5.4). That step order was not changed.
 
 ## Versioned states
 
@@ -495,7 +522,7 @@ Choices that are mine, not the review's:
 2. Still open. Bill's copy of the ArchiMate 4 text restricts use with generative AI tools, so the flags stay until a person checks the 9 definitions or written permission is given.
 3. Is delegation enough as a flow that carries authority, or does it need its own scope and expiry?
 4. Should model settings be one component, as built, or attributes on the gateway's serving link?
-5. Settled Nov 17, 2026: keep Agent-PaaS and add one AI-SaaS example (Case to Resolution).
+5. Settled Nov 17, 2026: keep Agent-PaaS and add one AI-SaaS example (Case to Resolution). Nov 18 added a second AI-SaaS example, Question to Answer. The service-desk example was not changed.
 6. Which banking obligations should be checked first: adverse action notices, sanctions screening, or model risk?
 7. Should versions add up by date, as built, or should each version be a full copy of the record?
 8. Should a soft parent-child link roll up only failures, as built?
@@ -514,6 +541,8 @@ A threat carries `catalog_threat_id` only where a real entry in `/data/threats.j
 | `thr.llm-reinterprets` (all six) | none (`null`) | The catalog's model-behavior entries assume an attacker. Here the model misreads plain business wording. `catalog_note` says so |
 
 Left unmapped on purpose, because the catalog has no entry for the same failure: the spoofed invoice, journal and case threats (untrusted text treated as a valid claim, which is a validation failure more than an injection), authority creep, logic tampering, silent fallback, guardrail outage, the separate scoring components, and the overlay threats. Authority creep is close to OWASP LLM06 Excessive Agency, but the only catalog entry that cites LLM06 (`dsgai06`) is about data exchange between tools, so it was not used.
+
+The five examples added Nov 18 follow the same rule. `directpromptinjection`: `thr.quote-persuasion`, `thr.restore-persuasion`, `thr.cite-persuasion`, `thr.privilege-persuasion`, `thr.release-persuasion`. `dsgai11`: `thr.data-exposure` in each of the five. `dsgai05`: `thr.master-data-poison` in Lead to Order, Incident to Resolution, Request to Fulfill, and Plan to Fulfill. Question to Answer uses `dsgai21` for `thr.corpus-poison` (a poisoned or outdated page in the retrieval corpus) and `indirectpromptinjection` for `thr.indirect-page` (instructions in a retrieved page). `thr.llm-reinterprets` stays unmapped in all five, with `catalog_threat_id` null and a `catalog_note`. The AI Model Provider on the provider side is accountable for that threat.
 
 ## Evidence for L2 and L5 starting points
 
@@ -579,7 +608,7 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 
 ## Unverified
 
-- Every obligation in the examples: Sarbanes-Oxley internal control, ASC 606, debt collection law, CCPA or GDPR, customer contracts, the internal process policies, the banking overlay (ECOA and Regulation B adverse action notices, US sanctions rules, SR 11-7 model risk guidance), the public sector procurement overlay (competition, debarment and domestic preference rules), the employment law overlay (equal employment opportunity law, FCRA as applied to employment screening, wage and hour rules), the SOX-style reporting overlay (disclosure controls, officer certification and Exchange Act reporting), and the consumer protection overlay (unfair-or-deceptive-practices law, complaint-handling rules and required disclosures). None was checked against an official source. Citations are left empty. Applicability needs counsel.
+- Every obligation in the examples: Sarbanes-Oxley internal control, ASC 606, debt collection law, CCPA or GDPR, customer contracts, the internal process policies, the banking overlay (ECOA and Regulation B adverse action notices, US sanctions rules, SR 11-7 model risk guidance), the public sector procurement overlay (competition, debarment and domestic preference rules), the employment law overlay (equal employment opportunity law, FCRA as applied to employment screening, wage and hour rules), the SOX-style reporting overlay (disclosure controls, officer certification and Exchange Act reporting), and the consumer protection overlay (unfair-or-deceptive-practices law, complaint-handling rules and required disclosures). The five examples added Nov 18 use internal policies and candidate instruments (privacy law, unsolicited-message rules, customer notice rules, retrieval limits, privileged-access rules, product hold rules). None was checked against an official source. Citations are left empty. No control is mapped to a statute as a verified crosswalk. Applicability needs counsel.
 - The ArchiMate 4 definitions of all 9 relationship types. Two secondary sources list all 9 in ArchiMate 4; the official v4 text was not read.
 - Which relevant authorities apply to the example. Each is a candidate.
 - Every example owner is a placeholder.
@@ -594,4 +623,4 @@ NODE_PATH=/path/to/node_modules node tests/test_cascade.js
 python3 tests/test_schema_export.py   # needs PyYAML and jsonschema
 ```
 
-`test_cascade.js` (73 tests) writes `tests/out-export.json` and `tests/out-export.yaml`. Then `test_schema_export.py` (55 checks) checks that both validate and match, and that every example validates.
+`test_cascade.js` (97 tests) writes `tests/out-export.json` and `tests/out-export.yaml`. Then `test_schema_export.py` (87 checks) checks that both validate and match, and that every example validates.
