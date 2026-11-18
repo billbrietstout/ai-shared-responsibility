@@ -23349,14 +23349,49 @@ var TM = (function () {
       label: "L2 AI Information (data)",
       when: "Use this when the risk sits in data the system learns from, retrieves, or writes: a retrieval corpus, a training set, master data, or a feed.",
       questions: [
-        { id: "dataName", label: "Which data set does the AI read, retrieve, learn from, or write to?", kind: "text", value: "Refund policy knowledge base" },
+        { id: "dataName", label: "Which data set does the AI read, retrieve, learn from, or write to?", kind: "select", value: "Refund policy knowledge base", options: [
+          ["Refund policy knowledge base", "Refund policy knowledge base"],
+          ["Customer master data", "Customer master data"],
+          ["Order and invoice ledger", "Order and invoice ledger"],
+          ["Inbound order documents", "Inbound order documents"],
+          ["Credit bureau data feed", "Credit bureau data feed"],
+          ["Invoice-match fine-tune set", "Invoice-match fine-tune set"],
+          ["Enterprise knowledge corpus", "Enterprise knowledge corpus"],
+          ["Other retrieval corpus", "Other retrieval corpus"],
+          ["Other training set", "Other training set"]
+        ] },
         { id: "dataKind", label: "What kind of data component is it?", kind: "select", value: "data_store", options: [["data_store", "Stored data"], ["data_feed", "A feed"], ["input_channel", "An input channel"]] },
         { id: "dataUse", label: "How is it used? This sets the link.", kind: "select", value: "retrieval", options: [["retrieval", "Retrieval at run time"], ["training", "Training or tuning"], ["record", "A record the agent writes"]] },
-        { id: "ownerName", label: "Who supplies it, and who owns it?", kind: "text", value: "Support content owner (placeholder)" },
+        { id: "ownerName", label: "Who supplies it, and who owns it?", kind: "select", value: "Support content owner (placeholder)", options: [
+          ["Support content owner (placeholder)", "Support content owner"],
+          ["Data steward (placeholder)", "Data steward"],
+          ["Data owner (placeholder)", "Data owner"],
+          ["Platform team (placeholder)", "Platform team"],
+          ["AI Model Provider (placeholder)", "AI Model Provider"]
+        ] },
         { id: "party", label: "Which side is that owner on?", kind: "select", value: "customer", options: [["customer", "Customer"], ["provider", "Provider"]] },
-        { id: "readerName", label: "Which agent reads it?", kind: "text", value: "Resolution agent" },
-        { id: "writerName", label: "Which agent writes it? Leave this blank if none do.", kind: "text", value: "" },
-        { id: "classification", label: "What classification does it carry?", kind: "text", value: "Internal policy" },
+        { id: "readerName", label: "Which agent reads it?", kind: "select", value: "Resolution agent", options: [
+          ["Resolution agent", "Resolution agent"],
+          ["Escalation agent", "Escalation agent"],
+          ["Order intake agent", "Order intake agent"],
+          ["Invoice match agent", "Invoice match agent"],
+          ["Reading agent", "Reading agent"]
+        ] },
+        { id: "writerName", label: "Which agent writes it?", kind: "select", value: "", options: [
+          ["", "None"],
+          ["Resolution agent", "Resolution agent"],
+          ["Order intake agent", "Order intake agent"],
+          ["Invoice match agent", "Invoice match agent"],
+          ["Writing agent", "Writing agent"]
+        ] },
+        { id: "classification", label: "What classification does it carry?", kind: "select", value: "Internal policy", options: [
+          ["Public", "Public"],
+          ["Internal", "Internal"],
+          ["Internal policy", "Internal policy"],
+          ["Confidential", "Confidential"],
+          ["Restricted personal data", "Restricted personal data"],
+          ["Not stated", "Not stated"]
+        ] },
         { id: "lineage", label: "Is there a lineage record?", kind: "select", value: "no", options: [["yes", "Yes"], ["no", "No"]] },
         { id: "operatingModel", label: "Operating model. This sets the L2 customer cell.", kind: "om", value: "Agent-PaaS" }
       ],
