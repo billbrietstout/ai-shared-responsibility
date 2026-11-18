@@ -219,7 +219,7 @@ def status_problems(obj, where, out):
         for i, v in enumerate(obj):
             status_problems(v, where + "[%d]" % i, out)
 
-for name in ("out-seed-L1.json", "out-seed-L2.json", "out-seed-L5.json", "out-seed-L2-custom.json"):
+for name in ("out-scoped-l2.json", "out-scoped-l5.json", "out-scoped-l5-saas.json"):
     path = os.path.join(T, name)
     if not os.path.exists(path):
         check(name + " exists (run test_cascade.js first)", False)
@@ -232,7 +232,33 @@ for name in ("out-seed-L1.json", "out-seed-L2.json", "out-seed-L5.json", "out-se
     check(name + " statuses are Proposed or Placeholder, and obligations stay unverified", not problems, "; ".join(problems[:6]))
     missing = [t["id"] for t in doc["threats"] if t.get("catalog_threat_id") and t["catalog_threat_id"] not in by_cat]
     linked = [t["id"] for t in doc["threats"] if t.get("control_ids")]
-    check(name + " threat ids exist and no threat-to-control link was added", not missing and not linked, str(missing or linked))
+    check(name + " threat ids exist and no threat-to-control link was stored on the threat", not missing and not linked, str(missing or linked))
+    layer = doc["system"]["assessment_layer"]
+    bad_layer = [c["id"] for c in doc["components"] if c.get("layer") in ("L1", "L3", "L4") or (not c.get("edge_actor") and c.get("layer") != layer)]
+    check(name + " keeps in-layer components on " + layer + " and edge actors off L1 and L3", not bad_layer, str(bad_layer))
+    rel_bad = [r["id"] for r in doc["relationships"] if r.get("type") == "realization" or r.get("cascade")]
+    check(name + " has no cascade or realization links", not doc["relationships"] and not rel_bad, str(rel_bad))
+    owners = []
+    for ctl in doc["controls"]:
+        acc = ctl.get("accountable") or {}
+        count = 1 if acc.get("name") and acc.get("persona_id") and acc.get("status") not in ("none", "shared") else 0
+        if acc.get("status") == "shared":
+            count = max(2, len(acc.get("names") or []))
+        if count != 1 or ctl.get("party") not in ("customer", "provider"):
+            owners.append(ctl["id"])
+        if ctl.get("record_status") == "verified" or acc.get("record_status") == "verified":
+            owners.append(ctl["id"] + " verified")
+    check(name + " gives each control exactly one owner and a customer or provider side", not owners, str(owners))
+    row_ids = [r.get("catalog_threat_id") for r in doc.get("layer_results") or [] if r.get("catalog_threat_id")]
+    check(name + " result threat ids exist", all(tid in by_cat for tid in row_ids), str(row_ids))
+    if name == "out-scoped-l5-saas.json":
+        pin = [c for c in doc["controls"] if c["id"] == "ctl.pin-version"][0]
+        check("AI-SaaS L5 pin control is provider-side and names the attestation reliance",
+              pin.get("party") == "provider" and pin.get("attestation_note") == "The customer relies on the provider's attestation."
+              and "SOC" not in pin.get("attestation_note", "") and "ISO" not in pin.get("attestation_note", ""))
+    if name == "out-scoped-l5.json":
+        retire = [r for r in doc["layer_results"] if r["lifecycle_stage"] == "retire"][0]
+        check("L5 retire row is Placeholder", retire.get("status") == "placeholder" and not retire.get("catalog_threat_id"))
 
 print("\n%d failed" % fails)
 sys.exit(1 if fails else 0)

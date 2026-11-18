@@ -467,7 +467,7 @@ const EXAMPLE_SPEC = {
   p2p: {
     overlay: "public-sector", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.agent-requisition", "cmp.agent-sourcing", "cmp.agent-receiving", "cmp.agent-invoice", "cmp.agent-payment"],
-    isolatedStep: "cmp.step-vendor-eligibility", isolatedComp: "cmp.vendor-risk",
+    offPathStep: "cmp.step-vendor-eligibility", offPathComp: "cmp.vendor-risk",
     process: "cmp.p2p-process", logic: "cmp.p2p-logic",
     lowered: ["cmp.agent-invoice", "cmp.agent-payment"],
     loweredSteps: ["cmp.step-invoice-match", "cmp.step-payment"]
@@ -475,7 +475,7 @@ const EXAMPLE_SPEC = {
   h2r: {
     overlay: "employment", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.agent-sourcing", "cmp.agent-screening", "cmp.agent-offer", "cmp.agent-onboarding", "cmp.agent-offboarding"],
-    isolatedStep: "cmp.step-background", isolatedComp: "cmp.background-check",
+    offPathStep: "cmp.step-background", offPathComp: "cmp.background-check",
     process: "cmp.h2r-process", logic: "cmp.h2r-logic",
     lowered: ["cmp.agent-offer", "cmp.agent-offboarding"],
     loweredSteps: ["cmp.step-offer", "cmp.step-offboarding"]
@@ -483,7 +483,7 @@ const EXAMPLE_SPEC = {
   r2r: {
     overlay: "sox", overlayThreats: 2, overlayObls: 3, reachedWorst: 20,
     agents: ["cmp.agent-journal", "cmp.agent-recon", "cmp.agent-adjustments", "cmp.agent-consolidation", "cmp.agent-reporting"],
-    isolatedStep: "cmp.step-anomaly", isolatedComp: "cmp.anomaly-detect",
+    offPathStep: "cmp.step-anomaly", offPathComp: "cmp.anomaly-detect",
     process: "cmp.r2r-process", logic: "cmp.r2r-logic",
     lowered: ["cmp.agent-adjustments", "cmp.agent-reporting"],
     loweredSteps: ["cmp.step-adjustments", "cmp.step-reporting"]
@@ -491,7 +491,7 @@ const EXAMPLE_SPEC = {
   case: {
     overlay: "consumer-protection", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.agent-intake", "cmp.agent-triage", "cmp.agent-investigate", "cmp.agent-resolve", "cmp.agent-escalate"],
-    isolatedStep: "cmp.step-identity", isolatedComp: "cmp.id-verify",
+    offPathStep: "cmp.step-identity", offPathComp: "cmp.id-verify",
     process: "cmp.case-process", logic: "cmp.case-logic",
     lowered: ["cmp.agent-resolve", "cmp.agent-escalate"],
     loweredSteps: ["cmp.step-resolve", "cmp.step-escalate"]
@@ -499,7 +499,7 @@ const EXAMPLE_SPEC = {
   l2o: {
     overlay: "marketing-consent", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.l2o-agent-capture", "cmp.l2o-agent-qualify", "cmp.l2o-agent-proposal", "cmp.l2o-agent-quote", "cmp.l2o-agent-handoff"],
-    isolatedStep: "cmp.l2o-step-consent", isolatedComp: "cmp.l2o-consent-check",
+    offPathStep: "cmp.l2o-step-consent", offPathComp: "cmp.l2o-consent-check",
     process: "cmp.l2o-process", logic: "cmp.l2o-logic",
     lowered: ["cmp.l2o-agent-quote", "cmp.l2o-agent-handoff"],
     loweredSteps: ["cmp.l2o-step-quote", "cmp.l2o-step-handoff"]
@@ -507,7 +507,7 @@ const EXAMPLE_SPEC = {
   i2r: {
     overlay: "customer-notice", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.i2r-agent-report", "cmp.i2r-agent-classify", "cmp.i2r-agent-diagnose", "cmp.i2r-agent-restore", "cmp.i2r-agent-notice"],
-    isolatedStep: "cmp.i2r-step-safety", isolatedComp: "cmp.i2r-safety-score",
+    offPathStep: "cmp.i2r-step-safety", offPathComp: "cmp.i2r-safety-score",
     process: "cmp.i2r-process", logic: "cmp.i2r-logic",
     lowered: ["cmp.i2r-agent-restore", "cmp.i2r-agent-notice"],
     loweredSteps: ["cmp.i2r-step-restore", "cmp.i2r-step-notice"]
@@ -515,7 +515,7 @@ const EXAMPLE_SPEC = {
   q2a: {
     overlay: "retrieval-limits", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.q2a-agent-ask", "cmp.q2a-agent-retrieve", "cmp.q2a-agent-draft", "cmp.q2a-agent-cite", "cmp.q2a-agent-handoff"],
-    isolatedStep: "cmp.q2a-step-entitlement", isolatedComp: "cmp.q2a-entitlement",
+    offPathStep: "cmp.q2a-step-entitlement", offPathComp: "cmp.q2a-entitlement",
     process: "cmp.q2a-process", logic: "cmp.q2a-logic",
     lowered: ["cmp.q2a-agent-cite", "cmp.q2a-agent-handoff"],
     loweredSteps: ["cmp.q2a-step-cite", "cmp.q2a-step-handoff"]
@@ -523,7 +523,7 @@ const EXAMPLE_SPEC = {
   r2f: {
     overlay: "privileged-access", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.r2f-agent-request", "cmp.r2f-agent-classify", "cmp.r2f-agent-plan", "cmp.r2f-agent-fulfill", "cmp.r2f-agent-exception"],
-    isolatedStep: "cmp.r2f-step-entitlement", isolatedComp: "cmp.r2f-entitlement-score",
+    offPathStep: "cmp.r2f-step-entitlement", offPathComp: "cmp.r2f-entitlement-score",
     process: "cmp.r2f-process", logic: "cmp.r2f-logic",
     lowered: ["cmp.r2f-agent-fulfill", "cmp.r2f-agent-exception"],
     loweredSteps: ["cmp.r2f-step-fulfill", "cmp.r2f-step-exception"]
@@ -531,7 +531,7 @@ const EXAMPLE_SPEC = {
   p2f: {
     overlay: "product-hold", overlayThreats: 2, overlayObls: 3, reachedWorst: 21,
     agents: ["cmp.p2f-agent-demand", "cmp.p2f-agent-allocate", "cmp.p2f-agent-replenish", "cmp.p2f-agent-release", "cmp.p2f-agent-exception"],
-    isolatedStep: "cmp.p2f-step-eligibility", isolatedComp: "cmp.p2f-lot-check",
+    offPathStep: "cmp.p2f-step-eligibility", offPathComp: "cmp.p2f-lot-check",
     process: "cmp.p2f-process", logic: "cmp.p2f-logic",
     lowered: ["cmp.p2f-agent-release", "cmp.p2f-agent-exception"],
     loweredSteps: ["cmp.p2f-step-release", "cmp.p2f-step-exception"]
@@ -541,7 +541,7 @@ const EXAMPLE_SPEC = {
 ["p2p", "h2r", "r2r", "case", "l2o", "i2r", "q2a", "r2f", "p2f"].forEach((exId) => {
   const spec = EXAMPLE_SPEC[exId];
   const ex = JSON.parse(fs.readFileSync(path.join(DIR, "example-" + exId + ".json"), "utf8"));
-  test(exId + ": reasoning LLM failure reaches the orchestrator and sub-agents, not the policy service or isolated step", () => {
+  test(exId + ": reasoning LLM failure reaches the orchestrator and sub-agents, not the policy service or the step kept off the model path", () => {
     const r = TM.cascade(ex, "cmp.reasoning-llm");
     assert.strictEqual(st(r, "cmp.llm-gateway"), "failed");
     assert.strictEqual(st(r, "cmp.orchestrator"), "failed");
@@ -550,8 +550,8 @@ const EXAMPLE_SPEC = {
     assert.strictEqual(st(r, spec.process), "impacted");
     assert.strictEqual(r.nodes[spec.process].rollup, true);
     assert.strictEqual(st(r, "cmp.policy-service"), "not reached");
-    assert.strictEqual(st(r, spec.isolatedStep), "not reached");
-    assert.strictEqual(st(r, spec.isolatedComp), "not reached");
+    assert.strictEqual(st(r, spec.offPathStep), "not reached");
+    assert.strictEqual(st(r, spec.offPathComp), "not reached");
     assert.strictEqual(st(r, "cmp.site-edge"), "failed");
     assert.strictEqual(st(r, "cmp.site-network"), "not reached");
     assert.strictEqual(r.reached.length, spec.reachedWorst);
@@ -672,63 +672,137 @@ function generatedStatuses(model) {
   return bad;
 }
 
-test("each starting point seeds a schema-shaped model, Proposed or Placeholder only, and the cascade runs", () => {
+function assertScopedShape(m, layer) {
+  assert.strictEqual(m.system.assessment_mode, "scoped");
+  assert.strictEqual(m.system.assessment_layer, layer);
+  assert.ok(m.components.some((c) => c.edge_actor), "has an edge actor");
+  assert.ok(m.components.some((c) => !c.edge_actor), "has an in-layer component");
+  m.components.forEach((c) => {
+    assert.notStrictEqual(c.layer, "L1", c.id);
+    assert.notStrictEqual(c.layer, "L3", c.id);
+    assert.notStrictEqual(c.layer, "L4", c.id);
+    if (c.edge_actor) {
+      assert.ok(["reads", "writes", "supplies", "consumes"].indexOf(c.edge_verb) >= 0, c.id);
+    } else {
+      assert.strictEqual(c.layer, layer, c.id);
+    }
+  });
+  assert.strictEqual(m.relationships.length, 0, "no relationship links");
+  m.relationships.forEach((r) => {
+    assert.notStrictEqual(r.type, "realization");
+    assert.ok(!r.cascade);
+  });
+  (m.edge_links || []).forEach((e) => {
+    assert.notStrictEqual(e.verb, "realization");
+    assert.ok(!e.cascade);
+    assert.notStrictEqual(e.record_status, "verified");
+  });
+  m.controls.forEach((c) => {
+    assert.strictEqual(TM.controlOwnerCount(c), 1, c.id);
+    assert.ok(c.party === "customer" || c.party === "provider", c.id);
+    assert.notStrictEqual(c.record_status, "verified", c.id);
+    assert.notStrictEqual(TM.statusWord(c), "Verified", c.id);
+    assert.notStrictEqual(TM.statusWord(c.accountable), "Verified", c.id);
+  });
+  const stages = layer === "L5" ? TM.L5_STAGES : TM.L2_STAGES;
+  assert.deepStrictEqual(m.layer_results.map((r) => r.lifecycle_stage), stages);
+}
+
+test("scoped L2 and L5 models stay on that layer, name one owner per control, and do not cascade", () => {
   const cat = JSON.parse(fs.readFileSync(path.join(DIR, "..", "..", "data", "threats.json"), "utf8"));
+  const matrix = JSON.parse(fs.readFileSync(path.join(DIR, "..", "..", "data", "matrix.json"), "utf8"));
   const ids = {};
   cat.threats.forEach((t) => { ids[t.id] = t; });
-  const l1 = TM.seedStart("L1");
-  const l2 = TM.seedStart("L2");
-  const l5 = TM.seedStart("L5");
-  const custom = TM.seedStart("L2", { worked: false, dataName: "Other retrieval corpus", dataUse: "retrieval" });
-  [l1, l2, l5, custom].forEach((m) => {
+  ["L2", "L5"].forEach((layer) => {
+    ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"].forEach((om) => {
+      assert.deepStrictEqual(plain(TM.SRF_CELLS[layer][om]), {
+        customer: matrix.cells[layer][om].customer,
+        provider: matrix.cells[layer][om].provider
+      }, layer + " " + om);
+    });
+    assert.ok(!matrix.cells[layer]["Federated-Consortium"] || !TM.SRF_CELLS[layer]["Federated-Consortium"]);
+  });
+  const l2 = TM.scopedModel("L2", "Agent-PaaS");
+  const l5 = TM.scopedModel("L5", "Agent-PaaS");
+  const saas = TM.scopedModel("L5", "AI-SaaS");
+  [l2, l5, saas].forEach((m) => {
     assert.strictEqual(m.tm_schema_version, "0.1.0-draft");
     assert.ok(TM.OPERATING_MODELS.indexOf(m.system.operating_model) >= 0);
     assert.deepStrictEqual(generatedStatuses(m), []);
+    assertScopedShape(m, m.system.assessment_layer);
     m.threats.forEach((t) => {
-      if (!t.catalog_threat_id) return;
+      assert.ok(t.catalog_threat_id, t.id + " needs a catalog id");
       assert.ok(ids[t.catalog_threat_id], t.catalog_threat_id);
+      assert.strictEqual(t.control_ids.length, 0);
+      assert.notStrictEqual(t.catalog_match_status, "verified");
     });
-    assert.ok(TM.cascade(m, m.components[0].id).reached.length >= 1);
+    m.layer_results.forEach((row) => {
+      if (row.catalog_threat_id) assert.ok(ids[row.catalog_threat_id], row.catalog_threat_id);
+      assert.notStrictEqual(row.status, "verified");
+      if (row.control_id) {
+        const ctl = m.controls.filter((c) => c.id === row.control_id)[0];
+        assert.ok(ctl, row.control_id);
+        assert.strictEqual(row.party, ctl.party);
+      }
+    });
+    const reached = TM.cascade(m, m.components[0].id);
+    assert.strictEqual(reached.reached.length, 1, "cascade does not leave the seeded component");
   });
-  const worst = TM.cascade(l2, "cmp.policy-kb");
-  assert.strictEqual(st(worst, "cmp.vector-index"), "failed");
-  assert.strictEqual(st(worst, "cmp.agent-resolve"), "failed");
-  assert.strictEqual(st(worst, "cmp.agent-escalate"), "impacted");
-  assert.strictEqual(st(worst, "cmp.step-resolution"), "impacted");
-  assert.strictEqual(st(worst, "cmp.policy-service"), "not reached");
-  const held = TM.cascade(l2, "cmp.policy-kb", { mode: "controls" });
-  assert.strictEqual(st(held, "cmp.agent-resolve"), "impacted");
-  assert.ok(held.lowered.some((c) => c.to === "cmp.agent-resolve" && c.edge === "rel.access-resolve"));
+  assert.ok(l2.components.some((c) => c.type === "retrieval_corpus"));
+  assert.ok(l2.components.some((c) => c.type === "vector_index"));
+  assert.ok(!l2.components.some((c) => c.type === "sub_agent" || c.type === "business_process"));
   const pageCtl = l2.controls.filter((c) => c.id === "ctl.approved-pages")[0];
-  assert.notStrictEqual(pageCtl.component_id, "cmp.policy-kb");
-  assert.notStrictEqual(pageCtl.component_id, "cmp.vector-index");
-  assert.ok(l2.relationships.filter((r) => r.id === "rel.access-resolve")[0].containment_control_ids.indexOf("ctl.approved-pages") >= 0);
-  const weights = TM.cascade(l5, "cmp.base-weights");
-  assert.strictEqual(st(weights, "cmp.tuned-model"), "failed");
-  assert.strictEqual(st(weights, "cmp.gateway"), "failed");
-  const weighed = TM.cascade(l5, "cmp.base-weights", { mode: "controls" });
-  assert.strictEqual(st(weighed, "cmp.tuned-model"), "impacted");
-  assert.strictEqual(st(weighed, "cmp.gateway"), "not reached");
-  assert.notStrictEqual(l5.controls.filter((c) => c.id === "ctl.safetensors")[0].component_id, "cmp.base-weights");
-  const silent = TM.cascade(l5, "cmp.vendor-model", { mode: "controls" });
-  assert.strictEqual(st(silent, "cmp.gateway"), "failed");
-  assert.strictEqual(silent.lowered.length, 0);
-  assert.ok(TM.gaps(l5).some((g) => g.rule === "TM-G28" && g.refs.indexOf("cmp.vendor-model") >= 0));
-  assert.ok(!TM.gaps(l5).some((g) => g.rule === "TM-G28" && g.refs[0] === "cmp.base-weights"));
-  const steps = TM.cascade(l1, "cmp.l1-step-1");
-  assert.strictEqual(st(steps, "cmp.l1-step-2"), "failed");
-  assert.strictEqual(st(steps, "cmp.l1-process"), "impacted");
-  assert.strictEqual(l1.threats.length, 0);
+  assert.strictEqual(pageCtl.catalog_control_id, "controlRetrievalAndVectorSystemIntegrity");
+  assert.strictEqual(pageCtl.party, "customer");
+  assert.strictEqual(pageCtl.matrix_customer, "shared");
+  assert.strictEqual(pageCtl.matrix_provider, "provider-managed");
   const l2threat = l2.threats.filter((t) => t.catalog_threat_id === "dsgai21")[0];
   const want = [];
   const entry = ids.dsgai21;
   if (entry.ai_exchange) want.push({ source: "owasp_ai_exchange", id: entry.id, url: entry.ai_exchange });
   ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai", "biml_llm24"].forEach((k) => { if (entry.mappings[k]) want.push({ source: k, id: entry.mappings[k] }); });
   assert.deepStrictEqual(plain(l2threat.external_refs), want);
-  fs.writeFileSync(path.join(__dirname, "out-seed-L1.json"), JSON.stringify(l1));
-  fs.writeFileSync(path.join(__dirname, "out-seed-L2.json"), JSON.stringify(l2));
-  fs.writeFileSync(path.join(__dirname, "out-seed-L5.json"), JSON.stringify(l5));
-  fs.writeFileSync(path.join(__dirname, "out-seed-L2-custom.json"), JSON.stringify(custom));
+  const retrieve = l2.layer_results.filter((r) => r.lifecycle_stage === "retrieve")[0];
+  assert.strictEqual(retrieve.status, "proposed");
+  assert.strictEqual(retrieve.catalog_threat_id, "dsgai21");
+  assert.strictEqual(retrieve.risk_map_id, "riskRetrievalVectorStorePoisoning");
+  assert.strictEqual(retrieve.risk_map_status, "proposed");
+  assert.ok(l5.components.some((c) => c.type === "base_weights" && c.locus === "external"));
+  assert.ok(l5.components.some((c) => c.type === "tuned_weights"));
+  assert.ok(l5.components.some((c) => c.type === "model_version"));
+  assert.ok(l5.components.some((c) => c.type === "model_card"));
+  assert.ok(l5.components.some((c) => c.type === "evaluation"));
+  assert.ok(l5.components.some((c) => c.type === "model_registry"));
+  assert.ok(l5.edge_links.some((e) => e.verb === "supplies" || e.verb === "consumes" || e.verb === "reads" || e.verb === "writes"));
+  const registry = l5.controls.filter((c) => c.id === "ctl.safetensors")[0];
+  assert.strictEqual(registry.party, "customer");
+  assert.strictEqual(registry.catalog_control_id, "controlModelRegistryIntegrity");
+  assert.notStrictEqual(registry.component_id, "cmp.base-weights");
+  const retire = l5.layer_results.filter((r) => r.lifecycle_stage === "retire")[0];
+  assert.strictEqual(retire.status, "placeholder");
+  assert.strictEqual(retire.catalog_threat_id, null);
+  assert.ok(/Placeholder, not Proposed/.test(retire.note));
+  const silent = l5.scope_notes.filter((n) => n.id === "silent-version-change")[0];
+  assert.strictEqual(silent.status, "placeholder");
+  const loader = l5.scope_notes.filter((n) => n.id === "riskMaliciousLoaderDeserialization")[0];
+  assert.strictEqual(loader.status, "proposed");
+  assert.ok(!l5.threats.some((t) => t.catalog_threat_id === "riskMaliciousLoaderDeserialization"));
+  const pin = saas.controls.filter((c) => c.id === "ctl.pin-version")[0];
+  assert.strictEqual(pin.party, "provider");
+  assert.strictEqual(pin.attestation_note, TM.ATTESTATION_NOTE);
+  assert.ok(!/SOC|ISO|FedRAMP/.test(pin.attestation_note));
+  const saasRow = saas.layer_results.filter((r) => r.lifecycle_stage === "update or version")[0];
+  assert.strictEqual(saasRow.party, "provider");
+  assert.strictEqual(saasRow.attestation_note, TM.ATTESTATION_NOTE);
+  assert.strictEqual(saasRow.status, "placeholder");
+  const yaml = TM.toYAML(l2);
+  const again = JSON.parse(JSON.stringify(l2));
+  assert.strictEqual(again.layer_results[4].party, l2.layer_results[4].party);
+  assert.ok(yaml.indexOf("party: customer") >= 0);
+  assert.ok(yaml.indexOf("assessment_mode: scoped") >= 0);
+  fs.writeFileSync(path.join(__dirname, "out-scoped-l2.json"), JSON.stringify(l2));
+  fs.writeFileSync(path.join(__dirname, "out-scoped-l5.json"), JSON.stringify(l5));
+  fs.writeFileSync(path.join(__dirname, "out-scoped-l5-saas.json"), JSON.stringify(saas));
 });
 
 function uiTests() {
@@ -968,13 +1042,12 @@ test("UI: canvas CSS keeps main/graph-scroll flex space and drawer close restore
   assert.ok(/#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "graph-scroll takes leftover height");
   assert.ok(/#rel-filters\s*\{[^}]*flex-wrap:\s*nowrap/.test(css), "filters stay on one row");
   assert.ok(/#rel-filters\s*\{[^}]*overflow-x:\s*auto/.test(css), "filters scroll sideways instead of wrapping tall");
-  assert.ok(!$("start-from").open, "Start from stays closed by default");
-  w.TM_UI.applySeed("L1", { worked: true });
-  assert.ok(!$("start-from").open, "Start from closes after a seed");
+  assert.ok(!$("assessment-mode").open, "Assessment panel stays closed by default");
+  w.TM_UI.load(example);
   const main = w.document.querySelector("main");
   assert.ok(main.classList.contains("drawer-closed"));
   assert.ok($("pane-handle").hidden, "resize handle hidden while Details closed");
-  w.TM_UI.selectComponent("cmp.l1-step-1");
+  w.TM_UI.selectComponent("cmp.reasoning-llm");
   assert.ok(main.classList.contains("drawer-open"));
   assert.ok(!$("pane-handle").hidden, "resize handle shown while Details open");
   $("drawer-close").click();
@@ -1022,24 +1095,33 @@ test("UI: diagram fits by viewBox, and details open, close, and return focus", (
   assert.strictEqual(w.document.activeElement, $("open-drawer"));
 });
 
-test("UI: a short L5 start keeps native diagram width instead of stretching to the pane", () => {
-  w.TM_UI.applySeed("L5", { worked: true });
-  const svg = $("graph-svg");
-  const parts = svg.getAttribute("viewBox").match(/\S+/g);
-  const diagramW = Number(parts[2]);
-  assert.ok(diagramW > 0 && diagramW < 900, "L5 seed viewBox stays narrow, got " + diagramW);
-  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), diagramW + "px");
+test("UI: a scoped L5 canvas is HTML cards that wrap, with no SVG and no fixed width", () => {
+  w.TM_UI.setAssessment("L5");
+  assert.ok(!$("graph-svg"));
+  assert.ok($("graph").querySelector(".scoped-canvas"));
+  assert.strictEqual($("graph").style.getPropertyValue("--diagram-w"), "");
   assert.ok(w.document.querySelectorAll("#graph .node").length < 15);
-  w.TM_UI.load(example);
-  const wide = Number($("graph-svg").getAttribute("viewBox").match(/\S+/g)[2]);
-  assert.ok(wide > diagramW, "the full example is wider than the L5 seed");
+  assert.ok(w.document.querySelector("#graph .node[data-id='cmp.edge-hub']"));
+  assert.ok($("example-wrap").hidden && $("cascade-wrap").hidden, "Example and Cascade controls are hidden when scoped");
+  assert.ok(!/IaaS: customer customer/.test($("graph").textContent));
+  assert.ok(/IaaS: the customer owns it; the provider manages it\./.test($("graph").textContent));
+  assert.ok(!/Under AI-SaaS/.test($("results-lead").textContent), "attestation note only under AI-SaaS");
+  $("om").value = "AI-SaaS";
+  $("om").dispatchEvent(new w.Event("change"));
+  assert.ok(/Under AI-SaaS/.test($("results-lead").textContent));
+  $("om").value = "Agent-PaaS";
+  $("om").dispatchEvent(new w.Event("change"));
+  w.TM_UI.setAssessment("holistic");
+  assert.ok(!$("example-wrap").hidden && !$("cascade-wrap").hidden);
+  assert.ok($("graph-svg"));
+  assert.ok(w.document.querySelector("#graph text.band-id"), "holistic bands return");
 });
 
 test("UI: cascade state does not sit on the owner line", () => {
-  w.TM_UI.applySeed("L2", { worked: true });
+  w.TM_UI.load(example);
   $("mode").value = "worst";
   $("mode").dispatchEvent(new w.Event("change"));
-  w.TM_UI.selectComponent("cmp.policy-kb");
+  w.TM_UI.selectComponent("cmp.reasoning-llm");
   const reached = Array.prototype.filter.call(w.document.querySelectorAll("#graph .node"), (n) => n.querySelector("text.nstate"));
   assert.ok(reached.length >= 2, "seed cascade paints state on more than one node");
   reached.forEach((node) => {
@@ -1134,142 +1216,83 @@ test("UI: list view selection opens details and close returns to that row", () =
   assert.ok($("graph-svg"));
 });
 
-test("UI: Start from offers L1, L2, and L5, keeps the example picker, and seeds L2", () => {
-  const radios = w.document.querySelectorAll('input[name="start-from"]');
+test("UI: assessment offers Holistic, Scoped L2, and Scoped L5", () => {
+  const radios = w.document.querySelectorAll('input[name="assessment-mode"]');
   assert.strictEqual(radios.length, 3);
-  assert.deepStrictEqual(Array.prototype.map.call(radios, (r) => r.value), ["L1", "L2", "L5"]);
+  assert.deepStrictEqual(Array.prototype.map.call(radios, (r) => r.value), ["holistic", "L2", "L5"]);
+  assert.ok(/Holistic/.test(radios[0].parentNode.textContent));
+  assert.ok(/Scoped: L2 AI Information/.test(radios[1].parentNode.textContent));
+  assert.ok(/Scoped: L5 AI Model Provider/.test(radios[2].parentNode.textContent));
   const note = $("start-l34");
-  assert.ok(note.textContent.indexOf("No Start from for L3 or L4") >= 0);
+  assert.ok(/mature threat-modeling practice/.test(note.textContent));
   assert.ok(note.textContent.indexOf("application layer (L3)") >= 0);
   assert.ok(note.textContent.indexOf("platform layer (L4)") >= 0);
   ["https://genai.owasp.org/llm-top-10/", "https://owaspai.org/", "https://atlas.mitre.org/", "https://github.com/cosai-oasis/secure-ai-tooling/tree/main/risk-map"].forEach((url) => {
     assert.ok(note.innerHTML.indexOf(url) >= 0, url);
   });
-  const choices = Array.from($("start-from").querySelector(".start-choices").children);
-  assert.strictEqual(choices.indexOf(radios[1].closest("label")), 1);
-  assert.strictEqual(choices.indexOf(note), 2);
-  assert.strictEqual(choices.indexOf(radios[2].closest("label")), 3);
+  const why = $("mode-why").textContent;
+  assert.ok(/on its own/.test(why));
+  assert.ok(/L3 and L4/.test(why));
+  assert.ok(/feed into the holistic view/.test(why));
+  assert.ok(!$("assessment-mode").open);
   assert.ok(w.document.querySelector("a.skip-link").getAttribute("href") === "#main");
-  assert.ok(w.document.getElementById("main"));
   assert.ok(w.document.querySelector("site-nav"));
   assert.ok(w.document.querySelector("site-footer"));
-  assert.ok(w.document.querySelector('meta[name="description"]').getAttribute("content").length > 40);
   assert.strictEqual($("example-pick").options.length, 11);
   radios[1].checked = true;
   radios[1].dispatchEvent(new w.Event("change"));
-  assert.ok($("graph-wrap").classList.contains("starting"));
-  assert.ok($("start-panel").textContent.indexOf("dsgai21") >= 0);
-  assert.ok($("start-panel").textContent.indexOf("controlRetrievalAndVectorSystemIntegrity") >= 0);
-  $("start-worked").click();
-  assert.ok(!$("graph-wrap").classList.contains("starting"));
   assert.ok(w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
-  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
-  assert.strictEqual($("example-pick").options.length, 11);
-  assert.strictEqual($("example-pick").selectedIndex, -1, "seed clears the catalog selection so the next pick fires change");
-  assert.ok(!w.TM_UI.state.exampleId);
-  assert.ok(!radios[1].checked, "seed does not leave the Start from radio checked");
-  $("example-pick").value = "o2c";
-  $("example-pick").dispatchEvent(new w.Event("change"));
-  assert.strictEqual($("sys-name").textContent, example.system.name);
-  assert.ok(!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
-  assert.ok(($("glossary").getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
-  assert.ok($("rel-filters").textContent.indexOf("part cannot exist alone") >= 0);
-  assert.strictEqual(TM.REL_TYPES.length, 9);
-  assert.ok(TM.REL_TYPES.indexOf("association") < 0 && TM.REL_TYPES.indexOf("specialization") < 0);
-});
-
-test("UI: after an L2 start seed, the Example picker loads a catalog example", () => {
-  w.TM_UI.applySeed("L2", { worked: true });
-  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
-  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.edge-resolve"]'));
+  assert.ok(!w.document.querySelector("#cascade-by-layer"));
+  assert.ok($("results-main"));
+  assert.ok(/dsgai21/.test($("results-main").textContent));
+  assert.ok(/Customer/.test($("results-main").textContent));
   assert.strictEqual($("example-pick").selectedIndex, -1);
-  $("example-pick").value = "p2p";
-  $("example-pick").dispatchEvent(new w.Event("change"));
-  assert.ok(/Procure to Pay/.test($("sys-name").textContent), $("sys-name").textContent);
-  assert.strictEqual(w.TM_UI.state.exampleId, "p2p");
-  assert.ok(!w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
-  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.orchestrator"]'));
-  assert.ok($("model-source").textContent.indexOf("example in the picker") >= 0);
-  w.TM_UI.applySeed("L2", { worked: true });
-  assert.strictEqual($("sys-name").textContent, "Refund policy knowledge base");
   $("example-pick").value = "o2c";
   $("example-pick").dispatchEvent(new w.Event("change"));
   assert.strictEqual($("sys-name").textContent, example.system.name);
   assert.ok(w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]'));
+  assert.ok(!$("results-wrap") || $("results-wrap").hidden);
+  assert.ok(($("glossary").getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
+  assert.ok($("rel-filters").textContent.indexOf("part cannot exist alone") >= 0);
+  assert.strictEqual(TM.REL_TYPES.length, 9);
 });
 
-test("UI: after an L2 start, picking an Example keeps focus on an L2 component", () => {
-  w.TM_UI.applySeed("L2", { worked: true });
-  $("example-pick").value = "o2c";
-  $("example-pick").dispatchEvent(new w.Event("change"));
+test("UI: scoped L5 shows edge actors, boundaries, and a results table, then Holistic restores the example", () => {
+  w.TM_UI.setAssessment("L5");
+  assert.ok(w.document.querySelector("#graph .b-customer"));
+  assert.ok(w.document.querySelector("#graph .b-provider"));
+  assert.ok(/Outside this layer/.test($("graph").textContent));
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.edge-gateway"]'));
+  assert.ok(!w.document.querySelector('#graph text.band-id'));
+  const table = $("results-main").textContent;
+  assert.ok(/supplymodelpoison/.test(table));
+  assert.ok(/retire/.test($("results-none").textContent) && /Placeholder/.test($("results-none").textContent));
+  assert.ok(($("results-main").querySelectorAll("tbody tr").length) < w.TM_STATE.model.layer_results.length, "no-threat rows are collapsed into one line");
+  assert.ok(/Provider/.test($("graph").textContent) && /Customer/.test($("graph").textContent));
+  w.document.querySelector('.tab[data-tab="export"]').click();
+  $("exp-json").click();
+  const exported = JSON.parse($("export-text").value);
+  w.TM_UI.load(exported);
+  w.document.querySelector('.tab[data-tab="export"]').click();
+  $("exp-json").click();
+  assert.deepStrictEqual(JSON.parse($("export-text").value), exported);
+  $("exp-yaml").click();
+  const yaml = $("export-text").value;
+  assert.ok(yaml.indexOf("party: customer") >= 0 || yaml.indexOf("party: provider") >= 0);
+  assert.ok(yaml.indexOf("# " + TM.DISCLAIMER) === 0);
+  w.TM_UI.setAssessment("holistic");
   assert.strictEqual($("sys-name").textContent, example.system.name);
-  const focus = w.TM_UI.state.selected;
-  assert.ok(focus, "an L2 component stays selected");
-  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
-  assert.ok(comp, focus);
-  assert.strictEqual(comp.layer, "L2", "focus stays on AI Information, not the L1 band");
-  assert.strictEqual(focus, w.TM_UI.firstComponentAtLayer(w.TM_UI.state.model, "L2"));
+  assert.strictEqual(w.TM_UI.state.selected, null);
 });
 
-test("UI: choosing L2 then an Example (without seeding) keeps focus on L2", () => {
-  const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
-  l2.checked = true;
-  l2.dispatchEvent(new w.Event("change"));
-  assert.ok($("graph-wrap").classList.contains("starting"));
-  $("example-pick").value = "o2c";
-  $("example-pick").dispatchEvent(new w.Event("change"));
-  assert.ok(!$("graph-wrap").classList.contains("starting"), "Example closes the Start panel");
-  assert.ok(!$("start-from").open, "Example collapses Start from details");
-  assert.strictEqual($("sys-name").textContent, example.system.name);
-  const focus = w.TM_UI.state.selected;
-  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
-  assert.ok(comp, focus);
-  assert.strictEqual(comp.layer, "L2", "L2 radio alone is enough to keep Example focus off L1");
-  assert.ok(l2.checked, "L2 radio stays selected so layer selection remains");
-  assert.ok(/focused on L2/.test($("model-source").textContent), $("model-source").textContent);
-});
-
-test("UI: choosing L5 then an Example (without seeding) keeps focus on L5", () => {
-  const l5 = w.document.querySelector('input[name="start-from"][value="L5"]');
-  l5.checked = true;
-  l5.dispatchEvent(new w.Event("change"));
-  $("example-pick").value = "o2c";
-  $("example-pick").dispatchEvent(new w.Event("change"));
-  const focus = w.TM_UI.state.selected;
-  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
-  assert.ok(comp, focus);
-  assert.strictEqual(comp.layer, "L5", "L5 radio alone keeps Example focus on the model band");
-  assert.strictEqual(focus, w.TM_UI.firstComponentAtLayer(w.TM_UI.state.model, "L5"));
-  assert.ok(l5.checked, "L5 radio stays selected so layer selection remains");
-});
-
-test("UI: a later Example pick still uses the kept Start from layer radio", () => {
-  const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
-  l2.checked = true;
-  l2.dispatchEvent(new w.Event("change"));
-  $("example-pick").value = "o2c";
-  $("example-pick").dispatchEvent(new w.Event("change"));
-  assert.ok(l2.checked);
-  $("example-pick").value = "p2p";
-  $("example-pick").dispatchEvent(new w.Event("change"));
-  const focus = w.TM_UI.state.selected;
-  const comp = TM.active(w.TM_UI.state.model).components.filter((c) => c.id === focus)[0];
-  assert.ok(comp, focus);
-  assert.strictEqual(comp.layer, "L2", "second Example pick still lands on L2");
-  assert.ok(l2.checked, "L2 radio remains after the second Example");
-  assert.ok(/Procure to Pay/.test($("sys-name").textContent), $("sys-name").textContent);
-});
-
-test("UI: cancelling Start from clears the Example focus layer", () => {
-  const l2 = w.document.querySelector('input[name="start-from"][value="L2"]');
-  l2.checked = true;
-  l2.dispatchEvent(new w.Event("change"));
-  $("start-cancel").click();
-  assert.ok(!$("graph-wrap").classList.contains("starting"));
-  assert.ok(!l2.checked, "cancel clears the L2 radio");
-  $("example-pick").value = "p2p";
-  $("example-pick").dispatchEvent(new w.Event("change"));
-  assert.strictEqual(w.TM_UI.state.selected, null, "cancel abandons L2 focus for the next Example pick");
+test("UI: the assessment panel remembers open or closed", () => {
+  $("assessment-mode").open = true;
+  $("assessment-mode").dispatchEvent(new w.Event("toggle"));
+  assert.strictEqual(w.localStorage.getItem("srf.threat-model.assessment-open"), "1");
+  $("assessment-mode").open = false;
+  $("assessment-mode").dispatchEvent(new w.Event("toggle"));
+  assert.strictEqual(w.localStorage.getItem("srf.threat-model.assessment-open"), "0");
 });
 
 }

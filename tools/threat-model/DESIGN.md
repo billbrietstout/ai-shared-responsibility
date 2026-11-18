@@ -19,10 +19,10 @@ Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's d
 | `example-q2a.yaml` / `example-q2a.json` | Question to Answer on a managed assistant (AI-SaaS, retrieval). Not the service-desk example |
 | `example-r2f.yaml` / `example-r2f.json` | Agentic Request to Fulfill (internal IT requests) |
 | `example-p2f.yaml` / `example-p2f.json` | Agentic Plan to Fulfill (supply and logistics). Hands allocated stock to O2C |
-| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the eleven; O2C is the default. Start from also builds a model from L1, L2, or L5 answers. The page uses the site header and footer. No build step |
-| `tests/test_cascade.js` | Headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the eleven examples, catalog links, APQC rows, the example picker, the three starting points, the pane layout and the UI (jsdom) |
-| `tests/test_ux.js` | Automated UX journeys (first paint, Start from L2/L5 dropdowns, custom build, Example after seed, **Example after L2/L5 radio without seed**, cascade, list view, export, L3/L4 guidance). Writes `tests/out-ux-report.json` with hard/soft findings for refinement. Hard-fails if Start from L2/L5 then Example leaves focus on L1 or clears selection |
-| `tests/test_schema_export.py` | Schema, every example, export, the export disclaimer, rejection cases, the optional APQC field, a wording check, Bill's November 18 relationship check, and the seeded starting points |
+| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the eleven; O2C is the default. Assessment mode is Holistic, Scoped L2, or Scoped L5. The page uses the site header and footer. No build step |
+| `tests/test_cascade.js` | Headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the eleven examples, catalog links, APQC rows, the example picker, Holistic and the two scoped modes, the pane layout and the UI (jsdom) |
+| `tests/test_ux.js` | Automated UX journeys (first paint, Scoped L2 and L5, Example after a scoped assessment, cascade, list view, export, L3/L4 guidance). Writes `tests/out-ux-report.json` with hard/soft findings. Hard-fails if a scoped model draws another layer's boxes or drops the results table |
+| `tests/test_schema_export.py` | Schema, every example, export, the export disclaimer, rejection cases, the optional APQC field, a wording check, Bill's November 18 relationship check, and the scoped assessments |
 
 ## Decisions by Bill, Nov 16, 2026
 
@@ -52,7 +52,7 @@ Bill's decision 8 (raise the v1.0 layer-name differences with the workstream: no
 
 ## Decisions by Bill, Nov 17, 2026
 
-Bill answered Part 1 of the Nov 17 publication plan. The page is listed on `/tools/`, in the sitemap, and in `llms.txt`. On November 18, 2026 the page gained the site header and footer, a skip link, a meta description, and a Start from choice for L1, L2, and L5. The title block later used the shared `page-hero` shell (eyebrow, title, lede, and a `callout--warn`), with Start from and the example controls in a toolbar under it. Start from stays closed until a reader opens it, so the graph keeps room under the site header and footer. Items 8 to 11 of that plan were not part of this change.
+Bill answered Part 1 of the Nov 17 publication plan. The page is listed on `/tools/`, in the sitemap, and in `llms.txt`. On November 18, 2026 the page gained the site header and footer, a skip link, a meta description, and an assessment choice: Holistic, Scoped L2, or Scoped L5. The title block uses the shared `page-hero` shell (eyebrow, title, lede, and a `callout--warn`). The assessment panel stays closed until a reader opens it, and the page remembers that choice, so the graph keeps room under the site header and footer. Items 8 to 11 of that plan were not part of this change.
 
 | # | Item | What changed |
 |---|---|---|
@@ -619,20 +619,28 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 - Every example owner is a placeholder.
 - Each catalog match is an editorial reading of the example threat against the catalog entry. Nobody outside this project has reviewed it.
 
-## Start from
+## Assessment modes
 
-A reader can start a model at L1 (the process it carries out today), L2 (AI Information), or L5 (AI Model Provider). The choice sits above the example picker. L3 and L4 are not starting points. A note between the L2 and L5 choices says there is no Start from for those layers, that established threat models already cover the application and the platform, and points to the OWASP Top 10 for LLM Applications, the OWASP AI Exchange, MITRE ATLAS, and the CoSAI Risk Map. After an L2 or L5 Start from choice (seeded or only the radio), picking an Example loads that catalog model and keeps focus on the first component at the same layer, so the tall L1 band does not hide the layer the reader just chose. The Start from details close, but the L2 or L5 radio stays checked so the layer selection remains visible for the next Example pick. Cancelling Start from clears that layer intent.
+The scoped canvas is plain HTML, not SVG: three groups (Customer side, Provider side, Outside this layer) of wrapping cards that stack to one column under 900 px, so nothing clips or scrolls sideways. Edge links show as short text on the cards instead of drawn lines. Boundary text uses plain words for the matrix values (for example, "IaaS: the customer owns it; the provider manages it."). The Example picker, Cascade selector and Worst case are hidden when scoped. Results rows with no catalog threat or control collapse into one "Stages with no catalog threat (Placeholder)" line; the export keeps every row. The AI-SaaS attestation note shows only under AI-SaaS.
 
-Each start shows entry questions, the catalog threats named for that layer, candidate CoSAI Risk Map controls, and the cascade rules. The answers build components and links in the existing model. The cascade function is unchanged. L2 entry fields use fixed dropdown choices (data set, owner, reader, writer, classification) so a reader picks from the worked examples instead of typing free text. L5 weights and vendor model names are fixed dropdowns too. L1 still uses free text for the process name and step list. `tests/test_ux.js` walks these journeys and records hard failures plus soft refine notes in `out-ux-report.json`. That eval is the gate for the L2/L5 → Example focus regression: choosing Start from L2 or L5 and then an Example must select a component at that layer, not leave an empty selection on the tall L1 band.
+The page has three modes. Holistic is the eleven examples. It starts at L1 and keeps the cascade. Scoped: L2 AI Information and Scoped: L5 AI Model Provider assess that layer on its own. A scoped assessment's results feed the holistic view: the results table is the record you bring back when you return to Holistic. L3 and L4 already have a mature threat-modeling practice. The note between the two scoped choices points to the OWASP Top 10 for LLM Applications, the OWASP AI Exchange, MITRE ATLAS, and the CoSAI Risk Map. Picking an example returns to Holistic and loads that example with no extra focus.
 
-The worked seeds follow the November 17 plan:
+The L1 question form from the earlier starting-point work is not a separate mode. Holistic already is that full model.
 
-- L2: a refund policy knowledge base. The integrity control is on the access link from the resolution agent to the vector index. It is not a control of the policy pages. The threat id is `dsgai21`.
-- L5: a public-hub weights file, fine-tuned in house, and a vendor model whose version `v2026-12` has no customer approval. The load check is on the flow from the weights file to the tuned model. The weights threat id is `supplymodelpoison`. The silent update has no catalog id.
+A scoped canvas shows only that layer's assets, plus edge actors for anything outside the layer. An edge actor is one box, marked reads, writes, supplies, or consumes. There is no L1 box, no L3 box, no realization link, and no cascade. Trust boundaries on the canvas are the customer and provider cells from `data/matrix.json` for that layer and the selected operating model (the four SRF v1.0 models only), internal versus external, and the owner of each asset.
 
-Risk Map ids that are not in `/data/threats.json` are shown as Proposed and are not stored as `catalog_threat_id`. A CoSAI control id stored on a generated control is Proposed. Nothing a start builds is Verified. Owners and obligations on a worked seed are Placeholder.
+Results replace the cascade. Columns are asset, lifecycle stage, threat, control, owner, side, and status. The side is customer or provider. Under AI-SaaS, an L5 provider-side control says the customer relies on the provider's attestation. The note does not invent an attestation name. The table sorts, and on a narrow screen each row stacks. JSON and YAML export include `layer_results`, `edge_links`, and the control's `party` and `attestation_note`. Those fields are optional in the schema, so older holistic files still validate.
 
-A missing customer approval on an L5 version is gap TM-G28 when a serving link leaves that model and a later component runs L1 logic. TM-G28 does not change the cascade.
+Lifecycle stages are collect, label, store, train, retrieve, write back, retain, and delete for L2, and source or select, train or tune, evaluate, sign and register, deploy or load, update or version, and retire for L5. A stage with no catalog threat is Placeholder. Retire has no supporting threat in `/data/threats.json` or in the CoSAI controls used here, so that row is Placeholder, not Proposed.
+
+Threat ids come from `/data/threats.json`. A CoSAI Risk Map id sits beside a threat only as Proposed, because that map is the November 17 plan and is not a field in the catalog. A control id is used only when `controls.yaml` at commit `622605a` lists the Risk Map risk on that control. Each control has one accountable owner. The owner persona comes from the catalog accountability row when there is one. Otherwise the owner is Placeholder. Nothing a scoped assessment builds is Verified.
+
+Worked sketches:
+
+- L2, Agent-PaaS: refund policy knowledge base (retrieval corpus) and policy vector index. The resolution agent and the escalation agent are edge actors that read the index. Threat `dsgai21`. Control `controlRetrievalAndVectorSystemIntegrity` on the index. Customer side under Agent-PaaS, because the catalog names the Data Provider on the customer side and the matrix customer cell is shared.
+- L5: public-hub weights, an in-house tuned model, a model registry, a vendor model card, a regression evaluation, and a vendor model whose version `v2026-12` has no customer approval. The hub supplies the weights. The fine-tune set supplies the tuned model. The gateway consumes both models. Those three are edge actors. Threat `supplymodelpoison` on the weights, with control `controlModelRegistryIntegrity`. The weights use IaaS, so that control's side is customer. The silent version change has no catalog id. It is a Placeholder row, not a threat id. `riskMaliciousLoaderDeserialization` is Proposed and is not linked, because `controls.yaml` does not list it on `controlModelRegistryIntegrity`.
+
+The assessment panel is closed by default. The browser remembers if the reader opens it.
 
 ## How to run the tests
 
