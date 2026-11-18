@@ -633,6 +633,99 @@ test("new examples store the fact-checked APQC rows, and the six older examples 
   assert.ok(!g.some((x) => x.severity === "medium"));
 });
 
+function generatedStatuses(model) {
+  const bad = [];
+  const see = (label, rec) => {
+    if (!rec || typeof rec !== "object") return;
+    ["record_status", "catalog_match_status"].forEach((k) => {
+      if (rec[k] === "verified") bad.push(label + " " + k);
+      if (rec[k] && rec[k] !== "proposed" && rec[k] !== "placeholder") bad.push(label + " " + k + "=" + rec[k]);
+    });
+    if (rec.review_status === "approved") bad.push(label + " review approved");
+    if (rec.verification && rec.verification.status && rec.verification.status !== "unverified") bad.push(label + " verification");
+  };
+  model.components.forEach((c) => {
+    see(c.id + " owner", c.owner);
+    if (!c.owner || (c.owner.record_status !== "placeholder" && c.owner.record_status !== "proposed")) bad.push(c.id + " owner status");
+  });
+  model.relationships.forEach((r) => {
+    see(r.id, r);
+    if (r.record_status !== "placeholder" && r.record_status !== "proposed") bad.push(r.id + " link status");
+  });
+  (model.obligations || []).forEach((o) => see(o.id, o));
+  (model.controls || []).forEach((c) => {
+    see(c.id, c);
+    if (c.record_status !== "placeholder" && c.record_status !== "proposed") bad.push(c.id + " control status");
+    (c.obligation_links || []).forEach((l) => see(c.id, l));
+  });
+  (model.threats || []).forEach((t) => {
+    see(t.id, t.accountable);
+    if (t.catalog_match_status) see(t.id + " match", { catalog_match_status: t.catalog_match_status });
+    if (t.business_response_owner) see(t.id + " response", t.business_response_owner);
+    (t.control_ids || []).forEach(() => bad.push(t.id + " has a threat-to-control link"));
+  });
+  return bad;
+}
+
+test("each starting point seeds a schema-shaped model, Proposed or Placeholder only, and the cascade runs", () => {
+  const cat = JSON.parse(fs.readFileSync(path.join(DIR, "..", "..", "data", "threats.json"), "utf8"));
+  const ids = {};
+  cat.threats.forEach((t) => { ids[t.id] = t; });
+  const l1 = TM.seedStart("L1");
+  const l2 = TM.seedStart("L2");
+  const l5 = TM.seedStart("L5");
+  const custom = TM.seedStart("L2", { worked: false, dataName: "Other corpus", dataUse: "retrieval" });
+  [l1, l2, l5, custom].forEach((m) => {
+    assert.strictEqual(m.tm_schema_version, "0.1.0-draft");
+    assert.ok(TM.OPERATING_MODELS.indexOf(m.system.operating_model) >= 0);
+    assert.deepStrictEqual(generatedStatuses(m), []);
+    m.threats.forEach((t) => {
+      if (!t.catalog_threat_id) return;
+      assert.ok(ids[t.catalog_threat_id], t.catalog_threat_id);
+    });
+    assert.ok(TM.cascade(m, m.components[0].id).reached.length >= 1);
+  });
+  const worst = TM.cascade(l2, "cmp.policy-kb");
+  assert.strictEqual(st(worst, "cmp.vector-index"), "failed");
+  assert.strictEqual(st(worst, "cmp.agent-resolve"), "failed");
+  assert.strictEqual(st(worst, "cmp.agent-escalate"), "impacted");
+  assert.strictEqual(st(worst, "cmp.step-resolution"), "impacted");
+  assert.strictEqual(st(worst, "cmp.policy-service"), "not reached");
+  const held = TM.cascade(l2, "cmp.policy-kb", { mode: "controls" });
+  assert.strictEqual(st(held, "cmp.agent-resolve"), "impacted");
+  assert.ok(held.lowered.some((c) => c.to === "cmp.agent-resolve" && c.edge === "rel.access-resolve"));
+  const pageCtl = l2.controls.filter((c) => c.id === "ctl.approved-pages")[0];
+  assert.notStrictEqual(pageCtl.component_id, "cmp.policy-kb");
+  assert.notStrictEqual(pageCtl.component_id, "cmp.vector-index");
+  assert.ok(l2.relationships.filter((r) => r.id === "rel.access-resolve")[0].containment_control_ids.indexOf("ctl.approved-pages") >= 0);
+  const weights = TM.cascade(l5, "cmp.base-weights");
+  assert.strictEqual(st(weights, "cmp.tuned-model"), "failed");
+  assert.strictEqual(st(weights, "cmp.gateway"), "failed");
+  const weighed = TM.cascade(l5, "cmp.base-weights", { mode: "controls" });
+  assert.strictEqual(st(weighed, "cmp.tuned-model"), "impacted");
+  assert.strictEqual(st(weighed, "cmp.gateway"), "not reached");
+  assert.notStrictEqual(l5.controls.filter((c) => c.id === "ctl.safetensors")[0].component_id, "cmp.base-weights");
+  const silent = TM.cascade(l5, "cmp.vendor-model", { mode: "controls" });
+  assert.strictEqual(st(silent, "cmp.gateway"), "failed");
+  assert.strictEqual(silent.lowered.length, 0);
+  assert.ok(TM.gaps(l5).some((g) => g.rule === "TM-G28" && g.refs.indexOf("cmp.vendor-model") >= 0));
+  assert.ok(!TM.gaps(l5).some((g) => g.rule === "TM-G28" && g.refs[0] === "cmp.base-weights"));
+  const steps = TM.cascade(l1, "cmp.l1-step-1");
+  assert.strictEqual(st(steps, "cmp.l1-step-2"), "failed");
+  assert.strictEqual(st(steps, "cmp.l1-process"), "impacted");
+  assert.strictEqual(l1.threats.length, 0);
+  const l2threat = l2.threats.filter((t) => t.catalog_threat_id === "dsgai21")[0];
+  const want = [];
+  const entry = ids.dsgai21;
+  if (entry.ai_exchange) want.push({ source: "owasp_ai_exchange", id: entry.id, url: entry.ai_exchange });
+  ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai", "biml_llm24"].forEach((k) => { if (entry.mappings[k]) want.push({ source: k, id: entry.mappings[k] }); });
+  assert.deepStrictEqual(plain(l2threat.external_refs), want);
+  fs.writeFileSync(path.join(__dirname, "out-seed-L1.json"), JSON.stringify(l1));
+  fs.writeFileSync(path.join(__dirname, "out-seed-L2.json"), JSON.stringify(l2));
+  fs.writeFileSync(path.join(__dirname, "out-seed-L5.json"), JSON.stringify(l5));
+  fs.writeFileSync(path.join(__dirname, "out-seed-L2-custom.json"), JSON.stringify(custom));
+});
+
 function uiTests() {
 // ---------- UI ----------
 const $ = (id) => w.document.getElementById(id);
@@ -978,6 +1071,44 @@ test("UI: list view selection opens details and close returns to that row", () =
   assert.strictEqual(w.document.activeElement.getAttribute("data-lv"), "cmp.orchestrator");
   $("view-toggle").click();
   assert.ok($("graph-svg"));
+});
+
+test("UI: Start from offers L1, L2, and L5, keeps the example picker, and seeds L2", () => {
+  const radios = w.document.querySelectorAll('input[name="start-from"]');
+  assert.strictEqual(radios.length, 3);
+  assert.deepStrictEqual(Array.prototype.map.call(radios, (r) => r.value), ["L1", "L2", "L5"]);
+  const note = $("start-l34");
+  assert.ok(note.textContent.indexOf("No Start from for L3 or L4") >= 0);
+  assert.ok(note.textContent.indexOf("application layer (L3)") >= 0);
+  assert.ok(note.textContent.indexOf("platform layer (L4)") >= 0);
+  ["https://genai.owasp.org/llm-top-10/", "https://owaspai.org/", "https://atlas.mitre.org/", "https://github.com/cosai-oasis/secure-ai-tooling/tree/main/risk-map"].forEach((url) => {
+    assert.ok(note.innerHTML.indexOf(url) >= 0, url);
+  });
+  const choices = Array.from($("start-from").querySelector(".start-choices").children);
+  assert.strictEqual(choices.indexOf(radios[1].closest("label")), 1);
+  assert.strictEqual(choices.indexOf(note), 2);
+  assert.strictEqual(choices.indexOf(radios[2].closest("label")), 3);
+  assert.ok(w.document.querySelector("a.skip-link").getAttribute("href") === "#workspace");
+  assert.ok(w.document.querySelector("site-nav"));
+  assert.ok(w.document.querySelector("site-footer"));
+  assert.ok(w.document.querySelector('meta[name="description"]').getAttribute("content").length > 40);
+  assert.strictEqual($("example-pick").options.length, 11);
+  radios[1].checked = true;
+  radios[1].dispatchEvent(new w.Event("change"));
+  assert.ok($("graph-wrap").classList.contains("starting"));
+  assert.ok($("start-panel").textContent.indexOf("dsgai21") >= 0);
+  assert.ok($("start-panel").textContent.indexOf("controlRetrievalAndVectorSystemIntegrity") >= 0);
+  $("start-worked").click();
+  assert.ok(!$("graph-wrap").classList.contains("starting"));
+  assert.ok(w.document.querySelector('#graph .node[data-id="cmp.policy-kb"]'));
+  assert.strictEqual($("example-pick").options.length, 11);
+  $("example-pick").value = "o2c";
+  $("example-pick").dispatchEvent(new w.Event("change"));
+  assert.strictEqual($("sys-name").textContent, example.system.name);
+  assert.ok($("glossary").textContent.indexOf("November 18, 2026") >= 0);
+  assert.ok($("rel-filters").textContent.indexOf("part cannot exist alone") >= 0);
+  assert.strictEqual(TM.REL_TYPES.length, 9);
+  assert.ok(TM.REL_TYPES.indexOf("association") < 0 && TM.REL_TYPES.indexOf("specialization") < 0);
 });
 
 }

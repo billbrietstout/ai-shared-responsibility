@@ -19,9 +19,9 @@ Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's d
 | `example-q2a.yaml` / `example-q2a.json` | Question to Answer on a managed assistant (AI-SaaS, retrieval). Not the service-desk example |
 | `example-r2f.yaml` / `example-r2f.json` | Agentic Request to Fulfill (internal IT requests) |
 | `example-p2f.yaml` / `example-p2f.json` | Agentic Plan to Fulfill (supply and logistics). Hands allocated stock to O2C |
-| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the eleven; O2C is the default. No build step, no network calls |
-| `tests/test_cascade.js` | 97 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the eleven examples, catalog links, APQC rows, the example picker, the pane layout and the UI (jsdom) |
-| `tests/test_schema_export.py` | 87 checks: schema, every example, export, the export disclaimer, rejection cases, the optional APQC field, and a wording check |
+| `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the eleven; O2C is the default. Start from also builds a model from L1, L2, or L5 answers. The page uses the site header and footer. No build step |
+| `tests/test_cascade.js` | 101 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the eleven examples, catalog links, APQC rows, the example picker, the three starting points, the pane layout and the UI (jsdom) |
+| `tests/test_schema_export.py` | Schema, every example, export, the export disclaimer, rejection cases, the optional APQC field, a wording check, Bill's November 18 relationship check, and the seeded starting points |
 
 ## Decisions by Bill, Nov 16, 2026
 
@@ -31,7 +31,7 @@ Source: "Decisions by Bill, Nov 16, 2026" in `drafts/architecture-frameworks-srf
 |---|---|---|---|
 | 1 | Ownership is an overlay: a field and a band on each component | **Approved by Bill** | `owner` field on every component; the owner line on each node; the "Ownership overlay" switch fills red any component with zero owners or two or more (TM-G01, TM-G02) |
 | 2 | The 9 relationship types | **Approved by Bill** | `relationship.type`. Association stays out of the stored types; a link can carry `unclassified: true` ("unclassified, needs review") instead (TM-G22) |
-| 2a | Cite ArchiMate 4, using v4 definitions where verified | **Approved by Bill** | See "Relationship types." All 9 types appear in ArchiMate 4 according to two secondary sources; none is verified against the official v4 text, so each is flagged |
+| 2a | Cite ArchiMate 4, using v4 definitions where verified | **Approved by Bill** | See "Relationship types." Bill checked the 9 definitions by hand on November 18, 2026. The flags are removed |
 | 3 | An L3 component realizes L1 logic, with the logic version and the L1 owner's approval on the link | **Approved by Bill** as both a candidate SRF pattern and a candidate control | `realization` with `logic_version` and `l1_approval` (TM-G04, TM-G20). Nothing was sent to CoSAI |
 | 4 | A data flow view across L1 to L5 | **Approved by Bill**, added | "Data flow" tab; `TM.dataFlows()` |
 | 5 | Network, facilities, edge or OT hosts, and location as candidate L4 component types | **Approved by Bill** as candidates, added | Types `network`, `facility`, `edge_ot_host`, `location`; two examples (TM-G25) |
@@ -51,7 +51,7 @@ Bill's decision 8 (raise the v1.0 layer-name differences with the workstream: no
 
 ## Decisions by Bill, Nov 17, 2026
 
-Bill answered Part 1 of the Nov 17 publication plan. Items 7 to 11 of that plan are not approved and were not done. The tool stays off `/tools/`, the sitemap and the navigation.
+Bill answered Part 1 of the Nov 17 publication plan. The page is listed on `/tools/`, in the sitemap, and in `llms.txt`. On November 18, 2026 the page gained the site header and footer, a skip link, a meta description, and a Start from choice for L1, L2, and L5. Items 8 to 11 of that plan were not part of this change.
 
 | # | Item | What changed |
 |---|---|---|
@@ -62,7 +62,7 @@ Bill answered Part 1 of the Nov 17 publication plan. Items 7 to 11 of that plan 
 | 6 | Explain ROCA and the link words | A one-line glossary under the filters. Each link filter shows its plain reading; the ArchiMate term is in the tooltip |
 | Q1 | Who is accountable for the reasoning-LLM threat | The AI Model Provider persona (`srf.role.model-provider`) on the provider side, as in `/data/threats.json`. The Agent-PaaS examples name "Model vendor (placeholder)" and the AI-SaaS example names the SaaS vendor's model provider. In each, the accountable is also the owner of the reasoning LLM, so TM-G06 no longer fires for this threat |
 | Q5 | Is Agent-PaaS right for the examples | Kept, and an AI-SaaS example was added: Case to Resolution on a managed AI service desk. See "Example business processes" |
-| Q2 | ArchiMate 4 text | Not used. See "Relationship types" |
+| Q2 | ArchiMate 4 text | Bill checked the 9 relationship definitions by hand on November 18, 2026. See "Relationship types." Two side questions on that sheet are still blank |
 | Part 2 | Evidence for L2 and L5 starting points | Listed in "Evidence for L2 and L5 starting points", and as help text on L2 and L5 components in the Component tab |
 
 ## Purpose
@@ -156,28 +156,32 @@ Component types: `business_process`, `process_step`, `business_logic`, `data_sto
 
 ## Relationship types
 
-Approved by Bill (decision 2). The tool uses 9 of the 11 ArchiMate relationship types and cites **ArchiMate 4** (Bill, Nov 16, 2026). It leaves out association, which is untyped (the `unclassified` flag replaces it), and specialization, which belongs in a type schema.
+Approved by Bill (decision 2). The tool uses 9 ArchiMate 4 relationship types (Bill, Nov 16, 2026, for the citation; Bill, November 18, 2026, for the definitions). Bill confirmed by hand that association and specialization are still the other two of the eleven types. The tool still leaves both out. Association stays untyped: the `unclassified` flag replaces it. Specialization stays out of the stored types. Whether v4 still allows derived relationships is not checked. The `derived` flag wording is unchanged.
 
-**Verification of the v4 definitions.** I could not read the official ArchiMate 4 text:
+**How the definitions were checked.** An assistant did not read the ArchiMate 4 specification. Its copyright notice does not permit use with generative AI tools without written permission from The Open Group. On November 18, 2026, Bill compared the nine definitions by hand and filled `2026-11-18-archimate4-check-sheet-bill-filled.md`. That sheet is the manual check. Each of the nine rows has a Result. The earlier unverified mark on each of the nine rows is removed.
 
-- The Open Group's specification pages require sign-in.
-- The publisher's sample PDFs of the v4 specification and Pocket Guide state that use with generative AI tools is not permitted without written permission, so I did not open them.
+Composition is the only definition that changed. Bill's Result: an element combines one or more other concepts, where the existence of those concepts depends on that of the element. Assignment is confirmed, and the definition is not widened. The other seven are confirmed. Their sentences below are the ones already in the tool, because they match his Result.
 
-**Nov 17, 2026.** Bill supplied a copy of the ArchiMate 4 specification. Its copyright notice does not permit using the publication in connection with generative AI tools without written permission from The Open Group. Checking the definitions with an AI assistant falls under that, so the copy was not used. No flag was cleared. Clearing them needs a person to compare the 9 definitions by hand, or written permission.
-
-Two secondary sources list all 11 ArchiMate 4 relationship types with short definitions: Linked.Archi's ArchiMate 4.0 guide, which cites specification chapter 5, and Archyno's "ArchiMate relationships" article. Their wording matches the ArchiMate 3.2 reference card for every type below, except that Linked.Archi reports a wider Assignment in v4. So the table uses the 3.2 reference-card wording, which is official, and flags every type as **not verified against the official ArchiMate 4 text**.
-
-| Type | Definition (ArchiMate 3.2 reference card wording) | In ArchiMate 4? | Graph | Plain name from the chat | Direction (`from` to `to`) |
+| Type | Definition | Bill's check, November 18, 2026 | Graph | Plain name from the chat | Direction (`from` to `to`) |
 |---|---|---|---|---|---|
-| composition | An element consists of one or more other concepts | Yes, secondary sources only. Flag: not verified in v4 | component (parent-child) | parent-of (part cannot exist alone) | whole to part |
-| aggregation | An element combines one or more other concepts | Yes, secondary only. Flag | component (parent-child) | parent-of (part is shared) | whole to part |
-| assignment | Allocation of responsibility, performance of behavior, storage, or execution | Yes, secondary only. Flag. Linked.Archi reports that v4 also lets an application component be assigned to a data object (golden source) | component | runtime or performer | assignee to what it executes |
-| realization | An element plays a critical role in the creation, achievement, sustenance, or operation of a more abstract element | Yes, secondary only. Flag | component | executes-logic-of | L3 realizer to L1 logic or step |
-| serving | An element provides its functionality to another element | Yes, secondary only. Flag | component | depends-on (reversed); with `provides: controls`, inherits-controls-from (reversed) | provider to consumer |
-| access | Behavior and active structure elements observe or act upon passive structure elements | Yes, secondary only. Flag | component | data dependency | accessor to data |
-| flow | Transfer from one element to another | Yes, secondary only. Flag | component | delegates-to, when it carries authority | source to target |
-| triggering | A temporal or causal relationship between elements | Yes, secondary only. Flag | component | step order | earlier step to later step |
-| influence | An element affects the implementation or achievement of some motivation element | Yes, secondary only. Flag | motivation | (none) | obligation to control |
+| composition | An element combines one or more other concepts, where the existence of those concepts depends on that of the element | Changed. Wording above is his Result | component (parent-child) | parent-of (part cannot exist alone) | whole to part |
+| aggregation | An element combines one or more other concepts | Confirmed | component (parent-child) | parent-of (part is shared) | whole to part |
+| assignment | Allocation of responsibility, performance of behavior, storage, or execution | Confirmed. The definition is not widened | component | runtime or performer | assignee to what it executes |
+| realization | An element plays a critical role in the creation, achievement, sustenance, or operation of a more abstract element | Confirmed | component | executes-logic-of | L3 realizer to L1 logic or step |
+| serving | An element provides its functionality to another element | Confirmed | component | depends-on (reversed); with `provides: controls`, inherits-controls-from (reversed) | provider to consumer |
+| access | Behavior and active structure elements observe or act upon passive structure elements | Confirmed | component | data dependency | accessor to data |
+| flow | Transfer from one element to another | Confirmed | component | delegates-to, when it carries authority | source to target |
+| triggering | A temporal or causal relationship between elements | Confirmed | component | step order | earlier step to later step |
+| influence | An element affects the implementation or achievement of some motivation element | Confirmed | motivation | (none) | obligation to control |
+
+Bill also confirmed the two types the tool does not store. His grouping, from the same sheet:
+
+| Type | Bill's group | His Result | In the tool |
+|---|---|---|---|
+| association | Dependency relationship | An unspecified relationship, or one that is not represented by another ArchiMate relationship | Not stored. `unclassified` is the flag for a link with no type |
+| specialization | Other relationship | An element is a particular kind of another element | Not stored |
+
+**Not checked yet.** Derivation of relationships. The sheet leaves that side question unanswered, so the `derived` flag wording is unchanged.
 
 ## One component graph
 
@@ -519,7 +523,7 @@ Choices that are mine, not the review's:
 ## Open questions for Bill
 
 1. Settled Nov 17, 2026: the AI Model Provider on the provider side is accountable for the reasoning-LLM threat.
-2. Still open. Bill's copy of the ArchiMate 4 text restricts use with generative AI tools, so the flags stay until a person checks the 9 definitions or written permission is given.
+2. Settled for the nine definitions, and for association and specialization as the other two types, on November 18, 2026: Bill's filled sheet `2026-11-18-archimate4-check-sheet-bill-filled.md`. Still open: whether v4 still allows derived relationships. That side question is blank.
 3. Is delegation enough as a flow that carries authority, or does it need its own scope and expiry?
 4. Should model settings be one component, as built, or attributes on the gateway's serving link?
 5. Settled Nov 17, 2026: keep Agent-PaaS and add one AI-SaaS example (Case to Resolution). Nov 18 added a second AI-SaaS example, Question to Answer. The service-desk example was not changed.
@@ -609,10 +613,25 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 ## Unverified
 
 - Every obligation in the examples: Sarbanes-Oxley internal control, ASC 606, debt collection law, CCPA or GDPR, customer contracts, the internal process policies, the banking overlay (ECOA and Regulation B adverse action notices, US sanctions rules, SR 11-7 model risk guidance), the public sector procurement overlay (competition, debarment and domestic preference rules), the employment law overlay (equal employment opportunity law, FCRA as applied to employment screening, wage and hour rules), the SOX-style reporting overlay (disclosure controls, officer certification and Exchange Act reporting), and the consumer protection overlay (unfair-or-deceptive-practices law, complaint-handling rules and required disclosures). The five examples added Nov 18 use internal policies and candidate instruments (privacy law, unsolicited-message rules, customer notice rules, retrieval limits, privileged-access rules, product hold rules). None was checked against an official source. Citations are left empty. No control is mapped to a statute as a verified crosswalk. Applicability needs counsel.
-- The ArchiMate 4 definitions of all 9 relationship types. Two secondary sources list all 9 in ArchiMate 4; the official v4 text was not read.
+- Whether v4 still allows derived relationships. Bill's November 18, 2026 sheet leaves that side question blank. The nine definitions are checked, and he confirmed association and specialization are still the other two types. The tool does not store those two.
 - Which relevant authorities apply to the example. Each is a candidate.
 - Every example owner is a placeholder.
 - Each catalog match is an editorial reading of the example threat against the catalog entry. Nobody outside this project has reviewed it.
+
+## Start from
+
+A reader can start a model at L1 (the process it carries out today), L2 (AI Information), or L5 (AI Model Provider). The choice sits above the example picker. L3 and L4 are not starting points. A note between the L2 and L5 choices says there is no Start from for those layers, that established threat models already cover the application and the platform, and points to the OWASP Top 10 for LLM Applications, the OWASP AI Exchange, MITRE ATLAS, and the CoSAI Risk Map.
+
+Each start shows entry questions, the catalog threats named for that layer, candidate CoSAI Risk Map controls, and the cascade rules. The answers build components and links in the existing model. The cascade function is unchanged.
+
+The worked seeds follow the November 17 plan:
+
+- L2: a refund policy knowledge base. The integrity control is on the access link from the resolution agent to the vector index. It is not a control of the policy pages. The threat id is `dsgai21`.
+- L5: a public-hub weights file, fine-tuned in house, and a vendor model whose version `v2026-12` has no customer approval. The load check is on the flow from the weights file to the tuned model. The weights threat id is `supplymodelpoison`. The silent update has no catalog id.
+
+Risk Map ids that are not in `/data/threats.json` are shown as Proposed and are not stored as `catalog_threat_id`. A CoSAI control id stored on a generated control is Proposed. Nothing a start builds is Verified. Owners and obligations on a worked seed are Placeholder.
+
+A missing customer approval on an L5 version is gap TM-G28 when a serving link leaves that model and a later component runs L1 logic. TM-G28 does not change the cascade.
 
 ## How to run the tests
 
@@ -623,4 +642,4 @@ NODE_PATH=/path/to/node_modules node tests/test_cascade.js
 python3 tests/test_schema_export.py   # needs PyYAML and jsonschema
 ```
 
-`test_cascade.js` (97 tests) writes `tests/out-export.json` and `tests/out-export.yaml`. Then `test_schema_export.py` (87 checks) checks that both validate and match, and that every example validates.
+`test_cascade.js` (101 tests) writes `tests/out-export.json`, `tests/out-export.yaml`, and `tests/out-seed-*.json`. Then `test_schema_export.py` checks that the exports and the seeded models validate, that every example validates, and that Bill's November 18 relationship check is recorded.

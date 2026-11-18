@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://aisharedresponsibility.com/schema/threat-model/0.1.0-draft",
   "title": "SRF layer-by-layer threat model (draft 0.1.0)",
-  "description": "DRAFT, Nov 16, 2026 (PT). One system's components, typed relationships in one component graph, versions, stakeholders, obligations, controls and threats across the 5 CoSAI SRF v1.0 layers. Personas are the 8 SRF v1.0 personas. Operating models are the 4 SRF v1.0 operating models. Relationship types follow ArchiMate 4 (cited per Bill, Nov 16, 2026; definitions checked only against secondary sources). Not part of SRF v1.0.",
+  "description": "DRAFT, Nov 16, 2026 (PT). One system's components, typed relationships in one component graph, versions, stakeholders, obligations, controls and threats across the 5 CoSAI SRF v1.0 layers. Personas are the 8 SRF v1.0 personas. Operating models are the 4 SRF v1.0 operating models. Relationship types follow ArchiMate 4. Bill checked the 9 definitions by hand on November 18, 2026. Not part of SRF v1.0.",
   "type": "object",
   "required": [
     "tm_schema_version",
@@ -616,6 +616,10 @@
               "note": {
                 "type": "string"
               },
+              "customer_approved": {
+                "type": "boolean",
+                "description": "False when this version is in effect with no customer approval. Absent means approval was not recorded. Used by the silent-model-change gap. It does not change the cascade."
+              },
               "set": {
                 "$ref": "#/$defs/component_set"
               },
@@ -636,7 +640,7 @@
       }
     },
     "relationship": {
-      "description": "A typed link between two components. Types are 9 of the 11 ArchiMate 3.2 relationship types, with ArchiMate's own definitions; association and specialization are left out. composition and aggregation form the containment graph (parent and child). serving, realization, assignment, access, flow and triggering form the dependency graph used for cascades. influence links an obligation to a control (motivation overlay) and does not cascade failures.",
+      "description": "A typed link between two components. Types are 9 ArchiMate 4 relationship types. Bill confirmed by hand on November 18, 2026 that association and specialization are still the other two of the 11 types. The tool still leaves both out. composition and aggregation form the containment graph (parent and child). serving, realization, assignment, access, flow and triggering form the dependency graph used for cascades. influence links an obligation to a control (motivation overlay) and does not cascade failures. Bill checked the 9 definitions by hand on November 18, 2026. Composition: an element combines one or more other concepts, where the existence of those concepts depends on that of the element. Whether v4 still allows derived relationships was not answered.",
       "type": "object",
       "required": [
         "id",
@@ -660,7 +664,7 @@
             "triggering",
             "influence"
           ],
-          "description": "All component links form one graph (Bill, Nov 16, 2026). Direction follows ArchiMate: composition/aggregation from whole to part; assignment from the assignee (for example a runtime) to what it executes; realization from the realizer (L3 component) to the more abstract element (L1 logic); serving from provider to consumer; access from the accessor to the data; flow and triggering from source to target; influence from obligation to control. Definitions follow ArchiMate 4 as reported by secondary sources; the official ArchiMate 4 text was not read."
+          "description": "All component links form one graph (Bill, Nov 16, 2026). Direction follows ArchiMate: composition/aggregation from whole to part; assignment from the assignee (for example a runtime) to what it executes; realization from the realizer (L3 component) to the more abstract element (L1 logic); serving from provider to consumer; access from the accessor to the data; flow and triggering from source to target; influence from obligation to control. Bill checked the 9 definitions by hand on November 18, 2026."
         },
         "from": {
           "type": "string",
@@ -797,6 +801,10 @@
         },
         "note": {
           "type": "string"
+        },
+        "record_status": {
+          "$ref": "#/$defs/record_status",
+          "description": "Placeholder or proposed on a link built by a starting point. A generated link is never verified."
         },
         "unclassified": {
           "type": "boolean",
@@ -1085,7 +1093,11 @@
         },
         "catalog_control_id": {
           "type": "string",
-          "description": "Optional link to a ROCA catalog control, for example srf.control.cross.*"
+          "description": "Optional link to a control id. A CoSAI Risk Map id is allowed only when the record_status is proposed and the id is not claimed to be in this site's control data."
+        },
+        "record_status": {
+          "$ref": "#/$defs/record_status",
+          "description": "Placeholder or proposed on a control built by a starting point. A generated control is never verified."
         },
         "vertical": {
           "$ref": "#/$defs/id_overlay"
@@ -1498,7 +1510,7 @@
             "triggering",
             "influence"
           ],
-          "description": "Direction follows ArchiMate: composition/aggregation from whole to part; assignment from the assignee (for example a runtime) to what it executes; realization from the realizer (L3 component) to the more abstract element (L1 logic); serving from provider to consumer; access from the accessor to the data; flow and triggering from source to target; influence from obligation to control. Definitions follow ArchiMate 4 as reported by secondary sources; the official ArchiMate 4 text was not read."
+          "description": "Direction follows ArchiMate: composition/aggregation from whole to part; assignment from the assignee (for example a runtime) to what it executes; realization from the realizer (L3 component) to the more abstract element (L1 logic); serving from provider to consumer; access from the accessor to the data; flow and triggering from source to target; influence from obligation to control. Bill checked the 9 definitions by hand on November 18, 2026."
         },
         "cascade": {
           "enum": [
