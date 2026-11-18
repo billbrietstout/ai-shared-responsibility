@@ -20,7 +20,8 @@ Draft for Bill Stout, Nov 16, 2026 (PT), updated later the same day for Bill's d
 | `example-r2f.yaml` / `example-r2f.json` | Agentic Request to Fulfill (internal IT requests) |
 | `example-p2f.yaml` / `example-p2f.json` | Agentic Plan to Fulfill (supply and logistics). Hands allocated stock to O2C |
 | `index.html` | Single-file prototype. Open `/tools/threat-model/` in a browser, or open this file locally. An example picker loads any of the eleven; O2C is the default. Start from also builds a model from L1, L2, or L5 answers. The page uses the site header and footer. No build step |
-| `tests/test_cascade.js` | 101 headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the eleven examples, catalog links, APQC rows, the example picker, the three starting points, the pane layout and the UI (jsdom) |
+| `tests/test_cascade.js` | Headless tests of the cascade logic, the one graph, derived links, default multiplicity, versions, data flow, stakeholders, gaps, controls, layer order, the eleven examples, catalog links, APQC rows, the example picker, the three starting points, the pane layout and the UI (jsdom) |
+| `tests/test_ux.js` | Automated UX journeys (first paint, Start from L2/L5 dropdowns, custom build, Example after seed, cascade, list view, export, L3/L4 guidance). Writes `tests/out-ux-report.json` with hard/soft findings for refinement |
 | `tests/test_schema_export.py` | Schema, every example, export, the export disclaimer, rejection cases, the optional APQC field, a wording check, Bill's November 18 relationship check, and the seeded starting points |
 
 ## Decisions by Bill, Nov 16, 2026
@@ -622,7 +623,7 @@ Inference (mine, or from the architecture frameworks review), except where Bill 
 
 A reader can start a model at L1 (the process it carries out today), L2 (AI Information), or L5 (AI Model Provider). The choice sits above the example picker. L3 and L4 are not starting points. A note between the L2 and L5 choices says there is no Start from for those layers, that established threat models already cover the application and the platform, and points to the OWASP Top 10 for LLM Applications, the OWASP AI Exchange, MITRE ATLAS, and the CoSAI Risk Map. After an L2 or L5 seed, picking an Example loads that catalog model and keeps focus on the first component at the same layer, so the tall L1 band does not hide the layer the reader just started from.
 
-Each start shows entry questions, the catalog threats named for that layer, candidate CoSAI Risk Map controls, and the cascade rules. The answers build components and links in the existing model. The cascade function is unchanged. L2 entry fields use fixed dropdown choices (data set, owner, reader, writer, classification) so a reader picks from the worked examples instead of typing free text.
+Each start shows entry questions, the catalog threats named for that layer, candidate CoSAI Risk Map controls, and the cascade rules. The answers build components and links in the existing model. The cascade function is unchanged. L2 entry fields use fixed dropdown choices (data set, owner, reader, writer, classification) so a reader picks from the worked examples instead of typing free text. L5 weights and vendor model names are fixed dropdowns too. L1 still uses free text for the process name and step list. `tests/test_ux.js` walks these journeys and records hard failures plus soft refine notes in `out-ux-report.json`.
 
 The worked seeds follow the November 17 plan:
 
@@ -637,9 +638,10 @@ A missing customer approval on an L5 version is gap TM-G28 when a serving link l
 
 ```
 cd tools/threat-model
-npm install jsdom            # once, in any folder; then point NODE_PATH at its node_modules
-NODE_PATH=/path/to/node_modules node tests/test_cascade.js
+npm --prefix tests ci
+NODE_PATH=tests/node_modules node tests/test_cascade.js
+NODE_PATH=tests/node_modules node tests/test_ux.js
 python3 tests/test_schema_export.py   # needs PyYAML and jsonschema
 ```
 
-`test_cascade.js` (101 tests) writes `tests/out-export.json`, `tests/out-export.yaml`, and `tests/out-seed-*.json`. Then `test_schema_export.py` checks that the exports and the seeded models validate, that every example validates, and that Bill's November 18 relationship check is recorded.
+`test_cascade.js` writes `tests/out-export.json`, `tests/out-export.yaml`, and `tests/out-seed-*.json`. `test_ux.js` writes `tests/out-ux-report.json` (hard checks must pass; soft findings are refine notes). Then `test_schema_export.py` checks that the exports and the seeded models validate, that every example validates, and that Bill's November 18 relationship check is recorded.
