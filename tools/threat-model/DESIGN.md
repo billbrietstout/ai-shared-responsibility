@@ -440,7 +440,7 @@ With the banking overlay off, the Nov 16 state gives 30 findings (3 high, 16 med
 - **Data flow tab**: the matrix, the moves and the paths described above.
 - **Threats tab**: the threat list and the full ROCA chain for the selected threat, with its stakeholders. A Catalog row shows the matching `/data/threats.json` entry and its outside IDs, or says there is no match and why. Each obligation shows "Unverified, needs counsel". The tab ends with the disclaimer.
 - **List view**: a button above the graph swaps the graph for a text list of every component, grouped L1 at the top down to L5, with type, owner and cascade state. Selecting a name selects the component.
-- **Link filters and glossary**: each filter shows the plain reading from `REL_INFO.plain`; the ArchiMate term is in the tooltip. One line under the filters says "ROCA = Risk, Obligation, Control, Accountable."
+- **Link filters and glossary**: each filter shows the plain reading from `REL_INFO.plain`; the ArchiMate term is in the tooltip. The line under the filters says "ROCA = Risk, Obligation, Control, Accountable," then tells you to rest the pointer on a filter in that row.
 - **Gaps tab**: every finding, sorted by severity, with a link to the component, and the default multiplicity rules in force.
 - **Edit tab**: add a component or a relationship (with an "unclassified, needs review" option), delete a component, import JSON, and reset to the example.
 - **Export tab**: JSON or YAML of the whole model, with a download link. `system.disclaimer` comes first, and the YAML starts with the same sentence as a comment.
