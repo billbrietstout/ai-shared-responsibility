@@ -653,3 +653,9 @@ python3 tests/test_schema_export.py   # needs PyYAML and jsonschema
 ```
 
 `test_cascade.js` writes `tests/out-export.json`, `tests/out-export.yaml`, and `tests/out-seed-*.json`. `test_ux.js` writes `tests/out-ux-report.json` (hard checks must pass; soft findings are refine notes). Then `test_schema_export.py` checks that the exports and the seeded models validate, that every example validates, and that Bill's November 18 relationship check is recorded.
+
+## Graph overlay and Details drawer
+
+Expand graph opens the graph in a full-window dialog (`role="dialog"`, `aria-modal="true"`). It has its own Zoom out, Zoom in and Fit controls and, in Holistic, the relationship filters. Focus moves to Close when it opens, Tab and Shift+Tab stay inside, and focus goes back to Expand graph when it closes. The rest of the page is inert while it is open. At 375 px it fills the screen. In scoped mode the HTML card canvas is what expands, and Zoom scales the cards.
+
+Details is closed by default, so the graph uses the full width. Clicking a graph box or a scoped card opens Details as a drawer over the right side of the graph, on the normal page and in the overlay. Close or Esc hides it. With both open, Esc closes the drawer first, then the overlay. The tabs are unchanged: Component, Cascade, Threats (ROCA), Data flow, Gaps, Edit, Export. On a phone the drawer is a bottom sheet.

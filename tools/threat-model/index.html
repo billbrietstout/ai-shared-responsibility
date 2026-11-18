@@ -56,12 +56,19 @@
   a { color:var(--link); }
   .linkbtn { background:none; border:0; padding:0; color:var(--link); text-decoration:underline; cursor:pointer; font:inherit; text-align:left; }
   .pill.counsel { background:#fee2e2; color:#7f1d1d; font-weight:600; }
-  #pane-handle { flex:0 0 10px; align-self:stretch; cursor:col-resize; background:var(--handle); border-left:1px solid var(--line); border-right:1px solid var(--line); touch-action:none; position:relative; z-index:2; }
-  #pane-handle::after { content:""; position:absolute; top:50%; left:2px; width:2px; height:28px; margin-top:-14px; border-radius:1px; background:var(--muted); }
+  #graph-wrap { position:relative; }
+  #graph-wrap.expanded { position:fixed; inset:0; z-index:10000; background:var(--bg); min-height:0; }
+  #graph-wrap.expanded #results-wrap { display:none; }
+  #graph-wrap.expanded #graph-scroll { flex:1 1 auto; max-height:none; overflow:auto; }
+  body.overlay-open { overflow:hidden; }
+  #expand-graph[hidden], #overlay-close[hidden] { display:none !important; }
+  .scoped-canvas { zoom:var(--zoom, 1); }
+  #pane-handle { position:absolute; top:0; bottom:0; right:calc(var(--drawer-w) - 5px); width:10px; z-index:31; cursor:col-resize; background:transparent; touch-action:none; }
+  #pane-handle::after { content:""; position:absolute; top:50%; left:4px; width:2px; height:28px; margin-top:-14px; border-radius:1px; background:var(--muted); }
   #pane-handle:hover, #pane-handle:focus { background:var(--handle-hot); }
   #pane-handle:focus-visible { outline:2px solid var(--focus); outline-offset:-2px; }
-  #side { flex:0 0 var(--drawer-w); width:var(--drawer-w); max-width:70%; display:flex; flex-direction:column; min-height:0; min-width:0; background:var(--panel); border-left:1px solid var(--line); overflow:hidden; transition:flex-basis .18s ease, transform .18s ease; }
-  main.drawer-closed #side { flex-basis:0; width:0; max-width:0; border-left:0; visibility:hidden; }
+  #side { position:absolute; top:0; right:0; bottom:0; z-index:30; width:var(--drawer-w); max-width:90%; display:flex; flex-direction:column; min-height:0; min-width:0; background:var(--panel); border-left:1px solid var(--line); box-shadow:-8px 0 24px rgba(15,23,42,.18); overflow:hidden; transition:transform .18s ease; }
+  main.drawer-closed #side { transform:translateX(105%); visibility:hidden; pointer-events:none; box-shadow:none; }
   main.drawer-closed #pane-handle { display:none; }
   .drawer-bar { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:6px 10px; border-bottom:1px solid var(--line); }
   #drawer-title { font-size:14px; }
@@ -131,11 +138,14 @@
     body { overflow:auto; height:auto; min-height:100%; }
     main { display:block; min-height:70vh; }
     #graph-wrap { min-height:70vh; }
+    #graph-wrap.expanded { min-height:0; height:100%; }
+    #graph-wrap.expanded #rel-filters { flex-wrap:nowrap; overflow-x:auto; }
+    #graph-wrap.expanded #glossary { display:none; }
     #graph-scroll { min-height:52vh; }
     #pane-handle { display:none !important; }
     #side, main.drawer-closed #side {
       position:fixed; left:0; right:0; bottom:0; width:100% !important; max-width:100% !important; flex:none;
-      height:min(50vh, 440px); z-index:40; border-left:0; border-top:1px solid var(--line);
+      height:min(50vh, 440px); z-index:40; top:auto; border-left:0; border-top:1px solid var(--line);
       border-radius:14px 14px 0 0; box-shadow:0 -8px 28px rgba(15,23,42,.22);
       visibility:visible; transform:translateY(0);
     }
@@ -267,6 +277,8 @@
         <button type="button" id="zoom-fit" aria-label="Fit the diagram to the pane">Fit</button>
         <span id="zoom-label">100%</span>
       </span>
+      <button type="button" id="expand-graph" aria-haspopup="dialog">Expand graph</button>
+      <button type="button" id="overlay-close" hidden>Close</button>
       <button type="button" id="open-drawer" aria-controls="side" aria-expanded="false">Details</button>
     </div>
     <div id="rel-filters"></div>
@@ -290,7 +302,7 @@
       </label>
       <div id="results-table"></div>
     </div>
-  </section>
+    <button type="button" id="drawer-scrim" tabindex="-1" aria-label="Close details" hidden></button>
   <div id="pane-handle" role="separator" aria-orientation="vertical" aria-label="Resize details pane" tabindex="0" aria-valuemin="280" aria-valuemax="720" aria-valuenow="360" hidden></div>
   <section id="side" data-llm="side" aria-label="Details" aria-hidden="true">
     <div class="drawer-bar">
@@ -309,8 +321,8 @@
     </nav>
     <div id="panel" role="tabpanel"></div>
   </section>
+  </section>
 </main>
-<button type="button" id="drawer-scrim" tabindex="-1" aria-label="Close details" hidden></button>
 <script type="application/json" id="example-data">
 {
  "tm_schema_version": "0.1.0-draft",
@@ -23833,6 +23845,7 @@ if (typeof module !== "undefined") module.exports = TM;
   function clone(x) { return JSON.parse(JSON.stringify(x)); }
   function compName(id) { var c = TM.byId(STATE.model.components)[id]; return c ? c.name : id; }
 
+  var overlayOpen = false;
   var drawerOpen = false, pendingFocus = null, returnFocusId = null, returnFocusKind = "details";
   var zoom = 1, currentCols = 0, lastPaneW = 0, reflowQueued = false;
   var ZOOMS = [0.5, 0.75, 1, 1.25, 1.5, 2, 3];
@@ -23910,8 +23923,56 @@ if (typeof module !== "undefined") module.exports = TM;
     var scrim = $("drawer-scrim");
     if (scrim) scrim.hidden = !(drawerOpen && narrow);
     var graphWrap = $("graph-wrap");
-    if (graphWrap) graphWrap.classList.toggle("view-list", STATE.view === "list");
+    if (graphWrap) {
+      graphWrap.classList.toggle("view-list", STATE.view === "list");
+      graphWrap.classList.toggle("expanded", overlayOpen);
+      if (overlayOpen) {
+        graphWrap.setAttribute("role", "dialog");
+        graphWrap.setAttribute("aria-modal", "true");
+        graphWrap.setAttribute("aria-label", "Expanded graph");
+      } else {
+        graphWrap.removeAttribute("role");
+        graphWrap.removeAttribute("aria-modal");
+        graphWrap.setAttribute("aria-label", "Component graph");
+      }
+    }
+    var ex = $("expand-graph"), oc = $("overlay-close");
+    if (ex) { ex.hidden = overlayOpen; ex.setAttribute("aria-expanded", overlayOpen ? "true" : "false"); }
+    if (oc) oc.hidden = !overlayOpen;
+    doc.body.classList.toggle("overlay-open", overlayOpen);
+    Array.prototype.forEach.call(doc.querySelectorAll("site-nav, site-footer, .page-hero, .tool-chrome"), function (el) {
+      if (overlayOpen) el.setAttribute("inert", ""); else el.removeAttribute("inert");
+    });
+    var zg = doc.querySelector(".zoom-group");
+    if (zg) zg.hidden = scopedOn() && !overlayOpen;
     applyZoom();
+  }
+  function overlayFocusables() {
+    var wrap = $("graph-wrap");
+    if (!wrap) return [];
+    var list = wrap.querySelectorAll('a[href], button, input, select, textarea, [tabindex="0"]');
+    return Array.prototype.filter.call(list, function (el) {
+      if (el.disabled || el.closest("[hidden]")) return false;
+      if (!drawerOpen && el.closest("#side")) return false;
+      if (el.closest("#results-wrap") || el.id === "drawer-scrim") return false;
+      return true;
+    });
+  }
+  function openOverlay() {
+    if (overlayOpen) return;
+    overlayOpen = true;
+    applyChrome();
+    queueReflow();
+    var oc = $("overlay-close");
+    if (oc) oc.focus();
+  }
+  function closeOverlay() {
+    if (!overlayOpen) return;
+    overlayOpen = false;
+    applyChrome();
+    queueReflow();
+    var ex = $("expand-graph");
+    if (ex) ex.focus();
   }
   function focusReturnTarget() {
     var el = null;
@@ -24629,8 +24690,7 @@ if (typeof module !== "undefined") module.exports = TM;
     if (wrap) wrap.classList.toggle("scoped", scoped);
     var results = $("results-wrap");
     if (results) results.hidden = !scoped;
-    ["example-wrap", "cascade-wrap", "zoom-group"].forEach(function (id) { var el = $(id); if (el) el.hidden = scoped; });
-    var zg = doc.querySelector(".zoom-group"); if (zg) zg.hidden = scoped;
+    ["example-wrap", "cascade-wrap"].forEach(function (id) { var el = $(id); if (el) el.hidden = scoped; });
     if ($("rel-filters")) $("rel-filters").hidden = STATE.view === "list" || scoped;
     var cascadeTab = doc.querySelector('.tab[data-tab="cascade"]');
     if (cascadeTab) cascadeTab.textContent = scoped ? "Results" : "Cascade";
@@ -24843,6 +24903,23 @@ if (typeof module !== "undefined") module.exports = TM;
     doc.addEventListener("keydown", function (e) {
       if (e.key !== "Escape") return;
       if (drawerOpen) { e.preventDefault(); closeDrawer(); return; }
+      if (overlayOpen) { e.preventDefault(); closeOverlay(); }
+    });
+    $("expand-graph").addEventListener("click", openOverlay);
+    $("overlay-close").addEventListener("click", closeOverlay);
+    doc.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab" || !overlayOpen) return;
+      var f = overlayFocusables();
+      if (!f.length) { e.preventDefault(); return; }
+      var first = f[0], last = f[f.length - 1], cur = doc.activeElement;
+      var inside = f.indexOf(cur) >= 0;
+      if (e.shiftKey && (cur === first || !inside)) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (cur === last || !inside)) { e.preventDefault(); first.focus(); }
+    });
+    doc.addEventListener("focusin", function (e) {
+      if (!overlayOpen) return;
+      var wrap = $("graph-wrap");
+      if (wrap && !wrap.contains(e.target)) { var f = overlayFocusables(); if (f.length) f[0].focus(); }
     });
     var handle = $("pane-handle");
     handle.addEventListener("pointerdown", function (e) {
@@ -24913,7 +24990,7 @@ if (typeof module !== "undefined") module.exports = TM;
     }
     syncHeader();
   }
-  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE, columnCount: columnCount, setAssessment: setAssessment };
+  window.TM_UI = { load: load, selectComponent: selectComponent, selectThreat: selectThreat, render: render, state: STATE, EXAMPLE_CATALOG: EXAMPLE_CATALOG, EXAMPLE: EXAMPLE, columnCount: columnCount, openOverlay: openOverlay, closeOverlay: closeOverlay, setAssessment: setAssessment };
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", init); else init();
 })();
 
