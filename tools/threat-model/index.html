@@ -23427,8 +23427,19 @@ var TM = (function () {
       label: "L5 AI Model Provider (model)",
       when: "Use this when you are choosing or changing a model: a new vendor, a new version, a fine-tune, or an open-weight file from a hub.",
       questions: [
-        { id: "weightsName", label: "Name the weights file or base model, if you have one.", kind: "text", value: "Public-hub weights file" },
-        { id: "vendorName", label: "Name the vendor model, including any fallback, embedding model, or reranker.", kind: "text", value: "Vendor reasoning model" },
+        { id: "weightsName", label: "Which weights file or base model do you start from?", kind: "select", value: "Public-hub weights file", options: [
+          ["Public-hub weights file", "Public-hub weights file"],
+          ["Open-weight base model", "Open-weight base model"],
+          ["Customer fine-tune checkpoint", "Customer fine-tune checkpoint"],
+          ["", "No local weights file"]
+        ] },
+        { id: "vendorName", label: "Which vendor model is in the path (reasoning, embedding, reranker, or fallback)?", kind: "select", value: "Vendor reasoning model", options: [
+          ["Vendor reasoning model", "Vendor reasoning model"],
+          ["Vendor embedding model", "Vendor embedding model"],
+          ["Vendor reranker", "Vendor reranker"],
+          ["Managed assistant model", "Managed assistant model"],
+          ["Fallback vendor model", "Fallback vendor model"]
+        ] },
         { id: "update", label: "How does a new version reach production?", kind: "select", value: "auto", options: [["pinned", "Pinned"], ["auto", "The provider updates it with no customer approval"], ["gateway", "A gateway routes it"]] },
         { id: "finetune", label: "Is it fine-tuned on data you hold?", kind: "select", value: "yes", options: [["yes", "Yes"], ["no", "No"]] },
         { id: "operatingModel", label: "Operating model. This sets the L5 customer cell.", kind: "om", value: "Agent-PaaS" }
