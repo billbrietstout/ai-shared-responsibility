@@ -202,10 +202,10 @@
   var graphWorkspace = document.getElementById("graph-workspace");
   var mapPanel = document.querySelector(".map-panel");
   var summaryEl = document.getElementById("filter-summary");
-  var readMoreBtn = document.getElementById("read-more");
   var finderEl = document.querySelector(".map-stage");
   var coverageMode = new URLSearchParams(location.search).get("page") === "coverage";
   var graphOpen = false;
+  var restoringHistory = false;
   /* details = record pane. viz = chain / neighbor graph / layers workspace. */
   var panelWorkspace = "details";
   var openColumn = "risk";
@@ -995,7 +995,7 @@
 
   /* Recorded values come from threats[].obligations[].basis. The chain shows
    * the raw value and a plain-words gloss. It does not add labels of its own. */
-  var NO_CONTROL_BASIS = "Mitigates. This risk record names the control in related_controls. Basis: none recorded.";
+  var NO_CONTROL_BASIS = "Mitigates. Listed as a control for this risk in the source record.";
   var BASIS_SHORT = {
     derived_via_control: "derived through a shared control",
     official_text: "official text",
@@ -1016,13 +1016,13 @@
   };
 
   function basisSentence(basis) {
-    if (!basis) return "Basis not recorded on this link.";
-    return "Recorded basis: " + basis + ". " + (BASIS_GLOSS[basis] || "No plain-words gloss is defined for this value.");
+    if (!basis) return "No source citation recorded yet.";
+    return (BASIS_GLOSS[basis] || "The source record gives a basis that this page does not describe yet.");
   }
 
   function basisChip(basis) {
-    if (!basis) return "Basis not recorded on this link.";
-    return "Basis: " + (BASIS_SHORT[basis] || basis) + " (" + basis + ").";
+    if (!basis) return "No source citation recorded yet.";
+    return "Basis: " + (BASIS_SHORT[basis] || "other") + ".";
   }
 
   function blankChain(startKind) {
@@ -1342,8 +1342,8 @@
         summary: item.req.summary || "",
         url: item.req.url || "",
         basis: "",
-        basisChips: ["Obligation to this control. Basis: citation on this control (mappings." + key + ")."],
-        basisSentences: ["Cited by this control in mappings." + key + ". Basis: citation on this control."],
+        basisChips: ["Obligation to this control. Basis: citation on this control."],
+        basisSentences: ["Cited by this control in its source record."],
         style: "solid",
         instrumentLevel: false,
         citationText: item.citation,
@@ -1361,7 +1361,7 @@
         summary: "",
         url: item.reg.url || "",
         basis: "",
-        basisChips: ["Obligation to this control. Basis: instrument cited in mappings." + key + ". No article record matched."],
+        basisChips: ["Obligation to this control. Basis: instrument cited by this control. No article record matched."],
         basisSentences: [],
         style: "dotted",
         instrumentLevel: true,
@@ -1440,7 +1440,7 @@
     if (!nodes.length) {
       chain.gaps.push({
         column: "control",
-        text: "No control records this persona in accountable_by_model."
+        text: "No control names this persona as accountable."
       });
     }
     chain.columnNotes.obligation = "Obligations stay on a risk or control chain. Choose one of those records to see them.";
@@ -1580,7 +1580,7 @@
             });
           }
           if (item.linkBasis) {
-            button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. Basis: none recorded. accountable_by_model names this persona."));
+            button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. No source citation recorded yet. The control's source record names this persona."));
           }
         }
         colBody.appendChild(button);
@@ -1717,7 +1717,7 @@
       else if (controlAttrs) idText = controlAttrs.vertical + ":" + controlAttrs.ref;
       if (idText && idText !== ":") {
         detailsId.hidden = false;
-        detailsId.textContent = idText;
+        detailsId.textContent = "ID: " + idText;
       }
     }
 
@@ -1815,7 +1815,7 @@
         }
       });
       if (chain.personaCards.length) {
-        appendSentence(account, "Control to persona. Basis: none recorded. Each persona comes from accountable_by_model on a control.");
+        appendSentence(account, "Control to persona. No source citation recorded yet. Each persona comes from controls that name it as accountable.");
       }
     }
     if (!chain.personaCards.length) {
@@ -2081,7 +2081,7 @@
     detailsKind.textContent = KIND_LABEL[attrs.kind] || attrs.kind;
     if (detailsId && attrs.ref) {
       detailsId.hidden = false;
-      detailsId.textContent = attrs.kind === "control" ? (attrs.vertical + ":" + attrs.ref) : attrs.ref;
+      detailsId.textContent = "ID: " + (attrs.kind === "control" ? (attrs.vertical + ":" + attrs.ref) : attrs.ref);
     }
     var meta = [];
     if (attrs.meta) meta.push(attrs.meta);
@@ -2776,13 +2776,39 @@
     return params.toString().replace(/%3A/g, ":");
   }
 
+  /* Opening a trace or the graph adds a history entry so Back returns to the
+     list. Filter, model, and close changes replace the current entry. */
+  function historyKey(params) {
+    var node = params.get("node") || params.get("risk") || params.get("control") || params.get("persona") || "";
+    var type = params.get("type") || (params.get("risk") ? "risk" : params.get("control") ? "control" : params.get("persona") ? "persona" : "");
+    var graphShown = params.get("view") === "graph" || params.get("graph") === "1";
+    return (node ? type + ":" + node : "") + "|" + (graphShown ? "graph" : "");
+  }
+
   function writeUrl() {
     if (coverageMode) return;
     var query = currentQuery();
     var next = location.pathname + (query ? "?" + query : "") + location.hash;
     var current = location.pathname + location.search + location.hash;
     if (next === current) return;
-    history.replaceState({ view: view, root: root, selected: selected }, "", next);
+    var before = historyKey(new URLSearchParams(location.search));
+    var after = historyKey(new URLSearchParams(query));
+    var opening = after !== "|" && after !== before && !restoringHistory;
+    var state = { view: view, root: root, selected: selected };
+    if (opening) history.pushState(state, "", next);
+    else history.replaceState(state, "", next);
+  }
+
+  function onPopState() {
+    restoringHistory = true;
+    try { applyFromLocation(); } finally { restoringHistory = false; }
+    if (!graph) return;
+    var target = null;
+    if (root || personaPick) target = detailsHeading;
+    else if (graphOpen) target = hideGraphBtn;
+    if (!target || !target.getClientRects().length) target = searchInput;
+    if (target === detailsHeading && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+    target.focus({ preventScroll: true });
   }
 
   function deepLink() {
@@ -3905,11 +3931,6 @@
   if (graphZoomOutBtn) graphZoomOutBtn.addEventListener("click", function () { stepGraphZoom(1); });
   if (graphResetBtn) graphResetBtn.addEventListener("click", resetGraphView);
   if (widenBtnGraph) widenBtnGraph.addEventListener("click", toggleWide);
-  readMoreBtn.addEventListener("click", function () {
-    var open = document.body.classList.toggle("more-open");
-    readMoreBtn.setAttribute("aria-expanded", open ? "true" : "false");
-    readMoreBtn.textContent = open ? "Read less" : "Read more";
-  });
   var lastNarrow = narrowQuery.matches;
   narrowQuery.addEventListener("change", function () {
     if (narrowQuery.matches === lastNarrow) return;
@@ -3994,7 +4015,7 @@
     if (narrowQuery.matches) closePanel(true);
     else clearSelection(true);
   });
-  window.addEventListener("popstate", applyFromLocation);
+  window.addEventListener("popstate", onPopState);
 
   function renderCoverage() {
     var body = document.getElementById("coverage-body");
@@ -4164,7 +4185,9 @@
       fillPersonaList();
       renderCoverage();
       renderModelNote();
+      restoringHistory = true;
       applyFromLocation();
+      restoringHistory = false;
       start();
       if (loadingEl) loadingEl.hidden = true;
     }).catch(function (err) {

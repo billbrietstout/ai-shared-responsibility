@@ -246,18 +246,18 @@ async function testLinkBasis(browser, base) {
   const official = threats.find((t) => (t.obligations || []).some((o) => o.basis === "official_text"));
   const page = await openPage(browser, base, 1280, 900, "?risk=directpromptinjection");
   const obligationChips = await page.$$eval('#chain-board button[data-chain-id^="obligation:"]', (els) => els.map((el) => el.textContent));
-  check("risk-to-obligation cards name the recorded derived basis", obligationChips.length > 0 && obligationChips.every((t) => t.indexOf("Basis: derived through a shared control (derived_via_control).") !== -1), JSON.stringify(obligationChips.slice(0, 2)));
+  check("risk-to-obligation cards name the recorded derived basis", obligationChips.length > 0 && obligationChips.every((t) => t.indexOf("Basis: derived through a shared control.") !== -1), JSON.stringify(obligationChips.slice(0, 2)));
   const personaChips = await page.$$eval('#chain-board button[data-chain-id^="accountable:"]', (els) => els.map((el) => el.textContent));
-  check("control-to-persona cards say no basis is recorded", personaChips.length > 0 && personaChips.every((t) => t.indexOf("Basis: none recorded. accountable_by_model names this persona.") !== -1), JSON.stringify(personaChips.slice(0, 1)));
+  check("control-to-persona cards say no source citation is recorded yet", personaChips.length > 0 && personaChips.every((t) => t.indexOf("No source citation recorded yet. The control's source record names this persona.") !== -1), JSON.stringify(personaChips.slice(0, 1)));
   const details = await page.$eval("#details-chain", (el) => el.textContent);
-  check("details name the recorded basis value in plain words", details.indexOf("Recorded basis: derived_via_control.") !== -1 && details.indexOf("Basis: none recorded.") !== -1, details.slice(0, 200));
+  check("details say what each link means in plain words", details.indexOf("The legal text is not the source of this link. It runs through a shared control.") !== -1 && details.indexOf("Listed as a control for this risk in the source record.") !== -1 && details.indexOf("No source citation recorded yet.") !== -1, details.slice(0, 200));
   check("details keep the threat definition link for an AI Exchange threat", await page.$$eval("#details-chain a", (els, url) => els.some((a) => a.href === url && a.textContent === "Risk definition"), derived.ai_exchange));
   await page.close();
 
   if (official) {
     const officialPage = await openPage(browser, base, 1280, 900, "?risk=" + official.id);
     const text = await officialPage.$$eval('#chain-board button[data-chain-id^="obligation:"]', (els) => els.map((el) => el.textContent).join(" | "));
-    check("official-text links say so in the chain (" + official.id + ")", text.indexOf("Basis: official text (official_text).") !== -1, text.slice(0, 200));
+    check("official-text links say so in the chain (" + official.id + ")", text.indexOf("Basis: official text.") !== -1, text.slice(0, 200));
     await officialPage.close();
   } else {
     check("data has at least one official_text link to test", false, "none found");
@@ -265,8 +265,8 @@ async function testLinkBasis(browser, base) {
 
   const controlPage = await openPage(browser, base, 1280, 900, "?control=finance:SRF-L3-DEV-001");
   const controlChips = await controlPage.$$eval('#chain-board button[data-chain-id^="obligation:"], #chain-board button[data-chain-id^="instrument:"]', (els) => els.map((el) => el.textContent).join(" | "));
-  check("control chain names the citation field behind each obligation", controlChips.indexOf("Basis: citation on this control (mappings.") !== -1, controlChips.slice(0, 200));
-  check("control chain groups risk-to-obligation bases by recorded value", /Risk to obligation, \d+ risks?\. Basis: derived through a shared control \(derived_via_control\)\./.test(controlChips), controlChips.slice(0, 300));
+  check("control chain says the obligation is cited on the control", controlChips.indexOf("Basis: citation on this control.") !== -1, controlChips.slice(0, 200));
+  check("control chain groups risk-to-obligation bases by recorded value", /Risk to obligation, \d+ risks?\. Basis: derived through a shared control\./.test(controlChips), controlChips.slice(0, 300));
   await controlPage.close();
 }
 
@@ -706,29 +706,19 @@ async function testPhoneSheet(browser, base) {
   const deskCols = await desk.evaluate(() => ({
     toggles: document.querySelectorAll(".chain-col__toggle").length,
     bodiesShown: Array.from(document.querySelectorAll(".chain-col__body")).filter((b) => !b.hidden).length,
-    readMore: getComputedStyle(document.getElementById("read-more")).display,
-    summary: getComputedStyle(document.getElementById("hero-summary")).display,
-    full: getComputedStyle(document.querySelector(".hero-full")).display,
     preview: getComputedStyle(document.querySelector(".map-preview")).display
   }));
   check("on desktop all four chain columns are open and have no toggles", deskCols.toggles === 0 && deskCols.bodiesShown === 4, JSON.stringify(deskCols));
-  check("on desktop the hero shows the full text and no Read more", deskCols.readMore === "none" && deskCols.summary === "none" && deskCols.full !== "none" && deskCols.preview !== "none", JSON.stringify(deskCols));
   await desk.close();
 
   const page = await openPage(browser, base, 375, 812, "");
   const hero = await page.evaluate(() => ({
     summary: getComputedStyle(document.getElementById("hero-summary")).display,
-    full: getComputedStyle(document.querySelector(".hero-full")).display,
-    preview: getComputedStyle(document.querySelector(".map-preview")).display,
-    button: document.getElementById("read-more").textContent, expanded: document.getElementById("read-more").getAttribute("aria-expanded"),
-    controls: document.getElementById("read-more").getAttribute("aria-controls").split(" ").every((id) => !!document.getElementById(id))
+    paragraphs: document.querySelectorAll(".map-hero__inner > p").length,
+    readMore: !!document.getElementById("read-more"),
+    preview: getComputedStyle(document.querySelector(".map-preview")).display
   }));
-  check("on the phone the hero is one summary sentence with a Read more button", hero.summary !== "none" && hero.full === "none" && hero.preview !== "none" && hero.button === "Read more" && hero.expanded === "false" && hero.controls, JSON.stringify(hero));
-  await page.click("#read-more");
-  const more = await page.evaluate(() => ({ full: getComputedStyle(document.querySelector(".hero-full")).display, preview: getComputedStyle(document.querySelector(".map-preview")).display, summary: getComputedStyle(document.getElementById("hero-summary")).display, button: document.getElementById("read-more").textContent, expanded: document.getElementById("read-more").getAttribute("aria-expanded") }));
-  check("Read more shows the full hero text and the Preview label stays", more.full !== "none" && more.preview !== "none" && more.summary === "none" && more.button === "Read less" && more.expanded === "true", JSON.stringify(more));
-  await page.click("#read-more");
-  check("Read less hides the full hero text again", await page.evaluate(() => getComputedStyle(document.querySelector(".hero-full")).display === "none"));
+  check("the hero is one paragraph with no Read more button and the Preview label stays", hero.summary !== "none" && hero.paragraphs === 1 && !hero.readMore && hero.preview !== "none", JSON.stringify(hero));
   check("the side panel is closed on the phone until a record is chosen", !(await sheetState(page)).shown);
 
   await search(page, "direct prompt injection");
@@ -804,7 +794,7 @@ async function testDetailGraphSplit(browser, base) {
       root: document.getElementById("map-status").dataset.root
     };
   });
-  check("insurance deep link selects the control in details", first.root === "control:insurance:SRF-L3-DEV-001" && /Prompt Injection Defense/.test(first.heading) && first.id === "insurance:SRF-L3-DEV-001" && !first.bodyHidden, JSON.stringify(first));
+  check("insurance deep link selects the control in details", first.root === "control:insurance:SRF-L3-DEV-001" && /Prompt Injection Defense/.test(first.heading) && first.id === "ID: insurance:SRF-L3-DEV-001" && !first.bodyHidden, JSON.stringify(first));
   check("the graph is not embedded in details and the workspace starts closed", first.workspaceHidden && !first.graphInDetails, JSON.stringify(first));
   check("the details pane does not use a nested scroll container", first.overflow === "visible" || first.overflow === "clip" || first.maxHeight === "none" || first.maxHeight === "", JSON.stringify(first));
 
@@ -888,7 +878,7 @@ async function testUrlState(browser, base) {
   const afterSelect = await bare.evaluate(() => ({ search: location.search, length: history.length }));
   const params = new URLSearchParams(afterSelect.search);
   check("selecting a risk writes type, node, model slug, and list view", params.get("type") === "risk" && params.get("node") === "directpromptinjection" && params.get("model") === "ai-paas" && params.get("view") === "list", afterSelect.search);
-  check("the URL is written with replaceState, so history does not grow", afterSelect.length === before, before + " -> " + afterSelect.length);
+  check("opening a trace adds exactly one history entry; model and entry changes add none", afterSelect.length === before + 1, before + " -> " + afterSelect.length);
 
   await clickNow(bare, "#explore-from-details");
   await sleep(700);
@@ -963,8 +953,8 @@ async function testCopyChain(browser, base) {
   await hiddenBefore.close();
   const live = await page.$eval("#copy-status", (el) => ({ role: el.getAttribute("role"), live: el.getAttribute("aria-live") }));
   check("the copy message sits in a polite live region", live.role === "status" && live.live === "polite", JSON.stringify(live));
-  const inHeader = await page.$eval("#copy-chain", (el) => !!el.closest(".details__bar") && el.textContent === "Copy chain as Markdown");
-  check("the button is in the node details header", inHeader);
+  const inHeader = await page.$eval("#copy-chain", (el) => !!el.closest(".details__actions") && el.textContent === "Copy chain as Markdown");
+  check("the button is in the node details action row", inHeader);
 
   await page.focus("#copy-chain");
   await page.keyboard.press("Enter");
@@ -1048,6 +1038,113 @@ async function testDropdownPickers(browser, base) {
   const after = await page.evaluate(() => ({ url: location.search, title: document.querySelector("#details-title, #details h2, #details-chain")?.textContent.slice(0, 80) }));
   check("choosing a risk in the drop-down opens its chain and updates the URL", /node=directpromptinjection/.test(after.url) && /type=risk/.test(after.url), JSON.stringify(after));
   await page.close();
+}
+
+
+async function testPlainDetails(browser, base) {
+  console.log("\n## Plain-language details");
+  const banned = ["related_controls", "accountable_by_model", "derived_via_control", "official_text", "Basis: none recorded", "Recorded basis", "mappings."];
+  for (const query of ["?type=risk&node=directpromptinjection", "?type=control&node=" + (await (async () => { const p = await openPage(browser, base, 1280, 900, "?risk=directpromptinjection"); const id = await p.$eval('#chain-board button[data-chain-id^="control:"]', (el) => el.dataset.chainId.replace(/^control:/, "")); await p.close(); return id; })())]) {
+    const page = await openPage(browser, base, 1280, 900, query);
+    const shown = await page.evaluate(() => {
+      const panel = document.querySelector(".details");
+      return { text: panel.innerText, board: document.getElementById("chain-board").innerText, id: document.getElementById("details-id").textContent, kind: document.getElementById("details-kind").textContent };
+    });
+    const hits = banned.filter((w) => shown.text.indexOf(w) !== -1 || shown.board.indexOf(w) !== -1);
+    check("no raw field names in visible text (" + query.slice(0, 40) + ")", hits.length === 0, JSON.stringify(hits));
+    check("the record ID is a small ID: line (" + query.slice(0, 40) + ")", /^ID: \S+$/.test(shown.id), shown.id);
+    await page.close();
+  }
+  const page = await openPage(browser, base, 1280, 900, "?type=risk&node=directpromptinjection");
+  const text = await page.$eval("#details-chain", (el) => el.innerText);
+  check("a risk link reads in plain words", text.indexOf("Listed as a control for this risk in the source record.") !== -1 && text.indexOf("No source citation recorded yet.") !== -1, text.slice(0, 200));
+  const idStyle = await page.$eval("#details-id", (el) => ({ size: parseFloat(getComputedStyle(el).fontSize), kindSize: parseFloat(getComputedStyle(document.getElementById("details-kind")).fontSize) }));
+  check("the ID line is small", idStyle.size <= 14, JSON.stringify(idStyle));
+  await page.close();
+}
+
+async function testBackButton(browser, base) {
+  console.log("\n## Back button and history");
+  const page = await openPage(browser, base, 1280, 900, "");
+  const start = await page.evaluate(() => history.length);
+  await page.select("#risk-suggestions", "risk:directpromptinjection");
+  await sleep(300);
+  const opened = await page.evaluate(() => ({ len: history.length, search: location.search, root: document.getElementById("map-status").dataset.root }));
+  check("opening a trace adds one history entry", opened.len === start + 1 && /node=directpromptinjection/.test(opened.search), JSON.stringify(opened));
+  await clickNow(page, '#model-filter-list input[type="radio"]:not([value="all"])');
+  await sleep(300);
+  const afterFilter = await page.evaluate(() => ({ len: history.length, search: location.search }));
+  check("a model change replaces the entry instead of adding one", afterFilter.len === start + 1 && /model=/.test(afterFilter.search), JSON.stringify(afterFilter));
+  await page.goBack();
+  await sleep(400);
+  const back = await page.evaluate(() => ({ search: location.search, root: document.getElementById("map-status").dataset.root, active: document.activeElement.id, onPage: location.pathname.indexOf("relationship-map") !== -1, detailsHidden: document.getElementById("details-body").hidden }));
+  check("Back closes the trace and stays in the tool", back.onPage && !/node=/.test(back.search) && !back.root && back.detailsHidden, JSON.stringify(back));
+  check("after Back focus lands on the search field", back.active === "node-search", back.active);
+  await page.goForward();
+  await sleep(400);
+  const fwd = await page.evaluate(() => ({ search: location.search, active: document.activeElement.id, root: document.getElementById("map-status").dataset.root }));
+  check("Forward reopens the trace and focuses its heading", /node=directpromptinjection/.test(fwd.search) && fwd.root && fwd.active === "details-heading", JSON.stringify(fwd));
+
+  await page.goBack();
+  await sleep(300);
+  await clickNow(page, "#show-graph");
+  await sleep(300);
+  const graph = await page.evaluate(() => ({ search: location.search, len: history.length }));
+  check("opening the graph adds a history entry", /view=graph/.test(graph.search), JSON.stringify(graph));
+  await page.goBack();
+  await sleep(400);
+  const noGraph = await page.evaluate(() => ({ search: location.search, shown: !document.getElementById("graph-workspace").hidden }));
+  check("Back from the graph returns to the list", !/view=graph/.test(noGraph.search), JSON.stringify(noGraph));
+  await page.close();
+
+  const deep = await openPage(browser, base, 1280, 900, "?risk=directpromptinjection");
+  const deepState = await deep.evaluate(() => ({ len: history.length, search: location.search }));
+  const plain = await openPage(browser, base, 1280, 900, "");
+  const plainLen = await plain.evaluate(() => history.length);
+  await plain.close();
+  check("loading a shared link does not add a history entry", deepState.len === plainLen && /node=directpromptinjection/.test(deepState.search), JSON.stringify(deepState));
+  await deep.close();
+}
+
+async function testPhoneHeaderAndIntro(browser, base) {
+  console.log("\n## Phone header and intro");
+  const page = await openPage(browser, base, 375, 812, "?type=risk&node=directpromptinjection");
+  const bar = await page.evaluate(() => {
+    const el = document.querySelector(".details__bar");
+    const r = el.getBoundingClientRect();
+    const clear = document.getElementById("clear-selection").getBoundingClientRect();
+    return { height: r.height, sticky: getComputedStyle(el).position, clearInside: clear.bottom <= r.bottom + 1 && clear.height >= 44, copyVisible: document.getElementById("copy-chain").getClientRects().length > 0 };
+  });
+  check("the sticky phone header is 100px or less and keeps the back button", bar.height <= 100 && bar.sticky === "sticky" && bar.clearInside, JSON.stringify(bar));
+  check("Copy chain stays reachable on the phone", bar.copyVisible, JSON.stringify(bar));
+  await page.close();
+
+  const list = await openPage(browser, base, 375, 812, "");
+  const sticky = await list.evaluate(() => Array.from(document.querySelectorAll("*")).filter((e) => ["sticky", "fixed"].indexOf(getComputedStyle(e).position) !== -1 && e.getClientRects().length).map((e) => e.getBoundingClientRect().height));
+  check("no sticky element on the phone list view is taller than 100px", sticky.every((h) => h <= 100) && await list.$("#node-search") !== null, JSON.stringify(sticky));
+  await list.close();
+
+  const desk = await openPage(browser, base, 1280, 900, "");
+  const intro = await desk.evaluate(() => {
+    const p = document.getElementById("hero-summary");
+    const sentences = p.textContent.trim().split(/(?<=[.?!])\s+/).filter(Boolean);
+    return {
+      paragraphs: document.querySelectorAll(".map-hero__inner > p").length,
+      sentences: sentences.length,
+      entries: Array.from(document.querySelectorAll(".entry-points button")).map((b) => b.textContent.trim()),
+      reqInPreview: !!document.querySelector(".map-preview #entry-requirement"),
+      gapInPreview: !!document.querySelector(".map-preview #entry-gap")
+    };
+  });
+  check("the intro is one paragraph of at most two sentences", intro.paragraphs === 1 && intro.sentences <= 2, JSON.stringify(intro));
+  check("the main choices are risk, control, and accountability", JSON.stringify(intro.entries) === JSON.stringify(["Explore a risk", "Explore a control", "Explore accountability"]), JSON.stringify(intro.entries));
+  check("the requirements note lives in the Preview disclosure", intro.reqInPreview && intro.gapInPreview, JSON.stringify(intro));
+  await desk.evaluate(() => { document.querySelector(".map-preview details").open = true; });
+  await clickNow(desk, "#entry-requirement");
+  await sleep(300);
+  const gap = await desk.evaluate(() => ({ shown: !document.getElementById("entry-gap").hidden, visible: document.getElementById("entry-gap").getClientRects().length > 0 }));
+  check("the requirements button shows the explanation in place", gap.shown && gap.visible, JSON.stringify(gap));
+  await desk.close();
 }
 
 async function testLoadResilience(browser, base) {
@@ -1315,6 +1412,9 @@ async function main() {
     await testUrlState(browser, base);
     await testCopyChain(browser, base);
     await testDropdownPickers(browser, base);
+    await testPlainDetails(browser, base);
+    await testBackButton(browser, base);
+    await testPhoneHeaderAndIntro(browser, base);
     await testLoadResilience(browser, base);
     await testDisclosures(browser, base);
     await testRiskWording(browser, base);
