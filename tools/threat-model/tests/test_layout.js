@@ -201,6 +201,7 @@ async function launchBrowser() {
   console.log("Chrome: " + chrome);
   const browser = await launchBrowser();
   try {
+    await pageScrolls(browser);
     await filterTip(browser);
     for (const mode of ["holistic", "L2", "L5"]) {
       await desktop(browser, mode, false);
