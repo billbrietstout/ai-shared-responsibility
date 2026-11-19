@@ -52,7 +52,7 @@ Bill's decision 8 (raise the v1.0 layer-name differences with the workstream: no
 
 ## Decisions by Bill, Nov 17, 2026
 
-Bill answered Part 1 of the Nov 17 publication plan. The page is listed on `/tools/`, in the sitemap, and in `llms.txt`. On November 18, 2026 the page gained the site header and footer, a skip link, a meta description, and an assessment choice: Holistic, Scoped L2, or Scoped L5. The title block uses the shared `page-hero` shell (eyebrow, title, lede, and a `callout--warn`). The assessment panel stays closed until a reader opens it, and the page remembers that choice. The window scrolls the page, as on the other tools. The graph keeps its full height, and the footer follows the graph. Items 8 to 11 of that plan were not part of this change.
+Bill answered Part 1 of the Nov 17 publication plan. The page is listed on `/tools/`, in the sitemap, and in `llms.txt`. On November 18, 2026 the page gained the site header and footer, a skip link, a meta description, and an assessment choice: Holistic, Scoped L2, or Scoped L5. The title block uses the shared `page-hero` shell (eyebrow, title, lede, and a `callout--warn`). The Options panel (assessment mode, operating model, cascade, and related controls) stays closed until a reader opens it, and the page remembers that choice. The initial view shows the example picker, the graph, and the graph controls. The window scrolls the page, as on the other tools. The graph keeps its full height, and the footer follows the graph. Items 8 to 11 of that plan were not part of this change.
 
 | # | Item | What changed |
 |---|---|---|
