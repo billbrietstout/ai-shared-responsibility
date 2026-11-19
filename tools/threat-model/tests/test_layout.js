@@ -119,8 +119,23 @@ async function phone(browser, mode) {
   await page.close();
 }
 
+async function launchBrowser() {
+  const args = ["--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu"];
+  let lastErr;
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      return await puppeteer.launch({ executablePath: chrome, args, timeout: 45000 });
+    } catch (err) {
+      lastErr = err;
+      console.log("Chrome launch attempt " + attempt + " failed: " + (err && err.message));
+    }
+  }
+  throw lastErr;
+}
+
 (async () => {
-  const browser = await puppeteer.launch({ executablePath: chrome, args: ["--no-sandbox"] });
+  console.log("Chrome: " + chrome);
+  const browser = await launchBrowser();
   try {
     await pageScrolls(browser);
     for (const mode of ["holistic", "L2", "L5"]) {
