@@ -50,6 +50,11 @@
   #rel-filters > .muted, #rel-filters > .rf { flex:0 0 auto; white-space:nowrap; }
   .rf { display:flex; gap:3px; align-items:center; flex:0 0 auto; white-space:nowrap; }
   #glossary { flex:0 0 auto; padding:2px 10px 3px; font-size:11px; color:var(--glossary); border-bottom:1px solid var(--line); margin:0; background:var(--bg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  /* Native title tips do not paint inside this page's overflow clip. This tip is fixed so it can sit outside the filter row. */
+  #rel-tip { position:fixed; z-index:10001; max-width:min(42ch, calc(100vw - 16px)); margin:0; padding:4px 8px; border:1px solid var(--line); border-radius:4px; background:var(--panel); color:var(--ink); font:12px/1.35 var(--font-sans), system-ui, sans-serif; box-shadow:0 4px 14px rgba(15,23,42,.18); pointer-events:none; }
+  #rel-tip[hidden] { display:none; }
+  #filter-hint { margin-right:2px; padding-right:10px; border-right:1px solid var(--line); cursor:help; }
+  .rf { cursor:help; }
   #view-bar { flex:0 0 auto; padding:4px 10px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; border-bottom:1px solid var(--line); font-size:12px; }
   .zoom-group { display:flex; gap:4px; align-items:center; margin-left:auto; }
   #zoom-label { min-width:3.2em; color:var(--muted); }
@@ -294,7 +299,7 @@
       <button type="button" id="open-drawer" aria-controls="side" aria-expanded="false">Details</button>
     </div>
     <div id="rel-filters"></div>
-    <p id="glossary" title="Each filter uses a plain reading; rest the pointer on a filter for the ArchiMate term. Bill checked these nine relationship names against ArchiMate 4 by hand on November 18, 2026.">ROCA = Risk, Obligation, Control, Accountable. Hover a filter for its ArchiMate term.</p>
+    <p id="glossary">ROCA = Risk, Obligation, Control, Accountable.</p>
     <div id="graph-scroll">
       <div id="graph"></div>
     </div>
@@ -24763,6 +24768,7 @@ if (typeof module !== "undefined") module.exports = TM;
     if (results) results.hidden = !scoped;
     ["example-wrap", "cascade-wrap"].forEach(function (id) { var el = $(id); if (el) el.hidden = scoped; });
     if ($("rel-filters")) $("rel-filters").hidden = STATE.view === "list" || scoped;
+    if (scoped || STATE.view === "list") hideRelTip();
     var cascadeTab = doc.querySelector('.tab[data-tab="cascade"]');
     if (cascadeTab) cascadeTab.textContent = scoped ? "Results" : "Cascade";
     renderGraph();
@@ -24908,10 +24914,142 @@ if (typeof module !== "undefined") module.exports = TM;
     try { localStorage.setItem(PANEL_KEY, box.open ? "1" : "0"); } catch (e) {}
   }
 
+  /* The filter row and the page column clip overflow, so the browser title
+     tip does not paint. Keep the title attribute as the text source, and
+     paint that text in #rel-tip on hover and on focus. A filter tip sits
+     below the ROCA line so the two lines stay readable. */
+  var hideRelTip = function () {};
+  function bindHoverTips(roots) {
+    var tip = doc.createElement("div");
+    tip.id = "rel-tip";
+    tip.setAttribute("role", "tooltip");
+    tip.hidden = true;
+    doc.body.appendChild(tip);
+    var current = null;
+    var anchorX = null;
+    var anchorY = null;
+
+    function element(node) {
+      var el = node;
+      while (el && el.nodeType !== 1) el = el.parentNode;
+      return el && el.closest ? el : null;
+    }
+    function hostOf(node) {
+      var el = element(node);
+      if (!el) return null;
+      el = el.closest("[title], [data-tip]");
+      if (!el) return null;
+      for (var i = 0; i < roots.length; i++) if (roots[i].contains(el)) return el;
+      return null;
+    }
+    function tipText(el) {
+      return el.getAttribute("data-tip") || el.getAttribute("title") || "";
+    }
+    function hold(el) {
+      if (!el.hasAttribute("title")) return;
+      el.setAttribute("data-tip", el.getAttribute("title"));
+      el.removeAttribute("title");
+    }
+    function release(el) {
+      if (!el || !el.hasAttribute("data-tip")) return;
+      if (!el.hasAttribute("title")) el.setAttribute("title", el.getAttribute("data-tip"));
+      el.removeAttribute("data-tip");
+      if (el.getAttribute("aria-describedby") === "rel-tip") el.removeAttribute("aria-describedby");
+      if (el.tagName === "LABEL") {
+        var input = el.querySelector("input");
+        if (input && input.getAttribute("aria-describedby") === "rel-tip") input.removeAttribute("aria-describedby");
+      }
+    }
+    function place(el) {
+      var cs = window.getComputedStyle(el);
+      if (el.hidden || cs.display === "none" || cs.visibility === "hidden") { hide(el); return; }
+      var r = el.getBoundingClientRect();
+      tip.style.left = "0px";
+      tip.style.top = "0px";
+      var margin = 8, tw = tip.offsetWidth, th = tip.offsetHeight;
+      var left = anchorX == null ? r.left : anchorX;
+      var row = el.closest("#rel-filters");
+      var gloss = $("glossary");
+      var glossBox = gloss ? gloss.getBoundingClientRect() : null;
+      var glossShown = glossBox && glossBox.height > 0 && window.getComputedStyle(gloss).display !== "none";
+      var top = anchorY == null ? r.bottom + 4 : anchorY + 14;
+      if (row) top = (glossShown ? glossBox.bottom : row.getBoundingClientRect().bottom) + 4;
+      if (left + tw > window.innerWidth - margin) left = window.innerWidth - tw - margin;
+      if (left < margin) left = margin;
+      if (top + th > window.innerHeight - margin) top = (row ? row.getBoundingClientRect().top : r.top) - th - 4;
+      if (top < margin) top = margin;
+      tip.style.left = left + "px";
+      tip.style.top = top + "px";
+    }
+    function show(el, ev) {
+      var text = tipText(el);
+      if (!el || !text) return;
+      if (current && current !== el) release(current);
+      current = el;
+      if (ev && typeof ev.clientX === "number") { anchorX = ev.clientX; anchorY = ev.clientY; }
+      else { anchorX = null; anchorY = null; }
+      hold(el);
+      el.setAttribute("aria-describedby", "rel-tip");
+      if (el.tagName === "LABEL") {
+        var input = el.querySelector("input");
+        if (input) input.setAttribute("aria-describedby", "rel-tip");
+      }
+      tip.textContent = text;
+      tip.hidden = false;
+      place(el);
+    }
+    function hide(el) {
+      if (current !== el) return;
+      release(el);
+      current = null;
+      anchorX = null;
+      anchorY = null;
+      tip.hidden = true;
+      tip.textContent = "";
+    }
+    function pointerStill(el) {
+      var active = doc.activeElement;
+      return !!(active && el.contains(active));
+    }
+    roots.forEach(function (root) {
+      root.addEventListener("mouseover", function (e) {
+        var el = hostOf(e.target);
+        if (el) show(el, e);
+      });
+      root.addEventListener("mousemove", function (e) {
+        var el = hostOf(e.target);
+        if (!el || current !== el) return;
+        anchorX = e.clientX;
+        anchorY = e.clientY;
+        place(el);
+      });
+      root.addEventListener("mouseout", function (e) {
+        var el = hostOf(e.target);
+        if (!el || current !== el) return;
+        if (hostOf(e.relatedTarget) === el) return;
+        if (pointerStill(el)) return;
+        hide(el);
+      });
+      root.addEventListener("focusin", function (e) {
+        var el = hostOf(e.target);
+        if (el) show(el, null);
+      });
+      root.addEventListener("focusout", function (e) {
+        var el = hostOf(e.target);
+        if (!el || current !== el) return;
+        if (hostOf(e.relatedTarget) === el) return;
+        if (el.matches(":hover")) return;
+        hide(el);
+      });
+    });
+    window.addEventListener("scroll", function () { if (current) place(current); }, true);
+    hideRelTip = function () { if (current) hide(current); };
+  }
+
   function init() {
     $("om").innerHTML = opts(TM.OPERATING_MODELS);
     var EXTRA_PLAIN = { unclassified: ["unclassified, needs review", "No type yet. Not used in the cascade until someone classifies it."], derived: ["derived (a shortcut for a chain)", "A derived link stands in for a chain of links. The cascade uses the chain."] };
-    $("rel-filters").innerHTML = '<span class="muted" title="Parent-child links roll impact up from a part to its whole. Every link below takes part in the one cascade.">Parent-child:</span>' + ["composition", "aggregation"].concat(['|']).concat(TM.REL_TYPES.filter(function (t) { return TM.REL_INFO[t].kind === "dependency"; })).concat(["unclassified", "derived"]).map(function (t) {
+    $("rel-filters").innerHTML = '<span class="muted" id="filter-hint" title="Each filter uses a plain reading. Bill checked these nine relationship names against ArchiMate 4 by hand on November 18, 2026.">Hover a filter for its ArchiMate term.</span><span class="muted" title="Parent-child links roll impact up from a part to its whole. Every link below takes part in the one cascade.">Parent-child:</span>' + ["composition", "aggregation"].concat(['|']).concat(TM.REL_TYPES.filter(function (t) { return TM.REL_INFO[t].kind === "dependency"; })).concat(["unclassified", "derived"]).map(function (t) {
       if (t === "|") return '<span class="muted">Depends on:</span>';
       var sw = '<svg width="26" height="8" aria-hidden="true"><line x1="0" y1="4" x2="26" y2="4" stroke="' + REL_STYLE[t].color + '" stroke-width="2" stroke-dasharray="' + REL_STYLE[t].dash + '"/></svg>';
       var label = EXTRA_PLAIN[t] ? EXTRA_PLAIN[t][0] : TM.REL_INFO[t].plain;
@@ -24919,6 +25057,7 @@ if (typeof module !== "undefined") module.exports = TM;
       return '<label class="rf" title="' + esc(tip) + '"><input type="checkbox" data-rel="' + t + '" checked>' + sw + esc(label) + "</label>";
     }).join("");
     Array.prototype.forEach.call(doc.querySelectorAll("#rel-filters input"), function (cb) { cb.addEventListener("change", function () { STATE.hidden[cb.getAttribute("data-rel")] = !cb.checked; renderGraph(); }); });
+    bindHoverTips([$("rel-filters"), $("glossary")]);
     Array.prototype.forEach.call(doc.querySelectorAll(".tab"), function (b) { b.addEventListener("click", function () { STATE.tab = b.getAttribute("data-tab"); render(); }); });
     $("om").addEventListener("change", function () {
       if (scopedOn()) {
@@ -24956,6 +25095,7 @@ if (typeof module !== "undefined") module.exports = TM;
       $("view-toggle").textContent = STATE.view === "list" ? "Graph view" : "List view";
       $("rel-filters").hidden = STATE.view === "list" || scopedOn();
       $("glossary").hidden = STATE.view === "list";
+      hideRelTip();
       renderGraph();
       applyZoom();
     });

@@ -150,6 +150,8 @@
   var riskSuggestions = document.getElementById("risk-suggestions");
   var modelList = document.getElementById("model-filter-list");
   var modelNote = document.getElementById("model-note");
+  var layerList = document.getElementById("layer-filter-list");
+  var controlSourceNote = document.getElementById("control-source-note");
   var tapestryInput = document.getElementById("show-tapestry");
   var widenBtn = document.getElementById("widen-view");
   var chainBtn = document.getElementById("show-chain");
@@ -173,6 +175,11 @@
   var personaList = document.getElementById("persona-list");
   var layerFrames = document.getElementById("layer-frames");
   var mapPage = document.querySelector(".map-page");
+  var chainHeading = document.getElementById("chain-heading");
+  var jumpChain = document.getElementById("jump-chain");
+  var showAllBtn = document.getElementById("show-all-results");
+  var showAllMatches = false;
+  var wordMatch = null;
   var detailsEl = document.querySelector(".details");
 
   var graph = null;
@@ -196,6 +203,7 @@
   var wide = false;
   var showTapestry = false;
   var modelFilter = "all";
+  var layerFilter = "all";
   var entry = "";
   var personaPick = "";
   var focusSet = {};
@@ -248,6 +256,7 @@
     var searchBits = [attrs.name, attrs.label, attrs.ref, attrs.meta, attrs.layer]
       .concat(attrs.coreModels || [])
       .concat(attrs.otherModels || [])
+      .concat(attrs.searchExtra || [])
       .filter(Boolean);
     attrs.search = searchBits.join(" ").toLowerCase();
     attrs.size = SIZE[attrs.kind];
@@ -327,6 +336,7 @@
       byFull: {},
       personaName: {},
       attacksByThreat: {},
+      dsgaiSource: {},
       emptyCrosswalk: []
     };
     ((data.sectorMap && data.sectorMap.mappings) || []).forEach(function (row) {
@@ -335,6 +345,7 @@
     ((data.threats && data.threats.threats) || []).forEach(function (threat) {
       if (threat && threat.id) next.threats[threat.id] = threat;
     });
+    next.dsgaiSource = (data.threats && data.threats.sources && data.threats.sources.owasp_dsgai) || {};
     ((data.attacks && data.attacks.entries) || []).forEach(function (entry) {
       if (!entry || !entry.id) return;
       var row = {
@@ -586,6 +597,7 @@
           layer: control.layer || "",
           coreModels: coreModels,
           otherModels: otherModels,
+          searchExtra: [control.description],
           sectorModels: sectorModels,
           accountablePersona: control.accountable_persona || "",
           accountableByModel: control.accountable_by_model || {},
@@ -642,6 +654,7 @@
         label: threat.name,
         ref: threatId,
         layer: threat.srf_layer || "",
+        searchExtra: threatSearchText(threat),
         x: -28,
         y: y
       });
@@ -667,6 +680,13 @@
       if (!attrs.coreModels || attrs.coreModels.indexOf(modelFilter) === -1) return false;
     }
     return true;
+  }
+
+  /* The layer filter narrows what the finder and suggestion lists offer. It
+   * does not remove controls from an open chain, because a threat can name a
+   * control in another layer. */
+  function layerAllowed(attrs) {
+    return !!attrs && (layerFilter === "all" || attrs.layer === layerFilter);
   }
 
   function nodeVisible(id) {
@@ -927,16 +947,36 @@
       !(basis === "official_text" || basis === "official_legal_text" || basis === "named_citation" || basis === "named_cite");
   }
 
+  /* Recorded values come from threats[].obligations[].basis. The chain shows
+   * the raw value and a plain-words gloss. It does not add labels of its own. */
+  var NO_CONTROL_BASIS = "Mitigates. This threat record names the control in related_controls. Basis: none recorded.";
+  var BASIS_SHORT = {
+    derived_via_control: "derived through a shared control",
+    official_text: "official text",
+    official_legal_text: "official text",
+    editorial: "editorial judgment",
+    editorial_mapping: "editorial judgment",
+    named_citation: "named citation",
+    named_cite: "named citation"
+  };
+  var BASIS_GLOSS = {
+    derived_via_control: "The legal text is not the source of this link. It runs through a shared control.",
+    official_text: "Taken from the official text.",
+    official_legal_text: "Taken from the official text.",
+    editorial: "The legal text is not the source of this link.",
+    editorial_mapping: "The legal text is not the source of this link.",
+    named_citation: "The record names this citation.",
+    named_cite: "The record names this citation."
+  };
+
   function basisSentence(basis) {
-    if (basis === "derived_via_control") {
-      return "Reached through a shared control. The legal text is not the source of this risk link.";
-    }
-    if (basis === "editorial" || basis === "editorial_mapping") {
-      return "Editorial judgment. The legal text is not the source of this risk link.";
-    }
-    if (basis === "official_text" || basis === "official_legal_text") return "Taken from the official text.";
-    if (basis === "named_citation" || basis === "named_cite") return "The record names this citation.";
-    return "The basis recorded on this link is " + (basis || "missing") + ".";
+    if (!basis) return "Basis not recorded on this link.";
+    return "Recorded basis: " + basis + ". " + (BASIS_GLOSS[basis] || "No plain-words gloss is defined for this value.");
+  }
+
+  function basisChip(basis) {
+    if (!basis) return "Basis not recorded on this link.";
+    return "Basis: " + (BASIS_SHORT[basis] || basis) + " (" + basis + ").";
   }
 
   function blankChain(startKind) {
@@ -998,6 +1038,28 @@
     }).filter(Boolean);
   }
 
+  /* Search matches recorded identifiers and descriptions only. The OWASP LLM
+   * Top 10, MITRE ATLAS, and OWASP DSGAI mapping strings are the framework IDs
+   * on the record. BIML is left out of the search index. */
+  var SEARCH_MAPPING_KEYS = ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai"];
+  function threatSearchText(threat) {
+    var map = threat.mappings || {};
+    return SEARCH_MAPPING_KEYS.map(function (key) { return map[key]; })
+      .concat([threat.impact, threat.attack_surface, threat.layer_rationale]);
+  }
+
+  /* A DSGAI record has no per-entry source URL in the AI Exchange field. It
+   * cites the DSGAI collection, which threats.json records once under sources. */
+  function riskSource(threat) {
+    if (typeof threat.ai_exchange === "string" && threat.ai_exchange.indexOf("http") === 0) {
+      return { url: threat.ai_exchange, label: "Threat definition" };
+    }
+    if (threat.dsgai && catalog.dsgaiSource.url) {
+      return { url: catalog.dsgaiSource.url, label: catalog.dsgaiSource.name || "OWASP DSGAI" };
+    }
+    return { url: "", label: "" };
+  }
+
   function riskCard(threat) {
     var owners = [];
     MODEL_ORDER.forEach(function (modelId) {
@@ -1012,12 +1074,13 @@
         sharedContext: ((cell.responsibility || {}).customer === "shared" || (cell.responsibility || {}).provider === "shared")
       });
     });
-    var url = typeof threat.ai_exchange === "string" && threat.ai_exchange.indexOf("http") === 0 ? threat.ai_exchange : "";
+    var source = riskSource(threat);
     return {
       id: "risk:" + threat.id,
       ref: threat.id,
       name: threat.name,
-      url: url,
+      url: source.url,
+      sourceLabel: source.label,
       layer: threat.srf_layer || "",
       affected: threat.affected_layers || [],
       attackSurface: threat.attack_surface || "",
@@ -1065,7 +1128,8 @@
       controlId: nodeId,
       controlName: attrs.name,
       lines: lines,
-      sectorPersona: attrs.accountablePersona || ""
+      sectorPersona: attrs.accountablePersona || "",
+      linkBasis: true
     };
   }
 
@@ -1187,6 +1251,8 @@
         summary: req.summary || "",
         url: req.url || "",
         basis: link.basis,
+        basisChips: ["Risk to obligation. " + basisChip(link.basis)],
+        basisSentences: ["Implements this obligation. " + basisSentence(link.basis)],
         style: style,
         instrumentLevel: false,
         sources: sources
@@ -1222,6 +1288,7 @@
     cited.articles.forEach(function (item) {
       var cardId = "obligation:" + item.req.id;
       obligationIds[item.req.id] = cardId;
+      var key = item.instrument.mapping_key || "";
       chain.obligations.push({
         id: cardId,
         citation: item.req.citation,
@@ -1229,6 +1296,8 @@
         summary: item.req.summary || "",
         url: item.req.url || "",
         basis: "",
+        basisChips: ["Obligation to this control. Basis: citation on this control (mappings." + key + ")."],
+        basisSentences: ["Cited by this control in mappings." + key + ". Basis: citation on this control."],
         style: "solid",
         instrumentLevel: false,
         citationText: item.citation,
@@ -1238,6 +1307,7 @@
     });
     cited.fallbacks.forEach(function (item) {
       var cardId = "instrument:" + item.reg.id;
+      var key = item.reg.mapping_key || "";
       chain.obligations.push({
         id: cardId,
         citation: item.reg.short || item.reg.name,
@@ -1245,6 +1315,8 @@
         summary: "",
         url: item.reg.url || "",
         basis: "",
+        basisChips: ["Obligation to this control. Basis: instrument cited in mappings." + key + ". No article record matched."],
+        basisSentences: [],
         style: "dotted",
         instrumentLevel: true,
         citationText: item.citation,
@@ -1263,10 +1335,26 @@
         var style = basisIsDashed(link.basis) ? "dashed" : "solid";
         addEdge(chain, { from: "risk:" + threat.id, to: cardId, style: style });
         chain.obligations.forEach(function (item) {
-          if (item.id !== cardId || item.basis) return;
-          item.basis = link.basis;
-          item.style = style;
+          if (item.id !== cardId) return;
+          item.riskLinks = (item.riskLinks || []).concat([{ risk: threat.name, basis: link.basis }]);
         });
+      });
+    });
+    chain.obligations.forEach(function (item) {
+      var groups = {};
+      var order = [];
+      (item.riskLinks || []).forEach(function (row) {
+        var key = row.basis || "";
+        if (!groups[key]) {
+          groups[key] = [];
+          order.push(key);
+        }
+        groups[key].push(row.risk);
+      });
+      order.forEach(function (basis) {
+        var names = groups[basis];
+        item.basisChips.push("Risk to obligation, " + unit(names.length, "threat", "threats") + ". " + basisChip(basis));
+        item.basisSentences.push("Risks to this obligation: " + names.join(", ") + ". " + basisSentence(basis));
       });
     });
     chain.controls.push(controlCard(nodeId, attrs));
@@ -1366,6 +1454,8 @@
 
   function renderChain(chain) {
     chainBoard.textContent = "";
+    var chainTitle = root && graph.hasNode(root) ? graph.getNodeAttribute(root, "name") : personaLabel(personaPick);
+    chainHeading.textContent = chainTitle ? "Chain for " + chainTitle + (modelFilter === "all" ? "" : " in " + modelName(modelFilter)) : "Chain";
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("id", "chain-svg");
     svg.setAttribute("class", "chain-svg");
@@ -1387,6 +1477,8 @@
     columns.forEach(function (column) {
       var wrap = makeEl("div", "chain-col");
       var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
+      heading.id = "chain-col-" + column[2];
+      heading.setAttribute("tabindex", "-1");
       wrap.appendChild(heading);
       column[1].forEach(function (item) {
         var pressed = chainFocus === item.id;
@@ -1400,6 +1492,9 @@
           if (item.citation && item.citation !== duty) button.appendChild(makeEl("span", "chain-card__kicker", item.citation));
           button.appendChild(makeEl("span", "chain-card__title", duty));
           button.appendChild(makeEl("span", "chain-card__tag", item.instrumentLevel ? "Instrument-level" : "Implements this obligation"));
+          (item.basisChips || []).forEach(function (text) {
+            button.appendChild(makeEl("span", "chain-card__meta", text));
+          });
         } else if (column[2] === "control") {
           button.appendChild(makeEl("span", "chain-card__kicker", [item.layer ? "Operates at " + item.layer : "", item.meta, item.ref].filter(Boolean).join(" · ")));
           button.appendChild(makeEl("span", "chain-card__title", item.name));
@@ -1421,6 +1516,9 @@
             item.lines.forEach(function (line) {
               button.appendChild(makeEl("span", "chain-owner", line.label + ": " + (line.missing ? "No persona recorded" : line.name)));
             });
+          }
+          if (item.linkBasis) {
+            button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. Basis: none recorded. accountable_by_model names this persona."));
           }
         }
         wrap.appendChild(button);
@@ -1541,11 +1639,11 @@
           } else {
             appendSentence(li, "No attack-inventory row names this threat in srf_crosswalk.");
           }
-          appendSentence(li, "Mitigates. This threat record names the control. The basis is not classified.");
+          appendSentence(li, NO_CONTROL_BASIS);
           if (item.url) {
             var source = makeEl("p", "");
             source.appendChild(document.createTextNode("Source: "));
-            source.appendChild(makeLink(item.url, "Threat definition"));
+            source.appendChild(makeLink(item.url, item.sourceLabel || "Threat definition"));
             li.appendChild(source);
           }
           item.owners.forEach(function (owner) {
@@ -1561,10 +1659,9 @@
           if (item.instrumentLevel) {
             appendSentence(li, "Instrument-level. The control cites this instrument, and no article record matched.");
             if (item.citationText) appendSentence(li, "Citation on the control: " + item.citationText);
-          } else if (item.basis) {
-            appendSentence(li, "Implements this obligation. " + basisSentence(item.basis));
-          } else if (item.citationText) {
-            appendSentence(li, "Implements this obligation. The basis is not classified. Citation: " + item.citationText);
+          } else {
+            (item.basisSentences || []).forEach(function (text) { appendSentence(li, text); });
+            if (item.citationText) appendSentence(li, "Citation on the control: " + item.citationText);
           }
           if (item.url) {
             var duty = makeEl("p", "");
@@ -1594,7 +1691,7 @@
           if (item.evidenceDetail) appendSentence(li, item.evidenceDetail);
           if (item.crossLayerNote) appendSentence(li, "Cross-layer note on this control: " + item.crossLayerNote);
           if ((chain.startKind === "risk" || chain.startKind === "control") && chain.risks.length) {
-            appendSentence(li, "Mitigates. This threat record names the control. The basis is not classified.");
+            appendSentence(li, NO_CONTROL_BASIS);
           }
           var page = makeEl("p", "");
           page.appendChild(document.createTextNode("Source: "));
@@ -1625,6 +1722,9 @@
           var extra = item.sectorPersona && item.lines.every(function (line) { return line.personaId !== item.sectorPersona; });
           if (extra && personaLabel(item.sectorPersona) !== item.sectorPersona) {
             appendSentence(li, "The control record also names " + personaLabel(item.sectorPersona) + ".");
+          }
+          if (item.linkBasis) {
+            appendSentence(li, "Control to persona. Basis: none recorded. The personas above come from accountable_by_model on this control.");
           }
         }
         list.appendChild(li);
@@ -1765,7 +1865,7 @@
     if (!selected || !graph.hasNode(selected)) {
       detailsHeading.textContent = "Node details";
       detailsEmpty.hidden = false;
-      detailsEmpty.textContent = "Select a risk or a control to see the chain, with sources and links.";
+      detailsEmpty.textContent = "Select a threat or a control to see the chain, with sources and links.";
       detailsBody.hidden = true;
       detailsSummary.textContent = "";
       detailsList.textContent = "";
@@ -1848,16 +1948,12 @@
     if (view === "chain" && currentChain) {
       text = chainSentence(currentChain);
     } else if (view === "search") {
-      var riskNoun = unit(allowed.risk || 0, "risk", "risks");
-      if (modelFilter === "all") {
-        text = riskNoun + " and " + unit(allowed.control || 0, "control can be opened.", "controls can be opened.");
-        if (!showTapestry && stats.tapestryControls) {
-          text += " " + unit(stats.tapestryControls, "Tapestry control is hidden.", "Tapestry controls are hidden.");
-        }
-      } else {
-        text = riskNoun + " and " + unit(allowed.control || 0, "control lists " + modelName(modelFilter) + ".", "controls list " + modelName(modelFilter) + ".");
+      var offered = countNodes(function (id, attrs) { return nodeAllowed(attrs) && layerAllowed(attrs); });
+      text = unit(offered.risk || 0, "threat", "threats") + " and " + unit(offered.control || 0, "control", "controls") + " can be opened.";
+      if (modelFilter === "all" && !showTapestry && stats.tapestryControls) {
+        text += " " + unit(stats.tapestryControls, "Tapestry control is hidden.", "Tapestry controls are hidden.");
       }
-      text += " Choose a risk or a control to see its chain.";
+      text += " Choose a threat or a control to see its chain.";
     } else if ((view === "focus" || view === "chain") && root && graph.hasNode(root)) {
       var rootAttrs = graph.getNodeAttributes(root);
       var rootKind = rootAttrs.kind === "risk" ? "risk" : "control";
@@ -1866,7 +1962,7 @@
           ? GAP_NOTE + " Choose All to see it on the map."
           : "This control does not list " + modelName(modelFilter) + ". Choose All under Operating model to see it.";
       } else if (view === "chain") {
-        text = "Choose a risk or a control to see its chain.";
+        text = "Choose a threat or a control to see its chain.";
       } else {
         var beside = Math.max(0, visible.total - 1);
         text = beside === 1
@@ -1876,7 +1972,7 @@
     } else if (view === "context") {
       text = "Layers run from L1 to L5. Open a name to see its chain.";
     } else {
-      text = "Choose a risk or a control to see its chain.";
+      text = "Choose a threat or a control to see its chain.";
     }
     statusEl.textContent = text;
     graphEl.setAttribute("aria-label", text);
@@ -1913,19 +2009,54 @@
     statusEl.dataset.suggested = suggested.join(",");
   }
 
+  /* With All models and All layers, the list is one sample control per layer.
+   * Choosing a model or a layer lists every control that matches. */
   function suggestedIds() {
+    var listing = modelFilter !== "all" || layerFilter !== "all";
     var best = {};
+    var every = [];
     graph.forEachNode(function (id, attrs) {
-      if (attrs.kind !== "control" || !nodeAllowed(attrs)) return;
+      if (attrs.kind !== "control" || !nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       if (modelFilter === "all" && !(attrs.coreModels && attrs.coreModels.length)) return;
       if (!attrs.layer) return;
+      if (listing) {
+        every.push(id);
+        return;
+      }
       var rank = VERTICAL_RANK[attrs.vertical];
       if (rank == null) rank = 99;
       var key = [-(attrs.coreModels ? attrs.coreModels.length : 0), rank, attrs.ref || "", id];
       var prev = best[attrs.layer];
       if (!prev || compareKeys(key, prev.key) < 0) best[attrs.layer] = { id: id, key: key };
     });
+    if (listing) return every.sort(compareControlIds);
     return LAYERS.map(function (layer) { return best[layer] && best[layer].id; }).filter(Boolean);
+  }
+
+  function compareControlIds(a, b) {
+    var x = graph.getNodeAttributes(a);
+    var y = graph.getNodeAttributes(b);
+    var ln = LAYERS.indexOf(x.layer) - LAYERS.indexOf(y.layer);
+    if (ln) return ln;
+    if (x.name !== y.name) return x.name < y.name ? -1 : 1;
+    if (x.meta !== y.meta) return String(x.meta) < String(y.meta) ? -1 : 1;
+    return a < b ? -1 : a > b ? 1 : 0;
+  }
+
+  function controlListNote(count) {
+    if (modelFilter === "all" && layerFilter === "all") {
+      return "Showing one sample control per layer. Choose an operating model or a layer to list every control.";
+    }
+    var inLayer = layerFilter !== "all" ? "in " + layerName(layerFilter) : "in layer order";
+    if (modelFilter !== "all") {
+      return unit(count, "control", "controls") + " list " + modelName(modelFilter) + " " + inLayer + ".";
+    }
+    return unit(count, "control", "controls") + " are " + inLayer + ", across all operating models.";
+  }
+
+  function layerName(layerId) {
+    if (!graph || !graph.hasNode("layer:" + layerId)) return layerId;
+    return graph.getNodeAttribute("layer:" + layerId, "name");
   }
 
   function compareKeys(a, b) {
@@ -1969,17 +2100,46 @@
     });
   }
 
+  var STOP_WORDS = ["the", "and", "for", "with", "from", "how", "what", "are", "that", "this", "into", "can", "not", "our", "you", "your", "use", "using"];
+
+  function queryWords(q) {
+    return q.split(/[^a-z0-9.:_]+/).filter(function (word) {
+      return word.length >= 3 && STOP_WORDS.indexOf(word) === -1;
+    });
+  }
+
   function matches(query) {
     var q = query.trim().toLowerCase();
+    wordMatch = null;
     if (!q) return [];
     var ids = [];
+    var allowed = [];
     graph.forEachNode(function (id, attrs) {
-      if (!nodeAllowed(attrs)) return;
+      if (!nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       if (attrs.kind !== "control" && attrs.kind !== "risk") return;
-      if (attrs.search.indexOf(q) === -1) return;
-      ids.push(id);
+      allowed.push(id);
+      if (attrs.search.indexOf(q) !== -1) ids.push(id);
     });
+    var counts = {};
+    if (!ids.length) {
+      var words = queryWords(q);
+      if (words.length >= 2) {
+        var needed = words.length <= 2 ? words.length : words.length - 1;
+        allowed.forEach(function (id) {
+          var haystack = graph.getNodeAttribute(id, "search");
+          var hit = words.filter(function (word) {
+            return haystack.indexOf(word) !== -1;
+          }).length;
+          if (hit >= needed) {
+            counts[id] = hit;
+            ids.push(id);
+          }
+        });
+        wordMatch = { needed: needed, total: words.length };
+      }
+    }
     ids.sort(function (a, b) {
+      if ((counts[a] || 0) !== (counts[b] || 0)) return (counts[b] || 0) - (counts[a] || 0);
       var aa = graph.getNodeAttributes(a);
       var bb = graph.getNodeAttributes(b);
       function exactness(attrs) {
@@ -2001,15 +2161,29 @@
 
   function renderMatches(query) {
     var ids = matches(query);
-    var shownIds = ids.slice(0, 8);
+    var shownIds = ids.slice(0, showAllMatches ? ids.length : 8);
     suggestionsWrap.hidden = true;
     renderIdList(shownIds);
+    showAllBtn.hidden = ids.length <= shownIds.length;
+    showAllBtn.textContent = "Show all " + ids.length + " matches";
     if (!query.trim()) {
       searchNote.textContent = "";
       return ids;
     }
-    var noun = ids.length === 1 ? "record matches." : "records match.";
-    var line = ids.length ? ids.length + " " + noun : "No matching risk or control.";
+    if (!ids.length) {
+      searchNote.textContent = "No matching threat or control.";
+      return ids;
+    }
+    var risks = ids.filter(function (id) {
+      return graph.getNodeAttribute(id, "kind") === "risk";
+    }).length;
+    var breakdown = unit(risks, "threat", "threats") + " and " + unit(ids.length - risks, "control", "controls");
+    var line;
+    if (wordMatch) {
+      line = "No record has that exact phrase. " + ids.length + (ids.length === 1 ? " record matches" : " records match") + " at least " + wordMatch.needed + " of your " + wordMatch.total + " words: " + breakdown + ".";
+    } else {
+      line = ids.length + (ids.length === 1 ? " record matches" : " records match") + ": " + breakdown + ".";
+    }
     if (ids.length > shownIds.length) line += " Showing the first " + shownIds.length + ".";
     searchNote.textContent = line;
     return ids;
@@ -2034,7 +2208,9 @@
       return;
     }
     var controlIds = entry === "threat" ? [] : suggestedIds();
-    var risks = entry === "control" ? [] : riskIds();
+    var risks = entry === "control" ? [] : riskIds().filter(function (id) {
+      return layerAllowed(graph.getNodeAttributes(id));
+    });
     suggestions.textContent = "";
     riskSuggestions.textContent = "";
     suggestionsWrap.hidden = !risks.length && !controlIds.length;
@@ -2055,19 +2231,22 @@
     searchResults.hidden = true;
     searchResults.textContent = "";
     if (!risks.length && !controlIds.length) {
-      searchNote.textContent = "No risk or control lists this operating model.";
+      searchNote.textContent = "No threat or control matches these filters.";
       return;
     }
-    var bits = [];
-    if (risks.length) bits.push(unit(risks.length, "risk", "risks"));
-    if (controlIds.length) bits.push(unit(controlIds.length, "suggested control", "suggested controls"));
-    searchNote.textContent = bits.join(". ") + ".";
+    var parts = [];
+    if (risks.length) parts.push(unit(risks.length, "threat", "threats") + ".");
+    if (controlIds.length) parts.push(controlListNote(controlIds.length));
+    searchNote.textContent = parts.join(" ");
   }
 
   function syncToggles() {
     tapestryInput.checked = showTapestry;
     document.querySelectorAll('input[name="operating-model"]').forEach(function (radio) {
       radio.checked = radio.value === modelFilter;
+    });
+    document.querySelectorAll('input[name="layer"]').forEach(function (radio) {
+      radio.checked = radio.value === layerFilter;
     });
   }
 
@@ -2104,12 +2283,13 @@
     chainBtn.hidden = !(view === "focus" && chainable);
     if (contextBtn) contextBtn.hidden = view === "context";
     startBtn.hidden = view === "search";
-    startBtn.textContent = "Start from one risk or control";
+    startBtn.textContent = "Start from one threat or control";
     var chainOn = view === "chain" && !!currentChain;
     if (mapPage) mapPage.classList.toggle("is-chain", chainOn);
     document.body.classList.toggle("chain-open", chainOn);
     var contextOn = view === "context";
     chainEl.hidden = !chainOn;
+    if (jumpChain) jumpChain.hidden = !chainOn;
     if (contextBoard) contextBoard.hidden = !contextOn;
     graphWrap.classList.toggle("graph-wrap--chain", chainOn);
     graphWrap.classList.toggle("graph-wrap--context", contextOn);
@@ -2117,30 +2297,30 @@
     if (contextOn) renderContext();
 
     if (view === "context") {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
+      findLabel.textContent = "Find a threat or a control";
+      searchInput.placeholder = "Threat or control name";
       helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
     } else if (view === "focus" && wide) {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
+      findLabel.textContent = "Find a threat or a control";
+      searchInput.placeholder = "Threat or control name";
       helpEl.textContent = "The map includes the layers and personas connected to the nodes next to this " + rootWord + ".";
     } else if (view === "focus") {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
+      findLabel.textContent = "Find a threat or a control";
+      searchInput.placeholder = "Threat or control name";
       helpEl.textContent = "The map is showing this " + rootWord + " and the nodes next to it.";
     } else if (view === "chain") {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
+      findLabel.textContent = "Find a threat or a control";
+      searchInput.placeholder = "Threat or control name";
       helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
     } else {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "Type a risk or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.";
+      findLabel.textContent = "Find a threat or a control";
+      searchInput.placeholder = "Threat or control name";
+      helpEl.textContent = "Type a threat or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.";
     }
 
     if (view === "search") {
       graphEmpty.hidden = false;
-      graphEmpty.textContent = "Choose a risk or a control to see its chain.";
+      graphEmpty.textContent = "Choose a threat or a control to see its chain.";
     } else if ((view === "focus" || view === "chain") && rootAttrs && !rootVisible) {
       graphEmpty.hidden = false;
       graphEmpty.textContent = outsideFilter(rootAttrs)
@@ -2163,6 +2343,7 @@
     });
     if (entryGap) entryGap.hidden = entry !== "requirement";
     if (entryAccount) entryAccount.hidden = entry !== "account";
+    if (controlSourceNote) controlSourceNote.hidden = entry === "threat";
     var riskHeading = document.getElementById("risk-suggestions-heading");
     var controlHeading = document.getElementById("suggestions-heading");
     if (riskHeading) riskHeading.hidden = entry === "control";
@@ -2214,6 +2395,7 @@
         linkNote = "";
         searchInput.value = "";
         commit(true);
+        revealChain();
       });
       personaList.appendChild(button);
     });
@@ -2231,6 +2413,7 @@
       else if (view === "focus") params.set("neighbors", "1");
     }
     if (modelFilter !== "all") params.set("model", modelFilter);
+    if (layerFilter !== "all") params.set("layer", layerFilter);
     if (showTapestry) params.set("tapestry", "1");
     if (view === "chain" && personaPick && !root) params.set("persona", personaPick);
     return params.toString();
@@ -2330,6 +2513,8 @@
     var params = new URLSearchParams(location.search);
     var model = params.get("model") || "all";
     modelFilter = model === "all" || coreIds[model] ? model : "all";
+    var layer = params.get("layer") || "all";
+    layerFilter = layer === "all" || LAYERS.indexOf(layer) !== -1 ? layer : "all";
     showTapestry = params.get("tapestry") === "1";
     wide = params.get("wide") === "1";
     linkHits = null;
@@ -2388,8 +2573,25 @@
     else if (view !== "chain") frameAll();
   }
 
+  function scrollToTarget(target, focusEl) {
+    target.scrollIntoView({ block: "start", behavior: "auto" });
+    (focusEl || target).focus({ preventScroll: true });
+  }
+
+  function revealChain() {
+    if (!chainEl.hidden) scrollToTarget(chainHeading);
+  }
+
+  function revealSearch() {
+    scrollToTarget(findForm, searchInput);
+  }
+
   function focusDetails(moveFocus) {
     if (!moveFocus) return;
+    if (!chainEl.hidden) {
+      revealChain();
+      return;
+    }
     detailsHeading.setAttribute("tabindex", "-1");
     detailsHeading.focus({ preventScroll: true });
   }
@@ -2585,6 +2787,7 @@
     chainFocus = root;
     selected = root;
     commit(true);
+    revealChain();
   }
 
   function setModel(id, push) {
@@ -2593,6 +2796,13 @@
     modelFilter = id;
     commit(push);
     if (renderer && view === "focus" && root && nodeAllowed(graph.getNodeAttributes(root))) frameFocus();
+  }
+
+  function setLayer(id, push) {
+    if (id !== "all" && LAYERS.indexOf(id) === -1) id = "all";
+    if (id === layerFilter) return;
+    layerFilter = id;
+    commit(push);
   }
 
   function setTapestry(on, push) {
@@ -2697,6 +2907,28 @@
       label.appendChild(text);
       if (model.name && model.name !== text.textContent) label.title = model.name;
       modelList.appendChild(label);
+    });
+  }
+
+  function renderLayerRadios(layers) {
+    if (!layerList) return;
+    layerList.textContent = "";
+    var all = [{ id: "all", name: "All" }].concat(layers.map(function (layer) {
+      return { id: layer.id, name: layer.id + " " + layer.name };
+    }));
+    all.forEach(function (layer) {
+      var label = document.createElement("label");
+      label.className = "model-option";
+      var input = document.createElement("input");
+      input.type = "radio";
+      input.name = "layer";
+      input.value = layer.id;
+      input.checked = layer.id === layerFilter;
+      var text = document.createElement("span");
+      text.textContent = layer.name;
+      label.appendChild(input);
+      label.appendChild(text);
+      layerList.appendChild(label);
     });
   }
 
@@ -2810,6 +3042,7 @@
   searchInput.addEventListener("input", function () {
     linkHits = null;
     linkNote = "";
+    showAllMatches = false;
     if (!graph) return;
     if (!searchInput.value.trim()) {
       if (view === "search") renderSuggestions();
@@ -2822,6 +3055,8 @@
       return;
     }
     renderMatches(searchInput.value);
+    var noteTop = searchNote.getBoundingClientRect().top;
+    if (noteTop > window.innerHeight * 0.6) window.scrollBy({ top: noteTop - window.innerHeight * 0.35, behavior: "auto" });
   });
   findForm.addEventListener("keydown", function (event) {
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
@@ -2849,6 +3084,13 @@
     if (!input || input.name !== "operating-model") return;
     setModel(input.value, true);
   });
+  if (layerList) {
+    layerList.addEventListener("change", function (event) {
+      var input = event.target;
+      if (!input || input.name !== "layer") return;
+      setLayer(input.value, true);
+    });
+  }
   tapestryInput.addEventListener("change", function () {
     setTapestry(tapestryInput.checked, true);
   });
@@ -2904,17 +3146,47 @@
         linkNote = "";
         searchInput.value = "";
         commit(true);
+        revealChain();
         return;
       }
       activateNode(id, true);
     });
   }
-  startBtn.addEventListener("click", function () { showSearch(true); });
+  startBtn.addEventListener("click", function () {
+    showSearch(true);
+    revealSearch();
+  });
   document.getElementById("entry-threat").addEventListener("click", function () { chooseEntry("threat"); });
   document.getElementById("entry-requirement").addEventListener("click", function () { chooseEntry("requirement"); });
   document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
   document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
-  clearBtn.addEventListener("click", function () { clearSelection(true); });
+  clearBtn.addEventListener("click", function () {
+    clearSelection(true);
+    if (view === "search") revealSearch();
+  });
+  document.addEventListener("click", function (event) {
+    var link = event.target.closest && event.target.closest("a[data-jump]");
+    if (!link) return;
+    var id = (link.getAttribute("href") || "").slice(1);
+    var target = document.getElementById(id);
+    if (!target || target.closest("[hidden]")) return;
+    event.preventDefault();
+    if (id === "node-search") {
+      revealSearch();
+      return;
+    }
+    if (!target.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) {
+      target.setAttribute("tabindex", "-1");
+    }
+    scrollToTarget(target);
+  });
+  showAllBtn.addEventListener("click", function () {
+    var shown = searchResults.querySelectorAll("button").length;
+    showAllMatches = true;
+    renderMatches(searchInput.value);
+    var buttons = searchResults.querySelectorAll("button");
+    if (buttons[shown]) buttons[shown].focus();
+  });
   document.addEventListener("keydown", function (event) {
     if (event.key !== "Escape") return;
     if (event.target === searchInput && searchInput.value) {
@@ -3068,6 +3340,7 @@
     });
     var models = buildGraph(data);
     renderModelRadios(models);
+    renderLayerRadios((data.layers && data.layers.layers) || []);
     fillLayerFrames();
     fillPersonaList();
     renderCoverage();
