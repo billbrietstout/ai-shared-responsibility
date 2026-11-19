@@ -175,6 +175,11 @@
   var personaList = document.getElementById("persona-list");
   var layerFrames = document.getElementById("layer-frames");
   var mapPage = document.querySelector(".map-page");
+  var chainHeading = document.getElementById("chain-heading");
+  var jumpChain = document.getElementById("jump-chain");
+  var showAllBtn = document.getElementById("show-all-results");
+  var showAllMatches = false;
+  var wordMatch = null;
   var detailsEl = document.querySelector(".details");
 
   var graph = null;
@@ -1449,6 +1454,8 @@
 
   function renderChain(chain) {
     chainBoard.textContent = "";
+    var chainTitle = root && graph.hasNode(root) ? graph.getNodeAttribute(root, "name") : personaLabel(personaPick);
+    chainHeading.textContent = chainTitle ? "Chain for " + chainTitle + (modelFilter === "all" ? "" : " in " + modelName(modelFilter)) : "Chain";
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("id", "chain-svg");
     svg.setAttribute("class", "chain-svg");
@@ -1470,6 +1477,8 @@
     columns.forEach(function (column) {
       var wrap = makeEl("div", "chain-col");
       var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
+      heading.id = "chain-col-" + column[2];
+      heading.setAttribute("tabindex", "-1");
       wrap.appendChild(heading);
       column[1].forEach(function (item) {
         var pressed = chainFocus === item.id;
@@ -2091,17 +2100,46 @@
     });
   }
 
+  var STOP_WORDS = ["the", "and", "for", "with", "from", "how", "what", "are", "that", "this", "into", "can", "not", "our", "you", "your", "use", "using"];
+
+  function queryWords(q) {
+    return q.split(/[^a-z0-9.:_]+/).filter(function (word) {
+      return word.length >= 3 && STOP_WORDS.indexOf(word) === -1;
+    });
+  }
+
   function matches(query) {
     var q = query.trim().toLowerCase();
+    wordMatch = null;
     if (!q) return [];
     var ids = [];
+    var allowed = [];
     graph.forEachNode(function (id, attrs) {
       if (!nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       if (attrs.kind !== "control" && attrs.kind !== "risk") return;
-      if (attrs.search.indexOf(q) === -1) return;
-      ids.push(id);
+      allowed.push(id);
+      if (attrs.search.indexOf(q) !== -1) ids.push(id);
     });
+    var counts = {};
+    if (!ids.length) {
+      var words = queryWords(q);
+      if (words.length >= 2) {
+        var needed = words.length <= 2 ? words.length : words.length - 1;
+        allowed.forEach(function (id) {
+          var haystack = graph.getNodeAttribute(id, "search");
+          var hit = words.filter(function (word) {
+            return haystack.indexOf(word) !== -1;
+          }).length;
+          if (hit >= needed) {
+            counts[id] = hit;
+            ids.push(id);
+          }
+        });
+        wordMatch = { needed: needed, total: words.length };
+      }
+    }
     ids.sort(function (a, b) {
+      if ((counts[a] || 0) !== (counts[b] || 0)) return (counts[b] || 0) - (counts[a] || 0);
       var aa = graph.getNodeAttributes(a);
       var bb = graph.getNodeAttributes(b);
       function exactness(attrs) {
@@ -2123,15 +2161,29 @@
 
   function renderMatches(query) {
     var ids = matches(query);
-    var shownIds = ids.slice(0, 8);
+    var shownIds = ids.slice(0, showAllMatches ? ids.length : 8);
     suggestionsWrap.hidden = true;
     renderIdList(shownIds);
+    showAllBtn.hidden = ids.length <= shownIds.length;
+    showAllBtn.textContent = "Show all " + ids.length + " matches";
     if (!query.trim()) {
       searchNote.textContent = "";
       return ids;
     }
-    var noun = ids.length === 1 ? "record matches." : "records match.";
-    var line = ids.length ? ids.length + " " + noun : "No matching threat or control.";
+    if (!ids.length) {
+      searchNote.textContent = "No matching threat or control.";
+      return ids;
+    }
+    var risks = ids.filter(function (id) {
+      return graph.getNodeAttribute(id, "kind") === "risk";
+    }).length;
+    var breakdown = unit(risks, "threat", "threats") + " and " + unit(ids.length - risks, "control", "controls");
+    var line;
+    if (wordMatch) {
+      line = "No record has that exact phrase. " + ids.length + (ids.length === 1 ? " record matches" : " records match") + " at least " + wordMatch.needed + " of your " + wordMatch.total + " words: " + breakdown + ".";
+    } else {
+      line = ids.length + (ids.length === 1 ? " record matches" : " records match") + ": " + breakdown + ".";
+    }
     if (ids.length > shownIds.length) line += " Showing the first " + shownIds.length + ".";
     searchNote.textContent = line;
     return ids;
@@ -2237,6 +2289,7 @@
     document.body.classList.toggle("chain-open", chainOn);
     var contextOn = view === "context";
     chainEl.hidden = !chainOn;
+    if (jumpChain) jumpChain.hidden = !chainOn;
     if (contextBoard) contextBoard.hidden = !contextOn;
     graphWrap.classList.toggle("graph-wrap--chain", chainOn);
     graphWrap.classList.toggle("graph-wrap--context", contextOn);
@@ -2342,6 +2395,7 @@
         linkNote = "";
         searchInput.value = "";
         commit(true);
+        revealChain();
       });
       personaList.appendChild(button);
     });
@@ -2519,8 +2573,25 @@
     else if (view !== "chain") frameAll();
   }
 
+  function scrollToTarget(target, focusEl) {
+    target.scrollIntoView({ block: "start", behavior: "auto" });
+    (focusEl || target).focus({ preventScroll: true });
+  }
+
+  function revealChain() {
+    if (!chainEl.hidden) scrollToTarget(chainHeading);
+  }
+
+  function revealSearch() {
+    scrollToTarget(findForm, searchInput);
+  }
+
   function focusDetails(moveFocus) {
     if (!moveFocus) return;
+    if (!chainEl.hidden) {
+      revealChain();
+      return;
+    }
     detailsHeading.setAttribute("tabindex", "-1");
     detailsHeading.focus({ preventScroll: true });
   }
@@ -2716,6 +2787,7 @@
     chainFocus = root;
     selected = root;
     commit(true);
+    revealChain();
   }
 
   function setModel(id, push) {
@@ -2970,6 +3042,7 @@
   searchInput.addEventListener("input", function () {
     linkHits = null;
     linkNote = "";
+    showAllMatches = false;
     if (!graph) return;
     if (!searchInput.value.trim()) {
       if (view === "search") renderSuggestions();
@@ -2982,6 +3055,8 @@
       return;
     }
     renderMatches(searchInput.value);
+    var noteTop = searchNote.getBoundingClientRect().top;
+    if (noteTop > window.innerHeight * 0.6) window.scrollBy({ top: noteTop - window.innerHeight * 0.35, behavior: "auto" });
   });
   findForm.addEventListener("keydown", function (event) {
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
@@ -3071,17 +3146,47 @@
         linkNote = "";
         searchInput.value = "";
         commit(true);
+        revealChain();
         return;
       }
       activateNode(id, true);
     });
   }
-  startBtn.addEventListener("click", function () { showSearch(true); });
+  startBtn.addEventListener("click", function () {
+    showSearch(true);
+    revealSearch();
+  });
   document.getElementById("entry-threat").addEventListener("click", function () { chooseEntry("threat"); });
   document.getElementById("entry-requirement").addEventListener("click", function () { chooseEntry("requirement"); });
   document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
   document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
-  clearBtn.addEventListener("click", function () { clearSelection(true); });
+  clearBtn.addEventListener("click", function () {
+    clearSelection(true);
+    if (view === "search") revealSearch();
+  });
+  document.addEventListener("click", function (event) {
+    var link = event.target.closest && event.target.closest("a[data-jump]");
+    if (!link) return;
+    var id = (link.getAttribute("href") || "").slice(1);
+    var target = document.getElementById(id);
+    if (!target || target.closest("[hidden]")) return;
+    event.preventDefault();
+    if (id === "node-search") {
+      revealSearch();
+      return;
+    }
+    if (!target.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) {
+      target.setAttribute("tabindex", "-1");
+    }
+    scrollToTarget(target);
+  });
+  showAllBtn.addEventListener("click", function () {
+    var shown = searchResults.querySelectorAll("button").length;
+    showAllMatches = true;
+    renderMatches(searchInput.value);
+    var buttons = searchResults.querySelectorAll("button");
+    if (buttons[shown]) buttons[shown].focus();
+  });
   document.addEventListener("keydown", function (event) {
     if (event.key !== "Escape") return;
     if (event.target === searchInput && searchInput.value) {
