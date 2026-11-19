@@ -297,6 +297,132 @@ async function testWording(browser, base) {
   await page.close();
 }
 
+const inView = (page, selector) => page.$eval(selector, (el) => {
+  const r = el.getBoundingClientRect();
+  return r.height > 0 && r.top >= 0 && r.top < window.innerHeight * 0.5;
+});
+const activeId = (page) => page.evaluate(() => document.activeElement.id || document.activeElement.tagName);
+
+async function testNavigation(browser, base) {
+  console.log("\n## Navigation: jump links, skip link, focus, scrolling, search wording");
+  const page = await openPage(browser, base, 1280, 800, "");
+
+  const initial = await page.evaluate(() => {
+    const order = (a, b) => !!(document.querySelector(a).compareDocumentPosition(document.querySelector(b)) & Node.DOCUMENT_POSITION_FOLLOWING);
+    const levels = Array.from(document.querySelectorAll("main h1, main h2, main h3, main h4")).filter((h) => !h.closest("[hidden]")).map((h) => Number(h.tagName[1]));
+    let skipped = 0;
+    levels.forEach((n, i) => { if (i && n - levels[i - 1] > 1) skipped += 1; });
+    const targets = Array.from(document.querySelectorAll("a[data-jump], a.skip-link, .map-jump a")).filter((a) => !a.closest(".chain-jump")).map((a) => a.getAttribute("href"));
+    return {
+      searchBottom: document.getElementById("node-search").getBoundingClientRect().bottom,
+      searchBeforeDomains: order("#find-form", ".layer-frames"),
+      personasBeforeIllustrative: order("#persona-list", ".illustrative"),
+      skipped: skipped,
+      targets: targets.filter((href) => href && href[0] === "#").map((href) => ({ href: href, exists: !!document.getElementById(href.slice(1)) })),
+      skipLinks: document.querySelectorAll("a.skip-link").length
+    };
+  });
+  check("the search field is in the first screen at 1280x800", initial.searchBottom <= 800, String(initial.searchBottom));
+  check("the search form comes before the Security domains block", initial.searchBeforeDomains);
+  check("the persona list comes before the illustrative table", initial.personasBeforeIllustrative);
+  check("visible headings never skip a level", initial.skipped === 0, String(initial.skipped));
+  check("there is a skip link to the content and one to search", initial.skipLinks >= 2, String(initial.skipLinks));
+  check("every in-page link on the first view has a target", initial.targets.length >= 6 && initial.targets.every((t) => t.exists), JSON.stringify(initial.targets.filter((t) => !t.exists)));
+
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  const skipText = await page.evaluate(() => document.activeElement.textContent.trim());
+  await page.keyboard.press("Enter");
+  await sleep(150);
+  check("Tab twice, then Enter on Skip to search, focuses the search field", skipText === "Skip to search" && (await activeId(page)) === "node-search", skipText + " / " + await activeId(page));
+
+  await search(page, "stop prompt injection");
+  const words = await page.evaluate(() => ({
+    note: document.getElementById("search-note").textContent,
+    ids: Array.from(document.querySelectorAll("#search-results button")).map((b) => b.dataset.nodeId)
+  }));
+  check("a plain phrase with no exact hit matches records by word count", /No record has that exact phrase/.test(words.note) && /at least 2 of your 3 words/.test(words.note), words.note);
+  check("'stop prompt injection' lists the prompt injection threats", words.ids.indexOf("risk:directpromptinjection") !== -1 && words.ids.indexOf("risk:indirectpromptinjection") !== -1, JSON.stringify(words.ids));
+  await search(page, "protect training data");
+  const train = await page.evaluate(() => ({ note: document.getElementById("search-note").textContent, n: document.querySelectorAll("#search-results button").length }));
+  check("'protect training data' returns records", train.n > 0 && /at least 2 of your 3 words/.test(train.note), train.note);
+
+  await search(page, "prompt injection");
+  const counts = await page.evaluate(() => ({
+    note: document.getElementById("search-note").textContent,
+    shown: document.querySelectorAll("#search-results button").length,
+    showAll: !document.getElementById("show-all-results").hidden,
+    showAllText: document.getElementById("show-all-results").textContent
+  }));
+  const total = Number((counts.note.match(/^(\d+) records match/) || [])[1]);
+  check("the search note counts threats and controls", /^\d+ records match: \d+ threats? and \d+ controls?\./.test(counts.note), counts.note);
+  check("matches beyond eight are behind a Show all button", counts.shown === 8 && counts.showAll && counts.showAllText === "Show all " + total + " matches", JSON.stringify(counts));
+  await page.click("#show-all-results");
+  await sleep(150);
+  const all = await page.evaluate(() => ({ shown: document.querySelectorAll("#search-results button").length, hidden: document.getElementById("show-all-results").hidden, activeInList: !!document.activeElement.closest("#search-results") }));
+  check("Show all lists every match and moves focus into the list", all.shown === total && all.hidden && all.activeInList, JSON.stringify(all));
+
+  await page.click('#search-results button[data-node-id="risk:directpromptinjection"]');
+  await sleep(900);
+  const opened = await page.evaluate(() => ({
+    active: document.activeElement.id,
+    text: document.getElementById("chain-heading").textContent,
+    level: document.getElementById("chain-heading").tagName,
+    jumpChainShown: !document.getElementById("jump-chain").hidden
+  }));
+  check("choosing a threat moves focus to the chain heading", opened.active === "chain-heading" && opened.level === "H2" && /^Chain for Direct prompt injection/.test(opened.text), JSON.stringify(opened));
+  check("the chain heading is in the first half of the window after choosing", await inView(page, "#chain-heading"));
+  check("the Chain jump link appears with a chain", opened.jumpChainShown);
+
+  const columnTargets = await page.$$eval(".chain-jump a", (links) => links.map((a) => ({ href: a.getAttribute("href"), exists: !!document.getElementById(a.getAttribute("href").slice(1)) })));
+  check("every chain jump link has a target", columnTargets.length === 5 && columnTargets.every((t) => t.exists), JSON.stringify(columnTargets));
+  await page.click('.chain-jump a[href="#chain-col-accountable"]');
+  await sleep(900);
+  check("the Accountable jump link moves focus to that column", (await activeId(page)) === "chain-col-accountable" && (await inView(page, "#chain-col-accountable")));
+  await page.click('.chain-jump a[href="#node-search"]');
+  await sleep(900);
+  check("Find another focuses the search field", (await activeId(page)) === "node-search");
+
+  await search(page, "direct prompt injection");
+  await page.click('#search-results button[data-node-id="risk:directpromptinjection"]');
+  await sleep(900);
+  await page.click("#clear-selection");
+  await sleep(900);
+  const cleared = await page.evaluate(() => ({ active: document.activeElement.id, chainHidden: document.getElementById("chain").hidden }));
+  check("Clear selection returns focus to the search field", cleared.active === "node-search" && cleared.chainHidden, JSON.stringify(cleared));
+
+  await page.$eval("#entry-account", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.click("#entry-account");
+  await sleep(900);
+  await page.click("#persona-list button");
+  await sleep(900);
+  const persona = await page.evaluate(() => ({ active: document.activeElement.id, text: document.getElementById("chain-heading").textContent }));
+  check("choosing a persona moves focus to its chain heading", persona.active === "chain-heading" && /^Chain for /.test(persona.text), JSON.stringify(persona));
+  check("the persona chain heading is in the first half of the window", await inView(page, "#chain-heading"));
+  check("no page errors on desktop", page.__errors.length === 0, page.__errors.join("; "));
+  await page.close();
+
+  const phone = await openPage(browser, base, 375, 812, "");
+  await phone.keyboard.press("Tab");
+  await phone.keyboard.press("Tab");
+  await phone.keyboard.press("Enter");
+  await sleep(150);
+  check("the skip link works at 375 wide", (await activeId(phone)) === "node-search");
+  await search(phone, "prompt injection");
+  const noteTop = await phone.$eval("#search-note", (el) => el.getBoundingClientRect().top);
+  check("the match count is on screen after typing at 375 wide", noteTop >= 0 && noteTop < 812 * 0.7, String(noteTop));
+  await phone.click('#search-results button[data-node-id="risk:directpromptinjection"]');
+  await sleep(900);
+  check("the chain heading is in the first half of the phone window", (await activeId(phone)) === "chain-heading" && await inView(phone, "#chain-heading"));
+  await phone.click('.chain-jump a[href="#chain-col-obligation"]');
+  await sleep(900);
+  check("the Obligation jump link works at 375 wide", (await activeId(phone)) === "chain-col-obligation" && await inView(phone, "#chain-col-obligation"));
+  const overflow = await phone.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  check("the page does not scroll sideways at 375 wide", overflow <= 0, String(overflow));
+  check("no page errors at 375 wide", phone.__errors.length === 0, phone.__errors.join("; "));
+  await phone.close();
+}
+
 async function captureMobile(browser, base) {
   if (!ARTIFACTS) return;
   const page = await openPage(browser, base, 375, 812, "");
@@ -339,6 +465,7 @@ async function main() {
     await testLinkBasis(browser, base);
     await testDsgaiSourceLinks(browser, base);
     await testWording(browser, base);
+    await testNavigation(browser, base);
     await captureDesktop(browser, base);
     await captureMobile(browser, base);
   } finally {
