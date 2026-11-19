@@ -179,8 +179,12 @@
     site-footer .footer { padding:12px 16px 24px; }
   }
   #mode-why { margin:0 0 4px; max-width:78ch; }
-  #assessment-mode { border:1px solid var(--line); border-radius:6px; margin:0; padding:2px 8px; max-width:100%; background:var(--bg); }
+  .bar--primary { margin-top:0; }
+  #assessment-mode { border:1px solid var(--line); border-radius:6px; margin:0; padding:2px 8px; flex:0 1 auto; max-width:100%; background:var(--bg); }
+  #assessment-mode[open] { flex:1 1 100%; }
   #assessment-mode summary { font-weight:700; cursor:pointer; min-height:32px; line-height:32px; font-size:12px; }
+  .options-body { padding:2px 0 6px; }
+  .options-body .bar { margin-top:4px; }
   .start-choices { display:flex; flex-wrap:wrap; gap:4px 16px; padding:4px 0 6px; }
   .start-choices label { display:flex; gap:6px; align-items:center; min-height:32px; max-width:100%; }
   #start-l34 { flex:1 0 100%; margin:4px 0; max-width:78ch; }
@@ -232,7 +236,8 @@
   .b-outside { fill:#f8fafc; stroke:#64748b; }
   .node-box { fill:#fff; stroke:#64748b; }
   @media (max-width: 760px) {
-    #assessment-mode, .start-choices, #start-l34, #mode-why { width:100%; }
+    #assessment-mode, .options-body, .start-choices, #start-l34, #mode-why { width:100%; }
+    #assessment-mode { flex:1 1 100%; }
     #graph-wrap.scoped #graph-scroll { max-height:none; min-height:0; overflow:visible; }
     #graph-wrap.scoped #results-wrap { flex:0 0 auto; max-height:none; }
     table.results thead { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
@@ -261,26 +266,30 @@
   </div>
 </header>
 <div class="tool-chrome">
-  <p id="model-source" class="small muted"></p>
-  <p id="mode-why" class="small">Each layer can be assessed on its own, alongside L3 and L4 assessments. A scoped assessment's results feed into the holistic view.</p>
-  <details id="assessment-mode">
-    <summary>Assessment</summary>
-    <div class="start-choices" role="radiogroup" aria-label="Assessment">
-      <label><input type="radio" name="assessment-mode" value="holistic" checked> Holistic</label>
-      <label><input type="radio" name="assessment-mode" value="L2"> Scoped: L2 AI Information</label>
-      <p id="start-l34" class="small">L3 and L4 already have a mature threat-modeling practice. Assess them alongside this page. For the application layer (L3) and the platform layer (L4), use the <a href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications</a>, the <a href="https://owaspai.org/">OWASP AI Exchange</a>, <a href="https://atlas.mitre.org/">MITRE ATLAS</a>, and the <a href="https://github.com/cosai-oasis/secure-ai-tooling/tree/main/risk-map">CoSAI Risk Map</a>.</p>
-      <label><input type="radio" name="assessment-mode" value="L5"> Scoped: L5 AI Model Provider</label>
-    </div>
-  </details>
-  <div class="bar">
+  <div class="bar bar--primary">
     <label id="example-wrap">Example <select id="example-pick"></select></label>
-    <label>Operating model <select id="om"></select></label>
-    <label>As of <input type="date" id="as-of"></label>
-    <label>Snapshot <select id="snap"></select></label>
-    <span id="overlay-controls"></span>
-    <label id="cascade-wrap">Cascade <select id="mode"><option value="worst">Worst case (ignore controls)</option><option value="controls">With controls in place</option></select></label>
-    <label><input type="checkbox" id="owner-ov"> Ownership overlay (color by owner; red = zero owners, or two or more)</label>
-    <button id="clear">Clear selection</button>
+    <details id="assessment-mode">
+      <summary>Options</summary>
+      <div class="options-body">
+        <p id="model-source" class="small muted"></p>
+        <p id="mode-why" class="small">Each layer can be assessed on its own, alongside L3 and L4 assessments. A scoped assessment's results feed into the holistic view.</p>
+        <div class="start-choices" role="radiogroup" aria-label="Assessment mode">
+          <label><input type="radio" name="assessment-mode" value="holistic" checked> Holistic</label>
+          <label><input type="radio" name="assessment-mode" value="L2"> Scoped: L2 AI Information</label>
+          <p id="start-l34" class="small">L3 and L4 already have a mature threat-modeling practice. Assess them alongside this page. For the application layer (L3) and the platform layer (L4), use the <a href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications</a>, the <a href="https://owaspai.org/">OWASP AI Exchange</a>, <a href="https://atlas.mitre.org/">MITRE ATLAS</a>, and the <a href="https://github.com/cosai-oasis/secure-ai-tooling/tree/main/risk-map">CoSAI Risk Map</a>.</p>
+          <label><input type="radio" name="assessment-mode" value="L5"> Scoped: L5 AI Model Provider</label>
+        </div>
+        <div class="bar">
+          <label>Operating model <select id="om"></select></label>
+          <label>As of <input type="date" id="as-of"></label>
+          <label>Snapshot <select id="snap"></select></label>
+          <span id="overlay-controls"></span>
+          <label id="cascade-wrap">Cascade <select id="mode"><option value="worst">Worst case (ignore controls)</option><option value="controls">With controls in place</option></select></label>
+          <label><input type="checkbox" id="owner-ov"> Ownership overlay (color by owner; red = zero owners, or two or more)</label>
+          <button id="clear">Clear selection</button>
+        </div>
+      </div>
+    </details>
   </div>
 </div>
 <main id="main" class="drawer-closed">

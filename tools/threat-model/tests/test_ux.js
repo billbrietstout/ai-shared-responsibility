@@ -63,7 +63,7 @@ function run() {
     finding(j, "hero_disclaimer", "hard", /not legal advice/i.test(text(w.document.querySelector(".callout--warn"))), "Warn callout states the prototype disclaimer");
     finding(j, "one_explainer", "hard", !/on its own|feed into/.test(text(w.document.querySelector(".page-hero__lede"))), "The hero lede does not repeat the explainer line");
     finding(j, "why_line", "hard", /on its own/.test(text($("mode-why"))) && /feed into the holistic view/.test(text($("mode-why"))), "The page says each layer can be assessed on its own and that scoped results feed the holistic view");
-    finding(j, "panel_closed", "hard", !$("assessment-mode").open, "Assessment panel stays closed so the graph keeps room");
+    finding(j, "panel_closed", "hard", !$("assessment-mode").open, "Options panel stays closed so the graph keeps room");
     finding(j, "graph_visible", "hard", !!$("graph-svg") && !$("graph-wrap").classList.contains("starting"), "Default example graph is visible on load");
     finding(j, "example_count", "hard", $("example-pick").options.length === 11, "Example picker lists all eleven catalog models");
     finding(j, "glossary_present", "hard", /ROCA = Risk, Obligation, Control, Accountable/.test(text($("glossary"))), "ROCA glossary is visible under the filters");
