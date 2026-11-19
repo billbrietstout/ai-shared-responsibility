@@ -74,6 +74,70 @@ async function desktop(browser, mode, overlay) {
   await page.close();
 }
 
+async function filterTip(browser) {
+  const page = await open(browser, 1280, 800, "holistic");
+  const read = () => page.evaluate(() => {
+    const tip = document.getElementById("rel-tip");
+    const box = tip.getBoundingClientRect();
+    const lab = document.querySelector('#rel-filters input[data-rel="realization"]').closest("label");
+    const gloss = document.getElementById("glossary");
+    const hint = document.getElementById("filter-hint");
+    const cs = getComputedStyle(tip);
+    return {
+      hidden: tip.hidden,
+      text: tip.textContent,
+      position: cs.position,
+      pe: cs.pointerEvents,
+      top: box.top,
+      left: box.left,
+      width: box.width,
+      height: box.height,
+      vw: window.innerWidth,
+      vh: window.innerHeight,
+      title: lab.getAttribute("title"),
+      glossTitle: gloss.getAttribute("title"),
+      glossText: gloss.textContent,
+      hintText: hint.textContent,
+      hintTitle: hint.getAttribute("title")
+    };
+  });
+  await page.hover('#rel-filters input[data-rel="realization"]');
+  await sleep(100);
+  let tip = await read();
+  check("filter hover shows the ArchiMate term", tip.hidden === false && tip.text === "ArchiMate term: realization", JSON.stringify(tip));
+  check("filter tip is fixed and inside the viewport", tip.position === "fixed" && tip.pe === "none" && tip.width > 20 && tip.height > 8 && tip.top >= 0 && tip.left >= 0 && tip.top + tip.height <= tip.vh + 1 && tip.left + tip.width <= tip.vw + 1, JSON.stringify(tip));
+  const clearOfCopy = () => page.evaluate(() => {
+    const tip = document.getElementById("rel-tip").getBoundingClientRect();
+    const gloss = document.getElementById("glossary").getBoundingClientRect();
+    const filters = document.getElementById("rel-filters").getBoundingClientRect();
+    const hits = (a, b) => a.bottom > b.top + 1 && a.top < b.bottom - 1 && a.right > b.left + 1 && a.left < b.right - 1;
+    return { gloss: hits(tip, gloss), filters: hits(tip, filters), tipTop: tip.top, glossBottom: gloss.bottom };
+  });
+  let gap = await clearOfCopy();
+  check("filter tip does not cover the ROCA line or the filter row", !gap.gloss && !gap.filters, JSON.stringify(gap));
+  check("ROCA line does not mention the filter hover", tip.glossText === "ROCA = Risk, Obligation, Control, Accountable." && tip.glossTitle == null && tip.hintText === "Hover a filter for its ArchiMate term.", JSON.stringify(tip));
+  await page.hover("#glossary");
+  await sleep(100);
+  tip = await read();
+  check("ROCA line has no tip", tip.hidden === true, JSON.stringify(tip));
+  await page.hover("#filter-hint");
+  await sleep(100);
+  tip = await read();
+  check("filter hint shows the ArchiMate note", tip.hidden === false && tip.text.indexOf("November 18, 2026") >= 0 && tip.text.indexOf("plain reading") >= 0 && tip.text.indexOf("ROCA") < 0, JSON.stringify(tip));
+  gap = await clearOfCopy();
+  check("filter hint tip does not cover the ROCA line", !gap.gloss && !gap.filters, JSON.stringify(gap));
+  await page.mouse.move(8, 8);
+  await sleep(100);
+  tip = await read();
+  check("leaving the hint hides the tip and restores its title", tip.hidden === true && (tip.hintTitle || "").indexOf("November 18, 2026") >= 0 && tip.title === "ArchiMate term: realization", JSON.stringify(tip));
+  await page.hover('#rel-filters input[data-rel="flow"]');
+  await sleep(150);
+  await page.screenshot({ path: "/tmp/filter-tip.png" });
+  tip = await read();
+  check("flow filter names its ArchiMate term", tip.text === "ArchiMate term: flow", JSON.stringify(tip));
+  await page.close();
+}
+
 async function phone(browser, mode) {
   const page = await open(browser, 375, 800, mode);
   await page.evaluate(() => document.querySelector("#graph .node").dispatchEvent(new MouseEvent("click", { bubbles: true })));
@@ -91,6 +155,7 @@ async function phone(browser, mode) {
 (async () => {
   const browser = await puppeteer.launch({ executablePath: chrome, args: ["--no-sandbox"] });
   try {
+    await filterTip(browser);
     for (const mode of ["holistic", "L2", "L5"]) {
       await desktop(browser, mode, false);
       await desktop(browser, mode, true);
