@@ -65,8 +65,9 @@
       <nav id="map-jump" class="map-jump" aria-label="On this page">
         <a href="#node-search" data-jump>Find</a>
         <a href="#map-filters" data-jump>Filters</a>
-        <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
         <a href="#details-heading" data-jump>Node details</a>
+        <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
+        <a id="jump-graph" href="#graph-workspace" data-jump hidden>Graph</a>
         <a href="#coverage-heading" data-jump>Coverage</a>
       </nav>
 
@@ -197,7 +198,7 @@
             </form>
 
             <div class="view-actions">
-              <button id="show-graph" type="button">Show graph</button>
+              <button id="show-graph" type="button">Explore relationship graph</button>
               <button id="widen-view" type="button" hidden>Widen the view</button>
               <button id="show-chain" type="button" hidden>Show the chain</button>
               <button id="show-context" type="button">Show layers</button>
@@ -214,63 +215,86 @@
           <p id="map-error" class="map-error" role="alert" hidden></p>
         </section>
 
-        <section class="details" aria-labelledby="details-heading" data-llm="node-details">
-          <div class="details__bar">
-            <h2 id="details-heading">Node details</h2>
-            <div class="details__buttons">
-              <button id="hide-graph" type="button" hidden>Hide graph</button>
-              <button id="clear-selection" type="button" disabled><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
+        <div class="map-panel">
+          <section class="details" aria-labelledby="details-heading" data-llm="node-details">
+            <div class="details__bar">
+              <h2 id="details-heading">Node details</h2>
+              <div class="details__buttons">
+                <button id="explore-from-details" type="button" hidden>Explore relationship graph</button>
+                <button id="clear-selection" type="button" disabled><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
+              </div>
             </div>
-          </div>
-          <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
-          <p id="map-gesture" class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
-          <div class="graph-wrap">
-            <div
-              id="graph"
-              class="graph"
-              role="img"
-              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a threat or a control to begin."
-            ></div>
-            <div id="context-board" class="context-board" hidden></div>
-            <div id="chain" class="chain" hidden>
-              <h2 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h2>
-              <nav class="chain-jump" aria-label="Chain columns">
-                <a href="#chain-col-risk" data-jump>Risk</a>
-                <a href="#chain-col-obligation" data-jump>Obligation</a>
-                <a href="#chain-col-control" data-jump>Control</a>
-                <a href="#chain-col-accountable" data-jump>Accountable</a>
-                <a href="#node-search" data-jump>Find another</a>
-              </nav>
-              <ul class="chain-legend" id="chain-legend" aria-label="Line types">
-                <li>
-                  <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
-                  <span>Solid. The record names this link. An obligation line is solid when the basis is the official text.</span>
-                </li>
-                <li>
-                  <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
-                  <span>Dashed. Shared control. The legal text does not name the risk.</span>
-                </li>
-                <li>
-                  <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
-                  <span>Dotted. Instrument-level. No article record matched.</span>
-                </li>
-              </ul>
-              <p id="chain-model-note" class="chain-model-note"></p>
-              <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
+            <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
+            <p id="details-empty">Select a threat or a control to see its record, sources, and links.</p>
+            <div id="details-body" hidden>
+              <p id="details-kind"></p>
+              <p id="details-id" class="details-id" hidden></p>
+              <p id="details-meta" hidden></p>
+              <p id="details-model-note" class="model-gap-note" hidden></p>
+              <div id="details-chain" hidden></div>
+              <h3 id="connections-heading">Connections</h3>
+              <ul id="details-connections" aria-labelledby="connections-heading"></ul>
             </div>
-            <p id="graph-empty" class="graph-empty">Choose a threat or a control to see its chain.</p>
-          </div>
+          </section>
 
-          <p id="details-empty">Select a threat or a control to see the chain, with sources and links.</p>
-          <div id="details-body" hidden>
-            <p id="details-kind"></p>
-            <p id="details-meta" hidden></p>
-            <p id="details-model-note" class="model-gap-note" hidden></p>
-            <div id="details-chain" hidden></div>
-            <h3 id="connections-heading">Connections</h3>
-            <ul id="details-connections" aria-labelledby="connections-heading"></ul>
-          </div>
-        </section>
+          <section id="graph-workspace" class="graph-workspace" aria-labelledby="graph-workspace-heading" hidden data-llm="relationship-graph">
+            <div class="graph-workspace__bar">
+              <h2 id="graph-workspace-heading">Relationship graph</h2>
+              <div class="graph-workspace__actions" role="toolbar" aria-label="Graph controls">
+                <button id="hide-graph" type="button">Back to details</button>
+                <button id="clear-graph-selection" type="button"><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
+                <button id="graph-fit" type="button" hidden>Fit to screen</button>
+                <button id="graph-zoom-in" type="button" hidden>Zoom in</button>
+                <button id="graph-zoom-out" type="button" hidden>Zoom out</button>
+                <button id="graph-reset" type="button" hidden>Reset view</button>
+                <button id="widen-view-graph" type="button" hidden>Widen the view</button>
+              </div>
+            </div>
+            <p id="map-gesture" class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
+            <ul id="graph-kind-legend" class="graph-kind-legend" aria-label="Node kinds" hidden>
+              <li><span class="swatch" data-swatch="risk" aria-hidden="true"></span> Threat</li>
+              <li><span class="swatch" data-swatch="policy" aria-hidden="true"></span> Obligation</li>
+              <li><span class="swatch" data-swatch="control" aria-hidden="true"></span> Control</li>
+              <li><span class="swatch" data-swatch="persona" aria-hidden="true"></span> Persona</li>
+            </ul>
+            <div class="graph-wrap">
+              <div
+                id="graph"
+                class="graph"
+                role="img"
+                aria-label="Chain of risk, obligation, control, and accountable persona. Choose a threat or a control to begin."
+              ></div>
+              <div id="context-board" class="context-board" hidden></div>
+              <div id="chain" class="chain" hidden>
+                <h2 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h2>
+                <nav class="chain-jump" aria-label="Chain columns">
+                  <a href="#chain-col-risk" data-jump>Risk</a>
+                  <a href="#chain-col-obligation" data-jump>Obligation</a>
+                  <a href="#chain-col-control" data-jump>Control</a>
+                  <a href="#chain-col-accountable" data-jump>Accountable</a>
+                  <a href="#node-search" data-jump>Find another</a>
+                </nav>
+                <ul class="chain-legend" id="chain-legend" aria-label="Line types">
+                  <li>
+                    <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
+                    <span>Solid. The record names this link. An obligation line is solid when the basis is the official text.</span>
+                  </li>
+                  <li>
+                    <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
+                    <span>Dashed. Shared control. The legal text does not name the risk.</span>
+                  </li>
+                  <li>
+                    <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
+                    <span>Dotted. Instrument-level. No article record matched.</span>
+                  </li>
+                </ul>
+                <p id="chain-model-note" class="chain-model-note"></p>
+                <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
+              </div>
+              <p id="graph-empty" class="graph-empty">Choose a threat or a control to see its chain.</p>
+            </div>
+          </section>
+        </div>
       </div>
     <section class="coverage" aria-labelledby="coverage-heading" data-llm="coverage">
       <h2 id="coverage-heading">Coverage</h2>

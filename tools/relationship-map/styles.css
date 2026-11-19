@@ -33,7 +33,7 @@
 }
 
 .map-page {
-  max-width: 1200px;
+  max-width: min(1200px, 100%);
   margin: 0 auto;
   padding: var(--sp-8) var(--page-pad) var(--sp-16);
 }
@@ -624,9 +624,11 @@ body .page-hero__lede {
 
 .chain {
   min-width: 0;
+  max-width: 100%;
   border: 1px solid var(--slate-200);
   background: var(--surface);
   padding: var(--sp-3);
+  overflow-x: auto;
 }
 
 .chain[hidden] {
@@ -835,18 +837,20 @@ body .page-hero__lede {
   list-style: none;
 }
 
+.map-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
 .details {
   border: 1px solid var(--slate-200);
   background: var(--surface);
   padding: var(--sp-4);
-  /* Beside the map, not a 720px block that runs off the window.
-     app.js sets top and max-height from the viewport. */
-  position: sticky;
-  top: 72px;
+  /* Page scroll only. Do not nest a second scroll inside this pane. */
+  position: static;
   align-self: start;
-  max-height: calc(100dvh - 88px);
-  overflow: auto;
-  overscroll-behavior: contain;
 }
 
 .details__bar {
@@ -854,12 +858,9 @@ body .page-hero__lede {
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--sp-3);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  margin: calc(-1 * var(--sp-4)) calc(-1 * var(--sp-4)) var(--sp-3);
-  padding: var(--sp-4) var(--sp-4) var(--sp-3);
-  background: var(--surface);
+  margin: 0 0 var(--sp-3);
+  padding: 0;
+  background: transparent;
 }
 
 .details__bar h2 {
@@ -1047,16 +1048,31 @@ body .page-hero__lede {
   }
 }
 
-/* List view. The finder column is the main view. The side panel holds the
-   chain, the optional graph, and the node details. */
+/* List view. Finder on the left. Record details or graph workspace on the right. */
 .map-layout {
   grid-template-columns: 400px minmax(0, 1fr);
   gap: var(--sp-6);
+  align-items: start;
 }
 
-.details {
-  top: 108px;
-  max-height: calc(100dvh - 124px);
+.map-panel {
+  position: static;
+  align-self: start;
+  min-width: 0;
+}
+
+.map-layout .details {
+  position: static;
+  top: auto;
+  /* Page scroll only: do not pin a nested pane. */
+}
+
+.map-page.is-workspace-graph .details {
+  display: none;
+}
+
+.map-page.is-workspace-details .graph-workspace {
+  display: none;
 }
 
 .details h2#details-heading {
@@ -1074,8 +1090,147 @@ body .page-hero__lede {
   display: none;
 }
 
+.details-id {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  font-family: var(--font-mono, ui-monospace, monospace);
+}
+
+.details-section {
+  margin: var(--sp-4) 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.details-section > h3 {
+  margin: 0 0 var(--sp-2);
+}
+
+.details-section p {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--text-sm);
+  max-width: 68ch;
+}
+
+.details-section ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: var(--text-sm);
+}
+
+.details-section li {
+  margin-bottom: var(--sp-2);
+}
+
+.details-section a,
+.details-related {
+  color: var(--fill-blue);
+}
+
+.details-related {
+  font: inherit;
+  font-weight: 700;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline;
+}
+
+.details-fold {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--text-sm);
+}
+
+.details-fold > summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.details-fold[open] > summary {
+  margin-bottom: var(--sp-2);
+}
+
 .label-narrow {
   display: none;
+}
+
+.graph-workspace {
+  border: 1px solid var(--slate-200);
+  background: var(--surface);
+  padding: var(--sp-4);
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.graph-workspace[hidden] {
+  display: none;
+}
+
+.graph-workspace__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
+.graph-workspace__bar h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+}
+
+.graph-workspace__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.graph-workspace__actions button {
+  font: inherit;
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.graph-workspace__actions button[hidden] {
+  display: none;
+}
+
+.graph-workspace__actions button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.graph-kind-legend {
+  list-style: none;
+  margin: 0 0 var(--sp-3);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  font-size: var(--text-sm);
+}
+
+.graph-kind-legend[hidden] {
+  display: none;
+}
+
+.graph-kind-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .graph-wrap--off .graph {
@@ -1108,7 +1263,10 @@ body .page-hero__lede {
 }
 
 .graph {
-  height: 520px;
+  /* Bounded viewport for pan and zoom. Not a second page of vertical scroll. */
+  height: min(560px, 70dvh);
+  max-height: 70dvh;
+  overflow: hidden;
 }
 
 #map-gesture[hidden] {
@@ -1276,38 +1434,57 @@ body .page-hero__lede {
     grid-template-columns: 1fr;
   }
 
-  .graph {
-    height: 420px;
-  }
-
-  .details {
+  .map-panel {
     display: none;
     position: fixed;
     inset: 0;
+    top: 0;
     z-index: 300;
     height: 100dvh;
-    align-self: stretch;
-    max-height: none;
-    border: 0;
-    padding: var(--sp-3);
     overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--surface);
+    padding: var(--sp-3);
+    gap: var(--sp-3);
+    flex-direction: column;
   }
 
-  .map-page.is-panel-open .details {
-    display: block;
+  .map-page.is-panel-open .map-panel {
+    display: flex;
+  }
+
+  .map-layout .details,
+  .map-layout .graph-workspace {
+    position: static;
+    top: auto;
+    border: 0;
+    padding: 0;
+    flex: 0 0 auto;
+    min-height: min-content;
+  }
+
+  .graph {
+    height: min(420px, 55dvh);
+    max-height: 55dvh;
   }
 
   body.sheet-open {
     overflow: hidden;
   }
 
-  .details__bar {
+  .details__bar,
+  .graph-workspace__bar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     margin: calc(-1 * var(--sp-3)) calc(-1 * var(--sp-3)) var(--sp-3);
     padding: var(--sp-3);
     border-bottom: 1px solid var(--slate-200);
+    background: var(--surface);
   }
 
-  .details__buttons button {
+  .details__buttons button,
+  .graph-workspace__actions button {
     min-height: 44px;
   }
 
@@ -1320,11 +1497,20 @@ body .page-hero__lede {
   }
 
   #jump-chain,
+  #jump-graph,
   .map-jump a[href="#details-heading"] {
     display: none;
   }
 
   .chain-jump a[href="#node-search"] {
+    display: none;
+  }
+
+  .map-page.is-workspace-graph .details {
+    display: none;
+  }
+
+  .map-page.is-workspace-details .graph-workspace {
     display: none;
   }
 
