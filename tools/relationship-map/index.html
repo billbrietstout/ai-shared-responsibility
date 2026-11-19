@@ -125,7 +125,7 @@
               <dl id="layer-frames"></dl>
             </section>
             <form id="find-form" class="find-form" role="search">
-              <label class="find-form__label" for="node-search">Find a risk or a control</label>
+              <label class="find-form__label" for="node-search">Find a threat or a control</label>
               <div class="find-form__row">
                 <input
                   id="node-search"
@@ -134,20 +134,21 @@
                   name="q"
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder="Risk or control name"
+                  placeholder="Threat or control name"
                   aria-describedby="map-help"
                   aria-controls="search-results"
                 />
                 <button class="find-form__submit" type="submit">Find</button>
               </div>
               <p id="map-help" class="map-help">
-                Type a risk or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.
+                Type a threat or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.
               </p>
               <p id="search-note" class="search-note" aria-live="polite"></p>
               <div id="suggestions-wrap">
-                <h3 id="risk-suggestions-heading" class="suggestions-heading">Risks</h3>
+                <h3 id="risk-suggestions-heading" class="suggestions-heading">Threats</h3>
                 <ul id="risk-suggestions" class="search-results search-results--risks" aria-labelledby="risk-suggestions-heading"></ul>
                 <h3 id="suggestions-heading" class="suggestions-heading">Controls</h3>
+                <p id="control-source-note" class="filter-note">These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml.</p>
                 <ul id="suggestions" class="search-results" aria-labelledby="suggestions-heading"></ul>
               </div>
               <ul id="search-results" class="search-results" aria-label="Matches" hidden></ul>
@@ -164,6 +165,12 @@
               <p id="model-note" class="filter-note"></p>
             </fieldset>
 
+            <fieldset class="model-filter layer-filter">
+              <legend>Layer</legend>
+              <div id="layer-filter-list" class="model-filter__list"></div>
+              <p class="filter-note">The layer filter narrows the finder and the suggestion lists. It does not remove controls from a chain that is already open.</p>
+            </fieldset>
+
             <label class="tapestry-toggle" for="show-tapestry">
               <input id="show-tapestry" type="checkbox" />
               <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
@@ -173,7 +180,7 @@
               <button id="widen-view" type="button" hidden>Widen the view</button>
               <button id="show-chain" type="button" hidden>Show the chain</button>
               <button id="show-context" type="button">Show layers</button>
-              <button id="start-one" type="button" hidden>Start from one risk or control</button>
+              <button id="start-one" type="button" hidden>Start from one threat or control</button>
             </div>
           </div>
 
@@ -185,7 +192,7 @@
               id="graph"
               class="graph"
               role="img"
-              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
+              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a threat or a control to begin."
             ></div>
             <div id="context-board" class="context-board" hidden></div>
             <div id="chain" class="chain" hidden>
@@ -206,7 +213,7 @@
               <p id="chain-model-note" class="chain-model-note"></p>
               <div id="chain-board" class="chain-board" aria-label="Risk, obligation, control, and accountable"></div>
             </div>
-            <p id="graph-empty" class="graph-empty">Choose a risk or a control to see its chain.</p>
+            <p id="graph-empty" class="graph-empty">Choose a threat or a control to see its chain.</p>
           </div>
         </section>
 
@@ -216,7 +223,7 @@
             <button id="clear-selection" type="button" disabled>Clear selection</button>
           </div>
           <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
-          <p id="details-empty">Select a risk or a control to see the chain, with sources and links.</p>
+          <p id="details-empty">Select a threat or a control to see the chain, with sources and links.</p>
           <div id="details-body" hidden>
             <p id="details-kind"></p>
             <p id="details-meta" hidden></p>
