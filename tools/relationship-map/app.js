@@ -204,6 +204,7 @@
   var summaryEl = document.getElementById("filter-summary");
   var readMoreBtn = document.getElementById("read-more");
   var finderEl = document.querySelector(".map-stage");
+  var coverageMode = new URLSearchParams(location.search).get("page") === "coverage";
   var graphOpen = false;
   /* details = record pane. viz = chain / neighbor graph / layers workspace. */
   var panelWorkspace = "details";
@@ -2447,6 +2448,37 @@
     return ids;
   }
 
+  function fillSelect(select, ids, placeholder, label) {
+    select.textContent = "";
+    var first = document.createElement("option");
+    first.value = "";
+    first.textContent = placeholder;
+    select.appendChild(first);
+    var groups = {};
+    var order = [];
+    ids.forEach(function (id) {
+      var attrs = graph.getNodeAttributes(id);
+      var key = attrs.layer || "";
+      if (!groups[key]) {
+        groups[key] = document.createElement("optgroup");
+        groups[key].label = key ? layerName(key) : "No layer recorded";
+        order.push(key);
+      }
+      var option = document.createElement("option");
+      option.value = id;
+      option.dataset.nodeId = id;
+      option.textContent = label(attrs);
+      groups[key].appendChild(option);
+    });
+    order.sort(function (x, y) {
+      var xi = LAYERS.indexOf(x) === -1 ? 99 : LAYERS.indexOf(x);
+      var yi = LAYERS.indexOf(y) === -1 ? 99 : LAYERS.indexOf(y);
+      return xi - yi;
+    });
+    order.forEach(function (key) { select.appendChild(groups[key]); });
+    if (root && select.querySelector('option[value="' + root + '"]')) select.value = root;
+  }
+
   function renderSuggestions() {
     if (entry === "requirement" || entry === "account") {
       suggestionsWrap.hidden = true;
@@ -2456,22 +2488,10 @@
     var risks = entry === "control" ? [] : riskIds().filter(function (id) {
       return layerAllowed(graph.getNodeAttributes(id));
     });
-    suggestions.textContent = "";
-    riskSuggestions.textContent = "";
     suggestionsWrap.hidden = !risks.length && !controlIds.length;
-    risks.forEach(function (id) {
-      var li = document.createElement("li");
-      var button = document.createElement("button");
-      fillButton(button, id);
-      li.appendChild(button);
-      riskSuggestions.appendChild(li);
-    });
-    controlIds.forEach(function (id) {
-      var li = document.createElement("li");
-      var button = document.createElement("button");
-      fillButton(button, id);
-      li.appendChild(button);
-      suggestions.appendChild(li);
+    fillSelect(riskSuggestions, risks, "Choose a risk (" + risks.length + ")", function (attrs) { return attrs.name; });
+    fillSelect(suggestions, controlIds, "Choose a control (" + controlIds.length + ")", function (attrs) {
+      return attrs.meta ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
     });
     hideResults();
     searchNote.textContent = !risks.length && !controlIds.length ? "No risk or control matches these filters." : "";
@@ -2651,10 +2671,10 @@
     if (entryGap) entryGap.hidden = entry !== "requirement";
     if (entryAccount) entryAccount.hidden = entry !== "account";
     if (controlSourceNote) controlSourceNote.hidden = entry === "threat";
-    var riskHeading = document.getElementById("risk-suggestions-heading");
-    var controlHeading = document.getElementById("suggestions-heading");
-    if (riskHeading) riskHeading.hidden = entry === "control";
-    if (controlHeading) controlHeading.hidden = entry === "threat";
+    var riskPick = document.getElementById("risk-pick");
+    var controlPick = document.getElementById("control-pick");
+    if (riskPick) riskPick.hidden = entry === "control";
+    if (controlPick) controlPick.hidden = entry === "threat";
     if (personaList) {
       Array.prototype.forEach.call(personaList.querySelectorAll("button"), function (button) {
         button.setAttribute("aria-pressed", button.dataset.persona === personaPick ? "true" : "false");
@@ -2757,6 +2777,7 @@
   }
 
   function writeUrl() {
+    if (coverageMode) return;
     var query = currentQuery();
     var next = location.pathname + (query ? "?" + query : "") + location.hash;
     var current = location.pathname + location.search + location.hash;
@@ -3646,6 +3667,11 @@
     if (!button) return;
     activateNode(button.dataset.nodeId, true);
   });
+  [riskSuggestions, suggestions].forEach(function (select) {
+    select.addEventListener("change", function () {
+      if (select.value) activateNode(select.value, true);
+    });
+  });
   modelList.addEventListener("change", function (event) {
     var input = event.target;
     if (!input || input.name !== "operating-model") return;
@@ -4152,6 +4178,15 @@
     statusEl.focus({ preventScroll: true });
     initialize(true);
   });
+
+  if (coverageMode) {
+    document.body.classList.add("coverage-mode");
+    document.title = "Data coverage · AI Security & Accountability Explorer · AI Shared Responsibility";
+    var coverageTitle = document.querySelector(".page-hero__title");
+    if (coverageTitle) coverageTitle.textContent = "Data coverage";
+    var coverageSection = document.getElementById("coverage");
+    if (coverageSection) coverageSection.hidden = false;
+  }
 
   initialize(false);
 })();

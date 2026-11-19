@@ -124,7 +124,8 @@ async function openEntry(page, entry) {
   await sleep(300);
 }
 async function search(page, text) {
-  await page.$eval("#node-search", (el) => { el.value = ""; });
+  await page.$eval("#node-search", (el) => { el.value = ""; window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 160, behavior: "instant" }); });
+  await sleep(60);
   await page.click("#node-search", { clickCount: 3 });
   await page.keyboard.press("Backspace");
   await page.type("#node-search", text);
@@ -169,7 +170,7 @@ async function testFullControlList(browser, base) {
   console.log("\n## Explore a control lists every control for the chosen model");
   const page = await openPage(browser, base, 1280, 900, "");
   await openEntry(page, "control");
-  const everyShown = await idsIn(page, "#suggestions button[data-node-id]");
+  const everyShown = await idsIn(page, "#suggestions option[data-node-id]");
   const dAll = diff(everyShown, inChainCore.map((c) => c.nodeId));
   check("All models and All layers lists every control that sits in an operating model (" + inChainCore.length + ")", everyShown.length === inChainCore.length && dAll.missing.length === 0 && dAll.extra.length === 0, JSON.stringify(dAll));
   check("the source note says the controls come from the sector catalogs", await page.$eval("#control-source-note", (el) => /sector catalogs/.test(el.textContent) && /CoSAI Risk Map controls\.yaml/.test(el.textContent) && !el.hidden));
@@ -178,7 +179,7 @@ async function testFullControlList(browser, base) {
     await pickModel(page, model);
     await openEntry(page, "control");
     const expected = inChainCore.filter((c) => c.core.indexOf(model) !== -1).map((c) => c.nodeId);
-    const shown = await idsIn(page, "#suggestions button[data-node-id]");
+    const shown = await idsIn(page, "#suggestions option[data-node-id]");
     const d = diff(shown, expected);
     check(model + " lists all " + expected.length + " controls, no sample", shown.length === expected.length && d.missing.length === 0 && d.extra.length === 0, JSON.stringify(d));
     const summary = await page.$eval("#filter-summary", (el) => el.textContent);
@@ -202,20 +203,20 @@ async function testLayerFilter(browser, base) {
   check("choosing L3 puts layer=L3 in the URL", /[?&]layer=L3/.test(page.url()), page.url());
   await openEntry(page, "control");
   const expectedL3 = inChainCore.filter((c) => c.layer === "L3").map((c) => c.nodeId);
-  const shownL3 = await idsIn(page, "#suggestions button[data-node-id]");
+  const shownL3 = await idsIn(page, "#suggestions option[data-node-id]");
   const d1 = diff(shownL3, expectedL3);
   check("L3 with All models lists every L3 control that sits in an operating model (" + expectedL3.length + ")", shownL3.length === expectedL3.length && d1.missing.length === 0 && d1.extra.length === 0, JSON.stringify(d1));
 
   await openEntry(page, "threat");
   const expectedRisks = threats.filter((t) => t.srf_layer === "L3").map((t) => "risk:" + t.id);
-  const shownRisks = await idsIn(page, "#risk-suggestions button[data-node-id]");
+  const shownRisks = await idsIn(page, "#risk-suggestions option[data-node-id]");
   const d2 = diff(shownRisks, expectedRisks);
   check("L3 limits the threat list to threats at L3 (" + expectedRisks.length + ")", shownRisks.length === expectedRisks.length && d2.missing.length === 0 && d2.extra.length === 0, JSON.stringify(d2));
 
   await pickModel(page, "AI-PaaS");
   await openEntry(page, "control");
   const expectedPaaS = inChainCore.filter((c) => c.layer === "L3" && c.core.indexOf("AI-PaaS") !== -1).map((c) => c.nodeId);
-  const shownPaaS = await idsIn(page, "#suggestions button[data-node-id]");
+  const shownPaaS = await idsIn(page, "#suggestions option[data-node-id]");
   const d3 = diff(shownPaaS, expectedPaaS);
   check("AI-PaaS with L3 lists the AI-PaaS controls at L3 (" + expectedPaaS.length + ")", shownPaaS.length === expectedPaaS.length && d3.missing.length === 0 && d3.extra.length === 0, JSON.stringify(d3));
   const paasSummary = await page.$eval("#filter-summary", (el) => el.textContent);
@@ -296,7 +297,7 @@ async function testWording(browser, base) {
   const help = await page.$eval("#map-help", (el) => el.textContent);
   check("search help text says risk or control", /Type a risk or a control name/.test(help), help);
   const heading = await page.$eval("#risk-suggestions-heading", (el) => el.textContent.trim());
-  check("risk list heading is Risks", heading === "Risks", heading);
+  check("risk picker label is Risk", heading === "Risk", heading);
   await openEntry(page, "threat");
   const hidden = await page.$eval("#control-source-note", (el) => el.hidden);
   check("control source note is hidden on Explore a threat", hidden === true);
@@ -487,8 +488,8 @@ async function testListView(browser, base) {
     const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
     const order = (a, b) => !!(document.querySelector(a).compareDocumentPosition(document.querySelector(b)) & Node.DOCUMENT_POSITION_FOLLOWING);
     return {
-      threats: document.querySelectorAll("#risk-suggestions button[data-node-id]").length,
-      controls: document.querySelectorAll("#suggestions button[data-node-id]").length,
+      threats: document.querySelectorAll("#risk-suggestions option[data-node-id]").length,
+      controls: document.querySelectorAll("#suggestions option[data-node-id]").length,
       summary: document.getElementById("filter-summary").textContent,
       filtersBeforeResults: order("#map-filters", "#risk-suggestions") && order("#map-filters", "#suggestions") && order("#map-filters", "#search-results"),
       summaryBeforeResults: order("#filter-summary", "#risk-suggestions"),
@@ -518,7 +519,7 @@ async function testListView(browser, base) {
   await pickModel(page, "all");
   await pickLayer(page, "all");
   await openEntry(page, "threat");
-  await page.click('#risk-suggestions button[data-node-id="risk:directpromptinjection"]');
+  await page.select("#risk-suggestions", "risk:directpromptinjection");
   await sleep(600);
   const open = await page.evaluate(() => {
     const panel = document.querySelector(".map-panel").getBoundingClientRect();
@@ -882,8 +883,7 @@ async function testUrlState(browser, base) {
   const before = await bare.evaluate(() => history.length);
   await pickModel(bare, "AI-PaaS");
   await openEntry(bare, "threat");
-  await bare.$eval('#risk-suggestions button[data-node-id="risk:directpromptinjection"]', (el) => el.scrollIntoView({ block: "center" }));
-  await bare.click('#risk-suggestions button[data-node-id="risk:directpromptinjection"]');
+  await bare.select("#risk-suggestions", "risk:directpromptinjection");
   await sleep(500);
   const afterSelect = await bare.evaluate(() => ({ search: location.search, length: history.length }));
   const params = new URLSearchParams(afterSelect.search);
@@ -1025,6 +1025,31 @@ async function loadWithRoutes(browser, base, width, query, handler) {
   return page;
 }
 
+async function testDropdownPickers(browser, base) {
+  console.log("\n## Risk and control pickers are drop-down lists");
+  const page = await openPage(browser, base, 1280, 900, "");
+  const info = await page.evaluate(() => {
+    const r = document.getElementById("risk-suggestions");
+    const c = document.getElementById("suggestions");
+    return {
+      riskTag: r.tagName, controlTag: c.tagName,
+      riskOptions: r.querySelectorAll("option[data-node-id]").length,
+      controlOptions: c.querySelectorAll("option[data-node-id]").length,
+      groups: r.querySelectorAll("optgroup").length,
+      riskLabel: document.querySelector('label[for="risk-suggestions"]').textContent.trim(),
+      controlLabel: document.querySelector('label[for="suggestions"]').textContent.trim()
+    };
+  });
+  check("risks and controls are select elements with labels", info.riskTag === "SELECT" && info.controlTag === "SELECT" && info.riskLabel === "Risk" && info.controlLabel === "Control", JSON.stringify(info));
+  check("each picker lists many options grouped by layer", info.riskOptions >= 20 && info.controlOptions > 50 && info.groups >= 2, JSON.stringify(info));
+  await page.focus("#risk-suggestions");
+  await page.select("#risk-suggestions", "risk:directpromptinjection");
+  await sleep(200);
+  const after = await page.evaluate(() => ({ url: location.search, title: document.querySelector("#details-title, #details h2, #details-chain")?.textContent.slice(0, 80) }));
+  check("choosing a risk in the drop-down opens its chain and updates the URL", /node=directpromptinjection/.test(after.url) && /type=risk/.test(after.url), JSON.stringify(after));
+  await page.close();
+}
+
 async function testLoadResilience(browser, base) {
   console.log("\n## Load placeholders, error alert, and Retry");
   let release = null;
@@ -1050,15 +1075,51 @@ async function testLoadResilience(browser, base) {
       statusRole: status.getAttribute("role")
     };
   });
-  check("while loading, the coverage area reserves at least 800px and shows no loading sentence", loading.coverageHeight >= 800 && loading.coverageText.length === 0 && loading.busy === "true", JSON.stringify(loading));
-  check("while loading, the finder list reserves 800px and the status line shows no visible text", loading.loadingHeight >= 800 && loading.statusText.length === 0 && loading.bars >= 8 && loading.statusRole === "status", JSON.stringify(loading));
+  check("while loading, the pickers reserve at least 200px and the status line shows no visible text", loading.loadingHeight >= 200 && loading.statusText.length === 0 && loading.bars >= 8 && loading.statusRole === "status" && loading.coverageText.length === 0 && loading.busy === "true", JSON.stringify(loading));
   const heightBefore = await slow.evaluate(() => document.documentElement.scrollHeight);
   release();
   await slow.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
   const after = await slow.evaluate(() => ({ height: document.documentElement.scrollHeight, placeholderGone: document.getElementById("map-loading").hidden, busy: document.getElementById("coverage-body").getAttribute("aria-busy"), coverageHeading: !!document.querySelector("#coverage-body h3") }));
   check("after loading, the placeholders are replaced by real content", after.placeholderGone && after.busy === null && after.coverageHeading, JSON.stringify(after));
   console.log("     page height before " + heightBefore + "px, after " + after.height + "px");
+  const pickerShift = await slow.evaluate(() => document.getElementById("suggestions-wrap").getBoundingClientRect().height);
+  check("the loaded pickers fit the reserved height within 120px", Math.abs(pickerShift - loading.loadingHeight) < 120, pickerShift + " vs " + loading.loadingHeight);
   await slow.close();
+
+  let coverageRelease = null;
+  const coverageGate = new Promise((resolve) => { coverageRelease = resolve; });
+  const covSlow = await loadWithRoutes(browser, base, 1280, "?page=coverage", (req) => {
+    if (!req.url().endsWith("/data/threats.json")) return false;
+    coverageGate.then(() => req.continue());
+    return true;
+  });
+  await sleep(600);
+  const covLoading = await covSlow.evaluate(() => {
+    const coverage = document.getElementById("coverage-body");
+    const visible = Array.from(coverage.querySelectorAll("*")).filter((n) => n.children.length === 0 && !n.closest(".visually-hidden") && n.textContent.trim());
+    return { height: coverage.getBoundingClientRect().height, text: visible.length, busy: coverage.getAttribute("aria-busy") };
+  });
+  check("while loading, the coverage page reserves at least 800px and shows no loading sentence", covLoading.height >= 800 && covLoading.text === 0 && covLoading.busy === "true", JSON.stringify(covLoading));
+  coverageRelease();
+  await covSlow.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  const cov = await covSlow.evaluate(() => ({
+    title: document.querySelector(".page-hero__title").textContent,
+    headings: Array.from(document.querySelectorAll("#coverage-body h3")).length,
+    layoutHidden: getComputedStyle(document.querySelector(".map-layout")).display === "none",
+    back: document.querySelector(".coverage-back a").getAttribute("href"),
+    url: location.search
+  }));
+  check("the coverage page shows the coverage lists, hides the explorer, and links back", cov.title === "Data coverage" && cov.headings >= 5 && cov.layoutHidden && cov.back === "./" && cov.url === "?page=coverage", JSON.stringify(cov));
+  await covSlow.close();
+
+  const normal = await openPage(browser, base, 1280, 900, "");
+  const link = await normal.evaluate(() => ({
+    sectionHidden: document.getElementById("coverage").hidden || getComputedStyle(document.getElementById("coverage")).display === "none",
+    href: document.querySelector(".coverage-link a").getAttribute("href"),
+    jump: !!document.querySelector('.map-jump a[href="#coverage-heading"]')
+  }));
+  check("the explorer page no longer shows coverage, only a link to it", link.sectionHidden && link.href === "?page=coverage" && !link.jump, JSON.stringify(link));
+  await normal.close();
 
   let failures = 2;
   const failing = await loadWithRoutes(browser, base, 1280, "?type=risk&node=directpromptinjection&model=ai-paas", (req) => {
@@ -1094,7 +1155,7 @@ async function testLoadResilience(browser, base) {
     models: Array.from(document.querySelectorAll('input[name="operating-model"]')).map((el) => el.value).join(),
     selected: document.getElementById("map-status").dataset.selected,
     model: document.querySelector('input[name="operating-model"]:checked').value,
-    risks: document.querySelectorAll("#risk-suggestions button[data-node-id]").length
+    risks: document.querySelectorAll("#risk-suggestions option[data-node-id]").length
   }));
   check("Retry re-runs initialization without a page reload and applies the URL state", recovered.errorHidden && recovered.selected === "risk:directpromptinjection" && recovered.model === "AI-PaaS", JSON.stringify(recovered));
   check("Retry does not duplicate filter options or list items", recovered.models === ["all"].concat(MODELS).join() && recovered.risks === threats.length, JSON.stringify(recovered));
@@ -1253,6 +1314,7 @@ async function main() {
     await testDetailGraphSplit(browser, base);
     await testUrlState(browser, base);
     await testCopyChain(browser, base);
+    await testDropdownPickers(browser, base);
     await testLoadResilience(browser, base);
     await testDisclosures(browser, base);
     await testRiskWording(browser, base);
