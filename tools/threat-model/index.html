@@ -17,11 +17,12 @@
     --state:#7f1d1d; --focus:#2563eb;
   }
   * { box-sizing: border-box; }
-  html, body { height:100%; }
-  body { margin:0; display:flex; flex-direction:column; min-height:100%; overflow:hidden; font: 14px/1.45 var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
+  /* The document scrolls, as on the other tools. The graph keeps its own height. */
+  html, body { height:auto; }
+  body { margin:0; display:flex; flex-direction:column; min-height:100vh; overflow:visible; font: 14px/1.45 var(--font-sans), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color:var(--ink); background:var(--bg); }
   site-nav, site-footer { flex:0 0 auto; display:block; }
-  site-footer .footer { padding:4px 16px; }
-  site-footer .footer__inner { gap:4px 16px; }
+  /* Body is a flex column, which would trap the shared sticky bar. Stick the header itself. */
+  site-nav { position:sticky; top:0; z-index:200; background:var(--bg); }
   /* Canvas page: keep page-hero shell, but shrink it so the graph gets height. */
   .page-hero { flex:0 0 auto; padding:6px var(--page-pad) 4px; background:var(--bg); border-bottom:1px solid var(--line); }
   .page-hero__inner { max-width: none; }
@@ -35,10 +36,10 @@
   #model-source:empty { display:none; }
   #model-source { margin:0 0 2px; line-height:1.3; }
   .bar label { display:flex; gap:4px; align-items:center; }
-  main { flex:1 1 auto; min-height:0; display:flex; align-items:stretch; overflow:hidden; }
-  #graph-wrap { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:hidden; }
-  #graph-scroll { flex:1 1 auto; min-height:0; min-width:0; overflow:auto; background:var(--bg); }
-  #graph-scroll.is-fit { overflow-x:hidden; }
+  main { flex:1 1 auto; min-height:0; display:flex; align-items:stretch; overflow:visible; }
+  #graph-wrap { flex:1 1 auto; min-width:0; min-height:0; display:flex; flex-direction:column; overflow:visible; position:relative; }
+  #graph-scroll { flex:1 1 auto; min-height:min-content; min-width:0; overflow:visible; background:var(--bg); }
+  #graph-scroll:not(.is-fit) { overflow-x:auto; }
   /* Zoom multiplies native diagram width. Cap at the pane so wide models shrink;
      never grow a short model past 1:1 box size at Fit (zoom 1). */
   #graph { width:calc(var(--zoom) * var(--diagram-w, 100%)); max-width:calc(var(--zoom) * 100%); }
@@ -61,19 +62,22 @@
   a { color:var(--link); }
   .linkbtn { background:none; border:0; padding:0; color:var(--link); text-decoration:underline; cursor:pointer; font:inherit; text-align:left; }
   .pill.counsel { background:#fee2e2; color:#7f1d1d; font-weight:600; }
-  #graph-wrap { position:relative; }
-  #graph-wrap.expanded { position:fixed; inset:0; z-index:10000; background:var(--bg); min-height:0; }
+  #graph-wrap.expanded { position:fixed; inset:0; z-index:10000; background:var(--bg); min-height:0; height:100%; display:flex; flex-direction:column; overflow:hidden; }
   #graph-wrap.expanded #results-wrap { display:none; }
-  #graph-wrap.expanded #graph-scroll { flex:1 1 auto; max-height:none; overflow:auto; }
+  #graph-wrap.expanded #graph-scroll { flex:1 1 auto; min-height:0; max-height:none; overflow:auto; }
   body.overlay-open { overflow:hidden; }
   #expand-graph[hidden], #overlay-close[hidden] { display:none !important; }
   .scoped-canvas { zoom:var(--zoom, 1); }
-  #pane-handle { position:absolute; top:0; bottom:0; right:calc(var(--drawer-w) - 5px); width:10px; z-index:31; cursor:col-resize; background:transparent; touch-action:none; }
+  #pane-handle { position:fixed; top:calc(var(--nav-h, 96px) + 8px); bottom:auto; right:calc(var(--drawer-w) - 5px); height:calc(100dvh - var(--nav-h, 96px) - 16px); width:10px; z-index:31; cursor:col-resize; background:transparent; touch-action:none; }
   #pane-handle::after { content:""; position:absolute; top:50%; left:4px; width:2px; height:28px; margin-top:-14px; border-radius:1px; background:var(--muted); }
   #pane-handle:hover, #pane-handle:focus { background:var(--handle-hot); }
   #pane-handle:focus-visible { outline:2px solid var(--focus); outline-offset:-2px; }
-  #side { position:absolute; top:0; right:0; bottom:0; z-index:30; width:var(--drawer-w); max-width:90%; display:flex; flex-direction:column; min-height:0; min-width:0; background:var(--panel); border-left:1px solid var(--line); box-shadow:-8px 0 24px rgba(15,23,42,.18); overflow:hidden; transition:transform .18s ease; }
+  #side { position:fixed; top:calc(var(--nav-h, 96px) + 8px); right:0; bottom:auto; height:calc(100dvh - var(--nav-h, 96px) - 16px); z-index:30; width:var(--drawer-w); max-width:90%; display:flex; flex-direction:column; min-height:0; min-width:0; background:var(--panel); border-left:1px solid var(--line); box-shadow:-8px 0 24px rgba(15,23,42,.18); overflow:hidden; transition:transform .18s ease; }
   main.drawer-closed #side { transform:translateX(105%); visibility:hidden; pointer-events:none; box-shadow:none; }
+  @media (min-width: 761px) {
+    #graph-wrap.expanded #side { position:absolute; top:0; right:0; bottom:0; height:auto; }
+    #graph-wrap.expanded #pane-handle { position:absolute; top:0; bottom:0; height:auto; }
+  }
   main.drawer-closed #pane-handle { display:none; }
   @media (min-width: 761px) {
     main.drawer-open #graph-wrap > #view-bar,
@@ -180,7 +184,7 @@
   .start-choices { display:flex; flex-wrap:wrap; gap:4px 16px; padding:4px 0 6px; }
   .start-choices label { display:flex; gap:6px; align-items:center; min-height:32px; max-width:100%; }
   #start-l34 { flex:1 0 100%; margin:4px 0; max-width:78ch; }
-  #results-wrap { flex:1 1 42%; min-height:0; overflow:auto; border-top:1px solid var(--line); padding:6px 10px 10px; background:var(--bg); }
+  #results-wrap { flex:1 1 42%; min-height:0; overflow:visible; border-top:1px solid var(--line); padding:6px 10px 10px; background:var(--bg); }
   #results-wrap h2 { font-size:14px; margin:0 0 4px; }
   #results-sort { min-height:32px; }
   table.results { width:100%; border-collapse:collapse; font-size:13px; }
@@ -217,7 +221,7 @@
   #graph-wrap.scoped #glossary,
   #graph-wrap.scoped #view-hint { display:none !important; }
   #graph-wrap.scoped #graph-scroll { flex:0 0 auto; max-height:none; overflow:visible; }
-  #graph-wrap.scoped #results-wrap { flex:1 1 auto; min-height:140px; max-height:none; overflow:auto; }
+  #graph-wrap.scoped #results-wrap { flex:1 1 auto; min-height:0; max-height:none; overflow:visible; }
   .b-label { font-size:12px; font-weight:700; fill:var(--band-ink); }
   .b-sub { font-size:11px; fill:var(--band-muted); }
   .s-name { font-size:12px; fill:var(--node-ink); }
@@ -23959,6 +23963,40 @@ if (typeof module !== "undefined") module.exports = TM;
     var zg = doc.querySelector(".zoom-group");
     if (zg) zg.hidden = scopedOn() && !overlayOpen;
     applyZoom();
+    queuePlaceDrawer();
+  }
+  var placeQueued = false;
+  function placeDrawer() {
+    var side = $("side"), handle = $("pane-handle");
+    if (!side) return;
+    if (overlayOpen || isNarrow() || !drawerOpen) {
+      side.style.top = "";
+      side.style.height = "";
+      if (handle) { handle.style.top = ""; handle.style.height = ""; }
+      return;
+    }
+    var wrap = $("graph-wrap");
+    var nav = doc.querySelector("site-nav");
+    var navBottom = nav ? Math.ceil(nav.getBoundingClientRect().bottom) : 96;
+    var gap = 8;
+    var wr = wrap.getBoundingClientRect();
+    var top = Math.max(navBottom + gap, wr.top);
+    var limit = Math.min(window.innerHeight - gap, wr.bottom);
+    var height = limit - top;
+    if (height < 120) height = Math.min(window.innerHeight - navBottom - gap, Math.max(120, wr.height));
+    side.style.top = Math.round(top) + "px";
+    side.style.height = Math.round(Math.max(120, height)) + "px";
+    if (handle) {
+      handle.style.top = side.style.top;
+      handle.style.height = side.style.height;
+    }
+  }
+  function queuePlaceDrawer() {
+    if (placeQueued) return;
+    placeQueued = true;
+    var run = function () { placeQueued = false; placeDrawer(); };
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(run);
+    else run();
   }
   function overlayFocusables() {
     var wrap = $("graph-wrap");
@@ -25117,7 +25155,20 @@ if (typeof module !== "undefined") module.exports = TM;
       else if (e.key === "Home") { e.preventDefault(); setDrawerWidth(maxDrawer()); }
       else if (e.key === "End") { e.preventDefault(); setDrawerWidth(280); }
     });
-    if (typeof ResizeObserver === "function") new ResizeObserver(function () { queueReflow(); }).observe($("graph-scroll"));
+    function syncNavHeight() {
+      var nav = doc.querySelector("site-nav");
+      var h = nav ? Math.ceil(nav.getBoundingClientRect().height) : 96;
+      if (h < 48) h = 96;
+      doc.documentElement.style.setProperty("--nav-h", h + "px");
+    }
+    syncNavHeight();
+    if (typeof ResizeObserver === "function") {
+      new ResizeObserver(function () { queueReflow(); }).observe($("graph-scroll"));
+      var navEl = doc.querySelector("site-nav");
+      if (navEl) new ResizeObserver(function () { syncNavHeight(); queuePlaceDrawer(); }).observe(navEl);
+    }
+    window.addEventListener("resize", function () { syncNavHeight(); queuePlaceDrawer(); });
+    window.addEventListener("scroll", queuePlaceDrawer, { passive: true });
     if (window.matchMedia) {
       var mq = window.matchMedia("(max-width: 760px)");
       var onMq = function () { applyChrome(); queueReflow(); };

@@ -232,7 +232,7 @@ function run() {
 
   journey("heuristic_summary", (j) => {
     const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (s) => s.textContent).join("\n");
-    finding(j, "graph_flex_space", "hard", /#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "Graph scroll claims leftover viewport height");
+    finding(j, "graph_flex_space", "hard", /body\s*\{[^}]*overflow:\s*visible/.test(css) && /#graph-scroll\s*\{[^}]*overflow:\s*visible/.test(css), "The page scrolls and the graph keeps its own height");
     finding(j, "results_stack", "hard", /table\.results td::before/.test(css), "Results rows stack on a narrow screen");
     w.TM_UI.setAssessment("holistic");
     finding(j, "holistic_has_cascade", "hard", !!w.document.querySelector("#graph text.band-id"), "Holistic still draws the five layer bands");
