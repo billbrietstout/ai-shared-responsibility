@@ -52,7 +52,8 @@
   /* Native title tips do not paint inside this page's overflow clip. This tip is fixed so it can sit outside the filter row. */
   #rel-tip { position:fixed; z-index:10001; max-width:min(42ch, calc(100vw - 16px)); margin:0; padding:4px 8px; border:1px solid var(--line); border-radius:4px; background:var(--panel); color:var(--ink); font:12px/1.35 var(--font-sans), system-ui, sans-serif; box-shadow:0 4px 14px rgba(15,23,42,.18); pointer-events:none; }
   #rel-tip[hidden] { display:none; }
-  #glossary, .rf { cursor:help; }
+  #filter-hint { margin-right:2px; padding-right:10px; border-right:1px solid var(--line); cursor:help; }
+  .rf { cursor:help; }
   #view-bar { flex:0 0 auto; padding:4px 10px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; border-bottom:1px solid var(--line); font-size:12px; }
   .zoom-group { display:flex; gap:4px; align-items:center; margin-left:auto; }
   #zoom-label { min-width:3.2em; color:var(--muted); }
@@ -294,7 +295,7 @@
       <button type="button" id="open-drawer" aria-controls="side" aria-expanded="false">Details</button>
     </div>
     <div id="rel-filters"></div>
-    <p id="glossary" title="Each filter uses a plain reading; rest the pointer on a filter for the ArchiMate term. Bill checked these nine relationship names against ArchiMate 4 by hand on November 18, 2026.">ROCA = Risk, Obligation, Control, Accountable. Hover a filter for its ArchiMate term.</p>
+    <p id="glossary">ROCA = Risk, Obligation, Control, Accountable.</p>
     <div id="graph-scroll">
       <div id="graph"></div>
     </div>
@@ -24875,9 +24876,10 @@ if (typeof module !== "undefined") module.exports = TM;
     try { localStorage.setItem(PANEL_KEY, box.open ? "1" : "0"); } catch (e) {}
   }
 
-  /* The filter row, the glossary line, and the page column all clip overflow.
-     Chrome then refuses the native title tip. Keep the title attribute as the
-     text source, and paint that text in #rel-tip on hover and on focus. */
+  /* The filter row and the page column clip overflow, so the browser title
+     tip does not paint. Keep the title attribute as the text source, and
+     paint that text in #rel-tip on hover and on focus. A filter tip sits
+     below the ROCA line so the two lines stay readable. */
   var hideRelTip = function () {};
   function bindHoverTips(roots) {
     var tip = doc.createElement("div");
@@ -24928,10 +24930,15 @@ if (typeof module !== "undefined") module.exports = TM;
       tip.style.top = "0px";
       var margin = 8, tw = tip.offsetWidth, th = tip.offsetHeight;
       var left = anchorX == null ? r.left : anchorX;
+      var row = el.closest("#rel-filters");
+      var gloss = $("glossary");
+      var glossBox = gloss ? gloss.getBoundingClientRect() : null;
+      var glossShown = glossBox && glossBox.height > 0 && window.getComputedStyle(gloss).display !== "none";
       var top = anchorY == null ? r.bottom + 4 : anchorY + 14;
+      if (row) top = (glossShown ? glossBox.bottom : row.getBoundingClientRect().bottom) + 4;
       if (left + tw > window.innerWidth - margin) left = window.innerWidth - tw - margin;
       if (left < margin) left = margin;
-      if (top + th > window.innerHeight - margin) top = (anchorY == null ? r.top : anchorY) - th - 8;
+      if (top + th > window.innerHeight - margin) top = (row ? row.getBoundingClientRect().top : r.top) - th - 4;
       if (top < margin) top = margin;
       tip.style.left = left + "px";
       tip.style.top = top + "px";
@@ -25004,7 +25011,7 @@ if (typeof module !== "undefined") module.exports = TM;
   function init() {
     $("om").innerHTML = opts(TM.OPERATING_MODELS);
     var EXTRA_PLAIN = { unclassified: ["unclassified, needs review", "No type yet. Not used in the cascade until someone classifies it."], derived: ["derived (a shortcut for a chain)", "A derived link stands in for a chain of links. The cascade uses the chain."] };
-    $("rel-filters").innerHTML = '<span class="muted" title="Parent-child links roll impact up from a part to its whole. Every link below takes part in the one cascade.">Parent-child:</span>' + ["composition", "aggregation"].concat(['|']).concat(TM.REL_TYPES.filter(function (t) { return TM.REL_INFO[t].kind === "dependency"; })).concat(["unclassified", "derived"]).map(function (t) {
+    $("rel-filters").innerHTML = '<span class="muted" id="filter-hint" title="Each filter uses a plain reading. Bill checked these nine relationship names against ArchiMate 4 by hand on November 18, 2026.">Hover a filter for its ArchiMate term.</span><span class="muted" title="Parent-child links roll impact up from a part to its whole. Every link below takes part in the one cascade.">Parent-child:</span>' + ["composition", "aggregation"].concat(['|']).concat(TM.REL_TYPES.filter(function (t) { return TM.REL_INFO[t].kind === "dependency"; })).concat(["unclassified", "derived"]).map(function (t) {
       if (t === "|") return '<span class="muted">Depends on:</span>';
       var sw = '<svg width="26" height="8" aria-hidden="true"><line x1="0" y1="4" x2="26" y2="4" stroke="' + REL_STYLE[t].color + '" stroke-width="2" stroke-dasharray="' + REL_STYLE[t].dash + '"/></svg>';
       var label = EXTRA_PLAIN[t] ? EXTRA_PLAIN[t][0] : TM.REL_INFO[t].plain;

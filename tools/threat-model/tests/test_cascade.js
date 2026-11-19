@@ -927,8 +927,11 @@ test("UI: link filters use the plain reading, with the ArchiMate term in the too
   const lab = w.document.querySelector('#rel-filters input[data-rel="realization"]').closest("label");
   assert.ok(lab.textContent.indexOf(TM.REL_INFO.realization.plain) >= 0);
   assert.strictEqual(lab.getAttribute("title"), "ArchiMate term: realization");
-  assert.ok($("glossary").textContent.indexOf("ROCA = Risk, Obligation, Control, Accountable") === 0);
-  assert.ok(($("glossary").getAttribute("title") || "").indexOf("ArchiMate") >= 0);
+  assert.strictEqual($("glossary").textContent, "ROCA = Risk, Obligation, Control, Accountable.");
+  assert.strictEqual($("glossary").getAttribute("title"), null);
+  assert.strictEqual($("filter-hint").textContent, "Hover a filter for its ArchiMate term.");
+  assert.ok($("filter-hint").getAttribute("title").indexOf("ArchiMate") >= 0);
+  assert.ok($("glossary").textContent.indexOf("ArchiMate") < 0);
 });
 test("UI: hovering or focusing a filter shows the ArchiMate term outside the clipped row", () => {
   const over = (el) => el.dispatchEvent(new w.MouseEvent("mouseover", { bubbles: true }));
@@ -953,11 +956,15 @@ test("UI: hovering or focusing a filter shows the ArchiMate term outside the cli
   assert.strictEqual(next.getAttribute("title"), "ArchiMate term: serving");
   const gloss = $("glossary");
   over(gloss);
+  assert.strictEqual(tip.hidden, true, "the ROCA line has no ArchiMate tip");
+  const hint = $("filter-hint");
+  over(hint);
   assert.ok(tip.textContent.indexOf("November 18, 2026") >= 0);
-  assert.ok(tip.textContent.indexOf("ArchiMate") >= 0);
-  out(gloss);
-  assert.ok((gloss.getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
-  const parent = w.document.querySelector("#rel-filters > .muted");
+  assert.ok(tip.textContent.indexOf("plain reading") >= 0);
+  assert.ok(tip.textContent.indexOf("ROCA") < 0);
+  out(hint);
+  assert.ok((hint.getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
+  const parent = Array.prototype.find.call(w.document.querySelectorAll("#rel-filters > .muted"), (el) => el.textContent.indexOf("Parent-child") === 0);
   over(parent);
   assert.ok(tip.textContent.indexOf("part to its whole") >= 0);
   out(parent);
@@ -1298,7 +1305,8 @@ test("UI: assessment offers Holistic, Scoped L2, and Scoped L5", () => {
   assert.strictEqual($("sys-name").textContent, example.system.name);
   assert.ok(w.document.querySelector('#graph .node[data-id="cmp.reasoning-llm"]'));
   assert.ok(!$("results-wrap") || $("results-wrap").hidden);
-  assert.ok(($("glossary").getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
+  assert.strictEqual($("glossary").getAttribute("title"), null);
+  assert.ok(($("filter-hint").getAttribute("title") || "").indexOf("November 18, 2026") >= 0);
   assert.ok($("rel-filters").textContent.indexOf("part cannot exist alone") >= 0);
   assert.strictEqual(TM.REL_TYPES.length, 9);
 });
