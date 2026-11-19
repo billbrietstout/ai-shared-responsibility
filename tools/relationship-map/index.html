@@ -7,7 +7,7 @@
     <title>AI Security &amp; Accountability Explorer · AI Shared Responsibility</title>
     <meta
       name="description"
-      content="Explore how AI security threats connect to obligations, controls, and one accountable persona. A security-requirement catalog is not in the data yet."
+      content="Explore how AI security risks connect to obligations, controls, and one accountable persona. A security-requirement catalog is not in the data yet."
     />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='5' cy='5' r='2' fill='%23166534'/%3E%3Ccircle cx='11' cy='11' r='2' fill='%231d4ed8'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="/shared/styles.css" />
@@ -18,7 +18,7 @@
   "@type": "WebApplication",
   "name": "AI Security & Accountability Explorer",
   "url": "https://aisharedresponsibility.com/tools/relationship-map/",
-  "description": "Explore how AI security threats connect to obligations, controls, and one accountable persona. A security-requirement catalog is not in the data yet.",
+  "description": "Explore how AI security risks connect to obligations, controls, and one accountable persona. A security-requirement catalog is not in the data yet.",
   "applicationCategory": "BusinessApplication",
   "isAccessibleForFree": true,
   "publisher": {
@@ -45,17 +45,17 @@
         <span class="page-hero__eyebrow">Tools</span>
         <h1 class="page-hero__title">AI Security &amp; Accountability Explorer</h1>
         <p id="hero-summary" class="page-hero__lede hero-summary">
-          Trace a threat to the obligations it cites, the controls it names, and one accountable persona. This is a preview, and each obligation link runs through a control.
+          Trace a risk to the obligations it cites, the controls it names, and one accountable persona. This is a preview, and each obligation link runs through a control.
         </p>
-        <button id="read-more" class="read-more" type="button" aria-expanded="false" aria-controls="hero-more preview-more">Read more</button>
+        <button id="read-more" class="read-more" type="button" aria-expanded="false" aria-controls="hero-more">Read more</button>
         <p class="page-hero__lede hero-full">
-          Trace a named threat to the obligations it cites, the controls that
-          threat record names, and one accountable persona.
+          Trace a named risk to the obligations it cites, the controls that
+          risk record names, and one accountable persona.
         </p>
         <p id="hero-more" class="page-hero__lede hero-full">
           The records in this explorer use the word obligation. A separate
           security-requirement catalog is not in the data yet. The chain is
-          threat, obligation, control, and one accountable persona for the
+          risk, obligation, control, and one accountable persona for the
           operating model you choose.
         </p>
       </div>
@@ -71,23 +71,31 @@
         <a href="#coverage-heading" data-jump>Coverage</a>
       </nav>
 
-      <aside id="preview-more" class="callout map-preview" role="note" aria-labelledby="map-preview-heading">
-        <h2 id="map-preview-heading" class="map-preview__title">Preview</h2>
-        <p>
-          This map is a preview. Risk-to-obligation links are in the data.
-          Each link is indirect: it runs through a control that addresses the
-          risk and cites the obligation. The link does not mean the legal text
-          names the risk.
-        </p>
-      </aside>
+      <div id="preview-more" class="map-preview">
+        <span class="map-preview__label">Preview</span>
+        <details class="map-preview__details esc-close">
+          <summary>What preview means</summary>
+          <p>
+            This map is a preview. Risk-to-obligation links are in the data.
+            Each link is indirect: it runs through a control that addresses the
+            risk and cites the obligation. The link does not mean the legal text
+            names the risk.
+          </p>
+        </details>
+      </div>
 
       <div class="map-layout">
         <section class="map-stage" aria-labelledby="map-heading" data-llm="map">
           <h2 id="map-heading" class="visually-hidden">Map</h2>
 
+          <div id="map-error-box" class="map-error" hidden>
+            <p id="map-error" class="map-error__text" role="alert"></p>
+            <button id="map-retry" class="map-error__retry" type="button">Retry</button>
+          </div>
+
           <div id="map-tools" class="map-tools">
             <div class="entry-points" role="group" aria-label="Ways to start">
-              <button id="entry-threat" type="button" aria-pressed="false">Explore a threat</button>
+              <button id="entry-threat" type="button" aria-pressed="false">Explore a risk</button>
               <button id="entry-requirement" type="button" aria-pressed="false">Security requirements (not in the data yet)</button>
               <button id="entry-control" type="button" aria-pressed="false">Explore a control</button>
               <button id="entry-account" type="button" aria-pressed="false">Explore accountability</button>
@@ -97,7 +105,7 @@
               <p>
                 A security-requirement catalog is not in the data yet. This
                 explorer uses the word obligation for the records that exist.
-                Choose a threat or a control to see those obligations in the
+                Choose a risk or a control to see those obligations in the
                 chain. This list is not titled security requirements.
               </p>
             </aside>
@@ -108,33 +116,35 @@
                 happens next.
               </p>
               <h2 class="entry-account__title">Accountable personas</h2>
-              <p>Each name is one SRF persona. Choosing one lists the controls and threats that record that persona.</p>
+              <p>Each name is one SRF persona. Choosing one lists the controls and risks that record that persona.</p>
               <div id="persona-list" class="persona-list"></div>
-              <h2 class="entry-account__title">Illustrative only</h2>
-              <p>
-                These titles are examples from the handoff. They are not
-                personas in the SRF, and they are not links.
-              </p>
-              <table class="illustrative">
-                <caption>Illustrative security activities. Not persona records.</caption>
-                <thead>
-                  <tr>
-                    <th scope="col">Security activity</th>
-                    <th scope="col">Illustrative title</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr><td>Agent identity provisioning</td><td>Identity owner</td></tr>
-                  <tr><td>Tool authorization</td><td>Application security owner</td></tr>
-                  <tr><td>Runtime policy enforcement</td><td>AI platform security owner</td></tr>
-                  <tr><td>Detection of unauthorized actions</td><td>Security operations owner</td></tr>
-                  <tr><td>Incident containment</td><td>Incident response owner</td></tr>
-                  <tr><td>Model supply-chain assurance</td><td>AI supply-chain security owner</td></tr>
-                </tbody>
-              </table>
+              <details class="illustrative-fold esc-close">
+                <summary>View illustrative handoff titles (examples, not SRF)</summary>
+                <p>
+                  These titles are examples from the handoff. They are not
+                  personas in the SRF, and they are not links.
+                </p>
+                <table class="illustrative">
+                  <caption>Illustrative security activities. Not persona records.</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Security activity</th>
+                      <th scope="col">Illustrative title</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Agent identity provisioning</td><td>Identity owner</td></tr>
+                    <tr><td>Tool authorization</td><td>Application security owner</td></tr>
+                    <tr><td>Runtime policy enforcement</td><td>AI platform security owner</td></tr>
+                    <tr><td>Detection of unauthorized actions</td><td>Security operations owner</td></tr>
+                    <tr><td>Incident containment</td><td>Incident response owner</td></tr>
+                    <tr><td>Model supply-chain assurance</td><td>AI supply-chain security owner</td></tr>
+                  </tbody>
+                </table>
+              </details>
             </section>
             <form id="find-form" class="find-form" role="search">
-              <label class="find-form__label" for="node-search">Find a threat or a control</label>
+              <label class="find-form__label" for="node-search">Find a risk or a control</label>
               <div class="find-form__row">
                 <input
                   id="node-search"
@@ -143,7 +153,7 @@
                   name="q"
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder="Threat or control name"
+                  placeholder="Risk or control name"
                   role="combobox"
                   aria-autocomplete="list"
                   aria-haspopup="listbox"
@@ -154,7 +164,7 @@
                 <button class="find-form__submit" type="submit">Find</button>
               </div>
               <p id="map-help" class="map-help">
-                Type a threat or a control name or a few words about it. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.
+                Type a risk or a control name or a few words about it. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.
               </p>
               <div id="map-filters" class="map-filters" tabindex="-1">
                 <h3 class="visually-hidden">Filters</h3>
@@ -185,9 +195,16 @@
                 </details>
               </div>
               <p id="filter-summary" class="filter-summary" role="status"></p>
+              <button id="toggle-filters" class="toggle-filters" type="button" aria-expanded="false" aria-controls="map-filters">Change filters</button>
               <p id="search-note" class="search-note" aria-live="polite"></p>
+              <div id="map-loading" class="load-placeholder" aria-hidden="true">
+                <span class="load-placeholder__bar"></span>
+                <span class="load-placeholder__bar"></span>
+                <span class="load-placeholder__bar"></span>
+                <span class="load-placeholder__bar load-placeholder__bar--short"></span>
+              </div>
               <div id="suggestions-wrap">
-                <h3 id="risk-suggestions-heading" class="suggestions-heading">Threats</h3>
+                <h3 id="risk-suggestions-heading" class="suggestions-heading">Risks</h3>
                 <ul id="risk-suggestions" class="search-results search-results--risks" aria-labelledby="risk-suggestions-heading"></ul>
                 <h3 id="suggestions-heading" class="suggestions-heading">Controls</h3>
                 <p id="control-source-note" class="filter-note">These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml.</p>
@@ -202,7 +219,7 @@
               <button id="widen-view" type="button" hidden>Widen the view</button>
               <button id="show-chain" type="button" hidden>Show the chain</button>
               <button id="show-context" type="button">Show layers</button>
-              <button id="start-one" type="button" hidden>Start from one threat or control</button>
+              <button id="start-one" type="button" hidden>Start from one risk or control</button>
             </div>
             <section class="layer-frames" aria-labelledby="layer-frames-heading" data-llm="security-domains">
               <h2 id="layer-frames-heading">Security domains</h2>
@@ -211,8 +228,7 @@
             </section>
           </div>
 
-          <p id="map-status" class="map-status" role="status">Loading map data.</p>
-          <p id="map-error" class="map-error" role="alert" hidden></p>
+          <p id="map-status" class="map-status" role="status"><span class="visually-hidden">Loading map data.</span></p>
         </section>
 
         <div class="map-panel">
@@ -220,12 +236,15 @@
             <div class="details__bar">
               <h2 id="details-heading">Node details</h2>
               <div class="details__buttons">
+                <button id="copy-chain" type="button" hidden>Copy chain as Markdown</button>
                 <button id="explore-from-details" type="button" hidden>Explore relationship graph</button>
                 <button id="clear-selection" type="button" disabled><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
               </div>
             </div>
             <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
-            <p id="details-empty">Select a threat or a control to see its record, sources, and links.</p>
+            <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+            <textarea id="copy-fallback" class="copy-fallback" readonly rows="8" aria-label="Chain as Markdown. Select all and copy." hidden></textarea>
+            <p id="details-empty">Select a risk or a control to see its record, sources, and links.</p>
             <div id="details-body" hidden>
               <p id="details-kind"></p>
               <p id="details-id" class="details-id" hidden></p>
@@ -252,7 +271,7 @@
             </div>
             <p id="map-gesture" class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
             <ul id="graph-kind-legend" class="graph-kind-legend" aria-label="Node kinds" hidden>
-              <li><span class="swatch" data-swatch="risk" aria-hidden="true"></span> Threat</li>
+              <li><span class="swatch" data-swatch="risk" aria-hidden="true"></span> Risk</li>
               <li><span class="swatch" data-swatch="policy" aria-hidden="true"></span> Obligation</li>
               <li><span class="swatch" data-swatch="control" aria-hidden="true"></span> Control</li>
               <li><span class="swatch" data-swatch="persona" aria-hidden="true"></span> Persona</li>
@@ -262,7 +281,7 @@
                 id="graph"
                 class="graph"
                 role="img"
-                aria-label="Chain of risk, obligation, control, and accountable persona. Choose a threat or a control to begin."
+                aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
               ></div>
               <div id="context-board" class="context-board" hidden></div>
               <div id="chain" class="chain" hidden>
@@ -274,24 +293,34 @@
                   <a href="#chain-col-accountable" data-jump>Accountable</a>
                   <a href="#node-search" data-jump>Find another</a>
                 </nav>
-                <ul class="chain-legend" id="chain-legend" aria-label="Line types">
-                  <li>
-                    <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
-                    <span>Solid. The record names this link. An obligation line is solid when the basis is the official text.</span>
-                  </li>
-                  <li>
-                    <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
-                    <span>Dashed. Shared control. The legal text does not name the risk.</span>
-                  </li>
-                  <li>
-                    <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
-                    <span>Dotted. Instrument-level. No article record matched.</span>
-                  </li>
-                </ul>
+                <div class="chain-legend-wrap">
+                  <ul class="chain-legend" id="chain-legend" aria-label="Line types">
+                    <li>
+                      <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
+                      <span>Solid: direct basis</span>
+                    </li>
+                    <li>
+                      <span class="legend-swatch legend-swatch--dashed" aria-hidden="true"></span>
+                      <span>Dashed: via shared control</span>
+                    </li>
+                    <li>
+                      <span class="legend-swatch legend-swatch--dotted" aria-hidden="true"></span>
+                      <span>Dotted: instrument level</span>
+                    </li>
+                  </ul>
+                  <details class="legend-help esc-close">
+                    <summary>What the lines mean</summary>
+                    <ul>
+                      <li>Solid. The record names this link. An obligation line is solid when the basis is the official text.</li>
+                      <li>Dashed. Shared control. The legal text does not name the risk.</li>
+                      <li>Dotted. Instrument-level. No article record matched.</li>
+                    </ul>
+                  </details>
+                </div>
                 <p id="chain-model-note" class="chain-model-note"></p>
                 <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
               </div>
-              <p id="graph-empty" class="graph-empty">Choose a threat or a control to see its chain.</p>
+              <p id="graph-empty" class="graph-empty">Choose a risk or a control to see its chain.</p>
             </div>
           </section>
         </div>
@@ -302,8 +331,12 @@
         These labels describe the records. A missing link is not a failed
         control, and an unassessed pointer is not a test result.
       </p>
-      <div id="coverage-body">
-        <p>Loading coverage.</p>
+      <div id="coverage-body" class="load-placeholder load-placeholder--coverage" aria-busy="true">
+        <span class="visually-hidden">Loading coverage.</span>
+        <span class="load-placeholder__bar" aria-hidden="true"></span>
+        <span class="load-placeholder__bar" aria-hidden="true"></span>
+        <span class="load-placeholder__bar" aria-hidden="true"></span>
+        <span class="load-placeholder__bar load-placeholder__bar--short" aria-hidden="true"></span>
       </div>
     </section>
     </main>

@@ -220,7 +220,7 @@ async function testLayerFilter(browser, base) {
   check("AI-PaaS with L3 lists the AI-PaaS controls at L3 (" + expectedPaaS.length + ")", shownPaaS.length === expectedPaaS.length && d3.missing.length === 0 && d3.extra.length === 0, JSON.stringify(d3));
   const paasSummary = await page.$eval("#filter-summary", (el) => el.textContent);
   check("the summary names both filters and the control count", paasSummary === "AI-PaaS, L3: " + expectedPaaS.length + " controls", paasSummary);
-  check("both filters are in the URL", /[?&]model=AI-PaaS/.test(page.url()) && /[?&]layer=L3/.test(page.url()), page.url());
+  check("both filters are in the URL", /[?&]model=ai-paas/.test(page.url()) && /[?&]layer=L3/.test(page.url()), page.url());
   await page.close();
 
   const deep = await openPage(browser, base, 1280, 900, "?layer=L5&model=IaaS");
@@ -250,7 +250,7 @@ async function testLinkBasis(browser, base) {
   check("control-to-persona cards say no basis is recorded", personaChips.length > 0 && personaChips.every((t) => t.indexOf("Basis: none recorded. accountable_by_model names this persona.") !== -1), JSON.stringify(personaChips.slice(0, 1)));
   const details = await page.$eval("#details-chain", (el) => el.textContent);
   check("details name the recorded basis value in plain words", details.indexOf("Recorded basis: derived_via_control.") !== -1 && details.indexOf("Basis: none recorded.") !== -1, details.slice(0, 200));
-  check("details keep the threat definition link for an AI Exchange threat", await page.$$eval("#details-chain a", (els, url) => els.some((a) => a.href === url && a.textContent === "Threat definition"), derived.ai_exchange));
+  check("details keep the threat definition link for an AI Exchange threat", await page.$$eval("#details-chain a", (els, url) => els.some((a) => a.href === url && a.textContent === "Risk definition"), derived.ai_exchange));
   await page.close();
 
   if (official) {
@@ -265,7 +265,7 @@ async function testLinkBasis(browser, base) {
   const controlPage = await openPage(browser, base, 1280, 900, "?control=finance:SRF-L3-DEV-001");
   const controlChips = await controlPage.$$eval('#chain-board button[data-chain-id^="obligation:"], #chain-board button[data-chain-id^="instrument:"]', (els) => els.map((el) => el.textContent).join(" | "));
   check("control chain names the citation field behind each obligation", controlChips.indexOf("Basis: citation on this control (mappings.") !== -1, controlChips.slice(0, 200));
-  check("control chain groups risk-to-obligation bases by recorded value", /Risk to obligation, \d+ threats?\. Basis: derived through a shared control \(derived_via_control\)\./.test(controlChips), controlChips.slice(0, 300));
+  check("control chain groups risk-to-obligation bases by recorded value", /Risk to obligation, \d+ risks?\. Basis: derived through a shared control \(derived_via_control\)\./.test(controlChips), controlChips.slice(0, 300));
   await controlPage.close();
 }
 
@@ -290,13 +290,13 @@ async function testWording(browser, base) {
   console.log("\n## Search label wording");
   const page = await openPage(browser, base, 1280, 900, "");
   const label = await page.$eval('label[for="node-search"]', (el) => el.textContent.trim());
-  check("search label says threat or control", label === "Find a threat or a control", label);
+  check("search label says risk or control", label === "Find a risk or a control", label);
   const placeholder = await page.$eval("#node-search", (el) => el.placeholder);
-  check("search placeholder says threat or control", placeholder === "Threat or control name", placeholder);
+  check("search placeholder says risk or control", placeholder === "Risk or control name", placeholder);
   const help = await page.$eval("#map-help", (el) => el.textContent);
-  check("search help text says threat or control", /Type a threat or a control name/.test(help), help);
+  check("search help text says risk or control", /Type a risk or a control name/.test(help), help);
   const heading = await page.$eval("#risk-suggestions-heading", (el) => el.textContent.trim());
-  check("threat list heading is Threats", heading === "Threats", heading);
+  check("risk list heading is Risks", heading === "Risks", heading);
   await openEntry(page, "threat");
   const hidden = await page.$eval("#control-source-note", (el) => el.hidden);
   check("control source note is hidden on Explore a threat", hidden === true);
@@ -361,8 +361,8 @@ async function testNavigation(browser, base) {
     showAllText: document.getElementById("show-all-results").textContent
   }));
   const total = Number((counts.note.match(/^(\d+) records match/) || [])[1]);
-  check("the search note counts threats and controls", /^\d+ records match: \d+ threats? and \d+ controls?\./.test(counts.note), counts.note);
-  const nThreats = Number((counts.note.match(/: (\d+) threats?/) || [])[1]);
+  check("the search note counts risks and controls", /^\d+ records match: \d+ risks? and \d+ controls?\./.test(counts.note), counts.note);
+  const nThreats = Number((counts.note.match(/: (\d+) risks?/) || [])[1]);
   const nControls = Number((counts.note.match(/and (\d+) controls?/) || [])[1]);
   check("each group shows up to eight matches and the rest are behind a Show all button", counts.shown === Math.min(nThreats, 8) + Math.min(nControls, 8) && counts.showAll && counts.showAllText === "Show all " + total + " matches", JSON.stringify(counts));
   await page.click("#show-all-results");
@@ -500,7 +500,7 @@ async function testListView(browser, base) {
   });
   check("the catalog lists every threat on load (" + threats.length + ")", first.threats === threats.length, String(first.threats));
   check("the catalog lists every control that sits in an operating model on load (" + inChainCore.length + ")", first.controls === inChainCore.length, String(first.controls));
-  check("the summary line gives the filters and both counts", first.summary === "All operating models, all layers: " + inChainCore.length + " controls, " + threats.length + " threats", first.summary);
+  check("the summary line gives the filters and both counts", first.summary === "All operating models, all layers: " + inChainCore.length + " controls, " + threats.length + " risks", first.summary);
   check("the filters and the summary come before the results", first.filtersBeforeResults && first.summaryBeforeResults);
   check("the side panel sits beside the list and starts empty", first.chainHidden && first.emptyShown && first.panelLeft >= first.finderRight, JSON.stringify(first));
   check("no blank graph panel on load", first.wrapHeight < 120, String(first.wrapHeight));
@@ -510,10 +510,10 @@ async function testListView(browser, base) {
   const filtered = await page.$eval("#filter-summary", (el) => el.textContent);
   const nControls = inChainCore.filter((c) => c.layer === "L3" && c.core.indexOf("AI-SaaS") !== -1).length;
   const nThreats = threats.filter((t) => t.srf_layer === "L3").length;
-  check("the summary reads 'AI-SaaS, L3: N controls, M threats'", filtered === "AI-SaaS, L3: " + nControls + " controls, " + nThreats + " threats", filtered);
+  check("the summary reads 'AI-SaaS, L3: N controls, M risks'", filtered === "AI-SaaS, L3: " + nControls + " controls, " + nThreats + " risks", filtered);
   await openEntry(page, "threat");
   const threatSummary = await page.$eval("#filter-summary", (el) => el.textContent);
-  check("the summary follows Explore a threat", threatSummary === "AI-SaaS, L3: " + nThreats + " threats", threatSummary);
+  check("the summary follows Explore a risk", threatSummary === "AI-SaaS, L3: " + nThreats + " risks", threatSummary);
 
   await pickModel(page, "all");
   await pickLayer(page, "all");
@@ -529,7 +529,7 @@ async function testListView(browser, base) {
       graphInDetails: !!document.querySelector(".details #graph, .details .graph-wrap"),
       listStillThere: list.height > 0 && list.right <= panel.left + 1,
       active: document.activeElement.id,
-      panelTopInView: panel.top >= 0 && panel.top < 220,
+      panelTopInView: panel.top >= -1 && panel.top < 220,
       heading: document.getElementById("details-heading").textContent
     };
   });
@@ -563,7 +563,7 @@ async function testGraphToggle(browser, base) {
   const shown = await graphState(page);
   check("Explore relationship graph reveals the graph workspace", shown.visibility === "visible" && shown.clientWidth > 300 && shown.clientHeight > 300, JSON.stringify(shown));
   check("Sigma matches the container size after it opens", shown.sigmaWidth === shown.offsetWidth && shown.sigmaHeight === shown.offsetHeight && shown.canvasWidth > 0 && Math.abs(shown.canvasWidth - shown.sigmaWidth) <= 1, JSON.stringify(shown));
-  check("focus moves to Back to details and the URL records the graph", (await activeId(page)) === "hide-graph" && /[?&]graph=1/.test(page.url()), (await activeId(page)) + " " + page.url());
+  check("focus moves to Back to details and the URL records the graph", (await activeId(page)) === "hide-graph" && /[?&]view=graph/.test(page.url()), (await activeId(page)) + " " + page.url());
   check("zoom controls are available in the graph workspace", await page.evaluate(() => !document.getElementById("graph-fit").hidden && !document.getElementById("graph-zoom-in").hidden && !document.getElementById("graph-zoom-out").hidden && !document.getElementById("graph-reset").hidden));
   await page.click("#hide-graph");
   await sleep(500);
@@ -637,7 +637,7 @@ async function testListbox(browser, base) {
     const options = Array.from(lb.querySelectorAll("[role=option]"));
     return { expanded: document.getElementById("node-search").getAttribute("aria-expanded"), shown: !lb.hidden, groups: groups, ids: options.every((o) => o.id), unique: new Set(options.map((o) => o.id)).size === options.length, active: document.getElementById("node-search").getAttribute("aria-activedescendant") };
   });
-  check("typing opens the listbox with labeled Threats and Controls groups", open.expanded === "true" && open.shown && open.groups.length === 2 && /^Threats \(\d+\)$/.test(open.groups[0].label) && /^Controls \(\d+\)$/.test(open.groups[1].label), JSON.stringify(open));
+  check("typing opens the listbox with labeled Risks and Controls groups", open.expanded === "true" && open.shown && open.groups.length === 2 && /^Risks \(\d+\)$/.test(open.groups[0].label) && /^Controls \(\d+\)$/.test(open.groups[1].label), JSON.stringify(open));
   check("every option has a unique id and nothing is highlighted yet", open.ids && open.unique && open.active === null, JSON.stringify(open));
 
   const highlight = () => page.evaluate(() => {
@@ -722,12 +722,12 @@ async function testPhoneSheet(browser, base) {
     button: document.getElementById("read-more").textContent, expanded: document.getElementById("read-more").getAttribute("aria-expanded"),
     controls: document.getElementById("read-more").getAttribute("aria-controls").split(" ").every((id) => !!document.getElementById(id))
   }));
-  check("on the phone the hero is one summary sentence with a Read more button", hero.summary !== "none" && hero.full === "none" && hero.preview === "none" && hero.button === "Read more" && hero.expanded === "false" && hero.controls, JSON.stringify(hero));
+  check("on the phone the hero is one summary sentence with a Read more button", hero.summary !== "none" && hero.full === "none" && hero.preview !== "none" && hero.button === "Read more" && hero.expanded === "false" && hero.controls, JSON.stringify(hero));
   await page.click("#read-more");
   const more = await page.evaluate(() => ({ full: getComputedStyle(document.querySelector(".hero-full")).display, preview: getComputedStyle(document.querySelector(".map-preview")).display, summary: getComputedStyle(document.getElementById("hero-summary")).display, button: document.getElementById("read-more").textContent, expanded: document.getElementById("read-more").getAttribute("aria-expanded") }));
-  check("Read more shows the full hero text and the Preview note", more.full !== "none" && more.preview !== "none" && more.summary === "none" && more.button === "Read less" && more.expanded === "true", JSON.stringify(more));
+  check("Read more shows the full hero text and the Preview label stays", more.full !== "none" && more.preview !== "none" && more.summary === "none" && more.button === "Read less" && more.expanded === "true", JSON.stringify(more));
   await page.click("#read-more");
-  check("Read less hides them again", await page.evaluate(() => getComputedStyle(document.querySelector(".map-preview")).display === "none"));
+  check("Read less hides the full hero text again", await page.evaluate(() => getComputedStyle(document.querySelector(".hero-full")).display === "none"));
   check("the side panel is closed on the phone until a record is chosen", !(await sheetState(page)).shown);
 
   await search(page, "direct prompt injection");
@@ -856,6 +856,353 @@ async function testDetailGraphSplit(browser, base) {
   await page.close();
 }
 
+
+const PREVIEW_TEXT = "This map is a preview. Risk-to-obligation links are in the data. Each link is indirect: it runs through a control that addresses the risk and cites the obligation. The link does not mean the legal text names the risk.";
+const MODEL_SLUGS = { "AI-SaaS": "ai-saas", "AI-PaaS": "ai-paas", "Agent-PaaS": "agent-paas", "IaaS": "iaas" };
+const norm = (text) => text.replace(/\s+/g, " ").trim();
+const mapState = (page) => page.$eval("#map-status", (el) => ({ selected: el.dataset.selected, root: el.dataset.root, model: el.dataset.model, view: el.dataset.view }));
+
+async function testUrlState(browser, base) {
+  console.log("\n## URL state: node, type, model, view");
+  const bare = await openPage(browser, base, 1280, 900, "");
+  const first = await bare.evaluate(() => ({
+    selected: document.getElementById("map-status").dataset.selected,
+    root: document.getElementById("map-status").dataset.root,
+    workspaceHidden: document.getElementById("graph-workspace").hidden,
+    emptyShown: !document.getElementById("details-empty").hidden,
+    search: location.search
+  }));
+  check("a bare load selects nothing, opens no trace, and leaves the URL clean", !first.selected && !first.root && first.workspaceHidden && first.emptyShown && first.search === "", JSON.stringify(first));
+
+  const radios = await bare.$$eval('input[name="operating-model"]', (els) => els.map((el) => el.value));
+  check("the operating model filter offers All and the four SRF models only", radios.join() === ["all"].concat(MODELS).join(), radios.join());
+  const bodyText = await bare.evaluate(() => document.body.innerText);
+  check("no page text names On-Prem as an operating model", !/on-prem/i.test(bodyText));
+
+  const before = await bare.evaluate(() => history.length);
+  await pickModel(bare, "AI-PaaS");
+  await openEntry(bare, "threat");
+  await bare.$eval('#risk-suggestions button[data-node-id="risk:directpromptinjection"]', (el) => el.scrollIntoView({ block: "center" }));
+  await bare.click('#risk-suggestions button[data-node-id="risk:directpromptinjection"]');
+  await sleep(500);
+  const afterSelect = await bare.evaluate(() => ({ search: location.search, length: history.length }));
+  const params = new URLSearchParams(afterSelect.search);
+  check("selecting a risk writes type, node, model slug, and list view", params.get("type") === "risk" && params.get("node") === "directpromptinjection" && params.get("model") === "ai-paas" && params.get("view") === "list", afterSelect.search);
+  check("the URL is written with replaceState, so history does not grow", afterSelect.length === before, before + " -> " + afterSelect.length);
+
+  await clickNow(bare, "#explore-from-details");
+  await sleep(700);
+  const graphParams = new URLSearchParams(await bare.evaluate(() => location.search));
+  check("opening the graph writes view=graph and keeps the selection", graphParams.get("view") === "graph" && graphParams.get("node") === "directpromptinjection" && graphParams.get("model") === "ai-paas", String(graphParams));
+  const sharedUrl = bare.url();
+  await bare.close();
+
+  const restored = await openPage(browser, base, 1280, 900, sharedUrl.slice(sharedUrl.indexOf("?")));
+  const back = await restored.evaluate(() => ({
+    selected: document.getElementById("map-status").dataset.selected,
+    model: document.querySelector('input[name="operating-model"]:checked').value,
+    workspaceShown: !document.getElementById("graph-workspace").hidden,
+    heading: document.getElementById("details-heading").textContent
+  }));
+  check("loading the shared URL restores the item, the model, and the graph view", back.selected === "risk:directpromptinjection" && back.model === "AI-PaaS" && back.workspaceShown, JSON.stringify(back));
+  await restored.close();
+
+  const listLoad = await openPage(browser, base, 1280, 900, "?type=control&node=finance:SRF-L3-DEV-001&model=iaas&view=list");
+  const control = await listLoad.evaluate(() => ({
+    selected: document.getElementById("map-status").dataset.selected,
+    model: document.querySelector('input[name="operating-model"]:checked').value,
+    workspaceHidden: document.getElementById("graph-workspace").hidden,
+    search: location.search
+  }));
+  check("a control link restores a control in list view", control.selected === "control:finance:SRF-L3-DEV-001" && control.model === "IaaS" && control.workspaceHidden, JSON.stringify(control));
+  check("colons in the node id stay readable in the URL", /node=finance:SRF-L3-DEV-001/.test(control.search), control.search);
+  await listLoad.close();
+
+  const persona = await openPage(browser, base, 1280, 900, "?type=persona&node=application-developer");
+  const personaState = await persona.evaluate(() => ({ heading: document.getElementById("details-heading").textContent, search: location.search, copyShown: !document.getElementById("copy-chain").hidden }));
+  check("a persona link opens that persona and rewrites its own URL", personaState.heading === "Application Developer" && /type=persona&node=application-developer/.test(personaState.search) && personaState.copyShown, JSON.stringify(personaState));
+  await persona.close();
+
+  for (const model of MODELS) {
+    const page = await openPage(browser, base, 1280, 900, "?model=" + MODEL_SLUGS[model]);
+    const checkedValue = await page.$eval('input[name="operating-model"]:checked', (el) => el.value);
+    check("model slug " + MODEL_SLUGS[model] + " selects " + model, checkedValue === model, checkedValue);
+    await page.close();
+  }
+  const legacy = await openPage(browser, base, 1280, 900, "?model=AI-PaaS&risk=directpromptinjection&graph=1");
+  const legacyState = await legacy.evaluate(() => ({ model: document.querySelector('input[name="operating-model"]:checked').value, root: document.getElementById("map-status").dataset.root, search: location.search }));
+  check("older risk=, model=, and graph=1 links still load and are rewritten", legacyState.model === "AI-PaaS" && legacyState.root === "risk:directpromptinjection" && /model=ai-paas/.test(legacyState.search) && /type=risk/.test(legacyState.search) && /view=graph/.test(legacyState.search), JSON.stringify(legacyState));
+  await legacy.close();
+
+  const badQueries = ["?type=bogus&node=x", "?type=risk&node=does-not-exist", "?type=control&node=", "?model=on-prem", "?model=%00&view=zzz", "?node=directpromptinjection", "?type=<script>&node=\"'", "?view=graph&type=persona&node=nobody"];
+  for (const query of badQueries) {
+    const page = await openPage(browser, base, 1280, 900, query);
+    const state = await mapState(page);
+    check("invalid parameters are ignored without errors: " + query, !state.selected && state.model === "all" && page.__errors.length === 0, JSON.stringify(state) + page.__errors.join(";"));
+    await page.close();
+  }
+}
+
+async function stubClipboard(page, mode) {
+  await page.evaluate((m) => {
+    window.__copied = null;
+    const stub = m === "ok"
+      ? { writeText: (text) => { window.__copied = text; return Promise.resolve(); } }
+      : { writeText: () => Promise.reject(new DOMException("blocked", "NotAllowedError")) };
+    Object.defineProperty(navigator, "clipboard", { value: stub, configurable: true });
+    if (m !== "ok") document.execCommand = () => false;
+  }, mode);
+}
+
+async function testCopyChain(browser, base) {
+  console.log("\n## Copy chain as Markdown");
+  const page = await openPage(browser, base, 1280, 900, "?type=risk&node=directpromptinjection&model=ai-paas&view=list");
+  await stubClipboard(page, "ok");
+  const hiddenBefore = await openPage(browser, base, 1280, 900, "");
+  check("the copy button is hidden until a chain is open", await hiddenBefore.$eval("#copy-chain", (el) => el.hidden));
+  await hiddenBefore.close();
+  const live = await page.$eval("#copy-status", (el) => ({ role: el.getAttribute("role"), live: el.getAttribute("aria-live") }));
+  check("the copy message sits in a polite live region", live.role === "status" && live.live === "polite", JSON.stringify(live));
+  const inHeader = await page.$eval("#copy-chain", (el) => !!el.closest(".details__bar") && el.textContent === "Copy chain as Markdown");
+  check("the button is in the node details header", inHeader);
+
+  await page.focus("#copy-chain");
+  await page.keyboard.press("Enter");
+  await sleep(250);
+  const copied = await page.evaluate(() => ({ text: window.__copied, label: document.getElementById("copy-chain").textContent, status: document.getElementById("copy-status").textContent, url: location.href, active: document.activeElement.id }));
+  check("Enter on the button copies Markdown", typeof copied.text === "string" && copied.text.indexOf("# Direct prompt injection") === 0, String(copied.text).slice(0, 80));
+  check("the Markdown names the model, the selected item, and the deep link", /- Operating model: AI-PaaS\n/.test(copied.text) && /- Selected item: Risk, Direct prompt injection \(directpromptinjection\)\n/.test(copied.text) && copied.text.indexOf("- Link: " + copied.url + "\n") !== -1, copied.text.slice(0, 400));
+  const direct = threats.find((t) => t.id === "directpromptinjection");
+  const expectedControls = (direct.related_controls || []).filter((fullId) => {
+    const found = controls.find((c) => c.nodeId === "control:" + fullId.replace(/^srf\.control\.(.+?)\.(SRF-.+)$/, "$1:$2"));
+    return found && found.core.indexOf("AI-PaaS") !== -1;
+  });
+  const controlLines = (copied.text.split("## Controls\n")[1] || "").split("\n## ")[0].split("\n").filter((l) => l.indexOf("- ") === 0);
+  check("the Markdown lists every control for AI-PaaS (" + expectedControls.length + ")", controlLines.length === expectedControls.length && expectedControls.length > 0, controlLines.length + " vs " + expectedControls.length);
+  check("the Markdown lists obligations and the accountable persona", /## Obligations\n- /.test(copied.text) && /## Accountable persona\n- Application Developer \(AI-PaaS\)/.test(copied.text), copied.text.slice(-600));
+  check("the button reads Copied and the live region says so", copied.label === "Copied" && /^Copied/.test(copied.status) && copied.active === "copy-chain", JSON.stringify({ label: copied.label, status: copied.status, active: copied.active }));
+  await sleep(2300);
+  const reset = await page.evaluate(() => ({ label: document.getElementById("copy-chain").textContent, status: document.getElementById("copy-status").textContent }));
+  check("after 2 seconds the label and the message reset", reset.label === "Copy chain as Markdown" && reset.status === "", JSON.stringify(reset));
+  await page.close();
+
+  const failing = await openPage(browser, base, 1280, 900, "?type=control&node=finance:SRF-L3-DEV-001");
+  await stubClipboard(failing, "fail");
+  await failing.click("#copy-chain");
+  await sleep(300);
+  const failure = await failing.evaluate(() => {
+    const status = document.getElementById("copy-status");
+    const area = document.getElementById("copy-fallback");
+    const box = area.getBoundingClientRect();
+    return { text: status.textContent, error: status.classList.contains("copy-status--error"), areaShown: !area.hidden && box.height > 0, areaText: area.value.slice(0, 20), label: document.getElementById("copy-chain").textContent, focus: document.activeElement.id };
+  });
+  check("a clipboard failure shows a visible message and the text to copy by hand", /Could not copy/.test(failure.text) && failure.error && failure.areaShown && failure.areaText.indexOf("# ") === 0 && failure.label === "Copy chain as Markdown" && failure.focus === "copy-fallback", JSON.stringify(failure));
+  await failing.keyboard.press("Escape");
+  await sleep(300);
+  check("no page errors while copying", failing.__errors.length === 0, failing.__errors.join("; "));
+  await failing.close();
+
+  const phone = await openPage(browser, base, 375, 812, "?type=risk&node=directpromptinjection");
+  const layout = await phone.evaluate(() => {
+    const bar = document.querySelector(".details__bar").getBoundingClientRect();
+    const title = document.getElementById("details-heading").getBoundingClientRect();
+    const copy = document.getElementById("copy-chain").getBoundingClientRect();
+    return { titleWidth: title.width, titleHeight: title.height, copyRight: copy.right, barRight: bar.right, width: window.innerWidth };
+  });
+  check("on the phone the sheet title is readable and the buttons stay inside the sheet", layout.titleWidth > 200 && layout.titleHeight < 80 && layout.copyRight <= layout.width, JSON.stringify(layout));
+  await phone.close();
+}
+
+async function loadWithRoutes(browser, base, width, query, handler) {
+  const page = await browser.newPage();
+  await page.setViewport({ width: width, height: width > 600 ? 900 : 812 });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.setRequestInterception(true);
+  page.on("request", (req) => { if (!handler(req)) req.continue(); });
+  await page.goto(base + "/tools/relationship-map/index.html" + (query || ""), { waitUntil: "load" });
+  page.__errors = errors;
+  return page;
+}
+
+async function testLoadResilience(browser, base) {
+  console.log("\n## Load placeholders, error alert, and Retry");
+  let release = null;
+  const gate = new Promise((resolve) => { release = resolve; });
+  const slow = await loadWithRoutes(browser, base, 1280, "", (req) => {
+    if (!req.url().endsWith("/data/threats.json")) return false;
+    gate.then(() => req.continue());
+    return true;
+  });
+  await sleep(600);
+  const loading = await slow.evaluate(() => {
+    const visibleText = (el) => Array.from(el.querySelectorAll("*")).concat([el]).filter((n) => n.children.length === 0 && !n.closest(".visually-hidden") && n.textContent.trim()).map((n) => n.textContent.trim());
+    const coverage = document.getElementById("coverage-body");
+    const status = document.getElementById("map-status");
+    const loadingBox = document.getElementById("map-loading");
+    return {
+      coverageHeight: coverage.getBoundingClientRect().height,
+      coverageText: visibleText(coverage),
+      statusText: visibleText(status),
+      bars: document.querySelectorAll(".load-placeholder__bar").length,
+      loadingHeight: loadingBox.getBoundingClientRect().height,
+      busy: coverage.getAttribute("aria-busy"),
+      statusRole: status.getAttribute("role")
+    };
+  });
+  check("while loading, the coverage area reserves at least 800px and shows no loading sentence", loading.coverageHeight >= 800 && loading.coverageText.length === 0 && loading.busy === "true", JSON.stringify(loading));
+  check("while loading, the finder list reserves 800px and the status line shows no visible text", loading.loadingHeight >= 800 && loading.statusText.length === 0 && loading.bars >= 8 && loading.statusRole === "status", JSON.stringify(loading));
+  const heightBefore = await slow.evaluate(() => document.documentElement.scrollHeight);
+  release();
+  await slow.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  const after = await slow.evaluate(() => ({ height: document.documentElement.scrollHeight, placeholderGone: document.getElementById("map-loading").hidden, busy: document.getElementById("coverage-body").getAttribute("aria-busy"), coverageHeading: !!document.querySelector("#coverage-body h3") }));
+  check("after loading, the placeholders are replaced by real content", after.placeholderGone && after.busy === null && after.coverageHeading, JSON.stringify(after));
+  console.log("     page height before " + heightBefore + "px, after " + after.height + "px");
+  await slow.close();
+
+  let failures = 2;
+  const failing = await loadWithRoutes(browser, base, 1280, "?type=risk&node=directpromptinjection&model=ai-paas", (req) => {
+    if (!req.url().endsWith("/data/threats.json")) return false;
+    if (failures > 0) {
+      failures -= 1;
+      if (failures === 1) req.respond({ status: 500, contentType: "text/plain", body: "boom" });
+      else req.respond({ status: 200, contentType: "application/json", body: "{ not json" });
+      return true;
+    }
+    return false;
+  });
+  await failing.waitForFunction(() => !document.getElementById("map-error-box").hidden, { timeout: 30000 });
+  const err = await failing.evaluate(() => {
+    const alert = document.getElementById("map-error");
+    const retry = document.getElementById("map-retry");
+    const box = retry.getBoundingClientRect();
+    return { role: alert.getAttribute("role"), text: alert.textContent, retryShown: box.width > 0 && retry.textContent === "Retry", retryInAlert: alert.contains(retry), ready: document.getElementById("map-status").dataset.ready || "" , coverage: document.getElementById("coverage-body").textContent, loadingHidden: document.getElementById("map-loading").hidden };
+  });
+  check("a failed fetch puts a clear message in a role=alert region", err.role === "alert" && /threats\.json/.test(err.text) && /500/.test(err.text), JSON.stringify(err));
+  check("a Retry button is visible next to the message, and placeholders are gone", err.retryShown && err.loadingHidden && !err.ready && /Retry/.test(err.coverage), JSON.stringify(err));
+
+  await failing.focus("#map-retry");
+  await failing.keyboard.press("Enter");
+  await failing.waitForFunction(() => !document.getElementById("map-error-box").hidden && /JSON|Unexpected|Expected/i.test(document.getElementById("map-error").textContent), { timeout: 30000 });
+  const second = await failing.evaluate(() => ({ text: document.getElementById("map-error").textContent, active: document.activeElement.id }));
+  check("a parse failure also lands in the alert, and focus returns to Retry", second.active === "map-retry" && second.text.length > 0 && !/\(500\)/.test(second.text), JSON.stringify(second));
+
+  await failing.keyboard.press("Space");
+  await failing.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  const recovered = await failing.evaluate(() => ({
+    errorHidden: document.getElementById("map-error-box").hidden,
+    models: Array.from(document.querySelectorAll('input[name="operating-model"]')).map((el) => el.value).join(),
+    selected: document.getElementById("map-status").dataset.selected,
+    model: document.querySelector('input[name="operating-model"]:checked').value,
+    risks: document.querySelectorAll("#risk-suggestions button[data-node-id]").length
+  }));
+  check("Retry re-runs initialization without a page reload and applies the URL state", recovered.errorHidden && recovered.selected === "risk:directpromptinjection" && recovered.model === "AI-PaaS", JSON.stringify(recovered));
+  check("Retry does not duplicate filter options or list items", recovered.models === ["all"].concat(MODELS).join() && recovered.risks === threats.length, JSON.stringify(recovered));
+  check("no uncaught page errors in the error and retry path", failing.__errors.length === 0, failing.__errors.join("; "));
+  await failing.close();
+
+  const phone = await loadWithRoutes(browser, base, 375, "", (req) => {
+    if (!req.url().endsWith("/data/matrix.json")) return false;
+    req.respond({ status: 404, contentType: "text/plain", body: "no" });
+    return true;
+  });
+  await phone.waitForFunction(() => !document.getElementById("map-error-box").hidden, { timeout: 30000 });
+  const small = await phone.evaluate(() => {
+    const retry = document.getElementById("map-retry").getBoundingClientRect();
+    return { retryWidth: retry.width, retryHeight: retry.height, right: retry.right, width: window.innerWidth, scrollWidth: document.documentElement.scrollWidth };
+  });
+  check("at 375 the Retry button is at least 44px tall and nothing scrolls sideways", small.retryHeight >= 44 && small.right <= small.width && small.scrollWidth <= small.width, JSON.stringify(small));
+  await phone.close();
+}
+
+async function testDisclosures(browser, base) {
+  console.log("\n## Disclosures: preview, line types, illustrative titles");
+  const page = await openPage(browser, base, 1280, 900, "");
+  const preview = await page.evaluate(() => {
+    const wrap = document.querySelector(".map-preview");
+    const details = wrap.querySelector("details");
+    return { label: wrap.querySelector(".map-preview__label").textContent.trim(), open: details.open, summary: details.querySelector("summary").textContent.trim(), text: details.querySelector("p").textContent, wrapHeight: wrap.getBoundingClientRect().height, standaloneNote: !!document.querySelector("aside.map-preview") };
+  });
+  check("the Preview note is a compact inline label with a closed disclosure", preview.label === "Preview" && preview.open === false && preview.summary.length > 0 && preview.wrapHeight < 80 && !preview.standaloneNote, JSON.stringify(preview));
+  check("the disclosure holds the full caveat text unchanged", norm(preview.text) === PREVIEW_TEXT, preview.text);
+  await page.focus(".map-preview__details summary");
+  await page.keyboard.press("Enter");
+  check("Enter on the Preview summary opens the caveat", await page.$eval(".map-preview__details", (el) => el.open && el.querySelector("p").checkVisibility()));
+  await page.keyboard.press("Escape");
+  check("Escape closes it and keeps focus on the summary", await page.evaluate(() => !document.querySelector(".map-preview__details").open && document.activeElement.tagName === "SUMMARY"));
+
+  await openEntry(page, "account");
+  const fold = await page.evaluate(() => {
+    const details = document.querySelector(".illustrative-fold");
+    const table = document.querySelector("table.illustrative");
+    const panel = document.getElementById("entry-account-panel");
+    return {
+      summary: details.querySelector("summary").textContent.trim(),
+      open: details.open,
+      tableInside: details.contains(table),
+      paragraphInside: Array.from(details.children).some((el) => el.tagName === "P" && /not\s+personas in the SRF/.test(el.textContent)),
+      tableVisible: table.checkVisibility(),
+      personasOutside: !details.contains(document.getElementById("persona-list")) && panel.contains(document.getElementById("persona-list"))
+    };
+  });
+  check("the illustrative table and its paragraph sit in a closed disclosure with the required summary", fold.summary === "View illustrative handoff titles (examples, not SRF)" && !fold.open && fold.tableInside && fold.paragraphInside && !fold.tableVisible && fold.personasOutside, JSON.stringify(fold));
+  await page.focus(".illustrative-fold summary");
+  await page.keyboard.press("Enter");
+  check("Enter opens the illustrative table", await page.$eval("table.illustrative", (el) => el.checkVisibility()));
+  await page.keyboard.press("Escape");
+  check("Escape closes the illustrative table and returns to the summary", await page.evaluate(() => !document.querySelector(".illustrative-fold").open && document.activeElement.tagName === "SUMMARY"));
+  await page.close();
+
+  const chain = await openPage(browser, base, 1280, 900, "?type=risk&node=directpromptinjection&view=graph");
+  const legend = await chain.evaluate(() => {
+    const items = Array.from(document.querySelectorAll("#chain-legend li")).map((li) => li.textContent.trim());
+    const details = document.querySelector(".legend-help");
+    return { items: items, open: details.open, full: Array.from(details.querySelectorAll("li")).map((li) => li.textContent.trim()), titles: document.querySelectorAll("#chain-legend [title]").length };
+  });
+  check("the line-type legend uses the three short labels", legend.items.join("|") === "Solid: direct basis|Dashed: via shared control|Dotted: instrument level", legend.items.join("|"));
+  check("the full sentences are in a closed disclosure, not in title attributes", !legend.open && legend.titles === 0 && legend.full.length === 3 && /The record names this link/.test(legend.full[0]) && /The legal text does not name the risk/.test(legend.full[1]) && /No article record matched/.test(legend.full[2]), JSON.stringify(legend));
+  await chain.focus(".legend-help summary");
+  await chain.keyboard.press("Enter");
+  check("Enter opens the line-type explanation", await chain.$eval(".legend-help", (el) => el.open && el.querySelector("li").checkVisibility()));
+  await chain.keyboard.press("Escape");
+  const afterEsc = await chain.evaluate(() => ({ open: document.querySelector(".legend-help").open, tag: document.activeElement.tagName, workspaceHidden: document.getElementById("graph-workspace").hidden }));
+  check("Escape closes the explanation first and does not close the graph", !afterEsc.open && afterEsc.tag === "SUMMARY" && !afterEsc.workspaceHidden, JSON.stringify(afterEsc));
+  check("no page errors with the disclosures", chain.__errors.length === 0, chain.__errors.join("; "));
+  await chain.close();
+
+  const phone = await openPage(browser, base, 375, 812, "");
+  const phoneState = await phone.evaluate(() => {
+    const label = document.querySelector(".map-preview__label").getBoundingClientRect();
+    const summary = document.querySelector(".map-preview__details summary").getBoundingClientRect();
+    return { labelVisible: label.height > 0, summaryVisible: summary.height > 0, sameRow: Math.abs(label.top - summary.top) < 20 };
+  });
+  check("at 375 the Preview label and its disclosure are visible on one row", phoneState.labelVisible && phoneState.summaryVisible && phoneState.sameRow, JSON.stringify(phoneState));
+  await phone.close();
+}
+
+async function testRiskWording(browser, base) {
+  console.log("\n## Risk, not Threat, in the explorer's own labels");
+  const page = await openPage(browser, base, 1280, 900, "?type=risk&node=directpromptinjection&model=ai-paas&view=graph");
+  const text = await page.evaluate(() => {
+    const skip = "site-nav, site-footer, #risk-suggestions, #suggestions, #persona-list, #chain-board, #details-chain, #coverage-body, #context-board, #search-results";
+    const parts = [];
+    const main = document.getElementById("main");
+    main.querySelectorAll("h1, h2, h3, h4, label, legend, button, summary, th, caption, p, li, span, a").forEach((el) => {
+      if (el.closest(skip)) return;
+      if (el.children.length) return;
+      parts.push(el.textContent.trim());
+    });
+    document.querySelectorAll("#chain-board .chain-card__kicker, #chain-board .chain-col__toggle, #details-chain h3").forEach((el) => parts.push(el.textContent.trim()));
+    parts.push(document.querySelector("#node-search").placeholder);
+    return parts.filter(Boolean);
+  });
+  const hits = text.filter((t) => /\bthreats?\b/i.test(t));
+  check("no explorer label calls a risk a threat", hits.length === 0, JSON.stringify(hits.slice(0, 5)));
+  const status = await page.$eval("#map-status", (el) => el.textContent);
+  check("the status line and the graph label use risk", !/threat/i.test(status) && !/threat/i.test(await page.$eval("#graph", (el) => el.getAttribute("aria-label"))), status);
+  await page.close();
+}
+
 async function captureMobile(browser, base) {
   if (!ARTIFACTS) return;
   const page = await openPage(browser, base, 375, 812, "");
@@ -904,6 +1251,11 @@ async function main() {
     await testListbox(browser, base);
     await testPhoneSheet(browser, base);
     await testDetailGraphSplit(browser, base);
+    await testUrlState(browser, base);
+    await testCopyChain(browser, base);
+    await testLoadResilience(browser, base);
+    await testDisclosures(browser, base);
+    await testRiskWording(browser, base);
     await captureDesktop(browser, base);
     await captureMobile(browser, base);
   } finally {
