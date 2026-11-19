@@ -115,9 +115,13 @@ async function pickLayer(page, layer) {
   await page.click('input[name="layer"][value="' + layer + '"]');
   await sleep(150);
 }
+async function clickNow(page, selector) {
+  await page.$eval(selector, (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.click(selector);
+}
 async function openEntry(page, entry) {
-  await page.click("#entry-" + entry);
-  await sleep(150);
+  await clickNow(page, "#entry-" + entry);
+  await sleep(300);
 }
 async function search(page, text) {
   await page.$eval("#node-search", (el) => { el.value = ""; });
@@ -138,19 +142,19 @@ async function testSearchIndex(browser, base) {
       return value && String(value).toLowerCase().indexOf(needle) !== -1;
     })).map((t) => "risk:" + t.id);
     await search(page, token);
-    const shown = await idsIn(page, "#search-results button[data-node-id]");
+    const shown = await idsIn(page, "#search-results [role=option][data-node-id]");
     const shownRisks = shown.filter((id) => id.indexOf("risk:") === 0);
     const d = diff(shownRisks, expected);
     check("search \"" + token + "\" finds every threat that records it (" + expected.length + ")", d.missing.length === 0 && expected.length > 0, JSON.stringify(d));
     check("search \"" + token + "\" returns no threat that does not record it", d.extra.length === 0, JSON.stringify(d));
   }
   await search(page, "Model behaviour integrity");
-  const impactHits = await idsIn(page, "#search-results button[data-node-id]");
+  const impactHits = await idsIn(page, "#search-results [role=option][data-node-id]");
   check("search matches a threat impact description", impactHits.indexOf("risk:directpromptinjection") !== -1, JSON.stringify(impactHits));
 
   const probe = controls.find((c) => /board-approved AI risk appetite statement/.test(c.description));
   await search(page, "board-approved AI risk appetite statement");
-  const descHits = await idsIn(page, "#search-results button[data-node-id]");
+  const descHits = await idsIn(page, "#search-results [role=option][data-node-id]");
   check("search matches a control description", !!probe && descHits.indexOf(probe.nodeId) !== -1, JSON.stringify(descHits));
 
   await search(page, "LLM01");
@@ -165,9 +169,9 @@ async function testFullControlList(browser, base) {
   console.log("\n## Explore a control lists every control for the chosen model");
   const page = await openPage(browser, base, 1280, 900, "");
   await openEntry(page, "control");
-  const sample = await idsIn(page, "#suggestions button[data-node-id]");
-  const sampleLayers = sample.map((id) => controls.find((c) => c.nodeId === id)).map((c) => c && c.layer);
-  check("All models and All layers shows one sample control per layer", sample.length === LAYERS.length && sameSet(sampleLayers, LAYERS), JSON.stringify(sample));
+  const everyShown = await idsIn(page, "#suggestions button[data-node-id]");
+  const dAll = diff(everyShown, inChainCore.map((c) => c.nodeId));
+  check("All models and All layers lists every control that sits in an operating model (" + inChainCore.length + ")", everyShown.length === inChainCore.length && dAll.missing.length === 0 && dAll.extra.length === 0, JSON.stringify(dAll));
   check("the source note says the controls come from the sector catalogs", await page.$eval("#control-source-note", (el) => /sector catalogs/.test(el.textContent) && /CoSAI Risk Map controls\.yaml/.test(el.textContent) && !el.hidden));
 
   for (const model of MODELS) {
@@ -177,8 +181,8 @@ async function testFullControlList(browser, base) {
     const shown = await idsIn(page, "#suggestions button[data-node-id]");
     const d = diff(shown, expected);
     check(model + " lists all " + expected.length + " controls, no sample", shown.length === expected.length && d.missing.length === 0 && d.extra.length === 0, JSON.stringify(d));
-    const note = await page.$eval("#search-note", (el) => el.textContent);
-    check(model + " note states the count and the model", note.indexOf(expected.length + " controls list " + model) === 0, note);
+    const summary = await page.$eval("#filter-summary", (el) => el.textContent);
+    check(model + " summary states the model and the count", summary === model + ", all layers: " + expected.length + " controls", summary);
   }
   await pickModel(page, "all");
   await page.close();
@@ -214,6 +218,8 @@ async function testLayerFilter(browser, base) {
   const shownPaaS = await idsIn(page, "#suggestions button[data-node-id]");
   const d3 = diff(shownPaaS, expectedPaaS);
   check("AI-PaaS with L3 lists the AI-PaaS controls at L3 (" + expectedPaaS.length + ")", shownPaaS.length === expectedPaaS.length && d3.missing.length === 0 && d3.extra.length === 0, JSON.stringify(d3));
+  const paasSummary = await page.$eval("#filter-summary", (el) => el.textContent);
+  check("the summary names both filters and the control count", paasSummary === "AI-PaaS, L3: " + expectedPaaS.length + " controls", paasSummary);
   check("both filters are in the URL", /[?&]model=AI-PaaS/.test(page.url()) && /[?&]layer=L3/.test(page.url()), page.url());
   await page.close();
 
@@ -270,7 +276,7 @@ async function testDsgaiSourceLinks(browser, base) {
   const linkTexts = [];
   for (const threat of dsgaiThreats) {
     await search(page, threat.id);
-    await page.click('#search-results button[data-node-id="risk:' + threat.id + '"]');
+    await page.click('#search-results [role=option][data-node-id="risk:' + threat.id + '"]');
     await sleep(120);
     const found = await page.$$eval("#details-chain a", (els, url) => els.filter((a) => a.href === url).map((a) => a.textContent), dsgaiUrl);
     linkTexts.push(found[0] || "");
@@ -339,30 +345,32 @@ async function testNavigation(browser, base) {
   await search(page, "stop prompt injection");
   const words = await page.evaluate(() => ({
     note: document.getElementById("search-note").textContent,
-    ids: Array.from(document.querySelectorAll("#search-results button")).map((b) => b.dataset.nodeId)
+    ids: Array.from(document.querySelectorAll("#search-results [role=option]")).map((b) => b.dataset.nodeId)
   }));
   check("a plain phrase with no exact hit matches records by word count", /No record has that exact phrase/.test(words.note) && /at least 2 of your 3 words/.test(words.note), words.note);
   check("'stop prompt injection' lists the prompt injection threats", words.ids.indexOf("risk:directpromptinjection") !== -1 && words.ids.indexOf("risk:indirectpromptinjection") !== -1, JSON.stringify(words.ids));
   await search(page, "protect training data");
-  const train = await page.evaluate(() => ({ note: document.getElementById("search-note").textContent, n: document.querySelectorAll("#search-results button").length }));
+  const train = await page.evaluate(() => ({ note: document.getElementById("search-note").textContent, n: document.querySelectorAll("#search-results [role=option]").length }));
   check("'protect training data' returns records", train.n > 0 && /at least 2 of your 3 words/.test(train.note), train.note);
 
   await search(page, "prompt injection");
   const counts = await page.evaluate(() => ({
     note: document.getElementById("search-note").textContent,
-    shown: document.querySelectorAll("#search-results button").length,
+    shown: document.querySelectorAll("#search-results [role=option]").length,
     showAll: !document.getElementById("show-all-results").hidden,
     showAllText: document.getElementById("show-all-results").textContent
   }));
   const total = Number((counts.note.match(/^(\d+) records match/) || [])[1]);
   check("the search note counts threats and controls", /^\d+ records match: \d+ threats? and \d+ controls?\./.test(counts.note), counts.note);
-  check("matches beyond eight are behind a Show all button", counts.shown === 8 && counts.showAll && counts.showAllText === "Show all " + total + " matches", JSON.stringify(counts));
+  const nThreats = Number((counts.note.match(/: (\d+) threats?/) || [])[1]);
+  const nControls = Number((counts.note.match(/and (\d+) controls?/) || [])[1]);
+  check("each group shows up to eight matches and the rest are behind a Show all button", counts.shown === Math.min(nThreats, 8) + Math.min(nControls, 8) && counts.showAll && counts.showAllText === "Show all " + total + " matches", JSON.stringify(counts));
   await page.click("#show-all-results");
   await sleep(150);
-  const all = await page.evaluate(() => ({ shown: document.querySelectorAll("#search-results button").length, hidden: document.getElementById("show-all-results").hidden, activeInList: !!document.activeElement.closest("#search-results") }));
-  check("Show all lists every match and moves focus into the list", all.shown === total && all.hidden && all.activeInList, JSON.stringify(all));
+  const all = await page.evaluate(() => ({ shown: document.querySelectorAll("#search-results [role=option]").length, hidden: document.getElementById("show-all-results").hidden, activeInList: !!document.getElementById(document.activeElement.getAttribute("aria-activedescendant") || "none") }));
+  check("Show all lists every match and highlights the first new one", all.shown === total && all.hidden && all.activeInList, JSON.stringify(all));
 
-  await page.click('#search-results button[data-node-id="risk:directpromptinjection"]');
+  await page.click('#search-results [role=option][data-node-id="risk:directpromptinjection"]');
   await sleep(900);
   const opened = await page.evaluate(() => ({
     active: document.activeElement.id,
@@ -384,9 +392,9 @@ async function testNavigation(browser, base) {
   check("Find another focuses the search field", (await activeId(page)) === "node-search");
 
   await search(page, "direct prompt injection");
-  await page.click('#search-results button[data-node-id="risk:directpromptinjection"]');
+  await page.click('#search-results [role=option][data-node-id="risk:directpromptinjection"]');
   await sleep(900);
-  await page.click("#clear-selection");
+  await clickNow(page, "#clear-selection");
   await sleep(900);
   const cleared = await page.evaluate(() => ({ active: document.activeElement.id, chainHidden: document.getElementById("chain").hidden }));
   check("Clear selection returns focus to the search field", cleared.active === "node-search" && cleared.chainHidden, JSON.stringify(cleared));
@@ -409,9 +417,10 @@ async function testNavigation(browser, base) {
   await sleep(150);
   check("the skip link works at 375 wide", (await activeId(phone)) === "node-search");
   await search(phone, "prompt injection");
-  const noteTop = await phone.$eval("#search-note", (el) => el.getBoundingClientRect().top);
-  check("the match count is on screen after typing at 375 wide", noteTop >= 0 && noteTop < 812 * 0.7, String(noteTop));
-  await phone.click('#search-results button[data-node-id="risk:directpromptinjection"]');
+  await sleep(900);
+  const firstTop = await phone.$eval("#search-results [role=option]", (el) => el.getBoundingClientRect().top);
+  check("the first match is on screen after typing at 375 wide", firstTop >= 0 && firstTop < 812 * 0.85, String(firstTop));
+  await phone.click('#search-results [role=option][data-node-id="risk:directpromptinjection"]');
   await sleep(900);
   check("the chain heading is in the first half of the phone window", (await activeId(phone)) === "chain-heading" && await inView(phone, "#chain-heading"));
   await phone.click('.chain-jump a[href="#chain-col-obligation"]');
@@ -421,6 +430,302 @@ async function testNavigation(browser, base) {
   check("the page does not scroll sideways at 375 wide", overflow <= 0, String(overflow));
   check("no page errors at 375 wide", phone.__errors.length === 0, phone.__errors.join("; "));
   await phone.close();
+}
+
+const sheetState = (page) => page.evaluate(() => {
+  const d = document.querySelector(".details");
+  const r = d.getBoundingClientRect();
+  return {
+    shown: getComputedStyle(d).display !== "none",
+    left: Math.round(r.left), top: Math.round(r.top), width: Math.round(r.width), height: Math.round(r.height),
+    sheetOpen: document.body.classList.contains("sheet-open"),
+    stageInert: document.querySelector(".map-stage").hasAttribute("inert")
+  };
+});
+const graphState = (page) => page.evaluate(() => {
+  const g = document.getElementById("graph");
+  const dims = window.__relationshipMap.renderer.getDimensions();
+  const canvas = g.querySelector("canvas");
+  return {
+    visibility: getComputedStyle(g).visibility,
+    clientWidth: g.clientWidth, clientHeight: g.clientHeight, offsetWidth: g.offsetWidth, offsetHeight: g.offsetHeight,
+    sigmaWidth: dims.width, sigmaHeight: dims.height,
+    canvasWidth: canvas ? canvas.clientWidth : 0,
+    focusable: g.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])').length,
+    wrapHeight: Math.round(g.parentNode.getBoundingClientRect().height)
+  };
+});
+
+async function testListView(browser, base) {
+  console.log("\n## List view: catalog first, filters above the results, summary line, side panel");
+  const page = await openPage(browser, base, 1280, 800, "");
+  const first = await page.evaluate(() => {
+    const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
+    const order = (a, b) => !!(document.querySelector(a).compareDocumentPosition(document.querySelector(b)) & Node.DOCUMENT_POSITION_FOLLOWING);
+    return {
+      threats: document.querySelectorAll("#risk-suggestions button[data-node-id]").length,
+      controls: document.querySelectorAll("#suggestions button[data-node-id]").length,
+      summary: document.getElementById("filter-summary").textContent,
+      filtersBeforeResults: order("#map-filters", "#risk-suggestions") && order("#map-filters", "#suggestions") && order("#map-filters", "#search-results"),
+      summaryBeforeResults: order("#filter-summary", "#risk-suggestions"),
+      chainHidden: document.getElementById("chain").hidden,
+      emptyShown: !document.getElementById("details-empty").hidden,
+      panelLeft: rect(".details").left, finderRight: rect(".map-stage").right,
+      wrapHeight: Math.round(document.querySelector(".graph-wrap").getBoundingClientRect().height)
+    };
+  });
+  check("the catalog lists every threat on load (" + threats.length + ")", first.threats === threats.length, String(first.threats));
+  check("the catalog lists every control that sits in an operating model on load (" + inChainCore.length + ")", first.controls === inChainCore.length, String(first.controls));
+  check("the summary line gives the filters and both counts", first.summary === "All operating models, all layers: " + inChainCore.length + " controls, " + threats.length + " threats", first.summary);
+  check("the filters and the summary come before the results", first.filtersBeforeResults && first.summaryBeforeResults);
+  check("the side panel sits beside the list and starts empty", first.chainHidden && first.emptyShown && first.panelLeft >= first.finderRight, JSON.stringify(first));
+  check("no blank graph panel on load", first.wrapHeight < 120, String(first.wrapHeight));
+
+  await pickModel(page, "AI-SaaS");
+  await pickLayer(page, "L3");
+  const filtered = await page.$eval("#filter-summary", (el) => el.textContent);
+  const nControls = inChainCore.filter((c) => c.layer === "L3" && c.core.indexOf("AI-SaaS") !== -1).length;
+  const nThreats = threats.filter((t) => t.srf_layer === "L3").length;
+  check("the summary reads 'AI-SaaS, L3: N controls, M threats'", filtered === "AI-SaaS, L3: " + nControls + " controls, " + nThreats + " threats", filtered);
+  await openEntry(page, "threat");
+  const threatSummary = await page.$eval("#filter-summary", (el) => el.textContent);
+  check("the summary follows Explore a threat", threatSummary === "AI-SaaS, L3: " + nThreats + " threats", threatSummary);
+
+  await pickModel(page, "all");
+  await pickLayer(page, "all");
+  await openEntry(page, "threat");
+  await page.click('#risk-suggestions button[data-node-id="risk:directpromptinjection"]');
+  await sleep(600);
+  const open = await page.evaluate(() => {
+    const panel = document.querySelector(".details").getBoundingClientRect();
+    const chain = document.getElementById("chain").getBoundingClientRect();
+    const list = document.getElementById("risk-suggestions").getBoundingClientRect();
+    return { chainInPanel: chain.left >= panel.left - 1 && chain.right <= panel.right + 1 && chain.height > 100, listStillThere: list.height > 0 && list.right <= panel.left, active: document.activeElement.id, panelTopInView: panel.top >= 0 && panel.top < 200 };
+  });
+  check("choosing a threat opens its chain in the side panel and the list stays", open.chainInPanel && open.listStillThere && open.active === "chain-heading", JSON.stringify(open));
+  check("the side panel stays in view while the list scrolls", open.panelTopInView);
+  await page.evaluate(() => window.scrollTo(0, 400));
+  await sleep(300);
+  check("the panel is still on screen after scrolling the page", await page.$eval(".details", (el) => { const r = el.getBoundingClientRect(); return r.top >= 0 && r.top < 300; }));
+  check("no page errors in the list view", page.__errors.length === 0, page.__errors.join("; "));
+  await page.close();
+}
+
+async function testGraphToggle(browser, base) {
+  console.log("\n## Graph is optional: hidden until opened, Sigma resizes when it opens");
+  const page = await openPage(browser, base, 1280, 800, "");
+  const hidden = await graphState(page);
+  check("the graph is hidden on load and out of the tab order", hidden.visibility === "hidden" && hidden.focusable === 0 && hidden.wrapHeight < 120, JSON.stringify(hidden));
+  check("Show graph is offered and Hide graph is not", await page.evaluate(() => !document.getElementById("show-graph").hidden && document.getElementById("hide-graph").hidden));
+
+  await page.click("#show-graph");
+  await sleep(900);
+  const shown = await graphState(page);
+  check("Show graph reveals the graph", shown.visibility === "visible" && shown.clientWidth > 300 && shown.clientHeight > 300, JSON.stringify(shown));
+  check("Sigma matches the container size after it opens", shown.sigmaWidth === shown.offsetWidth && shown.sigmaHeight === shown.offsetHeight && shown.canvasWidth > 0 && Math.abs(shown.canvasWidth - shown.sigmaWidth) <= 1, JSON.stringify(shown));
+  check("focus moves to Hide graph and the URL records the graph", (await activeId(page)) === "hide-graph" && /[?&]graph=1/.test(page.url()), (await activeId(page)) + " " + page.url());
+  await page.click("#hide-graph");
+  await sleep(500);
+  const closed = await graphState(page);
+  check("Hide graph hides it again and focus returns to Show graph", closed.visibility === "hidden" && (await activeId(page)) === "show-graph" && !/graph=1/.test(page.url()), JSON.stringify(closed) + (await activeId(page)));
+
+  await page.setViewport({ width: 1000, height: 800 });
+  await sleep(300);
+  await page.click("#show-graph");
+  await sleep(900);
+  const resized = await graphState(page);
+  check("Sigma follows a window resize that happened while the graph was hidden", resized.clientWidth < shown.clientWidth && resized.sigmaWidth === resized.offsetWidth && resized.sigmaHeight === resized.offsetHeight, JSON.stringify(resized));
+  await page.close();
+
+  const linked = await openPage(browser, base, 1280, 800, "?graph=1");
+  check("a shared link with graph=1 opens the graph", (await graphState(linked)).visibility === "visible");
+  await linked.close();
+
+  const chainPage = await openPage(browser, base, 1280, 800, "?risk=directpromptinjection");
+  check("an open chain offers Show graph", await chainPage.evaluate(() => !document.getElementById("show-graph").hidden && !document.getElementById("chain").hidden));
+  await chainPage.click("#show-graph");
+  await sleep(900);
+  const focusView = await chainPage.evaluate(() => ({ chainHidden: document.getElementById("chain").hidden, hideShown: !document.getElementById("hide-graph").hidden }));
+  const focusGraph = await graphState(chainPage);
+  check("Show graph on a chain draws the graph for that threat", focusView.chainHidden && focusView.hideShown && focusGraph.visibility === "visible" && focusGraph.sigmaWidth === focusGraph.offsetWidth, JSON.stringify(focusGraph));
+  await chainPage.click("#hide-graph");
+  await sleep(600);
+  check("Hide graph returns to the chain", await chainPage.evaluate(() => !document.getElementById("chain").hidden && document.activeElement.id === "chain-heading"));
+  await chainPage.close();
+
+  const phone = await openPage(browser, base, 375, 812, "");
+  check("the map still loads at 375 wide with the panel closed", await phone.$eval("#map-status", (el) => el.dataset.ready === "true" && !document.getElementById("map-error").textContent));
+  await phone.click("#show-graph");
+  await sleep(900);
+  const phoneGraph = await graphState(phone);
+  const sheet = await sheetState(phone);
+  check("Sigma sizes itself when the graph opens in the phone sheet", phoneGraph.clientWidth > 250 && phoneGraph.sigmaWidth === phoneGraph.offsetWidth && phoneGraph.sigmaHeight === phoneGraph.offsetHeight && sheet.shown, JSON.stringify({ phoneGraph, sheet }));
+  await phone.click("#clear-selection");
+  await sleep(500);
+  check("Back to list closes the graph sheet", !(await sheetState(phone)).shown);
+  check("no page errors with the graph at 375 wide", phone.__errors.length === 0, phone.__errors.join("; "));
+  await phone.close();
+}
+
+async function testListbox(browser, base) {
+  console.log("\n## Search listbox: ARIA combobox, grouped options, keyboard");
+  const page = await openPage(browser, base, 1280, 800, "");
+  const attrs = await page.$eval("#node-search", (el) => ({ role: el.getAttribute("role"), auto: el.getAttribute("aria-autocomplete"), expanded: el.getAttribute("aria-expanded"), controls: el.getAttribute("aria-controls"), popup: el.getAttribute("aria-haspopup") }));
+  check("the search field is a combobox that controls a listbox", attrs.role === "combobox" && attrs.auto === "list" && attrs.popup === "listbox" && attrs.expanded === "false" && attrs.controls === "search-results", JSON.stringify(attrs));
+  check("the popup is a listbox", await page.$eval("#search-results", (el) => el.getAttribute("role") === "listbox" && el.hidden));
+
+  await search(page, "prompt injection");
+  const open = await page.evaluate(() => {
+    const lb = document.getElementById("search-results");
+    const groups = Array.from(lb.querySelectorAll('[role=group]')).map((g) => {
+      const label = document.getElementById(g.getAttribute("aria-labelledby"));
+      return { label: label ? label.textContent : null, options: g.querySelectorAll("[role=option]").length };
+    });
+    const options = Array.from(lb.querySelectorAll("[role=option]"));
+    return { expanded: document.getElementById("node-search").getAttribute("aria-expanded"), shown: !lb.hidden, groups: groups, ids: options.every((o) => o.id), unique: new Set(options.map((o) => o.id)).size === options.length, active: document.getElementById("node-search").getAttribute("aria-activedescendant") };
+  });
+  check("typing opens the listbox with labeled Threats and Controls groups", open.expanded === "true" && open.shown && open.groups.length === 2 && /^Threats \(\d+\)$/.test(open.groups[0].label) && /^Controls \(\d+\)$/.test(open.groups[1].label), JSON.stringify(open));
+  check("every option has a unique id and nothing is highlighted yet", open.ids && open.unique && open.active === null, JSON.stringify(open));
+
+  const highlight = () => page.evaluate(() => {
+    const id = document.getElementById("node-search").getAttribute("aria-activedescendant");
+    const el = id ? document.getElementById(id) : null;
+    const options = Array.from(document.querySelectorAll("#search-results [role=option]"));
+    return { id: id, nodeId: el ? el.dataset.nodeId : null, index: el ? options.indexOf(el) : -1, selected: options.filter((o) => o.getAttribute("aria-selected") === "true").length, last: options.length - 1, focusOnInput: document.activeElement.id === "node-search" };
+  });
+  await page.keyboard.press("ArrowDown");
+  let h = await highlight();
+  check("ArrowDown highlights the first option and sets aria-activedescendant", h.index === 0 && h.selected === 1 && h.focusOnInput && /^risk:/.test(h.nodeId), JSON.stringify(h));
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  h = await highlight();
+  check("ArrowDown moves one option at a time", h.index === 2 && h.selected === 1, JSON.stringify(h));
+  await page.keyboard.press("End");
+  h = await highlight();
+  check("End highlights the last option", h.index === h.last && /^control:/.test(h.nodeId), JSON.stringify(h));
+  await page.keyboard.press("Home");
+  h = await highlight();
+  check("Home highlights the first option", h.index === 0, JSON.stringify(h));
+  await page.keyboard.press("ArrowUp");
+  h = await highlight();
+  check("ArrowUp from the first option returns to the text field", h.index === -1 && h.id === null && h.selected === 0, JSON.stringify(h));
+
+  await page.keyboard.press("Enter");
+  await sleep(300);
+  h = await highlight();
+  const chainAfterEnter = await page.$eval("#chain", (el) => el.hidden);
+  check("Enter with nothing highlighted does not jump to the first match", chainAfterEnter && h.index === 0, JSON.stringify(h) + chainAfterEnter);
+
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("ArrowDown");
+  h = await highlight();
+  const wanted = await page.evaluate((id) => window.__relationshipMap.graph.getNodeAttribute(id, "name"), h.nodeId);
+  await page.keyboard.press("Enter");
+  await sleep(700);
+  const picked = await page.evaluate(() => ({ heading: document.getElementById("chain-heading").textContent, hidden: document.getElementById("chain").hidden }));
+  check("Enter opens the highlighted option, not the first match", !picked.hidden && picked.heading.indexOf("Chain for " + wanted) === 0 && h.index === 2, JSON.stringify({ picked, wanted, h }));
+
+  await clickNow(page, "#clear-selection");
+  await sleep(400);
+  await search(page, "prompt injection");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Escape");
+  const afterEsc1 = await page.evaluate(() => ({ expanded: document.getElementById("node-search").getAttribute("aria-expanded"), value: document.getElementById("node-search").value, active: document.getElementById("node-search").getAttribute("aria-activedescendant") }));
+  check("Escape first clears the highlight and keeps the list open", afterEsc1.expanded === "true" && afterEsc1.active === null && afterEsc1.value === "prompt injection", JSON.stringify(afterEsc1));
+  await page.keyboard.press("Escape");
+  const afterEsc2 = await page.evaluate(() => ({ expanded: document.getElementById("node-search").getAttribute("aria-expanded"), hidden: document.getElementById("search-results").hidden, value: document.getElementById("node-search").value }));
+  check("Escape again closes the list and keeps the text", afterEsc2.expanded === "false" && afterEsc2.hidden && afterEsc2.value === "prompt injection", JSON.stringify(afterEsc2));
+  await page.keyboard.press("ArrowDown");
+  const reopened = await page.evaluate(() => ({ expanded: document.getElementById("node-search").getAttribute("aria-expanded"), active: document.getElementById("node-search").getAttribute("aria-activedescendant") }));
+  check("ArrowDown reopens the list", reopened.expanded === "true" && !!reopened.active, JSON.stringify(reopened));
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Escape");
+  await page.keyboard.press("Escape");
+  check("Escape once more clears the text", (await page.$eval("#node-search", (el) => el.value)) === "");
+  check("no page errors with the listbox", page.__errors.length === 0, page.__errors.join("; "));
+  await page.close();
+}
+
+async function testPhoneSheet(browser, base) {
+  console.log("\n## Phone: sheet, collapsible chain columns, Read more");
+  const desk = await openPage(browser, base, 1280, 800, "?risk=directpromptinjection");
+  const deskCols = await desk.evaluate(() => ({
+    toggles: document.querySelectorAll(".chain-col__toggle").length,
+    bodiesShown: Array.from(document.querySelectorAll(".chain-col__body")).filter((b) => !b.hidden).length,
+    readMore: getComputedStyle(document.getElementById("read-more")).display,
+    summary: getComputedStyle(document.getElementById("hero-summary")).display,
+    full: getComputedStyle(document.querySelector(".hero-full")).display,
+    preview: getComputedStyle(document.querySelector(".map-preview")).display
+  }));
+  check("on desktop all four chain columns are open and have no toggles", deskCols.toggles === 0 && deskCols.bodiesShown === 4, JSON.stringify(deskCols));
+  check("on desktop the hero shows the full text and no Read more", deskCols.readMore === "none" && deskCols.summary === "none" && deskCols.full !== "none" && deskCols.preview !== "none", JSON.stringify(deskCols));
+  await desk.close();
+
+  const page = await openPage(browser, base, 375, 812, "");
+  const hero = await page.evaluate(() => ({
+    summary: getComputedStyle(document.getElementById("hero-summary")).display,
+    full: getComputedStyle(document.querySelector(".hero-full")).display,
+    preview: getComputedStyle(document.querySelector(".map-preview")).display,
+    button: document.getElementById("read-more").textContent, expanded: document.getElementById("read-more").getAttribute("aria-expanded"),
+    controls: document.getElementById("read-more").getAttribute("aria-controls").split(" ").every((id) => !!document.getElementById(id))
+  }));
+  check("on the phone the hero is one summary sentence with a Read more button", hero.summary !== "none" && hero.full === "none" && hero.preview === "none" && hero.button === "Read more" && hero.expanded === "false" && hero.controls, JSON.stringify(hero));
+  await page.click("#read-more");
+  const more = await page.evaluate(() => ({ full: getComputedStyle(document.querySelector(".hero-full")).display, preview: getComputedStyle(document.querySelector(".map-preview")).display, summary: getComputedStyle(document.getElementById("hero-summary")).display, button: document.getElementById("read-more").textContent, expanded: document.getElementById("read-more").getAttribute("aria-expanded") }));
+  check("Read more shows the full hero text and the Preview note", more.full !== "none" && more.preview !== "none" && more.summary === "none" && more.button === "Read less" && more.expanded === "true", JSON.stringify(more));
+  await page.click("#read-more");
+  check("Read less hides them again", await page.evaluate(() => getComputedStyle(document.querySelector(".map-preview")).display === "none"));
+  check("the side panel is closed on the phone until a record is chosen", !(await sheetState(page)).shown);
+
+  await search(page, "direct prompt injection");
+  await page.keyboard.press("ArrowDown");
+  await page.keyboard.press("Enter");
+  await sleep(700);
+  const sheet = await sheetState(page);
+  check("the chain opens as a full-screen sheet", sheet.shown && sheet.left === 0 && sheet.top === 0 && sheet.width === 375 && sheet.height === 812 && sheet.sheetOpen, JSON.stringify(sheet));
+  check("the list behind the sheet is inert and focus is in the sheet", sheet.stageInert && (await activeId(page)) === "chain-heading");
+
+  const cols = await page.evaluate(() => Array.from(document.querySelectorAll(".chain-col__toggle")).map((b) => ({ text: b.textContent, expanded: b.getAttribute("aria-expanded"), key: b.dataset.column, bodyHidden: document.getElementById(b.getAttribute("aria-controls")).hidden })));
+  check("the four columns are sections with counts", cols.length === 4 && cols.map((c) => c.key).join() === "risk,obligation,control,accountable" && cols.every((c) => /\(\d+\)$/.test(c.text)), JSON.stringify(cols));
+  check("only Risk is open at first", cols.filter((c) => c.expanded === "true").map((c) => c.key).join() === "risk" && cols.every((c) => c.bodyHidden === (c.expanded !== "true")), JSON.stringify(cols));
+  await page.click('.chain-col__toggle[data-column="obligation"]');
+  const second = await page.evaluate(() => Array.from(document.querySelectorAll(".chain-col__toggle")).filter((b) => b.getAttribute("aria-expanded") === "true").map((b) => b.dataset.column));
+  check("opening Obligation closes Risk, so one section is open at a time", second.join() === "obligation", JSON.stringify(second));
+  await page.click('.chain-col__toggle[data-column="obligation"]');
+  const none = await page.evaluate(() => document.querySelectorAll('.chain-col__toggle[aria-expanded="true"]').length);
+  check("choosing the open section collapses it", none === 0);
+  await page.click('.chain-jump a[href="#chain-col-accountable"]');
+  await sleep(300);
+  const jumped = await page.evaluate(() => ({ open: Array.from(document.querySelectorAll(".chain-col__toggle")).filter((b) => b.getAttribute("aria-expanded") === "true").map((b) => b.dataset.column), active: document.activeElement.id }));
+  check("the Accountable jump link opens that section and focuses its heading", jumped.open.join() === "accountable" && jumped.active === "chain-col-accountable", JSON.stringify(jumped));
+  await page.keyboard.press("Tab");
+  check("Tab from the heading reaches the section toggle, then its cards", await page.evaluate(() => document.activeElement.classList.contains("chain-col__toggle")));
+  await page.keyboard.press("Tab");
+  check("the open section's card is next in the tab order", await page.evaluate(() => document.activeElement.classList.contains("chain-card")));
+
+  await page.keyboard.press("Escape");
+  await sleep(500);
+  const afterEsc = await sheetState(page);
+  check("Escape closes the sheet and returns focus to the search field", !afterEsc.shown && !afterEsc.stageInert && (await activeId(page)) === "node-search", JSON.stringify(afterEsc) + (await activeId(page)));
+
+  await search(page, "direct prompt injection");
+  await page.click('#search-results [role=option][data-node-id="risk:directpromptinjection"]');
+  await sleep(600);
+  await clickNow(page, "#clear-selection");
+  await sleep(500);
+  check("Back to list closes the sheet", !(await sheetState(page)).shown);
+
+  await page.setViewport({ width: 1280, height: 800 });
+  await sleep(300);
+  check("the page loads without a sideways scroll and no errors", page.__errors.length === 0, page.__errors.join("; "));
+  await page.close();
+
+  const wide = await openPage(browser, base, 375, 812, "?risk=directpromptinjection");
+  await wide.setViewport({ width: 1280, height: 800 });
+  await sleep(500);
+  const grown = await wide.evaluate(() => ({ toggles: document.querySelectorAll(".chain-col__toggle").length, bodies: Array.from(document.querySelectorAll(".chain-col__body")).filter((b) => !b.hidden).length }));
+  check("growing the window past 800 px opens all four columns and drops the toggles", grown.toggles === 0 && grown.bodies === 4, JSON.stringify(grown));
+  await wide.close();
 }
 
 async function captureMobile(browser, base) {
@@ -466,6 +771,10 @@ async function main() {
     await testDsgaiSourceLinks(browser, base);
     await testWording(browser, base);
     await testNavigation(browser, base);
+    await testListView(browser, base);
+    await testGraphToggle(browser, base);
+    await testListbox(browser, base);
+    await testPhoneSheet(browser, base);
     await captureDesktop(browser, base);
     await captureMobile(browser, base);
   } finally {

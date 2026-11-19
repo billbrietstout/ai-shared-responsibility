@@ -179,6 +179,18 @@
   var jumpChain = document.getElementById("jump-chain");
   var showAllBtn = document.getElementById("show-all-results");
   var showAllMatches = false;
+  var showGraphBtn = document.getElementById("show-graph");
+  var hideGraphBtn = document.getElementById("hide-graph");
+  var summaryEl = document.getElementById("filter-summary");
+  var readMoreBtn = document.getElementById("read-more");
+  var finderEl = document.querySelector(".map-stage");
+  var graphOpen = false;
+  var openColumn = "risk";
+  var opener = null;
+  var activeIndex = -1;
+  var listClosed = false;
+  var narrowQuery = window.matchMedia("(max-width: 800px)");
+  var SHEET_INERT = ["site-nav", ".page-hero", ".map-jump", ".map-preview", ".map-stage", ".coverage", "site-footer", ".skip-link"];
   var wordMatch = null;
   var detailsEl = document.querySelector(".details");
 
@@ -1479,7 +1491,23 @@
       var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
       heading.id = "chain-col-" + column[2];
       heading.setAttribute("tabindex", "-1");
+      wrap.dataset.column = column[2];
+      var narrowChain = narrowQuery.matches;
+      var colOpen = !narrowChain || openColumn === column[2];
+      var colBody = makeEl("div", "chain-col__body");
+      colBody.id = "chain-col-body-" + column[2];
+      if (narrowChain) {
+        var toggle = makeEl("button", "chain-col__toggle", heading.textContent);
+        toggle.type = "button";
+        toggle.dataset.column = column[2];
+        toggle.setAttribute("aria-expanded", colOpen ? "true" : "false");
+        toggle.setAttribute("aria-controls", colBody.id);
+        heading.textContent = "";
+        heading.appendChild(toggle);
+        colBody.hidden = !colOpen;
+      }
       wrap.appendChild(heading);
+      wrap.appendChild(colBody);
       column[1].forEach(function (item) {
         var pressed = chainFocus === item.id;
         var button = cardButton(item.id, pressed);
@@ -1521,23 +1549,34 @@
             button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. Basis: none recorded. accountable_by_model names this persona."));
           }
         }
-        wrap.appendChild(button);
+        colBody.appendChild(button);
       });
       if (!column[1].length && chain.columnNotes && chain.columnNotes[column[2]]) {
-        wrap.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column[2]]));
+        colBody.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column[2]]));
       }
       chain.gaps.forEach(function (gap) {
         if (gap.column !== column[2]) return;
         var note = makeEl("p", "chain-gap");
         note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
         note.appendChild(document.createTextNode(" " + gap.text));
-        wrap.appendChild(note);
+        colBody.appendChild(note);
       });
       columnsWrap.appendChild(wrap);
     });
     requestAnimationFrame(function () {
       drawChainLines();
       requestAnimationFrame(drawChainLines);
+    });
+  }
+
+  function setOpenColumn(key) {
+    openColumn = key;
+    Array.prototype.forEach.call(chainBoard.querySelectorAll(".chain-col"), function (col) {
+      var open = col.dataset.column === key;
+      var body = col.querySelector(".chain-col__body");
+      var toggle = col.querySelector(".chain-col__toggle");
+      if (body) body.hidden = !open;
+      if (toggle) toggle.setAttribute("aria-expanded", open ? "true" : "false");
     });
   }
 
@@ -1772,67 +1811,13 @@
      window: stick it under the nav on a wide screen, and dock it to the
      bottom on a narrow screen while a node is open. */
   function placeDetails() {
-    if (!detailsEl || !mapPage) return;
-    var narrow = window.matchMedia("(max-width: 800px)").matches;
-    var open = !!(detailsBody && !detailsBody.hidden);
-    /* On a phone the chain is the page. A docked details sheet would cover
-       the stacked columns, so the sheet stays in normal flow while a chain
-       is open. The neighbor graph still docks, because that canvas needs
-       the details beside it. */
-    var dock = narrow && open && !document.body.classList.contains("chain-open");
-    mapPage.classList.toggle("is-node-open", dock);
-    var cushion = 2;
-    if (narrow) {
-      detailsEl.style.top = "";
-      if (!dock) {
-        detailsEl.style.maxHeight = "";
-        return;
-      }
-      var nav = document.querySelector(".nav");
-      var navBottom = 0;
-      if (nav) {
-        var navPos = window.getComputedStyle(nav).position;
-        if (navPos === "sticky" || navPos === "fixed") {
-          var navRect = nav.getBoundingClientRect();
-          if (navRect.bottom > 0) navBottom = navRect.bottom;
-        }
-      }
-      var limit = window.innerHeight - Math.max(navBottom, 0) - 12 - 12;
-      var cap = Math.min(limit, Math.round(window.innerHeight * 0.42));
-      var sheet = Math.floor(cap - cushion);
-      if (sheet < 0) sheet = 0;
-      var nextHeight = sheet + "px";
-      if (detailsEl.style.maxHeight !== nextHeight) detailsEl.style.maxHeight = nextHeight;
-      return;
-    }
-    var navEl = document.querySelector(".nav");
-    var stick = 16;
-    if (navEl) {
-      var pos = window.getComputedStyle(navEl).position;
-      if (pos === "sticky" || pos === "fixed") {
-        var bottom = navEl.getBoundingClientRect().bottom;
-        if (bottom > 0) stick = Math.round(bottom) + 16;
-      }
-    }
-    var topPx = stick + "px";
-    if (detailsEl.style.top !== topPx) detailsEl.style.top = topPx;
-    /* Cap the panel at the layout's bottom as well as the window. A
-       viewport-tall panel is as tall as this column once the map is
-       scrolled up, and then sticky lets it slide off the top. */
-    var layout = document.querySelector(".map-layout");
-    var layoutRect = layout ? layout.getBoundingClientRect() : null;
-    var anchor = stick;
-    if (layoutRect && layoutRect.top > stick) anchor = layoutRect.top;
-    var bottomEdge = window.innerHeight - cushion;
-    if (layoutRect && layoutRect.bottom - cushion < bottomEdge) bottomEdge = layoutRect.bottom - cushion;
-    var height = Math.floor(bottomEdge - anchor) - 8;
-    if (height < 0) height = 0;
-    var heightPx = height + "px";
-    if (detailsEl.style.maxHeight !== heightPx) detailsEl.style.maxHeight = heightPx;
+    if (!detailsEl) return;
+    detailsEl.style.top = "";
+    detailsEl.style.maxHeight = "";
   }
 
   function renderDetails() {
-    clearBtn.disabled = !selected && !root && !personaPick;
+    clearBtn.disabled = !selected && !root && !personaPick && !graphOpen;
     if (view === "chain" && currentChain && ((root && graph.hasNode(root)) || personaPick)) {
       var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
       var focusedName = focusedChainName(currentChain);
@@ -2009,28 +1994,15 @@
     statusEl.dataset.suggested = suggested.join(",");
   }
 
-  /* With All models and All layers, the list is one sample control per layer.
-   * Choosing a model or a layer lists every control that matches. */
   function suggestedIds() {
-    var listing = modelFilter !== "all" || layerFilter !== "all";
-    var best = {};
     var every = [];
     graph.forEachNode(function (id, attrs) {
       if (attrs.kind !== "control" || !nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       if (modelFilter === "all" && !(attrs.coreModels && attrs.coreModels.length)) return;
       if (!attrs.layer) return;
-      if (listing) {
-        every.push(id);
-        return;
-      }
-      var rank = VERTICAL_RANK[attrs.vertical];
-      if (rank == null) rank = 99;
-      var key = [-(attrs.coreModels ? attrs.coreModels.length : 0), rank, attrs.ref || "", id];
-      var prev = best[attrs.layer];
-      if (!prev || compareKeys(key, prev.key) < 0) best[attrs.layer] = { id: id, key: key };
+      every.push(id);
     });
-    if (listing) return every.sort(compareControlIds);
-    return LAYERS.map(function (layer) { return best[layer] && best[layer].id; }).filter(Boolean);
+    return every.sort(compareControlIds);
   }
 
   function compareControlIds(a, b) {
@@ -2043,28 +2015,9 @@
     return a < b ? -1 : a > b ? 1 : 0;
   }
 
-  function controlListNote(count) {
-    if (modelFilter === "all" && layerFilter === "all") {
-      return "Showing one sample control per layer. Choose an operating model or a layer to list every control.";
-    }
-    var inLayer = layerFilter !== "all" ? "in " + layerName(layerFilter) : "in layer order";
-    if (modelFilter !== "all") {
-      return unit(count, "control", "controls") + " list " + modelName(modelFilter) + " " + inLayer + ".";
-    }
-    return unit(count, "control", "controls") + " are " + inLayer + ", across all operating models.";
-  }
-
   function layerName(layerId) {
     if (!graph || !graph.hasNode("layer:" + layerId)) return layerId;
     return graph.getNodeAttribute("layer:" + layerId, "name");
-  }
-
-  function compareKeys(a, b) {
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] < b[i]) return -1;
-      if (a[i] > b[i]) return 1;
-    }
-    return 0;
   }
 
   function fillButton(button, id) {
@@ -2088,16 +2041,69 @@
     }
   }
 
-  function renderIdList(ids, limit) {
+  var optionSeq = 0;
+
+  function hideResults() {
+    searchResults.hidden = true;
     searchResults.textContent = "";
-    searchResults.hidden = !ids.length;
-    ids.slice(0, limit || ids.length).forEach(function (id) {
-      var li = document.createElement("li");
-      var button = document.createElement("button");
-      fillButton(button, id);
-      li.appendChild(button);
-      searchResults.appendChild(li);
+    searchInput.setAttribute("aria-expanded", "false");
+    searchInput.removeAttribute("aria-activedescendant");
+    activeIndex = -1;
+  }
+
+  function optionEls() {
+    return Array.prototype.slice.call(searchResults.querySelectorAll('[role="option"]'));
+  }
+
+  function setActive(index) {
+    var opts = optionEls();
+    if (index >= opts.length) index = opts.length - 1;
+    if (index < -1) index = -1;
+    opts.forEach(function (el, i) {
+      el.setAttribute("aria-selected", i === index ? "true" : "false");
     });
+    activeIndex = index;
+    if (index < 0) {
+      searchInput.removeAttribute("aria-activedescendant");
+      return;
+    }
+    searchInput.setAttribute("aria-activedescendant", opts[index].id);
+    opts[index].scrollIntoView({ block: "nearest" });
+  }
+
+  function renderIdList(ids, perGroup) {
+    searchResults.textContent = "";
+    activeIndex = -1;
+    searchInput.removeAttribute("aria-activedescendant");
+    var groups = [["risk", "Threats"], ["control", "Controls"]];
+    var shown = 0;
+    groups.forEach(function (group) {
+      var members = ids.filter(function (id) {
+        return graph.getNodeAttribute(id, "kind") === group[0];
+      });
+      if (!members.length) return;
+      var wrap = document.createElement("div");
+      wrap.setAttribute("role", "group");
+      var label = document.createElement("div");
+      label.className = "listbox-group__label";
+      label.id = "listbox-label-" + group[0];
+      label.textContent = group[1] + " (" + members.length + ")";
+      wrap.setAttribute("aria-labelledby", label.id);
+      wrap.appendChild(label);
+      members.slice(0, perGroup || members.length).forEach(function (id) {
+        var option = document.createElement("div");
+        option.setAttribute("role", "option");
+        option.setAttribute("aria-selected", "false");
+        option.id = "search-option-" + (optionSeq += 1);
+        fillButton(option, id);
+        wrap.appendChild(option);
+        shown += 1;
+      });
+      searchResults.appendChild(wrap);
+    });
+    searchResults.hidden = !shown;
+    searchInput.setAttribute("aria-expanded", shown ? "true" : "false");
+    return shown;
   }
 
   var STOP_WORDS = ["the", "and", "for", "with", "from", "how", "what", "are", "that", "this", "into", "can", "not", "our", "you", "your", "use", "using"];
@@ -2161,10 +2167,11 @@
 
   function renderMatches(query) {
     var ids = matches(query);
-    var shownIds = ids.slice(0, showAllMatches ? ids.length : 8);
     suggestionsWrap.hidden = true;
-    renderIdList(shownIds);
-    showAllBtn.hidden = ids.length <= shownIds.length;
+    var shown = 0;
+    if (listClosed) hideResults();
+    else shown = renderIdList(ids, showAllMatches ? 0 : 8);
+    showAllBtn.hidden = listClosed || ids.length <= shown;
     showAllBtn.textContent = "Show all " + ids.length + " matches";
     if (!query.trim()) {
       searchNote.textContent = "";
@@ -2184,7 +2191,8 @@
     } else {
       line = ids.length + (ids.length === 1 ? " record matches" : " records match") + ": " + breakdown + ".";
     }
-    if (ids.length > shownIds.length) line += " Showing the first " + shownIds.length + ".";
+    if (!listClosed && ids.length > shown) line += " Showing up to 8 of each group.";
+    if (listClosed) line += " The list is closed. Press the down arrow to open it.";
     searchNote.textContent = line;
     return ids;
   }
@@ -2228,16 +2236,25 @@
       li.appendChild(button);
       suggestions.appendChild(li);
     });
-    searchResults.hidden = true;
-    searchResults.textContent = "";
-    if (!risks.length && !controlIds.length) {
-      searchNote.textContent = "No threat or control matches these filters.";
+    hideResults();
+    searchNote.textContent = !risks.length && !controlIds.length ? "No threat or control matches these filters." : "";
+  }
+
+  function renderSummary() {
+    if (!summaryEl || !graph) return;
+    if (entry === "requirement" || entry === "account") {
+      summaryEl.textContent = "";
       return;
     }
-    var parts = [];
-    if (risks.length) parts.push(unit(risks.length, "threat", "threats") + ".");
-    if (controlIds.length) parts.push(controlListNote(controlIds.length));
-    searchNote.textContent = parts.join(" ");
+    var counts = [];
+    if (entry !== "threat") counts.push(unit(suggestedIds().length, "control", "controls"));
+    if (entry !== "control") {
+      var threatCount = riskIds().filter(function (id) {
+        return layerAllowed(graph.getNodeAttributes(id));
+      }).length;
+      counts.push(unit(threatCount, "threat", "threats"));
+    }
+    summaryEl.textContent = (modelFilter === "all" ? "All operating models" : modelName(modelFilter)) + ", " + (layerFilter === "all" ? "all layers" : layerFilter) + ": " + counts.join(", ");
   }
 
   function syncToggles() {
@@ -2253,6 +2270,7 @@
   function updateChrome() {
     syncToggles();
     var query = searchInput.value.trim();
+    findForm.classList.toggle("has-query", !!query);
     if (query) {
       renderMatches(searchInput.value);
     } else if (linkHits && linkHits.length) {
@@ -2261,15 +2279,13 @@
       searchNote.textContent = linkNote;
     } else if (linkNote) {
       suggestionsWrap.hidden = true;
-      searchResults.hidden = true;
-      searchResults.textContent = "";
+      hideResults();
       searchNote.textContent = linkNote;
-    } else if (view === "search") {
+    } else if (view !== "context") {
       renderSuggestions();
     } else {
       suggestionsWrap.hidden = true;
-      searchResults.hidden = true;
-      searchResults.textContent = "";
+      hideResults();
       searchNote.textContent = "";
     }
 
@@ -2277,10 +2293,16 @@
     var rootVisible = !!(rootAttrs && nodeAllowed(rootAttrs));
     var rootWord = rootAttrs && rootAttrs.kind === "risk" ? "risk" : "control";
     var chainable = !!(rootAttrs && !rootAttrs.tapestry && (rootAttrs.kind === "risk" || rootAttrs.kind === "control"));
-    widenBtn.hidden = !((view === "focus" || view === "chain") && rootVisible);
+    var graphOn = view === "focus" || (view === "search" && graphOpen);
+    var canGraph = view === "search" || (view === "chain" && !!root && graph.hasNode(root) && !graph.getNodeAttribute(root, "tapestry"));
+    showGraphBtn.hidden = graphOn || !canGraph;
+    hideGraphBtn.hidden = !graphOn;
+    graphWrap.classList.toggle("graph-wrap--off", !graphOn);
+    graphWrap.classList.toggle("graph-wrap--graph", graphOn);
+    widenBtn.hidden = !(view === "focus" && rootVisible);
     widenBtn.textContent = view === "focus" && wide ? "Show only the nodes next to this " + rootWord : "Widen the view";
     widenBtn.setAttribute("aria-pressed", view === "focus" && wide ? "true" : "false");
-    chainBtn.hidden = !(view === "focus" && chainable);
+    chainBtn.hidden = true;
     if (contextBtn) contextBtn.hidden = view === "context";
     startBtn.hidden = view === "search";
     startBtn.textContent = "Start from one threat or control";
@@ -2315,11 +2337,11 @@
     } else {
       findLabel.textContent = "Find a threat or a control";
       searchInput.placeholder = "Threat or control name";
-      helpEl.textContent = "Type a threat or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.";
+      helpEl.textContent = "Type a threat or a control name or a few words about it. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
     }
 
     if (view === "search") {
-      graphEmpty.hidden = false;
+      graphEmpty.hidden = !graphOn;
       graphEmpty.textContent = "Choose a threat or a control to see its chain.";
     } else if ((view === "focus" || view === "chain") && rootAttrs && !rootVisible) {
       graphEmpty.hidden = false;
@@ -2333,7 +2355,22 @@
       graphEmpty.hidden = true;
       graphEmpty.textContent = "";
     }
+    var panelOpen = chainOn || graphOn || contextOn;
+    mapPage.classList.toggle("is-panel-open", panelOpen);
     syncEntry();
+    renderSummary();
+    syncSheet();
+  }
+
+  function syncSheet() {
+    var open = mapPage.classList.contains("is-panel-open") && narrowQuery.matches;
+    document.body.classList.toggle("sheet-open", open);
+    SHEET_INERT.forEach(function (selector) {
+      Array.prototype.forEach.call(document.querySelectorAll(selector), function (el) {
+        if (open) el.setAttribute("inert", "");
+        else el.removeAttribute("inert");
+      });
+    });
   }
 
   function syncEntry() {
@@ -2384,6 +2421,8 @@
       button.dataset.persona = id;
       button.textContent = attrs.name;
       button.addEventListener("click", function () {
+        rememberOpener();
+        openColumn = "accountable";
         personaPick = id;
         entry = "account";
         view = "chain";
@@ -2412,6 +2451,7 @@
       if (view === "focus" && wide) params.set("wide", "1");
       else if (view === "focus") params.set("neighbors", "1");
     }
+    if (view === "search" && graphOpen) params.set("graph", "1");
     if (modelFilter !== "all") params.set("model", modelFilter);
     if (layerFilter !== "all") params.set("layer", layerFilter);
     if (showTapestry) params.set("tapestry", "1");
@@ -2526,6 +2566,8 @@
     entry = "";
     var viewParam = params.get("view");
     view = viewParam === "context" ? "context" : "search";
+    graphOpen = params.get("graph") === "1";
+    openColumn = "risk";
     var controlParam = params.get("control");
     var riskParam = params.get("risk");
     if (riskParam || controlParam) {
@@ -2560,6 +2602,7 @@
         var personaAttrs = graph.getNodeAttributes("persona:" + asked);
         if (personaAttrs.provenance !== "proposed-extension") {
           personaPick = asked;
+          openColumn = "accountable";
           entry = "account";
           view = "chain";
           chainFocus = "accountable:persona:" + asked;
@@ -2578,8 +2621,18 @@
     (focusEl || target).focus({ preventScroll: true });
   }
 
+  function scrollPanelTo(target) {
+    var bar = detailsEl.querySelector(".details__bar");
+    var offset = (bar ? bar.offsetHeight : 0) + 8;
+    var delta = target.getBoundingClientRect().top - detailsEl.getBoundingClientRect().top - offset;
+    detailsEl.scrollTop += delta;
+    target.focus({ preventScroll: true });
+  }
+
   function revealChain() {
-    if (!chainEl.hidden) scrollToTarget(chainHeading);
+    if (chainEl.hidden) return;
+    detailsEl.scrollTop = 0;
+    chainHeading.focus({ preventScroll: true });
   }
 
   function revealSearch() {
@@ -2592,6 +2645,7 @@
       revealChain();
       return;
     }
+    detailsEl.scrollTop = 0;
     detailsHeading.setAttribute("tabindex", "-1");
     detailsHeading.focus({ preventScroll: true });
   }
@@ -2599,6 +2653,8 @@
   function openControl(id, moveFocus, options) {
     options = options || {};
     if (!graph.hasNode(id)) return;
+    if (moveFocus) rememberOpener();
+    if (root !== id) openColumn = "risk";
     var attrs = graph.getNodeAttributes(id);
     root = id;
     selected = id;
@@ -2737,6 +2793,7 @@
   }
 
   function showSearch(push) {
+    if (view !== "search") graphOpen = false;
     view = "search";
     root = null;
     selected = null;
@@ -2757,12 +2814,74 @@
       commit(!!push);
       return;
     }
-    if (view === "focus" || view === "chain") {
+    if (view === "focus" || view === "chain" || view === "context") {
       showSearch(!!push);
       return;
     }
+    if (graphOpen) graphOpen = false;
     selected = null;
     commit(!!push);
+  }
+
+  function closePanel(push) {
+    if (root) chainFocus = root;
+    clearSelection(push);
+    restoreOpener();
+  }
+
+  function rememberOpener() {
+    var el = document.activeElement;
+    if (el && finderEl && finderEl.contains(el) && el !== document.body) {
+      opener = { el: el, id: el.dataset ? el.dataset.nodeId : "" };
+    } else if (!opener) {
+      opener = { el: searchInput, id: "" };
+    }
+  }
+
+  function restoreOpener() {
+    var target = null;
+    if (opener) {
+      if (opener.el && opener.el.isConnected && opener.el.getClientRects().length) target = opener.el;
+      else if (opener.id) target = finderEl.querySelector('[data-node-id="' + opener.id + '"]');
+    }
+    if (!target || !target.getClientRects().length) target = searchInput;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ block: "nearest" });
+    opener = null;
+  }
+
+  function openGraph(push) {
+    rememberOpener();
+    if (view === "chain" && root) {
+      view = "focus";
+      wide = false;
+      commit(push);
+      if (renderer) frameFocus();
+    } else if (view === "search") {
+      graphOpen = true;
+      commit(push);
+      if (renderer) frameAll();
+    }
+    hideGraphBtn.focus({ preventScroll: true });
+  }
+
+  function closeGraph(push) {
+    if (view === "focus" && root && graph.hasNode(root) && !graph.getNodeAttribute(root, "tapestry")) {
+      view = "chain";
+      wide = false;
+      chainFocus = root;
+      selected = root;
+      commit(push);
+      revealChain();
+      return;
+    }
+    if (view === "focus") {
+      showSearch(push);
+    } else {
+      graphOpen = false;
+      commit(push);
+    }
+    restoreOpener();
   }
 
   function toggleWide() {
@@ -2889,8 +3008,8 @@
   }
 
   function activeButtons() {
-    var list = suggestionsWrap.hidden ? searchResults : suggestionsWrap;
-    return Array.prototype.slice.call(list.querySelectorAll("button"));
+    if (suggestionsWrap.hidden) return [];
+    return Array.prototype.slice.call(suggestionsWrap.querySelectorAll("button"));
   }
 
   function renderModelRadios(models) {
@@ -2942,7 +3061,7 @@
 
   function safeRefresh() {
     if (!renderer) return;
-    if (graphWrap.classList.contains("graph-wrap--chain")) return;
+    if (graphWrap.classList.contains("graph-wrap--off") || graphWrap.classList.contains("graph-wrap--context")) return;
     if (!graphEl.clientWidth || !graphEl.clientHeight) return;
     if (typeof renderer.resize === "function") renderer.resize();
     renderer.refresh();
@@ -2962,7 +3081,7 @@
     /* Chain and layer views hide the canvas. Reveal it briefly so Sigma can
        measure a non-zero container, then restore the active view class. */
     var held = [];
-    ["graph-wrap--chain", "graph-wrap--context"].forEach(function (name) {
+    ["graph-wrap--chain", "graph-wrap--context", "graph-wrap--off"].forEach(function (name) {
       if (graphWrap.classList.contains(name)) {
         graphWrap.classList.remove(name);
         held.push(name);
@@ -2970,6 +3089,7 @@
     });
     renderer = new SigmaCtor(graph, graphEl, {
       settings: {
+        allowInvalidContainer: true,
         enableNodeDrag: false,
         enableCameraRotation: false,
         enableCameraMouseRotation: false,
@@ -3036,30 +3156,75 @@
 
   findForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    var ids = matches(searchInput.value);
-    if (ids.length) activateNode(ids[0], true);
+    if (!searchInput.value.trim()) return;
+    if (listClosed) {
+      listClosed = false;
+      renderMatches(searchInput.value);
+    }
+    if (optionEls().length && activeIndex < 0) setActive(0);
+  });
+  searchInput.addEventListener("keydown", function (event) {
+    var opts = optionEls();
+    var open = !searchResults.hidden && opts.length > 0;
+    var key = event.key;
+    if (key === "ArrowDown") {
+      if (!searchInput.value.trim()) return;
+      if (listClosed) {
+        listClosed = false;
+        renderMatches(searchInput.value);
+        opts = optionEls();
+      }
+      if (!opts.length) return;
+      event.preventDefault();
+      setActive(activeIndex + 1);
+    } else if (key === "ArrowUp") {
+      if (!open) return;
+      event.preventDefault();
+      setActive(activeIndex - 1);
+    } else if ((key === "Home" || key === "End") && open && activeIndex >= 0) {
+      event.preventDefault();
+      setActive(key === "Home" ? 0 : opts.length - 1);
+    } else if (key === "Enter" && open && activeIndex >= 0) {
+      event.preventDefault();
+      activateNode(opts[activeIndex].dataset.nodeId, true);
+    } else if (key === "Escape" && open) {
+      event.preventDefault();
+      event.stopPropagation();
+      if (activeIndex >= 0) {
+        setActive(-1);
+      } else {
+        listClosed = true;
+        renderMatches(searchInput.value);
+      }
+    }
+  });
+  searchResults.addEventListener("mousedown", function (event) {
+    event.preventDefault();
   });
   searchInput.addEventListener("input", function () {
     linkHits = null;
     linkNote = "";
     showAllMatches = false;
+    listClosed = false;
+    findForm.classList.toggle("has-query", !!searchInput.value.trim());
     if (!graph) return;
     if (!searchInput.value.trim()) {
       if (view === "search") renderSuggestions();
       else {
         suggestionsWrap.hidden = true;
-        searchResults.hidden = true;
-        searchResults.textContent = "";
+        hideResults();
         searchNote.textContent = "";
       }
       return;
     }
     renderMatches(searchInput.value);
-    var noteTop = searchNote.getBoundingClientRect().top;
-    if (noteTop > window.innerHeight * 0.6) window.scrollBy({ top: noteTop - window.innerHeight * 0.35, behavior: "auto" });
+    var listTop = (searchResults.hidden ? searchNote : searchResults).getBoundingClientRect().top;
+    var inputTop = searchInput.getBoundingClientRect().top;
+    if (listTop > window.innerHeight * 0.85 && inputTop > 130) window.scrollBy({ top: inputTop - 130, behavior: "auto" });
   });
   findForm.addEventListener("keydown", function (event) {
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    if (!searchResults.hidden) return;
     var buttons = activeButtons();
     if (!buttons.length) return;
     var idx = buttons.indexOf(document.activeElement);
@@ -3075,8 +3240,8 @@
     }
   });
   document.getElementById("map-tools").addEventListener("click", function (event) {
-    var button = event.target.closest("button");
-    if (!button || !button.dataset.nodeId) return;
+    var button = event.target.closest("button[data-node-id], [role='option'][data-node-id]");
+    if (!button) return;
     activateNode(button.dataset.nodeId, true);
   });
   modelList.addEventListener("change", function (event) {
@@ -3097,6 +3262,11 @@
   widenBtn.addEventListener("click", toggleWide);
   chainBtn.addEventListener("click", showChainView);
   chainBoard.addEventListener("click", function (event) {
+    var toggle = event.target.closest("button.chain-col__toggle");
+    if (toggle) {
+      setOpenColumn(openColumn === toggle.dataset.column ? "" : toggle.dataset.column);
+      return;
+    }
     var button = event.target.closest("button[data-chain-id]");
     if (!button) return;
     chainFocus = button.dataset.chainId;
@@ -3107,7 +3277,9 @@
   });
   chainBoard.addEventListener("keydown", function (event) {
     if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-    var buttons = Array.prototype.slice.call(chainBoard.querySelectorAll("button"));
+    var buttons = Array.prototype.slice.call(chainBoard.querySelectorAll("button")).filter(function (b) {
+      return b.getClientRects().length > 0;
+    });
     var idx = buttons.indexOf(document.activeElement);
     if (idx < 0) return;
     event.preventDefault();
@@ -3135,6 +3307,7 @@
       var id = button.dataset.nodeId;
       var attrs = graph.getNodeAttributes(id);
       if (attrs.kind === "persona" && CORE_PERSONAS.indexOf(attrs.ref) !== -1) {
+        openColumn = "accountable";
         personaPick = attrs.ref;
         entry = "account";
         view = "chain";
@@ -3161,18 +3334,45 @@
   document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
   document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
   clearBtn.addEventListener("click", function () {
-    clearSelection(true);
-    if (view === "search") revealSearch();
+    if (narrowQuery.matches) closePanel(true);
+    else {
+      clearSelection(true);
+      if (view === "search") restoreOpener();
+    }
+  });
+  showGraphBtn.addEventListener("click", function () { openGraph(true); });
+  hideGraphBtn.addEventListener("click", function () { closeGraph(true); });
+  readMoreBtn.addEventListener("click", function () {
+    var open = document.body.classList.toggle("more-open");
+    readMoreBtn.setAttribute("aria-expanded", open ? "true" : "false");
+    readMoreBtn.textContent = open ? "Read less" : "Read more";
+  });
+  var lastNarrow = narrowQuery.matches;
+  narrowQuery.addEventListener("change", function () {
+    if (narrowQuery.matches === lastNarrow) return;
+    lastNarrow = narrowQuery.matches;
+    if (currentChain) renderChain(currentChain);
+    syncSheet();
   });
   document.addEventListener("click", function (event) {
     var link = event.target.closest && event.target.closest("a[data-jump]");
     if (!link) return;
     var id = (link.getAttribute("href") || "").slice(1);
     var target = document.getElementById(id);
-    if (!target || target.closest("[hidden]")) return;
+    if (!target || target.closest("[hidden]") || !target.getClientRects().length) return;
     event.preventDefault();
     if (id === "node-search") {
+      if (narrowQuery.matches && mapPage.classList.contains("is-panel-open")) closePanel(true);
       revealSearch();
+      return;
+    }
+    if (id.indexOf("chain-col-") === 0) {
+      if (narrowQuery.matches) setOpenColumn(id.slice("chain-col-".length));
+      scrollPanelTo(document.getElementById(id));
+      return;
+    }
+    if (detailsEl.contains(target)) {
+      scrollPanelTo(target);
       return;
     }
     if (!target.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(target.tagName)) {
@@ -3181,11 +3381,11 @@
     scrollToTarget(target);
   });
   showAllBtn.addEventListener("click", function () {
-    var shown = searchResults.querySelectorAll("button").length;
+    var shown = optionEls().length;
     showAllMatches = true;
     renderMatches(searchInput.value);
-    var buttons = searchResults.querySelectorAll("button");
-    if (buttons[shown]) buttons[shown].focus();
+    searchInput.focus();
+    setActive(shown);
   });
   document.addEventListener("keydown", function (event) {
     if (event.key !== "Escape") return;
@@ -3196,14 +3396,14 @@
       if (view === "search") renderSuggestions();
       else {
         suggestionsWrap.hidden = true;
-        searchResults.hidden = true;
-        searchResults.textContent = "";
+        hideResults();
         searchNote.textContent = "";
       }
       return;
     }
-    if (view === "search" && !selected) return;
-    clearSelection(true);
+    if (view === "search" && !selected && !graphOpen) return;
+    if (narrowQuery.matches) closePanel(true);
+    else clearSelection(true);
   });
   window.addEventListener("popstate", applyFromLocation);
 
