@@ -83,3 +83,20 @@ jobs:
       - name: Schema, catalog agreement, and export checks
         working-directory: tools/threat-model
         run: python3 tests/test_schema_export.py
+
+  relationship-map:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install relationship-map test tools
+        working-directory: tools/relationship-map/tests
+        run: npm ci
+
+      - name: Search, control list, layer filter, basis labels, and DSGAI source links in Chrome
+        working-directory: tools/relationship-map/tests
+        run: node test_relationship_map.js
