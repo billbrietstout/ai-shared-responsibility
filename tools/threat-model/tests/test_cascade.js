@@ -1035,11 +1035,11 @@ test("UI: SRF layers in sequence, L1 on top and L5 at the bottom (Bill's rule)",
   assert.deepStrictEqual(opts, want, "layer choices in the Edit form");
 });
 
-test("UI: canvas CSS keeps main/graph-scroll flex space and drawer close restores width classes", () => {
+test("UI: the page scrolls, the graph keeps its height, and drawer close restores width classes", () => {
   const css = Array.prototype.map.call(w.document.querySelectorAll("style"), (s) => s.textContent).join("\n");
   assert.ok(/main\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "main grows in the body column");
-  assert.ok(/main\s*\{[^}]*min-height:\s*0/.test(css), "main can shrink under site chrome");
-  assert.ok(/#graph-scroll\s*\{[^}]*flex:\s*1\s+1\s+auto/.test(css), "graph-scroll takes leftover height");
+  assert.ok(/body\s*\{[^}]*overflow:\s*visible/.test(css), "the window scrolls the page");
+  assert.ok(/#graph-scroll\s*\{[^}]*overflow:\s*visible/.test(css), "the graph keeps its own height");
   assert.ok(/#rel-filters\s*\{[^}]*flex-wrap:\s*nowrap/.test(css), "filters stay on one row");
   assert.ok(/#rel-filters\s*\{[^}]*overflow-x:\s*auto/.test(css), "filters scroll sideways instead of wrapping tall");
   assert.ok(!$("assessment-mode").open, "Assessment panel stays closed by default");

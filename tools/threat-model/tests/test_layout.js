@@ -39,6 +39,37 @@ const measure = () => {
   return { scroll: r(sc), side: r(document.getElementById("side")), open: document.getElementById("main").classList.contains("drawer-open") };
 };
 
+async function pageScrolls(browser) {
+  const page = await open(browser, 1280, 800, "holistic");
+  const r = await page.evaluate(() => {
+    const svg = document.getElementById("graph-svg");
+    const sc = document.getElementById("graph-scroll");
+    const footer = document.querySelector("site-footer");
+    return {
+      overflow: getComputedStyle(document.body).overflowY,
+      doc: document.documentElement.scrollHeight,
+      view: window.innerHeight,
+      svgBottom: svg.getBoundingClientRect().bottom + window.scrollY,
+      svgH: svg.getBoundingClientRect().height,
+      scH: sc.getBoundingClientRect().height,
+      footerTop: footer.getBoundingClientRect().top + window.scrollY
+    };
+  });
+  check("holistic at 1280: the window can scroll the page", r.overflow !== "hidden" && r.doc > r.view + 80, JSON.stringify(r));
+  check("holistic at 1280: the graph is taller than the old leftover pane", r.scH + 1 >= r.svgH && r.svgBottom <= r.doc + 2 && r.footerTop + 2 >= r.svgBottom, JSON.stringify(r));
+  const before = await page.evaluate(() => window.scrollY);
+  const hero = await page.evaluate(() => {
+    const b = document.querySelector(".page-hero").getBoundingClientRect();
+    return { x: Math.round(b.left + 40), y: Math.round(b.top + 20) };
+  });
+  await page.mouse.move(hero.x, hero.y);
+  await page.mouse.wheel({ deltaY: 500 });
+  await sleep(200);
+  const after = await page.evaluate(() => window.scrollY);
+  check("holistic at 1280: the wheel scrolls the window", after > before + 40, JSON.stringify({ before, after, hero }));
+  await page.close();
+}
+
 async function desktop(browser, mode, overlay) {
   const label = mode + (overlay ? " overlay" : " page") + " at 1280";
   const page = await open(browser, 1280, 800, mode);
@@ -91,6 +122,7 @@ async function phone(browser, mode) {
 (async () => {
   const browser = await puppeteer.launch({ executablePath: chrome, args: ["--no-sandbox"] });
   try {
+    await pageScrolls(browser);
     for (const mode of ["holistic", "L2", "L5"]) {
       await desktop(browser, mode, false);
       await desktop(browser, mode, true);
