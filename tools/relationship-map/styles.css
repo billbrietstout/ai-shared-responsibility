@@ -38,18 +38,18 @@
   padding: var(--sp-8) var(--page-pad) var(--sp-16);
 }
 
-/* A loaded chain has to start in the first screen at 1280x800.
-   The hero copy stays, with less padding. The preview moves under the board. */
-body.chain-open .page-hero {
+/* The search field and a loaded chain both have to start in the first screen
+   at 1280x800. The hero copy stays, with less padding in every state. */
+body .page-hero {
   padding: var(--sp-4) var(--page-pad) var(--sp-3);
 }
 
-body.chain-open .page-hero__title {
+body .page-hero__title {
   font-size: var(--text-3xl);
   margin-bottom: var(--sp-2);
 }
 
-body.chain-open .page-hero__lede {
+body .page-hero__lede {
   font-size: var(--text-base);
 }
 
@@ -270,6 +270,7 @@ body.chain-open .map-layout {
 .entry-points button:focus-visible,
 .persona-list button:focus-visible,
 .search-results button:focus-visible,
+.show-all-results:focus-visible,
 .chain-card:focus-visible,
 .context-people button:focus-visible,
 .context-controls button:focus-visible,
@@ -408,7 +409,7 @@ body.chain-open .map-layout {
 }
 
 #suggestions.search-results {
-  max-height: none;
+  max-height: 360px;
 }
 
 .search-results--risks {
@@ -1006,5 +1007,95 @@ body.chain-open .map-layout {
 
   .graph {
     height: 360px;
+  }
+}
+
+/* Navigation aids. */
+.map-jump,
+.chain-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1) var(--sp-4);
+  margin: 0 0 var(--sp-4);
+  font-size: var(--text-sm);
+}
+
+.chain-jump {
+  margin: 0 0 var(--sp-3);
+}
+
+.map-jump a,
+.chain-jump a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  font-weight: 700;
+}
+
+.map-jump a[hidden] {
+  display: none;
+}
+
+body.chain-open .map-jump {
+  order: -2;
+  margin-bottom: var(--sp-2);
+}
+
+.chain-heading {
+  margin: 0 0 var(--sp-2);
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+  overflow-wrap: anywhere;
+}
+
+.chain-heading:focus {
+  outline: none;
+}
+
+.map-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.map-filters:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.show-all-results {
+  align-self: flex-start;
+  margin-top: var(--sp-2);
+  font: inherit;
+  font-weight: 700;
+  font-size: var(--text-sm);
+  color: var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.show-all-results[hidden] {
+  display: none;
+}
+
+.chain-heading,
+.chain-col h3,
+#find-form,
+#map-filters,
+#details-heading,
+#coverage-heading {
+  scroll-margin-top: 110px;
+}
+
+@media (max-width: 800px) {
+  .map-jump a,
+  .chain-jump a {
+    min-height: 44px;
+  }
+
+  .show-all-results {
+    width: 100%;
   }
 }

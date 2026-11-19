@@ -36,6 +36,7 @@
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#node-search" data-jump>Skip to search</a>
     <script type="module" src="/shared/components.js"></script>
     <site-nav current="tools"></site-nav>
 
@@ -57,6 +58,14 @@
     </header>
 
     <main id="main" class="map-page" data-llm="relationship-map">
+      <nav id="map-jump" class="map-jump" aria-label="On this page">
+        <a href="#node-search" data-jump>Find</a>
+        <a href="#map-filters" data-jump>Filters</a>
+        <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
+        <a href="#details-heading" data-jump>Node details</a>
+        <a href="#coverage-heading" data-jump>Coverage</a>
+      </nav>
+
       <aside class="callout map-preview" role="note" aria-labelledby="map-preview-heading">
         <h2 id="map-preview-heading" class="map-preview__title">Preview</h2>
         <p>
@@ -93,6 +102,9 @@
                 Security ownership establishes who is accountable for what
                 happens next.
               </p>
+              <h2 class="entry-account__title">Accountable personas</h2>
+              <p>Each name is one SRF persona. Choosing one lists the controls and threats that record that persona.</p>
+              <div id="persona-list" class="persona-list"></div>
               <h2 class="entry-account__title">Illustrative only</h2>
               <p>
                 These titles are examples from the handoff. They are not
@@ -115,17 +127,9 @@
                   <tr><td>Model supply-chain assurance</td><td>AI supply-chain security owner</td></tr>
                 </tbody>
               </table>
-              <h2 class="entry-account__title">Accountable personas</h2>
-              <p>Each name is one SRF persona. Choosing one lists the controls and threats that record that persona.</p>
-              <div id="persona-list" class="persona-list"></div>
-            </section>
-            <section class="layer-frames" aria-labelledby="layer-frames-heading" data-llm="security-domains">
-              <h2 id="layer-frames-heading">Security domains</h2>
-              <p>These sentences describe the five layers. The names on the records stay the same.</p>
-              <dl id="layer-frames"></dl>
             </section>
             <form id="find-form" class="find-form" role="search">
-              <label class="find-form__label" for="node-search">Find a risk or a control</label>
+              <label class="find-form__label" for="node-search">Find a threat or a control</label>
               <div class="find-form__row">
                 <input
                   id="node-search"
@@ -134,47 +138,63 @@
                   name="q"
                   autocomplete="off"
                   spellcheck="false"
-                  placeholder="Risk or control name"
+                  placeholder="Threat or control name"
                   aria-describedby="map-help"
                   aria-controls="search-results"
                 />
                 <button class="find-form__submit" type="submit">Find</button>
               </div>
               <p id="map-help" class="map-help">
-                Type a risk or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.
+                Type a threat or a control name, then choose a match. The map shows four columns: risk, obligation, control, and the accountable persona.
               </p>
               <p id="search-note" class="search-note" aria-live="polite"></p>
               <div id="suggestions-wrap">
-                <h3 id="risk-suggestions-heading" class="suggestions-heading">Risks</h3>
+                <h3 id="risk-suggestions-heading" class="suggestions-heading">Threats</h3>
                 <ul id="risk-suggestions" class="search-results search-results--risks" aria-labelledby="risk-suggestions-heading"></ul>
                 <h3 id="suggestions-heading" class="suggestions-heading">Controls</h3>
+                <p id="control-source-note" class="filter-note">These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml.</p>
                 <ul id="suggestions" class="search-results" aria-labelledby="suggestions-heading"></ul>
               </div>
               <ul id="search-results" class="search-results" aria-label="Matches" hidden></ul>
+              <button id="show-all-results" class="show-all-results" type="button" hidden></button>
             </form>
 
-            <fieldset class="model-filter">
-              <legend>Operating model</legend>
-              <div id="model-filter-list" class="model-filter__list">
-                <label class="model-option">
-                  <input type="radio" name="operating-model" value="all" checked />
-                  <span>All</span>
-                </label>
-              </div>
-              <p id="model-note" class="filter-note"></p>
-            </fieldset>
+            <div id="map-filters" class="map-filters" tabindex="-1">
+              <h3 class="visually-hidden">Filters</h3>
+              <fieldset class="model-filter">
+                <legend>Operating model</legend>
+                <div id="model-filter-list" class="model-filter__list">
+                  <label class="model-option">
+                    <input type="radio" name="operating-model" value="all" checked />
+                    <span>All</span>
+                  </label>
+                </div>
+                <p id="model-note" class="filter-note"></p>
+              </fieldset>
 
-            <label class="tapestry-toggle" for="show-tapestry">
-              <input id="show-tapestry" type="checkbox" />
-              <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
-            </label>
+              <fieldset class="model-filter layer-filter">
+                <legend>Layer</legend>
+                <div id="layer-filter-list" class="model-filter__list"></div>
+                <p class="filter-note">The layer filter narrows the finder and the suggestion lists. It does not remove controls from a chain that is already open.</p>
+              </fieldset>
+
+              <label class="tapestry-toggle" for="show-tapestry">
+                <input id="show-tapestry" type="checkbox" />
+                <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
+              </label>
+            </div>
 
             <div class="view-actions">
               <button id="widen-view" type="button" hidden>Widen the view</button>
               <button id="show-chain" type="button" hidden>Show the chain</button>
               <button id="show-context" type="button">Show layers</button>
-              <button id="start-one" type="button" hidden>Start from one risk or control</button>
+              <button id="start-one" type="button" hidden>Start from one threat or control</button>
             </div>
+            <section class="layer-frames" aria-labelledby="layer-frames-heading" data-llm="security-domains">
+              <h2 id="layer-frames-heading">Security domains</h2>
+              <p>These sentences describe the five layers. The names on the records stay the same.</p>
+              <dl id="layer-frames"></dl>
+            </section>
           </div>
 
           <p id="map-status" class="map-status" role="status">Loading map data.</p>
@@ -185,10 +205,18 @@
               id="graph"
               class="graph"
               role="img"
-              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
+              aria-label="Chain of risk, obligation, control, and accountable persona. Choose a threat or a control to begin."
             ></div>
             <div id="context-board" class="context-board" hidden></div>
             <div id="chain" class="chain" hidden>
+              <h2 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h2>
+              <nav class="chain-jump" aria-label="Chain columns">
+                <a href="#chain-col-risk" data-jump>Risk</a>
+                <a href="#chain-col-obligation" data-jump>Obligation</a>
+                <a href="#chain-col-control" data-jump>Control</a>
+                <a href="#chain-col-accountable" data-jump>Accountable</a>
+                <a href="#node-search" data-jump>Find another</a>
+              </nav>
               <ul class="chain-legend" id="chain-legend" aria-label="Line types">
                 <li>
                   <span class="legend-swatch legend-swatch--solid" aria-hidden="true"></span>
@@ -204,9 +232,9 @@
                 </li>
               </ul>
               <p id="chain-model-note" class="chain-model-note"></p>
-              <div id="chain-board" class="chain-board" aria-label="Risk, obligation, control, and accountable"></div>
+              <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
             </div>
-            <p id="graph-empty" class="graph-empty">Choose a risk or a control to see its chain.</p>
+            <p id="graph-empty" class="graph-empty">Choose a threat or a control to see its chain.</p>
           </div>
         </section>
 
@@ -216,7 +244,7 @@
             <button id="clear-selection" type="button" disabled>Clear selection</button>
           </div>
           <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
-          <p id="details-empty">Select a risk or a control to see the chain, with sources and links.</p>
+          <p id="details-empty">Select a threat or a control to see the chain, with sources and links.</p>
           <div id="details-body" hidden>
             <p id="details-kind"></p>
             <p id="details-meta" hidden></p>
