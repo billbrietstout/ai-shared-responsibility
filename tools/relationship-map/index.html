@@ -68,7 +68,6 @@
         <a href="#details-heading" data-jump>Node details</a>
         <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
         <a id="jump-graph" href="#graph-workspace" data-jump hidden>Graph</a>
-        <a href="#coverage-heading" data-jump>Coverage</a>
       </nav>
 
       <div id="preview-more" class="map-preview">
@@ -203,15 +202,19 @@
                 <span class="load-placeholder__bar"></span>
                 <span class="load-placeholder__bar load-placeholder__bar--short"></span>
               </div>
-              <div id="suggestions-wrap">
-                <h3 id="risk-suggestions-heading" class="suggestions-heading">Risks</h3>
-                <ul id="risk-suggestions" class="search-results search-results--risks" aria-labelledby="risk-suggestions-heading"></ul>
-                <h3 id="suggestions-heading" class="suggestions-heading">Controls</h3>
-                <p id="control-source-note" class="filter-note">These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml.</p>
-                <ul id="suggestions" class="search-results" aria-labelledby="suggestions-heading"></ul>
-              </div>
               <div id="search-results" class="search-listbox" role="listbox" aria-label="Matches" hidden></div>
               <button id="show-all-results" class="show-all-results" type="button" hidden></button>
+              <div id="suggestions-wrap" class="pick-wrap">
+                <div id="risk-pick" class="pick-row">
+                  <label id="risk-suggestions-heading" class="suggestions-heading" for="risk-suggestions">Risk</label>
+                  <select id="risk-suggestions" class="pick-select"></select>
+                </div>
+                <div id="control-pick" class="pick-row">
+                  <label id="suggestions-heading" class="suggestions-heading" for="suggestions">Control</label>
+                  <select id="suggestions" class="pick-select"></select>
+                  <p id="control-source-note" class="filter-note">These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml. Narrow the list with Operating model and Layer.</p>
+                </div>
+              </div>
             </form>
 
             <div class="view-actions">
@@ -325,7 +328,9 @@
           </section>
         </div>
       </div>
-    <section class="coverage" aria-labelledby="coverage-heading" data-llm="coverage">
+    <p class="coverage-link"><a href="?page=coverage">Data coverage and known gaps</a>, for people who maintain the records.</p>
+    <section id="coverage" class="coverage" aria-labelledby="coverage-heading" data-llm="coverage" hidden>
+      <p class="coverage-back"><a href="./">Back to the explorer</a></p>
       <h2 id="coverage-heading">Coverage</h2>
       <p>
         These labels describe the records. A missing link is not a failed
