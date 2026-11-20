@@ -158,6 +158,8 @@
   var suggestionsWrap = document.getElementById("suggestions-wrap");
   var suggestions = document.getElementById("suggestions");
   var riskSuggestions = document.getElementById("risk-suggestions");
+  var riskPickRow = document.getElementById("risk-pick");
+  var controlPickRow = document.getElementById("control-pick");
   var modelList = document.getElementById("model-filter-list");
   var modelNote = document.getElementById("model-note");
   var layerList = document.getElementById("layer-filter-list");
@@ -211,6 +213,8 @@
   var panelWorkspace = "details";
   var openColumn = "risk";
   var expandedColumns = {};
+  var openBoxes = {};
+  var boxMore = {};
   var PERSONA_COLUMN_LIMIT = 8;
   var opener = null;
   var activeIndex = -1;
@@ -1448,17 +1452,22 @@
     var riskIds = {};
     chain.risks.forEach(function (card) { riskIds[card.id] = true; });
     var obligationCards = {};
+    chain.controlLinks = {};
     nodes.forEach(function (node) {
+      var links = { risks: [], obligations: [] };
+      chain.controlLinks[node.id] = links;
       chain.controls.push(controlCard(node.id, node.attrs));
       addEdge(chain, { from: node.id, to: "accountable:persona:" + id, style: "solid" });
       threats.forEach(function (threat) {
         if ((threat.related_controls || []).indexOf(node.attrs.fullId) !== -1 && riskIds["risk:" + threat.id]) {
           addEdge(chain, { from: "risk:" + threat.id, to: node.id, style: "solid" });
+          links.risks.push("risk:" + threat.id);
         }
       });
       var cited = citationsForControl(node.attrs);
       cited.articles.forEach(function (item) {
         var cardId = "obligation:" + item.req.id;
+        if (links.obligations.indexOf(cardId) === -1) links.obligations.push(cardId);
         if (!obligationCards[cardId]) {
           obligationCards[cardId] = {
             id: cardId,
@@ -1532,7 +1541,37 @@
       sectorPersona: ""
     });
     chain.personaCount = 1;
+    chain.boxLinks = personaBoxLinks(chain, id);
     return chain;
+  }
+
+  function personaBoxLinks(chain, personaId) {
+    var order = function (ids, cards) {
+      var rank = {};
+      cards.forEach(function (card, index) { rank[card.id] = index; });
+      return ids.filter(function (cardId) { return rank[cardId] !== undefined; }).sort(function (a, b) { return rank[a] - rank[b]; });
+    };
+    var links = { risk: {}, obligation: {}, control: {}, accountable: {} };
+    var personaCardId = chain.personaCards[0].id;
+    chain.risks.forEach(function (card) { links.risk[card.id] = []; });
+    chain.obligations.forEach(function (card) { links.obligation[card.id] = []; });
+    links.accountable[personaCardId] = chain.controls.map(function (card) { return card.id; });
+    chain.controls.forEach(function (card) {
+      var own = chain.controlLinks[card.id] || { risks: [], obligations: [] };
+      links.control[card.id] = [personaCardId];
+      own.risks.forEach(function (riskId) {
+        if (!links.risk[riskId]) return;
+        own.obligations.forEach(function (obligationId) {
+          if (links.risk[riskId].indexOf(obligationId) === -1) links.risk[riskId].push(obligationId);
+        });
+      });
+      own.obligations.forEach(function (obligationId) {
+        if (links.obligation[obligationId]) links.obligation[obligationId].push(card.id);
+      });
+    });
+    Object.keys(links.risk).forEach(function (key) { links.risk[key] = order(links.risk[key], chain.obligations); });
+    Object.keys(links.obligation).forEach(function (key) { links.obligation[key] = order(links.obligation[key], chain.controls); });
+    return links;
   }
 
   function buildChain(nodeId) {
@@ -1573,6 +1612,121 @@
     return button;
   }
 
+  var COLUMN_WORD = { risk: "Why", obligation: "What", control: "How", accountable: "Who" };
+  var BOX_ITEM_LIMIT = 8;
+  var NEXT_COLUMN = { risk: "obligation", obligation: "control", control: "accountable", accountable: "control" };
+  var BOX_LABEL = {
+    risk: "Obligations",
+    obligation: "Controls",
+    control: "Accountable",
+    accountable: "Controls that name this persona"
+  };
+  var BOX_EMPTY = {
+    risk: "No linked obligations in this data.",
+    obligation: "No linked controls in this data.",
+    control: "No accountable party in this data.",
+    accountable: "No control names this persona in this data."
+  };
+
+  function columnItems(chain, key) {
+    return key === "risk" ? chain.risks : key === "obligation" ? chain.obligations : key === "control" ? chain.controls : chain.personaCards;
+  }
+
+  function boxTitle(key, item) {
+    if (key === "risk" || key === "control") return item.name;
+    if (key === "obligation") return item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
+    var one = item.lines.length === 1 ? item.lines[0] : null;
+    return one && !one.missing ? one.name : item.controlName;
+  }
+
+  function personaBox(header, item, key, chain) {
+    var box = makeEl("div", "chain-box");
+    box.dataset.boxId = item.id;
+    var open = !!openBoxes[item.id];
+    var panelId = "chain-box-panel-" + key + "-" + columnItems(chain, key).indexOf(item);
+    var toggle = makeEl("button", "chain-box__toggle");
+    toggle.type = "button";
+    toggle.dataset.boxToggle = item.id;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-controls", panelId);
+    toggle.setAttribute("aria-label", "Links to the next column for " + boxTitle(key, item));
+    var top = makeEl("div", "chain-box__top");
+    top.appendChild(header);
+    top.appendChild(toggle);
+    box.appendChild(top);
+    var panel = makeEl("div", "chain-box__panel");
+    panel.id = panelId;
+    panel.hidden = !open;
+    var nextKey = NEXT_COLUMN[key];
+    var targets = ((chain.boxLinks || {})[key] || {})[item.id] || [];
+    var byId = {};
+    columnItems(chain, nextKey).forEach(function (card) { byId[card.id] = card; });
+    var shown = !boxMore[item.id] && targets.length > BOX_ITEM_LIMIT ? targets.slice(0, BOX_ITEM_LIMIT) : targets;
+    panel.appendChild(makeEl("p", "chain-box__label", BOX_LABEL[key] + " (" + targets.length + ")"));
+    if (!targets.length) {
+      panel.appendChild(makeEl("p", "chain-card__meta", BOX_EMPTY[key]));
+    } else {
+      var list = makeEl("ul", "chain-box__items");
+      shown.forEach(function (targetId) {
+        var li = makeEl("li");
+        var card = byId[targetId];
+        if (card) {
+          var jump = makeEl("button", "chain-box__jump", boxTitle(nextKey, card));
+          jump.type = "button";
+          jump.dataset.jumpTo = targetId;
+          jump.dataset.jumpColumn = nextKey;
+          li.appendChild(jump);
+        } else {
+          li.appendChild(makeEl("span", "chain-box__plain", targetId));
+        }
+        list.appendChild(li);
+      });
+      panel.appendChild(list);
+      if (targets.length > BOX_ITEM_LIMIT) {
+        var more = makeEl("button", "chain-box__more", boxMore[item.id] ? "Show fewer" : "Show " + (targets.length - BOX_ITEM_LIMIT) + " more");
+        more.type = "button";
+        more.dataset.boxMore = item.id;
+        more.setAttribute("aria-expanded", boxMore[item.id] ? "true" : "false");
+        panel.appendChild(more);
+      }
+    }
+    box.appendChild(panel);
+    return box;
+  }
+
+  function jumpToBox(targetId, columnKey) {
+    var chain = currentChain;
+    if (!chain) return;
+    var items = columnItems(chain, columnKey);
+    var index = -1;
+    items.forEach(function (card, i) { if (card.id === targetId) index = i; });
+    if (index === -1) return;
+    if (index >= PERSONA_COLUMN_LIMIT && columnKey !== "accountable") expandedColumns[columnKey] = true;
+    if (narrowQuery.matches) openColumn = columnKey;
+    chainFocus = targetId;
+    commit(false);
+    var card = chainCard(targetId);
+    if (card) {
+      card.scrollIntoView({ block: "center", behavior: "auto" });
+      card.focus({ preventScroll: true });
+      [0, 150].forEach(function (delay) {
+        setTimeout(function () {
+          var later = chainCard(targetId);
+          if (later) later.scrollIntoView({ block: "center", behavior: "auto" });
+        }, delay);
+      });
+    }
+  }
+
+  function columnTitle(key, headingName) {
+    var text = makeEl("span", "chain-col__text");
+    var label = makeEl("span", "chain-col__label", COLUMN_WORD[key].toLowerCase());
+    label.setAttribute("aria-hidden", "true");
+    text.appendChild(label);
+    text.appendChild(makeEl("span", "chain-col__name", headingName));
+    return text;
+  }
+
   function renderChain(chain) {
     chainBoard.textContent = "";
     var chainTitle = root && graph.hasNode(root) ? graph.getNodeAttribute(root, "name") : personaLabel(personaPick);
@@ -1599,7 +1753,11 @@
     ];
     columns.forEach(function (column) {
       var wrap = makeEl("div", "chain-col");
-      var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
+      var headingName = column[1].length ? column[0] + " (" + column[1].length + ")" : column[0];
+      var accessibleName = COLUMN_WORD[column[2]] + ": " + headingName;
+      var heading = makeEl("h3");
+      heading.appendChild(columnTitle(column[2], headingName));
+      heading.setAttribute("aria-label", accessibleName);
       heading.id = "chain-col-" + column[2];
       heading.setAttribute("tabindex", "-1");
       wrap.dataset.column = column[2];
@@ -1608,9 +1766,11 @@
       var colBody = makeEl("div", "chain-col__body");
       colBody.id = "chain-col-body-" + column[2];
       if (narrowChain) {
-        var toggle = makeEl("button", "chain-col__toggle", heading.textContent);
+        var toggle = makeEl("button", "chain-col__toggle");
+        toggle.appendChild(columnTitle(column[2], headingName));
         toggle.type = "button";
         toggle.dataset.column = column[2];
+        toggle.setAttribute("aria-label", accessibleName);
         toggle.setAttribute("aria-expanded", colOpen ? "true" : "false");
         toggle.setAttribute("aria-controls", colBody.id);
         heading.textContent = "";
@@ -1662,7 +1822,7 @@
             button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. No source citation recorded yet. The control's source record names this persona."));
           }
         }
-        colBody.appendChild(button);
+        colBody.appendChild(chain.startKind === "persona" ? personaBox(button, item, column[2], chain) : button);
       });
       if (collapsible) {
         var more = makeEl("button", "chain-more", expandedColumns[column[2]]
@@ -1729,7 +1889,8 @@
       if (!from || !to) return;
       var ar = from.getBoundingClientRect();
       var br = to.getBoundingClientRect();
-      var x1 = ar.right - origin.left;
+      var fromBox = from.closest(".chain-box");
+      var x1 = (fromBox ? fromBox.getBoundingClientRect().right : ar.right) - origin.left;
       var y1 = ar.top + ar.height / 2 - origin.top;
       var x2 = br.left - origin.left;
       var y2 = br.top + br.height / 2 - origin.top;
@@ -2572,6 +2733,22 @@
   }
 
   function renderSuggestions() {
+    if (entry === "account" && personaFocusId()) {
+      var personaChain = chainFromPersona(personaPick);
+      var personaRiskIds = personaChain.risks.map(function (card) { return card.id; });
+      var personaControlIds = personaChain.controls.map(function (card) { return card.id; });
+      suggestionsWrap.hidden = !personaRiskIds.length && !personaControlIds.length;
+      riskPickRow.hidden = false;
+      controlPickRow.hidden = false;
+      controlSourceNote.hidden = true;
+      fillSelect(riskSuggestions, personaRiskIds, "Choose a risk (" + personaRiskIds.length + ")", function (attrs) { return attrs.name; });
+      fillSelect(suggestions, personaControlIds, "Choose a control (" + personaControlIds.length + ")", function (attrs) {
+        return attrs.meta ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
+      });
+      hideResults();
+      searchNote.textContent = "";
+      return;
+    }
     if (entry === "requirement" || entry === "account") {
       suggestionsWrap.hidden = true;
       return;
@@ -2712,7 +2889,9 @@
     } else if (view === "chain") {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
+      helpEl.textContent = personaFocusId()
+        ? "Four columns: Risk, Obligation, Control, and Accountable. Open a box to see what it links to in the next column. The Risk and Control lists below show only this persona's records."
+        : "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
     } else {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
@@ -3844,6 +4023,30 @@
       renderChain(currentChain);
       var again = chainBoard.querySelector('button.chain-more[data-more-column="' + key + '"]');
       if (again) again.focus({ preventScroll: true });
+      return;
+    }
+    var boxToggle = event.target.closest("button.chain-box__toggle");
+    if (boxToggle) {
+      var boxKey = boxToggle.dataset.boxToggle;
+      openBoxes[boxKey] = !openBoxes[boxKey];
+      boxToggle.setAttribute("aria-expanded", openBoxes[boxKey] ? "true" : "false");
+      var boxPanel = document.getElementById(boxToggle.getAttribute("aria-controls"));
+      if (boxPanel) boxPanel.hidden = !openBoxes[boxKey];
+      drawChainLines();
+      return;
+    }
+    var boxMoreBtn = event.target.closest("button.chain-box__more");
+    if (boxMoreBtn) {
+      var moreKey = boxMoreBtn.dataset.boxMore;
+      boxMore[moreKey] = !boxMore[moreKey];
+      renderChain(currentChain);
+      var moreAgain = chainBoard.querySelector('button.chain-box__more[data-box-more="' + moreKey.replace(/"/g, '\\"') + '"]');
+      if (moreAgain) moreAgain.focus({ preventScroll: true });
+      return;
+    }
+    var jumpBtn = event.target.closest("button.chain-box__jump");
+    if (jumpBtn) {
+      jumpToBox(jumpBtn.dataset.jumpTo, jumpBtn.dataset.jumpColumn);
       return;
     }
     var toggle = event.target.closest("button.chain-col__toggle");
