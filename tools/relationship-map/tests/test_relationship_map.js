@@ -108,15 +108,20 @@ async function openPage(browser, base, width, height, query) {
 
 const idsIn = (page, selector) => page.$$eval(selector, (els) => els.map((el) => el.dataset.nodeId || el.dataset.chainId));
 
+const openOptionsPanel = (page) => page.evaluate(() => { const o = document.getElementById("options"); if (o) o.open = true; });
+
 async function pickModel(page, model) {
+  await openOptionsPanel(page);
   await page.click('input[name="operating-model"][value="' + model + '"]');
   await sleep(150);
 }
 async function pickLayer(page, layer) {
+  await openOptionsPanel(page);
   await page.click('input[name="layer"][value="' + layer + '"]');
   await sleep(150);
 }
 async function clickNow(page, selector) {
+  await page.$eval(selector, (el) => { const o = el.closest("details#options"); if (o) o.open = true; });
   await page.$eval(selector, (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await page.click(selector);
 }
@@ -125,6 +130,7 @@ async function openEntry(page, entry) {
   await sleep(300);
 }
 async function search(page, text) {
+  await openOptionsPanel(page);
   await page.$eval("#node-search", (el) => { el.value = ""; window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 160, behavior: "instant" }); });
   await sleep(60);
   await page.focus("#node-search");
@@ -294,11 +300,11 @@ async function testWording(browser, base) {
   console.log("\n## Search label wording");
   const page = await openPage(browser, base, 1280, 900, "");
   const label = await page.$eval('label[for="node-search"]', (el) => el.textContent.trim());
-  check("search label says risk or control", label === "Find a risk or a control", label);
+  check("search label names the four kinds", label === "Find a risk, obligation, control, or persona", label);
   const placeholder = await page.$eval("#node-search", (el) => el.placeholder);
-  check("search placeholder says risk or control", placeholder === "Risk or control name", placeholder);
+  check("search placeholder asks for a name or a few words", placeholder === "Name or a few words", placeholder);
   const help = await page.$eval("#map-help", (el) => el.textContent);
-  check("search help text says risk or control", /Type a risk or a control name/.test(help), help);
+  check("search help text names the four kinds", /Type a name or a few words about a risk, an obligation, a control, or a persona/.test(help), help);
   await openEntry(page, "threat");
   const heading = await page.$eval("#chain-col-risk", (el) => el.textContent.trim());
   check("the Risk column heading reads Risk", /^whyRisk \(\d+\)$/.test(heading), heading);
@@ -322,11 +328,10 @@ async function testNavigation(browser, base) {
     const levels = Array.from(document.querySelectorAll("main h1, main h2, main h3, main h4")).filter((h) => !h.closest("[hidden]")).map((h) => Number(h.tagName[1]));
     let skipped = 0;
     levels.forEach((n, i) => { if (i && n - levels[i - 1] > 1) skipped += 1; });
-    const targets = Array.from(document.querySelectorAll("a[data-jump], a.skip-link, .map-jump a")).filter((a) => !a.closest(".chain-jump")).map((a) => a.getAttribute("href"));
+    const targets = Array.from(document.querySelectorAll("a[data-jump], a.skip-link, .map-jump a")).map((a) => a.getAttribute("href"));
     return {
       searchBottom: document.getElementById("node-search").getBoundingClientRect().bottom,
       searchBeforeDomains: order("#find-form", ".layer-frames"),
-      personasBeforeIllustrative: order("#entry-account", ".illustrative"),
       skipped: skipped,
       targets: targets.filter((href) => href && href[0] === "#").map((href) => ({ href: href, exists: !!document.getElementById(href.slice(1)) })),
       skipLinks: document.querySelectorAll("a.skip-link").length
@@ -334,10 +339,9 @@ async function testNavigation(browser, base) {
   });
   check("the search field is in the first screen at 1280x800", initial.searchBottom <= 800, String(initial.searchBottom));
   check("the search form comes before the Security domains block", initial.searchBeforeDomains);
-  check("the persona list comes before the illustrative table", initial.personasBeforeIllustrative);
   check("visible headings never skip a level", initial.skipped === 0, String(initial.skipped));
   check("there is a skip link to the content and one to search", initial.skipLinks >= 2, String(initial.skipLinks));
-  check("every in-page link on the first view has a target", initial.targets.length >= 6 && initial.targets.every((t) => t.exists), JSON.stringify(initial.targets.filter((t) => !t.exists)));
+  check("every in-page link on the first view has a target", initial.targets.length >= 4 && initial.targets.every((t) => t.exists), JSON.stringify(initial.targets.filter((t) => !t.exists)));
 
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
@@ -365,10 +369,9 @@ async function testNavigation(browser, base) {
     showAllText: document.getElementById("show-all-results").textContent
   }));
   const total = Number((counts.note.match(/^(\d+) records match/) || [])[1]);
-  check("the search note counts risks and controls", /^\d+ records match: \d+ risks? and \d+ controls?\./.test(counts.note), counts.note);
-  const nThreats = Number((counts.note.match(/: (\d+) risks?/) || [])[1]);
-  const nControls = Number((counts.note.match(/and (\d+) controls?/) || [])[1]);
-  check("each group shows up to eight matches and the rest are behind a Show all button", counts.shown === Math.min(nThreats, 8) + Math.min(nControls, 8) && counts.showAll && counts.showAllText === "Show all " + total + " matches", JSON.stringify(counts));
+  check("the search note counts each kind with matches", /^\d+ records match: (\d+ (risks?|obligations?|controls?|personas?)(, | and )?)+\./.test(counts.note), counts.note);
+  const kindCounts = ["risk", "obligation", "control", "persona"].map((k) => Number((new RegExp("(\\d+) " + k + "s?(?:[,. ]|$)").exec(counts.note) || [])[1] || 0));
+  check("each group shows up to eight matches and the rest are behind a Show all button", counts.shown === kindCounts.reduce((sum, n) => sum + Math.min(n, 8), 0) && counts.showAll && counts.showAllText === "Show all " + total + " matches", JSON.stringify(counts));
   await page.click("#show-all-results");
   await sleep(150);
   const all = await page.evaluate(() => ({ shown: document.querySelectorAll("#search-results [role=option]").length, hidden: document.getElementById("show-all-results").hidden, activeInList: !!document.getElementById(document.activeElement.getAttribute("aria-activedescendant") || "none") }));
@@ -396,14 +399,7 @@ async function testNavigation(browser, base) {
   check("choosing a risk shows the chain workspace", !explored.workspaceHidden && !explored.chainHidden && /^Chain for Direct prompt injection/.test(explored.heading), JSON.stringify(explored));
   check("the Chain jump link appears with a chain", explored.jumpChainShown);
 
-  const columnTargets = await page.$$eval(".chain-jump a", (links) => links.map((a) => ({ href: a.getAttribute("href"), exists: !!document.getElementById(a.getAttribute("href").slice(1)) })));
-  check("every chain jump link has a target", columnTargets.length === 5 && columnTargets.every((t) => t.exists), JSON.stringify(columnTargets));
-  await clickNow(page, '.chain-jump a[href="#chain-col-accountable"]');
-  await sleep(900);
-  check("the Accountable jump link moves focus to that column", (await activeId(page)) === "chain-col-accountable" && (await inView(page, "#chain-col-accountable")));
-  await clickNow(page, '.chain-jump a[href="#node-search"]');
-  await sleep(900);
-  check("Find another focuses the search field", (await activeId(page)) === "node-search");
+  check("the chain has no column jump links", (await page.$$(".chain-jump")).length === 0);
 
   await search(page, "direct prompt injection");
   await page.click('#search-results [role=option][data-node-id="risk:directpromptinjection"]');
@@ -441,14 +437,10 @@ async function testNavigation(browser, base) {
   await phone.click('#search-results [role=option][data-node-id="risk:directpromptinjection"]');
   await sleep(900);
   check("the chain heading is in the first half of the phone window", (await activeId(phone)) === "chain-heading" && await inView(phone, "#chain-heading"));
-  await clickNow(phone, '.chain-jump a[href="#chain-col-obligation"]');
-  await sleep(900);
-  const obligationJump = await phone.evaluate(() => {
-    const el = document.getElementById("chain-col-obligation");
-    const r = el.getBoundingClientRect();
-    return { active: document.activeElement.id, open: Array.from(document.querySelectorAll('.chain-col__toggle[aria-expanded="true"]')).map((b) => b.dataset.column), visible: r.height > 0 && r.top < window.innerHeight && r.bottom > 0 };
-  });
-  check("the Obligation jump link works at 375 wide", obligationJump.active === "chain-col-obligation" && obligationJump.open.join() === "obligation" && obligationJump.visible, JSON.stringify(obligationJump));
+  await clickNow(phone, '.chain-col__toggle[data-column="obligation"]');
+  await sleep(300);
+  const obligationOpen = await phone.evaluate(() => Array.from(document.querySelectorAll('.chain-col__toggle[aria-expanded="true"]')).map((b) => b.dataset.column));
+  check("the Obligation column header opens that column at 375 wide", obligationOpen.join() === "obligation", obligationOpen.join());
   await clickNow(phone, "#clear-chain-selection");
   await sleep(400);
   const overflow = await phone.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -561,9 +553,16 @@ async function testGraphRemoved(browser, base) {
 
 const MODE_SETUP = {
   threat: { entry: "threat", key: "risk", pick: "risk:directpromptinjection", record: "Risk" },
+  obligation: { entry: "obligation", key: "obligation", pick: "", record: "Obligation" },
   control: { entry: "control", key: "control", pick: "control:finance:SRF-L3-DEV-001", record: "Control" },
   account: { entry: "account", key: "accountable", pick: "", record: "Accountable" }
 };
+
+async function modePick(page, setup) {
+  if (setup.pick) return setup.pick;
+  if (setup.key === "obligation") return (await optionValues(page, "obligation"))[3].value;
+  return (await optionValues(page, "accountable")).filter((o) => /model provider/i.test(o.text))[0].value;
+}
 
 async function startMode(browser, base, width, height, mode) {
   const page = await openPage(browser, base, width, height, "");
@@ -582,7 +581,7 @@ async function testModeParity(browser, base, width, height) {
   const signatures = {};
   const helps = {};
   const startCounts = {};
-  for (const mode of ["threat", "control", "account"]) {
+  for (const mode of ["threat", "obligation", "control", "account"]) {
     const setup = MODE_SETUP[mode];
     const page = await startMode(browser, base, width, height, mode);
     const start = await page.evaluate(() => ({
@@ -604,7 +603,7 @@ async function testModeParity(browser, base, width, height) {
     startCounts[mode] = start.selects.map((s) => s.id.replace("chain-select-", "") + ":" + s.options).join(" ");
     helps[mode] = start.help;
 
-    const pick = setup.pick || (await optionValues(page, "accountable")).filter((o) => /model provider/i.test(o.text))[0].value;
+    const pick = await modePick(page, setup);
     await pickValue(page, setup.key, pick);
     const after = await page.evaluate(() => {
       const cols = Array.from(document.querySelectorAll("#chain-board .chain-col")).map((c) => c.dataset.column);
@@ -639,9 +638,9 @@ async function testModeParity(browser, base, width, height) {
     check("no page errors in " + mode + " mode" + at, page.__errors.length === 0, page.__errors.join("; "));
     await page.close();
   }
-  check("all three modes show the same help line" + at, helps.threat === helps.control && helps.control === helps.account && /^Four columns: Risk, Obligation, Control, and Accountable\./.test(helps.threat), JSON.stringify(helps));
-  check("all three modes list the columns in the same order" + at, signatures.threat === signatures.control && signatures.control === signatures.account);
-  check("all three modes start with identical select counts" + at, startCounts.threat === startCounts.control && startCounts.control === startCounts.account, JSON.stringify(startCounts));
+  check("all four modes show the same help line" + at, helps.threat === helps.control && helps.control === helps.account && helps.account === helps.obligation && /^Four columns: Risk, Obligation, Control, and Accountable\./.test(helps.threat), JSON.stringify(helps));
+  check("all four modes list the columns in the same order" + at, signatures.threat === signatures.control && signatures.control === signatures.account && signatures.account === signatures.obligation);
+  check("all four modes start with identical select counts" + at, startCounts.threat === startCounts.control && startCounts.control === startCounts.account && startCounts.account === startCounts.obligation, JSON.stringify(startCounts));
   console.log("  select option counts at start" + at + ": " + startCounts.threat);
 
   const lastChance = await openPage(browser, base, width, height, "");
@@ -662,7 +661,7 @@ async function testModeParity(browser, base, width, height) {
       status: document.getElementById("map-status").textContent,
       note: document.getElementById("chain-model-note").textContent,
       legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
-      columnLinks: Array.from(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]')).filter((a) => a.checkVisibility()).length,
+      columnLinks: document.querySelectorAll(".chain-jump").length,
       oldRows: document.querySelectorAll("#chain-board li.control-row, #chain-board .control-rows, #chain-board .chain-box").length,
       overflow: document.documentElement.scrollWidth > window.innerWidth + 1
     };
@@ -673,7 +672,7 @@ async function testModeParity(browser, base, width, height) {
   check("the persona is in the Accountable column" + at, /AI Platform Provider/.test(chain.accountableText) && chain.cols.accountable.cards === 1);
   check("the persona status line counts every column above zero" + at, !!counts && counts.slice(1).every((n) => +n > 0), chain.status);
   check("persona chains show the persona line" + at, chain.note === "These are the controls that name this persona as accountable, with their risks and obligations.", chain.note);
-  if (width === 1280) check("the chain shows the line legend and four column jump links" + at, chain.legend && chain.columnLinks === 4, JSON.stringify([chain.legend, chain.columnLinks]));
+  if (width === 1280) check("the chain shows the line legend and no column jump links" + at, chain.legend && chain.columnLinks === 0, JSON.stringify([chain.legend, chain.columnLinks]));
   check("long columns are collapsed with a Show more control" + at, chain.cols.control.cards <= 8 && chain.cols.control.more.some((t) => /^Show \d+ more$/.test(t)), JSON.stringify(chain.cols.control));
   await page.evaluate(() => { const b = document.querySelector('button.chain-more[data-more-column="control"]'); if (b && /^Show \d+ more$/.test(b.textContent)) b.click(); });
   await sleep(300);
@@ -695,11 +694,11 @@ async function testModeParity(browser, base, width, height) {
       note: document.getElementById("chain-model-note").textContent,
       heading: document.getElementById("chain-workspace-heading").textContent,
       legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
-      columnLinks: Array.from(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]')).filter((a) => a.checkVisibility()).length,
+      columnLinks: document.querySelectorAll(".chain-jump").length,
       label: document.getElementById("chain-board").getAttribute("aria-label")
     }));
     check("a risk chain shows the generic model note and the ROCA chain heading", riskChain.note.indexOf("All shows one accountable persona for each operating model") !== -1 && riskChain.heading === "ROCA chain", JSON.stringify(riskChain));
-    check("a risk chain keeps the line-type legend, four column jump links, and its board label", riskChain.legend && riskChain.columnLinks === 4 && riskChain.label === "Risk, obligation, control, and accountable", JSON.stringify(riskChain));
+    check("a risk chain keeps the line-type legend and its board label and has no column jump links", riskChain.legend && riskChain.columnLinks === 0 && riskChain.label === "Risk, obligation, control, and accountable", JSON.stringify(riskChain));
     await riskPage.close();
   }
 }
@@ -881,12 +880,9 @@ async function testPhoneSheet(browser, base) {
   await page.click('.chain-col__toggle[data-column="obligation"]');
   const none = await page.evaluate(() => document.querySelectorAll('.chain-col__toggle[aria-expanded="true"]').length);
   check("choosing the open section collapses it", none === 0);
-  await page.click('.chain-jump a[href="#chain-col-accountable"]');
-  await sleep(300);
-  const jumped = await page.evaluate(() => ({ open: Array.from(document.querySelectorAll(".chain-col__toggle")).filter((b) => b.getAttribute("aria-expanded") === "true").map((b) => b.dataset.column), active: document.activeElement.id }));
-  check("the Accountable jump link opens that section and focuses its heading", jumped.open.join() === "accountable" && jumped.active === "chain-col-accountable", JSON.stringify(jumped));
-  await page.keyboard.press("Tab");
-  check("Tab from the heading reaches the section toggle, then its cards", await page.evaluate(() => document.activeElement.classList.contains("chain-col__toggle")));
+  await page.click('.chain-col__toggle[data-column="control"]');
+  await sleep(200);
+  check("the section toggle keeps focus after it opens", await page.evaluate(() => document.activeElement.classList.contains("chain-col__toggle")));
   await page.keyboard.press("Tab");
   check("the open section's menu is next in the tab order", await page.evaluate(() => document.activeElement.tagName === "SELECT"));
   await page.keyboard.press("Tab");
@@ -1249,7 +1245,7 @@ async function testPhoneHeaderAndIntro(browser, base) {
     };
   });
   check("the intro is one paragraph of at most two sentences", intro.paragraphs === 1 && intro.sentences <= 2, JSON.stringify(intro));
-  check("the main choices are risk, control, and accountability", JSON.stringify(intro.entries) === JSON.stringify(["Explore a risk", "Explore a control", "Explore accountability"]), JSON.stringify(intro.entries));
+  check("the main choices are risk, obligation, control, and accountability", JSON.stringify(intro.entries) === JSON.stringify(["Explore a risk", "Explore an obligation", "Explore a control", "Explore accountability"]), JSON.stringify(intro.entries));
   check("the requirements note lives in the Preview disclosure", intro.reqInPreview && intro.gapInPreview, JSON.stringify(intro));
   await desk.evaluate(() => { document.querySelector(".map-preview details").open = true; });
   await clickNow(desk, "#entry-requirement");
@@ -1384,7 +1380,7 @@ async function testLoadResilience(browser, base) {
 }
 
 async function testDisclosures(browser, base) {
-  console.log("\n## Disclosures: preview, line types, illustrative titles");
+  console.log("\n## Disclosures: preview and line types");
   const page = await openPage(browser, base, 1280, 900, "");
   const preview = await page.evaluate(() => {
     const wrap = document.querySelector(".map-preview");
@@ -1400,25 +1396,14 @@ async function testDisclosures(browser, base) {
   check("Escape closes it and keeps focus on the summary", await page.evaluate(() => !document.querySelector(".map-preview__details").open && document.activeElement.tagName === "SUMMARY"));
 
   await openEntry(page, "account");
-  const fold = await page.evaluate(() => {
-    const details = document.querySelector(".illustrative-fold");
-    const table = document.querySelector("table.illustrative");
-    const panel = document.getElementById("entry-account-panel");
-    return {
-      summary: details.querySelector("summary").textContent.trim(),
-      open: details.open,
-      tableInside: details.contains(table),
-      paragraphInside: Array.from(details.children).some((el) => el.tagName === "P" && /not\s+personas in the SRF/.test(el.textContent)),
-      tableVisible: table.checkVisibility(),
-      personaListGone: !document.getElementById("persona-list")
-    };
-  });
-  check("the illustrative table and its paragraph sit in a closed disclosure with the required summary", fold.summary === "View illustrative handoff titles (examples, not SRF)" && !fold.open && fold.tableInside && fold.paragraphInside && !fold.tableVisible && fold.personaListGone, JSON.stringify(fold));
-  await page.focus(".illustrative-fold summary");
-  await page.keyboard.press("Enter");
-  check("Enter opens the illustrative table", await page.$eval("table.illustrative", (el) => el.checkVisibility()));
-  await page.keyboard.press("Escape");
-  check("Escape closes the illustrative table and returns to the summary", await page.evaluate(() => !document.querySelector(".illustrative-fold").open && document.activeElement.tagName === "SUMMARY"));
+  const gone = await page.evaluate(() => ({
+    panel: !!document.getElementById("entry-account-panel"),
+    fold: !!document.querySelector(".illustrative-fold, table.illustrative, .auth-principle"),
+    persona: !!document.getElementById("persona-list"),
+    search: document.getElementById("node-search").checkVisibility(),
+    find: document.querySelector(".find-form__submit").checkVisibility()
+  }));
+  check("Explore accountability has no persona-only panel and keeps the search and Find controls", !gone.panel && !gone.fold && !gone.persona && gone.search && gone.find, JSON.stringify(gone));
   await page.close();
 
   const chain = await openPage(browser, base, 1280, 900, "?type=risk&node=directpromptinjection&view=list");
@@ -1474,21 +1459,30 @@ async function testRiskWording(browser, base) {
 async function captureModes(browser, base) {
   if (!ARTIFACTS) return;
   for (const [width, height] of [[1280, 900], [375, 812]]) {
-    for (const mode of ["threat", "control", "account"]) {
+    for (const mode of ["threat", "obligation", "control", "account"]) {
       const setup = MODE_SETUP[mode];
       const page = await startMode(browser, base, width, height, mode);
-      const pick = setup.pick || (await optionValues(page, "accountable")).filter((o) => /model provider/i.test(o.text))[0].value;
+      const pick = await modePick(page, setup);
       await pickValue(page, setup.key, pick);
+      await page.evaluate(() => { document.getElementById("options").open = false; });
       await sleep(400);
-      const name = { threat: "risk", control: "control", account: "accountability" }[mode];
+      const name = { threat: "risk", obligation: "obligation", control: "control", account: "accountability" }[mode];
       if (width === 1280) {
         await page.setViewport({ width: 1280, height: 1100 });
-        await page.$eval("#chain-workspace", (el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
+        await page.$eval("#options", (el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
+        await page.evaluate(() => window.scrollBy(0, -100));
         await sleep(300);
+        if (process.env.RELMAP_DEBUG) console.log(JSON.stringify(await page.evaluate(() => ({ y: scrollY, o: document.getElementById("options").getBoundingClientRect().toJSON(), ws: document.getElementById("chain-workspace").getBoundingClientRect().top }))));
       }
       await page.screenshot({ path: path.join(ARTIFACTS, "relmap-" + name + "-" + width + ".png") });
       await page.close();
     }
+    const open = await openPage(browser, base, width, height, "");
+    await open.evaluate(() => { document.getElementById("options").open = true; });
+    await open.$eval("#options", (el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
+    await sleep(300);
+    await open.screenshot({ path: path.join(ARTIFACTS, "relmap-options-open-" + width + ".png") });
+    await open.close();
   }
 }
 
@@ -1783,8 +1777,8 @@ async function testLeftColumnTrim(browser, base, width, height) {
     return {
       selectsInOptions: document.querySelectorAll("#options select").length,
       oldIds: ["risk-pick", "control-pick", "risk-suggestions", "suggestions", "suggestions-wrap", "control-source-note"].filter((id) => document.getElementById(id)),
-      modes: ["entry-threat", "entry-control", "entry-account"].every((id) => shown("#" + id)),
-      search: shown("#node-search"),
+      modes: ["entry-threat", "entry-obligation", "entry-control", "entry-account"].every((id) => !!document.getElementById(id)),
+      search: !!document.getElementById("node-search"),
       removed: ["persona-list", "start-one", "risk-pick", "control-pick"].filter((id) => document.getElementById(id)),
       illustrative: !!document.querySelector(".illustrative-fold"),
       model: document.querySelectorAll('#model-filter-list input[name="operating-model"]').length,
@@ -1796,7 +1790,7 @@ async function testLeftColumnTrim(browser, base, width, height) {
     };
   });
   check("Options has no Risk or Control drop-down and no control source note" + at, left.selectsInOptions === 0 && left.oldIds.length === 0, JSON.stringify(left));
-  check("Options keeps the mode buttons, search, filters, Tapestry, and the layers button" + at, left.modes && left.search && left.removed.length === 0 && left.illustrative && left.model >= 4 && left.layers >= 5 && left.tapestry && left.layersBtn, JSON.stringify(left));
+  check("Options keeps the four mode buttons, search, filters, Tapestry, and the layers button" + at, left.modes && left.search && left.removed.length === 0 && !left.illustrative && left.model >= 4 && left.layers >= 5 && left.tapestry && left.layersBtn, JSON.stringify(left));
   check("the line legend and the persona note stay" + at, left.legend && /These are the controls that name this persona as accountable/.test(left.note2), JSON.stringify(left));
   await page.close();
 
@@ -1833,9 +1827,17 @@ async function testLeftColumnTrim(browser, base, width, height) {
 async function testOptionsLayout(browser, base, width, height) {
   const at = " at " + width;
   const page = await openPage(browser, base, width, height, "");
-  await page.evaluate(() => sessionStorage.clear());
+  const first = await page.evaluate(() => {
+    const opt = document.getElementById("options");
+    return { open: opt.open, search: document.getElementById("node-search").checkVisibility(), modes: document.getElementById("entry-threat").checkVisibility(), status: document.getElementById("map-status").checkVisibility(), summary: opt.querySelector(":scope > summary").checkVisibility() };
+  });
+  check("Options is collapsed on first load, with only its summary and the status line showing" + at, first.open === false && !first.search && !first.modes && first.status && first.summary, JSON.stringify(first));
+  await page.evaluate(() => { sessionStorage.setItem("relmap-options-open", "open"); });
   await page.reload({ waitUntil: "load" });
   await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  check("a stored open state is ignored: Options is still collapsed after a reload" + at, await page.evaluate(() => document.getElementById("options").open === false));
+  await page.click("#options > summary");
+  await sleep(200);
   const info = await page.evaluate(() => {
     const opt = document.getElementById("options");
     const sum = opt ? opt.querySelector(":scope > summary") : null;
@@ -1843,7 +1845,7 @@ async function testOptionsLayout(browser, base, width, height) {
     const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
     return {
       tag: opt && opt.tagName, open: opt && opt.open, summary: sum && sum.textContent.trim(), summaryTag: sum && sum.tagName,
-      moved: ["entry-threat", "entry-control", "entry-account", "node-search", "model-filter-list", "layer-filter-list", "show-tapestry", "show-context", "map-filters"].filter((id) => !inside(id)),
+      moved: ["entry-threat", "entry-obligation", "entry-control", "entry-account", "node-search", "model-filter-list", "layer-filter-list", "show-tapestry", "show-context", "map-filters"].filter((id) => !inside(id)),
       layerFrames: !!opt && !!opt.querySelector(".layer-frames"),
       sideColumn: getComputedStyle(document.querySelector(".map-layout")).gridTemplateColumns.split(" ").length,
       stageWidth: rect(".map-stage").width, panelWidth: rect(".map-panel").width, viewport: window.innerWidth,
@@ -1851,7 +1853,7 @@ async function testOptionsLayout(browser, base, width, height) {
       overflow: document.documentElement.scrollWidth - window.innerWidth
     };
   });
-  check("Options is a details element, open on first load, with an Options summary" + at, info.tag === "DETAILS" && info.open === true && info.summary === "Options" && info.summaryTag === "SUMMARY", JSON.stringify(info));
+  check("Options is a details element with an Options summary that opens on click" + at, info.tag === "DETAILS" && info.open === true && info.summary === "Options" && info.summaryTag === "SUMMARY", JSON.stringify(info));
   check("the mode buttons, search, filters, Tapestry, and the layers button are inside Options" + at, info.moved.length === 0, JSON.stringify(info.moved));
   check("the left column is gone: one grid column, and the details panel sits below at the same width" + at, info.sideColumn === 1 && info.stageWidth > width - 160 && (width === 375 || (info.panelBelow && Math.abs(info.stageWidth - info.panelWidth) <= 1)), JSON.stringify(info));
   check("Options does not scroll sideways" + at, info.overflow <= 1, String(info.overflow));
@@ -1866,14 +1868,16 @@ async function testOptionsLayout(browser, base, width, height) {
   await page.click("#options > summary");
   await sleep(200);
   const closed = await page.evaluate(() => ({ open: document.getElementById("options").open, search: document.getElementById("node-search").checkVisibility() ? 1 : 0, status: document.getElementById("map-status").checkVisibility() ? 1 : 0, stored: sessionStorage.getItem("relmap-options-open") }));
-  check("clicking the Options summary collapses it, hides the controls, and saves the state" + at, closed.open === false && closed.search === 0 && closed.status === 1 && closed.stored === "closed", JSON.stringify(closed));
+  check("clicking the open Options summary collapses it and hides the controls" + at, closed.open === false && closed.search === 0 && closed.status === 1, JSON.stringify(closed));
+  await page.click("#options > summary");
+  await sleep(200);
   await page.reload({ waitUntil: "load" });
   await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
-  check("a collapsed Options stays collapsed after a reload" + at, await page.evaluate(() => document.getElementById("options").open === false));
+  check("an Options panel left open is collapsed again after a reload" + at, await page.evaluate(() => document.getElementById("options").open === false));
   await page.focus("#options > summary");
   await page.keyboard.press("Enter");
   await sleep(200);
-  check("the Options summary opens from the keyboard" + at, await page.evaluate(() => document.getElementById("options").open === true && sessionStorage.getItem("relmap-options-open") === "open"));
+  check("the Options summary opens from the keyboard" + at, await page.evaluate(() => document.getElementById("options").open === true));
   await page.click("#options > summary");
   await sleep(150);
   await page.evaluate(() => document.querySelector('a[href="#node-search"]').click());
@@ -1911,6 +1915,70 @@ async function testOptionsLayout(browser, base, width, height) {
   }
 }
 
+async function testFourModes(browser, base, width, height) {
+  const at = " at " + width;
+  console.log("\n## All four modes and search picks land on the ROCA chain" + at);
+  const info = await openPage(browser, base, width, height, "");
+  const closed = await info.evaluate(() => ({
+    detailsShown: document.querySelector(".details").getClientRects().length > 0,
+    workspaceHidden: document.getElementById("chain-workspace").hidden,
+    optionsOpen: document.getElementById("options").open,
+    buttons: Array.from(document.querySelectorAll("button, summary, a")).filter((el) => el.getClientRects().length > 0 || el.closest("#options")).map((el) => el.textContent.trim()).filter((t) => /graph/i.test(t)),
+    clearSelection: !!document.getElementById("clear-selection"),
+    jump: !!document.querySelector(".chain-jump"),
+    entries: Array.from(document.querySelectorAll(".entry-points button")).map((b) => b.id)
+  }));
+  check("with no pick there is no details panel, no chain, and Options is collapsed" + at, !closed.detailsShown && closed.workspaceHidden && !closed.optionsOpen, JSON.stringify(closed));
+  check("no button or link is labeled graph, and the duplicate Clear and jump links are gone" + at, closed.buttons.length === 0 && !closed.clearSelection && !closed.jump, JSON.stringify(closed));
+  check("the four mode buttons come in ROCA order" + at, closed.entries.join() === "entry-threat,entry-obligation,entry-control,entry-account", closed.entries.join());
+  await info.close();
+
+  const modes = [
+    ["threat", "risk", "Direct prompt injection", "risk"],
+    ["obligation", "obligation", "", "obligation"],
+    ["control", "control", "", "control"],
+    ["account", "accountable", "AI Platform Provider", "accountable"]
+  ];
+  for (const [mode, key, query, kindKey] of modes) {
+    const page = await startMode(browser, base, width, height, mode);
+    const start = await page.evaluate(() => ({
+      pressed: Array.from(document.querySelectorAll(".entry-points button[aria-pressed='true']")).map((b) => b.id),
+      counts: Array.from(document.querySelectorAll("#chain-board select")).map((s) => s.options.length - 1),
+      disabled: Array.from(document.querySelectorAll("#chain-board select")).filter((s) => s.disabled).length,
+      search: document.getElementById("node-search").checkVisibility(),
+      find: document.querySelector(".find-form__submit").checkVisibility()
+    }));
+    check(mode + " mode: the same search and Find controls, four full selects, and its button pressed" + at, start.pressed.join() === "entry-" + mode && start.disabled === 0 && start.counts.every((n) => n >= 6) && start.search && start.find, JSON.stringify(start));
+    let text = query;
+    if (!text) text = (await optionValues(page, key))[4].text;
+    if (width === 375) {
+      await clickNow(page, "#clear-chain-selection");
+      await sleep(500);
+    }
+    await search(page, text);
+    const results = await page.evaluate(() => Array.from(document.querySelectorAll("#search-results [role=option]")).map((o) => o.dataset.nodeId));
+    const want = results.filter((id) => (kindKey === "risk" ? id.indexOf("risk:") === 0 : kindKey === "obligation" ? /^(obligation|instrument):/.test(id) : kindKey === "control" ? id.indexOf("control:") === 0 : id.indexOf("persona:") === 0));
+    check(mode + " mode: search finds " + kindKey + " records" + at, want.length > 0, JSON.stringify(results.slice(0, 8)));
+    await page.click('#search-results [role=option][data-node-id="' + want[0] + '"]');
+    await sleep(900);
+    const landed = await page.evaluate(() => ({
+      chain: !document.getElementById("chain").hidden,
+      inSlot: !!document.querySelector("#chain-details-slot > .details"),
+      detailsShown: document.querySelector(".details").getClientRects().length > 0,
+      values: Array.from(document.querySelectorAll("#chain-board select")).map((s) => s.id.replace("chain-select-", "") + "=" + s.value),
+      counts: Array.from(document.querySelectorAll("#chain-board select")).map((s) => s.options.length - 1),
+      pressed: document.querySelectorAll("#chain-board button[aria-pressed='true']").length,
+      overflow: document.documentElement.scrollWidth - window.innerWidth
+    }));
+    const held = landed.values.filter((v) => !/=$/.test(v));
+    check(mode + " mode: choosing a " + kindKey + " from search shows the chain with details, and only the " + key + " select holds it" + at, landed.chain && landed.inSlot && landed.detailsShown && held.length === 1 && held[0].indexOf(key + "=") === 0 && landed.pressed >= 1, JSON.stringify(landed));
+    check(mode + " mode: the select counts are unchanged after a search pick" + at, landed.counts.join() === start.counts.join(), landed.counts.join() + " vs " + start.counts.join());
+    check(mode + " mode: no sideways scroll after a search pick" + at, landed.overflow <= 1, String(landed.overflow));
+    check("no page errors in the " + mode + " search flow" + at, page.__errors.length === 0, page.__errors.join("; "));
+    await page.close();
+  }
+}
+
 async function main() {
   const server = await serve();
   const base = "http://127.0.0.1:" + server.address().port;
@@ -1933,6 +2001,9 @@ async function main() {
       ["noNarrowingCode", () => testNoNarrowingCode(browser, base)],
       ["modeParity", async () => {
         for (const [width, height] of [[1280, 800], [375, 812]]) await testModeParity(browser, base, width, height);
+      }],
+      ["fourModes", async () => {
+        for (const [width, height] of [[1280, 800], [375, 812]]) await testFourModes(browser, base, width, height);
       }],
       ["columnLabels", () => testColumnLabels(browser, base)],
       ["listbox", () => testListbox(browser, base)],
