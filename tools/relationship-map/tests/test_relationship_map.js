@@ -621,6 +621,37 @@ async function testGraphToggle(browser, base) {
   await phone.close();
 }
 
+async function testPersonaGraph(browser, base) {
+  console.log("\n## Graph workspace: a picked persona opens focused on that persona");
+  const read = (page) => page.evaluate(() => ({
+    root: document.getElementById("map-status").dataset.root || "",
+    status: document.getElementById("map-status").textContent,
+    empty: document.getElementById("graph-empty") ? { hidden: document.getElementById("graph-empty").hidden, text: document.getElementById("graph-empty").textContent } : null,
+    workspaceHidden: document.getElementById("graph-workspace").hidden,
+    search: location.search,
+    heading: document.getElementById("details-heading").textContent
+  }));
+  for (const [width, height, button] of [[1280, 800, "#explore-from-details"], [375, 812, "#explore-from-details"]]) {
+    const page = await openPage(browser, base, width, height, "?type=persona&node=ai-platform-provider&view=list");
+    await clickNow(page, button);
+    await sleep(900);
+    const opened = await read(page);
+    check("persona graph at " + width + " opens the workspace on the persona, not the empty search graph", !opened.workspaceHidden && /node=ai-platform-provider/.test(opened.search) && /view=graph/.test(opened.search) && !/Choose a risk or a control/.test(opened.status) && /Showing this persona and \d+ nodes? next to it/.test(opened.status) && (!opened.empty || opened.empty.hidden), JSON.stringify(opened));
+    await clickNow(page, "#hide-graph");
+    await sleep(600);
+    const back = await read(page);
+    check("Back to details at " + width + " returns to the persona", /node=ai-platform-provider/.test(back.search) && /view=list/.test(back.search) && /Platform Provider/i.test(back.heading), JSON.stringify(back));
+    check("no page errors in the persona graph at " + width, page.__errors.length === 0, page.__errors.join("; "));
+    await page.close();
+  }
+  const bare = await openPage(browser, base, 1280, 800, "?type=persona&node=ai-system-users&view=list");
+  await clickNow(bare, "#explore-from-details");
+  await sleep(900);
+  const none = await read(bare);
+  check("a persona with no controls says so", !none.workspaceHidden && /No control names this persona yet/.test(none.status) && none.empty && !none.empty.hidden && /No control names this persona yet/.test(none.empty.text), JSON.stringify(none));
+  await bare.close();
+}
+
 async function testListbox(browser, base) {
   console.log("\n## Search listbox: ARIA combobox, grouped options, keyboard");
   const page = await openPage(browser, base, 1280, 800, "");
@@ -1406,6 +1437,7 @@ async function main() {
     await testNavigation(browser, base);
     await testListView(browser, base);
     await testGraphToggle(browser, base);
+    await testPersonaGraph(browser, base);
     await testListbox(browser, base);
     await testPhoneSheet(browser, base);
     await testDetailGraphSplit(browser, base);

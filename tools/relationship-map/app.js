@@ -747,12 +747,21 @@
     return nodeVisible(source) && nodeVisible(target);
   }
 
+  function personaFocusId() {
+    return !root && personaPick && graph.hasNode("persona:" + personaPick) ? "persona:" + personaPick : "";
+  }
+
+  function personaHasControls() {
+    return Object.keys(focusSet).some(function (id) { return graph.getNodeAttribute(id, "kind") === "control"; });
+  }
+
   function rebuildFocus() {
     focusSet = {};
-    if (view !== "focus" || !root || !graph.hasNode(root)) return;
-    if (!nodeAllowed(graph.getNodeAttributes(root))) return;
-    focusSet[root] = true;
-    var frontier = [root];
+    var focusRoot = personaFocusId() || (root && graph.hasNode(root) ? root : "");
+    if (view !== "focus" || !focusRoot) return;
+    if (!nodeAllowed(graph.getNodeAttributes(focusRoot))) return;
+    focusSet[focusRoot] = true;
+    var frontier = [focusRoot];
     var hops = wide ? 2 : 1;
     for (var hop = 0; hop < hops; hop++) {
       var next = [];
@@ -2192,6 +2201,10 @@
           ? "Showing this " + rootKind + " and 1 node next to it."
           : "Showing this " + rootKind + " and " + beside + " nodes next to it.";
       }
+    } else if (view === "focus" && personaFocusId()) {
+      text = !personaHasControls() ? "No control names this persona yet."
+        : visible.total === 2 ? "Showing this persona and 1 node next to it."
+        : "Showing this persona and " + (visible.total - 1) + " nodes next to it.";
     } else if (view === "context") {
       text = "Layers run from L1 to L5. Open a name to see its chain.";
     } else {
@@ -2627,6 +2640,10 @@
     if (!vizOpen) {
       graphEmpty.hidden = true;
       graphEmpty.textContent = "";
+    } else if (view === "focus" && personaFocusId()) {
+      var personaLinked = personaHasControls();
+      graphEmpty.hidden = personaLinked;
+      graphEmpty.textContent = personaLinked ? "" : "No control names this persona yet.";
     } else if (view === "search") {
       graphEmpty.hidden = !graphOn;
       graphEmpty.textContent = "Choose a risk or a control to see its chain.";
@@ -2760,7 +2777,7 @@
         }
         if (view === "focus" && wide) params.set("wide", "1");
         else if (view === "focus") params.set("neighbors", "1");
-      } else if (view === "chain" && personaPick && !root) {
+      } else if ((view === "chain" || view === "focus") && personaPick && !root) {
         params.set("type", "persona");
         params.set("node", personaPick);
         hasNode = true;
@@ -3258,6 +3275,11 @@
       wide = false;
       commit(push);
       if (renderer) frameFocus();
+    } else if (personaFocusId()) {
+      view = "focus";
+      wide = false;
+      commit(push);
+      if (renderer) frameFocus();
     } else {
       graphOpen = true;
       view = "search";
@@ -3281,6 +3303,14 @@
       wide = false;
       chainFocus = root;
       selected = root;
+      panelWorkspace = "details";
+      commit(push);
+      revealDetails(true);
+      return;
+    }
+    if (view === "focus" && personaFocusId()) {
+      view = "chain";
+      wide = false;
       panelWorkspace = "details";
       commit(push);
       revealDetails(true);
