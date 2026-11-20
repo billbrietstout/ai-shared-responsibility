@@ -137,7 +137,6 @@
   var tapestryInput = document.getElementById("show-tapestry");
   var contextBtn = document.getElementById("show-context");
   var contextBoard = document.getElementById("context-board");
-  var startBtn = document.getElementById("start-one");
   var helpEl = document.getElementById("map-help");
   var detailsHeading = document.getElementById("details-heading");
   var detailsEmpty = document.getElementById("details-empty");
@@ -153,7 +152,6 @@
   var clearChainBtn = document.getElementById("clear-chain-selection");
   var entryGap = document.getElementById("entry-gap");
   var entryAccount = document.getElementById("entry-account-panel");
-  var personaList = document.getElementById("persona-list");
   var layerFrames = document.getElementById("layer-frames");
   var mapPage = document.querySelector(".map-page");
   var chainHeading = document.getElementById("chain-heading");
@@ -2567,8 +2565,6 @@
     var contextOn = view === "context";
     var vizOpen = view === "chain" || contextOn;
     if (contextBtn) contextBtn.hidden = contextOn;
-    startBtn.hidden = !vizOpen;
-    startBtn.textContent = "Start from one risk or control";
     if (mapPage) {
       mapPage.classList.toggle("is-chain", chainOn);
       mapPage.classList.toggle("is-workspace-open", vizOpen);
@@ -2628,11 +2624,6 @@
     });
     if (entryGap) entryGap.hidden = entry !== "requirement";
     if (entryAccount) entryAccount.hidden = entry !== "account";
-    if (personaList) {
-      Array.prototype.forEach.call(personaList.querySelectorAll("button"), function (button) {
-        button.setAttribute("aria-pressed", button.dataset.persona === personaPick ? "true" : "false");
-      });
-    }
   }
 
   /* Every mode opens the same ROCA chain. The mode sets only which column
@@ -2681,22 +2672,6 @@
     searchInput.value = "";
     commit(true);
     if (moveFocus) revealChain();
-  }
-
-  function fillPersonaList() {
-    if (!personaList) return;
-    personaList.textContent = "";
-    CORE_PERSONAS.forEach(function (id) {
-      if (!graph.hasNode("persona:" + id)) return;
-      var attrs = graph.getNodeAttributes("persona:" + id);
-      if (attrs.provenance === "proposed-extension") return;
-      var button = document.createElement("button");
-      button.type = "button";
-      button.dataset.persona = id;
-      button.textContent = attrs.name;
-      button.addEventListener("click", function () { openPersona(id, true); });
-      personaList.appendChild(button);
-    });
   }
 
   function modelFromSlug(raw) {
@@ -3483,11 +3458,6 @@
       activateNode(id, true);
     });
   }
-  startBtn.addEventListener("click", function () {
-    entry = "";
-    showSearch(true);
-    revealSearch();
-  });
   document.getElementById("entry-threat").addEventListener("click", function () { chooseEntry("threat"); });
   document.getElementById("entry-requirement").addEventListener("click", function () { chooseEntry("requirement"); });
   document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
@@ -3848,7 +3818,6 @@
       renderModelRadios(models);
       renderLayerRadios((data.layers && data.layers.layers) || []);
       fillLayerFrames();
-      fillPersonaList();
       renderCoverage();
       renderModelNote();
       restoringHistory = true;

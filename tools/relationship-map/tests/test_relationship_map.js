@@ -324,7 +324,7 @@ async function testNavigation(browser, base) {
     return {
       searchBottom: document.getElementById("node-search").getBoundingClientRect().bottom,
       searchBeforeDomains: order("#find-form", ".layer-frames"),
-      personasBeforeIllustrative: order("#persona-list", ".illustrative"),
+      personasBeforeIllustrative: order("#entry-account", ".illustrative"),
       skipped: skipped,
       targets: targets.filter((href) => href && href[0] === "#").map((href) => ({ href: href, exists: !!document.getElementById(href.slice(1)) })),
       skipLinks: document.querySelectorAll("a.skip-link").length
@@ -418,10 +418,10 @@ async function testNavigation(browser, base) {
   await page.$eval("#entry-account", (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await page.click("#entry-account");
   await sleep(900);
-  await page.click("#persona-list button");
+  await page.select("#chain-select-accountable", (await optionValues(page, "accountable"))[1].value);
   await sleep(900);
   const persona = await page.evaluate(() => ({ active: document.activeElement.id, text: document.getElementById("chain-heading").textContent, workspaceHidden: document.getElementById("chain-workspace").hidden }));
-  check("choosing a persona moves focus to the chain heading", persona.active === "chain-heading" && persona.text.length > 0 && !persona.workspaceHidden, JSON.stringify(persona));
+  check("choosing a persona in the Accountable menu opens its chain and keeps focus on the menu", persona.active === "chain-select-accountable" && /^Chain for /.test(persona.text) && !persona.workspaceHidden, JSON.stringify(persona));
   check("the persona chain heading is in the first half of the window", await inView(page, "#chain-heading"));
   check("no page errors on desktop", page.__errors.length === 0, page.__errors.join("; "));
   await page.close();
@@ -632,12 +632,12 @@ async function testModeParity(browser, base, width, height) {
       check(mode + " mode: a " + key + " pick leaves every menu length and count unchanged" + at, (await sizes()).join("|") === sizeBefore.join("|"), (await sizes()).join("|") + " vs " + sizeBefore.join("|"));
       check(mode + " mode: a " + key + " pick shows one box in its own column" + at, boxCount === 1, String(boxCount));
     }
-    if (mode === "account" && width === 1280) {
-      const personas = await page.$$eval("#persona-list button", (els) => els.map((el) => el.dataset.personaId || el.textContent));
-      await page.$eval("#persona-list button:nth-of-type(2)", (el) => el.click());
-      await sleep(400);
-      const accOptions = await page.$eval("#chain-select-accountable", (sel) => sel.options.length - 1);
-      check("picking a persona in Options keeps the whole Accountable list" + at, accOptions === (await optionValues(page, "accountable")).length - 1 && accOptions >= 6 && personas.length >= 6, accOptions + " of " + personas.length);
+    if (mode === "account") {
+      const before = (await optionValues(page, "accountable")).length;
+      const second = (await optionValues(page, "accountable"))[2].value;
+      await pickValue(page, "accountable", second);
+      const afterPick = (await optionValues(page, "accountable")).length;
+      check("choosing a persona keeps the whole Accountable list" + at, afterPick === before && before >= 7, afterPick + " vs " + before);
     }
     check("no page errors in " + mode + " mode" + at, page.__errors.length === 0, page.__errors.join("; "));
     await page.close();
@@ -1413,10 +1413,10 @@ async function testDisclosures(browser, base) {
       tableInside: details.contains(table),
       paragraphInside: Array.from(details.children).some((el) => el.tagName === "P" && /not\s+personas in the SRF/.test(el.textContent)),
       tableVisible: table.checkVisibility(),
-      personasOutside: !details.contains(document.getElementById("persona-list")) && panel.contains(document.getElementById("persona-list"))
+      personaListGone: !document.getElementById("persona-list")
     };
   });
-  check("the illustrative table and its paragraph sit in a closed disclosure with the required summary", fold.summary === "View illustrative handoff titles (examples, not SRF)" && !fold.open && fold.tableInside && fold.paragraphInside && !fold.tableVisible && fold.personasOutside, JSON.stringify(fold));
+  check("the illustrative table and its paragraph sit in a closed disclosure with the required summary", fold.summary === "View illustrative handoff titles (examples, not SRF)" && !fold.open && fold.tableInside && fold.paragraphInside && !fold.tableVisible && fold.personaListGone, JSON.stringify(fold));
   await page.focus(".illustrative-fold summary");
   await page.keyboard.press("Enter");
   check("Enter opens the illustrative table", await page.$eval("table.illustrative", (el) => el.checkVisibility()));
@@ -1790,7 +1790,8 @@ async function testLeftColumnTrim(browser, base, width, height) {
       oldIds: ["risk-pick", "control-pick", "risk-suggestions", "suggestions", "suggestions-wrap", "control-source-note"].filter((id) => document.getElementById(id)),
       modes: ["entry-threat", "entry-control", "entry-account"].every((id) => shown("#" + id)),
       search: shown("#node-search"),
-      personas: document.querySelectorAll("#persona-list button").length,
+      removed: ["persona-list", "start-one", "risk-pick", "control-pick"].filter((id) => document.getElementById(id)),
+      illustrative: !!document.querySelector(".illustrative-fold"),
       model: document.querySelectorAll('#model-filter-list input[name="operating-model"]').length,
       layers: document.querySelectorAll('#layer-filter-list input[name="layer"]').length,
       tapestry: !!document.getElementById("show-tapestry"),
@@ -1800,7 +1801,7 @@ async function testLeftColumnTrim(browser, base, width, height) {
     };
   });
   check("Options has no Risk or Control drop-down and no control source note" + at, left.selectsInOptions === 0 && left.oldIds.length === 0, JSON.stringify(left));
-  check("Options keeps the mode buttons, search, persona picker, filters, Tapestry, and the layers button" + at, left.modes && left.search && left.personas >= 6 && left.model >= 4 && left.layers >= 5 && left.tapestry && left.layersBtn, JSON.stringify(left));
+  check("Options keeps the mode buttons, search, filters, Tapestry, and the layers button" + at, left.modes && left.search && left.removed.length === 0 && left.illustrative && left.model >= 4 && left.layers >= 5 && left.tapestry && left.layersBtn, JSON.stringify(left));
   check("the line legend and the persona note stay" + at, left.legend && /These are the controls that name this persona as accountable/.test(left.note2), JSON.stringify(left));
   await page.close();
 
@@ -1847,7 +1848,7 @@ async function testOptionsLayout(browser, base, width, height) {
     const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
     return {
       tag: opt && opt.tagName, open: opt && opt.open, summary: sum && sum.textContent.trim(), summaryTag: sum && sum.tagName,
-      moved: ["entry-threat", "entry-control", "entry-account", "node-search", "persona-list", "model-filter-list", "layer-filter-list", "show-tapestry", "show-context", "start-one", "map-filters"].filter((id) => !inside(id)),
+      moved: ["entry-threat", "entry-control", "entry-account", "node-search", "model-filter-list", "layer-filter-list", "show-tapestry", "show-context", "map-filters"].filter((id) => !inside(id)),
       layerFrames: !!opt && !!opt.querySelector(".layer-frames"),
       sideColumn: getComputedStyle(document.querySelector(".map-layout")).gridTemplateColumns.split(" ").length,
       stageWidth: rect(".map-stage").width, panelWidth: rect(".map-panel").width, viewport: window.innerWidth,
@@ -1856,7 +1857,7 @@ async function testOptionsLayout(browser, base, width, height) {
     };
   });
   check("Options is a details element, open on first load, with an Options summary" + at, info.tag === "DETAILS" && info.open === true && info.summary === "Options" && info.summaryTag === "SUMMARY", JSON.stringify(info));
-  check("the mode buttons, search, persona picker, filters, Tapestry, and the layers and start-over buttons are inside Options" + at, info.moved.length === 0, JSON.stringify(info.moved));
+  check("the mode buttons, search, filters, Tapestry, and the layers button are inside Options" + at, info.moved.length === 0, JSON.stringify(info.moved));
   check("the left column is gone: one grid column, and the details panel sits below at the same width" + at, info.sideColumn === 1 && info.stageWidth > width - 160 && (width === 375 || (info.panelBelow && Math.abs(info.stageWidth - info.panelWidth) <= 1)), JSON.stringify(info));
   check("Options does not scroll sideways" + at, info.overflow <= 1, String(info.overflow));
   const rows = await page.evaluate(() => {
