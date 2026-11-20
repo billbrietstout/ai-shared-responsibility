@@ -680,6 +680,17 @@ async function testPersonaGraph(browser, base) {
     }));
     check("persona view hides the line-type legend and the column jump links at " + width, !gone.legend && gone.columnLinks === 0, JSON.stringify(gone));
     check("persona view keeps Find another, the persona list, and the model and layer filters at " + width, (width < 800 || gone.findAnother) && gone.personaPick && gone.modelFilter && gone.layerFilter, JSON.stringify(gone));
+    const picks = await page.evaluate(() => {
+      const count = (id) => document.getElementById(id).options.length - 1;
+      return {
+        controls: count("suggestions"),
+        risks: count("risk-suggestions"),
+        wrapShown: getComputedStyle(document.getElementById("suggestions-wrap")).display !== "none",
+        help: document.getElementById("map-help").textContent
+      };
+    });
+    check("persona view narrows the Control list to the listed controls at " + width, picks.wrapShown && picks.controls === +/(\d+) controls?/.exec(chain.status)[1] && picks.risks === +/Showing (\d+) risk/.exec(chain.status)[1], JSON.stringify(picks));
+    check("persona view help line no longer describes four columns at " + width, picks.help.indexOf("Four columns") === -1 && /Each row is a control/.test(picks.help), picks.help);
     await page.focus("#chain-board li.control-row summary");
     await page.keyboard.press("Enter");
     const opened = await page.evaluate(() => {
@@ -745,6 +756,8 @@ async function testPersonaGraph(browser, base) {
   await sleep(900);
   const riskChain = await read(riskPage);
   check("a risk chain keeps the generic model note and shows the ROCA chain heading", riskChain.chainNote.indexOf("All shows one accountable persona for each operating model") !== -1 && riskChain.chainNote.indexOf("These are the controls that name this persona") === -1 && riskChain.workspaceHeading === "ROCA chain", JSON.stringify({ note: riskChain.chainNote, heading: riskChain.workspaceHeading }));
+  const riskPicks = await riskPage.evaluate(() => ({ help: document.getElementById("map-help").textContent, controls: document.getElementById("suggestions").options.length }));
+  check("a risk chain keeps the four-column help line", /Four columns/.test(riskPicks.help), riskPicks.help);
   const riskGone = await riskPage.evaluate(() => ({
     legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
     columnLinks: Array.from(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]')).filter((a) => a.checkVisibility()).length,

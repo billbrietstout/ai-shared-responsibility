@@ -158,6 +158,8 @@
   var suggestionsWrap = document.getElementById("suggestions-wrap");
   var suggestions = document.getElementById("suggestions");
   var riskSuggestions = document.getElementById("risk-suggestions");
+  var riskPickRow = document.getElementById("risk-pick");
+  var controlPickRow = document.getElementById("control-pick");
   var modelList = document.getElementById("model-filter-list");
   var modelNote = document.getElementById("model-note");
   var layerList = document.getElementById("layer-filter-list");
@@ -2670,6 +2672,22 @@
   }
 
   function renderSuggestions() {
+    if (entry === "account" && personaFocusId()) {
+      var personaChain = chainFromPersona(personaPick);
+      var personaRiskIds = personaChain.risks.map(function (card) { return card.id; });
+      var personaControlIds = personaChain.controls.map(function (card) { return card.id; });
+      suggestionsWrap.hidden = !personaRiskIds.length && !personaControlIds.length;
+      riskPickRow.hidden = false;
+      controlPickRow.hidden = false;
+      controlSourceNote.hidden = true;
+      fillSelect(riskSuggestions, personaRiskIds, "Choose a risk (" + personaRiskIds.length + ")", function (attrs) { return attrs.name; });
+      fillSelect(suggestions, personaControlIds, "Choose a control (" + personaControlIds.length + ")", function (attrs) {
+        return attrs.meta ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
+      });
+      hideResults();
+      searchNote.textContent = "";
+      return;
+    }
     if (entry === "requirement" || entry === "account") {
       suggestionsWrap.hidden = true;
       return;
@@ -2810,7 +2828,9 @@
     } else if (view === "chain") {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
+      helpEl.textContent = personaFocusId()
+        ? "Each row is a control that names this persona as accountable. Open a row to see its risks and obligations. The Risk and Control lists below show only this persona's records."
+        : "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
     } else {
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
