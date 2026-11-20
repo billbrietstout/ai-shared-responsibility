@@ -166,8 +166,6 @@
   var restoringHistory = false;
   var openColumn = "risk";
   var expandedColumns = {};
-  var chainPicks = { risk: "", obligation: "", control: "", accountable: "" };
-  var picksKey = "";
   var COLUMN_LIMIT = 8;
   var opener = null;
   var activeIndex = -1;
@@ -201,6 +199,7 @@
   var layerFilter = "all";
   var entry = "";
   var personaPick = "";
+  var reqPick = "";
   var catalog = null;
   var currentChain = null;
   var chainFocus = "";
@@ -749,21 +748,6 @@
     };
   }
 
-  /* Risk and control chains record which risks and obligations reach each
-     control, the same way the persona chain does, so one rule narrows all three. */
-  function attachControlLinks(chain) {
-    var riskIds = chain.risks.map(function (card) { return card.id; });
-    var obligationIds = chain.obligations.map(function (card) { return card.id; });
-    chain.controlLinks = {};
-    chain.controls.forEach(function (card) {
-      var cited = [];
-      chain.edges.forEach(function (edge) {
-        if (edge.to === card.id && hasId(obligationIds, edge.from) && cited.indexOf(edge.from) === -1) cited.push(edge.from);
-      });
-      chain.controlLinks[card.id] = { risks: riskIds, obligations: cited };
-    });
-  }
-
   function addEdge(chain, edge) {
     var key = edge.from + ">" + edge.to + ">" + edge.style;
     if (chain.edges.some(function (item) { return item.from === edge.from && item.to === edge.to && item.style === edge.style; })) return;
@@ -1034,7 +1018,6 @@
     nodes.forEach(function (node) { chain.controls.push(controlCard(node.id, node.attrs)); });
     pushControlGaps(chain, threat, nodes.length);
     addPersonaCards(chain, nodes);
-    attachControlLinks(chain);
     return chain;
   }
 
@@ -1129,7 +1112,6 @@
     });
     chain.controls.push(controlCard(nodeId, attrs));
     addPersonaCards(chain, [{ id: nodeId, attrs: attrs }]);
-    attachControlLinks(chain);
     return chain;
   }
 
@@ -1161,22 +1143,17 @@
     var riskIds = {};
     chain.risks.forEach(function (card) { riskIds[card.id] = true; });
     var obligationCards = {};
-    chain.controlLinks = {};
     nodes.forEach(function (node) {
-      var links = { risks: [], obligations: [] };
-      chain.controlLinks[node.id] = links;
       chain.controls.push(controlCard(node.id, node.attrs));
       addEdge(chain, { from: node.id, to: "accountable:persona:" + id, style: "solid" });
       threats.forEach(function (threat) {
         if ((threat.related_controls || []).indexOf(node.attrs.fullId) !== -1 && riskIds["risk:" + threat.id]) {
           addEdge(chain, { from: "risk:" + threat.id, to: node.id, style: "solid" });
-          links.risks.push("risk:" + threat.id);
         }
       });
       var cited = citationsForControl(node.attrs);
       cited.articles.forEach(function (item) {
         var cardId = "obligation:" + item.req.id;
-        if (links.obligations.indexOf(cardId) === -1) links.obligations.push(cardId);
         if (!obligationCards[cardId]) {
           obligationCards[cardId] = {
             id: cardId,
@@ -1253,6 +1230,108 @@
     return chain;
   }
 
+  function obligationCardFrom(cardId, item, instrumentLevel) {
+    var source = instrumentLevel ? item.reg : item.req;
+    return {
+      id: cardId,
+      citation: instrumentLevel ? (source.short || source.name) : source.citation,
+      title: instrumentLevel ? source.name : source.title,
+      summary: instrumentLevel ? "" : (source.summary || ""),
+      url: source.url || "",
+      basis: "",
+      basisChips: [],
+      basisSentences: instrumentLevel ? [] : ["Cited by a control in its source record."],
+      style: instrumentLevel ? "dotted" : "solid",
+      instrumentLevel: instrumentLevel,
+      citationText: item.citation,
+      sources: [],
+      controlCount: 0
+    };
+  }
+
+  /* Every obligation that a control allowed by the current filters cites. */
+  var obligationChoiceCache = { key: "", cards: [] };
+
+  function obligationChoiceCards() {
+    var key = [modelFilter, layerFilter, showTapestry].join("|");
+    if (obligationChoiceCache.key === key) return obligationChoiceCache.cards;
+    var seen = {};
+    var cards = [];
+    suggestedIds().forEach(function (id) {
+      var cited = citationsForControl(graph.getNodeAttributes(id));
+      cited.articles.forEach(function (item) {
+        var cardId = "obligation:" + item.req.id;
+        if (seen[cardId]) return;
+        seen[cardId] = true;
+        cards.push(obligationCardFrom(cardId, item, false));
+      });
+      cited.fallbacks.forEach(function (item) {
+        var cardId = "instrument:" + item.reg.id;
+        if (seen[cardId]) return;
+        seen[cardId] = true;
+        cards.push(obligationCardFrom(cardId, item, true));
+      });
+    });
+    cards.sort(function (a, b) {
+      return String(a.citation) < String(b.citation) ? -1 : String(a.citation) > String(b.citation) ? 1 : 0;
+    });
+    obligationChoiceCache = { key: key, cards: cards };
+    return cards;
+  }
+
+  function chainFromObligation(obligationId) {
+    var chain = blankChain("obligation");
+    var nodes = [];
+    var card = null;
+    graph.forEachNode(function (nodeId, attrs) {
+      if (!controlInChain(attrs)) return;
+      var cited = citationsForControl(attrs);
+      var hit = null;
+      var instrumentLevel = false;
+      cited.articles.forEach(function (item) { if ("obligation:" + item.req.id === obligationId) hit = item; });
+      cited.fallbacks.forEach(function (item) {
+        if ("instrument:" + item.reg.id === obligationId) {
+          hit = item;
+          instrumentLevel = true;
+        }
+      });
+      if (!hit) return;
+      nodes.push({ id: nodeId, attrs: attrs, instrumentLevel: instrumentLevel });
+      if (!card) card = obligationCardFrom(obligationId, hit, instrumentLevel);
+    });
+    var reqId = obligationId.indexOf("obligation:") === 0 ? obligationId.slice(11) : "";
+    if (!card && reqId && catalog.reqs[reqId]) card = obligationCardFrom(obligationId, { req: catalog.reqs[reqId], citation: "" }, false);
+    if (!card) return chain;
+    nodes.sort(function (a, b) {
+      if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
+      return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
+    });
+    card.controlCount = nodes.length;
+    card.basisChips.push("Cited by " + unit(nodes.length, "control", "controls") + " on this chain." + (card.instrumentLevel ? " No article record matched." : ""));
+    chain.obligations.push(card);
+    var threats = [];
+    Object.keys(catalog.threats).forEach(function (threatId) {
+      var threat = catalog.threats[threatId];
+      var direct = reqId && (threat.obligations || []).filter(function (link) { return link.requirement === reqId; })[0];
+      var viaControl = nodes.filter(function (node) { return (threat.related_controls || []).indexOf(node.attrs.fullId) !== -1; });
+      if (!direct && !viaControl.length) return;
+      threats.push({ threat: threat, direct: direct || null, viaControl: viaControl });
+    });
+    threats.sort(function (a, b) { return a.threat.name < b.threat.name ? -1 : a.threat.name > b.threat.name ? 1 : 0; });
+    threats.forEach(function (row) {
+      chain.risks.push(riskCard(row.threat));
+      if (row.direct) addEdge(chain, { from: "risk:" + row.threat.id, to: obligationId, style: basisIsDashed(row.direct.basis) ? "dashed" : "solid" });
+      row.viaControl.forEach(function (node) { addEdge(chain, { from: "risk:" + row.threat.id, to: node.id, style: "solid" }); });
+    });
+    nodes.forEach(function (node) {
+      chain.controls.push(controlCard(node.id, node.attrs));
+      addEdge(chain, { from: obligationId, to: node.id, style: node.instrumentLevel ? "dotted" : "solid" });
+    });
+    if (!nodes.length) chain.gaps.push({ column: "control", text: "No control cites this obligation for the selected operating model." });
+    addPersonaCards(chain, nodes);
+    return chain;
+  }
+
   function buildChain(nodeId) {
     if (!graph.hasNode(nodeId)) return null;
     var attrs = graph.getNodeAttributes(nodeId);
@@ -1303,91 +1382,10 @@
     return one && !one.missing ? one.name : item.controlName;
   }
 
-  var PICK_ORDER = ["risk", "obligation", "control", "accountable"];
   var ALL_LABEL = { risk: "All risks", obligation: "All obligations", control: "All controls", accountable: "All accountable parties" };
 
   function hasId(list, id) {
     return !!list && list.indexOf(id) !== -1;
-  }
-
-  /* The selects and column counts always use the whole chain. A pick only
-     changes which boxes show: the picked column keeps its one record and each
-     other column keeps what links to it through the chain's controls. */
-  function pickedKey() {
-    for (var i = 0; i < PICK_ORDER.length; i++) {
-      if (chainPicks[PICK_ORDER[i]]) return PICK_ORDER[i];
-    }
-    return "";
-  }
-
-  function linkedColumns(chain) {
-    var all = { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
-    var key = pickedKey();
-    if (!key || !chain.controlLinks) return all;
-    var id = chainPicks[key];
-    var links = chain.controlLinks;
-    var own = function (card) { return links[card.id] || { risks: [], obligations: [] }; };
-    var controls = chain.controls;
-    if (key === "risk") {
-      controls = controls.filter(function (card) { return hasId(own(card).risks, id); });
-    } else if (key === "obligation") {
-      controls = controls.filter(function (card) { return hasId(own(card).obligations, id); });
-    } else if (key === "control") {
-      controls = controls.filter(function (card) { return card.id === id; });
-    } else if (chain.startKind !== "persona") {
-      var picked = chain.personaCards.filter(function (card) { return card.id === id; })[0];
-      controls = controls.filter(function (card) { return !!picked && card.id === picked.controlId; });
-    }
-    var linkedTo = function (field) {
-      var seen = {};
-      controls.forEach(function (card) { own(card)[field].forEach(function (linked) { seen[linked] = true; }); });
-      return seen;
-    };
-    var riskSeen = linkedTo("risks");
-    var obligationSeen = linkedTo("obligations");
-    var accountable = chain.personaCards;
-    if (chain.startKind === "persona") {
-      accountable = controls.length ? chain.personaCards : [];
-    } else {
-      accountable = chain.personaCards.filter(function (card) {
-        return controls.some(function (control) { return control.id === card.controlId; });
-      });
-    }
-    var out = {
-      risk: chain.risks.filter(function (card) { return riskSeen[card.id]; }),
-      obligation: chain.obligations.filter(function (card) { return obligationSeen[card.id]; }),
-      control: controls,
-      accountable: accountable
-    };
-    out[key] = all[key].filter(function (card) { return card.id === id; });
-    return out;
-  }
-
-  function resetPicks(from) {
-    var start = from ? PICK_ORDER.indexOf(from) : 0;
-    PICK_ORDER.forEach(function (key, index) {
-      if (index >= start) chainPicks[key] = "";
-    });
-  }
-
-  function linkedChain(chain) {
-    if (!chain || !chain.controlLinks) return chain;
-    var cols = linkedColumns(chain);
-    var copy = {};
-    Object.keys(chain).forEach(function (key) { copy[key] = chain[key]; });
-    copy.risks = cols.risk;
-    copy.obligations = cols.obligation;
-    copy.controls = cols.control;
-    copy.personaCards = cols.accountable;
-    if (chain.startKind === "persona") {
-      copy.personaCount = cols.accountable.length ? chain.personaCount : 0;
-    } else {
-      copy.personaCount = 0;
-      cols.accountable.forEach(function (card) {
-        card.lines.forEach(function (line) { if (!line.missing) copy.personaCount += 1; });
-      });
-    }
-    return copy;
   }
 
   function optionText(key, item) {
@@ -1400,85 +1398,87 @@
     return boxTitle(key, item);
   }
 
-  function columnSelect(key, items, headingId) {
-    var select = makeEl("select", "pick-select chain-pick");
-    select.id = "chain-select-" + key;
-    select.dataset.column = key;
-    select.setAttribute("aria-labelledby", headingId);
-    var all = document.createElement("option");
-    all.value = "";
-    all.textContent = ALL_LABEL[key] + " (" + items.length + ")";
-    select.appendChild(all);
-    items.forEach(function (item) {
-      var option = document.createElement("option");
-      option.value = item.id;
-      option.textContent = optionText(key, item);
-      select.appendChild(option);
-    });
-    select.value = chainPicks[key] && hasId(items.map(function (item) { return item.id; }), chainPicks[key]) ? chainPicks[key] : "";
-    select.disabled = !items.length;
-    return select;
-  }
-
-  /* The column that names the mode holds the choice list for that mode:
-     every risk, every control, or every accountable persona. Choosing from it
-     starts a new chain. The other three columns list what is on the chain. */
-  var ROOT_KEY = { threat: "risk", control: "control", account: "accountable" };
-  var ROOT_PROMPT = { risk: "Choose a risk", control: "Choose a control", accountable: "Choose an accountable persona" };
-
   function personaChoiceIds() {
     return CORE_PERSONAS.filter(function (id) {
       return graph.hasNode("persona:" + id) && graph.getNodeAttribute("persona:" + id, "provenance") !== "proposed-extension";
     }).map(function (id) { return "persona:" + id; });
   }
 
-  function rootChoiceIds(key) {
-    if (key === "risk") {
-      return riskIds().filter(function (id) { return layerAllowed(graph.getNodeAttributes(id)); });
-    }
-    if (key === "control") return suggestedIds();
-    return personaChoiceIds();
+  function riskChoiceIds() {
+    return riskIds().filter(function (id) {
+      var attrs = graph.getNodeAttributes(id);
+      return nodeAllowed(attrs) && layerAllowed(attrs);
+    });
   }
 
-  function currentRootId(key) {
-    if (key === "accountable") return personaPick ? "persona:" + personaPick : "";
-    return root || "";
+  /* The key of the column that holds the focus, or "" when nothing is chosen. */
+  function focusKey() {
+    if (root && graph.hasNode(root)) return graph.getNodeAttribute(root, "kind") === "risk" ? "risk" : "control";
+    if (reqPick) return "obligation";
+    return personaPick ? "accountable" : "";
   }
 
-  function rootSelect(key, headingId) {
-    var select = makeEl("select", "pick-select chain-pick chain-pick--root");
+  function focusValue() {
+    var key = focusKey();
+    if (key === "risk" || key === "control") return root;
+    if (key === "obligation") return reqPick;
+    return key === "accountable" ? "persona:" + personaPick : "";
+  }
+
+  /* Each select lists every item of its kind that passes the Options filters.
+     Nothing on the chain changes these lists. A select shows its own pick
+     while the focus is in its column and the All option otherwise. */
+  function choiceSelect(key, headingId) {
+    var select = makeEl("select", "pick-select chain-pick");
     select.id = "chain-select-" + key;
     select.dataset.column = key;
-    select.dataset.root = "true";
     select.setAttribute("aria-labelledby", headingId);
-    var ids = rootChoiceIds(key);
-    var current = currentRootId(key);
-    if (current && ids.indexOf(current) === -1 && graph.hasNode(current)) ids = ids.concat([current]);
-    fillSelect(select, ids, ROOT_PROMPT[key] + " (" + ids.length + ")", function (attrs) {
-      return attrs.meta && attrs.kind === "control" ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
-    }, key === "accountable");
+    var current = focusKey() === key ? focusValue() : "";
+    if (key === "obligation") {
+      var cards = obligationChoiceCards();
+      var all = document.createElement("option");
+      all.value = "";
+      all.textContent = ALL_LABEL[key] + " (" + cards.length + ")";
+      select.appendChild(all);
+      cards.forEach(function (card) {
+        var option = document.createElement("option");
+        option.value = card.id;
+        option.textContent = optionText(key, card);
+        select.appendChild(option);
+      });
+      if (current && !cards.some(function (card) { return card.id === current; })) {
+        var held = currentChain && currentChain.obligations.filter(function (card) { return card.id === current; })[0];
+        if (held) {
+          var extra = document.createElement("option");
+          extra.value = held.id;
+          extra.textContent = optionText(key, held);
+          select.appendChild(extra);
+        }
+      }
+    } else {
+      var ids = key === "risk" ? riskChoiceIds() : key === "control" ? suggestedIds() : personaChoiceIds();
+      fillSelect(select, ids, ALL_LABEL[key] + " (" + ids.length + ")", function (attrs) {
+        return attrs.meta && attrs.kind === "control" ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
+      }, key === "accountable");
+      if (current && ids.indexOf(current) === -1 && graph.hasNode(current)) {
+        var held2 = document.createElement("option");
+        held2.value = current;
+        held2.dataset.nodeId = current;
+        held2.textContent = graph.getNodeAttribute(current, "name");
+        select.appendChild(held2);
+      }
+    }
     select.value = current;
     return select;
   }
 
-  var START_NOTE = {
-    risk: "Choose a risk to see the obligations it cites, the controls that address it, and the accountable persona on each control.",
-    control: "Choose a control to see the risks it covers, the obligations it cites, and its accountable persona.",
-    accountable: "Choose an accountable persona to see the controls that name it, with their risks and obligations."
-  };
+  var START_NOTE = "Choose a risk, an obligation, a control, or an accountable persona in any menu. The boxes then show what links to it.";
   var CONTROL_SOURCE_NOTE = "These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml. Narrow the list with Operating model and Layer.";
 
   function entryChain() {
-    var key = ROOT_KEY[entry];
-    if (!key) return null;
-    var chain = blankChain(key === "accountable" ? "persona" : key);
+    var chain = blankChain("risk");
     chain.blank = true;
     return chain;
-  }
-
-  function rootFocusId() {
-    if (root) return root;
-    return personaPick ? "accountable:persona:" + personaPick : "";
   }
 
   function announceDetails() {
@@ -1488,20 +1488,53 @@
     detailsLive.textContent = "Details updated: " + (kind ? kind + ", " : "") + name + ".";
   }
 
-  function setPick(key, id) {
-    if (!currentChain || currentChain.blank) return;
-    resetPicks();
-    chainPicks[key] = id || "";
-    var focusId = "";
-    for (var i = PICK_ORDER.length - 1; i >= 0; i--) {
-      if (chainPicks[PICK_ORDER[i]]) {
-        focusId = chainPicks[PICK_ORDER[i]];
-        break;
-      }
+  function clearFocus() {
+    root = null;
+    selected = null;
+    personaPick = "";
+    reqPick = "";
+    chainFocus = "";
+    expandedColumns = {};
+  }
+
+  /* A pick in any column makes that item the chain focus. The chain, the
+     boxes, and the details panel then show that item's linked chain. */
+  function setFocus(key, value) {
+    linkHits = null;
+    linkNote = "";
+    clearFocus();
+    if (!value) {
+      commit(true);
+      return;
     }
-    chainFocus = focusId || rootFocusId();
-    commit(false);
+    if (key === "risk" || key === "control") {
+      root = value;
+      selected = value;
+      chainFocus = value;
+      entry = key === "risk" ? "threat" : "control";
+      if (graph.hasNode(value) && graph.getNodeAttribute(value, "tapestry")) showTapestry = true;
+    } else if (key === "obligation") {
+      reqPick = value;
+      chainFocus = value;
+    } else {
+      personaPick = value.replace(/^persona:/, "");
+      chainFocus = "accountable:persona:" + personaPick;
+      entry = "account";
+    }
+    view = "chain";
+    openColumn = key;
+    commit(true);
     announceDetails();
+  }
+
+  function focusName() {
+    if (root && graph.hasNode(root)) return graph.getNodeAttribute(root, "name");
+    if (personaPick) return personaLabel(personaPick);
+    if (reqPick && currentChain) {
+      var hit = currentChain.obligations.filter(function (card) { return card.id === reqPick; })[0];
+      return hit ? (hit.citation && hit.citation !== hit.title ? hit.citation + ": " + hit.title : hit.title) : "";
+    }
+    return "";
   }
 
   function columnTitle(key, headingName) {
@@ -1515,7 +1548,7 @@
 
   function renderChain(chain) {
     chainBoard.textContent = "";
-    var chainTitle = root && graph.hasNode(root) ? graph.getNodeAttribute(root, "name") : personaPick ? personaLabel(personaPick) : "";
+    var chainTitle = focusName();
     chainHeading.textContent = chainTitle ? "Chain for " + chainTitle + (modelFilter === "all" ? "" : " in " + modelName(modelFilter)) : "Chain";
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("id", "chain-svg");
@@ -1524,30 +1557,30 @@
     chainBoard.appendChild(svg);
     var columnsWrap = makeEl("div", "chain-columns");
     chainBoard.appendChild(columnsWrap);
-    var rootKey = ROOT_KEY[entry] || "";
     var notes = [];
     if (chain.note) {
       notes.push(chain.note);
     } else if (chain.blank) {
-      notes.push(START_NOTE[rootKey] || "");
+      notes.push(START_NOTE);
     } else if (chain.startKind === "persona") {
       notes.push("These are the controls that name this persona as accountable, with their risks and obligations.");
+    } else if (chain.startKind === "obligation") {
+      notes.push("These are the controls that cite this obligation, with their risks and accountable personas.");
     } else if (modelFilter === "all") {
       notes.push("All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.");
     }
-    if (rootKey === "control") notes.push(CONTROL_SOURCE_NOTE);
+    if (chain.startKind === "control" || (chain.blank && entry === "control")) notes.push(CONTROL_SOURCE_NOTE);
     chainModelNote.textContent = notes.filter(Boolean).join(" ");
-    var shown = { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
-    var linked = linkedColumns(chain);
     var columns = [
-      ["Risk", shown.risk, "risk"],
-      ["Obligation", shown.obligation, "obligation"],
-      ["Control", shown.control, "control"],
-      ["Accountable", shown.accountable, "accountable"]
+      ["Risk", chain.risks, "risk"],
+      ["Obligation", chain.obligations, "obligation"],
+      ["Control", chain.controls, "control"],
+      ["Accountable", chain.personaCards, "accountable"]
     ];
     columns.forEach(function (column) {
       var wrap = makeEl("div", "chain-col");
-      var headingName = chain.blank ? column[0] : column[0] + " (" + column[1].length + ")";
+      var select = choiceSelect(column[2], "chain-col-" + column[2]);
+      var headingName = column[0] + " (" + (select.options.length - 1) + ")";
       var accessibleName = COLUMN_WORD[column[2]] + ": " + headingName;
       var heading = makeEl("h3");
       heading.appendChild(columnTitle(column[2], headingName));
@@ -1572,13 +1605,13 @@
         colBody.hidden = !colOpen;
       }
       wrap.appendChild(heading);
-      wrap.appendChild(column[2] === rootKey ? rootSelect(column[2], heading.id) : columnSelect(column[2], column[1], heading.id));
+      wrap.appendChild(select);
       wrap.appendChild(colBody);
-      var boxes = linked[column[2]];
+      var boxes = column[1];
       var collapsible = column[2] !== "accountable" && boxes.length > COLUMN_LIMIT;
       var shownItems = collapsible && !expandedColumns[column[2]] ? boxes.slice(0, COLUMN_LIMIT) : boxes;
       shownItems.forEach(function (item) {
-        var pressed = chainPicks[column[2]] === item.id;
+        var pressed = chainFocus === item.id;
         var button = cardButton(item.id, pressed);
         if (column[2] === "risk") {
           button.appendChild(makeEl("span", "chain-card__kicker", item.layer ? "Risk record · " + item.layer : "Risk record"));
@@ -2045,6 +2078,10 @@
     return section;
   }
 
+  function hasFocus() {
+    return !!(root || personaPick || reqPick);
+  }
+
   function focusedChainItem(chain) {
     var pools = [
       ["risk", chain.risks],
@@ -2066,6 +2103,7 @@
         for (var c = 0; c < chain.controls.length; c++) if (chain.controls[c].id === root) return { kind: "control", item: chain.controls[c] };
       }
     }
+    if (reqPick && chain.obligations.length) return { kind: "obligation", item: chain.obligations[0] };
     if (personaPick && chain.personaCards.length) return { kind: "accountable", item: chain.personaCards[0] };
     if (chain.controls.length) return { kind: "control", item: chain.controls[0] };
     if (chain.risks.length) return { kind: "risk", item: chain.risks[0] };
@@ -2073,10 +2111,10 @@
   }
 
   function renderDetails() {
-    var canClear = !!(selected || root || personaPick || view === "chain" || view === "context");
+    var canClear = !!(selected || hasFocus() || view === "chain" || view === "context");
     clearBtn.disabled = !canClear;
-    if (copyBtn) copyBtn.hidden = !(view === "chain" && currentChain && !currentChain.blank && (root || personaPick));
-    var copyKey = root || personaPick || "";
+    if (copyBtn) copyBtn.hidden = !(view === "chain" && currentChain && !currentChain.blank && hasFocus());
+    var copyKey = root || personaPick || reqPick || "";
     if (copyKey !== lastCopyKey) {
       lastCopyKey = copyKey;
       if (copyBtn) resetCopyState();
@@ -2087,29 +2125,28 @@
       detailsId.hidden = true;
       detailsId.textContent = "";
     }
-    if (view === "chain" && currentChain && !currentChain.blank && ((root && graph.hasNode(root)) || personaPick)) {
+    if (view === "chain" && currentChain && !currentChain.blank && hasFocus()) {
       var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
       var focusedName = focusedChainName(currentChain);
-      detailsHeading.textContent = focusedName || (rootAttrs ? rootAttrs.name : personaLabel(personaPick));
+      detailsHeading.textContent = focusedName || focusName();
       detailsEmpty.hidden = true;
       detailsBody.hidden = false;
       var focusKind = "";
-      if (focusedName && chainFocus !== root) {
+      if (focusedName && chainFocus !== root && chainFocus !== reqPick) {
         if (chainFocus.indexOf("instrument:") === 0 || chainFocus.indexOf("obligation:") === 0) focusKind = "Obligation";
         else if (chainFocus.indexOf("accountable:") === 0) focusKind = "Accountable";
         else if (chainFocus.indexOf("risk:") === 0) focusKind = "Risk";
         else focusKind = "Control";
       }
-      detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : "Accountable");
+      detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : reqPick ? "Obligation" : "Accountable");
       detailsMeta.hidden = true;
       detailsMeta.textContent = "";
       detailsModelNote.hidden = true;
       detailsModelNote.textContent = "";
       connectionsHeading.hidden = true;
       detailsList.hidden = true;
-      var linkedNow = linkedChain(currentChain);
-      renderChainDetails(linkedNow);
-      detailsSummary.textContent = chainSentence(linkedNow);
+      renderChainDetails(currentChain);
+      detailsSummary.textContent = chainSentence(currentChain);
       placeDetails();
       return;
     }
@@ -2120,8 +2157,8 @@
     if (!selected || !graph.hasNode(selected)) {
       detailsHeading.textContent = "Node details";
       detailsEmpty.hidden = false;
-      detailsEmpty.textContent = view === "chain" && ROOT_KEY[entry]
-        ? { risk: "Choose a risk", control: "Choose a control", accountable: "Choose an accountable persona" }[ROOT_KEY[entry]] + " to see its record, sources, and links."
+      detailsEmpty.textContent = view === "chain"
+        ? "Choose an item in any menu to see its record, sources, and links."
         : "Select a risk or a control to see its record, sources, and links.";
       detailsBody.hidden = true;
       detailsSummary.textContent = "";
@@ -2227,7 +2264,7 @@
     if (view === "chain" && currentChain && !currentChain.blank) {
       text = chainSentence(currentChain);
     } else if (view === "chain" && currentChain) {
-      text = currentChain.note || START_NOTE[ROOT_KEY[entry]] || "";
+      text = currentChain.note || START_NOTE;
     } else if (view === "search") {
       var offered = countNodes(function (id, attrs) { return nodeAllowed(attrs) && layerAllowed(attrs); });
       text = unit(offered.risk || 0, "risk", "risks") + " and " + unit(offered.control || 0, "control", "controls") + " can be opened.";
@@ -2627,19 +2664,22 @@
   }
 
   /* Every mode opens the same ROCA chain. The mode sets only which column
-     holds the choice list: Risk, Control, or Accountable. */
+     opens first on a phone: Risk, Control, or Accountable. */
+  var ENTRY_COLUMN = { threat: "risk", control: "control", account: "accountable" };
+
   function chooseEntry(next) {
     entry = next;
     root = null;
     selected = null;
     personaPick = "";
+    reqPick = "";
     chainFocus = "";
     linkHits = null;
     linkNote = "";
     searchInput.value = "";
     expandedColumns = {};
-    view = ROOT_KEY[next] ? "chain" : "search";
-    openColumn = ROOT_KEY[next] || "risk";
+    view = ENTRY_COLUMN[next] ? "chain" : "search";
+    openColumn = ENTRY_COLUMN[next] || "risk";
     commit(true);
     if (view === "chain") revealChain();
   }
@@ -2664,6 +2704,7 @@
     entry = "account";
     view = "chain";
     root = null;
+    reqPick = "";
     selected = null;
     chainFocus = "accountable:persona:" + id;
     expandedColumns = {};
@@ -2706,6 +2747,10 @@
         params.set("type", "persona");
         params.set("node", personaPick);
         hasNode = true;
+      } else if (reqPick) {
+        params.set("type", "obligation");
+        params.set("node", reqPick);
+        hasNode = true;
       }
     }
     if (modelFilter !== "all" && MODEL_SLUG[modelFilter]) params.set("model", MODEL_SLUG[modelFilter]);
@@ -2743,7 +2788,7 @@
     try { applyFromLocation(); } finally { restoringHistory = false; }
     if (!graph) return;
     var target = null;
-    if (root || personaPick) target = chainHeading;
+    if (hasFocus()) target = chainHeading;
     if (!target || !target.getClientRects().length) target = searchInput;
     if (target === chainHeading && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
@@ -2774,16 +2819,18 @@
       return blocked;
     }
     if (personaPick) return chainFromPersona(personaPick);
+    if (reqPick) {
+      var fromReq = chainFromObligation(reqPick);
+      if (fromReq.obligations.length) return fromReq;
+      var lost = entryChain();
+      lost.note = "No record matches that obligation.";
+      return lost;
+    }
     return entryChain();
   }
 
   function commit(push) {
     currentChain = chainForState();
-    var nextKey = currentChain ? [entry, personaPick, root, modelFilter, layerFilter, showTapestry].join("|") : "";
-    if (nextKey !== picksKey) {
-      picksKey = nextKey;
-      resetPicks();
-    }
     if (view !== "chain") chainFocus = "";
     if (currentChain) renderChain(currentChain);
     else if (chainBoard) chainBoard.textContent = "";
@@ -2869,6 +2916,7 @@
     selected = null;
     chainFocus = "";
     personaPick = "";
+    reqPick = "";
     entry = "";
     var viewParam = params.get("view");
     view = viewParam === "context" ? "context" : "search";
@@ -2878,6 +2926,14 @@
     var personaParam = params.get("persona") || "";
     var typeParam = params.get("type");
     var nodeParam = params.get("node");
+    if (typeParam === "obligation" && nodeParam && viewParam !== "full") {
+      if (/^(obligation|instrument):/.test(nodeParam)) {
+        reqPick = nodeParam;
+        openColumn = "obligation";
+        view = "chain";
+        chainFocus = nodeParam;
+      }
+    }
     if (viewParam !== "full" && nodeParam) {
       if (typeParam === "risk") riskParam = riskParam || nodeParam;
       else if (typeParam === "control") controlParam = controlParam || nodeParam;
@@ -2907,7 +2963,7 @@
         chainFocus = opened;
         view = "chain";
         entry = openedAttrs.kind === "risk" ? "threat" : "control";
-        openColumn = ROOT_KEY[entry];
+        openColumn = ENTRY_COLUMN[entry];
       }
     } else {
       var asked = personaParam;
@@ -2922,7 +2978,7 @@
         }
       }
     }
-    if (viewParam === "full" && !root && !personaPick) openChainFromNode(params.get("node"));
+    if (viewParam === "full" && !root && !personaPick && !reqPick) openChainFromNode(params.get("node"));
     commit(false);
   }
 
@@ -2993,7 +3049,7 @@
     if (moveFocus) rememberOpener();
     entry = attrs.kind === "risk" ? "threat" : "control";
     if (root !== id) {
-      openColumn = ROOT_KEY[entry];
+      openColumn = ENTRY_COLUMN[entry];
       expandedColumns = {};
     }
     root = id;
@@ -3003,6 +3059,7 @@
     linkNote = "";
     searchInput.value = "";
     personaPick = "";
+    reqPick = "";
     if (attrs.tapestry) showTapestry = true;
     view = "chain";
     commit(options.push !== false);
@@ -3012,20 +3069,6 @@
   function activateNode(id, moveFocus) {
     if (!graph || !graph.hasNode(id)) return;
     openControl(id, moveFocus, {});
-  }
-
-  function openRoot(key, value) {
-    if (!value) {
-      root = null;
-      selected = null;
-      personaPick = "";
-      chainFocus = "";
-      expandedColumns = {};
-      commit(true);
-      return;
-    }
-    if (key === "accountable") openPersona(value.replace(/^persona:/, ""), false);
-    else openControl(value, false, {});
   }
 
   function nodeButton(id, label) {
@@ -3150,26 +3193,13 @@
     commit(push);
   }
 
-  function anyPick() {
-    return PICK_ORDER.some(function (key) { return !!chainPicks[key]; });
-  }
-
-  /* Clear steps back one level: first the column picks, then the chosen
-     record (the mode keeps its four columns), then the mode itself. */
+  /* Clear steps back one level: first the chain focus (the four menus stay
+     full), then the mode itself. */
   function clearSelection(push) {
-    if (view === "chain" && anyPick()) {
-      resetPicks();
-      chainFocus = rootFocusId();
-      selected = root;
-      commit(!!push);
-      return;
-    }
-    if (view === "chain" && (root || personaPick)) {
-      root = null;
-      selected = null;
-      personaPick = "";
-      chainFocus = "";
-      expandedColumns = {};
+    if (view === "chain" && hasFocus()) {
+      linkHits = null;
+      linkNote = "";
+      clearFocus();
       commit(!!push);
       return;
     }
@@ -3183,7 +3213,6 @@
   }
 
   function closePanel(push) {
-    resetPicks();
     entry = "";
     showSearch(push);
     restoreOpener();
@@ -3400,7 +3429,23 @@
     if (!button) return;
     var keep = button.dataset.chainId;
     var column = button.closest(".chain-col");
-    if (column) setPick(column.dataset.column, keep);
+    if (column) {
+      var colKey = column.dataset.column;
+      var focusId = keep;
+      if (colKey === "accountable" && currentChain) {
+        var card = currentChain.personaCards.filter(function (item) { return item.id === keep; })[0];
+        var real = card ? card.lines.filter(function (line) { return !line.missing; }) : [];
+        var personaId = real.length === 1 && real[0].personaId ? real[0].personaId : (keep.indexOf("accountable:persona:") === 0 ? keep.slice(20) : "");
+        if (personaId) focusId = "persona:" + personaId;
+        else focusId = "";
+      }
+      if (focusId) {
+        setFocus(colKey, focusId);
+      } else {
+        chainFocus = keep;
+        commit(false);
+      }
+    }
     var again = chainCard(keep);
     if (again) again.focus();
   });
@@ -3408,8 +3453,7 @@
     var select = event.target.closest("select.chain-pick");
     if (!select) return;
     var key = select.dataset.column;
-    if (select.dataset.root === "true") openRoot(key, select.value);
-    else setPick(key, select.value);
+    setFocus(key, select.value);
     var again = document.getElementById("chain-select-" + key);
     if (again) again.focus({ preventScroll: true });
   });
@@ -3464,16 +3508,16 @@
   document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
   function selectedKindLabel() {
     if (root && graph.hasNode(root)) return KIND_LABEL[graph.getNodeAttribute(root, "kind")] || "Item";
-    return "Persona";
+    return reqPick ? "Obligation" : "Persona";
   }
 
   function chainMarkdown() {
     var chain = currentChain;
     var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
-    var name = rootAttrs ? rootAttrs.name : personaLabel(personaPick);
+    var name = focusName();
     var ref = "";
     if (rootAttrs) ref = rootAttrs.kind === "control" ? rootAttrs.vertical + ":" + rootAttrs.ref : rootAttrs.ref;
-    else ref = personaPick;
+    else ref = personaPick || reqPick;
     var lines = [];
     lines.push("# " + name);
     lines.push("");

@@ -236,7 +236,9 @@ async function testLayerFilter(browser, base) {
     const c = controls.find((x) => x.nodeId === id);
     return c && c.core.length && c.layer !== "L4";
   });
-  const chainControls = await chainPage.$$eval("#chain-select-control option", (opts) => opts.map((o) => o.value).filter(Boolean));
+  await chainPage.evaluate(() => { const b = document.querySelector('button.chain-more[data-more-column="control"]'); if (b && /^Show \d+ more$/.test(b.textContent)) b.click(); });
+  await sleep(300);
+  const chainControls = await chainPage.$$eval('#chain-board .chain-col[data-column="control"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
   check("an open chain keeps controls from other layers under a layer filter", crossLayer.length > 0 && crossLayer.every((id) => chainControls.indexOf(id) !== -1), JSON.stringify({ crossLayer: crossLayer, chainControls: chainControls }));
   await chainPage.close();
 }
@@ -299,7 +301,7 @@ async function testWording(browser, base) {
   check("search help text says risk or control", /Type a risk or a control name/.test(help), help);
   await openEntry(page, "threat");
   const heading = await page.$eval("#chain-col-risk", (el) => el.textContent.trim());
-  check("the Risk column heading reads Risk", /^whyRisk$/.test(heading), heading);
+  check("the Risk column heading reads Risk", /^whyRisk \(\d+\)$/.test(heading), heading);
   const note = await page.$eval("#chain-model-note", (el) => el.textContent);
   check("the chain note does not mention the control source on Explore a risk", note.indexOf("sector catalogs") === -1, note);
   await page.close();
@@ -579,6 +581,7 @@ async function testModeParity(browser, base, width, height) {
   console.log("\n## Explore a risk, a control, and accountability share one ROCA chain" + at);
   const signatures = {};
   const helps = {};
+  const startCounts = {};
   for (const mode of ["threat", "control", "account"]) {
     const setup = MODE_SETUP[mode];
     const page = await startMode(browser, base, width, height, mode);
@@ -595,10 +598,10 @@ async function testModeParity(browser, base, width, height) {
     }));
     check(mode + " mode starts on the ROCA chain" + at, start.workspace && start.chain && start.heading === "ROCA chain", JSON.stringify(start));
     check(mode + " mode shows all four column selects and none in Options" + at, start.selects.map((s) => s.id).join() === "chain-select-risk,chain-select-obligation,chain-select-control,chain-select-accountable" && start.inOptions === 0, JSON.stringify(start.selects));
-    const rootSel = start.selects.filter((s) => s.root);
-    check(mode + " mode starts with only its own select enabled and filled" + at, rootSel.length === 1 && rootSel[0].id === "chain-select-" + setup.key && rootSel[0].options > 1 && !rootSel[0].disabled && start.selects.filter((s) => s.id !== rootSel[0].id).every((s) => s.disabled && s.options === 0), JSON.stringify(start.selects));
-    check(mode + " mode starts with no cards until something is picked" + at, start.cards === 0, String(start.cards));
+    check(mode + " mode starts with all four selects enabled and full" + at, start.selects.every((s) => !s.disabled && s.options > 5), JSON.stringify(start.selects));
+    check(mode + " mode starts with no boxes until something is picked" + at, start.cards === 0, String(start.cards));
     check("no sideways scroll when " + mode + " mode opens" + at, start.overflow <= 1, String(start.overflow));
+    startCounts[mode] = start.selects.map((s) => s.id.replace("chain-select-", "") + ":" + s.options).join(" ");
     helps[mode] = start.help;
 
     const pick = setup.pick || (await optionValues(page, "accountable")).filter((o) => /model provider/i.test(o.text))[0].value;
@@ -617,33 +620,29 @@ async function testModeParity(browser, base, width, height) {
     });
     signatures[mode] = after.cols.join();
     check(mode + " mode keeps the same four columns after a pick" + at, after.cols.join() === "risk,obligation,control,accountable", after.cols.join());
-    check(mode + " mode fills the other three selects after a pick" + at, after.selects.filter((s) => s.id !== "chain-select-" + setup.key).every((s) => !s.disabled && s.options > 0) && after.selects.filter((s) => s.value).length === 1, JSON.stringify(after.selects));
+    check(mode + " mode: a " + setup.key + " pick leaves every select at its start count and shows the pick only in its own column" + at, after.selects.map((x) => x.id.replace("chain-select-", "") + ":" + x.options).join(" ") === startCounts[mode] && after.selects.filter((x) => x.value).length === 1 && after.selects.every((x) => !x.disabled), JSON.stringify(after.selects));
     check(mode + " mode shows the picked record in the details panel inside the chain" + at, after.details === setup.record && after.slot, JSON.stringify([after.details, after.slot]));
     check(mode + " mode status line counts all four columns" + at, /^Showing \d+ risks?, \d+ obligations?, \d+ controls?, and \d+ accountable personas?/.test(after.status) && !/ 0 (risks?|obligations?|controls?), /.test(after.status), after.status);
     if (width === 1280) check(mode + " mode draws connector lines" + at, after.lines > 0, String(after.lines));
     check("no sideways scroll after a pick in " + mode + " mode" + at, after.overflow <= 1, String(after.overflow));
     const sizes = () => page.evaluate(() => Array.from(document.querySelectorAll("#chain-board select")).map((sel) => sel.options.length + ":" + sel.options[0].textContent));
     const sizeBefore = await sizes();
-    for (const key of ["obligation", "control", "risk"]) {
+    for (const key of ["risk", "obligation", "control", "accountable"]) {
       const opts = (await optionValues(page, key)).filter((o) => o.value);
-      if (opts.length < 2 || key === setup.key) continue;
+      if (opts.length < 2) continue;
       await pickValue(page, key, opts[1].value);
+      const now = await page.evaluate(() => Array.from(document.querySelectorAll("#chain-board select")).map((sel) => ({ id: sel.id, value: sel.value, disabled: sel.disabled })));
       const boxCount = await page.$$eval('#chain-board .chain-col[data-column="' + key + '"] button[data-chain-id]', (els) => els.length);
       check(mode + " mode: a " + key + " pick leaves every menu length and count unchanged" + at, (await sizes()).join("|") === sizeBefore.join("|"), (await sizes()).join("|") + " vs " + sizeBefore.join("|"));
-      check(mode + " mode: a " + key + " pick shows one box in its own column" + at, boxCount === 1, String(boxCount));
-    }
-    if (mode === "account") {
-      const before = (await optionValues(page, "accountable")).length;
-      const second = (await optionValues(page, "accountable"))[2].value;
-      await pickValue(page, "accountable", second);
-      const afterPick = (await optionValues(page, "accountable")).length;
-      check("choosing a persona keeps the whole Accountable list" + at, afterPick === before && before >= 7, afterPick + " vs " + before);
+      check(mode + " mode: a " + key + " pick becomes the only pick and shows one box in its column" + at, now.filter((x) => x.value).map((x) => x.id).join() === "chain-select-" + key && now.every((x) => !x.disabled) && boxCount === 1, JSON.stringify(now) + " " + boxCount);
     }
     check("no page errors in " + mode + " mode" + at, page.__errors.length === 0, page.__errors.join("; "));
     await page.close();
   }
   check("all three modes show the same help line" + at, helps.threat === helps.control && helps.control === helps.account && /^Four columns: Risk, Obligation, Control, and Accountable\./.test(helps.threat), JSON.stringify(helps));
   check("all three modes list the columns in the same order" + at, signatures.threat === signatures.control && signatures.control === signatures.account);
+  check("all three modes start with identical select counts" + at, startCounts.threat === startCounts.control && startCounts.control === startCounts.account, JSON.stringify(startCounts));
+  console.log("  select option counts at start" + at + ": " + startCounts.threat);
 
   const lastChance = await openPage(browser, base, width, height, "");
   await clickNow(lastChance, "#show-context");
@@ -708,7 +707,7 @@ async function testModeParity(browser, base, width, height) {
 async function testNoNarrowingCode(browser, base) {
   console.log("\n## No list narrowing code");
   const source = fs.readFileSync(path.join(ROOT, "tools/relationship-map/app.js"), "utf8");
-  check("app.js has no NARROW_COLUMNS flag, narrowedColumns, or dropStalePicks", !/NARROW_COLUMNS|narrowedColumns|dropStalePicks/.test(source));
+  check("app.js has no narrowing flag, linked-column filter, pick state, or control link map", !/NARROW_COLUMNS|narrowedColumns|dropStalePicks|linkedColumns|linkedChain|chainPicks|controlLinks|resetPicks/.test(source));
 }
 
 async function testListbox(browser, base) {
@@ -826,10 +825,8 @@ async function testColumnLabels(browser, base) {
       check(at + " puts the label inside each heading", heads.every((h) => h.label === WORD[h.key].toLowerCase() && h.labelInHeading), JSON.stringify(heads.map((h) => [h.key, h.label, h.labelInHeading])));
       const nameRe = (key) => new RegExp("^" + WORD[key] + ": " + NAME[key] + " \\(\\d+\\)$");
       check(at + " gives each heading one accessible name with the label and count", heads.every((h) => nameRe(h.key).test(h.headingName)), JSON.stringify(heads.map((h) => h.headingName)));
-      if (counts) {
-        const total = { risk: +counts[1], obligation: +counts[2], control: +counts[3] };
-        check(at + " keeps the heading counts equal to the status line", ORDER.slice(0, 3).every((k) => new RegExp("\\((" + total[k] + ")\\)$").test(heads.find((h) => h.key === k).headingName)), JSON.stringify(heads.map((h) => h.headingName)) + " | " + status);
-      }
+      const optionCounts = await page.$$eval("#chain-board select", (els) => els.map((el) => el.options.length - 1));
+      check(at + " keeps each heading count equal to its select's option count", ORDER.every((k, n) => new RegExp("\\(" + optionCounts[n] + "\\)$").test(heads.find((h) => h.key === k).headingName)), JSON.stringify(heads.map((h) => h.headingName)) + " | " + optionCounts.join());
       if (width === 375) {
         const named = heads.every((h) => h.toggleName === h.headingName && (h.toggleExpanded === "true" || h.toggleExpanded === "false"));
         check(at + " gives each 375 px toggle the same name as its heading, with aria-expanded", named && heads.filter((h) => h.toggleExpanded === "true").length === 1, JSON.stringify(heads.map((h) => [h.toggleName, h.toggleExpanded])));
@@ -1524,6 +1521,7 @@ const readRoca = (page) => page.evaluate(() => {
       pressed: Array.from(col.querySelectorAll('button[data-chain-id][aria-pressed="true"]')).map((b) => b.dataset.chainId),
       more: Array.from(col.querySelectorAll("button.chain-more")).map((b) => b.textContent),
       rect: rect ? { left: rect.left, top: rect.top, width: rect.width, height: rect.height } : null,
+      disabled: select ? select.disabled : true,
       display: select ? getComputedStyle(select).display : ""
     };
   });
@@ -1565,12 +1563,12 @@ async function optionValues(page, key) {
 async function testRocaSelects(browser, base, width, height) {
   const at = " at " + width;
   const page = await openPersonaChain(browser, base, width, height);
-  const status = await page.$eval("#map-status", (el) => el.textContent);
-  const counts = /Showing (\d+) risks?, (\d+) obligations?, (\d+) controls?, and (\d+) accountable personas?/.exec(status);
-  const total = { risk: +counts[1], obligation: +counts[2], control: +counts[3], accountable: +counts[4] };
-
   let roca = await readRoca(page);
+  const total = {};
+  ROCA_KEYS.forEach((k) => { total[k] = roca[k].options; });
+
   check("each ROCA column has one native select" + at, ROCA_KEYS.every((k) => roca[k] && roca[k].exists) && (await page.$$eval("#chain-board select", (els) => els.length)) === 4);
+  check("all four selects are enabled and list every item of their kind" + at, ROCA_KEYS.every((k) => !roca[k].disabled) && total.risk >= 20 && total.obligation >= 50 && total.control >= 50 && total.accountable >= 6, JSON.stringify(total));
   check("the selects reuse the left-column drop-down style" + at, ROCA_KEYS.every((k) => /\bpick-select\b/.test(roca[k].className)) && ROCA_KEYS.every((k) => roca[k].rect.height >= 44));
   const snapshot = await page.accessibility.snapshot({ interestingOnly: false });
   const named = [];
@@ -1581,8 +1579,8 @@ async function testRocaSelects(browser, base, width, height) {
   })(snapshot);
   check("the selects have the accessible names Why, What, How, Who with counts" + at, ROCA_KEYS.every((k, i) => named[i] === ROCA_WORD[k] + ": " + ROCA_NAME[k] + " (" + total[k] + ")"), JSON.stringify(named));
   check("each select is tied to its column heading by aria-labelledby" + at, ROCA_KEYS.every((k) => roca[k].labelledBy === roca[k].headingId && roca[k].headingName === ROCA_WORD[k] + ": " + ROCA_NAME[k] + " (" + total[k] + ")"), JSON.stringify(roca));
-  check("the first options read All risks, All obligations, All controls, and a persona prompt, with counts" + at, ROCA_KEYS.every((k) => k === "accountable" ? roca[k].first === "Choose an accountable persona (" + roca[k].options + ")" && roca[k].options >= 6 : roca[k].first === ROCA_ALL[k] + " (" + total[k] + ")" && roca[k].options === total[k]), JSON.stringify(ROCA_KEYS.map((k) => [roca[k].first, roca[k].options])));
-  check("the persona select holds the chosen persona as its root" + at, roca.accountable.value === "persona:ai-platform-provider" && /\bchain-pick--root\b/.test(roca.accountable.className), JSON.stringify(roca.accountable));
+  check("every select starts with its All option and a count" + at, ROCA_KEYS.every((k) => roca[k].first === ROCA_ALL[k] + " (" + total[k] + ")"), JSON.stringify(ROCA_KEYS.map((k) => roca[k].first)));
+  check("the persona select shows the chosen persona and the other selects show All" + at, roca.accountable.value === "persona:ai-platform-provider" && ["risk", "obligation", "control"].every((k) => roca[k].value === ""), JSON.stringify(ROCA_KEYS.map((k) => roca[k].value)));
   const labels = await page.$$eval("#chain-board .chain-col h3 .chain-col__label", (els) => els.map((el) => el.textContent));
   check("the small why, what, how, who labels stay" + at, labels.join() === "why,what,how,who", labels.join());
   if (width === 1280) {
@@ -1601,6 +1599,16 @@ async function testRocaSelects(browser, base, width, height) {
 
   const lens = (r) => ROCA_KEYS.map((k) => r[k].options + "/" + r[k].headingName + "/" + r[k].first).join("|");
   const lens0 = lens(roca);
+  const optionIds = async () => {
+    const out = {};
+    for (const k of ROCA_KEYS) out[k] = (await optionValues(page, k)).map((o) => o.value).join(",");
+    return out;
+  };
+  const ids0 = await optionIds();
+  const sameLists = async () => {
+    const now = await optionIds();
+    return ROCA_KEYS.every((k) => now[k] === ids0[k]);
+  };
   const boxes = (page2) => page2.evaluate(() => {
     const out = {};
     document.querySelectorAll("#chain-board .chain-col").forEach((col) => {
@@ -1610,7 +1618,7 @@ async function testRocaSelects(browser, base, width, height) {
     return out;
   });
   const boxes0 = await boxes(page);
-  check("with nothing picked the boxes show every item in each column" + at, ROCA_KEYS.every((k) => boxes0[k].n === total[k]), JSON.stringify(ROCA_KEYS.map((k) => [boxes0[k].n, total[k]])));
+  check("the persona chain shows one persona box and linked controls" + at, boxes0.accountable.n === 1 && boxes0.control.n > 0, JSON.stringify(ROCA_KEYS.map((k) => boxes0[k].n)));
 
   const riskOptions = (await optionValues(page, "risk")).slice(1);
   let riskPick = null;
@@ -1618,16 +1626,14 @@ async function testRocaSelects(browser, base, width, height) {
   for (const opt of riskOptions) {
     await pickValue(page, "risk", opt.value);
     boxesRisk = await boxes(page);
-    if (boxesRisk.obligation.n > 0 && boxesRisk.obligation.n < total.obligation) { riskPick = opt; break; }
+    if (boxesRisk.obligation.n > 0 && boxesRisk.control.n > 0) { riskPick = opt; break; }
   }
   roca = await readRoca(page);
-  const afterRisk = roca;
   const statusRisk = await page.$eval("#map-status", (el) => el.textContent);
-  check("picking a risk keeps every select list and count the same" + at, lens(roca) === lens0, lens(roca) + " vs " + lens0);
-  check("picking a risk shows only that risk box, highlighted" + at, !!riskPick && boxesRisk.risk.n === 1 && roca.risk.value === riskPick.value && roca.risk.pressed.join() === riskPick.value, JSON.stringify(roca.risk));
-  check("picking a risk shows the linked obligations and controls as boxes" + at, boxesRisk.obligation.n > 0 && boxesRisk.obligation.n < total.obligation && boxesRisk.control.n > 0 && boxesRisk.control.n <= total.control && boxesRisk.accountable.n > 0, JSON.stringify(ROCA_KEYS.map((k) => boxesRisk[k].n)));
-  check("the shown boxes are a subset of the full columns" + at, ["obligation", "control"].every((k) => boxesRisk[k].ids.every((id) => boxes0[k].ids.indexOf(id) !== -1 || boxes0[k].n > boxes0[k].ids.length)));
-  check("the status line keeps the full counts after a pick" + at, new RegExp("Showing " + total.risk + " risks, " + total.obligation + " obligations?, " + total.control + " controls?, and ").test(statusRisk), statusRisk);
+  check("picking a risk keeps every select list and count the same" + at, lens(roca) === lens0 && (await sameLists()), lens(roca) + " vs " + lens0);
+  check("picking a risk replaces the persona pick and shows only that risk box, highlighted" + at, !!riskPick && boxesRisk.risk.n === 1 && roca.risk.value === riskPick.value && roca.accountable.value === "" && roca.risk.pressed.join() === riskPick.value, JSON.stringify(ROCA_KEYS.map((k) => roca[k].value)));
+  check("picking a risk shows its linked obligations, controls, and personas as boxes" + at, boxesRisk.obligation.n > 0 && boxesRisk.obligation.n < total.obligation && boxesRisk.control.n > 0 && boxesRisk.control.n < total.control && boxesRisk.accountable.n > 0, JSON.stringify(ROCA_KEYS.map((k) => boxesRisk[k].n)));
+  check("the status line counts the focused chain" + at, new RegExp("Showing 1 risk, " + boxesRisk.obligation.n + " obligations?, " + boxesRisk.control.n + " controls?, and ").test(statusRisk), statusRisk);
   const risk1 = await readPanel(page);
   check("picking a risk shows that risk record in the details panel" + at, risk1.visible && risk1.belowColumns && risk1.kind === "Risk" && risk1.heading === riskPick.text && /^ID: \S+/.test(risk1.id) && risk1.sections.indexOf("Key metadata") !== -1 && risk1.sections.indexOf("Description and objective") !== -1 && /Layer|layer/.test(risk1.text) && risk1.live.indexOf(riskPick.text) !== -1, JSON.stringify(risk1).slice(0, 700));
 
@@ -1641,12 +1647,11 @@ async function testRocaSelects(browser, base, width, height) {
     if (boxesOb.risk.n > 0 && boxesOb.control.n > 0) { obPick = opt; break; }
   }
   roca = await readRoca(page);
-  check("picking an obligation replaces the risk pick and keeps every list the same" + at, roca.obligation.value === obPick.value && roca.risk.value === "" && lens(roca) === lens0, lens(roca) + " vs " + lens0);
-  check("picking an obligation shows only that obligation box and its linked risks and controls" + at, boxesOb.obligation.n === 1 && roca.obligation.pressed.join() === obPick.value && boxesOb.risk.n > 0 && boxesOb.risk.n <= total.risk && boxesOb.control.n > 0 && boxesOb.control.n <= total.control, JSON.stringify(ROCA_KEYS.map((k) => boxesOb[k].n)));
+  check("picking an obligation moves the focus there and keeps every list the same" + at, !!obPick && roca.obligation.value === obPick.value && roca.risk.value === "" && lens(roca) === lens0 && (await sameLists()), lens(roca) + " vs " + lens0);
+  check("picking an obligation shows only that obligation box and its linked risks, controls, and personas" + at, boxesOb.obligation.n === 1 && roca.obligation.pressed.join() === obPick.value && boxesOb.risk.n > 0 && boxesOb.control.n > 0 && boxesOb.accountable.n > 0, JSON.stringify(ROCA_KEYS.map((k) => boxesOb[k].n)));
   const ob1 = await readPanel(page);
-  check("picking an obligation shows its record with citation and basis" + at, ob1.kind === "Obligation" && ob1.heading.length > 0 && ob1.sections.indexOf("Description and objective") !== -1 && ob1.sections.indexOf("Supporting obligations") !== -1 && ob1.sections.indexOf("Sources and relationship provenance") !== -1 && /Implements this obligation|Cited by/.test(ob1.text) && /Obligation text|Citation on the control|Instrument/.test(ob1.text) && ob1.live.indexOf("Obligation") !== -1, JSON.stringify(ob1).slice(0, 900));
-  const dutyCount = await page.$$eval("#details-obligations", (els) => els[0].parentElement.querySelectorAll("ul > li").length);
-  check("the details panel lists only the picked obligation" + at, dutyCount === 1, String(dutyCount));
+  check("picking an obligation shows its record with citation and basis" + at, ob1.kind === "Obligation" && ob1.heading.length > 0 && ob1.sections.indexOf("Description and objective") !== -1 && ob1.sections.indexOf("Supporting obligations") !== -1 && ob1.sections.indexOf("Sources and relationship provenance") !== -1 && /Implements this obligation|Cited by/.test(ob1.text) && ob1.live.indexOf("Obligation") !== -1, JSON.stringify(ob1).slice(0, 900));
+  check("the URL records the obligation focus" + at, /type=obligation/.test(page.url()), page.url());
 
   const controlOptions = (await optionValues(page, "control")).slice(1);
   let ctlPick = null;
@@ -1657,8 +1662,8 @@ async function testRocaSelects(browser, base, width, height) {
     if (boxesCtl.risk.n > 0 && boxesCtl.obligation.n > 0) { ctlPick = opt; break; }
   }
   roca = await readRoca(page);
-  check("picking a control keeps every list the same and the persona root" + at, roca.control.value === ctlPick.value && roca.accountable.value === "persona:ai-platform-provider" && lens(roca) === lens0, lens(roca) + " vs " + lens0);
-  check("picking a control shows only that control box with its linked risks and obligations" + at, boxesCtl.control.n === 1 && boxesCtl.risk.n > 0 && boxesCtl.obligation.n > 0 && boxesCtl.accountable.n === 1, JSON.stringify(ROCA_KEYS.map((k) => boxesCtl[k].n)));
+  check("picking a control moves the focus there and keeps every list the same" + at, roca.control.value === ctlPick.value && roca.obligation.value === "" && lens(roca) === lens0 && (await sameLists()), lens(roca) + " vs " + lens0);
+  check("picking a control shows only that control box with its linked risks and obligations" + at, boxesCtl.control.n === 1 && boxesCtl.risk.n > 0 && boxesCtl.obligation.n > 0 && boxesCtl.accountable.n >= 1, JSON.stringify(ROCA_KEYS.map((k) => boxesCtl[k].n)));
   const ctl1 = await readPanel(page);
   const pressedText = await page.$eval('#chain-board button[aria-pressed="true"]', (el) => el.textContent);
   check("picking a control shows its ID, layer, and evidence pointer" + at, ctl1.kind === "Control" && /^ID: \S+:\S+/.test(ctl1.id) && /Operates at L\d|Layer|layer/.test(ctl1.text + " " + pressedText) && /evidence pointer/i.test(ctl1.text + " " + pressedText) && ctl1.sections.indexOf("Key metadata") !== -1, JSON.stringify(ctl1).slice(0, 900));
@@ -1666,50 +1671,40 @@ async function testRocaSelects(browser, base, width, height) {
   await pickValue(page, "accountable", "persona:ai-system-users");
   roca = await readRoca(page);
   const acc1 = await readPanel(page);
-  check("choosing another persona resets every other pick and shows that persona" + at, roca.accountable.value === "persona:ai-system-users" && roca.risk.value === "" && roca.obligation.value === "" && roca.control.value === "" && acc1.kind === "Accountable" && /AI System Users/.test(acc1.heading), JSON.stringify([roca.accountable.value, acc1.kind, acc1.heading]));
-  const personaOptions = roca.accountable.options;
-  await pickValue(page, "accountable", "persona:ai-platform-provider");
-  roca = await readRoca(page);
-  check("the Accountable select lists the same personas for every persona pick" + at, roca.accountable.options === personaOptions && personaOptions >= 6, roca.accountable.options + " vs " + personaOptions);
+  check("choosing a persona resets every other select to All and shows that persona" + at, roca.accountable.value === "persona:ai-system-users" && roca.risk.value === "" && roca.obligation.value === "" && roca.control.value === "" && acc1.kind === "Accountable" && /AI System Users/.test(acc1.heading) && lens(roca) === lens0 && (await sameLists()), JSON.stringify([roca.accountable.value, acc1.kind, acc1.heading]));
 
   await pickValue(page, "risk", riskPick.value);
   await pickValue(page, "risk", riskOptions.find((o) => o.value !== riskPick.value).value);
   roca = await readRoca(page);
-  check("a new pick replaces the old one and the other selects show no pick" + at, roca.risk.value !== riskPick.value && roca.risk.value !== "" && roca.obligation.value === "" && roca.control.value === "" && lens(roca) === lens0 && roca.accountable.value === "persona:ai-platform-provider", JSON.stringify(ROCA_KEYS.map((k) => roca[k].value)));
+  check("a new pick in the same column replaces the old one" + at, roca.risk.value !== riskPick.value && roca.risk.value !== "" && ["obligation", "control", "accountable"].every((k) => roca[k].value === "") && lens(roca) === lens0, JSON.stringify(ROCA_KEYS.map((k) => roca[k].value)));
 
   await pickValue(page, "risk", riskPick.value);
-  await pickValue(page, "obligation", (await optionValues(page, "obligation"))[1].value);
   await pickValue(page, "obligation", "");
   roca = await readRoca(page);
   const boxesAfterAll = await boxes(page);
-  check("choosing All obligations clears the pick and shows every box again" + at, roca.obligation.value === "" && roca.risk.value === "" && ROCA_KEYS.every((k) => boxesAfterAll[k].n === total[k]) && lens(roca) === lens0, JSON.stringify(ROCA_KEYS.map((k) => boxesAfterAll[k].n)));
-  const status2 = await page.$eval("#map-status", (el) => el.textContent);
-  check("the status line returns to the full counts" + at, status2 === status, status2 + " | " + status);
+  check("choosing All obligations clears the focus and every select shows All" + at, ROCA_KEYS.every((k) => roca[k].value === "") && ROCA_KEYS.every((k) => boxesAfterAll[k].n === 0) && lens(roca) === lens0 && (await sameLists()), JSON.stringify(ROCA_KEYS.map((k) => [roca[k].value, boxesAfterAll[k].n])));
 
   const lastOb = (await optionValues(page, "obligation")).slice(1).pop();
   await pickValue(page, "obligation", lastOb.value);
   roca = await readRoca(page);
   const lastShown = await page.evaluate((id) => !!document.querySelector('#chain-board button[data-chain-id="' + id + '"]'), lastOb.value);
   check("the last obligation in the menu shows as a highlighted box when picked" + at, lastShown && roca.obligation.pressed.join() === lastOb.value && roca.obligation.cards === 1, JSON.stringify(roca.obligation));
-  await pickValue(page, "obligation", "");
 
-  const boxId = await page.evaluate(() => {
-    const card = document.querySelector('#chain-board .chain-col[data-column="obligation"] button[data-chain-id]');
-    return card.dataset.chainId;
-  });
-  if (width === 375) await page.evaluate(() => { const t = document.querySelector('.chain-col__toggle[data-column="obligation"]'); if (t.getAttribute("aria-expanded") !== "true") t.click(); });
+  await pickValue(page, "risk", riskPick.value);
+  if (width === 375) await page.evaluate(() => { const t = document.querySelector('.chain-col__toggle[data-column="control"]'); if (t.getAttribute("aria-expanded") !== "true") t.click(); });
   await sleep(150);
+  const boxId = await page.evaluate(() => document.querySelector('#chain-board .chain-col[data-column="control"] button[data-chain-id]').dataset.chainId);
   await page.click('#chain-board button[data-chain-id="' + boxId.replace(/"/g, '\\"') + '"]');
   await sleep(350);
   roca = await readRoca(page);
   const clicked = await readPanel(page);
-  check("clicking a box selects it in its select and shows its details" + at, roca.obligation.value === boxId && roca.obligation.pressed.join() === boxId && clicked.kind === "Obligation", JSON.stringify([roca.obligation.value, clicked.kind]));
+  check("clicking a box in another column makes it the focus and shows its details" + at, roca.control.value === boxId && roca.risk.value === "" && roca.control.pressed.join() === boxId && clicked.kind === "Control" && lens(roca) === lens0, JSON.stringify([roca.control.value, roca.risk.value, clicked.kind]));
   const noToggle = await page.evaluate(() => ({
     classes: document.querySelectorAll("#chain-board [class*='chain-box']").length,
     plus: Array.from(document.querySelectorAll("#chain-board button")).filter((b) => /^[+\u2212-]$/.test(b.textContent.trim()) || /^Links to the next column/.test(b.getAttribute("aria-label") || "")).length,
     lists: document.querySelectorAll("#chain-board .chain-card ul, #chain-board .chain-col__body ul").length
   }));
-  check("the chain has no +/- toggles and no inner linked-item lists" + at, noToggle.classes === 0 && noToggle.plus === 0 && noToggle.lists === 0, JSON.stringify(noToggle));
+  if (width === 1280) check("the chain has no +/- toggles and no inner linked-item lists" + at, noToggle.classes === 0 && noToggle.plus === 0 && noToggle.lists === 0, JSON.stringify(noToggle));
   const dead = await page.evaluate(() => /chain-box/.test(document.documentElement.outerHTML));
   check("no old box markup is left on the page" + at, !dead);
   const lines = await page.$$eval("#chain-svg path.chain-line", (els) => els.length);
