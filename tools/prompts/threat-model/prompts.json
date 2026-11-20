@@ -158,6 +158,7 @@
       "id": "experienced-threat-modeler",
       "label": "Experienced threat modeler",
       "default": true,
+      "role_summary": "Finds concrete attack scenarios that a builder can act on this sprint. It starts from data flows and trust boundaries, not from catalog lists. When a STRIDE category does not apply to an element, it says so and gives the reason.",
       "tradecraft": "Role: experienced threat modeler. Enumerate concrete scenarios a builder could act on this sprint. Prefer data-flow and trust-boundary analysis over catalogs. When a STRIDE letter does not apply to an element, say so and give a reason.",
       "notices_first": [
         "entry points, trust-boundary crossings, high-value stores, and controls whose shown coverage is uncertain",
@@ -171,6 +172,7 @@
     {
       "id": "application-security",
       "label": "Application security",
+      "role_summary": "Looks at entry points, authentication and authorization, input handling, session handling, and controls the application team can change. It keeps a provider-owned infrastructure threat in scope only when the diagram shows it and the application team needs evidence from the provider.",
       "tradecraft": "Role: application security engineer. Focus on entry points, authn/authz, input mediation, session handling, and control points the application team can change. Keep a provider-owned infrastructure threat in scope only when the diagram shows it and the application team must demand evidence.",
       "notices_first": [
         "public inputs that can bypass, disable, or choose whether a drawn filter runs",
@@ -184,6 +186,7 @@
     {
       "id": "llm-caller",
       "label": "LLM caller",
+      "role_summary": "For a team that calls an LLM, hosted or local. Looks at how prompts are built, which tool and retrieval inputs reach the model, over-reliance on model output, and what the model is allowed to decide. It does not assume the team can retrain the base model.",
       "tradecraft": "Role: team that calls an LLM (hosted or local). Focus on prompt construction, tool and retrieval inputs, over-reliance, and what the model is allowed to decide. Do not assume you can retrain the base model.",
       "notices_first": [
         "where untrusted content enters prompt assembly, retrieval, tools, memory, or model output handling",

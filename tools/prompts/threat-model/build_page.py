@@ -429,14 +429,11 @@ def main():
     baselines = pack["baseline_prompts"]
     pb = "\n".join(f"<li><strong>{esc(q['letter'])}</strong> {esc(q['name'])}: {esc(q['ask'])}</li>" for q in pack["phantom_b_questions"])
     def role_li(r):
-        rest = r["tradecraft"]
-        if ". " in rest:
-            rest = rest.split(". ", 1)[1]
         notices = "; ".join(r.get("notices_first", []))
         declines = "; ".join(r.get("declines_to_opine", []))
         return (
             f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). "
-            f"{esc(rest)} Notices first: {esc(notices)}. "
+            f"{esc(r['role_summary'])} Notices first: {esc(notices)}. "
             f"Declines to infer: {esc(declines)}.</li>"
         )
 
@@ -941,7 +938,7 @@ def main():
         applicable. Write mitigations in P-act, not here.
       </p>
 
-      <h2 class="section-label">Roles</h2>
+      <h2 class="section-label" id="roles">Roles</h2>
       <ul class="cite-list">
         {roles}
       </ul>
