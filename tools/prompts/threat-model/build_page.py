@@ -437,8 +437,8 @@ def main():
         return (
             f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). "
             f"{esc(t['role_summary'])}"
-            f"<p><strong>Watches for</strong></p><ul>{watch}</ul>"
-            f"<p><strong>Does not claim</strong></p><ul>{claim}</ul></li>"
+            f'<div class="role-points"><p><strong>Watches for</strong></p><ul>{watch}</ul></div>'
+            f'<div class="role-points"><p><strong>Does not claim</strong></p><ul>{claim}</ul></div></li>'
         )
 
     roles = "\n".join(role_li(r) for r in pack["roles"])
@@ -728,6 +728,16 @@ def main():
         max-width: 720px;
         margin: 0 0 var(--sp-5);
         line-height: var(--leading-normal);
+      }}
+      .role-points {{
+        margin: 0 0 var(--sp-3);
+      }}
+      .role-points p {{
+        margin: 0 0 var(--sp-1);
+      }}
+      .role-points ul {{
+        margin: 0;
+        padding-left: var(--sp-5);
       }}
       .cite-list, .q-list, .pb-list {{
         max-width: 720px;

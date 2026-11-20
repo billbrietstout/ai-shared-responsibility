@@ -146,6 +146,9 @@ def main() -> int:
             for item in items:
                 if norm(item) not in roles_visible:
                     errors.append(f"{rid}: {key} item is not shown in Roles: {item[:60]}")
+        for item in t.get("does_not_claim", []):
+            if re.match(r"(?i)it\s", item) or item.endswith("."):
+                errors.append(f"{rid}: does_not_claim item is not a short noun phrase: {item[:60]}")
         visible_lower = roles_visible.lower()
         for item in r.get("notices_first", []) + r.get("declines_to_opine", []):
             if norm(item).lower() in visible_lower:
@@ -157,6 +160,10 @@ def main() -> int:
                 errors.append(f"{rid}: tradecraft sentence visible in Roles: {sentence[:60]}")
     if "Role:" in roles_visible:
         errors.append("Roles text contains a 'Role:' prefix copied from tradecraft")
+    if page.count('class="role-points"') != 2 * len(pack["roles"]):
+        errors.append("each role needs a Watches for and a Does not claim block with class role-points")
+    if not re.search(r"\.role-points ul\s*\{[^}]*padding-left", page):
+        errors.append("role-points lists have no padding-left rule, so they are not visibly nested")
     for label in ("Notices first", "Declines to infer"):
         if label.lower() in roles_visible.lower():
             errors.append(f"Roles text contains the model-facing label '{label}'")
