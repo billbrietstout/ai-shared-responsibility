@@ -299,8 +299,53 @@
       }
       .legend__item { display: flex; align-items: center; gap: var(--sp-2); font-size: var(--text-xs); color: var(--slate-600); }
 
+      /* ── Orient, prior art, and "goes further" blocks ────────────── */
+      .orient { margin-bottom: var(--sp-10); }
+      .orient__text { max-width: 680px; font-size: var(--text-base); color: var(--slate-700); line-height: var(--leading-normal); }
+      .orient__text p { margin-bottom: var(--sp-3); }
+      .orient__text a, .fw-extra a { overflow-wrap: anywhere; }
+      .orient__sub {
+        font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.1em;
+        text-transform: uppercase; color: var(--slate-500); margin: var(--sp-5) 0 var(--sp-2);
+      }
+      .sbs { width: 100%; max-width: 680px; border-collapse: collapse; font-size: var(--text-sm); background: var(--surface); border: 1px solid var(--slate-200); }
+      .sbs caption { text-align: left; font-weight: 600; color: var(--slate-900); padding: var(--sp-3) var(--sp-3); border-bottom: 1px solid var(--slate-200); }
+      .sbs th, .sbs td { text-align: left; vertical-align: middle; padding: var(--sp-3); border-bottom: 1px solid var(--slate-100); color: var(--slate-700); line-height: var(--leading-snug); }
+      .sbs thead th { font-size: var(--text-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-600); border-bottom: 2px solid var(--slate-200); width: 50%; }
+      .sbs tbody tr:last-child > * { border-bottom: none; }
+      .sbs tbody th { font-weight: 700; color: var(--slate-900); border-left: 6px solid var(--slate-400); }
+      .sbs .sbs__l1 { border-left-color: var(--l1); }
+      .sbs .sbs__l3 { border-left-color: var(--l3); }
+      .sbs .sbs__l4 { border-left-color: var(--l4); }
+      .sbs .sbs__new { background: var(--l2-bg); color: var(--l2-text); }
+      .sbs th.sbs__new { background: var(--l2-bg); color: var(--l2-text); border-left-color: var(--l2); }
+      .sbs .sbs__new--l5, .sbs .sbs__new--l5 th { background: var(--l5-bg); color: var(--l5-text); border-left-color: var(--l5); }
+      .sbs__badge {
+        display: inline-block; margin-left: var(--sp-2); padding: 1px 6px; border: 1px solid currentColor;
+        font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 1px; white-space: nowrap;
+      }
+      .sbs__gap { color: var(--slate-600); font-style: italic; }
+      .adds__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); max-width: 880px; }
+      .adds__card { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); border: 1px solid var(--slate-200); border-top: 6px solid var(--slate-400); background: var(--surface); }
+      .adds__card--l2 { border-top-color: var(--l2); background: var(--l2-bg); color: var(--l2-text); }
+      .adds__card--l5 { border-top-color: var(--l5); background: var(--l5-bg); color: var(--l5-text); }
+      .adds__card--one { border-top-color: var(--cosai-blue); color: var(--slate-800); }
+      .adds__tag { font-size: var(--text-base); font-weight: 700; line-height: var(--leading-tight); }
+      .adds__body { font-size: var(--text-sm); line-height: var(--leading-normal); }
+      @media (max-width: 760px) { .adds__list { grid-template-columns: 1fr; } }
+      .orient__link { margin-top: var(--sp-4); font-size: var(--text-sm); }
+
+      .fw-extra h3 { font-size: var(--text-base); font-weight: 700; color: var(--slate-900); margin: var(--sp-5) 0 var(--sp-2); }
+      .fw-extra p { max-width: 640px; font-size: var(--text-base); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-3); }
+      .open-areas { max-width: 640px; margin: 0 0 var(--sp-3) var(--sp-5); color: var(--slate-600); line-height: var(--leading-normal); }
+      .open-areas li { margin-bottom: var(--sp-2); }
+      .fw-extra .relation-table td:first-child { white-space: normal; }
+
       /* ── Responsive ──────────────────────────────────────────────── */
       @media (max-width: 640px) {
+        .relation-table td:first-child { white-space: normal; }
+        .relation-table th, .relation-table td { padding: var(--sp-2); }
+        .sbs th, .sbs td { padding: var(--sp-2); }
         .layer-section__body { grid-template-columns: 1fr; }
         .layer-section__personas { justify-content: flex-start; margin-left: 0; margin-top: var(--sp-2); }
         .layer-section__header { flex-wrap: wrap; }
@@ -454,6 +499,78 @@
 
     <main id="main" class="page-body" data-llm="the-framework">
 
+      <section class="orient" aria-labelledby="orient-heading" data-llm="orient-quickly">
+        <h2 id="orient-heading" class="section__label">Start with what you know</h2>
+        <div class="orient__text">
+          <p>
+            If you know the cloud shared responsibility model, the SRF will look familiar.
+            AWS separates &ldquo;security <em>of</em> the cloud&rdquo; (the provider) from &ldquo;security <em>in</em> the cloud&rdquo; (the customer), and the line moves with the service type
+            (<a href="https://aws.amazon.com/compliance/shared-responsibility-model/" rel="noopener">AWS</a>).
+            Microsoft&rsquo;s AI shared responsibility model applies the same idea to AI with three layers, AI usage, AI application, and AI platform, and responsibility shifts across SaaS, PaaS, and IaaS
+            (<a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility-ai" rel="noopener">Microsoft</a>).
+            The SRF works the same way: responsibility is shared at the boundary of what is being provided.
+          </p>
+          <p>
+            Familiar, with two additions. Microsoft shows three layers. The SRF shows five.
+          </p>
+        </div>
+
+        <table class="sbs">
+          <caption>Microsoft AI shared responsibility layers beside SRF layers L1 to L5</caption>
+          <thead>
+            <tr>
+              <th scope="col">Microsoft AI layers</th>
+              <th scope="col">SRF layer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>AI usage</td>
+              <th scope="row" class="sbs__l1">L1 AI Business &amp; Usage</th>
+            </tr>
+            <tr class="sbs__new">
+              <td class="sbs__gap">No separate data layer</td>
+              <th scope="row" class="sbs__new">L2 AI Information <span class="sbs__badge">SRF addition</span></th>
+            </tr>
+            <tr>
+              <td>AI application</td>
+              <th scope="row" class="sbs__l3">L3 AI Application</th>
+            </tr>
+            <tr>
+              <td rowspan="2">AI platform, which also holds the model, training data, and weights and biases</td>
+              <th scope="row" class="sbs__l4">L4 AI Platform</th>
+            </tr>
+            <tr class="sbs__new--l5">
+              <th scope="row" class="sbs__new--l5">L5 AI Model Provider <span class="sbs__badge">SRF addition</span></th>
+            </tr>
+          </tbody>
+        </table>
+        <p class="orient__text" style="font-size:var(--text-sm);margin-top:var(--sp-3);">
+          Microsoft&rsquo;s article discusses the platform layer first. Its diagram stacks usage at the top and platform at the bottom, the same top-down direction the SRF uses with L1 on top. The table follows SRF order.
+          Usage maps to L1, application to L3, and platform to L4. L2 and L5 are the SRF additions.
+        </p>
+        <div class="adds" data-llm="what-is-new">
+          <h3 class="orient__sub" style="margin-top:var(--sp-6);">What is new</h3>
+          <ul class="adds__list">
+            <li class="adds__card adds__card--l2">
+              <span class="adds__tag">L2 AI Information</span>
+              <span class="adds__body">In Microsoft&rsquo;s model, training data sits inside the platform layer. In the SRF, data has its own layer and its own accountable party.</span>
+            </li>
+            <li class="adds__card adds__card--l5">
+              <span class="adds__tag">L5 AI Model Provider</span>
+              <span class="adds__body">In Microsoft&rsquo;s model, the model and its weights and biases sit inside the platform layer. In the SRF, the AI Model Provider has its own layer and answers for the model.</span>
+            </li>
+            <li class="adds__card adds__card--one">
+              <span class="adds__tag">One accountable party</span>
+              <span class="adds__body">The rule is one accountable party per component. A Shared cell means both sides have work, and you still name one accountable person.</span>
+            </li>
+          </ul>
+        </div>
+        <p class="orient__link">
+          <a href="/framework/prior-art/">See how the SRF compares with TOGAF, ArchiMate, OBASHI, Zachman, NIST, and ISO →</a>
+        </p>
+      </section>
+
       <!-- Tab bar -->
       <div class="fw-tabs" role="tablist" aria-label="Framework sections">
         <button class="fw-tab fw-tab--active" role="tab" aria-selected="true"  data-tab="layers" aria-controls="panel-layers">
@@ -501,8 +618,10 @@
         <section aria-labelledby="diagram-heading" data-llm="order-of-dependency">
           <h2 id="diagram-heading" class="section__label" style="margin-bottom: var(--sp-4);">Order of dependency</h2>
           <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 500px; margin-bottom: var(--sp-4);">
-            Layers are stacked in dependency order. L1 sets the rules; each layer
-            below inherits those constraints and adds its own.
+            Layers are listed from L1 AI Business &amp; Usage at the top to L5 AI Model
+            Provider at the bottom. Dependencies between components form a graph, not
+            a strict stack: a component can depend on more than one layer, and links
+            can cross layers.
           </p>
           <div class="cascade" aria-label="Five-layer dependency diagram">
             <div class="cascade-box cascade-box--l1">L1: AI Business &amp; Usage<div class="cascade-box__sub">Governance, Strategy, Compliance</div></div>
@@ -621,6 +740,77 @@
           <p style="font-size: var(--text-base); color: var(--slate-600); max-width: 580px; margin-top: var(--sp-4); line-height: var(--leading-normal);">
             For how the SRF applies across threat modeling, red teaming, secure development, control implementation, vulnerability management, and incident response, see
             <a href="/framework/security-lifecycle/">the AI security lifecycle →</a>
+          </p>
+        </section>
+
+        <hr class="divider" />
+
+        <section class="fw-extra" aria-labelledby="prior-art-heading" data-llm="built-on-prior-art">
+          <h2 id="prior-art-heading" class="section__label">Built on prior art</h2>
+          <p>
+            Each row names a framework people already use and the part of the SRF it supports.
+            Sources marked secondary rest on a summary, not the official text.
+          </p>
+          <table class="relation-table">
+            <caption>Prior art and the SRF part each supports</caption>
+            <thead><tr><th scope="col">Prior art</th><th scope="col">What it supports in the SRF</th><th scope="col">Source check</th></tr></thead>
+            <tbody>
+              <tr><td>TOGAF and ArchiMate</td><td>Business, data, application, and technology domains map to L1 to L4. ArchiMate typed links give &ldquo;cascade&rdquo; a defined meaning.</td><td>TOGAF: secondary. ArchiMate 3.2 reference cards: official PDF.</td></tr>
+              <tr><td>OBASHI</td><td>Its Ownership view above the asset layers is consistent with one accountable party per component.</td><td>Secondary</td></tr>
+              <tr><td>Zachman</td><td>Its six questions work as a completeness check across SRF layers.</td><td>Official site read</td></tr>
+              <tr><td>NIST CSF 2.0</td><td>GV.RR and GV.SC-02 call for roles and responsibilities, including for suppliers.</td><td>Official PDF read</td></tr>
+              <tr><td>NIST AI RMF 1.0</td><td>Its dimensions map to L1, L2, L5, and L3. GOVERN 2.1 and GOVERN 6 cover roles and third-party risk.</td><td>Official PDF read. Revision under way, so recheck.</td></tr>
+              <tr><td>ISO/IEC 42001 and 22989</td><td>Clause 5.3 covers roles and authorities. 22989 defines the AI stakeholder roles the SRF maps its personas to.</td><td>Both rest on SRF v1.0. 22989: secondary.</td></tr>
+              <tr><td>AWS and Microsoft</td><td>Provider and customer responsibilities that move by service type. Microsoft&rsquo;s usage, application, and platform layers map to L1, L3, and L4.</td><td>Official pages read</td></tr>
+            </tbody>
+          </table>
+          <p style="margin-top:var(--sp-4);">
+            NIST CSF 2.0 (GV.RR and GV.SC-02) and ISO/IEC 42001 Clause 5.3 call for roles and responsibilities, which GV.SC-02 describes as &ldquo;established, communicated, and coordinated internally and externally.&rdquo; The SRF assigns them per layer.
+          </p>
+          <p>
+            <a href="/framework/prior-art/">Read the full crosswalk and sources →</a>
+          </p>
+        </section>
+
+        <hr class="divider" />
+
+        <section class="fw-extra" aria-labelledby="goes-further-heading" data-llm="where-the-srf-goes-further">
+          <h2 id="goes-further-heading" class="section__label">Where the SRF goes further</h2>
+
+          <h3>L5 AI Model Provider is its own layer</h3>
+          <p>
+            In this analysis, TOGAF, ArchiMate, OBASHI, and Zachman treat an outside model as one more supplier building block.
+            The SRF makes it a layer because the AI Model Provider controls training data, model development, and provenance, and a customer cannot inspect or fix them.
+            That is a choice made for accountability reasons.
+            NIST CSF 2.0 (GV.SC) and the AI RMF (GOVERN 6) also treat supplier risk as something to govern.
+          </p>
+
+          <h3>Layers are areas of accountability</h3>
+          <p>
+            Dependencies between components form a graph, not a strict stack.
+            A secondary source reports that ArchiMate 4 replaced &ldquo;layers&rdquo; with &ldquo;domains,&rdquo; and Zachman says its framework implies nothing about working top-down or bottom-up.
+          </p>
+
+          <h3>Two orders, two jobs</h3>
+          <p>
+            The NIST AI RMF lists dimensions as Application Context, Data and Input, AI Model, then Task and Output.
+            In SRF terms that is L1, L2, L5, then L3.
+            NIST orders by how an AI system works. The SRF orders by dependency and accountability.
+            The AI RMF describes how the system works, and the SRF adds who is accountable at each step.
+          </p>
+          <h3>Open areas</h3>
+          <p>
+            These are possible directions that this site and its analysis raise. CoSAI has not committed to any of them, and they are not part of the published framework.
+          </p>
+          <ul class="open-areas">
+            <li>Typed links between components, so that &ldquo;cascade&rdquo; has a defined meaning.</li>
+            <li>Obligations linked to components in other layers.</li>
+            <li>A data flow view across layers.</li>
+            <li>A place for network, facilities, or location.</li>
+            <li>Lifecycle states for components.</li>
+          </ul>
+          <p>
+            <a href="/framework/prior-art/">See the sources and checks →</a>
           </p>
         </section>
 

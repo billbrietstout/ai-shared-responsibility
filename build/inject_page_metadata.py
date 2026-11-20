@@ -87,6 +87,9 @@ def classify(rel):
         return "reference", ["srf.framework.cosai-srf"] + LAYERS + ["srf.data.threats"]
     if rel == "framework/attack-inventory":
         return "reference", ["srf.framework.cosai-srf", "srf.data.attack-inventory", "srf.data.threats"]
+    if rel == "framework/prior-art":
+        return "reference", ["srf.framework.cosai-srf"] + LAYERS + ACCT + [
+            "srf.concept.accountable-party"]
     if rel == "framework/nice-mapping":
         return "mapping", ROLES8 + ["srf.framework.cosai-srf"]
     if top == "operating-models":
