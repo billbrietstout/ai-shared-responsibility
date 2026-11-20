@@ -12,6 +12,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 PACK = json.loads((HERE / "prompts.json").read_text(encoding="utf-8"))
+PAGE_TEXT = json.loads((HERE / "page_text.json").read_text(encoding="utf-8"))
 
 
 def esc(s: str) -> str:
@@ -412,12 +413,13 @@ def stage_section(qid: str, title: str, pack: dict) -> str:
 
 
 def source_li(c: dict) -> str:
-    """One Sources entry. Uses the human-facing fields, never the model-facing note."""
-    lic = c.get("license", "")
+    """One Sources entry. Reads page_text.json only; never the model-facing note."""
+    t = PAGE_TEXT["citations"][c["id"]]
+    lic = t.get("license", "")
     lic_html = f" License: {esc(lic.rstrip('.'))}." if lic else ""
     return (
         f'<li><a href="{esc(c["url"])}">{esc(c["title"])}</a>. '
-        f'{esc(c["byline"])}.{lic_html} {esc(c["why_cited"])}</li>'
+        f'{esc(t["byline"])}.{lic_html} {esc(t["why_cited"])}</li>'
     )
 
 
@@ -433,7 +435,7 @@ def main():
         declines = "; ".join(r.get("declines_to_opine", []))
         return (
             f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). "
-            f"{esc(r['role_summary'])} Notices first: {esc(notices)}. "
+            f"{esc(PAGE_TEXT['roles'][r['id']]['role_summary'])} Notices first: {esc(notices)}. "
             f"Declines to infer: {esc(declines)}.</li>"
         )
 

@@ -113,43 +113,31 @@
       "id": "shostack-four-questions",
       "title": "The Four Question Framework for Threat Modeling",
       "url": "https://shostack.org/files/papers/The_Four_Question_Framework.pdf",
-      "license": "Framework text CC-BY. This white paper: CC BY-NC 4.0.",
-      "note": "Do not rephrase the four questions.",
-      "byline": "Adam Shostack, Shostack + Associates, white paper, November 2024",
-      "why_cited": "We use the four questions word for word as the four main parts of the pack: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?"
+      "note": "Do not rephrase the four questions."
     },
     {
       "id": "phantom-b",
       "title": "PHANTOM-B: A STRIDE Analog for LLMs",
       "url": "https://shostack.org/files/papers/PHANTOM-B_Whitepaper_Shostack.pdf",
-      "license": "CC-BY",
-      "note": "Ask as questions on the LLM subset. The whitepaper excludes defenses; mitigations live in P-act.",
-      "byline": "Adam Shostack, Shostack + Associates, white paper, July 2026",
-      "why_cited": "We use its eight threat categories for the AI parts of a system, such as prompt injection and hallucination. The pack words each category as a question and asks it about every AI component. The white paper leaves out defenses, so the pack writes mitigations in the P-act step."
+      "note": "Ask as questions on the LLM subset. The whitepaper excludes defenses; mitigations live in P-act."
     },
     {
       "id": "stride",
       "title": "STRIDE",
       "url": "https://learn.microsoft.com/en-us/azure/security/develop/threat-modeling-tool-threats#stride-model",
-      "note": "Apply to the whole diagram, including non-LLM parts.",
-      "byline": "Microsoft Learn, Microsoft Threat Modeling Tool threats page",
-      "why_cited": "We use STRIDE on the whole diagram, including parts that have no AI. PHANTOM-B covers only the AI parts."
+      "note": "Apply to the whole diagram, including non-LLM parts."
     },
     {
       "id": "auspex",
       "title": "Auspex: Building Threat Modeling Tradecraft into an Artificial Intelligence-based Copilot",
       "url": "https://arxiv.org/abs/2503.09586",
-      "note": "Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack.",
-      "byline": "Andrew Crossman and four co-authors at JPMorgan Chase, arXiv preprint, March 2025",
-      "why_cited": "We follow its two-stage design. Stage one describes the system. Stage two builds a threat matrix. Each prompt receives the output of the earlier prompts. We wrote our prompts from the paper's published figures. The authors withheld their full prompt text for later publication, so none of it is in this pack."
+      "note": "Two-stage chain, cumulative prompt fill, threat matrix, SME evaluation. The prompts here are rebuilt from the paper's published figures. JPMC's withheld tradecraft text is not in this pack."
     },
     {
       "id": "rfc6819",
       "title": "OAuth 2.0 Threat Model and Security Considerations",
       "url": "https://datatracker.ietf.org/doc/html/rfc6819",
-      "note": "Shape only: state attack assumptions and existing features before eliciting threats. Do not copy OAuth threats into an unrelated diagram.",
-      "byline": "IETF, RFC 6819, Informational, January 2013",
-      "why_cited": "We borrow its order only. It states attack assumptions (section 2.2) and existing security features (section 3) before it lists threats (section 4). The pack asks for the same order. The OAuth threats in the RFC do not apply to other systems, so the pack does not use them."
+      "note": "Shape only: state attack assumptions and existing features before eliciting threats. Do not copy OAuth threats into an unrelated diagram."
     }
   ],
   "shared_rules": "You are producing a threat model for an AI-enabled system from a system representation (image, Mermaid, or SVG) and the operator fields supplied in the first message.\n\nRun mode:\n- If the operator asked to run Track A through P-report, asked to run Track B or Track C, or named this pack chain, this is a chain run. Execute every required step in order in this conversation, including selected optional tracks after P-qa and before P-report. After a step meets its stop_condition, immediately produce the next chain id. Repeat_until steps rerun in this same reply until the condition is true. Do not ask a question. Do not request continue. Do not request a field listed in operator_initial_inputs. Do not write that you will proceed to a step without producing that step's output.\n- If this message contains a single [chain] banner, produce only that named step.\n\nMissing first-message fields are empty (null, false, or []). Optional catalog, SRF, and vertical mapping without injected data are not_applicable. Incomplete is for partial supplied data or missing diagram evidence. If a stop_condition fails, record the gap in that step's JSON. Do not ask the operator for more information. Continue later steps that can run; leave blocked coverage incomplete. Stop the remaining chain only when a required inventory cannot be built from the representation.\n\nFor a chain run, emit a prompt-id heading, then that step's JSON or export payload, then the next step. No other commentary. Copy-one-block JSON steps output JSON only, with no markdown fences. Export steps output only the requested markdown, CSV, or Mermaid source.\n\nRules:\n- Use Shostack's Four Questions in this exact wording: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?\n- Keep the review profile and team perspective explicit.\n- Ground claims in diagram element ids or operator-supplied evidence. Label an unsupported claim as unknown; do not invent components, vendors, networks, trust boundaries, jurisdictions, operating models, assets, obligations, controls, or business consequences.\n- If trust boundaries are missing from the diagram, set inventory.missing_trust_boundaries to true and record that finding. Do not add boundaries silently.\n- Every scenario must name a diagram_referent whose id exists in the inventory and retain claim or source evidence.\n- A catalog entry without a system referent and evidence is not a scenario.\n- Do not use DREAD, OCTAVE, attack trees, likelihood, impact, severity, or residual risk as inferred scoring methods. Preserve supplied_severity only as an attributed operator input.\n- PHANTOM-B applies to the AI subset after traditional-analysis gates. Do not force a traditional scenario into a PHANTOM-B letter or put defenses in PHANTOM-B elicitation.\n- Do not invent external identifiers. Use only identifiers and URLs present in the injected source_manifest, source_registry, personas, matrix, or threat_crosswalk inputs.\n- Every external_ref keeps the schema fields source_id, external_id, catalog_version, relation, affected_referents, evidence_refs, confidence, status. status is candidate, mapped, affected, not_affected, or unknown.\n- A CVE or NVD reference may be affected only when applicability_evidence supplies non-unknown supplier, product, version, component_referent, and at least one resolving evidence_ref. Product-name similarity, unknown version, or CISA KEV presence cannot establish affected status.\n- CISA KEV may support an active_exploitation importance factor only after a CVE or NVD reference is validly affected for the same component. KEV presence alone cannot establish applicability or active exploitation for this system.\n- There is no network fetching in this pack. An omitted or empty source_manifest, srf_inputs, or vertical_source_rows object is not_applicable for that mapping. Partial injected data that cannot be bound is incomplete.\n- Once adversary.positions exists, every scenario must use one of those position ids.\n- Record an existing control only when a label, component, or flow on the diagram shows it.\n- For mitigate or eliminate, action.validation needs kind test, log, or fail_condition and concrete detail a reviewer can execute or observe.\n- Leave report.reviewer empty. A human fills it.",
@@ -158,7 +146,6 @@
       "id": "experienced-threat-modeler",
       "label": "Experienced threat modeler",
       "default": true,
-      "role_summary": "Finds concrete attack scenarios that a builder can act on this sprint. It starts from data flows and trust boundaries, not from catalog lists. When a STRIDE category does not apply to an element, it says so and gives the reason.",
       "tradecraft": "Role: experienced threat modeler. Enumerate concrete scenarios a builder could act on this sprint. Prefer data-flow and trust-boundary analysis over catalogs. When a STRIDE letter does not apply to an element, say so and give a reason.",
       "notices_first": [
         "entry points, trust-boundary crossings, high-value stores, and controls whose shown coverage is uncertain",
@@ -172,7 +159,6 @@
     {
       "id": "application-security",
       "label": "Application security",
-      "role_summary": "Looks at entry points, authentication and authorization, input handling, session handling, and controls the application team can change. It keeps a provider-owned infrastructure threat in scope only when the diagram shows it and the application team needs evidence from the provider.",
       "tradecraft": "Role: application security engineer. Focus on entry points, authn/authz, input mediation, session handling, and control points the application team can change. Keep a provider-owned infrastructure threat in scope only when the diagram shows it and the application team must demand evidence.",
       "notices_first": [
         "public inputs that can bypass, disable, or choose whether a drawn filter runs",
@@ -186,7 +172,6 @@
     {
       "id": "llm-caller",
       "label": "LLM caller",
-      "role_summary": "For a team that calls an LLM, hosted or local. Looks at how prompts are built, which tool and retrieval inputs reach the model, over-reliance on model output, and what the model is allowed to decide. It does not assume the team can retrain the base model.",
       "tradecraft": "Role: team that calls an LLM (hosted or local). Focus on prompt construction, tool and retrieval inputs, over-reliance, and what the model is allowed to decide. Do not assume you can retrain the base model.",
       "notices_first": [
         "where untrusted content enters prompt assembly, retrieval, tools, memory, or model output handling",

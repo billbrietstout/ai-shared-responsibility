@@ -1,0 +1,38 @@
+{
+  "description": "Human-facing text for /tools/prompts/threat-model/. build_page.py reads this file when it builds the page. The prompt pack does not load it.",
+  "citations": {
+    "shostack-four-questions": {
+      "byline": "Adam Shostack, Shostack + Associates, white paper, November 2024",
+      "why_cited": "We use the four questions word for word as the four main parts of the pack: What are we working on? What can go wrong? What are we going to do about it? Did we do a good job?",
+      "license": "Framework text CC-BY. This white paper: CC BY-NC 4.0."
+    },
+    "phantom-b": {
+      "byline": "Adam Shostack, Shostack + Associates, white paper, July 2026",
+      "why_cited": "We use its eight threat categories for the AI parts of a system, such as prompt injection and hallucination. The pack words each category as a question and asks it about every AI component. The white paper leaves out defenses, so the pack writes mitigations in the P-act step.",
+      "license": "CC-BY"
+    },
+    "stride": {
+      "byline": "Microsoft Learn, Microsoft Threat Modeling Tool threats page",
+      "why_cited": "We use STRIDE on the whole diagram, including parts that have no AI. PHANTOM-B covers only the AI parts."
+    },
+    "auspex": {
+      "byline": "Andrew Crossman and four co-authors at JPMorgan Chase, arXiv preprint, March 2025",
+      "why_cited": "We follow its two-stage design. Stage one describes the system. Stage two builds a threat matrix. Each prompt receives the output of the earlier prompts. We wrote our prompts from the paper's published figures. The authors withheld their full prompt text for later publication, so none of it is in this pack."
+    },
+    "rfc6819": {
+      "byline": "IETF, RFC 6819, Informational, January 2013",
+      "why_cited": "We borrow its order only. It states attack assumptions (section 2.2) and existing security features (section 3) before it lists threats (section 4). The pack asks for the same order. The OAuth threats in the RFC do not apply to other systems, so the pack does not use them."
+    }
+  },
+  "roles": {
+    "experienced-threat-modeler": {
+      "role_summary": "Finds concrete attack scenarios that a builder can act on this sprint. It starts from data flows and trust boundaries, not from catalog lists. When a STRIDE category does not apply to an element, it says so and gives the reason."
+    },
+    "application-security": {
+      "role_summary": "Looks at entry points, authentication and authorization, input handling, session handling, and controls the application team can change. It keeps a provider-owned infrastructure threat in scope only when the diagram shows it and the application team needs evidence from the provider."
+    },
+    "llm-caller": {
+      "role_summary": "For a team that calls an LLM, hosted or local. Looks at how prompts are built, which tool and retrieval inputs reach the model, over-reliance on model output, and what the model is allowed to decide. It does not assume the team can retrain the base model."
+    }
+  }
+}

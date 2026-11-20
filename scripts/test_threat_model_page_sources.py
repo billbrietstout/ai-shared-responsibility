@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """Visible text on /tools/prompts/threat-model/ must be human-facing.
 
-prompts.json holds model-facing fields next to human-facing ones:
-- citations[].note and roles[].tradecraft are instructions to the model.
-- citations[].why_cited, citations[].byline, and roles[].role_summary are for people.
+Two files feed the page:
+- prompts.json is the file the chat loads. It holds model-facing text only:
+  citations[].note, roles[].tradecraft, notices_first, declines_to_opine.
+- page_text.json holds the human-facing text: citation byline, why_cited,
+  license wording, and role summaries. build_page.py reads it. The chat never does.
 
-The Sources and Roles sections may show the human-facing fields only.
+This test checks that the Sources and Roles sections show page_text.json text,
+that no model-facing text appears there, and that the two files agree on ids.
 """
 from __future__ import annotations
 
@@ -18,6 +21,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PAGE_DIR = ROOT / "tools" / "prompts" / "threat-model"
+
+HUMAN_KEYS = {"byline", "why_cited", "license", "license_display", "role_summary"}
 
 
 class SectionText(HTMLParser):
@@ -35,8 +40,7 @@ class SectionText(HTMLParser):
     def handle_starttag(self, tag, attrs):
         a = dict(attrs)
         if tag == "h2":
-            if self.active:
-                self.active = False
+            self.active = False
             if a.get("id") == self.heading_id:
                 self.found = True
                 self.active = True
@@ -63,15 +67,38 @@ def section(page: str, heading_id: str) -> SectionText:
     return parser
 
 
-def tradecraft_sentences(text: str) -> list[str]:
-    parts = re.split(r"(?<=[.!?])\s+", norm(text))
-    return [p for p in parts if len(p) >= 25]
+def find_keys(node, keys: set[str], path: str = "") -> list[str]:
+    hits: list[str] = []
+    if isinstance(node, dict):
+        for k, v in node.items():
+            if k in keys:
+                hits.append(f"{path}.{k}")
+            hits.extend(find_keys(v, keys, f"{path}.{k}"))
+    elif isinstance(node, list):
+        for i, v in enumerate(node):
+            hits.extend(find_keys(v, keys, f"{path}[{i}]"))
+    return hits
 
 
 def main() -> int:
     pack = json.loads((PAGE_DIR / "prompts.json").read_text(encoding="utf-8"))
+    text = json.loads((PAGE_DIR / "page_text.json").read_text(encoding="utf-8"))
     page = (PAGE_DIR / "index.html").read_text(encoding="utf-8")
     errors: list[str] = []
+
+    for hit in find_keys(pack, HUMAN_KEYS):
+        errors.append(f"prompts.json holds a human-facing key: {hit}")
+
+    cit_ids = {c["id"] for c in pack["citations"]}
+    role_ids = {r["id"] for r in pack["roles"]}
+    if set(text["citations"]) != cit_ids:
+        errors.append(
+            f"page_text citations ids {sorted(set(text['citations']) ^ cit_ids)} do not match prompts.json"
+        )
+    if set(text["roles"]) != role_ids:
+        errors.append(
+            f"page_text role ids {sorted(set(text['roles']) ^ role_ids)} do not match prompts.json"
+        )
 
     sources = section(page, "sources")
     if not sources.found:
@@ -80,18 +107,23 @@ def main() -> int:
 
     for c in pack["citations"]:
         cid = c["id"]
+        t = text["citations"].get(cid, {})
         note = norm(c["note"])
         if note and note in src_visible:
             errors.append(f"{cid}: model-facing note is visible in Sources")
-        if not c.get("why_cited"):
-            errors.append(f"{cid}: missing why_cited")
-        elif norm(c["why_cited"]) not in src_visible:
+        if not t.get("why_cited"):
+            errors.append(f"{cid}: missing why_cited in page_text.json")
+        elif norm(t["why_cited"]) not in src_visible:
             errors.append(f"{cid}: why_cited is not shown in Sources")
+        if not t.get("byline"):
+            errors.append(f"{cid}: missing byline in page_text.json")
+        elif norm(t["byline"]) not in src_visible:
+            errors.append(f"{cid}: byline is not shown in Sources")
         if c["url"] not in sources.hrefs:
             errors.append(f"{cid}: link {c['url']} is not in Sources")
         if norm(c["title"]) not in src_visible:
             errors.append(f"{cid}: title is not shown in Sources")
-        if c.get("license") and norm(c["license"]).rstrip(".") not in src_visible:
+        if t.get("license") and norm(t["license"]).rstrip(".") not in src_visible:
             errors.append(f"{cid}: license is not shown in Sources")
 
     roles = section(page, "roles")
@@ -101,15 +133,15 @@ def main() -> int:
 
     for r in pack["roles"]:
         rid = r["id"]
-        summary = norm(r.get("role_summary", ""))
+        summary = norm(text["roles"].get(rid, {}).get("role_summary", ""))
         if not summary:
-            errors.append(f"{rid}: missing role_summary")
+            errors.append(f"{rid}: missing role_summary in page_text.json")
         elif summary not in roles_visible:
             errors.append(f"{rid}: role_summary is not shown in Roles")
         if norm(r["tradecraft"]) in roles_visible:
             errors.append(f"{rid}: tradecraft text is visible in Roles")
-        for sentence in tradecraft_sentences(r["tradecraft"]):
-            if sentence in roles_visible:
+        for sentence in re.split(r"(?<=[.!?])\s+", norm(r["tradecraft"])):
+            if len(sentence) >= 25 and sentence in roles_visible:
                 errors.append(f"{rid}: tradecraft sentence visible in Roles: {sentence[:60]}")
     if "Role:" in roles_visible:
         errors.append("Roles text contains a 'Role:' prefix copied from tradecraft")
@@ -120,8 +152,8 @@ def main() -> int:
             print(" -", e)
         return 1
     print(
-        f"ok: {len(pack['citations'])} citations show why_cited and no note; "
-        f"{len(pack['roles'])} roles show role_summary and no tradecraft"
+        f"ok: {len(pack['citations'])} citations and {len(pack['roles'])} roles show page_text.json "
+        "text; prompts.json has no human-facing keys; ids resolve"
     )
     return 0
 
