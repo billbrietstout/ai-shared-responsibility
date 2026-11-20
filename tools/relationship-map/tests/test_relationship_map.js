@@ -670,6 +670,16 @@ async function testPersonaGraph(browser, base) {
       };
     });
     check("persona chain at " + width + " lists controls as collapsed disclosure rows, not columns", rows.count > 0 && rows.columns === 0 && rows.allDetails && rows.allClosed && rows.bodyHidden, JSON.stringify(rows));
+    const gone = await page.evaluate(() => ({
+      legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
+      columnLinks: Array.from(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]')).filter((a) => a.checkVisibility()).length,
+      findAnother: document.querySelector('.chain-jump a[href="#node-search"]').checkVisibility(),
+      personaPick: !!document.getElementById("persona-list") && !!document.querySelector("#persona-list button"),
+      modelFilter: !!document.querySelector("#model-filter-list input"),
+      layerFilter: !!document.querySelector("#layer-filter-list input")
+    }));
+    check("persona view hides the line-type legend and the column jump links at " + width, !gone.legend && gone.columnLinks === 0, JSON.stringify(gone));
+    check("persona view keeps Find another, the persona list, and the model and layer filters at " + width, (width < 800 || gone.findAnother) && gone.personaPick && gone.modelFilter && gone.layerFilter, JSON.stringify(gone));
     await page.focus("#chain-board li.control-row summary");
     await page.keyboard.press("Enter");
     const opened = await page.evaluate(() => {
@@ -735,6 +745,12 @@ async function testPersonaGraph(browser, base) {
   await sleep(900);
   const riskChain = await read(riskPage);
   check("a risk chain keeps the generic model note and shows the ROCA chain heading", riskChain.chainNote.indexOf("All shows one accountable persona for each operating model") !== -1 && riskChain.chainNote.indexOf("These are the controls that name this persona") === -1 && riskChain.workspaceHeading === "ROCA chain", JSON.stringify({ note: riskChain.chainNote, heading: riskChain.workspaceHeading }));
+  const riskGone = await riskPage.evaluate(() => ({
+    legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
+    columnLinks: Array.from(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]')).filter((a) => a.checkVisibility()).length,
+    label: document.getElementById("chain-board").getAttribute("aria-label")
+  }));
+  check("a risk chain keeps the line-type legend, four column jump links, and its board label", riskGone.legend && riskGone.columnLinks === 4 && riskGone.label === "Risk, obligation, control, and accountable", JSON.stringify(riskGone));
   await riskPage.close();
 }
 

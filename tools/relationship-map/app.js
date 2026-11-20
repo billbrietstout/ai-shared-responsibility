@@ -1685,6 +1685,9 @@
     Array.prototype.forEach.call(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]'), function (a) {
       a.hidden = personaChain;
     });
+    var legendWrap = document.querySelector(".chain-legend-wrap");
+    if (legendWrap) legendWrap.hidden = personaChain;
+    chainBoard.setAttribute("aria-label", personaChain ? "Controls that name this persona as accountable" : "Risk, obligation, control, and accountable");
     if (personaChain) {
       chainModelNote.textContent = "These are the controls that name this persona as accountable, with their risks and obligations.";
       renderPersonaControls(chain);
