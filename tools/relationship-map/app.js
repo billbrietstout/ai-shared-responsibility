@@ -2797,9 +2797,9 @@
     try { applyFromLocation(); } finally { restoringHistory = false; }
     if (!graph) return;
     var target = null;
-    if (root || personaPick) target = detailsHeading;
+    if (root || personaPick) target = chainHeading;
     if (!target || !target.getClientRects().length) target = searchInput;
-    if (target === detailsHeading && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+    if (target === chainHeading && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
   }
 
@@ -3061,6 +3061,11 @@
     view = "chain";
     commit(options.push !== false);
     if (moveFocus) revealChain();
+  }
+
+  function activateNode(id, moveFocus) {
+    if (!graph || !graph.hasNode(id)) return;
+    openControl(id, moveFocus, {});
   }
 
   function openRoot(key, value) {
