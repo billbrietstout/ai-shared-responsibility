@@ -149,7 +149,7 @@ async function testSearchIndex(browser, base) {
     check("search \"" + token + "\" finds every threat that records it (" + expected.length + ")", d.missing.length === 0 && expected.length > 0, JSON.stringify(d));
     check("search \"" + token + "\" returns no threat that does not record it", d.extra.length === 0, JSON.stringify(d));
   }
-  await search(page, "Model behaviour integrity");
+  await search(page, "Model behavior integrity");
   const impactHits = await idsIn(page, "#search-results [role=option][data-node-id]");
   check("search matches a threat impact description", impactHits.indexOf("risk:directpromptinjection") !== -1, JSON.stringify(impactHits));
 
