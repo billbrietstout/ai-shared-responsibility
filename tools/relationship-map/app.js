@@ -213,7 +213,8 @@
   var panelWorkspace = "details";
   var openColumn = "risk";
   var expandedColumns = {};
-  var openControlRows = {};
+  var openBoxes = {};
+  var boxMore = {};
   var PERSONA_COLUMN_LIMIT = 8;
   var opener = null;
   var activeIndex = -1;
@@ -1540,7 +1541,37 @@
       sectorPersona: ""
     });
     chain.personaCount = 1;
+    chain.boxLinks = personaBoxLinks(chain, id);
     return chain;
+  }
+
+  function personaBoxLinks(chain, personaId) {
+    var order = function (ids, cards) {
+      var rank = {};
+      cards.forEach(function (card, index) { rank[card.id] = index; });
+      return ids.filter(function (cardId) { return rank[cardId] !== undefined; }).sort(function (a, b) { return rank[a] - rank[b]; });
+    };
+    var links = { risk: {}, obligation: {}, control: {}, accountable: {} };
+    var personaCardId = chain.personaCards[0].id;
+    chain.risks.forEach(function (card) { links.risk[card.id] = []; });
+    chain.obligations.forEach(function (card) { links.obligation[card.id] = []; });
+    links.accountable[personaCardId] = chain.controls.map(function (card) { return card.id; });
+    chain.controls.forEach(function (card) {
+      var own = chain.controlLinks[card.id] || { risks: [], obligations: [] };
+      links.control[card.id] = [personaCardId];
+      own.risks.forEach(function (riskId) {
+        if (!links.risk[riskId]) return;
+        own.obligations.forEach(function (obligationId) {
+          if (links.risk[riskId].indexOf(obligationId) === -1) links.risk[riskId].push(obligationId);
+        });
+      });
+      own.obligations.forEach(function (obligationId) {
+        if (links.obligation[obligationId]) links.obligation[obligationId].push(card.id);
+      });
+    });
+    Object.keys(links.risk).forEach(function (key) { links.risk[key] = order(links.risk[key], chain.obligations); });
+    Object.keys(links.obligation).forEach(function (key) { links.obligation[key] = order(links.obligation[key], chain.controls); });
+    return links;
   }
 
   function buildChain(nodeId) {
@@ -1581,97 +1612,109 @@
     return button;
   }
 
-  function chainItemButton(item, kicker, title) {
-    var button = cardButton(item.id, chainFocus === item.id);
-    if (kicker) button.appendChild(makeEl("span", "chain-card__kicker", kicker));
-    button.appendChild(makeEl("span", "chain-card__title", title));
-    return button;
+  var BOX_ITEM_LIMIT = 8;
+  var NEXT_COLUMN = { risk: "obligation", obligation: "control", control: "accountable", accountable: "control" };
+  var BOX_LABEL = {
+    risk: "Obligations",
+    obligation: "Controls",
+    control: "Accountable",
+    accountable: "Controls that name this persona"
+  };
+  var BOX_EMPTY = {
+    risk: "No linked obligations in this data.",
+    obligation: "No linked controls in this data.",
+    control: "No accountable party in this data.",
+    accountable: "No control names this persona in this data."
+  };
+
+  function columnItems(chain, key) {
+    return key === "risk" ? chain.risks : key === "obligation" ? chain.obligations : key === "control" ? chain.controls : chain.personaCards;
   }
 
-  function controlRowGroup(label, items, empty) {
-    var group = makeEl("div", "control-row__group");
-    group.appendChild(makeEl("h4", "control-row__label", label + " (" + items.length + ")"));
-    if (!items.length) {
-      group.appendChild(makeEl("p", "chain-card__meta", empty));
-      return group;
-    }
-    var list = makeEl("ul", "control-row__items");
-    items.forEach(function (node) {
-      var li = makeEl("li");
-      li.appendChild(node);
-      list.appendChild(li);
-    });
-    group.appendChild(list);
-    return group;
+  function boxTitle(key, item) {
+    if (key === "risk" || key === "control") return item.name;
+    if (key === "obligation") return item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
+    var one = item.lines.length === 1 ? item.lines[0] : null;
+    return one && !one.missing ? one.name : item.controlName;
   }
 
-  function renderPersonaControls(chain) {
-    var wrap = makeEl("div", "control-rows");
-    chainBoard.appendChild(wrap);
-    var byId = function (items) {
-      var map = {};
-      items.forEach(function (item) { map[item.id] = item; });
-      return map;
-    };
-    var risks = byId(chain.risks);
-    var obligations = byId(chain.obligations);
-    var accountable = chain.personaCards[0];
-    var total = chain.controls.length;
-    var limited = total > PERSONA_COLUMN_LIMIT;
-    var shown = limited && !expandedColumns.control ? chain.controls.slice(0, PERSONA_COLUMN_LIMIT) : chain.controls;
-    var list = makeEl("ul", "control-rows__list");
-    list.setAttribute("aria-label", "Controls that name this persona as accountable");
-    shown.forEach(function (control) {
-      var links = (chain.controlLinks || {})[control.id] || { risks: [], obligations: [] };
-      var li = makeEl("li", "control-row");
-      li.dataset.controlId = control.id;
-      var details = makeEl("details", "control-row__details");
-      details.open = !!openControlRows[control.id];
-      details.addEventListener("toggle", function () {
-        openControlRows[control.id] = details.open;
+  function personaBox(header, item, key, chain) {
+    var box = makeEl("div", "chain-box");
+    box.dataset.boxId = item.id;
+    var open = !!openBoxes[item.id];
+    var panelId = "chain-box-panel-" + key + "-" + columnItems(chain, key).indexOf(item);
+    var toggle = makeEl("button", "chain-box__toggle");
+    toggle.type = "button";
+    toggle.dataset.boxToggle = item.id;
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute("aria-controls", panelId);
+    toggle.setAttribute("aria-label", "Links to the next column for " + boxTitle(key, item));
+    var top = makeEl("div", "chain-box__top");
+    top.appendChild(header);
+    top.appendChild(toggle);
+    box.appendChild(top);
+    var panel = makeEl("div", "chain-box__panel");
+    panel.id = panelId;
+    panel.hidden = !open;
+    var nextKey = NEXT_COLUMN[key];
+    var targets = ((chain.boxLinks || {})[key] || {})[item.id] || [];
+    var byId = {};
+    columnItems(chain, nextKey).forEach(function (card) { byId[card.id] = card; });
+    var shown = !boxMore[item.id] && targets.length > BOX_ITEM_LIMIT ? targets.slice(0, BOX_ITEM_LIMIT) : targets;
+    panel.appendChild(makeEl("p", "chain-box__label", BOX_LABEL[key] + " (" + targets.length + ")"));
+    if (!targets.length) {
+      panel.appendChild(makeEl("p", "chain-card__meta", BOX_EMPTY[key]));
+    } else {
+      var list = makeEl("ul", "chain-box__items");
+      shown.forEach(function (targetId) {
+        var li = makeEl("li");
+        var card = byId[targetId];
+        if (card) {
+          var jump = makeEl("button", "chain-box__jump", boxTitle(nextKey, card));
+          jump.type = "button";
+          jump.dataset.jumpTo = targetId;
+          jump.dataset.jumpColumn = nextKey;
+          li.appendChild(jump);
+        } else {
+          li.appendChild(makeEl("span", "chain-box__plain", targetId));
+        }
+        list.appendChild(li);
       });
-      var summary = makeEl("summary", "control-row__summary");
-      summary.appendChild(makeEl("span", "chain-card__kicker", [control.layer ? "Operates at " + control.layer : "", control.meta, control.ref].filter(Boolean).join(" \u00b7 ")));
-      summary.appendChild(makeEl("span", "chain-card__title", control.name));
-      summary.appendChild(makeEl("span", "chain-card__meta", unit(links.risks.length, "risk", "risks") + ", " + unit(links.obligations.length, "obligation", "obligations")));
-      details.appendChild(summary);
-      var body = makeEl("div", "control-row__body");
-      var riskButtons = links.risks.filter(function (id) { return risks[id]; }).map(function (id) {
-        var item = risks[id];
-        return chainItemButton(item, item.layer ? "Risk record \u00b7 " + item.layer : "Risk record", item.name);
-      });
-      var obligationButtons = links.obligations.filter(function (id) { return obligations[id]; }).map(function (id) {
-        var item = obligations[id];
-        var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
-        return chainItemButton(item, item.citation && item.citation !== duty ? item.citation : "", duty);
-      });
-      body.appendChild(controlRowGroup("Risks", riskButtons, "No risk record links to this control."));
-      body.appendChild(controlRowGroup("Obligations", obligationButtons, "No obligation is linked to this control."));
-      var party = [];
-      if (accountable) {
-        var line = accountable.lines[0];
-        var button = chainItemButton(accountable, line ? line.label : "", line ? line.name : accountable.controlName);
-        party.push(button);
+      panel.appendChild(list);
+      if (targets.length > BOX_ITEM_LIMIT) {
+        var more = makeEl("button", "chain-box__more", boxMore[item.id] ? "Show fewer" : "Show " + (targets.length - BOX_ITEM_LIMIT) + " more");
+        more.type = "button";
+        more.dataset.boxMore = item.id;
+        more.setAttribute("aria-expanded", boxMore[item.id] ? "true" : "false");
+        panel.appendChild(more);
       }
-      body.appendChild(controlRowGroup("Accountable", party, "No persona is recorded."));
-      details.appendChild(body);
-      li.appendChild(details);
-      list.appendChild(li);
-    });
-    if (shown.length) wrap.appendChild(list);
-    if (limited) {
-      var more = makeEl("button", "chain-more", expandedColumns.control ? "Show fewer" : "Show " + (total - PERSONA_COLUMN_LIMIT) + " more");
-      more.type = "button";
-      more.dataset.moreColumn = "control";
-      more.setAttribute("aria-expanded", expandedColumns.control ? "true" : "false");
-      wrap.appendChild(more);
     }
-    chain.gaps.forEach(function (gap) {
-      var note = makeEl("p", "chain-gap");
-      note.appendChild(makeEl("span", "chain-gap__label", "Gap"));
-      note.appendChild(document.createTextNode(" " + gap.text));
-      wrap.appendChild(note);
-    });
+    box.appendChild(panel);
+    return box;
+  }
+
+  function jumpToBox(targetId, columnKey) {
+    var chain = currentChain;
+    if (!chain) return;
+    var items = columnItems(chain, columnKey);
+    var index = -1;
+    items.forEach(function (card, i) { if (card.id === targetId) index = i; });
+    if (index === -1) return;
+    if (index >= PERSONA_COLUMN_LIMIT && columnKey !== "accountable") expandedColumns[columnKey] = true;
+    if (narrowQuery.matches) openColumn = columnKey;
+    chainFocus = targetId;
+    commit(false);
+    var card = chainCard(targetId);
+    if (card) {
+      card.scrollIntoView({ block: "center", behavior: "auto" });
+      card.focus({ preventScroll: true });
+      [0, 150].forEach(function (delay) {
+        setTimeout(function () {
+          var later = chainCard(targetId);
+          if (later) later.scrollIntoView({ block: "center", behavior: "auto" });
+        }, delay);
+      });
+    }
   }
 
   function renderChain(chain) {
@@ -1683,21 +1726,11 @@
     svg.setAttribute("class", "chain-svg");
     svg.setAttribute("aria-hidden", "true");
     chainBoard.appendChild(svg);
-    var personaChain = chain.startKind === "persona";
-    Array.prototype.forEach.call(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]'), function (a) {
-      a.hidden = personaChain;
-    });
-    var legendWrap = document.querySelector(".chain-legend-wrap");
-    if (legendWrap) legendWrap.hidden = personaChain;
-    chainBoard.setAttribute("aria-label", personaChain ? "Controls that name this persona as accountable" : "Risk, obligation, control, and accountable");
-    if (personaChain) {
-      chainModelNote.textContent = "These are the controls that name this persona as accountable, with their risks and obligations.";
-      renderPersonaControls(chain);
-      return;
-    }
     var columnsWrap = makeEl("div", "chain-columns");
     chainBoard.appendChild(columnsWrap);
-    if (modelFilter === "all") {
+    if (chain.startKind === "persona") {
+      chainModelNote.textContent = "These are the controls that name this persona as accountable, with their risks and obligations.";
+    } else if (modelFilter === "all") {
       chainModelNote.textContent = "All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.";
     } else {
       chainModelNote.textContent = "";
@@ -1730,7 +1763,9 @@
       }
       wrap.appendChild(heading);
       wrap.appendChild(colBody);
-      column[1].forEach(function (item) {
+      var collapsible = chain.startKind === "persona" && column[2] !== "accountable" && column[1].length > PERSONA_COLUMN_LIMIT;
+      var shownItems = collapsible && !expandedColumns[column[2]] ? column[1].slice(0, PERSONA_COLUMN_LIMIT) : column[1];
+      shownItems.forEach(function (item) {
         var pressed = chainFocus === item.id;
         var button = cardButton(item.id, pressed);
         if (column[2] === "risk") {
@@ -1771,8 +1806,17 @@
             button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. No source citation recorded yet. The control's source record names this persona."));
           }
         }
-        colBody.appendChild(button);
+        colBody.appendChild(chain.startKind === "persona" ? personaBox(button, item, column[2], chain) : button);
       });
+      if (collapsible) {
+        var more = makeEl("button", "chain-more", expandedColumns[column[2]]
+          ? "Show fewer"
+          : "Show " + (column[1].length - PERSONA_COLUMN_LIMIT) + " more");
+        more.type = "button";
+        more.dataset.moreColumn = column[2];
+        more.setAttribute("aria-expanded", expandedColumns[column[2]] ? "true" : "false");
+        colBody.appendChild(more);
+      }
       if (!column[1].length && chain.columnNotes && chain.columnNotes[column[2]]) {
         colBody.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column[2]]));
       }
@@ -1829,7 +1873,8 @@
       if (!from || !to) return;
       var ar = from.getBoundingClientRect();
       var br = to.getBoundingClientRect();
-      var x1 = ar.right - origin.left;
+      var fromBox = from.closest(".chain-box");
+      var x1 = (fromBox ? fromBox.getBoundingClientRect().right : ar.right) - origin.left;
       var y1 = ar.top + ar.height / 2 - origin.top;
       var x2 = br.left - origin.left;
       var y2 = br.top + br.height / 2 - origin.top;
@@ -2829,7 +2874,7 @@
       findLabel.textContent = "Find a risk or a control";
       searchInput.placeholder = "Risk or control name";
       helpEl.textContent = personaFocusId()
-        ? "Each row is a control that names this persona as accountable. Open a row to see its risks and obligations. The Risk and Control lists below show only this persona's records."
+        ? "Four columns: Risk, Obligation, Control, and Accountable. Open a box to see what it links to in the next column. The Risk and Control lists below show only this persona's records."
         : "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
     } else {
       findLabel.textContent = "Find a risk or a control";
@@ -3962,6 +4007,30 @@
       renderChain(currentChain);
       var again = chainBoard.querySelector('button.chain-more[data-more-column="' + key + '"]');
       if (again) again.focus({ preventScroll: true });
+      return;
+    }
+    var boxToggle = event.target.closest("button.chain-box__toggle");
+    if (boxToggle) {
+      var boxKey = boxToggle.dataset.boxToggle;
+      openBoxes[boxKey] = !openBoxes[boxKey];
+      boxToggle.setAttribute("aria-expanded", openBoxes[boxKey] ? "true" : "false");
+      var boxPanel = document.getElementById(boxToggle.getAttribute("aria-controls"));
+      if (boxPanel) boxPanel.hidden = !openBoxes[boxKey];
+      drawChainLines();
+      return;
+    }
+    var boxMoreBtn = event.target.closest("button.chain-box__more");
+    if (boxMoreBtn) {
+      var moreKey = boxMoreBtn.dataset.boxMore;
+      boxMore[moreKey] = !boxMore[moreKey];
+      renderChain(currentChain);
+      var moreAgain = chainBoard.querySelector('button.chain-box__more[data-box-more="' + moreKey.replace(/"/g, '\\"') + '"]');
+      if (moreAgain) moreAgain.focus({ preventScroll: true });
+      return;
+    }
+    var jumpBtn = event.target.closest("button.chain-box__jump");
+    if (jumpBtn) {
+      jumpToBox(jumpBtn.dataset.jumpTo, jumpBtn.dataset.jumpColumn);
       return;
     }
     var toggle = event.target.closest("button.chain-col__toggle");

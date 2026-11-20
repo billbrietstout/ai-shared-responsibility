@@ -659,27 +659,39 @@ async function testPersonaGraph(browser, base) {
     await clickNow(page, "#explore-from-details");
     await sleep(900);
     const chain = await read(page);
-    const rows = await page.evaluate(() => {
-      const items = Array.from(document.querySelectorAll("#chain-board ul.control-rows__list > li.control-row"));
+    const counts = /Showing (\d+) risks?, (\d+) obligations?, (\d+) controls?, and (\d+) accountable personas?/.exec(chain.status);
+    const cols = await page.evaluate(() => {
+      const out = {};
+      document.querySelectorAll("#chain-board .chain-col").forEach((col) => {
+        out[col.dataset.column] = {
+          heading: col.querySelector("h3").textContent.trim(),
+          boxes: col.querySelectorAll(".chain-box").length,
+          cards: col.querySelectorAll("button[data-chain-id]").length
+        };
+      });
       return {
-        count: items.length,
-        columns: document.querySelectorAll("#chain-board .chain-col").length,
-        allDetails: items.every((li) => li.querySelector(":scope > details > summary")),
-        allClosed: items.every((li) => !li.querySelector("details").open),
-        bodyHidden: items.every((li) => !li.querySelector(".control-row__body").checkVisibility())
+        out: out,
+        oldRows: document.querySelectorAll("#chain-board li.control-row, #chain-board .control-rows").length,
+        toggles: Array.from(document.querySelectorAll("#chain-board .chain-box")).every((box) => {
+          const t = box.querySelector("button.chain-box__toggle");
+          const panel = t && document.getElementById(t.getAttribute("aria-controls"));
+          return t && t.getAttribute("aria-expanded") === "false" && panel && panel.hidden && box.querySelector("button[data-chain-id]");
+        })
       };
     });
-    check("persona chain at " + width + " lists controls as collapsed disclosure rows, not columns", rows.count > 0 && rows.columns === 0 && rows.allDetails && rows.allClosed && rows.bodyHidden, JSON.stringify(rows));
+    const names = ["risk", "obligation", "control", "accountable"];
+    check("persona chain at " + width + " renders the four columns with counts and no single list", names.every((n) => cols.out[n] && /\(\d+\)$/.test(cols.out[n].heading)) && cols.oldRows === 0, JSON.stringify(cols.out));
+    check("every box has a closed disclosure toggle with aria-expanded and aria-controls at " + width, names.every((n) => cols.out[n].boxes === cols.out[n].cards && cols.out[n].boxes > 0) && cols.toggles, JSON.stringify(cols.out));
+    check("the persona is in the Accountable column at " + width, /AI Platform Provider/.test(await page.$eval('#chain-board .chain-col[data-column="accountable"]', (el) => el.textContent)) && cols.out.accountable.boxes === 1);
     const gone = await page.evaluate(() => ({
       legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
       columnLinks: Array.from(document.querySelectorAll('.chain-jump a[href^="#chain-col-"]')).filter((a) => a.checkVisibility()).length,
-      findAnother: document.querySelector('.chain-jump a[href="#node-search"]').checkVisibility(),
-      personaPick: !!document.getElementById("persona-list") && !!document.querySelector("#persona-list button"),
+      personaPick: !!document.querySelector("#persona-list button"),
       modelFilter: !!document.querySelector("#model-filter-list input"),
       layerFilter: !!document.querySelector("#layer-filter-list input")
     }));
-    check("persona view hides the line-type legend and the column jump links at " + width, !gone.legend && gone.columnLinks === 0, JSON.stringify(gone));
-    check("persona view keeps Find another, the persona list, and the model and layer filters at " + width, (width < 800 || gone.findAnother) && gone.personaPick && gone.modelFilter && gone.layerFilter, JSON.stringify(gone));
+    check("persona view keeps the persona list and the model and layer filters at " + width, gone.personaPick && gone.modelFilter && gone.layerFilter, JSON.stringify(gone));
+    if (width === 1280) check("persona view shows the line legend and four column jump links", gone.legend && gone.columnLinks === 4, JSON.stringify(gone));
     const picks = await page.evaluate(() => {
       const count = (id) => document.getElementById(id).options.length - 1;
       return {
@@ -689,34 +701,94 @@ async function testPersonaGraph(browser, base) {
         help: document.getElementById("map-help").textContent
       };
     });
-    check("persona view narrows the Control list to the listed controls at " + width, picks.wrapShown && picks.controls === +/(\d+) controls?/.exec(chain.status)[1] && picks.risks === +/Showing (\d+) risk/.exec(chain.status)[1], JSON.stringify(picks));
-    check("persona view help line no longer describes four columns at " + width, picks.help.indexOf("Four columns") === -1 && /Each row is a control/.test(picks.help), picks.help);
-    await page.focus("#chain-board li.control-row summary");
-    await page.keyboard.press("Enter");
-    const opened = await page.evaluate(() => {
-      const li = document.querySelector("#chain-board li.control-row");
-      const labels = Array.from(li.querySelectorAll(".control-row__label")).map((h) => h.textContent.replace(/ \(\d+\)$/, ""));
-      return {
-        open: li.querySelector("details").open,
-        labels: labels,
-        accountable: li.querySelector(".control-row__group:last-child").textContent,
-        links: li.querySelectorAll("button[data-chain-id]").length,
-        tap: Array.from(li.querySelectorAll("summary, button[data-chain-id]")).every((el) => el.getBoundingClientRect().height >= 40)
-      };
+    check("persona view narrows the Control and Risk lists to the status line counts at " + width, picks.wrapShown && picks.controls === +counts[3] && picks.risks === +counts[1], JSON.stringify(picks));
+    check("persona view help line describes the boxes opening at " + width, /^Four columns: Risk, Obligation, Control, and Accountable\. Open a box to see what it links to in the next column\./.test(picks.help), picks.help);
+
+    {
+      const page = await openPage(browser, base, width, height, "?type=persona&node=ai-platform-provider&view=list");
+      await clickNow(page, "#explore-from-details");
+      await sleep(900);
+    const colOpen = (key) => page.evaluate((k) => {
+      const t = document.querySelector('.chain-col__toggle[data-column="' + k + '"]');
+      if (t && t.getAttribute("aria-expanded") !== "true") t.click();
+    }, key);
+    const openBox = async (key, wantLinks) => {
+      await colOpen(key);
+      return page.evaluate((k, need) => {
+        const boxes = Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="' + k + '"] .chain-box'));
+        for (const box of boxes) {
+          const t = box.querySelector("button.chain-box__toggle");
+          if (t.getAttribute("aria-expanded") !== "true") t.click();
+          const panel = document.getElementById(t.getAttribute("aria-controls"));
+          const jumps = panel.querySelectorAll("button.chain-box__jump").length;
+          if (!need || jumps) {
+            return {
+              expanded: t.getAttribute("aria-expanded"),
+              hiddenPanel: panel.hidden,
+              label: panel.querySelector(".chain-box__label").textContent,
+              jumps: jumps,
+              text: panel.textContent,
+              cardId: box.querySelector("button[data-chain-id]").dataset.chainId,
+              toggleId: t.dataset.boxToggle
+            };
+          }
+          t.click();
+        }
+        return null;
+      }, key, wantLinks);
+    };
+    const riskOpen = await openBox("risk", true);
+    check("opening a risk box lists its obligations at " + width, !!riskOpen && riskOpen.expanded === "true" && !riskOpen.hiddenPanel && /^Obligations \(\d+\)$/.test(riskOpen.label) && riskOpen.jumps > 0, JSON.stringify(riskOpen));
+    await page.evaluate(() => document.querySelector("#chain-board .chain-box__jump").click());
+    await sleep(1200);
+    const hit = await page.evaluate(() => {
+      const el = document.activeElement;
+      return { pressed: el.getAttribute("aria-pressed"), id: el.dataset.chainId || "", column: el.closest(".chain-col") && el.closest(".chain-col").dataset.column, inView: el.getBoundingClientRect().bottom > 0 && el.getBoundingClientRect().top < window.innerHeight, top: el.getBoundingClientRect().top, h: window.innerHeight, sy: window.scrollY };
     });
-    check("Enter opens a row and shows risks, obligations, and the accountable persona at " + width, opened.open && opened.labels.join("|") === "Risks|Obligations|Accountable" && /AI Platform Provider/.test(opened.accountable) && opened.links >= 1 && opened.tap, JSON.stringify(opened));
+    check("clicking a linked obligation highlights and focuses its box in the Obligation column at " + width, hit.pressed === "true" && /^obligation:/.test(hit.id) && hit.column === "obligation" && hit.inView, JSON.stringify(hit));
+    const ctl = await openBox("control", true);
+    check("opening a control box lists its accountable party at " + width, !!ctl && /^Accountable \(1\)$/.test(ctl.label) && /AI Platform Provider/.test(ctl.text), JSON.stringify(ctl));
+    await page.evaluate(() => {
+      const box = Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="control"] .chain-box')).find((b) => b.querySelector(".chain-box__toggle").getAttribute("aria-expanded") === "true");
+      box.querySelector(".chain-box__jump").click();
+    });
+    await sleep(500);
+    const toParty = await page.evaluate(() => ({ pressed: document.activeElement.getAttribute("aria-pressed"), id: document.activeElement.dataset.chainId || "" }));
+    check("clicking the accountable party highlights its box at " + width, toParty.pressed === "true" && /^accountable:/.test(toParty.id), JSON.stringify(toParty));
+    const acc = await openBox("accountable", false);
+    check("the Accountable box opens to the controls that name this persona at " + width, !!acc && acc.label === "Controls that name this persona (" + counts[3] + ")", JSON.stringify(acc && acc.label));
+    await page.evaluate(() => {
+      const more = document.querySelector('#chain-board .chain-col[data-column="accountable"] button.chain-box__more');
+      if (more) more.click();
+    });
+    await sleep(300);
+    const reach = await page.evaluate(() => {
+      const jumps = Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="accountable"] .chain-box__jump'));
+      const last = jumps[jumps.length - 1];
+      last.click();
+      return { jumps: jumps.length, id: last.dataset.jumpTo };
+    });
+    await sleep(500);
+    const reached = await page.evaluate(() => ({ id: document.activeElement.dataset.chainId || "", pressed: document.activeElement.getAttribute("aria-pressed"), cards: document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]').length }));
+    check("a target behind Show N more is revealed, highlighted, and focused at " + width, reached.id === reach.id && reached.pressed === "true" && reached.cards === +counts[3] && reach.jumps === +counts[3], JSON.stringify({ reach: reach, reached: reached }));
+    await colOpen("risk");
+    await page.focus('#chain-board button.chain-box__toggle');
+    const before = await page.evaluate(() => document.activeElement.getAttribute("aria-expanded"));
+    await page.keyboard.press("Enter");
+    const afterEnter = await page.evaluate(() => document.activeElement.getAttribute("aria-expanded"));
     await page.keyboard.press("Space");
-    const closedAgain = await page.evaluate(() => !document.querySelector("#chain-board li.control-row details").open);
-    check("Space closes the row again at " + width, closedAgain);
-    const counts = /Showing (\d+) risks?, (\d+) obligations?, (\d+) controls?, and (\d+) accountable personas?/.exec(chain.status);
+    const afterSpace = await page.evaluate(() => document.activeElement.getAttribute("aria-expanded"));
+    check("the box toggle works from the keyboard at " + width, before !== afterEnter && afterSpace === before, JSON.stringify([before, afterEnter, afterSpace]));
+      await page.close();
+    }
     check("the status line counts accountable personas and obligations above zero at " + width, !!counts && +counts[1] > 0 && +counts[2] > 0 && +counts[3] > 0 && +counts[4] > 0 && !/Choose a risk or a control/.test(chain.status), chain.status);
     check("the workspace heading reads ROCA chain in the chain view at " + width, chain.workspaceHeading === "ROCA chain", chain.workspaceHeading);
     check("persona chains show the persona line and not the generic model note at " + width, chain.chainNote === "These are the controls that name this persona as accountable, with their risks and obligations." && chain.chainNote.indexOf("All shows one accountable persona") === -1, chain.chainNote);
-    check("long columns are collapsed with a Show more control at " + width, chain.rowCount <= 8 && chain.more.some((t) => /^Show \d+ more$/.test(t)), JSON.stringify({ rows: chain.rowCount, more: chain.more }));
-    await page.evaluate(() => { document.querySelector('button.chain-more[data-more-column="control"]').click(); });
+    check("long columns are collapsed with a Show more control at " + width, chain.cols.control.cards <= 8 && chain.cols.control.more.some((t) => /^Show \d+ more$/.test(t)), JSON.stringify(chain.cols.control));
+    await page.evaluate(() => { const b = document.querySelector('button.chain-more[data-more-column="control"]'); if (b && /^Show \d+ more$/.test(b.textContent)) b.click(); });
     await sleep(300);
     const open = await read(page);
-    check("Show more reveals every control and Show fewer is offered at " + width, open.rowCount === +counts[3] && open.more.indexOf("Show fewer") !== -1, JSON.stringify({ rows: open.rowCount, more: open.more }));
+    check("Show more reveals every control and Show fewer is offered at " + width, open.cols.control.cards === +counts[3] && open.cols.control.more.indexOf("Show fewer") !== -1, JSON.stringify(open.cols.control));
     check("no horizontal page overflow in the persona chain at " + width, !open.overflow);
     if (width === 1280) {
       const toGraph = await page.evaluate(() => { const b = document.getElementById("widen-view"); return { hidden: b.hidden, text: b.textContent }; });
@@ -729,7 +801,7 @@ async function testPersonaGraph(browser, base) {
       await clickNow(page, "#show-chain");
       await sleep(600);
       const again = await read(page);
-      check("Show the chain returns to the persona chain", !again.chainHidden && again.rowCount > 0, JSON.stringify(again.rowCount));
+      check("Show the chain returns to the persona chain", !again.chainHidden && !!again.cols.accountable, JSON.stringify(again.cols));
       check("the workspace heading returns to ROCA chain after Show the chain", again.workspaceHeading === "ROCA chain", again.workspaceHeading);
     }
     await clickNow(page, "#hide-graph");
