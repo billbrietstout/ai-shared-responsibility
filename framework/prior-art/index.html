@@ -144,10 +144,12 @@
           Framework, NIST Cybersecurity Framework (CSF) 2.0, NIST AI Risk Management
           Framework (AI RMF) 1.0, ISO/IEC 22989 and 42001, and the cloud
           shared-responsibility models from AWS and Microsoft. Each one supports
-          part of the SRF. The first four layers line up with domains these
-          frameworks have used for decades. The ownership model, one accountable
-          party per component, is consistent with how OBASHI, NIST and the cloud
-          providers assign responsibility. L5 AI Model Provider is where the SRF
+          part of the SRF. The first four layers line up with the business, data,
+          application, and technology domains used in long-standing architecture
+          frameworks such as TOGAF. The ownership model, one accountable
+          party per component, is consistent with how those frameworks call for
+          documented roles and responsibilities. Cloud providers also mark some
+          responsibilities as shared. L5 AI Model Provider is where the SRF
           extends the older frameworks, which treat an outside model as one more
           supplier. Some AI frameworks list their parts in a different order, and
           the SRF complements them by naming who is accountable at each layer.
@@ -164,7 +166,7 @@
         <p>
           TOGAF, The Open Group&rsquo;s enterprise architecture standard, names four
           core architecture domains: business, data, application and technology
-          <a class="pa-cite" href="#src-6">[6]</a>. Those map to L1, L2, L3 and L4, so
+          <a class="pa-cite" href="#src-6">[6, secondary]</a>. Those map to L1, L2, L3 and L4, so
           the SRF&rsquo;s first four layers follow a structure enterprise architects
           already know. TOGAF&rsquo;s text is behind a sign-in, so the TOGAF points
           here rest on search excerpts, a secondary source.
@@ -183,9 +185,8 @@
           links between components. ArchiMate 3.2 names relationship types such as
           composition, aggregation, assignment, realization, serving, access, flow,
           triggering and influence <a class="pa-cite" href="#src-5">[5]</a>. The Open
-          Group released ArchiMate 4 in April 2026 <a class="pa-cite" href="#src-2">[2]</a>.
-          Those type names appear in the ArchiMate 4 table of contents, but the v4
-          definitions are behind a sign-in, so the 3.2 wording is used here.
+          Group released ArchiMate 4 in April 2026 <a class="pa-cite" href="#src-2">[2,</a> <a class="pa-cite" href="#src-4">4]</a>.
+          The v4 relationship definitions are behind a sign-in, so the 3.2 wording is used here.
         </p>
         <p>
           Typed links strengthen the SRF&rsquo;s cascade idea. The SRF says
@@ -273,8 +274,10 @@
           Task and Output fits L3. The AI RMF also supports the ownership model.
           GOVERN 2.1 asks that &ldquo;roles and responsibilities and lines of
           communication related to mapping, measuring, and managing AI risks are
-          documented and are clear,&rdquo; and GOVERN 6 covers AI risks from
-          &ldquo;third-party software and data and other supply chain issues&rdquo;
+          documented and are clear to individuals and teams throughout the
+          organization,&rdquo; and GOVERN 6 covers
+          &ldquo;AI risks and benefits arising from third-party software and data and
+          other supply chain issues&rdquo;
           <a class="pa-cite" href="#src-10">[10]</a>. That includes a model obtained
           from an outside AI Model Provider. The NIST AI RMF is being revised, so this
           mapping will need a recheck.
@@ -307,11 +310,12 @@
           describes three layers, AI platform, AI application and AI usage, and
           responsibility shifts across SaaS, PaaS and IaaS
           <a class="pa-cite" href="#src-14">[14]</a>. Those line up with L4, L3 and
-          L1. Microsoft places the model, training data and weights in the platform
-          layer and has no separate data layer. The SRF extends this by giving data
-          (L2) and the AI Model Provider (L5) their own layers and owners. Microsoft
-          also lists its layers from the platform up, the reverse of the SRF&rsquo;s
-          order.
+          L1. Microsoft places the model, training data, and weights and biases in
+          the platform layer and has no separate data layer. The SRF extends this by giving data
+          (L2) and the AI Model Provider (L5) their own layers and owners.
+          Microsoft&rsquo;s article discusses the platform layer first. Its diagram
+          stacks usage at the top and platform at the bottom, the same visual order
+          the SRF uses from L1 down.
         </p>
         <p>
           Microsoft&rsquo;s AI agent shared responsibility model supports the
@@ -320,8 +324,10 @@
           Microsoft provides the runtime, model hosting and platform safety controls.
           The customer owns the agent&rsquo;s instructions, tool selection and
           permissions, orchestration logic, memory design, identity and
-          authorization. In this reading, that matches the idea behind Agent-PaaS: the
-          agent platform has one owner, and the agent built on it has another.
+          authorization. In this reading, that is close to Agent-PaaS: the customer owns the
+          agent built on a provider-managed platform. Official SRF v1.0 marks
+          Agent-PaaS at L3 and L5 as Shared, because both parties have obligations
+          there.
         </p>
       </section>
 
@@ -366,7 +372,7 @@
                 <td>What</td>
                 <td>Data and Input</td>
                 <td>AI partner (data provider)</td>
-                <td>Inside platform and application</td>
+                <td>No separate data layer. Training data sits in the platform layer. Data governance also appears in the usage layer, and data connections in the application layer.</td>
               </tr>
               <tr class="pa-row--l3">
                 <th scope="row">L3 AI Application</th>
@@ -419,7 +425,7 @@
       <section class="pa-prose" aria-labelledby="extends-heading" data-llm="where-the-srf-extends">
         <h2 id="extends-heading">Where the SRF extends or complements these frameworks</h2>
         <p>
-          L5 AI Model Provider extends the older frameworks. TOGAF, ArchiMate, OBASHI
+          L5 AI Model Provider extends the older frameworks. In this analysis, TOGAF, ArchiMate, OBASHI
           and Zachman treat an outside model as one more supplier building block. The
           SRF makes it a layer because the AI Model Provider controls training data,
           model development and provenance, which a customer cannot inspect or fix.

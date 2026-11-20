@@ -504,7 +504,7 @@
         <div class="orient__text">
           <p>
             If you know the cloud shared responsibility model, the SRF will look familiar.
-            AWS splits &ldquo;security <em>of</em> the cloud&rdquo; (the provider) from &ldquo;security <em>in</em> the cloud&rdquo; (the customer), and the line moves with the service type
+            AWS separates &ldquo;security <em>of</em> the cloud&rdquo; (the provider) from &ldquo;security <em>in</em> the cloud&rdquo; (the customer), and the line moves with the service type
             (<a href="https://aws.amazon.com/compliance/shared-responsibility-model/" rel="noopener">AWS</a>).
             Microsoft&rsquo;s AI shared responsibility model applies the same idea to AI with three layers, AI usage, AI application, and AI platform, and responsibility shifts across SaaS, PaaS, and IaaS
             (<a href="https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility-ai" rel="noopener">Microsoft</a>).
@@ -537,7 +537,7 @@
               <th scope="row" class="sbs__l3">L3 AI Application</th>
             </tr>
             <tr>
-              <td rowspan="2">AI platform, which also holds the model, training data, and weights</td>
+              <td rowspan="2">AI platform, which also holds the model, training data, and weights and biases</td>
               <th scope="row" class="sbs__l4">L4 AI Platform</th>
             </tr>
             <tr class="sbs__new--l5">
@@ -546,7 +546,7 @@
           </tbody>
         </table>
         <p class="orient__text" style="font-size:var(--text-sm);margin-top:var(--sp-3);">
-          Microsoft lists its layers from the platform up. The SRF lists L1 first, so the table follows SRF order.
+          Microsoft&rsquo;s article discusses the platform layer first. Its diagram stacks usage at the top and platform at the bottom, the same top-down direction the SRF uses with L1 on top. The table follows SRF order.
           Usage maps to L1, application to L3, and platform to L4. L2 and L5 are the SRF additions.
         </p>
         <div class="adds" data-llm="what-is-new">
@@ -558,11 +558,11 @@
             </li>
             <li class="adds__card adds__card--l5">
               <span class="adds__tag">L5 AI Model Provider</span>
-              <span class="adds__body">In Microsoft&rsquo;s model, the model and its weights sit inside the platform layer. In the SRF, the AI Model Provider has its own layer and answers for the model.</span>
+              <span class="adds__body">In Microsoft&rsquo;s model, the model and its weights and biases sit inside the platform layer. In the SRF, the AI Model Provider has its own layer and answers for the model.</span>
             </li>
             <li class="adds__card adds__card--one">
               <span class="adds__tag">One accountable party</span>
-              <span class="adds__body">Every component gets exactly one named owner. &ldquo;Shared&rdquo; is never the final answer.</span>
+              <span class="adds__body">The rule is one accountable party per component. A Shared cell means both sides have work, and you still name one accountable person.</span>
             </li>
           </ul>
         </div>
@@ -618,8 +618,10 @@
         <section aria-labelledby="diagram-heading" data-llm="order-of-dependency">
           <h2 id="diagram-heading" class="section__label" style="margin-bottom: var(--sp-4);">Order of dependency</h2>
           <p style="font-size: var(--text-sm); color: var(--slate-600); max-width: 500px; margin-bottom: var(--sp-4);">
-            Layers are stacked in dependency order. L1 sets the rules; each layer
-            below inherits those constraints and adds its own.
+            Layers are listed from L1 AI Business &amp; Usage at the top to L5 AI Model
+            Provider at the bottom. Dependencies between components form a graph, not
+            a strict stack: a component can depend on more than one layer, and links
+            can cross layers.
           </p>
           <div class="cascade" aria-label="Five-layer dependency diagram">
             <div class="cascade-box cascade-box--l1">L1: AI Business &amp; Usage<div class="cascade-box__sub">Governance, Strategy, Compliance</div></div>
@@ -759,11 +761,11 @@
               <tr><td>NIST CSF 2.0</td><td>GV.RR and GV.SC-02 call for roles and responsibilities, including for suppliers.</td><td>Official PDF read</td></tr>
               <tr><td>NIST AI RMF 1.0</td><td>Its dimensions map to L1, L2, L5, and L3. GOVERN 2.1 and GOVERN 6 cover roles and third-party risk.</td><td>Official PDF read. Revision under way, so recheck.</td></tr>
               <tr><td>ISO/IEC 42001 and 22989</td><td>Clause 5.3 covers roles and authorities. 22989 defines the AI stakeholder roles the SRF maps its personas to.</td><td>Both rest on SRF v1.0. 22989: secondary.</td></tr>
-              <tr><td>AWS and Microsoft</td><td>Provider and customer split that moves by service type. Microsoft&rsquo;s usage, application, and platform layers map to L1, L3, and L4.</td><td>Official pages read</td></tr>
+              <tr><td>AWS and Microsoft</td><td>Provider and customer responsibilities that move by service type. Microsoft&rsquo;s usage, application, and platform layers map to L1, L3, and L4.</td><td>Official pages read</td></tr>
             </tbody>
           </table>
           <p style="margin-top:var(--sp-4);">
-            NIST CSF 2.0 (GV.RR and GV.SC-02) and ISO/IEC 42001 Clause 5.3 call for roles and responsibilities, which GV.SC-02 says must be &ldquo;established, communicated, and coordinated internally and externally.&rdquo; The SRF assigns them per layer.
+            NIST CSF 2.0 (GV.RR and GV.SC-02) and ISO/IEC 42001 Clause 5.3 call for roles and responsibilities, which GV.SC-02 describes as &ldquo;established, communicated, and coordinated internally and externally.&rdquo; The SRF assigns them per layer.
           </p>
           <p>
             <a href="/framework/prior-art/">Read the full crosswalk and sources →</a>
@@ -777,7 +779,7 @@
 
           <h3>L5 AI Model Provider is its own layer</h3>
           <p>
-            TOGAF, ArchiMate, OBASHI, and Zachman treat an outside model as one more supplier building block.
+            In this analysis, TOGAF, ArchiMate, OBASHI, and Zachman treat an outside model as one more supplier building block.
             The SRF makes it a layer because the AI Model Provider controls training data, model development, and provenance, and a customer cannot inspect or fix them.
             That is a choice made for accountability reasons.
             NIST CSF 2.0 (GV.SC) and the AI RMF (GOVERN 6) also treat supplier risk as something to govern.
