@@ -1612,6 +1612,7 @@
     return button;
   }
 
+  var COLUMN_WORD = { risk: "Why", obligation: "What", control: "How", accountable: "Who" };
   var BOX_ITEM_LIMIT = 8;
   var NEXT_COLUMN = { risk: "obligation", obligation: "control", control: "accountable", accountable: "control" };
   var BOX_LABEL = {
@@ -1717,6 +1718,15 @@
     }
   }
 
+  function columnTitle(key, headingName) {
+    var text = makeEl("span", "chain-col__text");
+    var label = makeEl("span", "chain-col__label", COLUMN_WORD[key].toLowerCase());
+    label.setAttribute("aria-hidden", "true");
+    text.appendChild(label);
+    text.appendChild(makeEl("span", "chain-col__name", headingName));
+    return text;
+  }
+
   function renderChain(chain) {
     chainBoard.textContent = "";
     var chainTitle = root && graph.hasNode(root) ? graph.getNodeAttribute(root, "name") : personaLabel(personaPick);
@@ -1743,7 +1753,11 @@
     ];
     columns.forEach(function (column) {
       var wrap = makeEl("div", "chain-col");
-      var heading = makeEl("h3", "", column[1].length ? column[0] + " (" + column[1].length + ")" : column[0]);
+      var headingName = column[1].length ? column[0] + " (" + column[1].length + ")" : column[0];
+      var accessibleName = COLUMN_WORD[column[2]] + ": " + headingName;
+      var heading = makeEl("h3");
+      heading.appendChild(columnTitle(column[2], headingName));
+      heading.setAttribute("aria-label", accessibleName);
       heading.id = "chain-col-" + column[2];
       heading.setAttribute("tabindex", "-1");
       wrap.dataset.column = column[2];
@@ -1752,9 +1766,11 @@
       var colBody = makeEl("div", "chain-col__body");
       colBody.id = "chain-col-body-" + column[2];
       if (narrowChain) {
-        var toggle = makeEl("button", "chain-col__toggle", heading.textContent);
+        var toggle = makeEl("button", "chain-col__toggle");
+        toggle.appendChild(columnTitle(column[2], headingName));
         toggle.type = "button";
         toggle.dataset.column = column[2];
+        toggle.setAttribute("aria-label", accessibleName);
         toggle.setAttribute("aria-expanded", colOpen ? "true" : "false");
         toggle.setAttribute("aria-controls", colBody.id);
         heading.textContent = "";

@@ -918,6 +918,62 @@ async function testListbox(browser, base) {
   await page.close();
 }
 
+async function testColumnLabels(browser, base) {
+  console.log("\n## ROCA column labels: Why, What, How, Who");
+  const WORD = { risk: "Why", obligation: "What", control: "How", accountable: "Who" };
+  const NAME = { risk: "Risk", obligation: "Obligation", control: "Control", accountable: "Accountable" };
+  const ORDER = ["risk", "obligation", "control", "accountable"];
+  const readHeads = (page) => page.evaluate(() => Array.from(document.querySelectorAll("#chain-board .chain-col")).map((col) => {
+    const h = col.querySelector("h3");
+    const label = h.querySelector(".chain-col__label");
+    const toggle = col.querySelector("button.chain-col__toggle");
+    return {
+      key: col.dataset.column,
+      label: label ? label.textContent : "",
+      labelInHeading: !!label && !!label.closest("h3"),
+      headingName: h.getAttribute("aria-label") || "",
+      toggleName: toggle ? toggle.getAttribute("aria-label") : null,
+      toggleExpanded: toggle ? toggle.getAttribute("aria-expanded") : null
+    };
+  }));
+  const cases = [
+    ["persona", "?type=persona&node=ai-platform-provider&view=list"],
+    ["risk", "?risk=directpromptinjection"],
+    ["control", "?type=control&node=finance:SRF-L3-DEV-001&model=iaas&view=list"]
+  ];
+  for (const [kind, query] of cases) {
+    for (const [width, height] of [[1280, 800], [375, 812]]) {
+      const page = await openPage(browser, base, width, height, query);
+      await clickNow(page, "#explore-from-details");
+      await sleep(900);
+      const heads = await readHeads(page);
+      const status = await page.$eval("#map-status", (el) => el.textContent);
+      const counts = /Showing (\d+) risks?, (\d+) obligations?, (\d+) controls?, and (\d+) accountable personas?/.exec(status);
+      const at = kind + " chain at " + width;
+      check(at + " renders the four columns in order", heads.map((h) => h.key).join() === ORDER.join(), JSON.stringify(heads.map((h) => h.key)));
+      check(at + " puts the label inside each heading", heads.every((h) => h.label === WORD[h.key].toLowerCase() && h.labelInHeading), JSON.stringify(heads.map((h) => [h.key, h.label, h.labelInHeading])));
+      const nameRe = (key) => new RegExp("^" + WORD[key] + ": " + NAME[key] + " \\(\\d+\\)$");
+      check(at + " gives each heading one accessible name with the label and count", heads.every((h) => nameRe(h.key).test(h.headingName)), JSON.stringify(heads.map((h) => h.headingName)));
+      if (counts) {
+        const total = { risk: +counts[1], obligation: +counts[2], control: +counts[3] };
+        check(at + " keeps the heading counts equal to the status line", ORDER.slice(0, 3).every((k) => new RegExp("\\((" + total[k] + ")\\)$").test(heads.find((h) => h.key === k).headingName)), JSON.stringify(heads.map((h) => h.headingName)) + " | " + status);
+      }
+      if (width === 375) {
+        const named = heads.every((h) => h.toggleName === h.headingName && (h.toggleExpanded === "true" || h.toggleExpanded === "false"));
+        check(at + " gives each 375 px toggle the same name as its heading, with aria-expanded", named && heads.filter((h) => h.toggleExpanded === "true").length === 1, JSON.stringify(heads.map((h) => [h.toggleName, h.toggleExpanded])));
+        await page.click('.chain-col__toggle[data-column="obligation"]');
+        await sleep(200);
+        const after = await readHeads(page);
+        const ob = after.find((h) => h.key === "obligation");
+        check(at + " keeps the toggle working after the label is added", ob.toggleExpanded === "true" && ob.toggleName === ob.headingName && after.find((h) => h.key === "risk").toggleExpanded === "false", JSON.stringify(ob));
+      } else {
+        check(at + " shows no column toggles on desktop", heads.every((h) => h.toggleName === null));
+      }
+      await page.close();
+    }
+  }
+}
+
 async function testPhoneSheet(browser, base) {
   console.log("\n## Phone: sheet, collapsible chain columns, Read more");
   const desk = await openPage(browser, base, 1280, 800, "?risk=directpromptinjection&graph=1");
@@ -1625,6 +1681,7 @@ async function main() {
     await testListView(browser, base);
     await testGraphToggle(browser, base);
     await testPersonaGraph(browser, base);
+    await testColumnLabels(browser, base);
     await testListbox(browser, base);
     await testPhoneSheet(browser, base);
     await testDetailGraphSplit(browser, base);
