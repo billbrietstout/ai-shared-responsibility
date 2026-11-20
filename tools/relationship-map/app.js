@@ -1312,35 +1312,41 @@
     return !!list && list.indexOf(id) !== -1;
   }
 
-  /* Column narrowing. While NARROW_COLUMNS is true, a pick in the Risk or
-     Obligation column limits the columns to its right: a risk limits the
-     obligations its controls cite, and a risk or an obligation limits the
-     controls. Set the flag to false and every column keeps all of its cards.
-     This function is the only place that applies the rule. */
-  var NARROW_COLUMNS = true;
-
-  function fullColumns(chain) {
-    return { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
+  /* The selects and column counts always use the whole chain. A pick only
+     changes which boxes show: the picked column keeps its one record and each
+     other column keeps what links to it through the chain's controls. */
+  function pickedKey() {
+    for (var i = 0; i < PICK_ORDER.length; i++) {
+      if (chainPicks[PICK_ORDER[i]]) return PICK_ORDER[i];
+    }
+    return "";
   }
 
-  function narrowedColumns(chain) {
-    if (!NARROW_COLUMNS || !chain.controlLinks) return fullColumns(chain);
+  function linkedColumns(chain) {
+    var all = { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
+    var key = pickedKey();
+    if (!key || !chain.controlLinks) return all;
+    var id = chainPicks[key];
     var links = chain.controlLinks;
-    var picks = chainPicks;
-    var controls = chain.controls.filter(function (card) {
-      var own = links[card.id] || { risks: [], obligations: [] };
-      return (!picks.risk || hasId(own.risks, picks.risk)) && (!picks.obligation || hasId(own.obligations, picks.obligation));
-    });
-    var obligations = chain.obligations;
-    if (picks.risk) {
-      var cited = {};
-      chain.controls.forEach(function (card) {
-        var own = links[card.id] || { risks: [], obligations: [] };
-        if (!hasId(own.risks, picks.risk)) return;
-        own.obligations.forEach(function (id) { cited[id] = true; });
-      });
-      obligations = chain.obligations.filter(function (card) { return cited[card.id]; });
+    var own = function (card) { return links[card.id] || { risks: [], obligations: [] }; };
+    var controls = chain.controls;
+    if (key === "risk") {
+      controls = controls.filter(function (card) { return hasId(own(card).risks, id); });
+    } else if (key === "obligation") {
+      controls = controls.filter(function (card) { return hasId(own(card).obligations, id); });
+    } else if (key === "control") {
+      controls = controls.filter(function (card) { return card.id === id; });
+    } else if (chain.startKind !== "persona") {
+      var picked = chain.personaCards.filter(function (card) { return card.id === id; })[0];
+      controls = controls.filter(function (card) { return !!picked && card.id === picked.controlId; });
     }
+    var linkedTo = function (field) {
+      var seen = {};
+      controls.forEach(function (card) { own(card)[field].forEach(function (linked) { seen[linked] = true; }); });
+      return seen;
+    };
+    var riskSeen = linkedTo("risks");
+    var obligationSeen = linkedTo("obligations");
     var accountable = chain.personaCards;
     if (chain.startKind === "persona") {
       accountable = controls.length ? chain.personaCards : [];
@@ -1349,12 +1355,14 @@
         return controls.some(function (control) { return control.id === card.controlId; });
       });
     }
-    return {
-      risk: chain.risks,
-      obligation: obligations,
+    var out = {
+      risk: chain.risks.filter(function (card) { return riskSeen[card.id]; }),
+      obligation: chain.obligations.filter(function (card) { return obligationSeen[card.id]; }),
       control: controls,
       accountable: accountable
     };
+    out[key] = all[key].filter(function (card) { return card.id === id; });
+    return out;
   }
 
   function resetPicks(from) {
@@ -1364,18 +1372,9 @@
     });
   }
 
-  function dropStalePicks(chain) {
-    for (var i = 0; i < PICK_ORDER.length; i++) {
-      var key = PICK_ORDER[i];
-      if (!chainPicks[key]) continue;
-      var ids = narrowedColumns(chain)[key].map(function (card) { return card.id; });
-      if (!hasId(ids, chainPicks[key])) resetPicks(key);
-    }
-  }
-
-  function shownChain(chain) {
+  function linkedChain(chain) {
     if (!chain || !chain.controlLinks) return chain;
-    var cols = narrowedColumns(chain);
+    var cols = linkedColumns(chain);
     var copy = {};
     Object.keys(chain).forEach(function (key) { copy[key] = chain[key]; });
     copy.risks = cols.risk;
@@ -1390,31 +1389,6 @@
         card.lines.forEach(function (line) { if (!line.missing) copy.personaCount += 1; });
       });
     }
-    return copy;
-  }
-
-  /* The details panel describes the picked records. Each picked column
-     collapses to its one record, and the other columns keep only what links to it. */
-  function detailsScope(chain) {
-    if (!chain || !chain.controlLinks) return chain;
-    var links = chain.controlLinks || {};
-    var picks = chainPicks;
-    var cols = narrowedColumns(chain);
-    var controls = picks.control ? cols.control.filter(function (card) { return card.id === picks.control; }) : cols.control;
-    var risks = cols.risk.filter(function (card) {
-      if (picks.risk) return card.id === picks.risk;
-      if (!picks.obligation && !picks.control) return true;
-      return controls.some(function (control) { return hasId((links[control.id] || {}).risks, card.id); });
-    });
-    var obligations = cols.obligation.filter(function (card) {
-      if (picks.obligation) return card.id === picks.obligation;
-      if (!picks.control) return true;
-      return hasId((links[picks.control] || {}).obligations, card.id);
-    });
-    var copy = shownChain(chain);
-    copy.risks = risks;
-    copy.obligations = obligations;
-    copy.controls = controls;
     return copy;
   }
 
@@ -1518,7 +1492,7 @@
 
   function setPick(key, id) {
     if (!currentChain || currentChain.blank) return;
-    resetPicks(key);
+    resetPicks();
     chainPicks[key] = id || "";
     var focusId = "";
     for (var i = PICK_ORDER.length - 1; i >= 0; i--) {
@@ -1528,11 +1502,6 @@
       }
     }
     chainFocus = focusId || rootFocusId();
-    if (id && key !== "accountable") {
-      var list = narrowedColumns(currentChain)[key];
-      var at = list.map(function (card) { return card.id; }).indexOf(id);
-      if (at >= COLUMN_LIMIT) expandedColumns[key] = true;
-    }
     commit(false);
     announceDetails();
   }
@@ -1570,8 +1539,8 @@
     }
     if (rootKey === "control") notes.push(CONTROL_SOURCE_NOTE);
     chainModelNote.textContent = notes.filter(Boolean).join(" ");
-    dropStalePicks(chain);
-    var shown = narrowedColumns(chain);
+    var shown = { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
+    var linked = linkedColumns(chain);
     var columns = [
       ["Risk", shown.risk, "risk"],
       ["Obligation", shown.obligation, "obligation"],
@@ -1607,8 +1576,9 @@
       wrap.appendChild(heading);
       wrap.appendChild(column[2] === rootKey ? rootSelect(column[2], heading.id) : columnSelect(column[2], column[1], heading.id));
       wrap.appendChild(colBody);
-      var collapsible = column[2] !== "accountable" && column[1].length > COLUMN_LIMIT;
-      var shownItems = collapsible && !expandedColumns[column[2]] ? column[1].slice(0, COLUMN_LIMIT) : column[1];
+      var boxes = linked[column[2]];
+      var collapsible = column[2] !== "accountable" && boxes.length > COLUMN_LIMIT;
+      var shownItems = collapsible && !expandedColumns[column[2]] ? boxes.slice(0, COLUMN_LIMIT) : boxes;
       shownItems.forEach(function (item) {
         var pressed = chainPicks[column[2]] === item.id;
         var button = cardButton(item.id, pressed);
@@ -2139,8 +2109,9 @@
       detailsModelNote.textContent = "";
       connectionsHeading.hidden = true;
       detailsList.hidden = true;
-      renderChainDetails(detailsScope(currentChain));
-      detailsSummary.textContent = chainSentence(shownChain(currentChain));
+      var linkedNow = linkedChain(currentChain);
+      renderChainDetails(linkedNow);
+      detailsSummary.textContent = chainSentence(linkedNow);
       placeDetails();
       return;
     }
@@ -2256,7 +2227,7 @@
     var allowed = countNodes(function (id, attrs) { return nodeAllowed(attrs); });
     var text = "";
     if (view === "chain" && currentChain && !currentChain.blank) {
-      text = chainSentence(shownChain(currentChain));
+      text = chainSentence(currentChain);
     } else if (view === "chain" && currentChain) {
       text = currentChain.note || START_NOTE[ROOT_KEY[entry]] || "";
     } else if (view === "search") {
@@ -2289,7 +2260,7 @@
     statusEl.dataset.skippedModels = Object.keys(skippedModels).sort().join(",");
     statusEl.dataset.missingLinks = String(missingLinks.length);
     statusEl.dataset.mappedFromSector = String(stats.mappedFromSector || 0);
-    var shownNow = shownChain(currentChain);
+    var shownNow = currentChain;
     statusEl.dataset.chainRisks = shownNow ? String(shownNow.risks.length) : "";
     statusEl.dataset.chainObligations = shownNow ? String(shownNow.obligations.length) : "";
     statusEl.dataset.chainControls = shownNow ? String(shownNow.controls.length) : "";
@@ -2619,7 +2590,7 @@
       helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
     } else if (view === "chain") {
       helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. " +
-        (NARROW_COLUMNS ? "Each menu narrows the menus to its right. " : "Each menu picks one record in its column. ") +
+        "Each menu lists every item in its column. A choice shows the items linked to it in the other columns. " +
         "Details for the choice appear below the columns.";
     } else {
       helpEl.textContent = "Type a risk or a control name or a few words about it. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
