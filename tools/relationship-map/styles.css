@@ -69,16 +69,14 @@ body .page-hero__lede {
 }
 
 .map-preview__details summary,
-.legend-help summary,
-.illustrative-fold summary {
+.legend-help summary {
   cursor: pointer;
   font-weight: 700;
   color: var(--ink);
 }
 
 .map-preview__details summary:focus-visible,
-.legend-help summary:focus-visible,
-.illustrative-fold summary:focus-visible {
+.legend-help summary:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
@@ -86,15 +84,6 @@ body .page-hero__lede {
 .map-preview__details p {
   max-width: 68ch;
   margin: var(--sp-2) 0 0;
-}
-
-.illustrative-fold {
-  margin-top: var(--sp-4);
-}
-
-.illustrative-fold > p {
-  max-width: 68ch;
-  margin: var(--sp-2) 0;
 }
 
 .chain-legend-wrap {
@@ -247,47 +236,9 @@ body .page-hero__lede {
 }
 
 .entry-gap__title,
-.entry-account__title,
 .layer-frames h2 {
   margin: 0 0 var(--sp-2);
   font-size: var(--text-base);
-}
-
-.auth-principle {
-  font-weight: 650;
-  max-width: 68ch;
-}
-
-.illustrative {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-sm);
-  margin-bottom: var(--sp-4);
-}
-
-.illustrative th,
-.illustrative td {
-  text-align: left;
-  padding: 0.35rem 0.5rem;
-  border-bottom: 1px solid var(--line, #e2e8f0);
-  vertical-align: top;
-}
-
-.persona-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
-}
-
-.persona-list button {
-  font: inherit;
-  font-size: var(--text-sm);
-  color: var(--ink);
-  background: var(--surface);
-  border: 1px solid var(--map-persona);
-  border-radius: 999px;
-  padding: 0.35rem 0.7rem;
-  cursor: pointer;
 }
 
 .layer-frames dl {
@@ -413,7 +364,6 @@ body .page-hero__lede {
 .tapestry-toggle input:focus-visible,
 .view-actions button:focus-visible,
 .entry-points button:focus-visible,
-.persona-list button:focus-visible,
 .search-results button:focus-visible,
 .show-all-results:focus-visible,
 .chain-card:focus-visible,
@@ -1052,8 +1002,7 @@ body .page-hero__lede {
 }
 
 /* Navigation aids. */
-.map-jump,
-.chain-jump {
+.map-jump {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-1) var(--sp-4);
@@ -1061,12 +1010,7 @@ body .page-hero__lede {
   font-size: var(--text-sm);
 }
 
-.chain-jump {
-  margin: 0 0 var(--sp-3);
-}
-
-.map-jump a,
-.chain-jump a {
+.map-jump a {
   display: inline-flex;
   align-items: center;
   min-height: 32px;
@@ -1126,8 +1070,7 @@ body .page-hero__lede {
 }
 
 @media (max-width: 800px) {
-  .map-jump a,
-.chain-jump a {
+  .map-jump a {
     min-height: 44px;
   }
 
@@ -1163,14 +1106,6 @@ body .page-hero__lede {
   font-size: var(--text-lg);
 }
 
-.details__buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2);
-  flex-shrink: 0;
-}
-
-.details__buttons button[hidden],
 .details__actions button[hidden] {
   display: none;
 }
@@ -1526,8 +1461,7 @@ body .page-hero__lede {
     background: var(--surface);
   }
 
-  .details__buttons button,
-.chain-workspace__actions button,
+  .chain-workspace__actions button,
 .details__actions button {
     min-height: 44px;
   }
@@ -1544,10 +1478,6 @@ body .page-hero__lede {
     flex: 1 1 auto;
   }
 
-  .details__buttons {
-    flex: 0 0 auto;
-  }
-
   #copy-chain {
     min-width: 0;
   }
@@ -1560,12 +1490,7 @@ body .page-hero__lede {
     display: inline;
   }
 
-  #jump-chain,
-.map-jump a[href="#details-heading"] {
-    display: none;
-  }
-
-  .chain-jump a[href="#node-search"] {
+  #jump-chain {
     display: none;
   }
 
@@ -1573,12 +1498,6 @@ body .page-hero__lede {
     display: none;
   }
 
-}
-
-.pick-wrap {
-  display: grid;
-  gap: var(--sp-3);
-  margin-top: var(--sp-3);
 }
 
 .pick-row[hidden] {
@@ -1665,10 +1584,6 @@ body.coverage-mode .page-hero__lede {
   cursor: pointer;
 }
 
-.pick-wrap[hidden] {
-  display: none;
-}
-
 .chain-col__text {
   display: block;
   min-width: 0;
@@ -1715,11 +1630,6 @@ body.coverage-mode .page-hero__lede {
   padding: var(--sp-4);
   position: static;
   max-height: none;
-}
-
-.details--in-chain .details__buttons,
-.details--in-chain #explore-from-details {
-  display: none;
 }
 
 .details--in-chain .details__bar {
@@ -1799,8 +1709,7 @@ body.coverage-mode .page-hero__lede {
     justify-content: flex-end;
   }
 
-  .options .entry-account,
-.options .find-form,
+  .options .find-form,
 .options .layer-frames {
     grid-column: 1 / -1;
   }
@@ -1843,13 +1752,6 @@ body.coverage-mode .page-hero__lede {
     margin-bottom: 0;
   }
 
-  .options .pick-wrap {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  }
-
-  .options .persona-list {
-    margin-bottom: var(--sp-3);
-  }
 }
 
 @media (max-width: 800px) {
