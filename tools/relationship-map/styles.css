@@ -1207,7 +1207,7 @@ body .page-hero__lede {
 
 /* List view. Finder on the left. Record details or graph workspace on the right. */
 .map-layout {
-  grid-template-columns: 400px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--sp-6);
   align-items: start;
 }
@@ -1887,8 +1887,116 @@ body.coverage-mode .page-hero__lede {
   }
 }
 
+.options {
+  margin: 0 0 var(--sp-4);
+  border: 1px solid var(--slate-300);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.options__summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px var(--sp-4);
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.options__summary:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.options[open] > .options__summary {
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.options > .map-tools {
+  margin: 0;
+  padding: var(--sp-4);
+}
+
+.layer-frames__item {
+  min-width: 0;
+}
+
 @media (min-width: 801px) {
-  .map-page.is-chain .map-layout {
-    grid-template-columns: 300px minmax(0, 1fr);
+  .options > .map-tools {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--sp-4);
+    row-gap: var(--sp-3);
+    align-items: start;
+  }
+
+  .options .entry-points {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .options .view-actions {
+    grid-column: 2;
+    grid-row: 1;
+    justify-content: flex-end;
+  }
+
+  .options .entry-account,
+  .options .find-form,
+  .options .layer-frames {
+    grid-column: 1 / -1;
+  }
+
+  .options .find-form__row {
+    max-width: 640px;
+  }
+
+  .options .map-filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--sp-3) var(--sp-4);
+  }
+
+  .options .map-filters .model-filter {
+    flex: 1 1 320px;
+    width: auto;
+    align-self: stretch;
+  }
+
+  .options .map-filters .layer-filter {
+    flex: 2 1 480px;
+  }
+
+  .options #model-filter-list {
+    min-height: 0;
+  }
+
+  .options .filter-help {
+    flex: 1 1 100%;
+  }
+
+  .options .layer-frames dl {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--sp-3) var(--sp-4);
+  }
+
+  .options .layer-frames dd {
+    margin-bottom: 0;
+  }
+
+  .options .pick-wrap {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .options .persona-list {
+    margin-bottom: var(--sp-3);
+  }
+}
+
+@media (max-width: 800px) {
+  .options > .map-tools {
+    padding: var(--sp-3);
   }
 }

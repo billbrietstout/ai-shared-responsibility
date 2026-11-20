@@ -495,7 +495,7 @@ async function testListView(browser, base) {
       summaryBeforeResults: order("#filter-summary", "#risk-suggestions"),
       chainHidden: document.getElementById("chain").hidden,
       emptyShown: !document.getElementById("details-empty").hidden,
-      panelLeft: rect(".details").left, finderRight: rect(".map-stage").right,
+      panelTop: rect(".map-panel").top, stageBottom: rect(".map-stage").bottom, panelWidth: rect(".map-panel").width, stageWidth: rect(".map-stage").width,
       wrapHeight: Math.round(document.querySelector(".graph-wrap").getBoundingClientRect().height)
     };
   });
@@ -503,7 +503,7 @@ async function testListView(browser, base) {
   check("the catalog lists every control that sits in an operating model on load (" + inChainCore.length + ")", first.controls === inChainCore.length, String(first.controls));
   check("the summary line gives the filters and both counts", first.summary === "All operating models, all layers: " + inChainCore.length + " controls, " + threats.length + " risks", first.summary);
   check("the filters and the summary come before the results", first.filtersBeforeResults && first.summaryBeforeResults);
-  check("the side panel sits beside the list and starts empty", first.chainHidden && first.emptyShown && first.panelLeft >= first.finderRight, JSON.stringify(first));
+  check("the details panel sits below Options at the full page width and starts empty", first.chainHidden && first.emptyShown && first.panelTop >= first.stageBottom - 1 && Math.abs(first.panelWidth - first.stageWidth) <= 1 && first.panelWidth > 1000, JSON.stringify(first));
   check("no blank graph panel on load", first.wrapHeight < 120, String(first.wrapHeight));
 
   await pickModel(page, "AI-SaaS");
@@ -528,13 +528,13 @@ async function testListView(browser, base) {
       detailsShown: !document.getElementById("details-body").hidden,
       graphHidden: document.getElementById("graph-workspace").hidden,
       graphInDetails: !!document.querySelector(".details #graph, .details .graph-wrap"),
-      listStillThere: list.height > 0 && list.right <= panel.left + 1,
+      listStillThere: list.height > 0 && list.bottom <= panel.top + 1,
       active: document.activeElement.id,
       panelTopInView: panel.top >= -1 && panel.top < 220,
       heading: document.getElementById("details-heading").textContent
     };
   });
-  check("choosing a threat opens details beside the list without the graph", open.detailsShown && open.graphHidden && !open.graphInDetails && open.listStillThere && open.active === "details-heading", JSON.stringify(open));
+  check("choosing a threat opens details below Options without the graph", open.detailsShown && open.graphHidden && !open.graphInDetails && open.listStillThere && open.active === "details-heading", JSON.stringify(open));
   check("the details panel is brought into view when a record opens", open.panelTopInView);
   await page.evaluate(() => window.scrollTo(0, 600));
   await sleep(100);
@@ -559,21 +559,21 @@ async function testGraphToggle(browser, base) {
     return !show.hidden && /Explore relationship graph/.test(show.textContent) && hide.hidden;
   }));
 
-  await page.click("#show-graph");
+  await clickNow(page, "#show-graph");
   await sleep(900);
   const shown = await graphState(page);
   check("Explore relationship graph reveals the graph workspace", shown.visibility === "visible" && shown.clientWidth > 300 && shown.clientHeight > 300, JSON.stringify(shown));
   check("Sigma matches the container size after it opens", shown.sigmaWidth === shown.offsetWidth && shown.sigmaHeight === shown.offsetHeight && shown.canvasWidth > 0 && Math.abs(shown.canvasWidth - shown.sigmaWidth) <= 1, JSON.stringify(shown));
   check("focus moves to Back to details and the URL records the graph", (await activeId(page)) === "hide-graph" && /[?&]view=graph/.test(page.url()), (await activeId(page)) + " " + page.url());
   check("zoom controls are available in the graph workspace", await page.evaluate(() => !document.getElementById("graph-fit").hidden && !document.getElementById("graph-zoom-in").hidden && !document.getElementById("graph-zoom-out").hidden && !document.getElementById("graph-reset").hidden));
-  await page.click("#hide-graph");
+  await clickNow(page, "#hide-graph");
   await sleep(500);
   const closed = await graphState(page);
   check("Back to details hides the workspace and focus returns to Explore", closed.visibility === "hidden" && (await activeId(page)) === "show-graph" && !/graph=1/.test(page.url()), JSON.stringify(closed) + (await activeId(page)));
 
   await page.setViewport({ width: 1000, height: 800 });
   await sleep(300);
-  await page.click("#show-graph");
+  await clickNow(page, "#show-graph");
   await sleep(900);
   const resized = await graphState(page);
   check("Sigma follows a window resize that happened while the graph was hidden", resized.clientWidth < shown.clientWidth && resized.sigmaWidth === resized.offsetWidth && resized.sigmaHeight === resized.offsetHeight, JSON.stringify(resized));
@@ -587,7 +587,7 @@ async function testGraphToggle(browser, base) {
   check("a deep-linked threat opens details without the graph workspace", await chainPage.evaluate(() => {
     return !document.getElementById("details-body").hidden && document.getElementById("graph-workspace").hidden && document.getElementById("chain").hidden && !document.querySelector(".details #graph");
   }));
-  await chainPage.click("#explore-from-details");
+  await clickNow(chainPage, "#explore-from-details");
   await sleep(900);
   const focusView = await chainPage.evaluate(() => ({
     workspaceHidden: document.getElementById("graph-workspace").hidden,
@@ -596,7 +596,7 @@ async function testGraphToggle(browser, base) {
     detailsInChain: !!document.querySelector("#chain #chain-details-slot > .details") && getComputedStyle(document.querySelector(".details")).display !== "none"
   }));
   check("Explore opens the chain workspace and moves the details below the chain", !focusView.workspaceHidden && !focusView.chainHidden && focusView.hideShown && focusView.detailsInChain, JSON.stringify(focusView));
-  await chainPage.click("#hide-graph");
+  await clickNow(chainPage, "#hide-graph");
   await sleep(600);
   const back = await chainPage.evaluate(() => ({
     workspaceHidden: document.getElementById("graph-workspace").hidden,
@@ -923,7 +923,7 @@ async function testPhoneSheet(browser, base) {
   check("the details open as a full-screen sheet", sheet.shown && sheet.left === 0 && sheet.top === 0 && sheet.width === 375 && sheet.height === 812 && sheet.sheetOpen, JSON.stringify(sheet));
   check("the list behind the sheet is inert and focus is on details", sheet.stageInert && (await activeId(page)) === "details-heading");
 
-  await page.click("#explore-from-details");
+  await clickNow(page, "#explore-from-details");
   await sleep(700);
   const cols = await page.evaluate(() => Array.from(document.querySelectorAll(".chain-col__toggle")).map((b) => ({ text: b.textContent, expanded: b.getAttribute("aria-expanded"), key: b.dataset.column, bodyHidden: document.getElementById(b.getAttribute("aria-controls")).hidden })));
   check("the four columns are sections with counts", cols.length === 4 && cols.map((c) => c.key).join() === "risk,obligation,control,accountable" && cols.every((c) => /\(\d+\)$/.test(c.text)), JSON.stringify(cols));
@@ -1003,7 +1003,7 @@ async function testDetailGraphSplit(browser, base) {
   }));
   check("the page can scroll through the full detail content", scrolled.scrollY > 200 && scrolled.height > 900 && scrolled.hasSources && scrolled.nested === "visible", JSON.stringify(scrolled));
 
-  await page.click("#explore-from-details");
+  await clickNow(page, "#explore-from-details");
   await sleep(800);
   const workspace = await page.evaluate(() => ({
     workspaceHidden: document.getElementById("graph-workspace").hidden,
@@ -1013,7 +1013,7 @@ async function testDetailGraphSplit(browser, base) {
   }));
   check("Explore opens the chain workspace for the same control with the details below it", !workspace.workspaceHidden && !workspace.chainHidden && workspace.detailsDisplay === "block" && workspace.root === "control:insurance:SRF-L3-DEV-001", JSON.stringify(workspace));
 
-  await page.click("#hide-graph");
+  await clickNow(page, "#hide-graph");
   await sleep(500);
   const back = await page.evaluate(() => ({
     workspaceHidden: document.getElementById("graph-workspace").hidden,
@@ -1904,6 +1904,93 @@ async function testLeftColumnTrim(browser, base, width, height) {
   await controlPage.close();
 }
 
+async function testOptionsLayout(browser, base, width, height) {
+  const at = " at " + width;
+  const page = await openPage(browser, base, width, height, "");
+  await page.evaluate(() => sessionStorage.clear());
+  await page.reload({ waitUntil: "load" });
+  await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  const info = await page.evaluate(() => {
+    const opt = document.getElementById("options");
+    const sum = opt ? opt.querySelector(":scope > summary") : null;
+    const inside = (id) => !!opt && opt.contains(document.getElementById(id));
+    const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
+    return {
+      tag: opt && opt.tagName, open: opt && opt.open, summary: sum && sum.textContent.trim(), summaryTag: sum && sum.tagName,
+      moved: ["entry-threat", "entry-control", "entry-account", "node-search", "persona-list", "model-filter-list", "layer-filter-list", "show-tapestry", "show-graph", "show-context", "start-one", "map-filters"].filter((id) => !inside(id)),
+      layerFrames: !!opt && !!opt.querySelector(".layer-frames"),
+      sideColumn: getComputedStyle(document.querySelector(".map-layout")).gridTemplateColumns.split(" ").length,
+      stageWidth: rect(".map-stage").width, panelWidth: rect(".map-panel").width, viewport: window.innerWidth,
+      panelBelow: rect(".map-panel").top >= rect(".map-stage").bottom - 1,
+      overflow: document.documentElement.scrollWidth - window.innerWidth
+    };
+  });
+  check("Options is a details element, open on first load, with an Options summary" + at, info.tag === "DETAILS" && info.open === true && info.summary === "Options" && info.summaryTag === "SUMMARY", JSON.stringify(info));
+  check("the mode buttons, search, persona picker, filters, Tapestry, and the graph, layers, and start-over buttons are inside Options" + at, info.moved.length === 0, JSON.stringify(info.moved));
+  check("the left column is gone: one grid column, and the details panel sits below at the same width" + at, info.sideColumn === 1 && info.stageWidth > width - 160 && (width === 375 || (info.panelBelow && Math.abs(info.stageWidth - info.panelWidth) <= 1)), JSON.stringify(info));
+  check("Options does not scroll sideways" + at, info.overflow <= 1, String(info.overflow));
+  const rows = await page.evaluate(() => {
+    const top = (sel) => Math.round(document.querySelector(sel).getBoundingClientRect().top);
+    const left = (sel) => Math.round(document.querySelector(sel).getBoundingClientRect().left);
+    return { modeTop: top("#entry-threat"), actionTop: top("#show-graph"), modelTop: top('[name="operating-model"]'), layerTop: top('[name="layer"]'), modeLeft: left("#entry-threat"), actionLeft: left("#show-graph"), modelLeft: left("#model-filter-list"), layerLeft: left("#layer-filter-list") };
+  });
+  if (width === 1280) check("at 1280 the mode buttons share a row with the graph, layers, and start-over buttons, and the two filters share a row" + at, Math.abs(rows.modeTop - rows.actionTop) < 40 && rows.actionLeft > rows.modeLeft && Math.abs(rows.modelTop - rows.layerTop) < 40 && rows.layerLeft > rows.modelLeft, JSON.stringify(rows));
+  else check("at 375 the Options rows stack: buttons, then filters" + at, rows.actionTop > rows.modeTop && rows.layerTop > rows.modelTop && rows.modeLeft < 40 && rows.actionLeft < 40, JSON.stringify(rows));
+
+  await page.click("#options > summary");
+  await sleep(200);
+  const closed = await page.evaluate(() => ({ open: document.getElementById("options").open, search: document.getElementById("node-search").checkVisibility() ? 1 : 0, status: document.getElementById("map-status").checkVisibility() ? 1 : 0, stored: sessionStorage.getItem("relmap-options-open") }));
+  check("clicking the Options summary collapses it, hides the controls, and saves the state" + at, closed.open === false && closed.search === 0 && closed.status === 1 && closed.stored === "closed", JSON.stringify(closed));
+  await page.reload({ waitUntil: "load" });
+  await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  check("a collapsed Options stays collapsed after a reload" + at, await page.evaluate(() => document.getElementById("options").open === false));
+  await page.focus("#options > summary");
+  await page.keyboard.press("Enter");
+  await sleep(200);
+  check("the Options summary opens from the keyboard" + at, await page.evaluate(() => document.getElementById("options").open === true && sessionStorage.getItem("relmap-options-open") === "open"));
+  await page.click("#options > summary");
+  await sleep(150);
+  await page.evaluate(() => document.querySelector('a[href="#node-search"]').click());
+  await sleep(300);
+  check("a Find link reopens a collapsed Options and focuses search" + at, await page.evaluate(() => document.getElementById("options").open && document.activeElement.id === "node-search"));
+  await page.close();
+
+  const persona = await openPersonaChain(browser, base, width, height);
+  const chain = await persona.evaluate(() => ({
+    board: document.getElementById("chain-board").getBoundingClientRect().width,
+    belowOptions: document.getElementById("graph-workspace").getBoundingClientRect().top >= document.getElementById("options").getBoundingClientRect().bottom - 1,
+    optionsOpen: document.getElementById("options").open,
+    selects: document.querySelectorAll("#chain-board select").length,
+    panelInChain: !!document.querySelector("#chain-details-slot > .details"),
+    detailsWidth: document.querySelector(".details").getBoundingClientRect().width,
+    overflow: document.documentElement.scrollWidth - window.innerWidth
+  }));
+  check("the ROCA chain and its details use the full page width below Options" + at, (width === 375 || chain.belowOptions) && chain.panelInChain && chain.selects === 4 && chain.overflow <= 1 && (width === 1280 ? chain.board > 1000 && chain.detailsWidth > 1000 : chain.board > 300), JSON.stringify(chain));
+  if (width === 1280) {
+    const cols = await persona.evaluate(() => Array.from(document.querySelectorAll("#chain-board .chain-col")).map((c) => Math.round(c.getBoundingClientRect().width)));
+    check("at 1280 each ROCA column is at least 200 px wide" + at, cols.length === 4 && cols.every((w) => w >= 200), cols.join());
+  }
+  await persona.close();
+
+  const graph = await openPage(browser, base, width, height, "?risk=directpromptinjection&graph=1");
+  const g = await graph.evaluate(() => ({ visible: getComputedStyle(document.getElementById("graph")).visibility, w: document.getElementById("graph").clientWidth, h: document.getElementById("graph").clientHeight, status: document.getElementById("map-status").textContent, overflow: document.documentElement.scrollWidth - window.innerWidth }));
+  check("the graph view still renders with the new layout" + at, g.visible === "visible" || g.w > 0, JSON.stringify(g));
+  check("the graph view does not scroll sideways" + at, g.overflow <= 1, JSON.stringify(g));
+  await graph.close();
+
+  const layers = await openPage(browser, base, width, height, "?view=context");
+  const l = await layers.evaluate(() => ({ board: !document.getElementById("context-board").hidden, bands: document.querySelectorAll("#context-board button[data-node-id]").length, overflow: document.documentElement.scrollWidth - window.innerWidth }));
+  check("the layers view still renders with the new layout" + at, l.board && l.bands > 5 && l.overflow <= 1, JSON.stringify(l));
+  await layers.close();
+
+  if (width === 375) {
+    const sheet = await openPage(browser, base, width, height, "?risk=directpromptinjection");
+    const state = await sheet.evaluate(() => { const p = document.querySelector(".map-panel").getBoundingClientRect(); return { left: p.left, top: p.top, w: p.width, h: p.height, open: document.body.classList.contains("sheet-open"), inert: document.querySelector(".map-stage").hasAttribute("inert") }; });
+    check("the 375 px sheet still covers the screen and makes Options inert" + at, state.left === 0 && state.top === 0 && state.w === 375 && state.open && state.inert, JSON.stringify(state));
+    await sheet.close();
+  }
+}
+
 async function main() {
   const server = await serve();
   const base = "http://127.0.0.1:" + server.address().port;
@@ -1936,7 +2023,10 @@ async function main() {
     await testLoadResilience(browser, base);
     await testDisclosures(browser, base);
     await testRiskWording(browser, base);
-    for (const [width, height] of [[1280, 800], [375, 812]]) await testLeftColumnTrim(browser, base, width, height);
+    for (const [width, height] of [[1280, 800], [375, 812]]) {
+      await testLeftColumnTrim(browser, base, width, height);
+      await testOptionsLayout(browser, base, width, height);
+    }
     await captureDesktop(browser, base);
     await captureMobile(browser, base);
   } finally {
