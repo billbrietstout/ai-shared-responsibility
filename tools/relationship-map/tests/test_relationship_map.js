@@ -1979,6 +1979,34 @@ async function testFourModes(browser, base, width, height) {
   }
 }
 
+async function testOptionsSameInEveryMode(browser, base) {
+  console.log("\n## Options shows the same controls in all four modes at 1280");
+  const labels = { threat: "Find a risk", obligation: "Find an obligation", control: "Find a control", account: "Find an accountable persona" };
+  const signatures = {};
+  const texts = {};
+  for (const mode of ["threat", "obligation", "control", "account"]) {
+    const page = await startMode(browser, base, 1280, 900, mode);
+    const seen = await page.evaluate(() => {
+      const opt = document.getElementById("options");
+      const items = [];
+      opt.querySelectorAll("*").forEach((el) => {
+        if (!el.checkVisibility()) return;
+        if (!el.matches("[id], button, input, select, legend, summary, h2, h3, p, fieldset, label, form, section, details, dl, dt")) return;
+        const textual = el.matches("legend, summary, button, h2, h3, dt");
+        items.push(el.tagName + "#" + (el.id || "") + "." + (el.id ? "" : el.className) + "|" + (textual ? el.textContent.trim() : ""));
+      });
+      return { items: items.filter((t) => !/^LABEL#\.find-form__label/.test(t)), text: opt.innerText, label: document.querySelector('label[for="node-search"]').textContent.trim(), placeholder: document.getElementById("node-search").placeholder, help: document.getElementById("map-help").textContent };
+    });
+    signatures[mode] = seen.items.join("\n");
+    texts[mode] = seen.text;
+    check(mode + " mode: the find label names the mode" + " at 1280", seen.label === labels[mode] && seen.placeholder.length > 0, seen.label + " / " + seen.placeholder);
+    check(mode + " mode: Options has no authorization text, Accountable personas heading, persona buttons, handoff titles fold, or Start from one button", !/Authorization establishes|Accountable personas|illustrative|handoff|Start from one/i.test(seen.text) && (await page.$$("#persona-list, #start-one, .illustrative-fold, #entry-account-panel")).length === 0, seen.text.slice(0, 200));
+    await page.close();
+  }
+  const sameSet = ["obligation", "control", "account"].every((m) => signatures[m] === signatures.threat);
+  check("the visible Options children are the same set in all four modes", sameSet && signatures.threat.length > 200, JSON.stringify(["obligation", "control", "account"].map((m) => [m, diff(signatures[m].split("\n"), signatures.threat.split("\n"))])));
+}
+
 async function main() {
   const server = await serve();
   const base = "http://127.0.0.1:" + server.address().port;
@@ -2005,6 +2033,7 @@ async function main() {
       ["fourModes", async () => {
         for (const [width, height] of [[1280, 800], [375, 812]]) await testFourModes(browser, base, width, height);
       }],
+      ["optionsSameInEveryMode", () => testOptionsSameInEveryMode(browser, base)],
       ["columnLabels", () => testColumnLabels(browser, base)],
       ["listbox", () => testListbox(browser, base)],
       ["phoneSheet", () => testPhoneSheet(browser, base)],

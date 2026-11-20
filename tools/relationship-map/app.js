@@ -2450,19 +2450,30 @@
     });
   }
 
+  var MODE_SEARCH = {
+    threat: { kind: "risk", label: "Find a risk", placeholder: "Risk name or a few words", noun: "a risk", none: "No matching risk." },
+    obligation: { kind: "obligation", label: "Find an obligation", placeholder: "Obligation citation or a few words", noun: "an obligation", none: "No matching obligation." },
+    control: { kind: "control", label: "Find a control", placeholder: "Control name or a few words", noun: "a control", none: "No matching control." },
+    account: { kind: "persona", label: "Find an accountable persona", placeholder: "Persona name", noun: "an accountable persona", none: "No matching persona." }
+  };
+
   function matches(query) {
     var q = query.trim().toLowerCase();
     wordMatch = null;
     if (!q) return [];
     var ids = [];
     var allowed = [];
+    var only = MODE_SEARCH[entry] ? MODE_SEARCH[entry].kind : "";
     graph.forEachNode(function (id, attrs) {
       if (attrs.kind !== "control" && attrs.kind !== "risk") return;
+      if (only && attrs.kind !== only) return;
       if (!nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       allowed.push(id);
       if (attrs.search.indexOf(q) !== -1) ids.push(id);
     });
-    obligationChoiceCards().map(function (card) { return card.id; }).concat(personaChoiceIds()).forEach(function (id) {
+    obligationChoiceCards().map(function (card) { return card.id; }).concat(personaChoiceIds()).filter(function (id) {
+      return !only || searchAttrs(id).kind === only;
+    }).forEach(function (id) {
       allowed.push(id);
       if (searchAttrs(id).search.indexOf(q) !== -1) ids.push(id);
     });
@@ -2517,7 +2528,7 @@
       return ids;
     }
     if (!ids.length) {
-      searchNote.textContent = "No matching risk, obligation, control, or persona.";
+      searchNote.textContent = MODE_SEARCH[entry] ? MODE_SEARCH[entry].none : "No matching risk, obligation, control, or persona.";
       return ids;
     }
     var parts = [];
@@ -2587,7 +2598,7 @@
 
   function renderSummary() {
     if (!summaryEl || !graph) return;
-    if (entry === "requirement" || entry === "account") {
+    if (entry === "requirement") {
       summaryEl.textContent = "";
       return;
     }
@@ -2646,8 +2657,9 @@
     chainWrap.classList.toggle("chain-wrap--context", contextOn);
     if (contextOn) renderContext();
 
-    findLabel.textContent = "Find a risk, obligation, control, or persona";
-    searchInput.placeholder = "Name or a few words";
+    var modeSearch = MODE_SEARCH[entry];
+    findLabel.textContent = modeSearch ? modeSearch.label : "Find a risk, obligation, control, or persona";
+    searchInput.placeholder = modeSearch ? modeSearch.placeholder : "Name or a few words";
     if (contextOn) {
       helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
     } else if (view === "chain") {
@@ -2655,7 +2667,7 @@
         "Each menu lists every item in its column. A choice shows the items linked to it in the other columns. " +
         "Details for the choice appear below the columns.";
     } else {
-      helpEl.textContent = "Type a name or a few words about a risk, an obligation, a control, or a persona. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
+      helpEl.textContent = "Type a name or a few words about " + (modeSearch ? modeSearch.noun : "a risk, an obligation, a control, or a persona") + ". Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
     }
 
     if (view === "chain" && !currentChain) {
