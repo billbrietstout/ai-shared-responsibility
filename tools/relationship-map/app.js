@@ -43,11 +43,12 @@
  *                          match is dotted and marked Instrument-level.
  *   control to persona     controls[].accountable_by_model for the chosen model
  *
- * ?view=full and ?view=full&node= do not open a link mesh. They open this
- * board when the query names a risk, control, persona, or node that can build
- * a chain, and the empty start state otherwise. ?tapestry=1 does not open a
- * mesh either. It still includes proposed-extension records in the layer view.
- * Tapestry records stay out of an SRF chain.
+ * Every mode opens the same four-column board: Explore a risk, Explore a
+ * control, and Explore accountability. The mode sets which column holds the
+ * choice list. ?view=full and ?view=full&node= open this board when the query
+ * names a risk, control, persona, or node that can build a chain, and the
+ * empty start state otherwise. ?tapestry=1 includes proposed-extension
+ * records in the layer view. Tapestry records stay out of an SRF chain.
  *
  * A control is Tapestry when its file or record provenance is proposed-extension,
  * or when every operating model it names is a proposed-extension model.
@@ -69,18 +70,8 @@
     policy: "Policy level",
     topic: "Whitepaper topic"
   };
-  var SIZE = {
-    layer: 2.4,
-    persona: 1.35,
-    model: 1.9,
-    risk: 1.15,
-    control: 0.5,
-    policy: 1.9,
-    topic: 1.05
-  };
   var MODEL_ORDER = ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"];
   var MODEL_SLUG = { "AI-SaaS": "ai-saas", "AI-PaaS": "ai-paas", "Agent-PaaS": "agent-paas", "IaaS": "iaas" };
-  var LAYER_Y = { L1: 84, L2: 66, L3: 48, L4: 30, L5: 12 };
   var LAYER_FRAME = {
     L1: "Business and usage security. Business processes, acceptable use, authority, human oversight.",
     L2: "Information and data security. Data protection, privacy, provenance, poisoning, exfiltration.",
@@ -117,29 +108,14 @@
     ["manufacturing", "Manufacturing", "/data/manufacturing-controls.json"],
     ["tapestry", "Tapestry", "/data/tapestry-controls.json"]
   ];
-  var FALLBACK = {
-    layer: "#334155",
-    persona: "#166534",
-    model: "#334155",
-    control: "#1e40af",
-    risk: "#9f1239",
-    policy: "#334155",
-    topic: "#334155",
-    edge: "#475569",
-    dim: "#94a3b8",
-    label: "#1a2332",
-    stage: "#ffffff"
-  };
   var GAP_NOTE = "This control isn't in any operating model filter yet.";
 
-  var graphEl = document.getElementById("graph");
-  var graphWrap = graphEl.parentNode;
-  var graphEmpty = document.getElementById("graph-empty");
+  var chainEmpty = document.getElementById("chain-empty");
+  var chainWorkspaceHeading = document.getElementById("chain-workspace-heading");
+  var chainWrap = document.querySelector(".chain-wrap");
   var chainEl = document.getElementById("chain");
   var chainBoard = document.getElementById("chain-board");
   var chainModelNote = document.getElementById("chain-model-note");
-  var graphWorkspaceHeading = document.getElementById("graph-workspace-heading");
-  var gestureEl = document.getElementById("map-gesture");
   var statusEl = document.getElementById("map-status");
   var errorEl = document.getElementById("map-error");
   var errorBox = document.getElementById("map-error-box");
@@ -155,21 +131,12 @@
   var searchInput = document.getElementById("node-search");
   var searchResults = document.getElementById("search-results");
   var searchNote = document.getElementById("search-note");
-  var suggestionsWrap = document.getElementById("suggestions-wrap");
-  var suggestions = document.getElementById("suggestions");
-  var riskSuggestions = document.getElementById("risk-suggestions");
-  var riskPickRow = document.getElementById("risk-pick");
-  var controlPickRow = document.getElementById("control-pick");
   var modelList = document.getElementById("model-filter-list");
   var modelNote = document.getElementById("model-note");
   var layerList = document.getElementById("layer-filter-list");
-  var controlSourceNote = document.getElementById("control-source-note");
   var tapestryInput = document.getElementById("show-tapestry");
-  var widenBtn = document.getElementById("widen-view");
-  var chainBtn = document.getElementById("show-chain");
   var contextBtn = document.getElementById("show-context");
   var contextBoard = document.getElementById("context-board");
-  var startBtn = document.getElementById("start-one");
   var helpEl = document.getElementById("map-help");
   var detailsHeading = document.getElementById("details-heading");
   var detailsEmpty = document.getElementById("details-empty");
@@ -181,41 +148,23 @@
   var detailsList = document.getElementById("details-connections");
   var detailsChain = document.getElementById("details-chain");
   var connectionsHeading = document.getElementById("connections-heading");
-  var clearBtn = document.getElementById("clear-selection");
-  var clearGraphBtn = document.getElementById("clear-graph-selection");
+  var clearChainBtn = document.getElementById("clear-chain-selection");
   var entryGap = document.getElementById("entry-gap");
-  var entryAccount = document.getElementById("entry-account-panel");
-  var personaList = document.getElementById("persona-list");
   var layerFrames = document.getElementById("layer-frames");
   var mapPage = document.querySelector(".map-page");
   var chainHeading = document.getElementById("chain-heading");
   var jumpChain = document.getElementById("jump-chain");
   var showAllBtn = document.getElementById("show-all-results");
   var showAllMatches = false;
-  var showGraphBtn = document.getElementById("show-graph");
-  var hideGraphBtn = document.getElementById("hide-graph");
-  var exploreFromDetailsBtn = document.getElementById("explore-from-details");
-  var graphFitBtn = document.getElementById("graph-fit");
-  var graphZoomInBtn = document.getElementById("graph-zoom-in");
-  var graphZoomOutBtn = document.getElementById("graph-zoom-out");
-  var graphResetBtn = document.getElementById("graph-reset");
-  var widenBtnGraph = document.getElementById("widen-view-graph");
-  var graphKindLegend = document.getElementById("graph-kind-legend");
-  var jumpGraph = document.getElementById("jump-graph");
-  var graphWorkspace = document.getElementById("graph-workspace");
+  var chainWorkspace = document.getElementById("chain-workspace");
   var mapPanel = document.querySelector(".map-panel");
   var summaryEl = document.getElementById("filter-summary");
   var finderEl = document.querySelector(".map-stage");
   var coverageMode = new URLSearchParams(location.search).get("page") === "coverage";
-  var graphOpen = false;
   var restoringHistory = false;
-  /* details = record pane. viz = chain / neighbor graph / layers workspace. */
-  var panelWorkspace = "details";
   var openColumn = "risk";
   var expandedColumns = {};
-  var chainPicks = { risk: "", obligation: "", control: "", accountable: "" };
-  var picksKey = "";
-  var PERSONA_COLUMN_LIMIT = 8;
+  var COLUMN_LIMIT = 8;
   var opener = null;
   var activeIndex = -1;
   var listClosed = false;
@@ -228,8 +177,6 @@
   var detailsSlot = document.getElementById("chain-details-slot");
 
   var graph = null;
-  var renderer = null;
-  var palette = null;
   var respLabel = {};
   var coreIds = {};
   var modelShort = { all: "All" };
@@ -245,14 +192,12 @@
   var view = "search";
   var root = null;
   var selected = null;
-  var wide = false;
   var showTapestry = false;
   var modelFilter = "all";
   var layerFilter = "all";
   var entry = "";
   var personaPick = "";
-  var focusSet = {};
-  var neighborMap = {};
+  var reqPick = "";
   var catalog = null;
   var currentChain = null;
   var chainFocus = "";
@@ -260,17 +205,6 @@
   var linkNote = "";
   var skippedModels = {};
   var missingLinks = [];
-
-  function readPalette() {
-    var cs = getComputedStyle(document.documentElement);
-    var out = {};
-    ["layer", "persona", "model", "risk", "control", "policy", "topic", "edge", "dim", "label", "stage"].forEach(function (key) {
-      var token = key === "label" ? "--ink" : key === "stage" ? "--surface" : "--map-" + key;
-      var value = cs.getPropertyValue(token).trim();
-      out[key] = value || FALLBACK[key];
-    });
-    return out;
-  }
 
   function showError(message, focusRetry) {
     errorBox.hidden = false;
@@ -313,7 +247,6 @@
       .concat(attrs.searchExtra || [])
       .filter(Boolean);
     attrs.search = searchBits.join(" ").toLowerCase();
-    attrs.size = SIZE[attrs.kind];
     graph.addNode(id, attrs);
   }
 
@@ -323,23 +256,7 @@
       return;
     }
     if (graph.hasUndirectedEdge(source, target)) return;
-    attr.size = 0.6;
     graph.addUndirectedEdge(source, target, attr);
-  }
-
-  function placeColumn(ids, x, y0, y1) {
-    var step = ids.length > 1 ? (y1 - y0) / (ids.length - 1) : 0;
-    ids.forEach(function (id, i) {
-      graph.setNodeAttribute(id, "x", x);
-      graph.setNodeAttribute(id, "y", y0 + step * i);
-    });
-  }
-
-  function placeGrid(ids, x0, y0, cols, dx, dy) {
-    ids.forEach(function (id, i) {
-      graph.setNodeAttribute(id, "x", x0 + (i % cols) * dx);
-      graph.setNodeAttribute(id, "y", y0 + Math.floor(i / cols) * dy);
-    });
   }
 
   function controlIsTapestry(control, fileProvenance, extIds) {
@@ -460,9 +377,7 @@
         name: layer.id + " " + layer.name,
         // L5 shows its full SRF name, "AI Model Provider". The other layers keep their short labels.
         label: layer.id + " " + (layer.id === "L5" ? layer.name : layer.short),
-        ref: layer.id,
-        x: 22,
-        y: LAYER_Y[layer.id] || 0
+        ref: layer.id
       });
     });
 
@@ -482,9 +397,7 @@
         kind: "model",
         name: model.name,
         label: model.short || model.id,
-        ref: model.id,
-        x: 18 + i * 18,
-        y: 104
+        ref: model.id
       });
     });
     extModels.forEach(function (model, i) {
@@ -495,9 +408,7 @@
         label: model.short || model.id,
         ref: model.id,
         tapestry: true,
-        provenance: "proposed-extension",
-        x: 18 + (models.length + i) * 18,
-        y: 104
+        provenance: "proposed-extension"
       });
     });
 
@@ -517,12 +428,10 @@
       });
     });
 
-    var personaIds = [];
     var personas = (data.personas && data.personas.personas) || [];
     personas.forEach(function (persona) {
       var id = "persona:" + persona.id;
       var tapestry = persona.provenance === "proposed-extension";
-      personaIds.push(id);
       if (tapestry) stats.tapestryPersonas += 1;
       catalog.personaName[persona.id] = persona.name;
       addNode(id, {
@@ -532,9 +441,7 @@
         ref: persona.id,
         provenance: persona.provenance || "",
         tapestry: tapestry,
-        srfLayers: persona.srf_layers || [],
-        x: 0,
-        y: 0
+        srfLayers: persona.srf_layers || []
       });
       (persona.srf_layers || []).forEach(function (layerId) {
         link(id, "layer:" + layerId, { type: "persona-layer" });
@@ -544,7 +451,6 @@
     var specs = (data.personas && data.personas.sector_specializations) || [];
     specs.forEach(function (spec) {
       var id = "persona:" + spec.id;
-      personaIds.push(id);
       catalog.personaName[spec.id] = spec.name;
       addNode(id, {
         kind: "persona",
@@ -553,9 +459,7 @@
         ref: spec.id,
         specializes: spec.specializes || "",
         tapestry: spec.provenance === "proposed-extension",
-        srfLayers: spec.srf_layers || [],
-        x: 0,
-        y: 0
+        srfLayers: spec.srf_layers || []
       });
       (spec.srf_layers || []).forEach(function (layerId) {
         link(id, "layer:" + layerId, { type: "persona-layer" });
@@ -564,48 +468,33 @@
         link(id, "persona:" + spec.specializes, { type: "specializes", spec: id });
       }
     });
-    placeColumn(personaIds, -6, 12, 84);
 
     var policyLookup = {};
-    var policyIds = [];
     ((data.policy && data.policy.levels) || []).forEach(function (level) {
       var id = "policy:" + level.key;
-      policyIds.push(id);
       addNode(id, {
         kind: "policy",
         name: level.label,
         label: level.label,
-        ref: level.key,
-        x: 0,
-        y: 0
+        ref: level.key
       });
       policyLookup[level.key] = id;
       if (level.label) policyLookup[String(level.label).toLowerCase()] = id;
     });
-    placeGrid(policyIds, -6, -8, 5, 16, 8);
 
-    var topicIds = [];
     var sections = (data.topics && data.topics.sections) || {};
     Object.keys(sections).forEach(function (key) {
       var section = sections[key];
       if (!section || !section.title) return;
       var id = "topic:" + key;
-      topicIds.push(id);
       addNode(id, {
         kind: "topic",
         name: section.title,
         label: section.title,
-        ref: key,
-        x: 0,
-        y: 0
+        ref: key
       });
     });
-    topicIds.sort(function (a, b) {
-      return (sections[a.slice(6)].n || 0) - (sections[b.slice(6)].n || 0);
-    });
-    placeGrid(topicIds, 78, 16, 4, 8, 14);
 
-    var controlsByLayer = { L1: [], L2: [], L3: [], L4: [], L5: [] };
     (data.controlFiles || []).forEach(function (file) {
       var controls = (file.json && file.json.controls) || [];
       controls.forEach(function (control) {
@@ -661,12 +550,9 @@
           evidenceDetail: evidenceParts(control).detail,
           crossLayerNote: control.cross_layer_note || "",
           tapestry: tapestry,
-          provenance: tapestry ? "proposed-extension" : (control.provenance || ""),
-          x: 0,
-          y: 0
+          provenance: tapestry ? "proposed-extension" : (control.provenance || "")
         });
         catalog.byFull[fullId] = id;
-        if (controlsByLayer[control.layer]) controlsByLayer[control.layer].push(id);
         if (control.layer) link(id, "layer:" + control.layer, { type: "control-layer" });
         if (control.accountable_persona) {
           link(id, "persona:" + control.accountable_persona, { type: "control-persona" });
@@ -683,15 +569,6 @@
         if (policyId) link(id, policyId, { type: "control-policy" });
       });
     });
-    Object.keys(controlsByLayer).forEach(function (layerId) {
-      var ids = controlsByLayer[layerId];
-      var cols = 10;
-      var dy = 1.35;
-      var rows = Math.max(1, Math.ceil(ids.length / cols));
-      var originY = (LAYER_Y[layerId] || 0) - ((rows - 1) * dy) / 2;
-      // x = 49 leaves room for the longest layer label, "L5 AI Model Provider".
-      placeGrid(ids, 49, originY, cols, 2.15, dy);
-    });
 
     var riskIds = Object.keys(catalog.threats);
     riskIds.sort(function (a, b) {
@@ -699,19 +576,16 @@
       var bn = catalog.threats[b].name || b;
       return an < bn ? -1 : an > bn ? 1 : 0;
     });
-    riskIds.forEach(function (threatId, i) {
+    riskIds.forEach(function (threatId) {
       var threat = catalog.threats[threatId];
       var id = "risk:" + threatId;
-      var y = riskIds.length > 1 ? 4 + (i * 90) / (riskIds.length - 1) : 48;
       addNode(id, {
         kind: "risk",
         name: threat.name,
         label: threat.name,
         ref: threatId,
         layer: threat.srf_layer || "",
-        searchExtra: threatSearchText(threat),
-        x: -28,
-        y: y
+        searchExtra: threatSearchText(threat)
       });
       (threat.related_controls || []).forEach(function (fullId) {
         var controlId = catalog.byFull[fullId];
@@ -742,194 +616,6 @@
    * control in another layer. */
   function layerAllowed(attrs) {
     return !!attrs && (layerFilter === "all" || attrs.layer === layerFilter);
-  }
-
-  function nodeVisible(id) {
-    if (!graph || !graph.hasNode(id)) return false;
-    var attrs = graph.getNodeAttributes(id);
-    if (!nodeAllowed(attrs)) return false;
-    if (view !== "focus") return false;
-    return !!focusSet[id];
-  }
-
-  function edgeVisible(source, target) {
-    return nodeVisible(source) && nodeVisible(target);
-  }
-
-  function personaFocusId() {
-    return !root && personaPick && graph.hasNode("persona:" + personaPick) ? "persona:" + personaPick : "";
-  }
-
-  function personaHasControls() {
-    return Object.keys(focusSet).some(function (id) { return graph.getNodeAttribute(id, "kind") === "control"; });
-  }
-
-  function rebuildFocus() {
-    focusSet = {};
-    var focusRoot = personaFocusId() || (root && graph.hasNode(root) ? root : "");
-    if (view !== "focus" || !focusRoot) return;
-    if (!nodeAllowed(graph.getNodeAttributes(focusRoot))) return;
-    focusSet[focusRoot] = true;
-    var frontier = [focusRoot];
-    var hops = wide ? 2 : 1;
-    for (var hop = 0; hop < hops; hop++) {
-      var next = [];
-      frontier.forEach(function (id) {
-        graph.forEachNeighbor(id, function (neighbor) {
-          if (focusSet[neighbor]) return;
-          var attrs = graph.getNodeAttributes(neighbor);
-          if (!nodeAllowed(attrs)) return;
-          if (hop > 0 && (attrs.kind === "control" || attrs.kind === "topic")) return;
-          focusSet[neighbor] = true;
-          next.push(neighbor);
-        });
-      });
-      frontier = next;
-    }
-  }
-
-  function rebuildNeighbors() {
-    neighborMap = {};
-    if (!selected || !graph.hasNode(selected)) return;
-    graph.forEachNeighbor(selected, function (neighbor) {
-      if (view === "focus") {
-        if (focusSet[neighbor]) neighborMap[neighbor] = true;
-        return;
-      }
-      if (nodeVisible(neighbor)) neighborMap[neighbor] = true;
-    });
-  }
-
-  /* Operating-model and policy names are short anchors. On a wide canvas
-   * they are forced on, so the label grid cannot drop AI-SaaS, Agent-PaaS,
-   * or the five policy levels at the default zoom. On a narrow canvas they
-   * stay on "auto": the grid may cull them until a zoom makes room. */
-  function anchorLabelsForced() {
-    return !!(graphEl && graphEl.clientWidth >= 700);
-  }
-
-  function labelMode(key, attrs, hovered) {
-    if (key === selected || hovered) return "visible";
-    if (view === "focus") return "visible";
-    if (selected && !neighborMap[key]) return "hidden";
-    if (attrs.kind === "layer") return "visible";
-    if ((attrs.kind === "model" || attrs.kind === "policy") && anchorLabelsForced()) return "visible";
-    if (attrs.kind === "persona" || attrs.kind === "model" || attrs.kind === "policy" || attrs.kind === "risk") return "auto";
-    return "hidden";
-  }
-
-  var labelWidthCache = {};
-  var labelMeasureCtx = null;
-
-  function labelPixelWidth(text) {
-    var key = String(text || "");
-    if (Object.prototype.hasOwnProperty.call(labelWidthCache, key)) return labelWidthCache[key];
-    var width = key.length * 7;
-    if (!labelMeasureCtx) {
-      var canvas = document.createElement("canvas");
-      labelMeasureCtx = canvas.getContext("2d");
-    }
-    if (labelMeasureCtx) {
-      labelMeasureCtx.font = "12px sans-serif";
-      width = labelMeasureCtx.measureText(key).width;
-    }
-    labelWidthCache[key] = width;
-    return width;
-  }
-
-  /* Sigma draws the name to the right of the node. A topic on the right
-     edge, such as "Ephemeral Execution and Ephemeral Compute", then runs
-     off the canvas. Put the name on the side with room, and shrink it
-     only when neither side can hold the full 12px name. */
-  function labelPlacement(attrs) {
-    var side = (view === "focus" || !attrs || attrs.kind !== "persona") ? "right" : "left";
-    var size = 12;
-    if (!renderer || !attrs || attrs.x == null || attrs.y == null) return { side: side, size: size };
-    var dims = renderer.getDimensions();
-    if (!dims || !dims.width) return { side: side, size: size };
-    var point;
-    try {
-      point = renderer.graphToViewport({ x: attrs.x, y: attrs.y });
-    } catch (err) {
-      return { side: side, size: size };
-    }
-    if (!point || !isFinite(point.x)) return { side: side, size: size };
-    var text = attrs.label || "";
-    if (!text) return { side: side, size: size };
-    var full = labelPixelWidth(text);
-    var roomRight = dims.width - point.x;
-    var roomLeft = point.x;
-    var room = (side === "left" ? roomLeft : roomRight) - 28;
-    var altSide = side === "left" ? "right" : "left";
-    var altRoom = (altSide === "left" ? roomLeft : roomRight) - 28;
-    if (full > room && altRoom > room) {
-      side = altSide;
-      room = altRoom;
-    }
-    if (full > room && room > 0) {
-      var fitted = Math.floor(12 * room / full);
-      if (fitted < 1) fitted = 1;
-      if (fitted > 12) fitted = 12;
-      size = fitted;
-    }
-    return { side: side, size: size };
-  }
-
-  function labelPlate(mode, kind) {
-    if (mode === "hidden") return {};
-    if (kind !== "layer" && kind !== "persona" && kind !== "model" && kind !== "policy" && kind !== "risk") {
-      if (!(kind === "control" && view === "focus")) return {};
-    }
-    return {
-      labelBackgroundColor: palette.stage,
-      labelBackgroundPadding: 4,
-      labelDepth: "topNodes"
-    };
-  }
-
-  function nodeReducer(key, data, attrs, state) {
-    if (!nodeVisible(key)) return { visibility: "hidden", labelVisibility: "hidden" };
-    var hovered = !!(state && state.isHovered);
-    var color = palette[attrs.kind] || FALLBACK[attrs.kind];
-    var inContext = view !== "full" || !selected || key === selected || neighborMap[key] || hovered;
-    if (!inContext) {
-      return {
-        visibility: "visible",
-        color: palette.dim,
-        labelColor: palette.dim,
-        labelVisibility: "hidden",
-        zIndex: 0,
-        highlighted: false,
-        cursor: "pointer"
-      };
-    }
-    var showLabel = labelMode(key, attrs, hovered);
-    var place = showLabel === "hidden" ? null : labelPlacement(attrs);
-    var z = key === selected ? 4 : (neighborMap[key] || hovered) ? 3 : (attrs.kind === "layer" || attrs.kind === "model" ? 2 : 1);
-    return Object.assign({
-      visibility: "visible",
-      color: color,
-      labelColor: palette.label,
-      labelVisibility: showLabel,
-      labelPosition: place ? place.side : ((view === "focus" || attrs.kind !== "persona") ? "right" : "left"),
-      labelSize: place ? place.size : 12,
-      zIndex: z,
-      size: key === selected ? attrs.size * 1.25 : attrs.size,
-      highlighted: key === selected,
-      cursor: "pointer"
-    }, labelPlate(showLabel, attrs.kind));
-  }
-
-  function edgeReducer(key) {
-    var source = graph.source(key);
-    var target = graph.target(key);
-    var type = graph.getEdgeAttribute(key, "type") || "";
-    if (!edgeVisible(source, target, type)) return { visibility: "hidden" };
-    return {
-      visibility: "visible",
-      color: palette.edge,
-      size: selected ? 1.8 : 1.1
-    };
   }
 
   function relationPhrase(fromId, attr) {
@@ -1055,7 +741,8 @@
       dashed: 0,
       fallbacks: 0,
       personaCount: 0,
-      columnNotes: {}
+      columnNotes: {},
+      blank: false
     };
   }
 
@@ -1454,22 +1141,17 @@
     var riskIds = {};
     chain.risks.forEach(function (card) { riskIds[card.id] = true; });
     var obligationCards = {};
-    chain.controlLinks = {};
     nodes.forEach(function (node) {
-      var links = { risks: [], obligations: [] };
-      chain.controlLinks[node.id] = links;
       chain.controls.push(controlCard(node.id, node.attrs));
       addEdge(chain, { from: node.id, to: "accountable:persona:" + id, style: "solid" });
       threats.forEach(function (threat) {
         if ((threat.related_controls || []).indexOf(node.attrs.fullId) !== -1 && riskIds["risk:" + threat.id]) {
           addEdge(chain, { from: "risk:" + threat.id, to: node.id, style: "solid" });
-          links.risks.push("risk:" + threat.id);
         }
       });
       var cited = citationsForControl(node.attrs);
       cited.articles.forEach(function (item) {
         var cardId = "obligation:" + item.req.id;
-        if (links.obligations.indexOf(cardId) === -1) links.obligations.push(cardId);
         if (!obligationCards[cardId]) {
           obligationCards[cardId] = {
             id: cardId,
@@ -1546,6 +1228,110 @@
     return chain;
   }
 
+  function obligationCardFrom(cardId, item, instrumentLevel) {
+    var source = instrumentLevel ? item.reg : item.req;
+    return {
+      id: cardId,
+      citation: instrumentLevel ? (source.short || source.name) : source.citation,
+      title: instrumentLevel ? source.name : source.title,
+      summary: instrumentLevel ? "" : (source.summary || ""),
+      url: source.url || "",
+      basis: "",
+      basisChips: [],
+      basisSentences: instrumentLevel ? [] : ["Cited by a control in its source record."],
+      style: instrumentLevel ? "dotted" : "solid",
+      instrumentLevel: instrumentLevel,
+      citationText: item.citation,
+      sources: [],
+      controlCount: 0
+    };
+  }
+
+  /* Every obligation that a control allowed by the current filters cites. */
+  var obligationChoiceCache = { key: "", cards: [], byId: {} };
+
+  function obligationChoiceCards() {
+    var key = [modelFilter, layerFilter, showTapestry].join("|");
+    if (obligationChoiceCache.key === key) return obligationChoiceCache.cards;
+    var seen = {};
+    var cards = [];
+    suggestedIds().forEach(function (id) {
+      var cited = citationsForControl(graph.getNodeAttributes(id));
+      cited.articles.forEach(function (item) {
+        var cardId = "obligation:" + item.req.id;
+        if (seen[cardId]) return;
+        seen[cardId] = true;
+        cards.push(obligationCardFrom(cardId, item, false));
+      });
+      cited.fallbacks.forEach(function (item) {
+        var cardId = "instrument:" + item.reg.id;
+        if (seen[cardId]) return;
+        seen[cardId] = true;
+        cards.push(obligationCardFrom(cardId, item, true));
+      });
+    });
+    cards.sort(function (a, b) {
+      return String(a.citation) < String(b.citation) ? -1 : String(a.citation) > String(b.citation) ? 1 : 0;
+    });
+    var byId = {};
+    cards.forEach(function (card) { byId[card.id] = card; });
+    obligationChoiceCache = { key: key, cards: cards, byId: byId };
+    return cards;
+  }
+
+  function chainFromObligation(obligationId) {
+    var chain = blankChain("obligation");
+    var nodes = [];
+    var card = null;
+    graph.forEachNode(function (nodeId, attrs) {
+      if (!controlInChain(attrs)) return;
+      var cited = citationsForControl(attrs);
+      var hit = null;
+      var instrumentLevel = false;
+      cited.articles.forEach(function (item) { if ("obligation:" + item.req.id === obligationId) hit = item; });
+      cited.fallbacks.forEach(function (item) {
+        if ("instrument:" + item.reg.id === obligationId) {
+          hit = item;
+          instrumentLevel = true;
+        }
+      });
+      if (!hit) return;
+      nodes.push({ id: nodeId, attrs: attrs, instrumentLevel: instrumentLevel });
+      if (!card) card = obligationCardFrom(obligationId, hit, instrumentLevel);
+    });
+    var reqId = obligationId.indexOf("obligation:") === 0 ? obligationId.slice(11) : "";
+    if (!card && reqId && catalog.reqs[reqId]) card = obligationCardFrom(obligationId, { req: catalog.reqs[reqId], citation: "" }, false);
+    if (!card) return chain;
+    nodes.sort(function (a, b) {
+      if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
+      return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
+    });
+    card.controlCount = nodes.length;
+    card.basisChips.push("Cited by " + unit(nodes.length, "control", "controls") + " on this chain." + (card.instrumentLevel ? " No article record matched." : ""));
+    chain.obligations.push(card);
+    var threats = [];
+    Object.keys(catalog.threats).forEach(function (threatId) {
+      var threat = catalog.threats[threatId];
+      var direct = reqId && (threat.obligations || []).filter(function (link) { return link.requirement === reqId; })[0];
+      var viaControl = nodes.filter(function (node) { return (threat.related_controls || []).indexOf(node.attrs.fullId) !== -1; });
+      if (!direct && !viaControl.length) return;
+      threats.push({ threat: threat, direct: direct || null, viaControl: viaControl });
+    });
+    threats.sort(function (a, b) { return a.threat.name < b.threat.name ? -1 : a.threat.name > b.threat.name ? 1 : 0; });
+    threats.forEach(function (row) {
+      chain.risks.push(riskCard(row.threat));
+      if (row.direct) addEdge(chain, { from: "risk:" + row.threat.id, to: obligationId, style: basisIsDashed(row.direct.basis) ? "dashed" : "solid" });
+      row.viaControl.forEach(function (node) { addEdge(chain, { from: "risk:" + row.threat.id, to: node.id, style: "solid" }); });
+    });
+    nodes.forEach(function (node) {
+      chain.controls.push(controlCard(node.id, node.attrs));
+      addEdge(chain, { from: obligationId, to: node.id, style: node.instrumentLevel ? "dotted" : "solid" });
+    });
+    if (!nodes.length) chain.gaps.push({ column: "control", text: "No control cites this obligation for the selected operating model." });
+    addPersonaCards(chain, nodes);
+    return chain;
+  }
+
   function buildChain(nodeId) {
     if (!graph.hasNode(nodeId)) return null;
     var attrs = graph.getNodeAttributes(nodeId);
@@ -1596,96 +1382,10 @@
     return one && !one.missing ? one.name : item.controlName;
   }
 
-  var PICK_ORDER = ["risk", "obligation", "control", "accountable"];
   var ALL_LABEL = { risk: "All risks", obligation: "All obligations", control: "All controls", accountable: "All accountable parties" };
 
   function hasId(list, id) {
     return !!list && list.indexOf(id) !== -1;
-  }
-
-  /* Persona chains narrow left to right: a risk limits the obligations that its
-     controls cite, and an obligation or a risk limits the controls. Other chains
-     show every card. */
-  function narrowedColumns(chain) {
-    if (chain.startKind !== "persona") {
-      return { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
-    }
-    var links = chain.controlLinks || {};
-    var picks = chainPicks;
-    var controls = chain.controls.filter(function (card) {
-      var own = links[card.id] || { risks: [], obligations: [] };
-      return (!picks.risk || hasId(own.risks, picks.risk)) && (!picks.obligation || hasId(own.obligations, picks.obligation));
-    });
-    var obligations = chain.obligations;
-    if (picks.risk) {
-      var cited = {};
-      chain.controls.forEach(function (card) {
-        var own = links[card.id] || { risks: [], obligations: [] };
-        if (!hasId(own.risks, picks.risk)) return;
-        own.obligations.forEach(function (id) { cited[id] = true; });
-      });
-      obligations = chain.obligations.filter(function (card) { return cited[card.id]; });
-    }
-    return {
-      risk: chain.risks,
-      obligation: obligations,
-      control: controls,
-      accountable: controls.length ? chain.personaCards : []
-    };
-  }
-
-  function resetPicks(from) {
-    var start = from ? PICK_ORDER.indexOf(from) : 0;
-    PICK_ORDER.forEach(function (key, index) {
-      if (index >= start) chainPicks[key] = "";
-    });
-  }
-
-  function dropStalePicks(chain) {
-    for (var i = 0; i < PICK_ORDER.length; i++) {
-      var key = PICK_ORDER[i];
-      if (!chainPicks[key]) continue;
-      var ids = narrowedColumns(chain)[key].map(function (card) { return card.id; });
-      if (!hasId(ids, chainPicks[key])) resetPicks(key);
-    }
-  }
-
-  function shownChain(chain) {
-    if (!chain || chain.startKind !== "persona") return chain;
-    var cols = narrowedColumns(chain);
-    var copy = {};
-    Object.keys(chain).forEach(function (key) { copy[key] = chain[key]; });
-    copy.risks = cols.risk;
-    copy.obligations = cols.obligation;
-    copy.controls = cols.control;
-    copy.personaCards = cols.accountable;
-    copy.personaCount = cols.accountable.length ? chain.personaCount : 0;
-    return copy;
-  }
-
-  /* The details panel describes the picked records. Each picked column
-     collapses to its one record, and the other columns keep only what links to it. */
-  function detailsScope(chain) {
-    if (!chain || chain.startKind !== "persona") return chain;
-    var links = chain.controlLinks || {};
-    var picks = chainPicks;
-    var cols = narrowedColumns(chain);
-    var controls = picks.control ? cols.control.filter(function (card) { return card.id === picks.control; }) : cols.control;
-    var risks = cols.risk.filter(function (card) {
-      if (picks.risk) return card.id === picks.risk;
-      if (!picks.obligation && !picks.control) return true;
-      return controls.some(function (control) { return hasId((links[control.id] || {}).risks, card.id); });
-    });
-    var obligations = cols.obligation.filter(function (card) {
-      if (picks.obligation) return card.id === picks.obligation;
-      if (!picks.control) return true;
-      return hasId((links[picks.control] || {}).obligations, card.id);
-    });
-    var copy = shownChain(chain);
-    copy.risks = risks;
-    copy.obligations = obligations;
-    copy.controls = controls;
-    return copy;
   }
 
   function optionText(key, item) {
@@ -1694,26 +1394,91 @@
       return item.citation && item.citation !== duty ? item.citation + ". " + duty : duty;
     }
     if (key === "control") return item.meta ? item.name + " (" + item.meta + ")" : item.name;
+    if (key === "accountable" && item.lines.length > 1) return item.controlName + " (one persona per model)";
     return boxTitle(key, item);
   }
 
-  function columnSelect(key, items, headingId) {
+  function personaChoiceIds() {
+    return CORE_PERSONAS.filter(function (id) {
+      return graph.hasNode("persona:" + id) && graph.getNodeAttribute("persona:" + id, "provenance") !== "proposed-extension";
+    }).map(function (id) { return "persona:" + id; });
+  }
+
+  function riskChoiceIds() {
+    return riskIds().filter(function (id) {
+      var attrs = graph.getNodeAttributes(id);
+      return nodeAllowed(attrs) && layerAllowed(attrs);
+    });
+  }
+
+  /* The key of the column that holds the focus, or "" when nothing is chosen. */
+  function focusKey() {
+    if (root && graph.hasNode(root)) return graph.getNodeAttribute(root, "kind") === "risk" ? "risk" : "control";
+    if (reqPick) return "obligation";
+    return personaPick ? "accountable" : "";
+  }
+
+  function focusValue() {
+    var key = focusKey();
+    if (key === "risk" || key === "control") return root;
+    if (key === "obligation") return reqPick;
+    return key === "accountable" ? "persona:" + personaPick : "";
+  }
+
+  /* Each select lists every item of its kind that passes the Options filters.
+     Nothing on the chain changes these lists. A select shows its own pick
+     while the focus is in its column and the All option otherwise. */
+  function choiceSelect(key, headingId) {
     var select = makeEl("select", "pick-select chain-pick");
     select.id = "chain-select-" + key;
     select.dataset.column = key;
     select.setAttribute("aria-labelledby", headingId);
-    var all = document.createElement("option");
-    all.value = "";
-    all.textContent = ALL_LABEL[key] + " (" + items.length + ")";
-    select.appendChild(all);
-    items.forEach(function (item) {
-      var option = document.createElement("option");
-      option.value = item.id;
-      option.textContent = optionText(key, item);
-      select.appendChild(option);
-    });
-    select.value = chainPicks[key] && hasId(items.map(function (item) { return item.id; }), chainPicks[key]) ? chainPicks[key] : "";
+    var current = focusKey() === key ? focusValue() : "";
+    if (key === "obligation") {
+      var cards = obligationChoiceCards();
+      var all = document.createElement("option");
+      all.value = "";
+      all.textContent = ALL_LABEL[key] + " (" + cards.length + ")";
+      select.appendChild(all);
+      cards.forEach(function (card) {
+        var option = document.createElement("option");
+        option.value = card.id;
+        option.textContent = optionText(key, card);
+        select.appendChild(option);
+      });
+      if (current && !cards.some(function (card) { return card.id === current; })) {
+        var held = currentChain && currentChain.obligations.filter(function (card) { return card.id === current; })[0];
+        if (held) {
+          var extra = document.createElement("option");
+          extra.value = held.id;
+          extra.textContent = optionText(key, held);
+          select.appendChild(extra);
+        }
+      }
+    } else {
+      var ids = key === "risk" ? riskChoiceIds() : key === "control" ? suggestedIds() : personaChoiceIds();
+      fillSelect(select, ids, ALL_LABEL[key] + " (" + ids.length + ")", function (attrs) {
+        return attrs.meta && attrs.kind === "control" ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
+      }, key === "accountable");
+      if (current && ids.indexOf(current) === -1 && graph.hasNode(current)) {
+        var held2 = document.createElement("option");
+        held2.value = current;
+        held2.dataset.nodeId = current;
+        held2.textContent = graph.getNodeAttribute(current, "name");
+        select.appendChild(held2);
+      }
+    }
+    select.value = current;
     return select;
+  }
+
+  var START_NOTE = "Choose a risk, an obligation, a control, or an accountable persona in any menu. The boxes then show what links to it.";
+  var CONTROL_SOURCE_NOTE = "These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml. Narrow the list with Operating model and Layer.";
+
+  function entryChain() {
+    var chain = blankChain("risk");
+    chain.blank = true;
+    return chain;
   }
 
   function announceDetails() {
@@ -1723,25 +1488,55 @@
     detailsLive.textContent = "Details updated: " + (kind ? kind + ", " : "") + name + ".";
   }
 
-  function setPick(key, id) {
-    if (!currentChain || currentChain.startKind !== "persona") return;
-    resetPicks(key);
-    chainPicks[key] = id || "";
-    var focusId = "";
-    for (var i = PICK_ORDER.length - 1; i >= 0; i--) {
-      if (chainPicks[PICK_ORDER[i]]) {
-        focusId = chainPicks[PICK_ORDER[i]];
-        break;
-      }
+  function clearFocus() {
+    root = null;
+    selected = null;
+    personaPick = "";
+    reqPick = "";
+    chainFocus = "";
+    expandedColumns = {};
+  }
+
+  /* A pick in any column makes that item the chain focus. The chain, the
+     boxes, and the details panel then show that item's linked chain. */
+  function setFocus(key, value) {
+    linkHits = null;
+    linkNote = "";
+    searchInput.value = "";
+    clearFocus();
+    if (!value) {
+      commit(true);
+      return;
     }
-    chainFocus = focusId || "accountable:persona:" + personaPick;
-    if (id && key !== "accountable") {
-      var list = narrowedColumns(currentChain)[key];
-      var at = list.map(function (card) { return card.id; }).indexOf(id);
-      if (at >= PERSONA_COLUMN_LIMIT) expandedColumns[key] = true;
+    if (key === "risk" || key === "control") {
+      root = value;
+      selected = value;
+      chainFocus = value;
+      entry = key === "risk" ? "threat" : "control";
+      if (graph.hasNode(value) && graph.getNodeAttribute(value, "tapestry")) showTapestry = true;
+    } else if (key === "obligation") {
+      reqPick = value;
+      chainFocus = value;
+      entry = "obligation";
+    } else {
+      personaPick = value.replace(/^persona:/, "");
+      chainFocus = "accountable:persona:" + personaPick;
+      entry = "account";
     }
-    commit(false);
+    view = "chain";
+    openColumn = key;
+    commit(true);
     announceDetails();
+  }
+
+  function focusName() {
+    if (root && graph.hasNode(root)) return graph.getNodeAttribute(root, "name");
+    if (personaPick) return personaLabel(personaPick);
+    if (reqPick && currentChain) {
+      var hit = currentChain.obligations.filter(function (card) { return card.id === reqPick; })[0];
+      return hit ? (hit.citation && hit.citation !== hit.title ? hit.citation + ": " + hit.title : hit.title) : "";
+    }
+    return "";
   }
 
   function columnTitle(key, headingName) {
@@ -1755,7 +1550,7 @@
 
   function renderChain(chain) {
     chainBoard.textContent = "";
-    var chainTitle = root && graph.hasNode(root) ? graph.getNodeAttribute(root, "name") : personaLabel(personaPick);
+    var chainTitle = focusName();
     chainHeading.textContent = chainTitle ? "Chain for " + chainTitle + (modelFilter === "all" ? "" : " in " + modelName(modelFilter)) : "Chain";
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("id", "chain-svg");
@@ -1764,25 +1559,30 @@
     chainBoard.appendChild(svg);
     var columnsWrap = makeEl("div", "chain-columns");
     chainBoard.appendChild(columnsWrap);
-    if (chain.startKind === "persona") {
-      chainModelNote.textContent = "These are the controls that name this persona as accountable, with their risks and obligations.";
+    var notes = [];
+    if (chain.note) {
+      notes.push(chain.note);
+    } else if (chain.blank) {
+      notes.push(START_NOTE);
+    } else if (chain.startKind === "persona") {
+      notes.push("These are the controls that name this persona as accountable, with their risks and obligations.");
+    } else if (chain.startKind === "obligation") {
+      notes.push("These are the controls that cite this obligation, with their risks and accountable personas.");
     } else if (modelFilter === "all") {
-      chainModelNote.textContent = "All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.";
-    } else {
-      chainModelNote.textContent = "";
+      notes.push("All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.");
     }
-    dropStalePicks(chain);
-    var shown = narrowedColumns(chain);
-    var isPersona = chain.startKind === "persona";
+    if (chain.startKind === "control" || (chain.blank && entry === "control")) notes.push(CONTROL_SOURCE_NOTE);
+    chainModelNote.textContent = notes.filter(Boolean).join(" ");
     var columns = [
-      ["Risk", shown.risk, "risk"],
-      ["Obligation", shown.obligation, "obligation"],
-      ["Control", shown.control, "control"],
-      ["Accountable", shown.accountable, "accountable"]
+      ["Risk", chain.risks, "risk"],
+      ["Obligation", chain.obligations, "obligation"],
+      ["Control", chain.controls, "control"],
+      ["Accountable", chain.personaCards, "accountable"]
     ];
     columns.forEach(function (column) {
       var wrap = makeEl("div", "chain-col");
-      var headingName = column[1].length || isPersona ? column[0] + " (" + column[1].length + ")" : column[0];
+      var select = choiceSelect(column[2], "chain-col-" + column[2]);
+      var headingName = column[0] + " (" + (select.options.length - 1) + ")";
       var accessibleName = COLUMN_WORD[column[2]] + ": " + headingName;
       var heading = makeEl("h3");
       heading.appendChild(columnTitle(column[2], headingName));
@@ -1807,12 +1607,13 @@
         colBody.hidden = !colOpen;
       }
       wrap.appendChild(heading);
-      if (isPersona) wrap.appendChild(columnSelect(column[2], column[1], heading.id));
+      wrap.appendChild(select);
       wrap.appendChild(colBody);
-      var collapsible = chain.startKind === "persona" && column[2] !== "accountable" && column[1].length > PERSONA_COLUMN_LIMIT;
-      var shownItems = collapsible && !expandedColumns[column[2]] ? column[1].slice(0, PERSONA_COLUMN_LIMIT) : column[1];
+      var boxes = column[1];
+      var collapsible = column[2] !== "accountable" && boxes.length > COLUMN_LIMIT;
+      var shownItems = collapsible && !expandedColumns[column[2]] ? boxes.slice(0, COLUMN_LIMIT) : boxes;
       shownItems.forEach(function (item) {
-        var pressed = isPersona ? chainPicks[column[2]] === item.id : chainFocus === item.id;
+        var pressed = chainFocus === item.id;
         var button = cardButton(item.id, pressed);
         if (column[2] === "risk") {
           button.appendChild(makeEl("span", "chain-card__kicker", item.layer ? "Risk record · " + item.layer : "Risk record"));
@@ -1857,7 +1658,7 @@
       if (collapsible) {
         var more = makeEl("button", "chain-more", expandedColumns[column[2]]
           ? "Show fewer"
-          : "Show " + (column[1].length - PERSONA_COLUMN_LIMIT) + " more");
+          : "Show " + (column[1].length - COLUMN_LIMIT) + " more");
         more.type = "button";
         more.dataset.moreColumn = column[2];
         more.setAttribute("aria-expanded", expandedColumns[column[2]] ? "true" : "false");
@@ -2025,7 +1826,7 @@
       appendSentence(about, focus.item.title || focus.item.citation || "Obligation record.");
       if (focus.item.summary) appendSentence(about, focus.item.summary);
     } else {
-      appendSentence(about, "Open Explore relationship graph to walk the full chain.");
+      appendSentence(about, "Choose a card or a menu entry in the chain to see its record.");
     }
 
     var meta = sectionBlock("Key metadata", "details-metadata");
@@ -2243,7 +2044,7 @@
     if (inChain) {
       if (detailsEl.parentNode !== detailsSlot) detailsSlot.appendChild(detailsEl);
     } else if (detailsEl.parentNode !== mapPanel) {
-      mapPanel.insertBefore(detailsEl, graphWorkspace);
+      mapPanel.insertBefore(detailsEl, chainWorkspace);
     }
   }
 
@@ -2279,6 +2080,10 @@
     return section;
   }
 
+  function hasFocus() {
+    return !!(root || personaPick || reqPick);
+  }
+
   function focusedChainItem(chain) {
     var pools = [
       ["risk", chain.risks],
@@ -2300,6 +2105,7 @@
         for (var c = 0; c < chain.controls.length; c++) if (chain.controls[c].id === root) return { kind: "control", item: chain.controls[c] };
       }
     }
+    if (reqPick && chain.obligations.length) return { kind: "obligation", item: chain.obligations[0] };
     if (personaPick && chain.personaCards.length) return { kind: "accountable", item: chain.personaCards[0] };
     if (chain.controls.length) return { kind: "control", item: chain.controls[0] };
     if (chain.risks.length) return { kind: "risk", item: chain.risks[0] };
@@ -2307,42 +2113,41 @@
   }
 
   function renderDetails() {
-    var canClear = !!(selected || root || personaPick || graphOpen);
-    clearBtn.disabled = !canClear;
-    if (copyBtn) copyBtn.hidden = !(view === "chain" && currentChain && (root || personaPick));
-    var copyKey = root || personaPick || "";
+    var canClear = !!(selected || hasFocus() || view === "chain" || view === "context");
+    if (copyBtn) copyBtn.hidden = !(view === "chain" && currentChain && !currentChain.blank && hasFocus());
+    var copyKey = root || personaPick || reqPick || "";
     if (copyKey !== lastCopyKey) {
       lastCopyKey = copyKey;
       if (copyBtn) resetCopyState();
       if (copyFallback) copyFallback.hidden = true;
     }
-    if (clearGraphBtn) clearGraphBtn.disabled = !canClear;
+    if (clearChainBtn) clearChainBtn.disabled = !canClear;
     if (detailsId) {
       detailsId.hidden = true;
       detailsId.textContent = "";
     }
-    if (view === "chain" && currentChain && ((root && graph.hasNode(root)) || personaPick)) {
+    if (view === "chain" && currentChain && !currentChain.blank && hasFocus()) {
       var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
       var focusedName = focusedChainName(currentChain);
-      detailsHeading.textContent = focusedName || (rootAttrs ? rootAttrs.name : personaLabel(personaPick));
+      detailsHeading.textContent = focusedName || focusName();
       detailsEmpty.hidden = true;
       detailsBody.hidden = false;
       var focusKind = "";
-      if (focusedName && chainFocus !== root) {
+      if (focusedName && chainFocus !== root && chainFocus !== reqPick) {
         if (chainFocus.indexOf("instrument:") === 0 || chainFocus.indexOf("obligation:") === 0) focusKind = "Obligation";
         else if (chainFocus.indexOf("accountable:") === 0) focusKind = "Accountable";
         else if (chainFocus.indexOf("risk:") === 0) focusKind = "Risk";
         else focusKind = "Control";
       }
-      detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : "Accountable");
+      detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : reqPick ? "Obligation" : "Accountable");
       detailsMeta.hidden = true;
       detailsMeta.textContent = "";
       detailsModelNote.hidden = true;
       detailsModelNote.textContent = "";
       connectionsHeading.hidden = true;
       detailsList.hidden = true;
-      renderChainDetails(detailsScope(currentChain));
-      detailsSummary.textContent = chainSentence(shownChain(currentChain));
+      renderChainDetails(currentChain);
+      detailsSummary.textContent = chainSentence(currentChain);
       placeDetails();
       return;
     }
@@ -2353,7 +2158,9 @@
     if (!selected || !graph.hasNode(selected)) {
       detailsHeading.textContent = "Node details";
       detailsEmpty.hidden = false;
-      detailsEmpty.textContent = "Select a risk or a control to see its record, sources, and links.";
+      detailsEmpty.textContent = view === "chain"
+        ? "Choose an item in any menu to see its record, sources, and links."
+        : "Select a risk or a control to see its record, sources, and links.";
       detailsBody.hidden = true;
       detailsSummary.textContent = "";
       detailsList.textContent = "";
@@ -2454,48 +2261,29 @@
 
   function publish() {
     var allowed = countNodes(function (id, attrs) { return nodeAllowed(attrs); });
-    var visible = countNodes(nodeVisible);
     var text = "";
-    if (view === "chain" && currentChain) {
-      text = chainSentence(shownChain(currentChain));
+    if (view === "chain" && currentChain && !currentChain.blank) {
+      text = chainSentence(currentChain);
+    } else if (view === "chain" && currentChain) {
+      text = currentChain.note || START_NOTE;
     } else if (view === "search") {
       var offered = countNodes(function (id, attrs) { return nodeAllowed(attrs) && layerAllowed(attrs); });
       text = unit(offered.risk || 0, "risk", "risks") + " and " + unit(offered.control || 0, "control", "controls") + " can be opened.";
       if (modelFilter === "all" && !showTapestry && stats.tapestryControls) {
         text += " " + unit(stats.tapestryControls, "Tapestry control is hidden.", "Tapestry controls are hidden.");
       }
-      text += " Choose a risk or a control to see its chain.";
-    } else if ((view === "focus" || view === "chain") && root && graph.hasNode(root)) {
-      var rootAttrs = graph.getNodeAttributes(root);
-      var rootKind = rootAttrs.kind === "risk" ? "risk" : "control";
-      if (!nodeAllowed(rootAttrs)) {
-        text = outsideFilter(rootAttrs)
-          ? GAP_NOTE + " Choose All to see it on the map."
-          : "This control does not list " + modelName(modelFilter) + ". Choose All under Operating model to see it.";
-      } else if (view === "chain") {
-        text = "Choose a risk or a control to see its chain.";
-      } else {
-        var beside = Math.max(0, visible.total - 1);
-        text = beside === 1
-          ? "Showing this " + rootKind + " and 1 node next to it."
-          : "Showing this " + rootKind + " and " + beside + " nodes next to it.";
-      }
-    } else if (view === "focus" && personaFocusId()) {
-      text = !personaHasControls() ? "No control names this persona yet."
-        : visible.total === 2 ? "Showing this persona and 1 node next to it."
-        : "Showing this persona and " + (visible.total - 1) + " nodes next to it.";
+      text += " Choose a risk, an obligation, a control, or a persona to see its chain.";
     } else if (view === "context") {
       text = "Layers run from L1 to L5. Open a name to see its chain.";
     } else {
-      text = "Choose a risk or a control to see its chain.";
+      text = "Choose a risk, an obligation, a control, or a persona to see its chain.";
     }
     statusEl.textContent = text;
-    graphEl.setAttribute("aria-label", text);
     statusEl.dataset.view = view;
     statusEl.dataset.model = modelFilter;
     statusEl.dataset.tapestry = showTapestry ? "1" : "0";
-    statusEl.dataset.wide = wide ? "1" : "0";
     statusEl.dataset.root = root || "";
+    statusEl.dataset.persona = personaPick || "";
     statusEl.dataset.selected = selected || "";
     statusEl.dataset.totalControls = String(stats.controls);
     statusEl.dataset.srfControls = String(stats.srfControls);
@@ -2504,15 +2292,11 @@
     statusEl.dataset.tapestryControls = String(stats.tapestryControls);
     statusEl.dataset.tapestryPersonas = String(stats.tapestryPersonas);
     statusEl.dataset.allowedControls = String(allowed.control || 0);
-    statusEl.dataset.visibleControls = String(visible.control || 0);
-    statusEl.dataset.visiblePersonas = String(visible.persona || 0);
-    statusEl.dataset.visibleModels = String(visible.model || 0);
-    statusEl.dataset.visibleNodes = String(visible.total || 0);
-    statusEl.dataset.focusCount = String(Object.keys(focusSet).length);
+    statusEl.dataset.mode = entry;
     statusEl.dataset.skippedModels = Object.keys(skippedModels).sort().join(",");
     statusEl.dataset.missingLinks = String(missingLinks.length);
     statusEl.dataset.mappedFromSector = String(stats.mappedFromSector || 0);
-    var shownNow = shownChain(currentChain);
+    var shownNow = currentChain;
     statusEl.dataset.chainRisks = shownNow ? String(shownNow.risks.length) : "";
     statusEl.dataset.chainObligations = shownNow ? String(shownNow.obligations.length) : "";
     statusEl.dataset.chainControls = shownNow ? String(shownNow.controls.length) : "";
@@ -2551,8 +2335,30 @@
     return graph.getNodeAttribute("layer:" + layerId, "name");
   }
 
+  var SEARCH_KINDS = [["risk", "Risks"], ["obligation", "Obligations"], ["control", "Controls"], ["persona", "Accountable personas"]];
+
+  function obligationName(card) {
+    return card.citation && card.citation !== card.title ? card.citation + ": " + card.title : card.title;
+  }
+
+  /* Search results can be graph records or obligation cards, which are not graph nodes. */
+  function searchAttrs(id) {
+    if (graph.hasNode(id)) return graph.getNodeAttributes(id);
+    obligationChoiceCards();
+    var card = obligationChoiceCache.byId[id];
+    if (!card) return { kind: "", name: id, search: "" };
+    return {
+      kind: "obligation",
+      name: obligationName(card),
+      meta: card.instrumentLevel ? "Instrument level" : "",
+      ref: "",
+      layer: "",
+      search: [card.citation, card.title, card.summary, card.citationText].filter(Boolean).join(" ").toLowerCase()
+    };
+  }
+
   function fillButton(button, id) {
-    var attrs = graph.getNodeAttributes(id);
+    var attrs = searchAttrs(id);
     button.type = "button";
     button.dataset.nodeId = id;
     var title = document.createElement("span");
@@ -2606,11 +2412,10 @@
     searchResults.textContent = "";
     activeIndex = -1;
     searchInput.removeAttribute("aria-activedescendant");
-    var groups = [["risk", "Risks"], ["control", "Controls"]];
     var shown = 0;
-    groups.forEach(function (group) {
+    SEARCH_KINDS.forEach(function (group) {
       var members = ids.filter(function (id) {
-        return graph.getNodeAttribute(id, "kind") === group[0];
+        return searchAttrs(id).kind === group[0];
       });
       if (!members.length) return;
       var wrap = document.createElement("div");
@@ -2645,17 +2450,32 @@
     });
   }
 
+  var MODE_SEARCH = {
+    threat: { kind: "risk", label: "Find a risk", placeholder: "Risk name or a few words", noun: "a risk", none: "No matching risk." },
+    obligation: { kind: "obligation", label: "Find an obligation", placeholder: "Obligation citation or a few words", noun: "an obligation", none: "No matching obligation." },
+    control: { kind: "control", label: "Find a control", placeholder: "Control name or a few words", noun: "a control", none: "No matching control." },
+    account: { kind: "persona", label: "Find an accountable persona", placeholder: "Persona name", noun: "an accountable persona", none: "No matching persona." }
+  };
+
   function matches(query) {
     var q = query.trim().toLowerCase();
     wordMatch = null;
     if (!q) return [];
     var ids = [];
     var allowed = [];
+    var only = MODE_SEARCH[entry] ? MODE_SEARCH[entry].kind : "";
     graph.forEachNode(function (id, attrs) {
-      if (!nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       if (attrs.kind !== "control" && attrs.kind !== "risk") return;
+      if (only && attrs.kind !== only) return;
+      if (!nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       allowed.push(id);
       if (attrs.search.indexOf(q) !== -1) ids.push(id);
+    });
+    obligationChoiceCards().map(function (card) { return card.id; }).concat(personaChoiceIds()).filter(function (id) {
+      return !only || searchAttrs(id).kind === only;
+    }).forEach(function (id) {
+      allowed.push(id);
+      if (searchAttrs(id).search.indexOf(q) !== -1) ids.push(id);
     });
     var counts = {};
     if (!ids.length) {
@@ -2663,7 +2483,7 @@
       if (words.length >= 2) {
         var needed = words.length <= 2 ? words.length : words.length - 1;
         allowed.forEach(function (id) {
-          var haystack = graph.getNodeAttribute(id, "search");
+          var haystack = searchAttrs(id).search;
           var hit = words.filter(function (word) {
             return haystack.indexOf(word) !== -1;
           }).length;
@@ -2677,8 +2497,8 @@
     }
     ids.sort(function (a, b) {
       if ((counts[a] || 0) !== (counts[b] || 0)) return (counts[b] || 0) - (counts[a] || 0);
-      var aa = graph.getNodeAttributes(a);
-      var bb = graph.getNodeAttributes(b);
+      var aa = searchAttrs(a);
+      var bb = searchAttrs(b);
       function exactness(attrs) {
         var name = attrs.name.toLowerCase();
         if (name === q || (attrs.ref && String(attrs.ref).toLowerCase() === q)) return 0;
@@ -2688,8 +2508,8 @@
       var ae = exactness(aa);
       var be = exactness(bb);
       if (ae !== be) return ae - be;
-      var ak = KIND_ORDER.indexOf(aa.kind);
-      var bk = KIND_ORDER.indexOf(bb.kind);
+      var ak = SEARCH_KINDS.map(function (group) { return group[0]; }).indexOf(aa.kind);
+      var bk = SEARCH_KINDS.map(function (group) { return group[0]; }).indexOf(bb.kind);
       if (ak !== bk) return ak - bk;
       return aa.name < bb.name ? -1 : aa.name > bb.name ? 1 : 0;
     });
@@ -2698,7 +2518,6 @@
 
   function renderMatches(query) {
     var ids = matches(query);
-    suggestionsWrap.hidden = true;
     var shown = 0;
     if (listClosed) hideResults();
     else shown = renderIdList(ids, showAllMatches ? 0 : 8);
@@ -2709,13 +2528,15 @@
       return ids;
     }
     if (!ids.length) {
-      searchNote.textContent = "No matching risk or control.";
+      searchNote.textContent = MODE_SEARCH[entry] ? MODE_SEARCH[entry].none : "No matching risk, obligation, control, or persona.";
       return ids;
     }
-    var risks = ids.filter(function (id) {
-      return graph.getNodeAttribute(id, "kind") === "risk";
-    }).length;
-    var breakdown = unit(risks, "risk", "risks") + " and " + unit(ids.length - risks, "control", "controls");
+    var parts = [];
+    [["risk", "risk", "risks"], ["obligation", "obligation", "obligations"], ["control", "control", "controls"], ["persona", "persona", "personas"]].forEach(function (group) {
+      var count = ids.filter(function (id) { return searchAttrs(id).kind === group[0]; }).length;
+      if (count) parts.push(unit(count, group[1], group[2]));
+    });
+    var breakdown = parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] : parts[0];
     var line;
     if (wordMatch) {
       line = "No record has that exact phrase. " + ids.length + (ids.length === 1 ? " record matches" : " records match") + " at least " + wordMatch.needed + " of your " + wordMatch.total + " words: " + breakdown + ".";
@@ -2741,7 +2562,7 @@
     return ids;
   }
 
-  function fillSelect(select, ids, placeholder, label) {
+  function fillSelect(select, ids, placeholder, label, flat) {
     select.textContent = "";
     var first = document.createElement("option");
     first.value = "";
@@ -2751,10 +2572,14 @@
     var order = [];
     ids.forEach(function (id) {
       var attrs = graph.getNodeAttributes(id);
-      var key = attrs.layer || "";
+      var key = flat ? "" : attrs.layer || "";
       if (!groups[key]) {
-        groups[key] = document.createElement("optgroup");
-        groups[key].label = key ? layerName(key) : "No layer recorded";
+        if (flat) {
+          groups[key] = select;
+        } else {
+          groups[key] = document.createElement("optgroup");
+          groups[key].label = key ? layerName(key) : "No layer recorded";
+        }
         order.push(key);
       }
       var option = document.createElement("option");
@@ -2768,47 +2593,12 @@
       var yi = LAYERS.indexOf(y) === -1 ? 99 : LAYERS.indexOf(y);
       return xi - yi;
     });
-    order.forEach(function (key) { select.appendChild(groups[key]); });
-    if (root && select.querySelector('option[value="' + root + '"]')) select.value = root;
-  }
-
-  function renderSuggestions() {
-    if (entry === "account" && personaFocusId()) {
-      var personaChain = chainFromPersona(personaPick);
-      var personaRiskIds = personaChain.risks.map(function (card) { return card.id; });
-      var personaControlIds = personaChain.controls.map(function (card) { return card.id; });
-      suggestionsWrap.hidden = !personaRiskIds.length && !personaControlIds.length;
-      riskPickRow.hidden = false;
-      controlPickRow.hidden = false;
-      controlSourceNote.hidden = true;
-      fillSelect(riskSuggestions, personaRiskIds, "Choose a risk (" + personaRiskIds.length + ")", function (attrs) { return attrs.name; });
-      fillSelect(suggestions, personaControlIds, "Choose a control (" + personaControlIds.length + ")", function (attrs) {
-        return attrs.meta ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
-      });
-      hideResults();
-      searchNote.textContent = "";
-      return;
-    }
-    if (entry === "requirement" || entry === "account") {
-      suggestionsWrap.hidden = true;
-      return;
-    }
-    var controlIds = entry === "threat" ? [] : suggestedIds();
-    var risks = entry === "control" ? [] : riskIds().filter(function (id) {
-      return layerAllowed(graph.getNodeAttributes(id));
-    });
-    suggestionsWrap.hidden = !risks.length && !controlIds.length;
-    fillSelect(riskSuggestions, risks, "Choose a risk (" + risks.length + ")", function (attrs) { return attrs.name; });
-    fillSelect(suggestions, controlIds, "Choose a control (" + controlIds.length + ")", function (attrs) {
-      return attrs.meta ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
-    });
-    hideResults();
-    searchNote.textContent = !risks.length && !controlIds.length ? "No risk or control matches these filters." : "";
+    if (!flat) order.forEach(function (key) { select.appendChild(groups[key]); });
   }
 
   function renderSummary() {
     if (!summaryEl || !graph) return;
-    if (entry === "requirement" || entry === "account") {
+    if (entry === "requirement") {
       summaryEl.textContent = "";
       return;
     }
@@ -2840,136 +2630,58 @@
     if (query) {
       renderMatches(searchInput.value);
     } else if (linkHits && linkHits.length) {
-      suggestionsWrap.hidden = true;
       renderIdList(linkHits);
       searchNote.textContent = linkNote;
-    } else if (linkNote) {
-      suggestionsWrap.hidden = true;
+    } else {
       hideResults();
       searchNote.textContent = linkNote;
-    } else if (view !== "context") {
-      renderSuggestions();
-    } else {
-      suggestionsWrap.hidden = true;
-      hideResults();
-      searchNote.textContent = "";
     }
 
-    var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
-    var rootVisible = !!(rootAttrs && nodeAllowed(rootAttrs));
-    var rootWord = rootAttrs && rootAttrs.kind === "risk" ? "risk" : "control";
-    var chainable = !!(rootAttrs && !rootAttrs.tapestry && (rootAttrs.kind === "risk" || rootAttrs.kind === "control"));
-    var graphOn = view === "focus" || (view === "search" && graphOpen);
     var chainOn = view === "chain" && !!currentChain;
     var contextOn = view === "context";
-    var vizOpen = panelWorkspace === "viz" && (chainOn || graphOn || contextOn || (view === "search" && graphOpen));
-    if (view === "search" && !graphOpen && !contextOn) panelWorkspace = "details";
-    if ((chainOn || graphOn || contextOn) && panelWorkspace !== "viz" && panelWorkspace !== "details") panelWorkspace = "details";
-    vizOpen = panelWorkspace === "viz" && (chainOn || graphOn || contextOn || (view === "search" && graphOpen));
-    var canExplore = chainOn || graphOn || contextOn || view === "search" || (view === "chain" && !!root);
-    showGraphBtn.hidden = vizOpen || !canExplore || (view === "context");
-    if (exploreFromDetailsBtn) {
-      exploreFromDetailsBtn.hidden = vizOpen || !(chainOn || graphOn || (root && graph.hasNode(root)) || personaPick);
-    }
-    if (hideGraphBtn) {
-      hideGraphBtn.hidden = !vizOpen;
-      hideGraphBtn.textContent = chainOn && view === "focus" ? "Back to details" : "Back to details";
-    }
-    var showZoom = vizOpen && graphOn;
-    if (graphFitBtn) graphFitBtn.hidden = !showZoom;
-    if (graphZoomInBtn) graphZoomInBtn.hidden = !showZoom;
-    if (graphZoomOutBtn) graphZoomOutBtn.hidden = !showZoom;
-    if (graphResetBtn) graphResetBtn.hidden = !showZoom;
-    if (graphKindLegend) graphKindLegend.hidden = !showZoom;
-    graphWrap.classList.toggle("graph-wrap--off", !graphOn);
-    graphWrap.classList.toggle("graph-wrap--graph", graphOn);
-    var personaViz = !!personaFocusId() && vizOpen;
-    widenBtn.hidden = !((view === "focus" && rootVisible && vizOpen) || (personaViz && (view === "focus" || view === "chain")));
-    widenBtn.textContent = personaViz && view === "chain" ? "Show the relationship graph"
-      : view === "focus" && wide ? "Show only the nodes next to this " + (personaViz ? "persona" : rootWord) : "Widen the view";
-    widenBtn.setAttribute("aria-pressed", view === "focus" && wide ? "true" : "false");
-    if (widenBtnGraph) {
-      widenBtnGraph.hidden = widenBtn.hidden;
-      widenBtnGraph.textContent = widenBtn.textContent;
-      widenBtnGraph.setAttribute("aria-pressed", widenBtn.getAttribute("aria-pressed"));
-    }
-    chainBtn.hidden = !(view === "focus" && (chainable || personaViz) && vizOpen);
-    if (contextBtn) contextBtn.hidden = view === "context" && vizOpen;
-    startBtn.hidden = view === "search" && !vizOpen;
-    startBtn.textContent = "Start from one risk or control";
+    var vizOpen = view === "chain" || contextOn;
+    if (contextBtn) contextBtn.hidden = contextOn;
     if (mapPage) {
-      mapPage.classList.toggle("is-chain", chainOn && vizOpen);
-      mapPage.classList.toggle("is-workspace-graph", vizOpen);
-      mapPage.classList.toggle("is-workspace-details", !vizOpen && !!(chainOn || graphOn || contextOn || selected || personaPick));
+      mapPage.classList.toggle("is-chain", chainOn);
+      mapPage.classList.toggle("is-workspace-open", vizOpen);
     }
-    document.body.classList.toggle("chain-open", chainOn && vizOpen);
-    if (graphWorkspace) graphWorkspace.hidden = !vizOpen;
-    chainEl.hidden = !(chainOn && vizOpen);
-    placeDetailsPanel(chainOn && vizOpen);
-    if (chainOn && vizOpen && currentChain.startKind === "persona") suggestionsWrap.hidden = true;
-    graphWorkspaceHeading.textContent = chainOn ? "ROCA chain" : "Relationship graph";
-    if (jumpChain) jumpChain.hidden = !(chainOn && vizOpen);
-    if (jumpGraph) jumpGraph.hidden = !vizOpen;
-    if (contextBoard) contextBoard.hidden = !(contextOn && vizOpen);
-    graphWrap.classList.toggle("graph-wrap--chain", chainOn && vizOpen);
-    graphWrap.classList.toggle("graph-wrap--context", contextOn && vizOpen);
-    gestureEl.hidden = !(view === "focus" && vizOpen);
-    if (contextOn && vizOpen) renderContext();
+    document.body.classList.toggle("chain-open", chainOn);
+    chainWorkspace.hidden = !vizOpen;
+    chainEl.hidden = !chainOn;
+    placeDetailsPanel(chainOn);
+    detailsEl.hidden = !chainOn;
+    chainWorkspaceHeading.textContent = contextOn ? "Layers" : "ROCA chain";
+    if (jumpChain) jumpChain.hidden = !chainOn;
+    if (contextBoard) contextBoard.hidden = !contextOn;
+    chainWrap.classList.toggle("chain-wrap--chain", chainOn);
+    chainWrap.classList.toggle("chain-wrap--context", contextOn);
+    if (contextOn) renderContext();
 
-    if (view === "context") {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
+    var modeSearch = MODE_SEARCH[entry];
+    findLabel.textContent = modeSearch ? modeSearch.label : "Find a risk, obligation, control, or persona";
+    searchInput.placeholder = modeSearch ? modeSearch.placeholder : "Name or a few words";
+    if (contextOn) {
       helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
-    } else if (view === "focus" && wide) {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "The map includes the layers and personas connected to the nodes next to this " + rootWord + ".";
-    } else if (view === "focus") {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "The map is showing this " + rootWord + " and the nodes next to it.";
     } else if (view === "chain") {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = personaFocusId()
-        ? "Four columns: Risk, Obligation, Control, and Accountable. Each menu narrows the menu to its right. Details for the choice appear below the columns."
-        : "Four columns: Risk, Obligation, Control, and Accountable. A solid line is a link the record names. A dashed line is a shared control. Choose a card for details.";
+      helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. " +
+        "Each menu lists every item in its column. A choice shows the items linked to it in the other columns. " +
+        "Details for the choice appear below the columns.";
     } else {
-      findLabel.textContent = "Find a risk or a control";
-      searchInput.placeholder = "Risk or control name";
-      helpEl.textContent = "Type a risk or a control name or a few words about it. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
+      helpEl.textContent = "Type a name or a few words about " + (modeSearch ? modeSearch.noun : "a risk, an obligation, a control, or a persona") + ". Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
     }
 
-    if (!vizOpen) {
-      graphEmpty.hidden = true;
-      graphEmpty.textContent = "";
-    } else if (view === "focus" && personaFocusId()) {
-      var personaLinked = personaHasControls();
-      graphEmpty.hidden = personaLinked;
-      graphEmpty.textContent = personaLinked ? "" : "No control names this persona yet.";
-    } else if (view === "search") {
-      graphEmpty.hidden = !graphOn;
-      graphEmpty.textContent = "Choose a risk or a control to see its chain.";
-    } else if ((view === "focus" || view === "chain") && rootAttrs && !rootVisible) {
-      graphEmpty.hidden = false;
-      graphEmpty.textContent = outsideFilter(rootAttrs)
-        ? GAP_NOTE + " Choose All to see it on the map."
-        : "This control does not list " + modelName(modelFilter) + ". Choose All under Operating model to see it.";
-    } else if (view === "chain" && !currentChain) {
-      graphEmpty.hidden = false;
-      graphEmpty.textContent = "This record has no chain for the selected operating model.";
+    if (view === "chain" && !currentChain) {
+      chainEmpty.hidden = false;
+      chainEmpty.textContent = "This record has no chain for the selected operating model.";
     } else {
-      graphEmpty.hidden = true;
-      graphEmpty.textContent = "";
+      chainEmpty.hidden = true;
+      chainEmpty.textContent = "";
     }
-    var panelOpen = !!(chainOn || graphOn || contextOn || selected || personaPick || (view === "search" && graphOpen));
+    var panelOpen = !!(chainOn || contextOn || selected || personaPick);
     mapPage.classList.toggle("is-panel-open", panelOpen);
     syncEntry();
     renderSummary();
     syncSheet();
-    if (vizOpen && graphOn && renderer) {
-      requestAnimationFrame(function () { safeRefresh(); });
-    }
   }
 
   function syncSheet() {
@@ -2984,28 +2696,32 @@
   }
 
   function syncEntry() {
-    ["threat", "requirement", "control", "account"].forEach(function (key) {
+    ["threat", "obligation", "requirement", "control", "account"].forEach(function (key) {
       var button = document.getElementById("entry-" + key);
       if (button) button.setAttribute("aria-pressed", entry === key ? "true" : "false");
     });
     if (entryGap) entryGap.hidden = entry !== "requirement";
-    if (entryAccount) entryAccount.hidden = entry !== "account";
-    if (controlSourceNote) controlSourceNote.hidden = entry === "threat";
-    var riskPick = document.getElementById("risk-pick");
-    var controlPick = document.getElementById("control-pick");
-    if (riskPick) riskPick.hidden = entry === "control";
-    if (controlPick) controlPick.hidden = entry === "threat";
-    if (personaList) {
-      Array.prototype.forEach.call(personaList.querySelectorAll("button"), function (button) {
-        button.setAttribute("aria-pressed", button.dataset.persona === personaPick ? "true" : "false");
-      });
-    }
   }
+
+  /* Every mode opens the same ROCA chain. The mode sets only which column
+     opens first on a phone: Risk, Control, or Accountable. */
+  var ENTRY_COLUMN = { threat: "risk", obligation: "obligation", control: "control", account: "accountable" };
 
   function chooseEntry(next) {
     entry = next;
-    if (next !== "account") personaPick = "";
-    showSearch(true);
+    root = null;
+    selected = null;
+    personaPick = "";
+    reqPick = "";
+    chainFocus = "";
+    linkHits = null;
+    linkNote = "";
+    searchInput.value = "";
+    expandedColumns = {};
+    view = ENTRY_COLUMN[next] ? "chain" : "search";
+    openColumn = ENTRY_COLUMN[next] || "risk";
+    commit(true);
+    if (view === "chain") revealChain();
   }
 
   function fillLayerFrames() {
@@ -3021,37 +2737,22 @@
     });
   }
 
-  function fillPersonaList() {
-    if (!personaList) return;
-    personaList.textContent = "";
-    CORE_PERSONAS.forEach(function (id) {
-      if (!graph.hasNode("persona:" + id)) return;
-      var attrs = graph.getNodeAttributes("persona:" + id);
-      if (attrs.provenance === "proposed-extension") return;
-      var button = document.createElement("button");
-      button.type = "button";
-      button.dataset.persona = id;
-      button.textContent = attrs.name;
-      button.addEventListener("click", function () {
-        rememberOpener();
-        openColumn = "accountable";
-        personaPick = id;
-        entry = "account";
-        view = "chain";
-        root = null;
-        selected = null;
-        chainFocus = "accountable:persona:" + id;
-        expandedColumns = {};
-        wide = false;
-        linkHits = null;
-        linkNote = "";
-        searchInput.value = "";
-        panelWorkspace = "details";
-        commit(true);
-        revealDetails(true);
-      });
-      personaList.appendChild(button);
-    });
+  function openPersona(id, moveFocus) {
+    if (moveFocus) rememberOpener();
+    openColumn = "accountable";
+    personaPick = id;
+    entry = "account";
+    view = "chain";
+    root = null;
+    reqPick = "";
+    selected = null;
+    chainFocus = "accountable:persona:" + id;
+    expandedColumns = {};
+    linkHits = null;
+    linkNote = "";
+    searchInput.value = "";
+    commit(true);
+    if (moveFocus) revealChain();
   }
 
   function modelFromSlug(raw) {
@@ -3064,13 +2765,14 @@
   }
 
   /* The URL carries type and node (the selected item), model (a slug), and
-     view (list or graph). risk=, control=, persona=, and graph=1 are older
-     spellings. They still load, and the next state change rewrites them. */
+     view (list). risk=, control=, persona=, graph=1, and the old graph
+     parameters are older spellings. They still load into the ROCA chain, and
+     the next state change rewrites them. */
   function currentQuery() {
     var params = new URLSearchParams();
     var hasNode = false;
-    if (view !== "context") {
-      if ((view === "focus" || view === "chain") && root && graph.hasNode(root)) {
+    if (view === "chain") {
+      if (root && graph.hasNode(root)) {
         var attrs = graph.getNodeAttributes(root);
         if (attrs.kind === "risk") {
           params.set("type", "risk");
@@ -3081,31 +2783,30 @@
           params.set("node", attrs.vertical + ":" + attrs.ref);
           hasNode = true;
         }
-        if (view === "focus" && wide) params.set("wide", "1");
-        else if (view === "focus") params.set("neighbors", "1");
-      } else if ((view === "chain" || view === "focus") && personaPick && !root) {
+      } else if (personaPick && !root) {
         params.set("type", "persona");
         params.set("node", personaPick);
+        hasNode = true;
+      } else if (reqPick) {
+        params.set("type", "obligation");
+        params.set("node", reqPick);
         hasNode = true;
       }
     }
     if (modelFilter !== "all" && MODEL_SLUG[modelFilter]) params.set("model", MODEL_SLUG[modelFilter]);
     if (layerFilter !== "all") params.set("layer", layerFilter);
     if (showTapestry) params.set("tapestry", "1");
-    var graphShown = (panelWorkspace === "viz" && (view === "chain" || view === "focus")) || (view === "search" && graphOpen);
     if (view === "context") params.set("view", "context");
-    else if (graphShown) params.set("view", "graph");
     else if (hasNode || modelFilter !== "all" || layerFilter !== "all" || showTapestry) params.set("view", "list");
     return params.toString().replace(/%3A/g, ":");
   }
 
-  /* Opening a trace or the graph adds a history entry so Back returns to the
-     list. Filter, model, and close changes replace the current entry. */
+  /* Opening a chain adds a history entry so Back returns to the list.
+     Filter, model, and close changes replace the current entry. */
   function historyKey(params) {
     var node = params.get("node") || params.get("risk") || params.get("control") || params.get("persona") || "";
     var type = params.get("type") || (params.get("risk") ? "risk" : params.get("control") ? "control" : params.get("persona") ? "persona" : "");
-    var graphShown = params.get("view") === "graph" || params.get("graph") === "1";
-    return (node ? type + ":" + node : "") + "|" + (graphShown ? "graph" : "");
+    return (node ? type + ":" + node : "") + "|";
   }
 
   function writeUrl() {
@@ -3127,10 +2828,9 @@
     try { applyFromLocation(); } finally { restoringHistory = false; }
     if (!graph) return;
     var target = null;
-    if (root || personaPick) target = detailsHeading;
-    else if (graphOpen) target = hideGraphBtn;
+    if (hasFocus()) target = chainHeading;
     if (!target || !target.getClientRects().length) target = searchInput;
-    if (target === detailsHeading && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
+    if (target === chainHeading && !target.hasAttribute("tabindex")) target.setAttribute("tabindex", "-1");
     target.focus({ preventScroll: true });
   }
 
@@ -3139,25 +2839,44 @@
     return location.origin + location.pathname + (query ? "?" + query : "");
   }
 
-  function commit(push) {
-    if (view === "chain" && personaPick && !root) currentChain = chainFromPersona(personaPick);
-    else currentChain = view === "chain" && root ? buildChain(root) : null;
-    var nextKey = currentChain ? [personaPick, root, modelFilter, layerFilter, showTapestry].join("|") : "";
-    if (nextKey !== picksKey) {
-      picksKey = nextKey;
-      resetPicks();
+  function blockedNote(id) {
+    var attrs = graph.getNodeAttributes(id);
+    if (attrs.tapestry) return "This is a Tapestry record. Tapestry records stay out of an SRF chain.";
+    return outsideFilter(attrs)
+      ? GAP_NOTE + " Choose All to see it in a chain."
+      : "This control does not list " + modelName(modelFilter) + ". Choose All under Operating model to see it.";
+  }
+
+  /* The chain for the current state. A record that cannot build a chain keeps
+     the four columns and the choice list, and the note says why. */
+  function chainForState() {
+    if (view !== "chain") return null;
+    if (root && graph.hasNode(root)) {
+      var built = buildChain(root);
+      if (built) return built;
+      var blocked = entryChain();
+      if (blocked) blocked.note = blockedNote(root);
+      return blocked;
     }
+    if (personaPick) return chainFromPersona(personaPick);
+    if (reqPick) {
+      var fromReq = chainFromObligation(reqPick);
+      if (fromReq.obligations.length) return fromReq;
+      var lost = entryChain();
+      lost.note = "No record matches that obligation.";
+      return lost;
+    }
+    return entryChain();
+  }
+
+  function commit(push) {
+    currentChain = chainForState();
     if (view !== "chain") chainFocus = "";
     if (currentChain) renderChain(currentChain);
     else if (chainBoard) chainBoard.textContent = "";
-    rebuildFocus();
-    rebuildNeighbors();
     updateChrome();
     renderDetails();
-    if (renderer) {
-      safeRefresh();
-      publish();
-    }
+    publish();
     writeUrl(!!push);
   }
 
@@ -3197,7 +2916,7 @@
     return hit;
   }
 
-  /* view=full used to select a node on the link mesh. The mesh is gone.
+  /* view=full used to select a node on a link graph. The graph is gone.
      Open the chain when this id can build one. Otherwise leave the empty
      start state and do not report an error. */
   function openChainFromNode(node) {
@@ -3218,7 +2937,6 @@
       selected = node;
       chainFocus = node;
       view = "chain";
-      wide = false;
       entry = attrs.kind === "risk" ? "threat" : "control";
       return;
     }
@@ -3232,24 +2950,31 @@
     var layer = params.get("layer") || "all";
     layerFilter = layer === "all" || LAYERS.indexOf(layer) !== -1 ? layer : "all";
     showTapestry = params.get("tapestry") === "1";
-    wide = params.get("wide") === "1";
     linkHits = null;
     linkNote = "";
     root = null;
     selected = null;
     chainFocus = "";
     personaPick = "";
+    reqPick = "";
     entry = "";
     var viewParam = params.get("view");
     view = viewParam === "context" ? "context" : "search";
-    graphOpen = params.get("graph") === "1" || viewParam === "graph";
-    panelWorkspace = "details";
     openColumn = "risk";
     var controlParam = params.get("control");
     var riskParam = params.get("risk");
     var personaParam = params.get("persona") || "";
     var typeParam = params.get("type");
     var nodeParam = params.get("node");
+    if (typeParam === "obligation" && nodeParam && viewParam !== "full") {
+      if (/^(obligation|instrument):/.test(nodeParam)) {
+        reqPick = nodeParam;
+        entry = "obligation";
+        openColumn = "obligation";
+        view = "chain";
+        chainFocus = nodeParam;
+      }
+    }
     if (viewParam !== "full" && nodeParam) {
       if (typeParam === "risk") riskParam = riskParam || nodeParam;
       else if (typeParam === "control") controlParam = controlParam || nodeParam;
@@ -3277,10 +3002,9 @@
         root = opened;
         selected = opened;
         chainFocus = opened;
-        if (openedAttrs.tapestry || wide || params.get("neighbors") === "1") view = "focus";
-        else view = "chain";
+        view = "chain";
         entry = openedAttrs.kind === "risk" ? "threat" : "control";
-        if (graphOpen || params.get("neighbors") === "1" || wide) panelWorkspace = "viz";
+        openColumn = ENTRY_COLUMN[entry];
       }
     } else {
       var asked = personaParam;
@@ -3292,17 +3016,11 @@
           entry = "account";
           view = "chain";
           chainFocus = "accountable:persona:" + asked;
-          if (graphOpen) panelWorkspace = "viz";
         }
       }
     }
-    if (viewParam === "full" && !root && !personaPick) openChainFromNode(params.get("node"));
-    if (view === "search" && graphOpen) panelWorkspace = "viz";
-    if (view === "context") panelWorkspace = "viz";
+    if (viewParam === "full" && !root && !personaPick && !reqPick) openChainFromNode(params.get("node"));
     commit(false);
-    if (!renderer) return;
-    if (view === "focus") frameFocus();
-    else if (view !== "chain") frameAll();
   }
 
   function scrollToTarget(target, focusEl) {
@@ -3313,12 +3031,7 @@
   function scrollPanelTo(target) {
     if (!target) return;
     if (mapPanel && narrowQuery.matches && mapPage.classList.contains("is-panel-open")) {
-      var bar = null;
-      if (panelWorkspace === "viz") bar = mapPanel.querySelector(".graph-workspace__bar");
-      else bar = mapPanel.querySelector(".details__bar");
-      if (!bar || !bar.getClientRects().length) {
-        bar = mapPanel.querySelector(".graph-workspace__bar:not([hidden])") || mapPanel.querySelector(".details__bar");
-      }
+      var bar = mapPanel.querySelector(".chain-workspace__bar:not([hidden])") || mapPanel.querySelector(".details__bar");
       var offset = (bar && bar.getClientRects().length ? bar.getBoundingClientRect().height : 0) + 8;
       var delta = target.getBoundingClientRect().top - mapPanel.getBoundingClientRect().top - offset;
       mapPanel.scrollTop += delta;
@@ -3330,30 +3043,18 @@
 
   function revealChain() {
     if (!currentChain) return;
-    panelWorkspace = "viz";
     updateChrome();
     if (chainEl.hidden) return;
     if (mapPanel && narrowQuery.matches) mapPanel.scrollTop = 0;
+    else chainWorkspace.scrollIntoView({ block: "start", behavior: "auto" });
     chainHeading.focus({ preventScroll: true });
     drawChainLines();
   }
 
-  var OPTIONS_KEY = "relmap-options-open";
   var optionsEl = document.getElementById("options");
 
   function openOptions() {
     if (optionsEl && !optionsEl.open) optionsEl.open = true;
-  }
-
-  if (optionsEl) {
-    try {
-      if (sessionStorage.getItem(OPTIONS_KEY) === "closed") optionsEl.open = false;
-    } catch (e) { /* storage can be blocked */ }
-    optionsEl.addEventListener("toggle", function () {
-      try {
-        sessionStorage.setItem(OPTIONS_KEY, optionsEl.open ? "open" : "closed");
-      } catch (e) { /* storage can be blocked */ }
-    });
   }
 
   function revealSearch() {
@@ -3362,29 +3063,24 @@
   }
 
   function revealDetails(moveFocus) {
-    panelWorkspace = "details";
     updateChrome();
     if (!moveFocus) return;
-    if (mapPanel && narrowQuery.matches) {
-      mapPanel.scrollTop = 0;
-    } else if (mapPanel) {
-      mapPanel.scrollIntoView({ block: "start", behavior: "auto" });
-    }
+    if (mapPanel && narrowQuery.matches) mapPanel.scrollTop = 0;
     detailsHeading.setAttribute("tabindex", "-1");
     detailsHeading.focus({ preventScroll: true });
-  }
-
-  function focusDetails(moveFocus) {
-    if (!moveFocus) return;
-    revealDetails(true);
   }
 
   function openControl(id, moveFocus, options) {
     options = options || {};
     if (!graph.hasNode(id)) return;
-    if (moveFocus) rememberOpener();
-    if (root !== id) openColumn = "risk";
     var attrs = graph.getNodeAttributes(id);
+    if (attrs.kind !== "risk" && attrs.kind !== "control") return;
+    if (moveFocus) rememberOpener();
+    entry = attrs.kind === "risk" ? "threat" : "control";
+    if (root !== id) {
+      openColumn = ENTRY_COLUMN[entry];
+      expandedColumns = {};
+    }
     root = id;
     selected = id;
     chainFocus = id;
@@ -3392,24 +3088,23 @@
     linkNote = "";
     searchInput.value = "";
     personaPick = "";
+    reqPick = "";
     if (attrs.tapestry) showTapestry = true;
-    if (attrs.tapestry || (attrs.kind !== "risk" && attrs.kind !== "control") || options.neighbors) {
-      view = "focus";
-      wide = !!options.wide;
-      if (!options.keepWide && !options.neighbors) wide = false;
-    } else {
-      view = "chain";
-      wide = false;
-    }
-    panelWorkspace = options.workspace || "details";
-    if (view === "focus") panelWorkspace = "viz";
+    view = "chain";
     commit(options.push !== false);
-    if (renderer && view === "focus") frameFocus();
-    focusDetails(moveFocus);
+    if (moveFocus) revealChain();
   }
 
   function activateNode(id, moveFocus) {
-    if (!graph || !graph.hasNode(id)) return;
+    if (!graph) return;
+    var obligation = /^(obligation|instrument):/.test(id);
+    if (obligation || (id.indexOf("persona:") === 0 && graph.hasNode(id))) {
+      if (moveFocus) rememberOpener();
+      setFocus(obligation ? "obligation" : "accountable", id);
+      if (moveFocus) revealChain();
+      return;
+    }
+    if (!graph.hasNode(id)) return;
     openControl(id, moveFocus, {});
   }
 
@@ -3512,53 +3207,51 @@
 
   function showContext(push) {
     view = "context";
+    entry = "";
     root = null;
     selected = null;
     chainFocus = "";
-    wide = false;
     personaPick = "";
     linkHits = null;
     linkNote = "";
     searchInput.value = "";
-    panelWorkspace = "viz";
     commit(push);
   }
 
   function showSearch(push) {
-    if (view !== "search") graphOpen = false;
     view = "search";
     root = null;
     selected = null;
     chainFocus = "";
-    wide = false;
     personaPick = "";
     linkHits = null;
     linkNote = "";
     searchInput.value = "";
-    if (!graphOpen) panelWorkspace = "details";
     commit(push);
-    if (renderer) frameAll();
   }
 
+  /* Clear steps back one level: first the chain focus (the four menus stay
+     full), then the mode itself. */
   function clearSelection(push) {
-    if ((view === "focus" || view === "chain") && root && chainFocus && chainFocus !== root) {
-      chainFocus = root;
-      selected = root;
+    if (view === "chain" && hasFocus()) {
+      linkHits = null;
+      linkNote = "";
+      clearFocus();
       commit(!!push);
       return;
     }
-    if (view === "focus" || view === "chain" || view === "context") {
+    if (view === "chain" || view === "context") {
+      entry = "";
       showSearch(!!push);
       return;
     }
-    if (graphOpen) graphOpen = false;
     selected = null;
     commit(!!push);
   }
 
   function closePanel(push) {
-    if (root) chainFocus = root;
-    clearSelection(push);
+    entry = "";
+    showSearch(push);
     restoreOpener();
   }
 
@@ -3584,154 +3277,11 @@
     opener = null;
   }
 
-  function openGraph(push) {
-    rememberOpener();
-    panelWorkspace = "viz";
-    if (view === "chain" && (root || personaFocusId())) {
-      /* Keep the ROCA chain as the relationship visualization. Neighbor
-         graph is available from Widen the view / Show the chain toggles. */
-      commit(push);
-      revealChain();
-      hideGraphBtn.focus({ preventScroll: true });
-      return;
-    }
-    if (view === "search") {
-      graphOpen = true;
-      commit(push);
-      if (renderer) frameAll();
-    } else if (view === "context") {
-      commit(push);
-    } else if (root && graph.hasNode(root)) {
-      view = "focus";
-      wide = false;
-      commit(push);
-      if (renderer) frameFocus();
-    } else if (personaFocusId()) {
-      view = "focus";
-      wide = false;
-      commit(push);
-      if (renderer) frameFocus();
-    } else {
-      graphOpen = true;
-      view = "search";
-      commit(push);
-      if (renderer) frameAll();
-    }
-    if (mapPanel && narrowQuery.matches) mapPanel.scrollTop = 0;
-    hideGraphBtn.focus({ preventScroll: true });
-  }
-
-  function closeGraph(push) {
-    if (view === "search" && graphOpen && !root && !personaPick) {
-      graphOpen = false;
-      panelWorkspace = "details";
-      commit(push);
-      restoreOpener();
-      return;
-    }
-    if (view === "focus" && root && graph.hasNode(root) && !graph.getNodeAttribute(root, "tapestry")) {
-      view = "chain";
-      wide = false;
-      chainFocus = root;
-      selected = root;
-      panelWorkspace = "details";
-      commit(push);
-      revealDetails(true);
-      return;
-    }
-    if (view === "focus" && personaFocusId()) {
-      view = "chain";
-      wide = false;
-      panelWorkspace = "details";
-      commit(push);
-      revealDetails(true);
-      return;
-    }
-    if (view === "context" && !root && !personaPick) {
-      panelWorkspace = "details";
-      showSearch(push);
-      restoreOpener();
-      return;
-    }
-    panelWorkspace = "details";
-    if (view === "chain" || root || personaPick) {
-      commit(push);
-      revealDetails(true);
-      return;
-    }
-    graphOpen = false;
-    commit(push);
-    restoreOpener();
-  }
-
-  function stepGraphZoom(direction) {
-    if (!renderer || view !== "focus") return;
-    var camera = renderer.getCamera();
-    var state = camera.getState();
-    var ratio = state.ratio * (direction < 0 ? 0.8 : 1.25);
-    if (ratio < 0.05) ratio = 0.05;
-    if (ratio > 1.6) ratio = 1.6;
-    camera.animate({ x: state.x, y: state.y, ratio: ratio, angle: 0 }, { duration: 160 });
-  }
-
-  function fitGraphView() {
-    if (!renderer) return;
-    if (view === "focus") frameFocus();
-    else frameAll();
-  }
-
-  function resetGraphView() {
-    if (!renderer) return;
-    if (view === "focus" && root) {
-      wide = false;
-      commit(false);
-      frameFocus();
-      return;
-    }
-    frameAll();
-  }
-
-  function toggleWide() {
-    panelWorkspace = "viz";
-    if (view === "chain" && (root || personaFocusId())) {
-      view = "focus";
-      wide = false;
-      commit(true);
-      if (renderer) frameFocus();
-      return;
-    }
-    if (view !== "focus" || (!root && !personaFocusId())) return;
-    wide = !wide;
-    commit(true);
-    if (renderer) frameFocus();
-  }
-
-  function showChainView() {
-    if (personaFocusId() && view === "focus") {
-      view = "chain";
-      wide = false;
-      panelWorkspace = "viz";
-      commit(true);
-      revealChain();
-      return;
-    }
-    if (!root || !graph.hasNode(root)) return;
-    if (graph.getNodeAttribute(root, "tapestry")) return;
-    view = "chain";
-    wide = false;
-    chainFocus = root;
-    selected = root;
-    panelWorkspace = "viz";
-    commit(true);
-    revealChain();
-  }
-
   function setModel(id, push) {
     if (id !== "all" && !coreIds[id]) id = "all";
     if (id === modelFilter) return;
     modelFilter = id;
     commit(push);
-    if (renderer && view === "focus" && root && nodeAllowed(graph.getNodeAttributes(root))) frameFocus();
   }
 
   function setLayer(id, push) {
@@ -3747,86 +3297,8 @@
     if (root && graph.hasNode(root) && !nodeAllowed(graph.getNodeAttributes(root))) {
       root = null;
       selected = null;
-      wide = false;
-      view = "search";
     }
     commit(push);
-    if (renderer && view === "focus") frameFocus();
-  }
-
-  function frameAll() {
-    if (!renderer) return;
-    renderer.getCamera().animate({ x: 0.5, y: 0.5, ratio: 1, angle: 0 }, { duration: 280 });
-  }
-
-  function frameNodeIds(ids, minRatio, always, labelPad) {
-    if (!renderer || !ids.length) return;
-    var dims = renderer.getDimensions();
-    var edge = 40;
-    var allIn = true;
-    var minX = Infinity;
-    var maxX = -Infinity;
-    var minY = Infinity;
-    var maxY = -Infinity;
-    ids.forEach(function (nid) {
-      if (!graph.hasNode(nid)) return;
-      var attrs = graph.getNodeAttributes(nid);
-      if (attrs.x < minX) minX = attrs.x;
-      if (attrs.x > maxX) maxX = attrs.x;
-      if (attrs.y < minY) minY = attrs.y;
-      if (attrs.y > maxY) maxY = attrs.y;
-      var point = renderer.graphToViewport({ x: attrs.x, y: attrs.y });
-      if (point.x < edge || point.y < edge || point.x > dims.width - edge || point.y > dims.height - edge) {
-        allIn = false;
-      }
-    });
-    if (!always && allIn) return;
-    var spanX = Math.max(maxX - minX, 8);
-    var spanY = Math.max(maxY - minY, 8);
-    var padX = Math.max(spanX * 0.3, 10);
-    var padY = Math.max(spanY * 0.3, 10);
-    /* Focused persona names are drawn to the right of the node, and model
-     * names are drawn to the right as well. Keep a little extra room there
-     * so a short name is not cut off at the canvas edge. */
-    var rightPad = padX + (labelPad ? Math.max(spanX * 0.22, 8) : 0);
-    var norm = renderer.getNormalizationFunction();
-    if (typeof norm !== "function") return;
-    var a = norm({ x: minX - padX, y: minY - padY });
-    var b = norm({ x: maxX + rightPad, y: maxY + padY });
-    var ratio = Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y));
-    var cx = (a.x + b.x) / 2;
-    var cy = (a.y + b.y) / 2;
-    if (ratio < minRatio) ratio = minRatio;
-    if (ratio > 1) {
-      ratio = 1;
-      cx = 0.5;
-      cy = 0.5;
-    }
-    renderer.getCamera().animate({
-      x: cx,
-      y: cy,
-      ratio: ratio,
-      angle: 0
-    }, { duration: 280 });
-  }
-
-  /* Frame the selected node and its neighbors. Do not zoom closer than
-   * about 55% of the map, so the surrounding nodes stay in view. */
-  function frameSelection(id) {
-    var ids = [id];
-    graph.forEachNeighbor(id, function (neighbor) {
-      if (nodeVisible(neighbor)) ids.push(neighbor);
-    });
-    frameNodeIds(ids, 0.55, false);
-  }
-
-  function frameFocus() {
-    frameNodeIds(Object.keys(focusSet), 0.12, true, true);
-  }
-
-  function activeButtons() {
-    if (suggestionsWrap.hidden) return [];
-    return Array.prototype.slice.call(suggestionsWrap.querySelectorAll("button"));
   }
 
   function renderModelRadios(models) {
@@ -3877,96 +3349,15 @@
       : "Sector model names are mapped to these four SRF models by data/sector-model-map.json. The sector name stays on the control.";
   }
 
-  function safeRefresh() {
-    if (!renderer) return;
-    if (graphWrap.classList.contains("graph-wrap--off") || graphWrap.classList.contains("graph-wrap--context")) return;
-    if (!graphEl.clientWidth || !graphEl.clientHeight) return;
-    if (typeof renderer.resize === "function") renderer.resize();
-    renderer.refresh();
-  }
-
-  function applyScheme() {
-    palette = readPalette();
-    graphEl.style.backgroundColor = palette.stage;
-    safeRefresh();
-    if (statusEl.dataset.ready === "true") publish();
-  }
-
   function start() {
-    var SigmaCtor = window.Sigma && (window.Sigma.Sigma || window.Sigma);
-    if (typeof SigmaCtor !== "function") throw new Error("Sigma did not load.");
-    palette = readPalette();
-    /* Chain and layer views hide the canvas. Reveal it briefly so Sigma can
-       measure a non-zero container, then restore the active view class. */
-    var held = [];
-    ["graph-wrap--chain", "graph-wrap--context", "graph-wrap--off"].forEach(function (name) {
-      if (graphWrap.classList.contains(name)) {
-        graphWrap.classList.remove(name);
-        held.push(name);
-      }
-    });
-    renderer = new SigmaCtor(graph, graphEl, {
-      settings: {
-        allowInvalidContainer: true,
-        enableNodeDrag: false,
-        enableCameraRotation: false,
-        enableCameraMouseRotation: false,
-        /* Persona labels use "auto" in the full graph. At the overview a
-         * persona is about 7px, under this threshold, so the name stays off.
-         * A modest zoom (camera ratio near 0.6) crosses 9px and the name is
-         * drawn. The label grid drops names that would stack. Hover forces
-         * one name on at any zoom. Focus view forces labels on. */
-        labelRenderedSizeThreshold: 9,
-        labelDensity: 0.5,
-        labelGridCellSize: 150,
-        nodePickingPadding: 4,
-        minEdgeThickness: 0.4,
-        stagePadding: 28,
-        hideLabelsOnMove: false,
-        inertiaDuration: 0,
-        inertiaRatio: 0
-      },
-      styles: {
-        stage: { background: function () { return palette.stage; } }
-      },
-      nodeReducer: nodeReducer,
-      edgeReducer: edgeReducer
-    });
-    held.forEach(function (name) { graphWrap.classList.add(name); });
-    graphEl.style.backgroundColor = palette.stage;
-
-    var ignoreStage = false;
-    function onNode(event) {
-      ignoreStage = true;
-      if (view === "focus" && focusSet[event.node]) {
-        selected = event.node;
-        commit(true);
-      }
-      setTimeout(function () { ignoreStage = false; }, 0);
-    }
-    renderer.on("clickNode", onNode);
-    renderer.on("clickNodeLabel", onNode);
-    renderer.on("clickStage", function () {
-      if (ignoreStage) return;
-      if (view === "search") return;
-      clearSelection(true);
-    });
-
     window.__relationshipMap = {
       graph: graph,
-      renderer: renderer,
-      labelMode: labelMode,
-      anchorLabelsForced: anchorLabelsForced,
-      nodeVisible: nodeVisible,
       outsideFilter: function (id) { return outsideFilter(graph.getNodeAttributes(id)); }
     };
-
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        safeRefresh();
         publish();
         renderDetails();
-        if (view === "focus") frameFocus();
         statusEl.dataset.ready = "true";
       });
     });
@@ -4027,12 +3418,8 @@
     findForm.classList.toggle("has-query", !!searchInput.value.trim());
     if (!graph) return;
     if (!searchInput.value.trim()) {
-      if (view === "search") renderSuggestions();
-      else {
-        suggestionsWrap.hidden = true;
-        hideResults();
-        searchNote.textContent = "";
-      }
+      hideResults();
+      searchNote.textContent = "";
       return;
     }
     renderMatches(searchInput.value);
@@ -4040,32 +3427,10 @@
     var inputTop = searchInput.getBoundingClientRect().top;
     if (listTop > window.innerHeight * 0.85 && inputTop > 130) window.scrollBy({ top: inputTop - 130, behavior: "auto" });
   });
-  findForm.addEventListener("keydown", function (event) {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-    if (!searchResults.hidden) return;
-    var buttons = activeButtons();
-    if (!buttons.length) return;
-    var idx = buttons.indexOf(document.activeElement);
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      buttons[idx < 0 ? 0 : Math.min(buttons.length - 1, idx + 1)].focus();
-    } else if (idx > 0) {
-      event.preventDefault();
-      buttons[idx - 1].focus();
-    } else if (idx === 0) {
-      event.preventDefault();
-      searchInput.focus();
-    }
-  });
   document.getElementById("map-tools").addEventListener("click", function (event) {
     var button = event.target.closest("button[data-node-id], [role='option'][data-node-id]");
     if (!button) return;
     activateNode(button.dataset.nodeId, true);
-  });
-  [riskSuggestions, suggestions].forEach(function (select) {
-    select.addEventListener("change", function () {
-      if (select.value) activateNode(select.value, true);
-    });
   });
   modelList.addEventListener("change", function (event) {
     var input = event.target;
@@ -4082,8 +3447,6 @@
   tapestryInput.addEventListener("change", function () {
     setTapestry(tapestryInput.checked, true);
   });
-  widenBtn.addEventListener("click", toggleWide);
-  chainBtn.addEventListener("click", showChainView);
   chainBoard.addEventListener("click", function (event) {
     var more = event.target.closest("button.chain-more");
     if (more) {
@@ -4103,11 +3466,22 @@
     if (!button) return;
     var keep = button.dataset.chainId;
     var column = button.closest(".chain-col");
-    if (currentChain && currentChain.startKind === "persona" && column) {
-      setPick(column.dataset.column, keep);
-    } else {
-      chainFocus = keep;
-      commit(false);
+    if (column) {
+      var colKey = column.dataset.column;
+      var focusId = keep;
+      if (colKey === "accountable" && currentChain) {
+        var card = currentChain.personaCards.filter(function (item) { return item.id === keep; })[0];
+        var real = card ? card.lines.filter(function (line) { return !line.missing; }) : [];
+        var personaId = real.length === 1 && real[0].personaId ? real[0].personaId : (keep.indexOf("accountable:persona:") === 0 ? keep.slice(20) : "");
+        if (personaId) focusId = "persona:" + personaId;
+        else focusId = "";
+      }
+      if (focusId) {
+        setFocus(colKey, focusId);
+      } else {
+        chainFocus = keep;
+        commit(false);
+      }
     }
     var again = chainCard(keep);
     if (again) again.focus();
@@ -4116,7 +3490,7 @@
     var select = event.target.closest("select.chain-pick");
     if (!select) return;
     var key = select.dataset.column;
-    setPick(key, select.value);
+    setFocus(key, select.value);
     var again = document.getElementById("chain-select-" + key);
     if (again) again.focus({ preventScroll: true });
   });
@@ -4159,45 +3533,30 @@
       var id = button.dataset.nodeId;
       var attrs = graph.getNodeAttributes(id);
       if (attrs.kind === "persona" && CORE_PERSONAS.indexOf(attrs.ref) !== -1) {
-        openColumn = "accountable";
-        personaPick = attrs.ref;
-        entry = "account";
-        view = "chain";
-        root = null;
-        selected = null;
-        chainFocus = "accountable:persona:" + attrs.ref;
-        wide = false;
-        linkHits = null;
-        linkNote = "";
-        searchInput.value = "";
-        panelWorkspace = "details";
-        commit(true);
-        revealDetails(true);
+        openPersona(attrs.ref, true);
         return;
       }
       activateNode(id, true);
     });
   }
-  startBtn.addEventListener("click", function () {
-    showSearch(true);
-    revealSearch();
-  });
   document.getElementById("entry-threat").addEventListener("click", function () { chooseEntry("threat"); });
+  var obligationButton = document.getElementById("entry-obligation");
+  if (obligationButton) obligationButton.addEventListener("click", function () { chooseEntry("obligation"); });
   document.getElementById("entry-requirement").addEventListener("click", function () { chooseEntry("requirement"); });
   document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
   document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
   function selectedKindLabel() {
     if (root && graph.hasNode(root)) return KIND_LABEL[graph.getNodeAttribute(root, "kind")] || "Item";
-    return "Persona";
+    return reqPick ? "Obligation" : "Persona";
   }
 
   function chainMarkdown() {
     var chain = currentChain;
     var rootAttrs = root && graph.hasNode(root) ? graph.getNodeAttributes(root) : null;
-    var name = rootAttrs ? rootAttrs.name : personaLabel(personaPick);
+    var name = focusName();
     var ref = "";
     if (rootAttrs) ref = rootAttrs.kind === "control" ? rootAttrs.vertical + ":" + rootAttrs.ref : rootAttrs.ref;
-    else ref = personaPick;
+    else ref = personaPick || reqPick;
     var lines = [];
     lines.push("# " + name);
     lines.push("");
@@ -4312,16 +3671,7 @@
       if (view === "search") restoreOpener();
     }
   }
-  clearBtn.addEventListener("click", onClearClick);
-  if (clearGraphBtn) clearGraphBtn.addEventListener("click", onClearClick);
-  showGraphBtn.addEventListener("click", function () { openGraph(true); });
-  if (exploreFromDetailsBtn) exploreFromDetailsBtn.addEventListener("click", function () { openGraph(true); });
-  hideGraphBtn.addEventListener("click", function () { closeGraph(true); });
-  if (graphFitBtn) graphFitBtn.addEventListener("click", fitGraphView);
-  if (graphZoomInBtn) graphZoomInBtn.addEventListener("click", function () { stepGraphZoom(-1); });
-  if (graphZoomOutBtn) graphZoomOutBtn.addEventListener("click", function () { stepGraphZoom(1); });
-  if (graphResetBtn) graphResetBtn.addEventListener("click", resetGraphView);
-  if (widenBtnGraph) widenBtnGraph.addEventListener("click", toggleWide);
+  if (clearChainBtn) clearChainBtn.addEventListener("click", onClearClick);
   var lastNarrow = narrowQuery.matches;
   narrowQuery.addEventListener("change", function () {
     if (narrowQuery.matches === lastNarrow) return;
@@ -4342,21 +3692,11 @@
       revealSearch();
       return;
     }
-    if (id === "graph-workspace" || id === "chain-heading") {
-      panelWorkspace = "viz";
-      updateChrome();
-      scrollPanelTo(target);
-      return;
-    }
-    if (id === "details-heading") {
-      panelWorkspace = "details";
-      updateChrome();
+    if (id === "chain-workspace" || id === "chain-heading" || id === "details-heading") {
       scrollPanelTo(target);
       return;
     }
     if (id.indexOf("chain-col-") === 0) {
-      panelWorkspace = "viz";
-      updateChrome();
       if (narrowQuery.matches) setOpenColumn(id.slice("chain-col-".length));
       scrollPanelTo(document.getElementById(id));
       return;
@@ -4390,20 +3730,11 @@
       searchInput.value = "";
       linkHits = null;
       linkNote = "";
-      if (view === "search") renderSuggestions();
-      else {
-        suggestionsWrap.hidden = true;
-        hideResults();
-        searchNote.textContent = "";
-      }
+      hideResults();
+      searchNote.textContent = "";
       return;
     }
-    if (view === "search" && !selected && !graphOpen) return;
-    if (panelWorkspace === "viz" && (root || personaPick || view === "chain")) {
-      event.preventDefault();
-      closeGraph(true);
-      return;
-    }
+    if (view === "search" && !selected) return;
     if (narrowQuery.matches) closePanel(true);
     else clearSelection(true);
   });
@@ -4493,17 +3824,12 @@
     body.appendChild(makeEl("p", "", "Not classified. No control stores a value for those four functions. Vertical lifecycle stages are a different field and are not shown here as those functions."));
   }
 
-  var scheme = window.matchMedia("(prefers-color-scheme: dark)");
-  if (scheme.addEventListener) scheme.addEventListener("change", applyScheme);
-  else if (scheme.addListener) scheme.addListener(applyScheme);
-
   var VENDOR_SCRIPTS = [
-    ["/shared/vendor/graphology-0.26.0.umd.min.js", function () { return !!(window.graphology && window.graphology.UndirectedGraph); }],
-    ["/shared/vendor/sigma-4.0.6.min.js", function () { return typeof window.Sigma !== "undefined"; }]
+    ["/shared/vendor/graphology-0.26.0.umd.min.js", function () { return !!(window.graphology && window.graphology.UndirectedGraph); }]
   ];
 
-  /* The page loads both libraries with defer. After a failed attempt, Retry
-     adds a script tag for any library that is still missing. */
+  /* The page loads the library with defer. After a failed attempt, Retry
+     adds a script tag if it is still missing. */
   function ensureVendors() {
     return Promise.all(VENDOR_SCRIPTS.map(function (entry) {
       if (entry[1]()) return null;
@@ -4574,7 +3900,6 @@
       renderModelRadios(models);
       renderLayerRadios((data.layers && data.layers.layers) || []);
       fillLayerFrames();
-      fillPersonaList();
       renderCoverage();
       renderModelNote();
       restoringHistory = true;
