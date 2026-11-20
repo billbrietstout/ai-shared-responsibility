@@ -209,6 +209,8 @@
   /* details = record pane. viz = chain / neighbor graph / layers workspace. */
   var panelWorkspace = "details";
   var openColumn = "risk";
+  var expandedColumns = {};
+  var PERSONA_COLUMN_LIMIT = 8;
   var opener = null;
   var activeIndex = -1;
   var listClosed = false;
@@ -1442,17 +1444,79 @@
       if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
       return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
     });
+    var riskIds = {};
+    chain.risks.forEach(function (card) { riskIds[card.id] = true; });
+    var obligationCards = {};
     nodes.forEach(function (node) {
       chain.controls.push(controlCard(node.id, node.attrs));
       addEdge(chain, { from: node.id, to: "accountable:persona:" + id, style: "solid" });
+      threats.forEach(function (threat) {
+        if ((threat.related_controls || []).indexOf(node.attrs.fullId) !== -1 && riskIds["risk:" + threat.id]) {
+          addEdge(chain, { from: "risk:" + threat.id, to: node.id, style: "solid" });
+        }
+      });
+      var cited = citationsForControl(node.attrs);
+      cited.articles.forEach(function (item) {
+        var cardId = "obligation:" + item.req.id;
+        if (!obligationCards[cardId]) {
+          obligationCards[cardId] = {
+            id: cardId,
+            citation: item.req.citation,
+            title: item.req.title,
+            summary: item.req.summary || "",
+            url: item.req.url || "",
+            basis: "",
+            basisChips: [],
+            basisSentences: ["Cited by a control in its source record."],
+            style: "solid",
+            instrumentLevel: false,
+            citationText: item.citation,
+            sources: [],
+            controlCount: 0
+          };
+          chain.obligations.push(obligationCards[cardId]);
+        }
+        obligationCards[cardId].controlCount += 1;
+        addEdge(chain, { from: cardId, to: node.id, style: "solid" });
+      });
+      cited.fallbacks.forEach(function (item) {
+        var cardId = "instrument:" + item.reg.id;
+        if (!obligationCards[cardId]) {
+          obligationCards[cardId] = {
+            id: cardId,
+            citation: item.reg.short || item.reg.name,
+            title: item.reg.name,
+            summary: "",
+            url: item.reg.url || "",
+            basis: "",
+            basisChips: [],
+            basisSentences: [],
+            style: "dotted",
+            instrumentLevel: true,
+            citationText: item.citation,
+            sources: [],
+            controlCount: 0
+          };
+          chain.obligations.push(obligationCards[cardId]);
+        }
+        obligationCards[cardId].controlCount += 1;
+        addEdge(chain, { from: cardId, to: node.id, style: "dotted" });
+      });
+    });
+    chain.obligations.forEach(function (item) {
+      item.basisChips.push("Cited by " + unit(item.controlCount, "control", "controls") + " on this chain." + (item.instrumentLevel ? " No article record matched." : ""));
+    });
+    chain.obligations.sort(function (a, b) {
+      return String(a.citation) < String(b.citation) ? -1 : String(a.citation) > String(b.citation) ? 1 : 0;
     });
     if (!nodes.length) {
       chain.gaps.push({
         column: "control",
-        text: "No control names this persona as accountable."
+        text: "No control names this persona yet."
       });
+    } else if (!chain.obligations.length) {
+      chain.gaps.push({ column: "obligation", text: "No obligation is linked to these controls." });
     }
-    chain.columnNotes.obligation = "Obligations stay on a risk or control chain. Choose one of those records to see them.";
     chain.personaCards.push({
       id: "accountable:persona:" + id,
       controlId: "persona:" + id,
@@ -1466,6 +1530,7 @@
       }],
       sectorPersona: ""
     });
+    chain.personaCount = 1;
     return chain;
   }
 
@@ -1551,7 +1616,9 @@
       }
       wrap.appendChild(heading);
       wrap.appendChild(colBody);
-      column[1].forEach(function (item) {
+      var collapsible = chain.startKind === "persona" && column[2] !== "accountable" && column[1].length > PERSONA_COLUMN_LIMIT;
+      var shownItems = collapsible && !expandedColumns[column[2]] ? column[1].slice(0, PERSONA_COLUMN_LIMIT) : column[1];
+      shownItems.forEach(function (item) {
         var pressed = chainFocus === item.id;
         var button = cardButton(item.id, pressed);
         if (column[2] === "risk") {
@@ -1594,6 +1661,15 @@
         }
         colBody.appendChild(button);
       });
+      if (collapsible) {
+        var more = makeEl("button", "chain-more", expandedColumns[column[2]]
+          ? "Show fewer"
+          : "Show " + (column[1].length - PERSONA_COLUMN_LIMIT) + " more");
+        more.type = "button";
+        more.dataset.moreColumn = column[2];
+        more.setAttribute("aria-expanded", expandedColumns[column[2]] ? "true" : "false");
+        colBody.appendChild(more);
+      }
       if (!column[1].length && chain.columnNotes && chain.columnNotes[column[2]]) {
         colBody.appendChild(makeEl("p", "chain-card__meta", chain.columnNotes[column[2]]));
       }
@@ -1946,7 +2022,7 @@
   }
 
   function chainSentence(chain) {
-    var personaBit = modelFilter === "all"
+    var personaBit = modelFilter === "all" && chain.startKind !== "persona"
       ? chain.personaCount + (chain.personaCount === 1 ? " accountable persona" : " accountable personas") + ", one for each model on a shown control"
       : unit(chain.personaCount, "accountable persona", "accountable personas");
     var text = "Showing " + unit(chain.risks.length, "risk", "risks") + ", " +
@@ -2587,15 +2663,17 @@
     if (graphKindLegend) graphKindLegend.hidden = !showZoom;
     graphWrap.classList.toggle("graph-wrap--off", !graphOn);
     graphWrap.classList.toggle("graph-wrap--graph", graphOn);
-    widenBtn.hidden = !(view === "focus" && rootVisible && vizOpen);
-    widenBtn.textContent = view === "focus" && wide ? "Show only the nodes next to this " + rootWord : "Widen the view";
+    var personaViz = !!personaFocusId() && vizOpen;
+    widenBtn.hidden = !((view === "focus" && rootVisible && vizOpen) || (personaViz && (view === "focus" || view === "chain")));
+    widenBtn.textContent = personaViz && view === "chain" ? "Show the relationship graph"
+      : view === "focus" && wide ? "Show only the nodes next to this " + (personaViz ? "persona" : rootWord) : "Widen the view";
     widenBtn.setAttribute("aria-pressed", view === "focus" && wide ? "true" : "false");
     if (widenBtnGraph) {
       widenBtnGraph.hidden = widenBtn.hidden;
       widenBtnGraph.textContent = widenBtn.textContent;
       widenBtnGraph.setAttribute("aria-pressed", widenBtn.getAttribute("aria-pressed"));
     }
-    chainBtn.hidden = !(view === "focus" && chainable && vizOpen);
+    chainBtn.hidden = !(view === "focus" && (chainable || personaViz) && vizOpen);
     if (contextBtn) contextBtn.hidden = view === "context" && vizOpen;
     startBtn.hidden = view === "search" && !vizOpen;
     startBtn.textContent = "Start from one risk or control";
@@ -2736,6 +2814,7 @@
         root = null;
         selected = null;
         chainFocus = "accountable:persona:" + id;
+        expandedColumns = {};
         wide = false;
         linkHits = null;
         linkNote = "";
@@ -3256,7 +3335,7 @@
   function openGraph(push) {
     rememberOpener();
     panelWorkspace = "viz";
-    if (view === "chain" && root) {
+    if (view === "chain" && (root || personaFocusId())) {
       /* Keep the ROCA chain as the relationship visualization. Neighbor
          graph is available from Widen the view / Show the chain toggles. */
       commit(push);
@@ -3362,20 +3441,28 @@
 
   function toggleWide() {
     panelWorkspace = "viz";
-    if (view === "chain" && root) {
+    if (view === "chain" && (root || personaFocusId())) {
       view = "focus";
       wide = false;
       commit(true);
       if (renderer) frameFocus();
       return;
     }
-    if (view !== "focus" || !root) return;
+    if (view !== "focus" || (!root && !personaFocusId())) return;
     wide = !wide;
     commit(true);
     if (renderer) frameFocus();
   }
 
   function showChainView() {
+    if (personaFocusId() && view === "focus") {
+      view = "chain";
+      wide = false;
+      panelWorkspace = "viz";
+      commit(true);
+      revealChain();
+      return;
+    }
     if (!root || !graph.hasNode(root)) return;
     if (graph.getNodeAttribute(root, "tapestry")) return;
     view = "chain";
@@ -3746,6 +3833,15 @@
   widenBtn.addEventListener("click", toggleWide);
   chainBtn.addEventListener("click", showChainView);
   chainBoard.addEventListener("click", function (event) {
+    var more = event.target.closest("button.chain-more");
+    if (more) {
+      var key = more.dataset.moreColumn;
+      expandedColumns[key] = !expandedColumns[key];
+      renderChain(currentChain);
+      var again = chainBoard.querySelector('button.chain-more[data-more-column="' + key + '"]');
+      if (again) again.focus({ preventScroll: true });
+      return;
+    }
     var toggle = event.target.closest("button.chain-col__toggle");
     if (toggle) {
       setOpenColumn(openColumn === toggle.dataset.column ? "" : toggle.dataset.column);
