@@ -325,10 +325,20 @@
         font-size: 0.65rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; vertical-align: 1px; white-space: nowrap;
       }
       .sbs__gap { color: var(--slate-600); font-style: italic; }
+      .adds__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-3); max-width: 880px; }
+      .adds__card { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); border: 1px solid var(--slate-200); border-top: 6px solid var(--slate-400); background: var(--surface); }
+      .adds__card--l2 { border-top-color: var(--l2); background: var(--l2-bg); color: var(--l2-text); }
+      .adds__card--l5 { border-top-color: var(--l5); background: var(--l5-bg); color: var(--l5-text); }
+      .adds__card--one { border-top-color: var(--cosai-blue); color: var(--slate-800); }
+      .adds__tag { font-size: var(--text-base); font-weight: 700; line-height: var(--leading-tight); }
+      .adds__body { font-size: var(--text-sm); line-height: var(--leading-normal); }
+      @media (max-width: 760px) { .adds__list { grid-template-columns: 1fr; } }
       .orient__link { margin-top: var(--sp-4); font-size: var(--text-sm); }
 
       .fw-extra h3 { font-size: var(--text-base); font-weight: 700; color: var(--slate-900); margin: var(--sp-5) 0 var(--sp-2); }
       .fw-extra p { max-width: 640px; font-size: var(--text-base); color: var(--slate-600); line-height: var(--leading-normal); margin-bottom: var(--sp-3); }
+      .open-areas { max-width: 640px; margin: 0 0 var(--sp-3) var(--sp-5); color: var(--slate-600); line-height: var(--leading-normal); }
+      .open-areas li { margin-bottom: var(--sp-2); }
       .fw-extra .relation-table td:first-child { white-space: normal; }
 
       /* ── Responsive ──────────────────────────────────────────────── */
@@ -501,8 +511,7 @@
             The SRF works the same way: responsibility is shared at the boundary of what is being provided.
           </p>
           <p>
-            Two things are new. The SRF gives <strong>L2 AI Information</strong> and <strong>L5 AI Model Provider</strong> their own layers.
-            It also names exactly one accountable party for each component.
+            Same shape, two additions. Microsoft shows three layers. The SRF shows five.
           </p>
         </div>
 
@@ -540,6 +549,23 @@
           Microsoft lists its layers from the platform up. The SRF lists L1 first, so the table follows SRF order.
           Usage maps to L1, application to L3, and platform to L4. L2 and L5 are the SRF additions.
         </p>
+        <div class="adds" data-llm="what-is-new">
+          <h3 class="orient__sub" style="margin-top:var(--sp-6);">What is new</h3>
+          <ul class="adds__list">
+            <li class="adds__card adds__card--l2">
+              <span class="adds__tag">L2 AI Information</span>
+              <span class="adds__body">In Microsoft&rsquo;s model, training data sits inside the platform layer. In the SRF, data has its own layer and its own accountable party.</span>
+            </li>
+            <li class="adds__card adds__card--l5">
+              <span class="adds__tag">L5 AI Model Provider</span>
+              <span class="adds__body">In Microsoft&rsquo;s model, the model and its weights sit inside the platform layer. In the SRF, the AI Model Provider has its own layer and answers for the model.</span>
+            </li>
+            <li class="adds__card adds__card--one">
+              <span class="adds__tag">One accountable party</span>
+              <span class="adds__body">Every component gets exactly one named owner. &ldquo;Shared&rdquo; is never the final answer.</span>
+            </li>
+          </ul>
+        </div>
         <p class="orient__link">
           <a href="/framework/prior-art/">See how the SRF compares with TOGAF, ArchiMate, OBASHI, Zachman, NIST, and ISO →</a>
         </p>
@@ -770,6 +796,17 @@
             NIST orders by how an AI system works. The SRF orders by dependency and accountability.
             The AI RMF describes how the system works, and the SRF adds who is accountable at each step.
           </p>
+          <h3>Open areas</h3>
+          <p>
+            These are possible directions that this site and its analysis raise. CoSAI has not committed to any of them, and they are not part of the published framework.
+          </p>
+          <ul class="open-areas">
+            <li>An open area is typed links between components, so that &ldquo;cascade&rdquo; has a defined meaning.</li>
+            <li>One possible direction is to link obligations to components in other layers.</li>
+            <li>A data flow view across layers is a gap the current layers do not fill.</li>
+            <li>An open question is where network, facilities, or location belong.</li>
+            <li>Lifecycle states for components could be added.</li>
+          </ul>
           <p>
             <a href="/framework/prior-art/">See the sources and checks →</a>
           </p>
