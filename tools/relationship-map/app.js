@@ -69,18 +69,8 @@
     policy: "Policy level",
     topic: "Whitepaper topic"
   };
-  var SIZE = {
-    layer: 2.4,
-    persona: 1.35,
-    model: 1.9,
-    risk: 1.15,
-    control: 0.5,
-    policy: 1.9,
-    topic: 1.05
-  };
   var MODEL_ORDER = ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"];
   var MODEL_SLUG = { "AI-SaaS": "ai-saas", "AI-PaaS": "ai-paas", "Agent-PaaS": "agent-paas", "IaaS": "iaas" };
-  var LAYER_Y = { L1: 84, L2: 66, L3: 48, L4: 30, L5: 12 };
   var LAYER_FRAME = {
     L1: "Business and usage security. Business processes, acceptable use, authority, human oversight.",
     L2: "Information and data security. Data protection, privacy, provenance, poisoning, exfiltration.",
@@ -117,29 +107,12 @@
     ["manufacturing", "Manufacturing", "/data/manufacturing-controls.json"],
     ["tapestry", "Tapestry", "/data/tapestry-controls.json"]
   ];
-  var FALLBACK = {
-    layer: "#334155",
-    persona: "#166534",
-    model: "#334155",
-    control: "#1e40af",
-    risk: "#9f1239",
-    policy: "#334155",
-    topic: "#334155",
-    edge: "#475569",
-    dim: "#94a3b8",
-    label: "#1a2332",
-    stage: "#ffffff"
-  };
   var GAP_NOTE = "This control isn't in any operating model filter yet.";
 
-  var graphEl = document.getElementById("graph");
-  var graphWrap = graphEl.parentNode;
-  var graphEmpty = document.getElementById("graph-empty");
+  var chainEmpty = document.getElementById("chain-empty");
   var chainEl = document.getElementById("chain");
   var chainBoard = document.getElementById("chain-board");
   var chainModelNote = document.getElementById("chain-model-note");
-  var graphWorkspaceHeading = document.getElementById("graph-workspace-heading");
-  var gestureEl = document.getElementById("map-gesture");
   var statusEl = document.getElementById("map-status");
   var errorEl = document.getElementById("map-error");
   var errorBox = document.getElementById("map-error-box");
@@ -155,18 +128,10 @@
   var searchInput = document.getElementById("node-search");
   var searchResults = document.getElementById("search-results");
   var searchNote = document.getElementById("search-note");
-  var suggestionsWrap = document.getElementById("suggestions-wrap");
-  var suggestions = document.getElementById("suggestions");
-  var riskSuggestions = document.getElementById("risk-suggestions");
-  var riskPickRow = document.getElementById("risk-pick");
-  var controlPickRow = document.getElementById("control-pick");
   var modelList = document.getElementById("model-filter-list");
   var modelNote = document.getElementById("model-note");
   var layerList = document.getElementById("layer-filter-list");
-  var controlSourceNote = document.getElementById("control-source-note");
   var tapestryInput = document.getElementById("show-tapestry");
-  var widenBtn = document.getElementById("widen-view");
-  var chainBtn = document.getElementById("show-chain");
   var contextBtn = document.getElementById("show-context");
   var contextBoard = document.getElementById("context-board");
   var startBtn = document.getElementById("start-one");
@@ -182,7 +147,7 @@
   var detailsChain = document.getElementById("details-chain");
   var connectionsHeading = document.getElementById("connections-heading");
   var clearBtn = document.getElementById("clear-selection");
-  var clearGraphBtn = document.getElementById("clear-graph-selection");
+  var clearChainBtn = document.getElementById("clear-chain-selection");
   var entryGap = document.getElementById("entry-gap");
   var entryAccount = document.getElementById("entry-account-panel");
   var personaList = document.getElementById("persona-list");
@@ -192,22 +157,11 @@
   var jumpChain = document.getElementById("jump-chain");
   var showAllBtn = document.getElementById("show-all-results");
   var showAllMatches = false;
-  var showGraphBtn = document.getElementById("show-graph");
-  var hideGraphBtn = document.getElementById("hide-graph");
-  var exploreFromDetailsBtn = document.getElementById("explore-from-details");
-  var graphFitBtn = document.getElementById("graph-fit");
-  var graphZoomInBtn = document.getElementById("graph-zoom-in");
-  var graphZoomOutBtn = document.getElementById("graph-zoom-out");
-  var graphResetBtn = document.getElementById("graph-reset");
-  var widenBtnGraph = document.getElementById("widen-view-graph");
-  var graphKindLegend = document.getElementById("graph-kind-legend");
-  var jumpGraph = document.getElementById("jump-graph");
-  var graphWorkspace = document.getElementById("graph-workspace");
+  var chainWorkspace = document.getElementById("chain-workspace");
   var mapPanel = document.querySelector(".map-panel");
   var summaryEl = document.getElementById("filter-summary");
   var finderEl = document.querySelector(".map-stage");
   var coverageMode = new URLSearchParams(location.search).get("page") === "coverage";
-  var graphOpen = false;
   var restoringHistory = false;
   /* details = record pane. viz = chain / neighbor graph / layers workspace. */
   var panelWorkspace = "details";
@@ -228,8 +182,6 @@
   var detailsSlot = document.getElementById("chain-details-slot");
 
   var graph = null;
-  var renderer = null;
-  var palette = null;
   var respLabel = {};
   var coreIds = {};
   var modelShort = { all: "All" };
@@ -245,14 +197,11 @@
   var view = "search";
   var root = null;
   var selected = null;
-  var wide = false;
   var showTapestry = false;
   var modelFilter = "all";
   var layerFilter = "all";
   var entry = "";
   var personaPick = "";
-  var focusSet = {};
-  var neighborMap = {};
   var catalog = null;
   var currentChain = null;
   var chainFocus = "";
@@ -260,17 +209,6 @@
   var linkNote = "";
   var skippedModels = {};
   var missingLinks = [];
-
-  function readPalette() {
-    var cs = getComputedStyle(document.documentElement);
-    var out = {};
-    ["layer", "persona", "model", "risk", "control", "policy", "topic", "edge", "dim", "label", "stage"].forEach(function (key) {
-      var token = key === "label" ? "--ink" : key === "stage" ? "--surface" : "--map-" + key;
-      var value = cs.getPropertyValue(token).trim();
-      out[key] = value || FALLBACK[key];
-    });
-    return out;
-  }
 
   function showError(message, focusRetry) {
     errorBox.hidden = false;
@@ -313,7 +251,6 @@
       .concat(attrs.searchExtra || [])
       .filter(Boolean);
     attrs.search = searchBits.join(" ").toLowerCase();
-    attrs.size = SIZE[attrs.kind];
     graph.addNode(id, attrs);
   }
 
@@ -323,23 +260,7 @@
       return;
     }
     if (graph.hasUndirectedEdge(source, target)) return;
-    attr.size = 0.6;
     graph.addUndirectedEdge(source, target, attr);
-  }
-
-  function placeColumn(ids, x, y0, y1) {
-    var step = ids.length > 1 ? (y1 - y0) / (ids.length - 1) : 0;
-    ids.forEach(function (id, i) {
-      graph.setNodeAttribute(id, "x", x);
-      graph.setNodeAttribute(id, "y", y0 + step * i);
-    });
-  }
-
-  function placeGrid(ids, x0, y0, cols, dx, dy) {
-    ids.forEach(function (id, i) {
-      graph.setNodeAttribute(id, "x", x0 + (i % cols) * dx);
-      graph.setNodeAttribute(id, "y", y0 + Math.floor(i / cols) * dy);
-    });
   }
 
   function controlIsTapestry(control, fileProvenance, extIds) {
@@ -460,9 +381,7 @@
         name: layer.id + " " + layer.name,
         // L5 shows its full SRF name, "AI Model Provider". The other layers keep their short labels.
         label: layer.id + " " + (layer.id === "L5" ? layer.name : layer.short),
-        ref: layer.id,
-        x: 22,
-        y: LAYER_Y[layer.id] || 0
+        ref: layer.id
       });
     });
 
@@ -482,9 +401,7 @@
         kind: "model",
         name: model.name,
         label: model.short || model.id,
-        ref: model.id,
-        x: 18 + i * 18,
-        y: 104
+        ref: model.id
       });
     });
     extModels.forEach(function (model, i) {
@@ -495,9 +412,7 @@
         label: model.short || model.id,
         ref: model.id,
         tapestry: true,
-        provenance: "proposed-extension",
-        x: 18 + (models.length + i) * 18,
-        y: 104
+        provenance: "proposed-extension"
       });
     });
 
@@ -532,9 +447,7 @@
         ref: persona.id,
         provenance: persona.provenance || "",
         tapestry: tapestry,
-        srfLayers: persona.srf_layers || [],
-        x: 0,
-        y: 0
+        srfLayers: persona.srf_layers || []
       });
       (persona.srf_layers || []).forEach(function (layerId) {
         link(id, "layer:" + layerId, { type: "persona-layer" });
@@ -553,9 +466,7 @@
         ref: spec.id,
         specializes: spec.specializes || "",
         tapestry: spec.provenance === "proposed-extension",
-        srfLayers: spec.srf_layers || [],
-        x: 0,
-        y: 0
+        srfLayers: spec.srf_layers || []
       });
       (spec.srf_layers || []).forEach(function (layerId) {
         link(id, "layer:" + layerId, { type: "persona-layer" });
@@ -575,9 +486,7 @@
         kind: "policy",
         name: level.label,
         label: level.label,
-        ref: level.key,
-        x: 0,
-        y: 0
+        ref: level.key
       });
       policyLookup[level.key] = id;
       if (level.label) policyLookup[String(level.label).toLowerCase()] = id;
@@ -595,9 +504,7 @@
         kind: "topic",
         name: section.title,
         label: section.title,
-        ref: key,
-        x: 0,
-        y: 0
+        ref: key
       });
     });
     topicIds.sort(function (a, b) {
@@ -605,7 +512,6 @@
     });
     placeGrid(topicIds, 78, 16, 4, 8, 14);
 
-    var controlsByLayer = { L1: [], L2: [], L3: [], L4: [], L5: [] };
     (data.controlFiles || []).forEach(function (file) {
       var controls = (file.json && file.json.controls) || [];
       controls.forEach(function (control) {
@@ -661,12 +567,9 @@
           evidenceDetail: evidenceParts(control).detail,
           crossLayerNote: control.cross_layer_note || "",
           tapestry: tapestry,
-          provenance: tapestry ? "proposed-extension" : (control.provenance || ""),
-          x: 0,
-          y: 0
+          provenance: tapestry ? "proposed-extension" : (control.provenance || "")
         });
         catalog.byFull[fullId] = id;
-        if (controlsByLayer[control.layer]) controlsByLayer[control.layer].push(id);
         if (control.layer) link(id, "layer:" + control.layer, { type: "control-layer" });
         if (control.accountable_persona) {
           link(id, "persona:" + control.accountable_persona, { type: "control-persona" });
@@ -682,15 +585,6 @@
         var policyId = policyNodeFor(control, policyLookup);
         if (policyId) link(id, policyId, { type: "control-policy" });
       });
-    });
-    Object.keys(controlsByLayer).forEach(function (layerId) {
-      var ids = controlsByLayer[layerId];
-      var cols = 10;
-      var dy = 1.35;
-      var rows = Math.max(1, Math.ceil(ids.length / cols));
-      var originY = (LAYER_Y[layerId] || 0) - ((rows - 1) * dy) / 2;
-      // x = 49 leaves room for the longest layer label, "L5 AI Model Provider".
-      placeGrid(ids, 49, originY, cols, 2.15, dy);
     });
 
     var riskIds = Object.keys(catalog.threats);
@@ -709,9 +603,7 @@
         label: threat.name,
         ref: threatId,
         layer: threat.srf_layer || "",
-        searchExtra: threatSearchText(threat),
-        x: -28,
-        y: y
+        searchExtra: threatSearchText(threat)
       });
       (threat.related_controls || []).forEach(function (fullId) {
         var controlId = catalog.byFull[fullId];
@@ -742,194 +634,6 @@
    * control in another layer. */
   function layerAllowed(attrs) {
     return !!attrs && (layerFilter === "all" || attrs.layer === layerFilter);
-  }
-
-  function nodeVisible(id) {
-    if (!graph || !graph.hasNode(id)) return false;
-    var attrs = graph.getNodeAttributes(id);
-    if (!nodeAllowed(attrs)) return false;
-    if (view !== "focus") return false;
-    return !!focusSet[id];
-  }
-
-  function edgeVisible(source, target) {
-    return nodeVisible(source) && nodeVisible(target);
-  }
-
-  function personaFocusId() {
-    return !root && personaPick && graph.hasNode("persona:" + personaPick) ? "persona:" + personaPick : "";
-  }
-
-  function personaHasControls() {
-    return Object.keys(focusSet).some(function (id) { return graph.getNodeAttribute(id, "kind") === "control"; });
-  }
-
-  function rebuildFocus() {
-    focusSet = {};
-    var focusRoot = personaFocusId() || (root && graph.hasNode(root) ? root : "");
-    if (view !== "focus" || !focusRoot) return;
-    if (!nodeAllowed(graph.getNodeAttributes(focusRoot))) return;
-    focusSet[focusRoot] = true;
-    var frontier = [focusRoot];
-    var hops = wide ? 2 : 1;
-    for (var hop = 0; hop < hops; hop++) {
-      var next = [];
-      frontier.forEach(function (id) {
-        graph.forEachNeighbor(id, function (neighbor) {
-          if (focusSet[neighbor]) return;
-          var attrs = graph.getNodeAttributes(neighbor);
-          if (!nodeAllowed(attrs)) return;
-          if (hop > 0 && (attrs.kind === "control" || attrs.kind === "topic")) return;
-          focusSet[neighbor] = true;
-          next.push(neighbor);
-        });
-      });
-      frontier = next;
-    }
-  }
-
-  function rebuildNeighbors() {
-    neighborMap = {};
-    if (!selected || !graph.hasNode(selected)) return;
-    graph.forEachNeighbor(selected, function (neighbor) {
-      if (view === "focus") {
-        if (focusSet[neighbor]) neighborMap[neighbor] = true;
-        return;
-      }
-      if (nodeVisible(neighbor)) neighborMap[neighbor] = true;
-    });
-  }
-
-  /* Operating-model and policy names are short anchors. On a wide canvas
-   * they are forced on, so the label grid cannot drop AI-SaaS, Agent-PaaS,
-   * or the five policy levels at the default zoom. On a narrow canvas they
-   * stay on "auto": the grid may cull them until a zoom makes room. */
-  function anchorLabelsForced() {
-    return !!(graphEl && graphEl.clientWidth >= 700);
-  }
-
-  function labelMode(key, attrs, hovered) {
-    if (key === selected || hovered) return "visible";
-    if (view === "focus") return "visible";
-    if (selected && !neighborMap[key]) return "hidden";
-    if (attrs.kind === "layer") return "visible";
-    if ((attrs.kind === "model" || attrs.kind === "policy") && anchorLabelsForced()) return "visible";
-    if (attrs.kind === "persona" || attrs.kind === "model" || attrs.kind === "policy" || attrs.kind === "risk") return "auto";
-    return "hidden";
-  }
-
-  var labelWidthCache = {};
-  var labelMeasureCtx = null;
-
-  function labelPixelWidth(text) {
-    var key = String(text || "");
-    if (Object.prototype.hasOwnProperty.call(labelWidthCache, key)) return labelWidthCache[key];
-    var width = key.length * 7;
-    if (!labelMeasureCtx) {
-      var canvas = document.createElement("canvas");
-      labelMeasureCtx = canvas.getContext("2d");
-    }
-    if (labelMeasureCtx) {
-      labelMeasureCtx.font = "12px sans-serif";
-      width = labelMeasureCtx.measureText(key).width;
-    }
-    labelWidthCache[key] = width;
-    return width;
-  }
-
-  /* Sigma draws the name to the right of the node. A topic on the right
-     edge, such as "Ephemeral Execution and Ephemeral Compute", then runs
-     off the canvas. Put the name on the side with room, and shrink it
-     only when neither side can hold the full 12px name. */
-  function labelPlacement(attrs) {
-    var side = (view === "focus" || !attrs || attrs.kind !== "persona") ? "right" : "left";
-    var size = 12;
-    if (!renderer || !attrs || attrs.x == null || attrs.y == null) return { side: side, size: size };
-    var dims = renderer.getDimensions();
-    if (!dims || !dims.width) return { side: side, size: size };
-    var point;
-    try {
-      point = renderer.graphToViewport({ x: attrs.x, y: attrs.y });
-    } catch (err) {
-      return { side: side, size: size };
-    }
-    if (!point || !isFinite(point.x)) return { side: side, size: size };
-    var text = attrs.label || "";
-    if (!text) return { side: side, size: size };
-    var full = labelPixelWidth(text);
-    var roomRight = dims.width - point.x;
-    var roomLeft = point.x;
-    var room = (side === "left" ? roomLeft : roomRight) - 28;
-    var altSide = side === "left" ? "right" : "left";
-    var altRoom = (altSide === "left" ? roomLeft : roomRight) - 28;
-    if (full > room && altRoom > room) {
-      side = altSide;
-      room = altRoom;
-    }
-    if (full > room && room > 0) {
-      var fitted = Math.floor(12 * room / full);
-      if (fitted < 1) fitted = 1;
-      if (fitted > 12) fitted = 12;
-      size = fitted;
-    }
-    return { side: side, size: size };
-  }
-
-  function labelPlate(mode, kind) {
-    if (mode === "hidden") return {};
-    if (kind !== "layer" && kind !== "persona" && kind !== "model" && kind !== "policy" && kind !== "risk") {
-      if (!(kind === "control" && view === "focus")) return {};
-    }
-    return {
-      labelBackgroundColor: palette.stage,
-      labelBackgroundPadding: 4,
-      labelDepth: "topNodes"
-    };
-  }
-
-  function nodeReducer(key, data, attrs, state) {
-    if (!nodeVisible(key)) return { visibility: "hidden", labelVisibility: "hidden" };
-    var hovered = !!(state && state.isHovered);
-    var color = palette[attrs.kind] || FALLBACK[attrs.kind];
-    var inContext = view !== "full" || !selected || key === selected || neighborMap[key] || hovered;
-    if (!inContext) {
-      return {
-        visibility: "visible",
-        color: palette.dim,
-        labelColor: palette.dim,
-        labelVisibility: "hidden",
-        zIndex: 0,
-        highlighted: false,
-        cursor: "pointer"
-      };
-    }
-    var showLabel = labelMode(key, attrs, hovered);
-    var place = showLabel === "hidden" ? null : labelPlacement(attrs);
-    var z = key === selected ? 4 : (neighborMap[key] || hovered) ? 3 : (attrs.kind === "layer" || attrs.kind === "model" ? 2 : 1);
-    return Object.assign({
-      visibility: "visible",
-      color: color,
-      labelColor: palette.label,
-      labelVisibility: showLabel,
-      labelPosition: place ? place.side : ((view === "focus" || attrs.kind !== "persona") ? "right" : "left"),
-      labelSize: place ? place.size : 12,
-      zIndex: z,
-      size: key === selected ? attrs.size * 1.25 : attrs.size,
-      highlighted: key === selected,
-      cursor: "pointer"
-    }, labelPlate(showLabel, attrs.kind));
-  }
-
-  function edgeReducer(key) {
-    var source = graph.source(key);
-    var target = graph.target(key);
-    var type = graph.getEdgeAttribute(key, "type") || "";
-    if (!edgeVisible(source, target, type)) return { visibility: "hidden" };
-    return {
-      visibility: "visible",
-      color: palette.edge,
-      size: selected ? 1.8 : 1.1
-    };
   }
 
   function relationPhrase(fromId, attr) {
@@ -1603,14 +1307,20 @@
     return !!list && list.indexOf(id) !== -1;
   }
 
-  /* Persona chains narrow left to right: a risk limits the obligations that its
-     controls cite, and an obligation or a risk limits the controls. Other chains
-     show every card. */
+  /* Column narrowing. While NARROW_COLUMNS is true, a pick in the Risk or
+     Obligation column limits the columns to its right: a risk limits the
+     obligations its controls cite, and a risk or an obligation limits the
+     controls. Set the flag to false and every column keeps all of its cards.
+     This function is the only place that applies the rule. */
+  var NARROW_COLUMNS = true;
+
+  function fullColumns(chain) {
+    return { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
+  }
+
   function narrowedColumns(chain) {
-    if (chain.startKind !== "persona") {
-      return { risk: chain.risks, obligation: chain.obligations, control: chain.controls, accountable: chain.personaCards };
-    }
-    var links = chain.controlLinks || {};
+    if (!NARROW_COLUMNS || !chain.controlLinks) return fullColumns(chain);
+    var links = chain.controlLinks;
     var picks = chainPicks;
     var controls = chain.controls.filter(function (card) {
       var own = links[card.id] || { risks: [], obligations: [] };
@@ -1626,11 +1336,19 @@
       });
       obligations = chain.obligations.filter(function (card) { return cited[card.id]; });
     }
+    var accountable = chain.personaCards;
+    if (chain.startKind === "persona") {
+      accountable = controls.length ? chain.personaCards : [];
+    } else {
+      accountable = chain.personaCards.filter(function (card) {
+        return controls.some(function (control) { return control.id === card.controlId; });
+      });
+    }
     return {
       risk: chain.risks,
       obligation: obligations,
       control: controls,
-      accountable: controls.length ? chain.personaCards : []
+      accountable: accountable
     };
   }
 
@@ -1651,7 +1369,7 @@
   }
 
   function shownChain(chain) {
-    if (!chain || chain.startKind !== "persona") return chain;
+    if (!chain || !chain.controlLinks) return chain;
     var cols = narrowedColumns(chain);
     var copy = {};
     Object.keys(chain).forEach(function (key) { copy[key] = chain[key]; });
@@ -1659,14 +1377,21 @@
     copy.obligations = cols.obligation;
     copy.controls = cols.control;
     copy.personaCards = cols.accountable;
-    copy.personaCount = cols.accountable.length ? chain.personaCount : 0;
+    if (chain.startKind === "persona") {
+      copy.personaCount = cols.accountable.length ? chain.personaCount : 0;
+    } else {
+      copy.personaCount = 0;
+      cols.accountable.forEach(function (card) {
+        card.lines.forEach(function (line) { if (!line.missing) copy.personaCount += 1; });
+      });
+    }
     return copy;
   }
 
   /* The details panel describes the picked records. Each picked column
      collapses to its one record, and the other columns keep only what links to it. */
   function detailsScope(chain) {
-    if (!chain || chain.startKind !== "persona") return chain;
+    if (!chain || !chain.controlLinks) return chain;
     var links = chain.controlLinks || {};
     var picks = chainPicks;
     var cols = narrowedColumns(chain);
@@ -2243,7 +1968,7 @@
     if (inChain) {
       if (detailsEl.parentNode !== detailsSlot) detailsSlot.appendChild(detailsEl);
     } else if (detailsEl.parentNode !== mapPanel) {
-      mapPanel.insertBefore(detailsEl, graphWorkspace);
+      mapPanel.insertBefore(detailsEl, chainWorkspace);
     }
   }
 
@@ -3584,148 +3309,6 @@
     opener = null;
   }
 
-  function openGraph(push) {
-    rememberOpener();
-    panelWorkspace = "viz";
-    if (view === "chain" && (root || personaFocusId())) {
-      /* Keep the ROCA chain as the relationship visualization. Neighbor
-         graph is available from Widen the view / Show the chain toggles. */
-      commit(push);
-      revealChain();
-      hideGraphBtn.focus({ preventScroll: true });
-      return;
-    }
-    if (view === "search") {
-      graphOpen = true;
-      commit(push);
-      if (renderer) frameAll();
-    } else if (view === "context") {
-      commit(push);
-    } else if (root && graph.hasNode(root)) {
-      view = "focus";
-      wide = false;
-      commit(push);
-      if (renderer) frameFocus();
-    } else if (personaFocusId()) {
-      view = "focus";
-      wide = false;
-      commit(push);
-      if (renderer) frameFocus();
-    } else {
-      graphOpen = true;
-      view = "search";
-      commit(push);
-      if (renderer) frameAll();
-    }
-    if (mapPanel && narrowQuery.matches) mapPanel.scrollTop = 0;
-    hideGraphBtn.focus({ preventScroll: true });
-  }
-
-  function closeGraph(push) {
-    if (view === "search" && graphOpen && !root && !personaPick) {
-      graphOpen = false;
-      panelWorkspace = "details";
-      commit(push);
-      restoreOpener();
-      return;
-    }
-    if (view === "focus" && root && graph.hasNode(root) && !graph.getNodeAttribute(root, "tapestry")) {
-      view = "chain";
-      wide = false;
-      chainFocus = root;
-      selected = root;
-      panelWorkspace = "details";
-      commit(push);
-      revealDetails(true);
-      return;
-    }
-    if (view === "focus" && personaFocusId()) {
-      view = "chain";
-      wide = false;
-      panelWorkspace = "details";
-      commit(push);
-      revealDetails(true);
-      return;
-    }
-    if (view === "context" && !root && !personaPick) {
-      panelWorkspace = "details";
-      showSearch(push);
-      restoreOpener();
-      return;
-    }
-    panelWorkspace = "details";
-    if (view === "chain" || root || personaPick) {
-      commit(push);
-      revealDetails(true);
-      return;
-    }
-    graphOpen = false;
-    commit(push);
-    restoreOpener();
-  }
-
-  function stepGraphZoom(direction) {
-    if (!renderer || view !== "focus") return;
-    var camera = renderer.getCamera();
-    var state = camera.getState();
-    var ratio = state.ratio * (direction < 0 ? 0.8 : 1.25);
-    if (ratio < 0.05) ratio = 0.05;
-    if (ratio > 1.6) ratio = 1.6;
-    camera.animate({ x: state.x, y: state.y, ratio: ratio, angle: 0 }, { duration: 160 });
-  }
-
-  function fitGraphView() {
-    if (!renderer) return;
-    if (view === "focus") frameFocus();
-    else frameAll();
-  }
-
-  function resetGraphView() {
-    if (!renderer) return;
-    if (view === "focus" && root) {
-      wide = false;
-      commit(false);
-      frameFocus();
-      return;
-    }
-    frameAll();
-  }
-
-  function toggleWide() {
-    panelWorkspace = "viz";
-    if (view === "chain" && (root || personaFocusId())) {
-      view = "focus";
-      wide = false;
-      commit(true);
-      if (renderer) frameFocus();
-      return;
-    }
-    if (view !== "focus" || (!root && !personaFocusId())) return;
-    wide = !wide;
-    commit(true);
-    if (renderer) frameFocus();
-  }
-
-  function showChainView() {
-    if (personaFocusId() && view === "focus") {
-      view = "chain";
-      wide = false;
-      panelWorkspace = "viz";
-      commit(true);
-      revealChain();
-      return;
-    }
-    if (!root || !graph.hasNode(root)) return;
-    if (graph.getNodeAttribute(root, "tapestry")) return;
-    view = "chain";
-    wide = false;
-    chainFocus = root;
-    selected = root;
-    panelWorkspace = "viz";
-    commit(true);
-    revealChain();
-  }
-
   function setModel(id, push) {
     if (id !== "all" && !coreIds[id]) id = "all";
     if (id === modelFilter) return;
@@ -3752,76 +3335,6 @@
     }
     commit(push);
     if (renderer && view === "focus") frameFocus();
-  }
-
-  function frameAll() {
-    if (!renderer) return;
-    renderer.getCamera().animate({ x: 0.5, y: 0.5, ratio: 1, angle: 0 }, { duration: 280 });
-  }
-
-  function frameNodeIds(ids, minRatio, always, labelPad) {
-    if (!renderer || !ids.length) return;
-    var dims = renderer.getDimensions();
-    var edge = 40;
-    var allIn = true;
-    var minX = Infinity;
-    var maxX = -Infinity;
-    var minY = Infinity;
-    var maxY = -Infinity;
-    ids.forEach(function (nid) {
-      if (!graph.hasNode(nid)) return;
-      var attrs = graph.getNodeAttributes(nid);
-      if (attrs.x < minX) minX = attrs.x;
-      if (attrs.x > maxX) maxX = attrs.x;
-      if (attrs.y < minY) minY = attrs.y;
-      if (attrs.y > maxY) maxY = attrs.y;
-      var point = renderer.graphToViewport({ x: attrs.x, y: attrs.y });
-      if (point.x < edge || point.y < edge || point.x > dims.width - edge || point.y > dims.height - edge) {
-        allIn = false;
-      }
-    });
-    if (!always && allIn) return;
-    var spanX = Math.max(maxX - minX, 8);
-    var spanY = Math.max(maxY - minY, 8);
-    var padX = Math.max(spanX * 0.3, 10);
-    var padY = Math.max(spanY * 0.3, 10);
-    /* Focused persona names are drawn to the right of the node, and model
-     * names are drawn to the right as well. Keep a little extra room there
-     * so a short name is not cut off at the canvas edge. */
-    var rightPad = padX + (labelPad ? Math.max(spanX * 0.22, 8) : 0);
-    var norm = renderer.getNormalizationFunction();
-    if (typeof norm !== "function") return;
-    var a = norm({ x: minX - padX, y: minY - padY });
-    var b = norm({ x: maxX + rightPad, y: maxY + padY });
-    var ratio = Math.max(Math.abs(b.x - a.x), Math.abs(b.y - a.y));
-    var cx = (a.x + b.x) / 2;
-    var cy = (a.y + b.y) / 2;
-    if (ratio < minRatio) ratio = minRatio;
-    if (ratio > 1) {
-      ratio = 1;
-      cx = 0.5;
-      cy = 0.5;
-    }
-    renderer.getCamera().animate({
-      x: cx,
-      y: cy,
-      ratio: ratio,
-      angle: 0
-    }, { duration: 280 });
-  }
-
-  /* Frame the selected node and its neighbors. Do not zoom closer than
-   * about 55% of the map, so the surrounding nodes stay in view. */
-  function frameSelection(id) {
-    var ids = [id];
-    graph.forEachNeighbor(id, function (neighbor) {
-      if (nodeVisible(neighbor)) ids.push(neighbor);
-    });
-    frameNodeIds(ids, 0.55, false);
-  }
-
-  function frameFocus() {
-    frameNodeIds(Object.keys(focusSet), 0.12, true, true);
   }
 
   function activeButtons() {
@@ -3875,21 +3388,6 @@
     modelNote.textContent = mapped
       ? mapped + " controls " + verb + " a sector model name, such as SaMD-Cloud or OT-Edge. data/sector-model-map.json maps each name to one of these four SRF models. The sector name stays on the control. This filter uses that mapping."
       : "Sector model names are mapped to these four SRF models by data/sector-model-map.json. The sector name stays on the control.";
-  }
-
-  function safeRefresh() {
-    if (!renderer) return;
-    if (graphWrap.classList.contains("graph-wrap--off") || graphWrap.classList.contains("graph-wrap--context")) return;
-    if (!graphEl.clientWidth || !graphEl.clientHeight) return;
-    if (typeof renderer.resize === "function") renderer.resize();
-    renderer.refresh();
-  }
-
-  function applyScheme() {
-    palette = readPalette();
-    graphEl.style.backgroundColor = palette.stage;
-    safeRefresh();
-    if (statusEl.dataset.ready === "true") publish();
   }
 
   function start() {
