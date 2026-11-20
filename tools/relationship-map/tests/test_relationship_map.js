@@ -621,6 +621,96 @@ async function testGraphToggle(browser, base) {
   await phone.close();
 }
 
+async function testPersonaGraph(browser, base) {
+  console.log("\n## Visualization: a picked persona opens the ROCA chain, with the graph as an option");
+  const read = (page) => page.evaluate(() => {
+    const cols = {};
+    document.querySelectorAll("#chain-board .chain-col").forEach((col) => {
+      cols[col.dataset.column] = {
+        heading: col.querySelector("h3").textContent.trim(),
+        cards: col.querySelectorAll("button[data-chain-id]").length,
+        more: Array.from(col.querySelectorAll("button.chain-more")).map((b) => b.textContent)
+      };
+    });
+    const accountable = document.querySelector('#chain-board .chain-col[data-column="accountable"]');
+    const hide = document.getElementById("hide-graph");
+    return {
+      cols: cols,
+      accountableText: accountable ? accountable.textContent : "",
+      status: document.getElementById("map-status").textContent,
+      chainHidden: document.getElementById("chain").hidden,
+      focusGraphShown: !document.querySelector(".graph-wrap").classList.contains("graph-wrap--off"),
+      empty: document.getElementById("graph-empty") ? { hidden: document.getElementById("graph-empty").hidden, text: document.getElementById("graph-empty").textContent } : null,
+      widen: { hidden: document.getElementById("widen-view").hidden, text: document.getElementById("widen-view").textContent },
+      chainBtnHidden: document.getElementById("show-chain").hidden,
+      workspaceHeading: document.getElementById("graph-workspace-heading").textContent,
+      chainNote: document.getElementById("chain-model-note").textContent,
+      workspaceHidden: document.getElementById("graph-workspace").hidden,
+      hideHidden: hide.hidden,
+      search: location.search,
+      heading: document.getElementById("details-heading").textContent,
+      overflow: document.documentElement.scrollWidth > window.innerWidth + 1
+    };
+  });
+  for (const [width, height] of [[1280, 800], [375, 812]]) {
+    const page = await openPage(browser, base, width, height, "?type=persona&node=ai-platform-provider&view=list");
+    await clickNow(page, "#explore-from-details");
+    await sleep(900);
+    const chain = await read(page);
+    const names = ["risk", "obligation", "control", "accountable"];
+    check("persona chain at " + width + " shows Risk, Obligation, Control, and Accountable columns", names.every((n) => chain.cols[n]) && !chain.chainHidden && !chain.workspaceHidden, JSON.stringify(chain.cols));
+    check("the persona is in the Accountable column at " + width, /AI Platform Provider/.test(chain.accountableText) && chain.cols.accountable.cards === 1, chain.accountableText);
+    const counts = /Showing (\d+) risks?, (\d+) obligations?, (\d+) controls?, and (\d+) accountable personas?/.exec(chain.status);
+    check("the status line counts accountable personas and obligations above zero at " + width, !!counts && +counts[1] > 0 && +counts[2] > 0 && +counts[3] > 0 && +counts[4] > 0 && !/Choose a risk or a control/.test(chain.status), chain.status);
+    check("the workspace heading reads ROCA chain in the chain view at " + width, chain.workspaceHeading === "ROCA chain", chain.workspaceHeading);
+    check("persona chains show the persona line and not the generic model note at " + width, chain.chainNote === "These are the controls that name this persona as accountable, with their risks and obligations." && chain.chainNote.indexOf("All shows one accountable persona") === -1, chain.chainNote);
+    check("long columns are collapsed with a Show more control at " + width, chain.cols.control.cards <= 8 && chain.cols.control.more.some((t) => /^Show \d+ more$/.test(t)), JSON.stringify(chain.cols.control));
+    await page.evaluate(() => { document.querySelector('button.chain-more[data-more-column="control"]').click(); });
+    await sleep(300);
+    const open = await read(page);
+    check("Show more reveals every control and Show fewer is offered at " + width, open.cols.control.cards === +counts[3] && open.cols.control.more.indexOf("Show fewer") !== -1, JSON.stringify(open.cols.control));
+    check("no horizontal page overflow in the persona chain at " + width, !open.overflow);
+    if (width === 1280) {
+      const toGraph = await page.evaluate(() => { const b = document.getElementById("widen-view"); return { hidden: b.hidden, text: b.textContent }; });
+      check("the chain offers the relationship graph", !toGraph.hidden && /relationship graph/.test(toGraph.text), JSON.stringify(toGraph));
+      await clickNow(page, "#widen-view");
+      await sleep(900);
+      const forced = await read(page);
+      check("the graph toggle opens the force graph on the persona", forced.chainHidden && forced.focusGraphShown && /Showing this persona and \d+ nodes? next to it/.test(forced.status) && !forced.chainBtnHidden, JSON.stringify(forced));
+      check("the workspace heading reads Relationship graph after the graph toggle", forced.workspaceHeading === "Relationship graph", forced.workspaceHeading);
+      await clickNow(page, "#show-chain");
+      await sleep(600);
+      const again = await read(page);
+      check("Show the chain returns to the persona chain", !again.chainHidden && !!again.cols.accountable, JSON.stringify(again.cols));
+      check("the workspace heading returns to ROCA chain after Show the chain", again.workspaceHeading === "ROCA chain", again.workspaceHeading);
+    }
+    await clickNow(page, "#hide-graph");
+    await sleep(600);
+    const back = await read(page);
+    check("Back to details at " + width + " returns to the persona", /node=ai-platform-provider/.test(back.search) && /view=list/.test(back.search) && /Platform Provider/i.test(back.heading), JSON.stringify({ search: back.search, heading: back.heading }));
+    check("no page errors in the persona chain at " + width, page.__errors.length === 0, page.__errors.join("; "));
+    await page.close();
+  }
+  const bare = await openPage(browser, base, 1280, 800, "?type=persona&node=ai-system-users&view=list");
+  await clickNow(bare, "#explore-from-details");
+  await sleep(900);
+  const none = await read(bare);
+  const gapText = await bare.evaluate(() => document.getElementById("chain-board").textContent);
+  check("a persona with no controls says so in the chain", !none.workspaceHidden && !none.chainHidden && /No control names this persona yet\./.test(gapText), gapText.slice(0, 300));
+  await clickNow(bare, "#widen-view");
+  await sleep(700);
+  const noneGraph = await read(bare);
+  check("the force graph for that persona shows the same message", /No control names this persona yet/.test(noneGraph.status) && noneGraph.empty && !noneGraph.empty.hidden && /No control names this persona yet/.test(noneGraph.empty.text), JSON.stringify(noneGraph.empty) + noneGraph.status);
+  await bare.close();
+
+  const riskPage = await openPage(browser, base, 1280, 800, "?risk=directpromptinjection");
+  await clickNow(riskPage, "#explore-from-details");
+  await sleep(900);
+  const riskChain = await read(riskPage);
+  check("a risk chain keeps the generic model note and shows the ROCA chain heading", riskChain.chainNote.indexOf("All shows one accountable persona for each operating model") !== -1 && riskChain.chainNote.indexOf("These are the controls that name this persona") === -1 && riskChain.workspaceHeading === "ROCA chain", JSON.stringify({ note: riskChain.chainNote, heading: riskChain.workspaceHeading }));
+  await riskPage.close();
+}
+
 async function testListbox(browser, base) {
   console.log("\n## Search listbox: ARIA combobox, grouped options, keyboard");
   const page = await openPage(browser, base, 1280, 800, "");
@@ -1406,6 +1496,7 @@ async function main() {
     await testNavigation(browser, base);
     await testListView(browser, base);
     await testGraphToggle(browser, base);
+    await testPersonaGraph(browser, base);
     await testListbox(browser, base);
     await testPhoneSheet(browser, base);
     await testDetailGraphSplit(browser, base);
