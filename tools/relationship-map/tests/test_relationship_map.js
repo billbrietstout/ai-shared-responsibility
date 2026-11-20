@@ -643,6 +643,8 @@ async function testPersonaGraph(browser, base) {
       empty: document.getElementById("graph-empty") ? { hidden: document.getElementById("graph-empty").hidden, text: document.getElementById("graph-empty").textContent } : null,
       widen: { hidden: document.getElementById("widen-view").hidden, text: document.getElementById("widen-view").textContent },
       chainBtnHidden: document.getElementById("show-chain").hidden,
+      workspaceHeading: document.getElementById("graph-workspace-heading").textContent,
+      chainNote: document.getElementById("chain-model-note").textContent,
       workspaceHidden: document.getElementById("graph-workspace").hidden,
       hideHidden: hide.hidden,
       search: location.search,
@@ -660,6 +662,8 @@ async function testPersonaGraph(browser, base) {
     check("the persona is in the Accountable column at " + width, /AI Platform Provider/.test(chain.accountableText) && chain.cols.accountable.cards === 1, chain.accountableText);
     const counts = /Showing (\d+) risks?, (\d+) obligations?, (\d+) controls?, and (\d+) accountable personas?/.exec(chain.status);
     check("the status line counts accountable personas and obligations above zero at " + width, !!counts && +counts[1] > 0 && +counts[2] > 0 && +counts[3] > 0 && +counts[4] > 0 && !/Choose a risk or a control/.test(chain.status), chain.status);
+    check("the workspace heading reads ROCA chain in the chain view at " + width, chain.workspaceHeading === "ROCA chain", chain.workspaceHeading);
+    check("persona chains show the persona line and not the generic model note at " + width, chain.chainNote === "These are the controls that name this persona as accountable, with their risks and obligations." && chain.chainNote.indexOf("All shows one accountable persona") === -1, chain.chainNote);
     check("long columns are collapsed with a Show more control at " + width, chain.cols.control.cards <= 8 && chain.cols.control.more.some((t) => /^Show \d+ more$/.test(t)), JSON.stringify(chain.cols.control));
     await page.evaluate(() => { document.querySelector('button.chain-more[data-more-column="control"]').click(); });
     await sleep(300);
@@ -673,10 +677,12 @@ async function testPersonaGraph(browser, base) {
       await sleep(900);
       const forced = await read(page);
       check("the graph toggle opens the force graph on the persona", forced.chainHidden && forced.focusGraphShown && /Showing this persona and \d+ nodes? next to it/.test(forced.status) && !forced.chainBtnHidden, JSON.stringify(forced));
+      check("the workspace heading reads Relationship graph after the graph toggle", forced.workspaceHeading === "Relationship graph", forced.workspaceHeading);
       await clickNow(page, "#show-chain");
       await sleep(600);
       const again = await read(page);
       check("Show the chain returns to the persona chain", !again.chainHidden && !!again.cols.accountable, JSON.stringify(again.cols));
+      check("the workspace heading returns to ROCA chain after Show the chain", again.workspaceHeading === "ROCA chain", again.workspaceHeading);
     }
     await clickNow(page, "#hide-graph");
     await sleep(600);
@@ -696,6 +702,13 @@ async function testPersonaGraph(browser, base) {
   const noneGraph = await read(bare);
   check("the force graph for that persona shows the same message", /No control names this persona yet/.test(noneGraph.status) && noneGraph.empty && !noneGraph.empty.hidden && /No control names this persona yet/.test(noneGraph.empty.text), JSON.stringify(noneGraph.empty) + noneGraph.status);
   await bare.close();
+
+  const riskPage = await openPage(browser, base, 1280, 800, "?risk=directpromptinjection");
+  await clickNow(riskPage, "#explore-from-details");
+  await sleep(900);
+  const riskChain = await read(riskPage);
+  check("a risk chain keeps the generic model note and shows the ROCA chain heading", riskChain.chainNote.indexOf("All shows one accountable persona for each operating model") !== -1 && riskChain.chainNote.indexOf("These are the controls that name this persona") === -1 && riskChain.workspaceHeading === "ROCA chain", JSON.stringify({ note: riskChain.chainNote, heading: riskChain.workspaceHeading }));
+  await riskPage.close();
 }
 
 async function testListbox(browser, base) {

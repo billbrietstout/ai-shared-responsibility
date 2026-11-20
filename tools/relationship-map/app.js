@@ -138,6 +138,7 @@
   var chainEl = document.getElementById("chain");
   var chainBoard = document.getElementById("chain-board");
   var chainModelNote = document.getElementById("chain-model-note");
+  var graphWorkspaceHeading = document.getElementById("graph-workspace-heading");
   var gestureEl = document.getElementById("map-gesture");
   var statusEl = document.getElementById("map-status");
   var errorEl = document.getElementById("map-error");
@@ -1583,7 +1584,9 @@
     chainBoard.appendChild(svg);
     var columnsWrap = makeEl("div", "chain-columns");
     chainBoard.appendChild(columnsWrap);
-    if (modelFilter === "all") {
+    if (chain.startKind === "persona") {
+      chainModelNote.textContent = "These are the controls that name this persona as accountable, with their risks and obligations.";
+    } else if (modelFilter === "all") {
       chainModelNote.textContent = "All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.";
     } else {
       chainModelNote.textContent = "";
@@ -2685,6 +2688,7 @@
     document.body.classList.toggle("chain-open", chainOn && vizOpen);
     if (graphWorkspace) graphWorkspace.hidden = !vizOpen;
     chainEl.hidden = !(chainOn && vizOpen);
+    graphWorkspaceHeading.textContent = chainOn ? "ROCA chain" : "Relationship graph";
     if (jumpChain) jumpChain.hidden = !(chainOn && vizOpen);
     if (jumpGraph) jumpGraph.hidden = !vizOpen;
     if (contextBoard) contextBoard.hidden = !(contextOn && vizOpen);
