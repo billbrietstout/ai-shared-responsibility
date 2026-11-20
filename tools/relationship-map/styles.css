@@ -1,30 +1,16 @@
-/* Relationship map. Kind colors meet 3:1 against --surface in both schemes. */
+/* Relationship map. Control, persona, and line colors meet 3:1 against --surface in both schemes. */
 
 :root {
-  --map-layer: #334155;
   --map-persona: #166534;
-  --map-model: #334155;
   --map-control: #1e40af;
-  --map-risk: #9f1239;
-  --map-policy: #334155;
-  --map-topic: #334155;
   --map-edge: #475569;
-  --map-dim: #94a3b8;
-  --map-label: var(--ink);
 }
 
 @media screen and (prefers-color-scheme: dark) {
   :root {
-    --map-layer: #cbd5e1;
     --map-persona: #86efac;
-    --map-model: #cbd5e1;
     --map-control: #93c5fd;
-    --map-risk: #fda4af;
-    --map-policy: #cbd5e1;
-    --map-topic: #cbd5e1;
     --map-edge: #cbd5e1;
-    --map-dim: #64748b;
-    --map-label: var(--ink);
   }
 }
 
@@ -357,7 +343,6 @@ body .page-hero__lede {
 }
 
 .map-tools,
-.graph,
 .details {
   scroll-margin-top: 76px;
 }
@@ -528,20 +513,6 @@ body .page-hero__lede {
   cursor: pointer;
 }
 
-.swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.swatch[data-swatch="layer"] { background: var(--map-layer); }
-.swatch[data-swatch="persona"] { background: var(--map-persona); }
-.swatch[data-swatch="model"] { background: var(--map-model); }
-.swatch[data-swatch="control"] { background: var(--map-control); }
-.swatch[data-swatch="risk"] { background: var(--map-risk); }
-.swatch[data-swatch="policy"] { background: var(--map-policy); }
-.swatch[data-swatch="topic"] { background: var(--map-topic); }
 
 .kind-count {
   color: var(--ink-muted);
@@ -591,21 +562,12 @@ body .page-hero__lede {
   background: var(--slate-50);
 }
 
-.graph-wrap {
+.chain-wrap {
   position: relative;
   min-width: 0;
 }
 
-.graph {
-  position: relative;
-  width: 100%;
-  height: 640px;
-  background: var(--surface);
-  border: 1px solid var(--slate-200);
-  touch-action: none;
-}
-
-.graph-empty {
+.chain-empty {
   position: absolute;
   inset: 0;
   display: flex;
@@ -617,29 +579,6 @@ body .page-hero__lede {
   font-size: var(--text-sm);
   color: var(--ink-muted);
   pointer-events: none;
-}
-
-.graph-empty[hidden] {
-  display: none;
-}
-
-.graph-wrap--chain .graph {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 640px;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.graph-wrap--chain .graph-empty {
-  display: none;
-}
-
-.graph-wrap--context .graph,
-.graph-wrap--context .graph-empty {
-  display: none;
 }
 
 .context-board {
@@ -773,7 +712,7 @@ body .page-hero__lede {
   margin-bottom: var(--sp-1);
 }
 
-.graph-wrap--chain {
+.chain-wrap--chain {
   overflow: visible;
   max-width: 100%;
 }
@@ -1099,10 +1038,6 @@ body .page-hero__lede {
   .chain-legend li {
     flex-basis: 100%;
   }
-
-  .graph {
-    height: 420px;
-  }
 }
 
 @media (max-width: 480px) {
@@ -1111,12 +1046,8 @@ body .page-hero__lede {
   }
 
   .find-form__submit,
-  .view-actions button {
+.view-actions button {
     width: 100%;
-  }
-
-  .graph {
-    height: 360px;
   }
 }
 
@@ -1196,7 +1127,7 @@ body .page-hero__lede {
 
 @media (max-width: 800px) {
   .map-jump a,
-  .chain-jump a {
+.chain-jump a {
     min-height: 44px;
   }
 
@@ -1205,7 +1136,7 @@ body .page-hero__lede {
   }
 }
 
-/* List view. Finder on the left. Record details or graph workspace on the right. */
+/* Options above, ROCA chain and record details below. */
 .map-layout {
   grid-template-columns: minmax(0, 1fr);
   gap: var(--sp-6);
@@ -1224,11 +1155,7 @@ body .page-hero__lede {
   /* Page scroll only: do not pin a nested pane. */
 }
 
-.map-page.is-workspace-graph .details {
-  display: none;
-}
-
-.map-page.is-workspace-details .graph-workspace {
+.map-page.is-workspace-open .details {
   display: none;
 }
 
@@ -1328,7 +1255,7 @@ body .page-hero__lede {
   display: none;
 }
 
-.graph-workspace {
+.chain-workspace {
   border: 1px solid var(--slate-200);
   background: var(--surface);
   padding: var(--sp-4);
@@ -1337,11 +1264,11 @@ body .page-hero__lede {
   overflow-x: hidden;
 }
 
-.graph-workspace[hidden] {
+.chain-workspace[hidden] {
   display: none;
 }
 
-.graph-workspace__bar {
+.chain-workspace__bar {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -1350,19 +1277,19 @@ body .page-hero__lede {
   margin-bottom: var(--sp-3);
 }
 
-.graph-workspace__bar h2 {
+.chain-workspace__bar h2 {
   margin: 0;
   font-size: var(--text-lg);
   line-height: var(--leading-snug);
 }
 
-.graph-workspace__actions {
+.chain-workspace__actions {
   display: flex;
   flex-wrap: wrap;
   gap: var(--sp-2);
 }
 
-.graph-workspace__actions button {
+.chain-workspace__actions button {
   font: inherit;
   font-weight: 700;
   font-size: var(--text-sm);
@@ -1375,73 +1302,21 @@ body .page-hero__lede {
   cursor: pointer;
 }
 
-.graph-workspace__actions button[hidden] {
+.chain-workspace__actions button[hidden] {
   display: none;
 }
 
-.graph-workspace__actions button:focus-visible {
+.chain-workspace__actions button:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
 
-.graph-kind-legend {
-  list-style: none;
-  margin: 0 0 var(--sp-3);
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sp-2) var(--sp-4);
-  font-size: var(--text-sm);
-}
-
-.graph-kind-legend[hidden] {
-  display: none;
-}
-
-.graph-kind-legend li {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.graph-wrap--off .graph {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.graph-wrap--off .graph-empty {
-  display: none;
-}
-
-.graph-empty {
+.chain-empty {
   position: static;
   inset: auto;
   justify-content: flex-start;
   text-align: left;
   padding: 0 0 var(--sp-3);
-}
-
-.graph-wrap--graph .graph-empty {
-  position: absolute;
-  inset: 0;
-  justify-content: center;
-  text-align: center;
-  padding: var(--sp-4);
-}
-
-.graph {
-  /* Bounded viewport for pan and zoom. Not a second page of vertical scroll. */
-  height: min(560px, 70dvh);
-  max-height: 70dvh;
-  overflow: hidden;
-}
-
-#map-gesture[hidden] {
-  display: none;
 }
 
 .filter-summary {
@@ -1627,7 +1502,7 @@ body .page-hero__lede {
   }
 
   .map-layout .details,
-  .map-layout .graph-workspace {
+.map-layout .chain-workspace {
     position: static;
     top: auto;
     border: 0;
@@ -1636,17 +1511,12 @@ body .page-hero__lede {
     min-height: min-content;
   }
 
-  .graph {
-    height: min(420px, 55dvh);
-    max-height: 55dvh;
-  }
-
   body.sheet-open {
     overflow: hidden;
   }
 
   .details__bar,
-  .graph-workspace__bar {
+.chain-workspace__bar {
     position: sticky;
     top: 0;
     z-index: 1;
@@ -1657,28 +1527,20 @@ body .page-hero__lede {
   }
 
   .details__buttons button,
-  .graph-workspace__actions button,
-  .details__actions button {
+.chain-workspace__actions button,
+.details__actions button {
     min-height: 44px;
   }
 
   .details__bar,
-  .graph-workspace__bar {
-    flex-wrap: wrap;
-  }
-
-  .details__bar h2,
-  .graph-workspace__bar h2 {
-    flex: 1 1 100%;
-  }
-
-  .details__bar {
+.chain-workspace__bar {
     flex-wrap: nowrap;
     align-items: center;
     padding: var(--sp-2) var(--sp-3);
   }
 
-  .details__bar h2 {
+  .details__bar h2,
+.chain-workspace__bar h2 {
     flex: 1 1 auto;
   }
 
@@ -1699,8 +1561,7 @@ body .page-hero__lede {
   }
 
   #jump-chain,
-  #jump-graph,
-  .map-jump a[href="#details-heading"] {
+.map-jump a[href="#details-heading"] {
     display: none;
   }
 
@@ -1708,11 +1569,7 @@ body .page-hero__lede {
     display: none;
   }
 
-  .map-page.is-workspace-graph .details {
-    display: none;
-  }
-
-  .map-page.is-workspace-details .graph-workspace {
+  .map-page.is-workspace-open .details {
     display: none;
   }
 
@@ -1850,7 +1707,7 @@ body.coverage-mode .page-hero__lede {
   margin-top: var(--sp-4);
 }
 
-.map-page.is-workspace-graph .details.details--in-chain {
+.map-page.is-workspace-open .details.details--in-chain {
   display: block;
   border: 1px solid var(--slate-300);
   border-radius: var(--radius);
@@ -1878,7 +1735,7 @@ body.coverage-mode .page-hero__lede {
 }
 
 @media (max-width: 800px) {
-  .map-page.is-workspace-graph .details.details--in-chain {
+  .map-page.is-workspace-open .details.details--in-chain {
     padding: var(--sp-3);
   }
 
@@ -1943,8 +1800,8 @@ body.coverage-mode .page-hero__lede {
   }
 
   .options .entry-account,
-  .options .find-form,
-  .options .layer-frames {
+.options .find-form,
+.options .layer-frames {
     grid-column: 1 / -1;
   }
 

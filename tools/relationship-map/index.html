@@ -56,7 +56,6 @@
         <a href="#map-filters" data-jump>Filters</a>
         <a href="#details-heading" data-jump>Node details</a>
         <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
-        <a id="jump-graph" href="#graph-workspace" data-jump hidden>Graph</a>
       </nav>
 
       <div id="preview-more" class="map-preview">
@@ -199,23 +198,9 @@
               </div>
               <div id="search-results" class="search-listbox" role="listbox" aria-label="Matches" hidden></div>
               <button id="show-all-results" class="show-all-results" type="button" hidden></button>
-              <div id="suggestions-wrap" class="pick-wrap">
-                <div id="risk-pick" class="pick-row">
-                  <label id="risk-suggestions-heading" class="suggestions-heading" for="risk-suggestions">Risk</label>
-                  <select id="risk-suggestions" class="pick-select"></select>
-                </div>
-                <div id="control-pick" class="pick-row">
-                  <label id="suggestions-heading" class="suggestions-heading" for="suggestions">Control</label>
-                  <select id="suggestions" class="pick-select"></select>
-                  <p id="control-source-note" class="filter-note">These controls come from the site's sector catalogs. They are not yet drawn from the CoSAI Risk Map controls.yaml. Narrow the list with Operating model and Layer.</p>
-                </div>
-              </div>
             </form>
 
             <div class="view-actions">
-              <button id="show-graph" type="button">Explore relationship graph</button>
-              <button id="widen-view" type="button" hidden>Widen the view</button>
-              <button id="show-chain" type="button" hidden>Show the chain</button>
               <button id="show-context" type="button">Show layers</button>
               <button id="start-one" type="button" hidden>Start from one risk or control</button>
             </div>
@@ -243,7 +228,6 @@
             </div>
             <div class="details__actions">
               <button id="copy-chain" type="button" hidden>Copy chain as Markdown</button>
-              <button id="explore-from-details" type="button" hidden>Explore relationship graph</button>
             </div>
             <p id="details-summary" class="visually-hidden" aria-live="polite"></p>
             <p id="details-live" class="visually-hidden" role="status" aria-live="polite"></p>
@@ -261,33 +245,14 @@
             </div>
           </section>
 
-          <section id="graph-workspace" class="graph-workspace" aria-labelledby="graph-workspace-heading" hidden data-llm="relationship-graph">
-            <div class="graph-workspace__bar">
-              <h2 id="graph-workspace-heading">Relationship graph</h2>
-              <div class="graph-workspace__actions" role="toolbar" aria-label="Graph controls">
-                <button id="hide-graph" type="button">Back to details</button>
-                <button id="clear-graph-selection" type="button"><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
-                <button id="graph-fit" type="button" hidden>Fit to screen</button>
-                <button id="graph-zoom-in" type="button" hidden>Zoom in</button>
-                <button id="graph-zoom-out" type="button" hidden>Zoom out</button>
-                <button id="graph-reset" type="button" hidden>Reset view</button>
-                <button id="widen-view-graph" type="button" hidden>Widen the view</button>
+          <section id="chain-workspace" class="chain-workspace" aria-labelledby="chain-workspace-heading" hidden data-llm="roca-chain">
+            <div class="chain-workspace__bar">
+              <h2 id="chain-workspace-heading">ROCA chain</h2>
+              <div class="chain-workspace__actions" role="toolbar" aria-label="Chain controls">
+                <button id="clear-chain-selection" type="button"><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
               </div>
             </div>
-            <p id="map-gesture" class="map-help">Drag to move the map. Use the scroll wheel or a pinch to zoom.</p>
-            <ul id="graph-kind-legend" class="graph-kind-legend" aria-label="Node kinds" hidden>
-              <li><span class="swatch" data-swatch="risk" aria-hidden="true"></span> Risk</li>
-              <li><span class="swatch" data-swatch="policy" aria-hidden="true"></span> Obligation</li>
-              <li><span class="swatch" data-swatch="control" aria-hidden="true"></span> Control</li>
-              <li><span class="swatch" data-swatch="persona" aria-hidden="true"></span> Persona</li>
-            </ul>
-            <div class="graph-wrap">
-              <div
-                id="graph"
-                class="graph"
-                role="img"
-                aria-label="Chain of risk, obligation, control, and accountable persona. Choose a risk or a control to begin."
-              ></div>
+            <div class="chain-wrap">
               <div id="context-board" class="context-board" hidden></div>
               <div id="chain" class="chain" hidden>
                 <h2 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h2>
@@ -326,7 +291,7 @@
                 <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
                 <div id="chain-details-slot" class="chain-details-slot"></div>
               </div>
-              <p id="graph-empty" class="graph-empty">Choose a risk or a control to see its chain.</p>
+              <p id="chain-empty" class="chain-empty">Choose a risk or a control to see its chain.</p>
             </div>
           </section>
         </div>
@@ -351,7 +316,6 @@
 
     <site-footer></site-footer>
     <script defer src="/shared/vendor/graphology-0.26.0.umd.min.js"></script>
-    <script defer src="/shared/vendor/sigma-4.0.6.min.js"></script>
     <script defer src="app.js"></script>
   </body>
 </html>
