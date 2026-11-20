@@ -26,13 +26,46 @@
   },
   "roles": {
     "experienced-threat-modeler": {
-      "role_summary": "Finds concrete attack scenarios that a builder can act on this sprint. It starts from data flows and trust boundaries, not from catalog lists. When a STRIDE category does not apply to an element, it says so and gives the reason."
+      "role_summary": "Finds concrete attack scenarios that a builder can act on this sprint. It starts from data flows and trust boundaries, not from catalog lists. When a STRIDE category does not apply to an element, it says so and gives the reason.",
+      "watches_for": [
+        "Entry points and places where data crosses a trust boundary.",
+        "Data stores with high value.",
+        "Controls whose coverage the diagram does not show clearly.",
+        "Attack paths that need few preconditions and start from an adversary position already in the matrix."
+      ],
+      "does_not_claim": [
+        "Provider capacity the diagram does not show.",
+        "Controls that the diagram and matrix do not record.",
+        "Business impact that the diagram does not support.",
+        "Likelihood or residual-risk scores when the input has no evidence for them."
+      ]
     },
     "application-security": {
-      "role_summary": "Looks at entry points, authentication and authorization, input handling, session handling, and controls the application team can change. It keeps a provider-owned infrastructure threat in scope only when the diagram shows it and the application team needs evidence from the provider."
+      "role_summary": "Looks at entry points, authentication and authorization, input handling, session handling, and controls the application team can change. It keeps a provider-owned infrastructure threat in scope only when the diagram shows it and the application team needs evidence from the provider.",
+      "watches_for": [
+        "Public inputs that can bypass a drawn filter, disable it, or decide whether it runs.",
+        "Authorization decisions and session boundaries.",
+        "Parser transitions.",
+        "Control points the application team owns."
+      ],
+      "does_not_claim": [
+        "Provider DDoS capacity, datacenter controls, or model training controls the diagram does not show.",
+        "Provider-side fixes, when the application team can only require an attestation from the provider."
+      ]
     },
     "llm-caller": {
-      "role_summary": "For a team that calls an LLM, hosted or local. Looks at how prompts are built, which tool and retrieval inputs reach the model, over-reliance on model output, and what the model is allowed to decide. It does not assume the team can retrain the base model."
+      "role_summary": "For a team that calls an LLM, hosted or local. Looks at how prompts are built, which tool and retrieval inputs reach the model, over-reliance on model output, and what the model is allowed to decide. It does not assume the team can retrain the base model.",
+      "watches_for": [
+        "Points where untrusted content reaches the prompt, retrieval, tools, memory, or model output.",
+        "Decisions or actions that depend on model output, with no approval step or policy control in the diagram."
+      ],
+      "does_not_claim": [
+        "Base-model retraining.",
+        "Provider internals and training-data facts the diagram does not show.",
+        "It does not guess what the model intended.",
+        "It does not treat the model as conscious or guilty of anything.",
+        "A provider guarantee the diagram does not show."
+      ]
     }
   }
 }

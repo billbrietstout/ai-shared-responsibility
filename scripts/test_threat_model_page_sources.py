@@ -138,6 +138,18 @@ def main() -> int:
             errors.append(f"{rid}: missing role_summary in page_text.json")
         elif summary not in roles_visible:
             errors.append(f"{rid}: role_summary is not shown in Roles")
+        t = text["roles"].get(rid, {})
+        for key in ("watches_for", "does_not_claim"):
+            items = t.get(key, [])
+            if not items:
+                errors.append(f"{rid}: missing {key} in page_text.json")
+            for item in items:
+                if norm(item) not in roles_visible:
+                    errors.append(f"{rid}: {key} item is not shown in Roles: {item[:60]}")
+        visible_lower = roles_visible.lower()
+        for item in r.get("notices_first", []) + r.get("declines_to_opine", []):
+            if norm(item).lower() in visible_lower:
+                errors.append(f"{rid}: model-facing list text is visible in Roles: {item[:60]}")
         if norm(r["tradecraft"]) in roles_visible:
             errors.append(f"{rid}: tradecraft text is visible in Roles")
         for sentence in re.split(r"(?<=[.!?])\s+", norm(r["tradecraft"])):
@@ -145,6 +157,9 @@ def main() -> int:
                 errors.append(f"{rid}: tradecraft sentence visible in Roles: {sentence[:60]}")
     if "Role:" in roles_visible:
         errors.append("Roles text contains a 'Role:' prefix copied from tradecraft")
+    for label in ("Notices first", "Declines to infer"):
+        if label.lower() in roles_visible.lower():
+            errors.append(f"Roles text contains the model-facing label '{label}'")
 
     if errors:
         print("FAIL")
@@ -153,7 +168,8 @@ def main() -> int:
         return 1
     print(
         f"ok: {len(pack['citations'])} citations and {len(pack['roles'])} roles show page_text.json "
-        "text; prompts.json has no human-facing keys; ids resolve"
+        "text; Roles show page_text.json lists and no model-facing list text; "
+        "prompts.json has no human-facing keys; ids resolve"
     )
     return 0
 

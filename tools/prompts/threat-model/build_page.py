@@ -431,12 +431,14 @@ def main():
     baselines = pack["baseline_prompts"]
     pb = "\n".join(f"<li><strong>{esc(q['letter'])}</strong> {esc(q['name'])}: {esc(q['ask'])}</li>" for q in pack["phantom_b_questions"])
     def role_li(r):
-        notices = "; ".join(r.get("notices_first", []))
-        declines = "; ".join(r.get("declines_to_opine", []))
+        t = PAGE_TEXT["roles"][r["id"]]
+        watch = "".join(f"<li>{esc(x)}</li>" for x in t["watches_for"])
+        claim = "".join(f"<li>{esc(x)}</li>" for x in t["does_not_claim"])
         return (
             f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). "
-            f"{esc(PAGE_TEXT['roles'][r['id']]['role_summary'])} Notices first: {esc(notices)}. "
-            f"Declines to infer: {esc(declines)}.</li>"
+            f"{esc(t['role_summary'])}"
+            f"<p><strong>Watches for</strong></p><ul>{watch}</ul>"
+            f"<p><strong>Does not claim</strong></p><ul>{claim}</ul></li>"
         )
 
     roles = "\n".join(role_li(r) for r in pack["roles"])
