@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Authoring helper: rebuild index.html from prompts.json. Not a site build step.
-The committed HTML is the page; re-run this after editing prompts.json."""
+The committed HTML is the page; re-run this after editing prompts.json.
+Then run build/inject_page_metadata.py and build/inject_chunk_markers.py from the
+repository root. The verify workflow applies the same injectors, and the page
+does not match the committed file without them."""
 from __future__ import annotations
 
 import html
@@ -410,7 +413,7 @@ def stage_section(qid: str, title: str, pack: dict) -> str:
 
 def source_li(c: dict) -> str:
     """One Sources entry. Uses the human-facing fields, never the model-facing note."""
-    lic = c.get("license_display") or c.get("license") or ""
+    lic = c.get("license", "")
     lic_html = f" License: {esc(lic.rstrip('.'))}." if lic else ""
     return (
         f'<li><a href="{esc(c["url"])}">{esc(c["title"])}</a>. '
@@ -426,14 +429,11 @@ def main():
     baselines = pack["baseline_prompts"]
     pb = "\n".join(f"<li><strong>{esc(q['letter'])}</strong> {esc(q['name'])}: {esc(q['ask'])}</li>" for q in pack["phantom_b_questions"])
     def role_li(r):
-        rest = r["tradecraft"]
-        if ". " in rest:
-            rest = rest.split(". ", 1)[1]
         notices = "; ".join(r.get("notices_first", []))
         declines = "; ".join(r.get("declines_to_opine", []))
         return (
             f"<li><strong>{esc(r['label'])}</strong> ({esc(r['id'])}). "
-            f"{esc(rest)} Notices first: {esc(notices)}. "
+            f"{esc(r['role_summary'])} Notices first: {esc(notices)}. "
             f"Declines to infer: {esc(declines)}.</li>"
         )
 
@@ -523,7 +523,7 @@ def main():
     <link rel="stylesheet" href="/shared/styles.css" />
     <style>
       .prompt-block {{
-        background: var(--cosai-navy);
+        background: var(--fill-navy);
         border-radius: var(--radius-lg);
         overflow: hidden;
         margin-bottom: var(--sp-6);
@@ -569,7 +569,7 @@ def main():
         max-width: 720px;
         margin: 0 0 var(--sp-8);
         padding: var(--sp-3) var(--sp-4);
-        background: #fff;
+        background: var(--surface);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
       }}
@@ -583,7 +583,7 @@ def main():
         font-size: var(--text-xs);
         font-weight: 600;
         color: #fff;
-        background: var(--cosai-navy);
+        background: var(--fill-navy);
         border: 0;
         border-radius: var(--radius);
         padding: 6px 12px;
@@ -595,7 +595,7 @@ def main():
         padding: var(--sp-5);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
-        background: #fff;
+        background: var(--surface);
       }}
       .deliverable__title {{
         font-size: var(--text-xs);
@@ -652,22 +652,22 @@ def main():
         font-size: var(--text-xs);
         font-weight: 600;
         color: var(--slate-600);
-        background: #fff;
+        background: var(--surface);
         border: 1px solid var(--slate-200);
         border-radius: var(--radius);
         padding: 4px 10px;
         cursor: pointer;
       }}
       .shortcut-paste button.is-copied {{
-        color: #047857;
-        border-color: #6ee7b7;
+        color: var(--dm-fg-047857);
+        border-color: var(--dm-bd-6ee7b7);
       }}
       .shortcut-more {{
         margin: 0 0 var(--sp-5);
         padding: var(--sp-3) var(--sp-4);
         border: 1px dashed var(--slate-300);
         border-radius: var(--radius);
-        background: #fff;
+        background: var(--surface);
       }}
       .shortcut-more > summary {{
         cursor: pointer;
@@ -776,6 +776,11 @@ def main():
     </header>
 
     <main id="main" class="page-body" data-llm="threat-model-prompts">
+
+      <div class="callout callout--warn prompt-injection-warning" role="note">
+        <strong>Prompt injection warning</strong>
+        Always review prompts before referencing or copying them into an assistant, agent, or production system.
+      </div>
 
       <h2 class="section-label">On this page</h2>
       <ul class="q-list">
@@ -933,7 +938,7 @@ def main():
         applicable. Write mitigations in P-act, not here.
       </p>
 
-      <h2 class="section-label">Roles</h2>
+      <h2 class="section-label" id="roles">Roles</h2>
       <ul class="cite-list">
         {roles}
       </ul>
