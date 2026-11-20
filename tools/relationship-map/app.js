@@ -3014,8 +3014,10 @@
     LAYERS.forEach(function (layerId) {
       if (!graph.hasNode("layer:" + layerId)) return;
       var name = graph.getNodeAttribute("layer:" + layerId, "name");
-      layerFrames.appendChild(makeEl("dt", "", name));
-      layerFrames.appendChild(makeEl("dd", "", LAYER_FRAME[layerId] || ""));
+      var item = makeEl("div", "layer-frames__item");
+      item.appendChild(makeEl("dt", "", name));
+      item.appendChild(makeEl("dd", "", LAYER_FRAME[layerId] || ""));
+      layerFrames.appendChild(item);
     });
   }
 
@@ -3336,7 +3338,26 @@
     drawChainLines();
   }
 
+  var OPTIONS_KEY = "relmap-options-open";
+  var optionsEl = document.getElementById("options");
+
+  function openOptions() {
+    if (optionsEl && !optionsEl.open) optionsEl.open = true;
+  }
+
+  if (optionsEl) {
+    try {
+      if (sessionStorage.getItem(OPTIONS_KEY) === "closed") optionsEl.open = false;
+    } catch (e) { /* storage can be blocked */ }
+    optionsEl.addEventListener("toggle", function () {
+      try {
+        sessionStorage.setItem(OPTIONS_KEY, optionsEl.open ? "open" : "closed");
+      } catch (e) { /* storage can be blocked */ }
+    });
+  }
+
   function revealSearch() {
+    openOptions();
     scrollToTarget(findForm, searchInput);
   }
 
@@ -3551,6 +3572,7 @@
   }
 
   function restoreOpener() {
+    openOptions();
     var target = null;
     if (opener) {
       if (opener.el && opener.el.isConnected && opener.el.getClientRects().length) target = opener.el;
@@ -4312,6 +4334,7 @@
     if (!link) return;
     var id = (link.getAttribute("href") || "").slice(1);
     var target = document.getElementById(id);
+    if (target && optionsEl && optionsEl.contains(target)) openOptions();
     if (!target || target.closest("[hidden]") || !target.getClientRects().length) return;
     event.preventDefault();
     if (id === "node-search") {
