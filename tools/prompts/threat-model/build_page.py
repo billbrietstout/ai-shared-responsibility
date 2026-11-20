@@ -413,7 +413,7 @@ def stage_section(qid: str, title: str, pack: dict) -> str:
 
 def source_li(c: dict) -> str:
     """One Sources entry. Uses the human-facing fields, never the model-facing note."""
-    lic = c.get("license_display") or c.get("license") or ""
+    lic = c.get("license", "")
     lic_html = f" License: {esc(lic.rstrip('.'))}." if lic else ""
     return (
         f'<li><a href="{esc(c["url"])}">{esc(c["title"])}</a>. '
