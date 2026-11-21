@@ -154,7 +154,8 @@
   var searchResults = document.getElementById("search-results");
   var searchNote = document.getElementById("search-note");
   var modelList = document.getElementById("model-filter-list");
-  var modelNote = document.getElementById("model-note");
+  var modelNote = document.getElementById("model-info-text");
+  var scopeSummaryEl = document.getElementById("scope-summary");
   var layerList = document.getElementById("layer-filter-list");
   var tapestryInput = document.getElementById("show-tapestry");
   var contextBtn = document.getElementById("show-context");
@@ -720,11 +721,14 @@
   function controlInChain(attrs) {
     if (!attrs || attrs.kind !== "control") return false;
     if (isTapestryRecord(attrs) && !showTapestry) return false;
-    if (!nodeAllowed(attrs)) return false;
     if (isTapestryRecord(attrs)) return modelFilter === "all";
     if (!(attrs.coreModels && attrs.coreModels.length)) return false;
-    if (modelFilter === "all") return true;
-    return attrs.coreModels.indexOf(modelFilter) !== -1;
+    return true;
+  }
+
+  function outsideCurrentFilter(attrs) {
+    if (!attrs || attrs.kind !== "control") return false;
+    return !nodeAllowed(attrs) || !layerAllowed(attrs);
   }
 
   function modelsFor(attrs) {
@@ -1762,8 +1766,6 @@
     var notes = [];
     if (chain.note) {
       notes.push(chain.note);
-    } else if (chain.blank) {
-      notes.push(START_NOTE);
     } else if (chain.startKind === "persona") {
       notes.push("These are the controls that name this persona as accountable, with their risks and obligations.");
     } else if (chain.startKind === "obligation") {
@@ -1830,6 +1832,9 @@
         } else if (column[2] === "control") {
           button.appendChild(makeEl("span", "chain-card__kicker", [item.layer ? "Operates at " + item.layer : "", item.meta, item.ref].filter(Boolean).join(" · ")));
           button.appendChild(makeEl("span", "chain-card__title", item.name));
+          if (graph.hasNode(item.id) && outsideCurrentFilter(graph.getNodeAttributes(item.id))) {
+            button.appendChild(makeEl("span", "chain-card__meta chain-card__outside", "Outside current filter"));
+          }
           if (item.evidenceText) button.appendChild(makeEl("span", "chain-card__meta", item.evidenceText));
           if (item.sectorModels.length) {
             button.appendChild(makeEl("span", "chain-card__meta", "Sector: " + item.sectorModels.map(function (row) {
@@ -2383,9 +2388,7 @@
     if (!selected || !graph.hasNode(selected)) {
       detailsHeading.textContent = "Node details";
       detailsEmpty.hidden = false;
-      detailsEmpty.textContent = view === "chain"
-        ? "Choose an item in any menu to see its record, sources, and links."
-        : "Select a risk or a control to see its record, sources, and links.";
+      detailsEmpty.textContent = "Choose a column item to see its record, sources, and links.";
       detailsBody.hidden = true;
       if (copyStatus) copyStatus.textContent = "";
       detailsList.textContent = "";
@@ -2881,13 +2884,23 @@
     });
   }
 
+  function scopeSummaryLine() {
+    var model = modelFilter === "all" ? "All models" : modelName(modelFilter);
+    var layer = layerFilter === "all" ? "All layers" : layerFilter;
+    var tapestry = showTapestry ? "Tapestry on" : "Tapestry off";
+    return model + " \u00b7 " + layer + " \u00b7 " + tapestry;
+  }
+
   function renderSummary() {
-    if (!summaryEl || !graph) return;
+    if (!graph) return;
     var controlCount = suggestedIds().length;
     var threatCount = riskIds().filter(function (id) {
       return layerAllowed(graph.getNodeAttributes(id));
     }).length;
-    summaryEl.textContent = (modelFilter === "all" ? "All operating models" : modelName(modelFilter)) + ", " + (layerFilter === "all" ? "all layers" : layerFilter) + ": " + unit(controlCount, "control", "controls") + ", " + unit(threatCount, "risk", "risks");
+    if (scopeSummaryEl) scopeSummaryEl.textContent = scopeSummaryLine();
+    if (summaryEl) {
+      summaryEl.textContent = (modelFilter === "all" ? "All operating models" : modelName(modelFilter)) + ", " + (layerFilter === "all" ? "all layers" : layerFilter) + ": " + unit(controlCount, "control", "controls") + ", " + unit(threatCount, "risk", "risks");
+    }
   }
 
   function syncToggles() {
@@ -3340,7 +3353,12 @@
     if (!currentChain) return;
     updateChrome();
     if (chainEl.hidden) return;
-    chainWorkspace.scrollIntoView({ block: "start", behavior: "auto" });
+    if (narrowQuery.matches) {
+      var headTop = chainHeading.getBoundingClientRect().top + window.scrollY - 96;
+      window.scrollTo({ top: Math.max(0, headTop), behavior: "auto" });
+    } else {
+      chainWorkspace.scrollIntoView({ block: "start", behavior: "auto" });
+    }
     chainHeading.focus({ preventScroll: true });
     drawChainLines();
   }
@@ -3606,17 +3624,87 @@
   }
 
   function renderModelNote() {
+    if (!modelNote) return;
     var mapped = stats.mappedFromSector || 0;
     var verb = mapped === 1 ? "uses" : "use";
-    modelNote.textContent = mapped
+    var sector = mapped
       ? mapped + " controls " + verb + " a sector model name, such as SaMD-Cloud or OT-Edge. data/sector-model-map.json maps each name to one of these four SRF models. The sector name stays on the control. This filter uses that mapping."
       : "Sector model names are mapped to these four SRF models by data/sector-model-map.json. The sector name stays on the control.";
+    modelNote.textContent = sector + " The layer filter narrows the finder and the lists. It does not remove controls from a chain that is already open.";
+  }
+
+  function closeInfoBubble(btn) {
+    if (!btn) return;
+    var panelId = btn.getAttribute("aria-controls");
+    var panel = panelId ? document.getElementById(panelId) : null;
+    btn.setAttribute("aria-expanded", "false");
+    if (panel) panel.hidden = true;
+  }
+
+  function openInfoBubble(btn) {
+    if (!btn) return;
+    var panelId = btn.getAttribute("aria-controls");
+    var panel = panelId ? document.getElementById(panelId) : null;
+    if (!panel) return;
+    document.querySelectorAll(".info-bubble__btn[aria-expanded='true']").forEach(function (other) {
+      if (other !== btn) closeInfoBubble(other);
+    });
+    btn.setAttribute("aria-expanded", "true");
+    panel.hidden = false;
+  }
+
+  function wireInfoBubble(btn) {
+    if (!btn || btn.dataset.infoWired === "1") return;
+    btn.dataset.infoWired = "1";
+    var panelId = btn.getAttribute("aria-controls");
+    if (panelId && !btn.getAttribute("aria-describedby")) btn.setAttribute("aria-describedby", panelId);
+    btn.addEventListener("focus", function () { openInfoBubble(btn); });
+    btn.addEventListener("blur", function () {
+      window.setTimeout(function () {
+        if (btn.matches(":focus")) return;
+        var panelId = btn.getAttribute("aria-controls");
+        var panel = panelId ? document.getElementById(panelId) : null;
+        if (panel && panel.matches(":hover")) return;
+        closeInfoBubble(btn);
+      }, 0);
+    });
+    btn.addEventListener("mouseenter", function () { openInfoBubble(btn); });
+    btn.addEventListener("mouseleave", function (event) {
+      var panelId = btn.getAttribute("aria-controls");
+      var panel = panelId ? document.getElementById(panelId) : null;
+      if (panel && panel.contains(event.relatedTarget)) return;
+      if (btn.matches(":focus")) return;
+      closeInfoBubble(btn);
+    });
+    var panelId = btn.getAttribute("aria-controls");
+    var panel = panelId ? document.getElementById(panelId) : null;
+    if (panel) {
+      panel.addEventListener("mouseleave", function (event) {
+        if (btn.contains(event.relatedTarget)) return;
+        if (btn.matches(":focus")) return;
+        closeInfoBubble(btn);
+      });
+    }
+    btn.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        closeInfoBubble(btn);
+        btn.focus();
+      }
+    });
+  }
+
+  function initInfoBubbles() {
+    Array.prototype.forEach.call(document.querySelectorAll(".info-bubble__btn"), wireInfoBubble);
   }
 
   function start() {
+    initInfoBubbles();
     window.__relationshipMap = {
       graph: graph,
       outsideFilter: function (id) { return outsideFilter(graph.getNodeAttributes(id)); },
+      outsideCurrentFilter: function (id) { return outsideCurrentFilter(graph.getNodeAttributes(id)); },
       isTapestryRecord: function (id) { return graph.hasNode(id) && isTapestryRecord(graph.getNodeAttributes(id)); }
     };
     requestAnimationFrame(function () {
@@ -3968,6 +4056,14 @@
   });
   document.addEventListener("keydown", function (event) {
     if (event.key !== "Escape") return;
+    var bubble = event.target.closest && event.target.closest(".info-bubble__btn[aria-expanded='true']");
+    if (bubble) {
+      event.preventDefault();
+      event.stopPropagation();
+      closeInfoBubble(bubble);
+      bubble.focus();
+      return;
+    }
     var fold = event.target.closest && event.target.closest("details.esc-close[open]");
     if (fold) {
       event.preventDefault();
