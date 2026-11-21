@@ -146,8 +146,16 @@ A risk cell sets `no_linked_control_in_model` when none of its related controls 
 | `misleadingclaims` | Misleading AI claims to customers | L1 | IaaS | `ai-system-governance` |
 | `highriskuse` | Prohibited or unclassified high-risk use | L1 | IaaS | `ai-system-governance` |
 | `uncontestable` | Decisions people cannot contest or get explained | L1 | IaaS | `ai-system-governance` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | AI-SaaS | `ai-system-governance` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | AI-PaaS | `ai-system-governance` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | Agent-PaaS | `ai-system-governance` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | IaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | AI-SaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | AI-PaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | Agent-PaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | IaaS | `ai-system-governance` |
 
-10 cells. Class: `no_linked_control_in_model`.
+18 cells. Class: `no_linked_control_in_model`.
 
 ## Summary finding
 

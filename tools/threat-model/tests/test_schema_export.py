@@ -101,12 +101,12 @@ for root, dirs, files in os.walk(D):
 DATA = os.path.join(os.path.dirname(D), "..", "data")
 cat = json.load(open(os.path.join(DATA, "threats.json")))
 matrix = json.load(open(os.path.join(DATA, "matrix.json")))
-check("threat count matches the rows", cat.get("count") == len(cat["threats"]) == 42, str(cat.get("count")))
+check("threat count matches the rows", cat.get("count") == len(cat["threats"]) == 62, str(cat.get("count")))
 from collections import Counter
 _layers = Counter(t["srf_layer"] for t in cat["threats"])
 check("threat layer_counts match the rows",
       cat.get("layer_counts") == {k: _layers[k] for k in ("L1", "L2", "L3", "L4", "L5")}
-      == {"L1": 12, "L2": 7, "L3": 8, "L4": 8, "L5": 7},
+      == {"L1": 12, "L2": 19, "L3": 16, "L4": 8, "L5": 7},
       str(cat.get("layer_counts")))
 by_cat = {t["id"]: t for t in cat["threats"]}
 STATUS = {"verified", "placeholder", "proposed"}
