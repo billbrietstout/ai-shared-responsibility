@@ -6211,7 +6211,7 @@ Machine-readable: https://aisharedresponsibility.com/data/common-controls.json
 
 Sector-neutral controls that apply in every sector. Common is not an industry vertical. Control ids use SRF-COM-{layer}-{seq} and canonical ids use srf.control.common.<id>. Status: draft.
 
-Total controls: 26
+Total controls: 35
 
 #### L1: AI Business & Usage (10 controls)
 
@@ -6739,6 +6739,185 @@ Regulatory mappings:
   - iso_42001: ISO/IEC 42001:2023, Annex A, A.8.2
 
 
+#### L4: AI Platform (9 controls)
+
+##### SRF-COM-L4-001: Model gateway authentication and authorization, including agent identities
+
+Layer: L4 (AI Platform) | Persona: `ai-platform-provider` | Component: LLM Routers & Gateways
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: AI Platform Provider is accountable on AI-SaaS, AI-PaaS, and IaaS. Agentic Platform & Framework Providers is accountable on Agent-PaaS, where each agent has its own identity and each call is checked against that identity's scope.
+
+Every call to a model endpoint must be authenticated, and the call must be checked against the caller's scope before it reaches the model. Each agent has its own identity. An agent call is accepted only when that identity is the caller and the scope allows the call. A call with no authentication, a call outside the caller's scope, or an agent call that uses a person's identity is rejected and logged with the caller, the endpoint, and the time. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of model endpoint calls in the measurement window that are authenticated and checked against the caller's scope. An agent call counts only when the caller identity belongs to that agent. A call with no authentication, no scope check, or an agent call that uses a person's identity counts as a miss. The tier-defined window is the loosest window among the source controls, which record a validation gate, a one-hour rate, and continuous checks. The target percentage is set per model tier.
+Threshold: model_endpoint_auth_coverage >= tier-defined
+Breach action: reject-call; log-rejected-call; alert-accountable-owner
+
+Regulatory mappings:
+  - finos_aigf: AIR-PREV-012 (Role-Based Access Control for AI Data); AIR-DET-004 (AI System Observability)
+  - nist_ai_rmf: MEASURE 2.7 (security and resilience are evaluated and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023 (edition-level)
+  - cis: CIS Control 6: Access Control Management
+  - aicm: IAM-14 (Strong Authentication); IAM-16 (Authorization Mechanisms)
+
+##### SRF-COM-L4-002: Guardrail configuration baseline, change control, and bypass monitoring
+
+Layer: L4 (AI Platform) | Persona: `ai-platform-provider` | Component: Guardrails & Safety Systems
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+
+The AI Platform Provider must record a configuration baseline for platform guardrails before a model is served. The baseline names the guardrail policies that are active. A change to the baseline takes effect in production only after an approval that records the approver and the time. The provider measures the bypass rate: how often an input the baseline says to intercept reaches the model, and how often an output the baseline says to block is returned to the caller. The measured rates are compared with limits the organization sets per model tier. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of in-scope platforms that have a recorded guardrail baseline, an approval record for each baseline change in the window, and a measured bypass rate. A platform missing any of the three counts as a miss. The tier-defined window is the loosest window among the source controls, which record a validation gate, deployment, each change, a 24-hour rate, and continuous checks. The target percentage is set per model tier. The bypass limit is set per model tier.
+Threshold: guardrail_baseline_change_and_bypass_coverage >= tier-defined
+Breach action: revert-unapproved-change; alert-ai-platform-provider; review-guardrail-baseline
+
+Regulatory mappings:
+  - finos_aigf: AIR-PREV-017 (AI Firewall Implementation and Management); AIR-PREV-003 (User/App/Model Firewalling/Filtering); AIR-DET-004 (AI System Observability)
+  - nist_ai_rmf: MEASURE 2.6 (safety risks are evaluated and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023 (edition-level)
+  - cis: CIS Control 4: Secure Configuration of Enterprise Assets and Software
+  - aicm: TVM-11 (Guardrails)
+
+##### SRF-COM-L4-003: Audit logging and runtime anomaly monitoring
+
+Layer: L4 (AI Platform) | Persona: `ai-platform-provider` | Component: Compute Infrastructure
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+
+The AI Platform Provider must log each AI request and each AI action, including the caller, the time, and what was done. The log records enough to reconstruct the request and the action. Unusual or unauthorized access, including access by a third party and remote access, raises an alert. A named reviewer records a review of each alert. EU AI Act Article 12 applies only where in scope.
+
+Evidence: Percentage of in-scope AI platform components whose requests and actions are logged, and whose alerts for unusual or unauthorized access, including third-party access and remote access, have a recorded review. A component with a gap in the log, or an alert with no review, counts as a miss. The quarterly window is the loosest window among the source controls. The target percentage is set per model tier.
+Threshold: ai_request_log_and_alert_review_coverage >= tier-defined
+Breach action: alert-ai-platform-provider; review-open-alert
+
+Regulatory mappings:
+  - nist_ai_rmf: MEASURE 2.4 (the deployed AI system is monitored for changes); MEASURE 2.8 (risks associated with transparency and accountability are examined and documented)
+  - eu_ai_act: Article 12 (record-keeping; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.6.2.8
+  - cis: CIS Control 8: Audit Log Management
+  - aicm: LOG-03 (Security Monitoring and Alerting); LOG-13 (Failures and Anomalies Reporting)
+
+##### SRF-COM-L4-004: Encryption of AI data and model weights at rest and in transit
+
+Layer: L4 (AI Platform) | Persona: `ai-platform-provider` | Component: Compute Infrastructure
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+
+Prompts, outputs, training data, and model weights must be encrypted at rest and in transit. Each store and each channel has a managed key, and the organization records which key protects it. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of in-scope stores and channels that hold prompts, outputs, training data, or model weights and that encrypt that data at rest and in transit with a managed key. A store or channel missing encryption, or missing a recorded key, counts as a miss. The quarterly window is the loosest window among the source controls. The target percentage is set per model tier.
+Threshold: ai_data_and_weight_encryption_coverage >= tier-defined
+Breach action: isolate-unencrypted-store-or-channel; alert-ai-platform-provider
+
+Regulatory mappings:
+  - nist_ai_rmf: MEASURE 2.7 (security and resilience are evaluated and documented); MEASURE 2.10 (privacy risk is examined and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023 (edition-level)
+  - owasp_llm: LLM02: Sensitive Information Disclosure
+  - cis: CIS Control 3: Data Protection
+  - aicm: CEK-03 (Data Encryption, including in-use); LOG-10 (Encryption Monitoring and Reporting)
+
+##### SRF-COM-L4-005: Model serving availability and capacity target
+
+Layer: L4 (AI Platform) | Persona: `ai-platform-provider` | Component: Compute Infrastructure
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: Serving availability and capacity stay with the AI Platform Provider on AI-SaaS, AI-PaaS, Agent-PaaS, and IaaS. On IaaS the customer fills that platform role for the endpoint it runs.
+
+Each model serving endpoint must meet an availability target and a capacity target that the organization sets and records. The AI Platform Provider measures the endpoint against both targets. Failover is tested, and the test records whether the endpoint kept serving. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of in-scope model serving endpoints that met the availability target and the capacity target the organization set for them, and whose failover was tested in the window. An endpoint that missed a target, or that has no failover test on file, counts as a miss. The monthly window is the loosest window among the source controls, which use a month or a rolling 30 days. The targets are set per model tier.
+Threshold: serving_availability_capacity_and_failover_coverage >= tier-defined
+Breach action: escalate-to-ai-platform-provider; run-failover; open-availability-incident
+
+Regulatory mappings:
+  - nist_ai_rmf: MEASURE 2.7 (security and resilience are evaluated and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.4.5
+  - owasp_llm: LLM10: Unbounded Consumption
+
+##### SRF-COM-L4-006: Model artifact integrity verification at load
+
+Layer: L4 (AI Platform) | Persona: `ai-model-serving` | Component: LLM Routers & Gateways
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Cross-layer note: One source control sits at L5: finance SRF-L5-MON-001 checks the signature when a model artifact is loaded. This control sits at L4 and covers that check for the serving runtime. The model provider signs the artifact on the model provider's control. Manufacturing SRF-L4-DES-008 keeps an AI bill of materials for the system. This control checks the artifact when it is loaded.
+
+AI Model Serving must load a model artifact only when the artifact is signed and the format does not execute code on load. The signature and the format are checked when the artifact is loaded and again on a schedule the organization sets and records. A failed check stops the load. The endpoint does not serve from an artifact that failed the check. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of model load events in which the artifact was signed, the format does not execute code on load, and both checks passed. A load of an unsigned artifact, a format that executes code on load, or a failed check counts as a miss. A scheduled repeat of the check that was missed also counts as a miss. The per-load window matches the load-time source controls. The schedule interval is set per model tier, because those source controls check at each load and do not name a second interval. The target percentage is set per model tier.
+Threshold: signed_safe_artifact_load_coverage >= tier-defined
+Breach action: reject-model-load; alert-ai-model-serving
+
+Regulatory mappings:
+  - finos_aigf: AIR-SEC-008 (Tampering With the Foundational Model)
+  - nist_ai_rmf: MEASURE 2.7 (security and resilience are evaluated and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023 (edition-level)
+  - owasp_llm: LLM03: Supply Chain; LLM04: Data and Model Poisoning
+  - aicm: MDS-08 (Model Integrity Checks); MDS-09 (Model Signing/Ownership Verification)
+
+##### SRF-COM-L4-007: Model version pinning, staged rollout, and rollback
+
+Layer: L4 (AI Platform) | Persona: `ai-model-serving` | Component: LLM Routers & Gateways
+Lifecycle stage: change
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+
+No control in the six sector files states this duty for a model serving endpoint. This common control has no sector source and states the duty for every sector. Each endpoint serves one pinned model version. A change to that version is rolled out in stages. The rollout plan records the stages and the time allowed to return the endpoint to the last approved version. The organization measures the time from the rollback decision to the endpoint serving that version, and compares the measured time with the time in the plan. EU AI Act Article 15 applies only where in scope.
+
+Evidence: The measured time from the rollback decision to the endpoint serving the last approved version. The time is compared with the time the organization set and recorded in the rollout plan. An endpoint that is not serving a pinned version, a rollout with no staged plan on file, or a measured time longer than the time in the plan counts as a miss. No sector control sets this window, so the per-rollout window is an SRF choice. The allowed time is set per model tier.
+Threshold: measured_rollback_time <= tier-defined
+Breach action: halt-rollout; restore-last-approved-version; notify-ai-model-serving
+
+Regulatory mappings:
+  - nist_ai_rmf: MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use); MANAGE 4.1 (post-deployment monitoring plans are implemented, including change management and decommissioning)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.6.2.5
+
+##### SRF-COM-L4-008: Inference endpoint isolation, tenant separation, and egress control
+
+Layer: L4 (AI Platform) | Persona: `ai-platform-provider` | Component: Compute Infrastructure
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: AI Platform Provider is accountable on AI-SaaS, AI-PaaS, and Agent-PaaS. AI Model Serving is accountable on IaaS, where that persona runs the inference endpoints and the egress rules.
+
+Each tenant's inference traffic must stay separate from every other tenant's traffic. Egress from an inference endpoint is denied unless an allow rule names the destination. A flow with no allow rule is blocked and logged with the tenant, the endpoint, and the destination. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of in-scope inference endpoints that keep each tenant's traffic separate and that deny egress unless an allow rule names the destination. An endpoint that mixes tenant traffic, or that allows egress with no allow rule, counts as a miss. The continuous window matches the source control. The target percentage is set per model tier.
+Threshold: tenant_isolation_and_default_deny_egress_coverage >= tier-defined
+Breach action: block-egress; log-denied-flow; alert-accountable-owner
+
+Regulatory mappings:
+  - nist_ai_rmf: MEASURE 2.7 (security and resilience are evaluated and documented); MEASURE 2.10 (privacy risk is examined and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023 (edition-level)
+  - owasp_llm: LLM02: Sensitive Information Disclosure
+
+##### SRF-COM-L4-009: Platform security assessment and vulnerability management
+
+Layer: L4 (AI Platform) | Persona: `ai-platform-provider` | Component: Compute Infrastructure
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+
+The AI Platform Provider must assess the platform before it enters production. The assessment covers authentication, authorization, encryption, guardrail configuration, and known vulnerabilities in platform components. After production, the platform is scanned for vulnerabilities and patched on a cadence the organization sets and records. Findings the assessment marks for remediation before production are closed before production, and later findings are patched inside that cadence. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of in-scope platforms that have a security assessment on file from before production and a vulnerability scan and patch record inside the cadence the organization set. A platform that entered production with no assessment, or whose scan or patch record is outside that cadence, counts as a miss. The tier-defined window is the loosest window among the source controls. The target percentage is set per model tier.
+Threshold: platform_assessment_and_patch_coverage >= tier-defined
+Breach action: block-production-until-assessed; patch-on-cadence; notify-ai-platform-provider
+
+Regulatory mappings:
+  - finos_aigf: AIR-PREV-005 (System Acceptance Testing)
+  - nist_ai_rmf: MEASURE 1.3 (independent assessors are involved in TEVV); MEASURE 2.7 (security and resilience are evaluated and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.6.2.4
+  - cis: CIS Control 7: Continuous Vulnerability Management; CIS Control 18: Penetration Testing
+  - aicm: A&A-02 (Independent Assessments); TVM-06 (Penetration Testing); TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)
+
+
 ---
 
 ---
@@ -6893,7 +7072,7 @@ Six categories, each with the SRF contribution and the open gap:
 
 3. Secure development and AI supply chain. Contribution: names who attests at each handoff in the model and data supply chain and who verifies it, per operating model. Serves CoSAI, CIS, OWASP AI Exchange. Site has the Vendor Risk Assessment and the supply-chain threats in the crosswalk. Gap: an attestation handoff map as data.
 
-4. Control implementation and benchmarking. Contribution: control ownership. Every catalog says what good looks like; none say who at your company owns each control under your deployment model. The vertical schemas prove the pattern with 260 sector controls and 26 common controls, each carrying an accountable persona. Serves CIS, CSA, OWASP AI Exchange, NIST. Site has the AICM and Security Controls assessments, six vertical schemas, the OSCAL catalog, and a CIS Controls card on the compare page. Thirty-four controls across the six vertical schemas carry a control-level `cis` mapping key (CIS Controls v8.1), verified against the official 18-control list and the April 2026 AI/LLM Companion Guide. No open gap at the control level mapped; safeguard-level (N.N) mapping remains future work.
+4. Control implementation and benchmarking. Contribution: control ownership. Every catalog says what good looks like; none say who at your company owns each control under your deployment model. The vertical schemas prove the pattern with 260 sector controls and 35 common controls, each carrying an accountable persona. Serves CIS, CSA, OWASP AI Exchange, NIST. Site has the AICM and Security Controls assessments, six vertical schemas, the OSCAL catalog, and a CIS Controls card on the compare page. Thirty-four controls across the six vertical schemas carry a control-level `cis` mapping key (CIS Controls v8.1), verified against the official 18-control list and the April 2026 AI/LLM Companion Guide. No open gap at the control level mapped; safeguard-level (N.N) mapping remains future work.
 
 5. Vulnerability management and finding remediation. Contribution: routing. Severity scoring rates how bad a finding is. The SRF adds whose queue it goes in and who signs acceptance if it will not be fixed. Serves OWASP GenAI Security Project (AIVSS) and coordinated disclosure practice. Site has the finding routing reference (/data/finding-routing.json), which resolves an AIVSS- or CVSS-scored finding to an accountable persona and breach action by SRF layer and operating model, and the Incident Response Playbooks (machine-readable at /export/playbooks.json). No open gap; AIVSS's own numeric severity-band cut points remain TBD pending its full v0.8 documentation, so routing keys on the qualitative band.
 
