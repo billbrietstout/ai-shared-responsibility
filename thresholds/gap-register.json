@@ -4691,9 +4691,9 @@
   },
   "common": {
     "source_file": "common-controls.json",
-    "control_count": 18,
+    "control_count": 26,
     "with_bindings": 0,
-    "without_bindings": 18,
+    "without_bindings": 26,
     "controls": [
       {
         "id": "SRF-COM-L1-001",
@@ -4978,6 +4978,134 @@
           "param": "tier-defined",
           "window": "per-system",
           "breach_action": "quarantine-affected-store; alert-store-owner; open-security-incident"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-001",
+        "title": "Prompt Injection Defense and Detection",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "prompt_injection_defense_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "block-release-until-detection-is-logging; alert-application-developer"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-002",
+        "title": "Agent Task Boundary and Tool-Execution Authorization",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "agent_scope_and_tool_check_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-deployment",
+          "breach_action": "block-tool-call; log-denied-call; alert-accountable-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-003",
+        "title": "Human Oversight Gate for High-Impact Outputs and Actions",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "high_impact_approval_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "hold-output-or-action; notify-named-approver"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-004",
+        "title": "Operator Override and Stop Capability, Tested",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "stop_test_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "restrict-operation-until-stop-is-tested; notify-accountable-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-005",
+        "title": "Explanation, Notice, and Appeal for Adverse Decisions",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "adverse_decision_notice_and_appeal_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual-review",
+          "breach_action": "hold-adverse-notice; notify-accountable-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-006",
+        "title": "Output Filtering and Content Safety",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "output_filter_measurement_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "alert-application-developer; review-filter-limits"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-007",
+        "title": "Pre-Deployment Testing, Red Teaming, and Adversarial Robustness",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "pre_deployment_test_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-deployment",
+          "breach_action": "block-release; notify-named-reviewer"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L3-008",
+        "title": "AI Interaction Disclosure and Content Labeling",
+        "srf_layer": "L3",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_disclosure_and_label_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-system",
+          "breach_action": "hold-release-until-disclosure-and-labels-are-in-place; notify-application-developer"
         },
         "bindings": [],
         "best_case": "no_binding",
