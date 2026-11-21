@@ -47,7 +47,7 @@ Vertical schemas are companion-site extensions, not CoSAI-ratified.
 | File | URL | Use it for |
 | --- | --- | --- |
 | Vendor risk categories | `https://aisharedresponsibility.com/data/vendor-risk.json` | Vendor-vs-customer split, attestation baseline, evidence to demand per supplier category |
-| Threat-to-accountability crosswalk | `https://aisharedresponsibility.com/data/threats.json` | OWASP AI Exchange and DSGAI data-plane failures mapped to SRF layer and persona per operating model |
+| Threat-to-accountability crosswalk | `https://aisharedresponsibility.com/data/threats.json` | 38 risks (L1 8, L2 7, L3 8, L4 8, L5 7): OWASP AI Exchange, DSGAI data-plane failures, and seven draft L1 business and usage risks, each mapped to SRF layer and persona per operating model |
 | Threat source registry | `https://aisharedresponsibility.com/data/threat-sources.json` | Authority, license, and binding rules for external threat sources |
 | Finding routing reference | `https://aisharedresponsibility.com/data/finding-routing.json` | Resolving a scored finding to one accountable persona and an escalation ladder |
 | Proposed SRF next-version extensions | `https://aisharedresponsibility.com/data/srf-vnext-extensions.json` | Companion asks for a future CoSAI paper; not part of v1.0 |

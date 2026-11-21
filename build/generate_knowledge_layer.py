@@ -645,7 +645,9 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
         dsgai_url = ((threats.get("sources") or {}).get("owasp_dsgai") or {}).get("url")
         for t in threats.get("threats", []):
             tid = f"ext.threat.{t['id']}"
-            url = t.get("ai_exchange")
+            url = t.get("source_url")
+            if not (isinstance(url, str) and url.startswith("http")):
+                url = t.get("ai_exchange")
             if not (isinstance(url, str) and url.startswith("http")):
                 url = dsgai_url or f"{SITE}/data/threats.json"
             add_node(tid, t["name"], "concept", url, subtype="risk")

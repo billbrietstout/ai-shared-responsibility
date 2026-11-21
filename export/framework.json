@@ -5,8 +5,8 @@
   "srf_version": "1.0",
   "updated": "2026-09-02",
   "counts": {
-    "concepts": 685,
-    "relationships": 6507,
+    "concepts": 694,
+    "relationships": 6605,
     "definitions": 36
   },
   "concepts": [
@@ -1295,6 +1295,20 @@
       "type": "concept",
       "subtype": "requirement",
       "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj"
+    },
+    {
+      "id": "ext.requirement.oecd-ai-principles.1-2",
+      "label": "Principle 1.2: Human agency, oversight, and use within purpose",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449"
+    },
+    {
+      "id": "ext.requirement.oecd-ai-principles.1-3",
+      "label": "Principle 1.3: Transparency and explainability",
+      "type": "concept",
+      "subtype": "requirement",
+      "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449"
     },
     {
       "id": "ext.requirement.oecd-ai-principles.1-4",
@@ -4739,6 +4753,55 @@
       "type": "concept",
       "subtype": "risk",
       "url": "https://genai.owasp.org/resource/owasp-genai-data-security-risks-mitigations-2026/"
+    },
+    {
+      "id": "ext.threat.overreliance",
+      "label": "Over-reliance and automation bias",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.outofpurpose",
+      "label": "Use outside the intended purpose",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.inventorygap",
+      "label": "Gaps in the AI inventory and ownership",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.missingoversight",
+      "label": "Missing human oversight",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.ailiteracy",
+      "label": "Low AI literacy",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.unclearaccountability",
+      "label": "Unclear accountability",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
+    },
+    {
+      "id": "ext.threat.misleadingclaims",
+      "label": "Misleading AI claims to customers",
+      "type": "concept",
+      "subtype": "risk",
+      "url": "https://airisk.mit.edu/risks"
     },
     {
       "id": "srf.concept.project-tapestry",
@@ -8907,6 +8970,36 @@
       "source": "ext.requirement.eu-ai-act.art-86",
       "rel": "maps_to_layer",
       "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.requirement.oecd-ai-principles.1-2",
+      "rel": "part_of",
+      "target": "ext.framework.oecd-ai-principles"
+    },
+    {
+      "source": "ext.requirement.oecd-ai-principles.1-2",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.requirement.oecd-ai-principles.1-3",
+      "rel": "part_of",
+      "target": "ext.framework.oecd-ai-principles"
+    },
+    {
+      "source": "ext.requirement.oecd-ai-principles.1-3",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L1"
+    },
+    {
+      "source": "ext.requirement.oecd-ai-principles.1-3",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L3"
+    },
+    {
+      "source": "ext.requirement.oecd-ai-principles.1-3",
+      "rel": "maps_to_layer",
+      "target": "srf.layer.L5"
     },
     {
       "source": "ext.requirement.oecd-ai-principles.1-4",
@@ -45320,6 +45413,1006 @@
       "source": "ext.threat.dsgai21",
       "rel": "risk_owner",
       "target": "srf.role.data-provider",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "mitigated_by",
+      "target": "srf.control.common.SRF-COM-L1-002"
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-26",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 26 (deployer obligations; where in scope)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-1-2",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-4-3",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.oecd-ai-principles.1-2",
+      "basis": "official_text",
+      "obligation_source": {
+        "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+        "citation": "Principle 1.2(b)",
+        "excerpt": "AI actors should implement mechanisms and safeguards, such as capacity for human agency and oversight, including to address risks arising from uses outside of intended purpose, intentional misuse, or unintentional misuse"
+      }
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.overreliance",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "mitigated_by",
+      "target": "srf.control.common.SRF-COM-L1-002"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "mitigated_by",
+      "target": "srf.control.common.SRF-COM-L1-003"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-003"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "mitigated_by",
+      "target": "srf.control.healthcare.SRF-L1-HOR-002"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-13",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L1-HOR-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 13 (Transparency); Article 4 (AI literacy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-26",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 26 (deployer obligations; where in scope)"
+          },
+          {
+            "control": "srf.control.common.SRF-COM-L1-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 26 (deployer obligations; where in scope)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 26 (Deployer obligations)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L1-HOR-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 13 (Transparency); Article 4 (AI literacy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.hipaa-security-rule.164-308",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L1-HOR-002",
+            "mapping_key": "hipaa",
+            "citation": "45 CFR §164.308(a)(5): Security awareness training"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-1-2",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
+          },
+          {
+            "control": "srf.control.common.SRF-COM-L1-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); GOVERN 1.4 (the risk management process and its outcomes are set through transparent policies and procedures); GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+          },
+          {
+            "control": "srf.control.healthcare.SRF-L1-HOR-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (characteristics of trustworthy AI are integrated into organizational policies); GOVERN 2.2 (personnel receive AI risk management training)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-1-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); GOVERN 1.4 (the risk management process and its outcomes are set through transparent policies and procedures); GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); GOVERN 1.4 (the risk management process and its outcomes are set through transparent policies and procedures); GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-2",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L1-HOR-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (characteristics of trustworthy AI are integrated into organizational policies); GOVERN 2.2 (personnel receive AI risk management training)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.manage-4-3",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.onc-hti-1.b11",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L1-HOR-002",
+            "mapping_key": "onc_hti1",
+            "citation": "§170.315(b)(11)(vi): Transparency disclosures"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.onc-hti-1.b11-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.healthcare.SRF-L1-HOR-002",
+            "mapping_key": "onc_hti1",
+            "citation": "§170.315(b)(11)(vi): Transparency disclosures"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-003",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Roles and Responsibilities)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.oecd-ai-principles.1-2",
+      "basis": "official_text",
+      "obligation_source": {
+        "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+        "citation": "Principle 1.2(b)",
+        "excerpt": "AI actors should implement mechanisms and safeguards, such as capacity for human agency and oversight, including to address risks arising from uses outside of intended purpose, intentional misuse, or unintentional misuse"
+      }
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.outofpurpose",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-users",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "mitigated_by",
+      "target": "srf.control.common.SRF-COM-L1-004"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-002"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L1-DEV-002"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L1-ACQ-001"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.annex-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-004",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-17",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.insurance.SRF-L1-DEV-002",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 17 (quality management system, inventory of high-risk systems)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-49",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-004",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-004",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-1-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L1-ACQ-001",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.1 (policies, processes, procedures, and practices across the organization); MAP 1.1 (context is established for the AI risk assessment)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-1-6",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.6 (mechanisms are in place to inventory AI systems); MAP 1.5 (organizational risk tolerances are determined and documented)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.6 (mechanisms are in place to inventory AI systems, resourced by risk priority)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L1-DEV-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.6 (mechanisms are in place to inventory AI systems)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L1-ACQ-001",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.1 (policies, processes, procedures, and practices across the organization); MAP 1.1 (context is established for the AI risk assessment)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.6 (mechanisms are in place to inventory AI systems); MAP 1.5 (organizational risk tolerances are determined and documented)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.omb-m-25-21.3b-v",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L1-ACQ-001",
+            "mapping_key": "m_25_21",
+            "citation": "Section 3(a)(v) (Update AI Use Case Inventories)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Model Inventory); Section III (model materiality)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-002",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Model Inventory); Section III (model materiality)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.oecd-ai-principles.1-5",
+      "basis": "official_text",
+      "obligation_source": {
+        "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+        "citation": "Principle 1.5(b)",
+        "excerpt": "To this end, AI actors should ensure traceability, including in relation to datasets, processes and decisions made during the AI system lifecycle, to enable analysis of the AI system’s outputs and responses to inquiry, appropriate to the context and consistent with the state of the art."
+      }
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.inventorygap",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-004"
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-14",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-004",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 14 (Human oversight)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-1-3",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.3 (level of risk management activity is set by risk tolerance); GOVERN 3.2 (policies define human-AI configurations and oversight)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-3-2",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-004",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 1.3 (level of risk management activity is set by risk tolerance); GOVERN 3.2 (policies define human-AI configurations and oversight)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-iii",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-004",
+            "mapping_key": "sr26_2",
+            "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.oecd-ai-principles.1-2",
+      "basis": "official_text",
+      "obligation_source": {
+        "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+        "citation": "Principle 1.2(b)",
+        "excerpt": "AI actors should implement mechanisms and safeguards, such as capacity for human agency and oversight, including to address risks arising from uses outside of intended purpose, intentional misuse, or unintentional misuse"
+      }
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.oecd-ai-principles.1-4",
+      "basis": "official_text",
+      "obligation_source": {
+        "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+        "citation": "Principle 1.4(b)",
+        "excerpt": "Mechanisms should be in place, as appropriate, to ensure that if AI systems risk causing undue harm or exhibit undesired behaviour, they can be overridden, repaired, and/or decommissioned safely as needed."
+      }
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.missingoversight",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "mitigated_by",
+      "target": "srf.control.common.SRF-COM-L1-009"
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "mitigated_by",
+      "target": "srf.control.public-sector.SRF-L1-ACQ-008"
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-4",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-009",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 4 (AI literacy, as amended; consolidated text of July 27, 2026; requires providers and deployers to take measures to support AI literacy and sets no required level)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-2",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-009",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.2 (personnel and partners receive AI risk management training for their duties)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-3-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L1-ACQ-008",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 3.1 (AI risk and benefit management is reflected in workforce and capacity planning); GOVERN 3.2 (AI risk awareness training is provided)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-3-2",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L1-ACQ-008",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 3.1 (AI risk and benefit management is reflected in workforce and capacity planning); GOVERN 3.2 (AI risk awareness training is provided)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.omb-m-25-21.4b-iv",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.public-sector.SRF-L1-ACQ-008",
+            "mapping_key": "m_25_21",
+            "citation": "Section 4(b)(iv) (Ensure Adequate Human Training and Assessment)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.ailiteracy",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "mitigated_by",
+      "target": "srf.control.common.SRF-COM-L1-005"
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "mitigated_by",
+      "target": "srf.control.finance.SRF-L1-DEV-001"
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "mitigated_by",
+      "target": "srf.control.insurance.SRF-L1-MON-002"
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-17",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-005",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 17 (quality management system; where in scope)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.eu-ai-act.art-9",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-001",
+            "mapping_key": "eu_ai_act",
+            "citation": "Article 9 (Risk management system)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-1",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-005",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication for AI risk are documented); GOVERN 2.3 (executive leadership takes responsibility for decisions about AI risk)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L1-MON-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 2.3 (executive leadership takes responsibility)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.govern-2-3",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.common.SRF-COM-L1-005",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication for AI risk are documented); GOVERN 2.3 (executive leadership takes responsibility for decisions about AI risk)"
+          },
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-001",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.3 (executive leadership takes responsibility for AI risk decisions); MAP 1.5 (organizational risk tolerances are determined and documented)"
+          },
+          {
+            "control": "srf.control.insurance.SRF-L1-MON-002",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 2.3 (executive leadership takes responsibility)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.nist-ai-rmf.map-1-5",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-001",
+            "mapping_key": "nist_ai_rmf",
+            "citation": "GOVERN 2.3 (executive leadership takes responsibility for AI risk decisions); MAP 1.5 (organizational risk tolerances are determined and documented)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.sr-26-2.section-vi",
+      "basis": "derived_via_control",
+      "obligation_source": {
+        "controls": [
+          {
+            "control": "srf.control.finance.SRF-L1-DEV-001",
+            "mapping_key": "sr26_2",
+            "citation": "Section VI (Governance and Controls)"
+          }
+        ]
+      }
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.oecd-ai-principles.1-5",
+      "basis": "official_text",
+      "obligation_source": {
+        "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+        "citation": "Principle 1.5(a)",
+        "excerpt": "AI actors should be accountable for the proper functioning of AI systems and for the respect of the above principles, based on their roles, the context, and consistent with the state of the art."
+      }
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.unclearaccountability",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "IaaS"
+    },
+    {
+      "source": "ext.threat.misleadingclaims",
+      "rel": "triggers_obligation",
+      "target": "ext.requirement.oecd-ai-principles.1-3",
+      "basis": "official_text",
+      "obligation_source": {
+        "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+        "citation": "Principle 1.3(i)",
+        "excerpt": "to foster a general understanding of AI systems, including their capabilities and limitations"
+      }
+    },
+    {
+      "source": "ext.threat.misleadingclaims",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-SaaS"
+    },
+    {
+      "source": "ext.threat.misleadingclaims",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "AI-PaaS"
+    },
+    {
+      "source": "ext.threat.misleadingclaims",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
+      "operating_model": "Agent-PaaS"
+    },
+    {
+      "source": "ext.threat.misleadingclaims",
+      "rel": "risk_owner",
+      "target": "srf.role.ai-system-governance",
       "operating_model": "IaaS"
     },
     {
