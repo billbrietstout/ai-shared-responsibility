@@ -2,12 +2,16 @@
 """Build draft L2/L3 business and usage risk rows for threats.json (PR 3 series)."""
 from __future__ import annotations
 
+import copy
 import json
 from collections import defaultdict
 from pathlib import Path
 
 from obligation_kind import citation_pattern, current_obligation
+from risk_obligation_links import derived_control_rows
 from roca_orphans import cited_requirement_ids, control_slug, load_inputs, repo_root
+
+SRF_MODELS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
 
 
 L2_ACCOUNTABILITY_TEMPLATE = {
@@ -143,37 +147,65 @@ def load_control_index(root: Path):
     return by_req, related
 
 
-def obligation_links(req_ids, by_req):
-    links = []
-    controls_for_row = set()
+def load_controls_by_full(root: Path):
+    controls = {}
+    for vertical in ("finance", "healthcare", "insurance", "public-sector", "defense", "manufacturing", "common"):
+        path = root / "data" / f"{vertical}-controls.json"
+        if not path.is_file():
+            continue
+        doc = json.loads(path.read_text(encoding="utf-8"))
+        for control in doc.get("controls") or []:
+            if control.get("id"):
+                controls[f"srf.control.{vertical}.{control['id']}"] = control
+    return controls
+
+
+def wire_traceable_obligations(threat, req_ids, allowed):
+    manual = [o for o in threat.get("obligations") or [] if isinstance(o, dict)]
+    links = list(manual)
+    related = set()
     for req_id in req_ids:
-        rows = by_req.get(req_id, [])
+        rows = allowed.get((threat["id"], req_id), [])
         if not rows:
             continue
-        controls = []
-        seen = set()
+        links.append(
+            {
+                "requirement": req_id,
+                "basis": "derived_via_control",
+                "source": {"controls": rows},
+            }
+        )
         for row in rows:
-            key = (row["control"], row["mapping_key"])
-            if key in seen:
-                continue
-            seen.add(key)
-            controls.append(
-                {
-                    "control": row["control"],
-                    "mapping_key": row["mapping_key"],
-                    "citation": row["citation"],
-                }
+            related.add(row["control"])
+    threat["obligations"] = links
+    threat["related_controls"] = sorted(related)
+
+
+def align_accountability(threat, controls_by_full, template):
+    if threat["id"] in ("unlawfultrainingdata", "unlabeledsyntheticout"):
+        return
+    for model in SRF_MODELS:
+        base = dict(template[model])
+        owners = []
+        for cid in threat.get("related_controls") or []:
+            by_model = (controls_by_full.get(cid) or {}).get("accountable_by_model") or {}
+            if model in by_model:
+                owners.append(by_model[model])
+        if owners:
+            persona = owners[0]
+            if len(set(owners)) > 1:
+                persona = max(set(owners), key=owners.count)
+            base["accountable_persona"] = persona
+            base.pop("no_linked_control_in_model", None)
+        else:
+            base["accountable_persona"] = template[model]["accountable_persona"]
+            base["note"] = (
+                "No related control applies in this operating model. "
+                f"The persona stays {template[model]['accountable_persona']}, "
+                "and the cell records no_linked_control_in_model."
             )
-            controls_for_row.add(row["control"])
-        if controls:
-            links.append(
-                {
-                    "requirement": req_id,
-                    "basis": "derived_via_control",
-                    "source": {"controls": controls},
-                }
-            )
-    return links, sorted(controls_for_row)
+            base["no_linked_control_in_model"] = True
+        threat["accountability"][model] = base
 
 
 RISK_SPECS = [
@@ -488,16 +520,13 @@ RISK_SPECS = [
 ]
 
 
-def build_threat(spec, by_req):
+def build_threat(spec):
     obligations = spec.get("obligations", [])
     manual_links = [o for o in obligations if isinstance(o, dict)]
     req_ids = [o for o in obligations if isinstance(o, str)]
-    auto_links, related = obligation_links(req_ids, by_req)
-    if spec.get("related_controls") is not None:
-        related = spec["related_controls"]
-    else:
-        related = related
-    links = auto_links + manual_links
+    related = spec.get("related_controls")
+    if related is None:
+        related = []
     return {
         "id": spec["id"],
         "name": spec["name"],
@@ -509,7 +538,7 @@ def build_threat(spec, by_req):
         "srf_layer": spec["srf_layer"],
         "affected_layers": spec["affected_layers"],
         "layer_rationale": spec["layer_rationale"],
-        "accountability": spec["accountability"],
+        "accountability": copy.deepcopy(spec["accountability"]),
         "mappings": {
             "owasp_llm_top10": None,
             "mitre_atlas": None,
@@ -520,22 +549,44 @@ def build_threat(spec, by_req):
             "oecd_aim": spec["oecd_aim"],
         },
         "related_controls": related,
-        "obligations": links,
+        "obligations": manual_links,
+        "_req_ids": req_ids,
+        "_accountability_template": copy.deepcopy(spec["accountability"]),
     }
 
 
 def main():
     root = repo_root()
-    by_req, _ = load_control_index(root)
+    controls_by_full = load_controls_by_full(root)
     threats_path = root / "data" / "threats.json"
     doc = json.loads(threats_path.read_text(encoding="utf-8"))
-    existing = {t["id"] for t in doc["threats"]}
-    new_rows = []
+    draft_ids = {spec["id"] for spec in RISK_SPECS}
+    doc["threats"] = [t for t in doc["threats"] if t["id"] not in draft_ids]
+    by_req, _ = load_control_index(root)
+    stubs = []
     for spec in RISK_SPECS:
-        if spec["id"] in existing:
-            raise SystemExit(f"duplicate id {spec['id']}")
-        new_rows.append(build_threat(spec, by_req))
-    doc["threats"].extend(new_rows)
+        threat = build_threat(spec)
+        req_ids = threat.pop("_req_ids")
+        if not threat.get("related_controls"):
+            seed = set()
+            primary = spec["srf_layer"]
+            for req_id in req_ids:
+                for row in by_req.get(req_id, []):
+                    if row.get("layer") != primary:
+                        continue
+                    seed.add(row["control"])
+            threat["related_controls"] = sorted(seed)
+        threat["_req_ids"] = req_ids
+        stubs.append(threat)
+    doc["threats"].extend(stubs)
+    threats_path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    allowed = derived_control_rows(str(root))
+    for threat in stubs:
+        wire_traceable_obligations(threat, threat.pop("_req_ids"), allowed)
+        template = threat.pop("_accountability_template")
+        align_accountability(threat, controls_by_full, template)
+    doc["threats"] = [t for t in doc["threats"] if t["id"] not in draft_ids] + stubs
+    new_rows = stubs
     doc["count"] = len(doc["threats"])
     desc = doc.get("description", "")
     if "Eleven draft L1 rows" in desc:
