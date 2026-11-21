@@ -110,6 +110,7 @@
     ["manufacturing", "Manufacturing", "/data/manufacturing-controls.json"],
     ["tapestry", "Tapestry", "/data/tapestry-controls.json"]
   ];
+  var COMMON_SECTOR = CONTROL_FILES[0][1];
   var controlAliases = {};
 
   function controlPageUrl(vertical, ref) {
@@ -1413,7 +1414,7 @@
       var duty = boxTitle(key, item);
       return item.citation && item.citation !== duty ? item.citation + ". " + duty : duty;
     }
-    if (key === "control") return item.meta ? item.name + " (" + item.meta + ")" : item.name;
+    if (key === "control") return item.name;
     if (key === "accountable" && item.lines.length > 1) return item.controlName + " (one persona per model)";
     return boxTitle(key, item);
   }
@@ -1478,7 +1479,7 @@
     } else {
       var ids = key === "risk" ? riskChoiceIds() : key === "control" ? suggestedIds() : personaChoiceIds();
       fillSelect(select, ids, ALL_LABEL[key] + " (" + ids.length + ")", function (attrs) {
-        return attrs.meta && attrs.kind === "control" ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
+        return attrs.name;
       }, key === "accountable", key === "control");
       if (current && ids.indexOf(current) === -1 && graph.hasNode(current)) {
         var held2 = document.createElement("option");
@@ -2354,11 +2355,13 @@
     return every.sort(compareControlIds);
   }
 
-  /* Display order for every control list: layer L1 to L5, then controls with no
-    sector, then sector-specific controls by sector name, then name. A control is
-    sector-specific when its record names a sector operating model. */
+  /* Display order for every control list: layer L1 to L5, then the common
+    group (data/common-controls.json), then one group per sector file by sector
+    name, then title. A control's group is its source file (item.vertical, from
+    CONTROL_FILES), not the operating models it lists. Common controls and
+    controls that list only the 4 SRF models stay in their own file's group. */
   function controlSector(item) {
-    return item && item.sectorModels && item.sectorModels.length ? String(item.meta || "") : "";
+    return item && item.vertical ? String(item.meta || "") : "";
   }
 
   function layerRank(layerId) {
@@ -2370,9 +2373,13 @@
     return String(a).localeCompare(String(b), "en", { sensitivity: "base" });
   }
 
+  function sectorRank(name) {
+    return !name ? 2 : name === COMMON_SECTOR ? 0 : 1;
+  }
+
   function compareSectors(a, b) {
-    if (!a || !b) return a ? 1 : b ? -1 : 0;
-    return textOrder(a, b);
+    var rank = sectorRank(a) - sectorRank(b);
+    return rank || textOrder(a, b);
   }
 
   function compareControls(x, y) {
@@ -2389,14 +2396,14 @@
 
   function compareControlNodes(a, b) {
     function plain(node) {
-      return { id: node.id, layer: node.attrs.layer, name: node.attrs.name, meta: node.attrs.meta, sectorModels: node.attrs.sectorModels };
+      return { id: node.id, layer: node.attrs.layer, name: node.attrs.name, meta: node.attrs.meta, vertical: node.attrs.vertical };
     }
     return compareControls(plain(a), plain(b));
   }
 
   function controlWithId(id) {
     var attrs = graph.getNodeAttributes(id);
-    return { id: id, layer: attrs.layer, name: attrs.name, meta: attrs.meta, sectorModels: attrs.sectorModels };
+    return { id: id, layer: attrs.layer, name: attrs.name, meta: attrs.meta, vertical: attrs.vertical };
   }
 
   function compareControlIds(a, b) {

@@ -43,7 +43,7 @@ readData("sector-model-map.json").mappings.forEach((row) => {
   if (row.sector_model && row.srf_model) sectorMap[row.sector_model] = row.srf_model;
 });
 
-const SECTOR_LABEL = { finance: "Finance", healthcare: "Healthcare", insurance: "Insurance", "public-sector": "Public sector", defense: "Defense", manufacturing: "Manufacturing" };
+const SECTOR_LABEL = { common: "All sectors (common)", finance: "Finance", healthcare: "Healthcare", insurance: "Insurance", "public-sector": "Public sector", defense: "Defense", manufacturing: "Manufacturing" };
 const controls = [];
 CONTROL_FILES.forEach((slug) => {
   const file = readData(slug + "-controls.json");
@@ -51,12 +51,11 @@ CONTROL_FILES.forEach((slug) => {
   file.controls.forEach((control) => {
     if (control.provenance === "proposed-extension") return;
     const core = [];
-    const sectorNamed = (control.operating_models || []).some((model) => !!sectorMap[model]);
     (control.operating_models || []).forEach((model) => {
       const srf = MODELS.indexOf(model) !== -1 ? model : sectorMap[model];
       if (srf && core.indexOf(srf) === -1) core.push(srf);
     });
-    controls.push({ nodeId: "control:" + slug + ":" + control.id, id: control.id, layer: control.layer, core: core, name: control.title, description: control.description || "", persona: control.accountable_persona || "", sector: sectorNamed ? SECTOR_LABEL[slug] : "" });
+    controls.push({ nodeId: "control:" + slug + ":" + control.id, id: control.id, layer: control.layer, core: core, name: control.title, description: control.description || "", persona: control.accountable_persona || "", sector: SECTOR_LABEL[slug], slug: slug });
   });
 });
 const inChainCore = controls.filter((c) => c.core.length);
@@ -2014,23 +2013,23 @@ readData("layers.json").layers.forEach((l) => { LAYER_NAME[l.id] = l.id + " " + 
 const byText = (a, b) => String(a).localeCompare(String(b), "en", { sensitivity: "base" });
 function controlOrder(a, b) {
   return (LAYERS.indexOf(a.layer) - LAYERS.indexOf(b.layer))
-    || (a.sector === b.sector ? 0 : !a.sector ? -1 : !b.sector ? 1 : byText(a.sector, b.sector))
+    || (a.sector === b.sector ? 0 : a.slug === "common" ? -1 : b.slug === "common" ? 1 : byText(a.sector, b.sector))
     || byText(a.name, b.name)
     || (a.nodeId < b.nodeId ? -1 : 1);
 }
-const groupLabel = (c) => LAYER_NAME[c.layer] + (c.sector ? " \u00b7 " + c.sector : "");
+const groupLabel = (c) => LAYER_NAME[c.layer] + " \u00b7 " + c.sector;
 
 async function testControlOrdering(browser, base) {
-  console.log("\n## Controls list by layer, then no sector, then sector, then name");
+  console.log("\n## Controls list by layer, then common, then sector, then title");
   const expected = inChainCore.slice().sort(controlOrder);
-  check("data has sector-specific and no-sector controls in the same layer", LAYERS.some((l) => expected.some((c) => c.layer === l && !c.sector) && expected.some((c) => c.layer === l && c.sector)), "none");
+  check("data has common and sector controls in the same layer", LAYERS.some((l) => expected.some((c) => c.layer === l && c.slug === "common") && expected.some((c) => c.layer === l && c.slug !== "common")), "none");
   const page = await startMode(browser, base, 1280, 900, "control");
   const select = await page.$$eval("#chain-select-control optgroup", (groups) => groups.map((g) => ({ label: g.label, ids: Array.from(g.querySelectorAll("option")).map((o) => o.value) })));
   check("the Control select lists every control in layer, sector, name order (" + expected.length + ")", JSON.stringify(select.flatMap((g) => g.ids)) === JSON.stringify(expected.map((c) => c.nodeId)), JSON.stringify(select.flatMap((g) => g.ids).slice(0, 5)) + " vs " + JSON.stringify(expected.slice(0, 5).map((c) => c.nodeId)));
   const labels = [];
   expected.forEach((c) => { const l = groupLabel(c); if (labels[labels.length - 1] !== l) labels.push(l); });
   check("the Control select uses one optgroup per layer and sector, in order", JSON.stringify(select.map((g) => g.label)) === JSON.stringify(labels), JSON.stringify(select.map((g) => g.label)));
-  check("optgroup labels include L5 AI Model Provider and L5 AI Model Provider \u00b7 Healthcare", select.some((g) => g.label === "L5 AI Model Provider") && select.some((g) => g.label === "L5 AI Model Provider \u00b7 Healthcare"), JSON.stringify(select.map((g) => g.label)));
+  check("optgroup labels include L5 AI Model Provider \u00b7 Healthcare", select.some((g) => g.label === "L5 AI Model Provider \u00b7 Healthcare"), JSON.stringify(select.map((g) => g.label)));
   await page.close();
 
   for (const [width, height] of [[1280, 900], [375, 812]]) {
@@ -2044,7 +2043,7 @@ async function testControlOrdering(browser, base) {
     const sorted = known.slice().sort(controlOrder).map((c) => c.nodeId);
     check("the control list in the details panel follows the order" + at, listed.length > 10 && known.length === listed.length && JSON.stringify(listed) === JSON.stringify(sorted), JSON.stringify(listed.slice(0, 4)) + " vs " + JSON.stringify(sorted.slice(0, 4)));
     check("the chain boxes match the first entries of that list" + at, boxes.length > 1 && JSON.stringify(boxes) === JSON.stringify(listed.slice(0, boxes.length)), JSON.stringify(boxes.slice(0, 4)));
-    check("the persona chain mixes layers and sectors so the order is exercised" + at, new Set(known.map((c) => c.layer)).size > 1 && known.some((c) => c.sector) && known.some((c) => !c.sector), "too uniform");
+    check("the persona chain mixes layers and sectors so the order is exercised" + at, new Set(known.map((c) => c.layer)).size > 1 && new Set(known.map((c) => c.slug)).size > 1, "too uniform");
     await p2.close();
   }
 }
@@ -2218,7 +2217,34 @@ async function testUsersPersonaControls(browser, base) {
   check("the AI System Users chain lists its controls, including all three", want.every((id) => listed.indexOf(id) !== -1) && listed.length >= 3, JSON.stringify(listed));
   const state = await page.evaluate(() => ({ empty: document.querySelectorAll("#chain-board .chain-empty-state").length, cards: document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]').length }));
   check("the AI System Users chain shows control boxes and no empty state", state.empty === 0 && state.cards >= 3, JSON.stringify(state));
-  check("SRF-COM-L1-001 appears in the L1 no-sector group of the Control select", await page.$$eval("#chain-select-control optgroup", (groups) => { const g = groups.find((x) => x.label === "L1 AI Business & Usage"); return !!g && Array.from(g.querySelectorAll("option")).some((o) => o.value === "control:common:SRF-COM-L1-001"); }));
+  await page.close();
+  await testControlGrouping(browser, base);
+}
+
+async function testControlGrouping(browser, base) {
+  console.log("\n## Control select groups by source file");
+  const page = await startMode(browser, base, 1280, 900, "control");
+  const groups = await page.$$eval("#chain-select-control optgroup", (gs) => gs.map((g) => ({ label: g.label, options: Array.from(g.querySelectorAll("option")).map((o) => ({ id: o.value, text: o.textContent })) })));
+  const layerGroups = (layer) => groups.filter((g) => g.label.indexOf(LAYER_NAME[layer]) === 0);
+  const common = "SRF-COM-L1-001";
+  const l1 = layerGroups("L1");
+  check("the first L1 group is labeled L1 AI Business & Usage \u00b7 All sectors (common) and holds SRF-COM-L1-001", l1.length > 1 && l1[0].label === LAYER_NAME.L1 + " \u00b7 All sectors (common)" && l1[0].options.some((o) => o.id === "control:common:" + common), JSON.stringify(l1.map((g) => g.label)));
+  const sectors = l1.slice(1).map((g) => g.label.slice((LAYER_NAME.L1 + " \u00b7 ").length));
+  check("L1 sector groups follow A to Z by sector name", JSON.stringify(sectors) === JSON.stringify(sectors.slice().sort(byText)) && sectors.indexOf("Finance") !== -1, JSON.stringify(sectors));
+  check("every group is named with a layer and a sector", groups.every((g) => / \u00b7 /.test(g.label)), JSON.stringify(groups.map((g) => g.label)));
+  const finance = inChainCore.filter((c) => c.slug === "finance");
+  const financeListed = groups.filter((g) => / \u00b7 Finance$/.test(g.label)).flatMap((g) => g.options.map((o) => o.id));
+  check("every finance control sits in a Finance group (" + finance.length + ")", finance.length > 0 && finance.every((c) => financeListed.indexOf(c.nodeId) !== -1) && financeListed.length === finance.length, financeListed.length + " vs " + finance.length);
+  const unnamed = groups.filter((g) => !/ \u00b7 /.test(g.label));
+  check("no unnamed group holds a control that has a source file", unnamed.length === 0, JSON.stringify(unnamed.map((g) => g.label)));
+  const texts = groups.flatMap((g) => g.options.map((o) => o.text));
+  check("no option text has doubled parentheses", texts.length > 100 && texts.every((t) => !/\(\s*[^()]*\([^()]*\)\s*\)/.test(t)) && groups.every((g) => !/\([^()]*\([^()]*\)[^()]*\)/.test(g.label)), texts.filter((t) => /\(.*\(/.test(t)).slice(0, 3).join(" | "));
+  const acceptable = groups.flatMap((g) => g.options).find((o) => o.id === "control:common:" + common);
+  check("the Acceptable Use Policy control shows its title with no suffix", !!acceptable && /^Acceptable Use Policy Acknowledgment by AI System Users$/.test(acceptable.text), JSON.stringify(acceptable));
+  groups.forEach((g) => {
+    const names = g.options.map((o) => o.text);
+    check("titles are A to Z inside " + g.label, JSON.stringify(names) === JSON.stringify(names.slice().sort(byText)), names.slice(0, 3).join(" | "));
+  });
   await page.close();
 }
 
