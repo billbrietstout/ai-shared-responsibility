@@ -166,8 +166,33 @@ A risk cell sets `no_linked_control_in_model` when none of its related controls 
 | `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | AI-PaaS | `ai-system-governance` |
 | `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | Agent-PaaS | `ai-system-governance` |
 | `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | IaaS | `ai-system-governance` |
+| `weakplatformaccountability` | AI platform security accountability not enforced | L4 | Agent-PaaS | `ai-platform-provider` |
+| `weakplatformmfa` | Privileged access to the AI platform without multifactor authentication | L4 | IaaS | `ai-platform-provider` |
+| `unremediatedplatformflaws` | Known vulnerabilities on the AI platform not remediated | L4 | Agent-PaaS | `ai-platform-provider` |
+| `unprotectedplatformtraffic` | AI platform traffic and keys not cryptographically protected | L4 | Agent-PaaS | `ai-platform-provider` |
+| `incompleteplatformqms` | AI platform quality management system incomplete | L4 | AI-SaaS | `ai-platform-provider` |
+| `incompleteplatformqms` | AI platform quality management system incomplete | L4 | AI-PaaS | `ai-platform-provider` |
+| `incompleteplatformqms` | AI platform quality management system incomplete | L4 | Agent-PaaS | `ai-platform-provider` |
+| `openplatformfacility` | AI platform hosting area without facility access controls | L4 | AI-SaaS | `ai-platform-provider` |
+| `openplatformfacility` | AI platform hosting area without facility access controls | L4 | AI-PaaS | `ai-platform-provider` |
+| `openplatformfacility` | AI platform hosting area without facility access controls | L4 | Agent-PaaS | `ai-platform-provider` |
+| `openplatformfacility` | AI platform hosting area without facility access controls | L4 | IaaS | `ai-platform-provider` |
+| `unregisteredclinicalplatform` | Clinical AI platform interoperability capabilities not registered | L4 | AI-PaaS | `ai-platform-provider` |
+| `unscreenedmodelpersonnel` | AI Model Provider personnel without required screening | L5 | AI-SaaS | `model-provider` |
+| `unscreenedmodelpersonnel` | AI Model Provider personnel without required screening | L5 | AI-PaaS | `model-provider` |
+| `unscreenedmodelpersonnel` | AI Model Provider personnel without required screening | L5 | Agent-PaaS | `model-provider` |
+| `noncompliantmodelrelease` | High-risk model offered without provider compliance duties | L5 | AI-SaaS | `model-provider` |
+| `noncompliantmodelrelease` | High-risk model offered without provider compliance duties | L5 | AI-PaaS | `model-provider` |
+| `noncompliantmodelrelease` | High-risk model offered without provider compliance duties | L5 | Agent-PaaS | `model-provider` |
+| `undefinednotifyingauthority` | Model conformity assessment without a competent notifying authority | L5 | AI-SaaS | `model-provider` |
+| `undefinednotifyingauthority` | Model conformity assessment without a competent notifying authority | L5 | AI-PaaS | `model-provider` |
+| `undefinednotifyingauthority` | Model conformity assessment without a competent notifying authority | L5 | Agent-PaaS | `model-provider` |
+| `undefinednotifyingauthority` | Model conformity assessment without a competent notifying authority | L5 | IaaS | `model-provider` |
+| `opaquefederalmodelacq` | Federal acquisition of AI models lacks required transparency | L5 | Agent-PaaS | `ai-system-governance` |
+| `opaquefederalmodelacq` | Federal acquisition of AI models lacks required transparency | L5 | IaaS | `ai-system-governance` |
+| `unqualifiedclinicalmodel` | Clinical predictive model without required qualification | L5 | AI-PaaS | `model-provider` |
 
-30 cells. Class: `no_linked_control_in_model`.
+55 cells. Class: `no_linked_control_in_model`.
 
 ## Summary finding
 
