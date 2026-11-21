@@ -6912,7 +6912,7 @@
       "affected_layers": [
         "L1"
       ],
-      "layer_rationale": "A person uses an AI system for a purpose the organization did not allow, or for a purpose the provider did not intend. That choice sits at L1. The acceptable-use controls require permitted purposes. Principle 1.2(b) states the harm of uses outside the intended purpose, so that link is official text. dsgai03 is the related case of a system the organization does not know about. This row is use of a known system outside its purpose.",
+      "layer_rationale": "A person uses an AI system for a purpose the organization did not allow, or for a purpose the provider did not intend. That choice sits at L1. SRF-COM-L1-002 requires use within the acceptable use policy, and SRF-COM-L1-003 issues that policy. The finance acknowledgment control measures the signature, so it is not linked. Principle 1.2(b) states the harm of uses outside the intended purpose, so that link is official text. dsgai03 is the related case of a system the organization does not know about. This row is use of a known system outside its purpose.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-users",
@@ -6963,7 +6963,6 @@
       "related_controls": [
         "srf.control.common.SRF-COM-L1-002",
         "srf.control.common.SRF-COM-L1-003",
-        "srf.control.finance.SRF-L1-DEV-003",
         "srf.control.healthcare.SRF-L1-HOR-002"
       ],
       "obligations": [
@@ -6981,11 +6980,6 @@
                 "control": "srf.control.common.SRF-COM-L1-003",
                 "mapping_key": "eu_ai_act",
                 "citation": "Article 26 (deployer obligations; where in scope)"
-              },
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-003",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 26 (Deployer obligations)"
               }
             ]
           }
@@ -7599,7 +7593,7 @@
         "L1",
         "L5"
       ],
-      "layer_rationale": "The organization runs a use the law prohibits, or it does not record that a use is high-risk or high-impact, so the duties that follow that class never start. That decision sits at L1. SRF-COM-L1-004 records the legal risk class on the inventory entry. The public-sector designation and discontinuation controls apply on the models those controls list. Article 5, Article 25, and Article 51 have no related control that cites them, so those links are named citations.",
+      "layer_rationale": "The organization runs a use the law prohibits, or it does not record that a use is high-risk or high-impact, so the duties that follow that class never start. That decision sits at L1. The public-sector controls designate high-impact use and stop a use that misses the required practices. They do not apply on IaaS, so that model has no control for this risk. SRF-COM-L1-004 records a legal risk class on the inventory, and the inventory row already links that control. Article 6, Article 49, and Annex III are named citations on this row.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7608,7 +7602,7 @@
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The L1 matrix cell is shared for the customer and provider-managed for the provider. This failure is the customer's use and governance of AI, so the customer is the accountable party."
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.public-sector.SRF-L1-ACQ-002 in this model. The L1 matrix cell is shared for the customer and provider-managed for the provider. This failure is the customer's use and governance of AI, so the customer is the accountable party."
         },
         "AI-PaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7617,7 +7611,7 @@
             "customer": "customer-owned",
             "provider": "provider-managed"
           },
-          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The customer owns L1 in this operating model."
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.public-sector.SRF-L1-ACQ-002 in this model. The customer owns L1 in this operating model."
         },
         "Agent-PaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7626,7 +7620,7 @@
             "customer": "customer-owned",
             "provider": "provider-managed"
           },
-          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The customer owns L1 in this operating model."
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.public-sector.SRF-L1-ACQ-002 in this model. The customer owns L1 in this operating model."
         },
         "IaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7635,7 +7629,8 @@
             "customer": "customer-owned",
             "provider": "provider-managed"
           },
-          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The customer owns L1 in this operating model."
+          "note": "No related control applies in this operating model. The persona stays ai-system-governance, and the cell records no_linked_control_in_model.",
+          "no_linked_control_in_model": true
         }
       },
       "mappings": {
@@ -7648,50 +7643,10 @@
         "oecd_aim": "https://oecd.ai/en/incidents (monitor). No incident page was retrieved for this row. The monitor says its pages are not the official views of the OECD or of its member countries."
       },
       "related_controls": [
-        "srf.control.common.SRF-COM-L1-004",
         "srf.control.public-sector.SRF-L1-ACQ-002",
         "srf.control.public-sector.SRF-L1-MON-005"
       ],
       "obligations": [
-        {
-          "requirement": "eu-ai-act.annex-iii",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-004",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "eu-ai-act.art-49",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-004",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "eu-ai-act.art-6",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-004",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
-              }
-            ]
-          }
-        },
         {
           "requirement": "omb-m-25-21.4a",
           "basis": "derived_via_control",
@@ -7732,10 +7687,30 @@
           }
         },
         {
+          "requirement": "eu-ai-act.annex-iii",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Annex III",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02024R1689-20260727",
+            "document": "eu-ai-act",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
           "requirement": "eu-ai-act.art-25",
           "basis": "named_citation",
           "source": {
             "citation": "Article 25(1) to (5)",
+            "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+            "document": "eu-ai-act",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-49",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 49(1) to (5)",
             "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
             "document": "eu-ai-act",
             "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
@@ -7757,6 +7732,16 @@
           "source": {
             "citation": "Article 51(1) to (3)",
             "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+            "document": "eu-ai-act",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-6",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 6",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
             "document": "eu-ai-act",
             "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
           }
@@ -8055,7 +8040,7 @@
       "affected_layers": [
         "L1"
       ],
-      "layer_rationale": "After deployment, serious incidents and errors are not detected, recorded, or reported to the people who have to act. That procedure sits at L1. SRF-COM-L1-008 is the incident procedure. SRF-COM-L1-010 requires the post-deployment monitoring plan, and Article 72 is linked through that plan. Article 43 is cited on the same control for modified high-risk systems and is not linked, because it is a conformity procedure. The defense incident control is included because it cites the CMMC and SP 800-171 incident requirements.",
+      "layer_rationale": "After deployment, serious incidents and errors are not detected, recorded, or reported to the people who have to act. That procedure sits at L1. SRF-COM-L1-008 is the incident procedure. SRF-COM-L1-010 requires the post-deployment monitoring plan, and Article 72 is linked through that plan. Article 43 is cited on the same control for modified high-risk systems and is not linked, because it is a conformity procedure. The CMMC and SP 800-171 incident requirements stay on this row as named citations. The defense control that cites them is not listed here, because a later pass can draw that control from the citation.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-governance",
@@ -8107,36 +8092,9 @@
         "srf.control.common.SRF-COM-L1-008",
         "srf.control.common.SRF-COM-L1-010",
         "srf.control.healthcare.SRF-L1-PMS-002",
-        "srf.control.manufacturing.SRF-L1-OPS-005",
-        "srf.control.defense.SRF-L1-OPS-008"
+        "srf.control.manufacturing.SRF-L1-OPS-005"
       ],
       "obligations": [
-        {
-          "requirement": "cmmc-2-0.ir-l2-3-6-1",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.defense.SRF-L1-OPS-008",
-                "mapping_key": "cmmc_2_0",
-                "citation": "IR.L2-3.6.1 (operational incident-handling capability); IR.L2-3.6.2 (track, document, and report incidents)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "cmmc-2-0.ir-l2-3-6-2",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.defense.SRF-L1-OPS-008",
-                "mapping_key": "cmmc_2_0",
-                "citation": "IR.L2-3.6.1 (operational incident-handling capability); IR.L2-3.6.2 (track, document, and report incidents)"
-              }
-            ]
-          }
-        },
         {
           "requirement": "eu-ai-act.art-72",
           "basis": "derived_via_control",
@@ -8215,16 +8173,23 @@
           }
         },
         {
-          "requirement": "nist-sp-800-171.3-6-1",
-          "basis": "derived_via_control",
+          "requirement": "cmmc-2-0.ir-l2-3-6-1",
+          "basis": "named_citation",
           "source": {
-            "controls": [
-              {
-                "control": "srf.control.defense.SRF-L1-OPS-008",
-                "mapping_key": "nist_800_171",
-                "citation": "3.6.1"
-              }
-            ]
+            "citation": "IR.L2-3.6.1",
+            "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+            "document": "cmmc-2-0",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.ir-l2-3-6-2",
+          "basis": "named_citation",
+          "source": {
+            "citation": "IR.L2-3.6.2",
+            "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+            "document": "cmmc-2-0",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
           }
         },
         {
@@ -8234,6 +8199,16 @@
             "citation": "GOVERN 1.5",
             "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
             "document": "nist-ai-rmf",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-6-1",
+          "basis": "named_citation",
+          "source": {
+            "citation": "3.6.1",
+            "url": "https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-171r2.pdf",
+            "document": "nist-sp-800-171",
             "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
           }
         }
