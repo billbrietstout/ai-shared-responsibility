@@ -686,9 +686,9 @@ async function testModeParity(browser, base, width, height) {
   await testRocaSelects(browser, base, width, height);
 
   if (width === 1280) {
-    const bare = await openPage(browser, base, 1280, 800, "?type=persona&node=ai-system-users&view=list");
+    const bare = await openNoControlsFixture(browser, base, 1280, 800);
     const gapText = await bare.evaluate(() => document.getElementById("chain-board").textContent);
-    check("a persona with no controls says so in the chain", /No control names this persona yet\./.test(gapText), gapText.slice(0, 300));
+    check("fixture: a persona with no controls says so in the chain", /No control names this persona yet\./.test(gapText), gapText.slice(0, 300));
     await bare.close();
 
     const riskPage = await openPage(browser, base, 1280, 800, "?risk=directpromptinjection");
@@ -2107,13 +2107,31 @@ async function testDetailsBesideChain(browser, base) {
   }
 }
 
+async function openNoControlsFixture(browser, base, width, height) {
+  const page = await browser.newPage();
+  await page.setViewport({ width: width, height: height });
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    if (/\/data\/[a-z-]+-controls\.json$/.test(req.url())) {
+      const file = path.join(ROOT, "data", path.basename(req.url()));
+      const body = fs.readFileSync(file, "utf8").split("ai-system-users").join("ai-system-governance");
+      req.respond({ status: 200, contentType: "application/json", body: body });
+    } else {
+      req.continue();
+    }
+  });
+  await page.goto(base + "/tools/relationship-map/index.html?type=persona&node=ai-system-users&view=list", { waitUntil: "load" });
+  await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  return page;
+}
+
 async function testEmptyControlsState(browser, base) {
-  console.log("\n## A pick with no controls shows an empty state");
-  const withControls = new Set(controls.map((c) => c.persona));
-  check("data has a core persona that no control names", !withControls.has("ai-system-users"), "ai-system-users is named");
+  console.log("\n## A pick with no controls shows an empty state (fixture)");
+  // Fixture: serve the control files with every ai-system-users owner swapped to
+  // ai-system-governance, so the persona has zero controls. Real data is not touched.
   for (const [width, height] of [[1280, 900], [375, 812]]) {
     const at = " at " + width;
-    const page = await openPersonaChain(browser, base, width, height, "?type=persona&node=ai-system-users&view=list");
+    const page = await openNoControlsFixture(browser, base, width, height);
     const s = await page.evaluate(() => {
       const empty = document.querySelector("#chain-board .chain-empty-state");
       return {
@@ -2124,11 +2142,36 @@ async function testEmptyControlsState(browser, base) {
         overflow: document.documentElement.scrollWidth - window.innerWidth
       };
     });
-    check("the chain says No controls mapped yet and keeps its four menus" + at, s.visible && /No controls mapped yet/.test(s.text) && s.cards === 0 && s.selects === 4 && s.overflow <= 0, JSON.stringify(s));
+    check("fixture: a persona with zero controls says No controls mapped yet and keeps its four menus" + at, s.visible && /No controls mapped yet/.test(s.text) && s.cards === 0 && s.selects === 4 && s.overflow <= 0, JSON.stringify(s));
     await page.close();
   }
   const page = await openPersonaChain(browser, base, 1280, 900);
   check("a persona with controls shows no empty state", (await page.$$("#chain-board .chain-empty-state")).length === 0);
+  await page.close();
+}
+
+async function testUsersPersonaControls(browser, base) {
+  console.log("\n## AI System Users is accountable for the acceptable use controls");
+  const want = ["control:finance:SRF-L1-DEV-003", "control:finance:SRF-L1-DEV-006", "control:healthcare:SRF-L1-HOR-002"];
+  const byId = (id) => controls.find((c) => c.nodeId === id);
+  const finance = readData("finance-controls.json").controls;
+  const health = readData("healthcare-controls.json").controls;
+  const dev3 = finance.find((c) => c.id === "SRF-L1-DEV-003");
+  const hor2 = health.find((c) => c.id === "SRF-L1-HOR-002");
+  const dev6 = finance.find((c) => c.id === "SRF-L1-DEV-006");
+  const allUsers = (c) => Object.keys(c.accountable_by_model).length > 0 && Object.values(c.accountable_by_model).every((p) => p === "ai-system-users") && c.accountable_persona === "ai-system-users";
+  check("data: DEV-003 and HOR-002 name ai-system-users on each model they already mapped, with models unchanged", allUsers(dev3) && allUsers(hor2) && sameSet(Object.keys(dev3.accountable_by_model), ["AI-SaaS", "AI-PaaS", "Agent-PaaS"]) && sameSet(Object.keys(hor2.accountable_by_model), ["AI-SaaS", "Agent-PaaS", "IaaS"]) && sameSet(dev3.operating_models, ["AI-SaaS", "AI-PaaS", "Agent-PaaS"]) && sameSet(hor2.operating_models, ["SaMD-Cloud", "EHR-Embedded", "Agent-Clinical", "On-Premise"]), "unexpected");
+  check("data: both descriptions say AI System Governance still issues the policy", /AI System Governance issues and maintains the policy/.test(dev3.description) && /AI System Governance issues and maintains the policy/.test(hor2.description), "missing sentence");
+  check("data: SRF-L1-DEV-006 is an L1 sector-neutral control owned by ai-system-users on all four models", !!dev6 && dev6.layer === "L1" && allUsers(dev6) && sameSet(Object.keys(dev6.accountable_by_model), MODELS) && sameSet(dev6.operating_models, MODELS), JSON.stringify(dev6 && dev6.accountable_by_model));
+  check("data: SRF-L1-DEV-006 has no sector operating model", !!dev6 && dev6.operating_models.every((m) => MODELS.indexOf(m) !== -1), "sector model present");
+  const page = await openPersonaChain(browser, base, 1280, 900, "?type=persona&node=ai-system-users&view=list");
+  await page.evaluate(() => { document.querySelectorAll('.chain-more[data-more-column="control"]').forEach((b) => b.click()); });
+  await sleep(200);
+  const listed = await page.$$eval('#details-chain .details-related[data-node-id^="control:"]', (els) => els.map((el) => el.dataset.nodeId));
+  check("the AI System Users chain lists its controls, including all three", want.every((id) => listed.indexOf(id) !== -1) && listed.length >= 3, JSON.stringify(listed));
+  const state = await page.evaluate(() => ({ empty: document.querySelectorAll("#chain-board .chain-empty-state").length, cards: document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]').length }));
+  check("the AI System Users chain shows control boxes and no empty state", state.empty === 0 && state.cards >= 3, JSON.stringify(state));
+  check("DEV-006 appears in the L1 no-sector group of the Control select", await page.$$eval("#chain-select-control optgroup", (groups) => { const g = groups.find((x) => x.label === "L1 AI Business & Usage"); return !!g && Array.from(g.querySelectorAll("option")).some((o) => o.value === "control:finance:SRF-L1-DEV-006"); }));
   await page.close();
 }
 
@@ -2163,6 +2206,7 @@ async function main() {
       ["optionsCue", () => testOptionsCue(browser, base)],
       ["detailsBesideChain", () => testDetailsBesideChain(browser, base)],
       ["emptyControlsState", () => testEmptyControlsState(browser, base)],
+      ["usersPersonaControls", () => testUsersPersonaControls(browser, base)],
       ["columnLabels", () => testColumnLabels(browser, base)],
       ["listbox", () => testListbox(browser, base)],
       ["phoneSheet", () => testPhoneSheet(browser, base)],
