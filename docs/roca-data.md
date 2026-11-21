@@ -77,3 +77,40 @@ The three joint-accountability controls now have one owner per model:
 - Finance `SRF-L5-MON-001` is `ai-platform-provider` on AI-PaaS and Agent-PaaS, and `ai-model-serving` on IaaS. Signing the artifact stays on `SRF-L5-DEV-002`, owned by `model-provider`.
 
 18 risk-owner cells were set to the persona of a linked control that applies in that model, preferring a control at the risk's layer. At that edit, 4 cells had no linked control in that model (`modelinversionandmembership` and `devmodelleak` and `dsgai05` on AI-SaaS, and `dsgai11` on IaaS). Those four kept their persona and set `no_linked_control_in_model`. Later controls closed the `dsgai05` AI-SaaS gap and the `dsgai11` IaaS gap, so those two cells no longer set `no_linked_control_in_model`. SRF-COM-L5-001 and SRF-COM-L5-004 close the `modelinversionandmembership` AI-SaaS gap, because both apply in AI-SaaS and name `model-provider`, which is that cell's persona. One cell still has no linked control in that model: `devmodelleak` on AI-SaaS. 9 of the original 31 mismatched cells already matched after the sector map and the control-owner edits, so the persona was left as it was. The previous persona and note for each changed cell are in `owner_alignment`.
+
+## Orphan check
+
+Bill's rule for the relationship map is that every risk, obligation, control, and accountable persona sits in at least one complete ROCA chain. A chain runs from a risk to an obligation, from that obligation to a control, and from that control to an accountable persona.
+
+`build/roca_orphans.py` reads the same links the map builds in `tools/relationship-map/app.js`.
+
+- Risk to obligation: `threats[].obligations[]` in `data/threats.json`. An obligation is a `requirements[]` row in `data/moral-regulatory-hierarchy.json`.
+- Obligation to control: a control citation that matches the requirement, using the same match as `citationsForControl`, or the control named in `threats[].obligations[].source.controls[]`.
+- Risk to control, direct column: the control id is in `threats[].related_controls`.
+- Risk to control, transitive column: the control cites an obligation that some risk links. A control can appear in both columns. The two columns are counted separately.
+- Control to persona: `accountable_by_model` or `accountable_persona` on controls in `data/*-controls.json`, including `data/common-controls.json`. A persona named for any of the four operating models (AI-SaaS, AI-PaaS, Agent-PaaS, and IaaS) counts.
+
+An item is an orphan when a link is missing.
+
+- A risk is an orphan when it has no obligation, or no obligation that reaches a control with an accountable persona.
+- An obligation is an orphan when no risk links it, or it reaches no control.
+- A control is an orphan when it is in neither the direct column nor the transitive column, or it reaches no obligation, or it names no accountable persona.
+- A persona is an orphan when no control it is accountable for is on a complete chain.
+
+The persona list is `personas[]` and `sector_specializations[]` in `data/personas.json`. The check counts every control file under `data/`, including common controls and tapestry controls. The map does not draw tapestry records on an SRF chain. This check still reports a tapestry control when a link is missing.
+
+A control that is also a row in `thresholds/gap-register.json` is still an orphan when a link is missing. The report marks that line `in gap register`.
+
+An item is counted in each layer it names. The total counts the item once. Layer here is the SRF layer on the record (`L1` through `L5`).
+
+Run the check from the repository root:
+
+```
+python3 build/roca_orphans.py
+```
+
+The command prints each orphan, grouped by type and layer, with the id and the missing link. `thresholds/orphan-baseline.json` holds the orphan counts by type and layer, and the direct and transitive control-to-risk counts. The run fails when an orphan count is above that baseline, and when the script itself errors. Orphans at or below the baseline do not fail the run.
+
+`mode` in that file is `report-only`. Set `mode` to `blocking` to fail the run when any orphan remains. Use that setting when the counts reach 0.
+
+`python3 build/test_roca_orphans.py` runs the fixture tests. `python3 build/roca_orphans.py --print-baseline` prints a baseline document for the current data. Replace `thresholds/orphan-baseline.json` with that output when the accepted counts change, and keep `mode` as `report-only` until the counts are 0.
