@@ -53,7 +53,7 @@
     "implementing_persona_note"
   ],
   "principles_note": "principles lists informative IDs from data/ai-agentic-principles.json and data/security-principles.json. They create no governed_by edges.",
-  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of July 27, 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs. EU AI Act Articles 10, 12, 15, 26, and 72 on the L2 controls repeat citations already in the sector control files and were not checked again against the consolidated text. GDPR Article 5 and the ISO/IEC 42001 Annex A numbers come from the controls' source request and were not checked against the standards. The L1 controls' EU AI Act articles other than Article 4 (6, 17, 25, 26, 27, 43, 49, 72, 73, and Annex III), the NIST AI RMF subcategory wording on SRF-COM-L1-002 to 010 (taken from NIST AI 100-1 where the repository holds it), and the ISO/IEC 42001 clause and Annex A numbers on those controls come from the controls' source request and were not checked against the consolidated text or the standard.",
+  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of July 27, 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs. EU AI Act Articles 10, 12, 15, 26, and 72 on the L2 controls repeat citations already in the sector control files and were not checked again against the consolidated text. GDPR Article 5 and the ISO/IEC 42001 Annex A numbers come from the controls' source request and were not checked against the standards. The L1 controls' EU AI Act articles other than Article 4 (6, 17, 25, 26, 27, 43, 49, 72, 73, and Annex III), the NIST AI RMF subcategory wording on SRF-COM-L1-002 to 010 (taken from NIST AI 100-1 where the repository holds it), and the ISO/IEC 42001 clause and Annex A numbers on those controls come from the controls' source request and were not checked against the consolidated text or the standard. EU AI Act Articles 9, 13, 14, 15, and 86 on the L3 controls repeat citations already in the sector control files and were not checked again against the consolidated text. SRF-COM-L3-008 names EU AI Act Article 50 in its description only. The hierarchy has no Article 50 obligation record, so no obligation id was created and the citation stays unmatched. The ISO/IEC 42001 Annex A numbers on the L3 controls come from the source request and were not checked against the standard.",
   "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' with an optional short gloss in parentheses. 'N/A' means no EU AI Act nexus. 'TBD:' prefix marks an unverified mapping.",
   "controls": [
     {
@@ -851,6 +851,363 @@
       ],
       "accountable_persona_note": "The owners match threat dsgai11 in data/threats.json, which names AI Platform Provider in all four operating models. The sector controls this one draws on, SRF-L2-MON-003 (finance) and SRF-L2-PMS-003 (healthcare), name the Data Provider and apply only under Agent-PaaS. Under this control the Data Provider stays accountable for checking data before ingestion, which is SRF-COM-L2-007. Under IaaS, dsgai11 names AI Platform Provider as the persona and the customer as the accountable party, because the customer runs the stack. This control follows that persona.",
       "implementing_persona_note": "The Data Provider defines which actors may write to a store and which content the store may hold. The AI Platform Provider owns enforcement and detection on the stores in use."
+    },
+    {
+      "id": "SRF-COM-L3-001",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Prompt Injection Defense and Detection",
+      "description": "The Application Developer must keep the instructions sent to a model separate from untrusted input and from retrieved content. Untrusted input is text a person or another system submits. Retrieved content includes documents, records, and tool results the application fetches. Both are checked for injection attempts, including attempts to override the instructions, switch the role, or jailbreak the model, before they are placed in the model context. In operation the application detects those attempts and logs each detection with the application, the time, and the action taken. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-SEC-010 (Prompt Injection); AIR-PREV-003 (User/App/Model Firewalling/Filtering); AIR-DET-004 (AI System Observability)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM01: Prompt Injection",
+        "aicm": "AIS-08 (Input Validation); AIS-15 (Prompt Differentiation)"
+      },
+      "threshold": {
+        "metric": "prompt_injection_defense_coverage",
+        "description": "Percentage of in-scope AI applications in production that keep untrusted input and retrieved content apart from instructions and that log injection detection. An application missing the separation or the detection log counts as a miss. The tier-defined window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "detection_finding (2004). Detection events log the application, the time, and the action taken.",
+          "attribute": "finding.type_uid; finding.severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "block-release-until-detection-is-logging; alert-application-developer"
+      },
+      "principles": [
+        "untrusted-content-segregated-and-labeled"
+      ]
+    },
+    {
+      "id": "SRF-COM-L3-002",
+      "layer": "L3",
+      "component": "Agents & Orchestration Models",
+      "lifecycle_stage": "operate",
+      "title": "Agent Task Boundary and Tool-Execution Authorization",
+      "description": "An agent may act only inside a task scope that is written down before deployment. The scope names the actions the agent may take and the conditions under which it must stop and refer to a person. Each tool call is checked against that scope and against the rights of the user the agent acts for. The check runs at each step of a multi-step task, because a check only at session start would miss a later call. A call outside the scope or outside those rights is blocked and logged with the agent, the tool, the user, and the time. EU AI Act Articles 14 and 15 apply only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "agentic-platform-provider",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-018 (Agent Authority Least Privilege Framework); AIR-SEC-024 (Agent Action Authorization Bypass); AIR-SEC-025 (Tool Chain Manipulation and Injection)",
+        "nist_ai_rmf": "GOVERN 3.2 (policies define human-AI configurations and oversight); MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 14 (human oversight; where in scope); Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM06: Excessive Agency",
+        "aicm": "AIS-11 (Agents Security Boundaries); IAM-19 (Agent Access Restriction)"
+      },
+      "threshold": {
+        "metric": "agent_scope_and_tool_check_coverage",
+        "description": "Percentage of in-scope agent deployments that have a written task scope and a tool-call check against that scope and the user's rights. A deployment missing either counts as a miss. The per-deployment window is looser than the continuous and per-session windows in the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity",
+          "attribute": "api_activity events on tool endpoints. A denied call has status Failure and status_code 403 or the equivalent. Compare actor identity with the task scope and the user's rights.",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-deployment",
+        "breach_action": "block-tool-call; log-denied-call; alert-accountable-owner"
+      },
+      "principles": [
+        "tool-permissions-never-exceed-function-need"
+      ],
+      "accountable_persona_note": "Application Developer is accountable on AI-SaaS, AI-PaaS, and IaaS. Agentic Platform & Framework Providers is accountable on Agent-PaaS, where the platform checks task scope and tool rights.",
+      "cross_layer_note": "One source control sits at L1: finance SRF-L1-DEV-004, a written agent authorization policy owned by AI System Governance on Agent-PaaS. This control sits at L3 and covers the runtime task scope and the per-call tool check. The written policy stays on the L1 control."
+    },
+    {
+      "id": "SRF-COM-L3-003",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Human Oversight Gate for High-Impact Outputs and Actions",
+      "description": "A named person must approve a high-impact output or action before it takes effect. The organization classes an output or action as high-impact when it can harm a person, change a person's rights or access to a service, or change a safety-critical state. The approval is an explicit act by that person, recorded with the person's name, the time, and the outcome. The output or action does not take effect on a timeout or because no one responded. Where a validated safety case shows that waiting for approval would itself cause harm, the organization records that case and the automatic action it authorizes. EU AI Act Article 14 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 3.2 (policies define human-AI configurations and oversight); MAP 3.5 (processes for human oversight are assessed)",
+        "eu_ai_act": "Article 14 (human oversight; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.9.2",
+        "aicm": "GRC-15 (Human supervision)"
+      },
+      "threshold": {
+        "metric": "high_impact_approval_coverage",
+        "description": "Percentage of high-impact outputs and actions that have a recorded approval by a named person before they take effect. A high-impact output or action with no recorded approval counts as a miss, except where a validated safety case authorizes an automatic action and that case is on record. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Approval events log the named person, the time, and the outcome.",
+          "attribute": "actor.user.name; time; activity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "hold-output-or-action; notify-named-approver"
+      },
+      "principles": [
+        "approval-before-high-impact-actions"
+      ],
+      "cross_layer_note": "Two source controls sit at L1. Defense SRF-L1-OVR-011 is an escalation chain that is documented and rehearsed. Healthcare SRF-L1-HOR-003 is a policy that records when a clinician overrides a recommendation. This control sits at L3 and covers approval before a high-impact output or action takes effect. The escalation chain and the override-documentation policy stay on those L1 controls."
+    },
+    {
+      "id": "SRF-COM-L3-004",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Operator Override and Stop Capability, Tested",
+      "description": "An operator must be able to override an AI output or stop the system from the operator interface. The control is labeled, and using it does not require technical knowledge of the model. Each use is logged with the operator, the time, and a reason. The organization tests the stop within the review window, records the time from the stop request to the halt, and compares that time with the response time set for the system. The test result is kept through the review window. EU AI Act Article 14 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "agentic-platform-provider",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MANAGE 2.4 (mechanisms are in place to disengage systems that deviate from intended use)",
+        "eu_ai_act": "Article 14 (human oversight; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "aicm": "GRC-15 (Human supervision)"
+      },
+      "threshold": {
+        "metric": "stop_test_coverage",
+        "description": "Percentage of in-scope AI systems whose override or stop was tested within the review window, with the measured time to stop recorded and compared with the response time set for that system. A system with no current test, or a test with no measured time, counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier. The response time itself is set per system.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Override and stop events log the operator, the time, and the reason. The stop test record stores the measured time to halt.",
+          "attribute": "actor.user.name; time; activity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "restrict-operation-until-stop-is-tested; notify-accountable-owner"
+      },
+      "principles": [
+        "time-to-stop-is-a-measured-control"
+      ],
+      "accountable_persona_note": "Application Developer is accountable on AI-SaaS, AI-PaaS, and IaaS. Agentic Platform & Framework Providers is accountable on Agent-PaaS, where the platform provides the operator override and stop.",
+      "cross_layer_note": "One source control sits at L4: defense SRF-L4-OVR-012, a platform-level emergency stop tested on a cycle and owned by the AI Platform Provider. This control sits at L3 and covers the operator override and the tested stop on the application. The platform stop stays on the L4 control. The response time is set per system. This control does not set a time in seconds."
+    },
+    {
+      "id": "SRF-COM-L3-005",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "Explanation, Notice, and Appeal for Adverse Decisions",
+      "description": "When an AI system makes or informs a decision that goes against a person, that person receives a plain-language reason and a way to appeal. The reason states the main factors in the decision in words that do not require technical knowledge of the model, and it is delivered with the notice of the decision. The appeal path names the office that reviews the appeal, the time allowed for the review, and that a person with authority to change the decision conducts the review. Both the reason and the appeal path are in place before the decision is issued. EU AI Act Articles 13 and 86 apply only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.9 (the AI model is explained, validated, and documented)",
+        "eu_ai_act": "Article 13 (transparency and provision of information; where in scope); Article 86 (right to explanation of individual decision-making; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.8.2 and A.8.3",
+        "aicm": "GRC-15 (Human supervision)"
+      },
+      "threshold": {
+        "metric": "adverse_decision_notice_and_appeal_coverage",
+        "description": "Percentage of in-scope adverse AI-assisted decisions that include a plain-language reason and a way to appeal. A decision missing either counts as a miss. The annual-review window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Decision notice events record whether a plain-language reason and an appeal path were included.",
+          "attribute": "activity_id; observables",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "hold-adverse-notice; notify-accountable-owner"
+      }
+    },
+    {
+      "id": "SRF-COM-L3-006",
+      "layer": "L3",
+      "component": "APIs & Fine-tuned Models",
+      "lifecycle_stage": "operate",
+      "title": "Output Filtering and Content Safety",
+      "description": "Model outputs pass through safety filters before they reach a person or another system. The filters apply the output categories the organization prohibits, and they run after every model call, including a call in the middle of an agent task. The organization measures, by category, how often a filter blocks or redacts an output and how often an output gets past a filter that should have blocked it. Both counts are compared with limits set per model tier. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-003 (User/App/Model Firewalling/Filtering)",
+        "nist_ai_rmf": "MEASURE 2.6 (safety risks are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM05: Improper Output Handling",
+        "aicm": "AIS-09 (Output Validation); TVM-11 (Guardrails)"
+      },
+      "threshold": {
+        "metric": "output_filter_measurement_coverage",
+        "description": "Percentage of in-scope AI systems whose outputs pass a safety filter and whose filter blocks and bypasses are measured by category. A system with no filter, or with no measurement of blocks and bypasses, counts as a miss. The tier-defined window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "security_finding (2001). Filter decisions are logged by category for blocks and for bypasses.",
+          "attribute": "finding.type_uid; finding.severity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "alert-application-developer; review-filter-limits"
+      },
+      "principles": [
+        "monitored-output-treated-as-hostile-to-monitors"
+      ]
+    },
+    {
+      "id": "SRF-COM-L3-007",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "validate",
+      "title": "Pre-Deployment Testing, Red Teaming, and Adversarial Robustness",
+      "description": "A release of an AI system requires a test record against criteria written down before the test. The criteria cover functional behavior, safety boundaries, and security. The record includes adversarial tests and a red-team test, using hostile inputs such as prompt injection and attempts to manipulate the model, and it records the findings. A named reviewer signs the record before release. EU AI Act Articles 9 and 15 apply only where in scope.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.1 (approaches for evaluating AI system trustworthiness are established); MEASURE 2.7 (security and resilience are evaluated and documented); MAP 2.3 (scientific integrity and TEVV considerations are identified and documented)",
+        "eu_ai_act": "Article 9 (risk management system; where in scope); Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.4",
+        "owasp_llm": "LLM01: Prompt Injection",
+        "aicm": "AIS-05 (Application Security Testing); MDS-06 (Adversarial Attack Analysis); TVM-06 (Penetration Testing)"
+      },
+      "threshold": {
+        "metric": "pre_deployment_test_coverage",
+        "description": "Percentage of AI system releases in the review window that have a signed test record covering the documented criteria, including adversarial tests and a red-team test. A release with no such record counts as a miss. The per-deployment window matches the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The signed test record for the release is the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-deployment",
+        "breach_action": "block-release; notify-named-reviewer"
+      },
+      "principles": [
+        "defenses-evaluated-against-adaptive-adversaries"
+      ]
+    },
+    {
+      "id": "SRF-COM-L3-008",
+      "layer": "L3",
+      "component": "Application Platforms",
+      "lifecycle_stage": "operate",
+      "title": "AI Interaction Disclosure and Content Labeling",
+      "description": "A person who interacts with an AI system is told, at the start of the interaction and in the interface the person is using, that the other party is an AI system. Content the system generates is labeled as generated where a law or an organizational rule requires a label, and the label stays with the content when the content is stored or shown. No control in the six sector files states this duty. This common control has no sector source and states the duty for every sector. EU AI Act Article 50 sets transparency duties for certain AI systems, including telling a person they are interacting with an AI system and labeling generated content. data/moral-regulatory-hierarchy.json has no Article 50 obligation record, so this control cites Article 50 in this text only, leaves the citation unmatched, and assigns no obligation id.",
+      "accountable_persona": "application-developer",
+      "accountable_by_model": {
+        "AI-SaaS": "application-developer",
+        "AI-PaaS": "application-developer",
+        "Agent-PaaS": "application-developer",
+        "IaaS": "application-developer"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.8 (risks associated with transparency and accountability are examined and documented)",
+        "eu_ai_act": "Unmatched (no obligation record for the transparency duty named in the control text; no obligation id is assigned)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.8.2"
+      },
+      "threshold": {
+        "metric": "ai_disclosure_and_label_coverage",
+        "description": "Percentage of in-scope AI systems that tell a person they are interacting with an AI system and that label generated content where a label is required. A system missing the disclosure, or missing a required label, counts as a miss. No sector control sets a window, so the per-system window is an SRF choice. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The disclosure text in the interface and the label on generated content are the evidence.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-system",
+        "breach_action": "hold-release-until-disclosure-and-labels-are-in-place; notify-application-developer"
+      }
     }
   ]
 }
