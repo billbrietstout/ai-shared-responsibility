@@ -1823,7 +1823,7 @@
       var idText = "";
       if (focus && focus.kind === "control") idText = (focus.item.vertical || "") + ":" + (focus.item.ref || "");
       else if (focus && focus.kind === "risk") idText = focus.item.ref || "";
-      else if (controlAttrs) idText = controlAttrs.vertical + ":" + controlAttrs.ref;
+      else if (!focus && controlAttrs) idText = controlAttrs.vertical + ":" + controlAttrs.ref;
       if (idText && idText !== ":") {
         detailsId.hidden = false;
         detailsId.textContent = "ID: " + idText;
@@ -1838,13 +1838,9 @@
     }
 
     var about = sectionBlock("Description and objective", "details-about");
-    if (controlAttrs && controlAttrs.description) {
-      if (controlAttrs.description.length > 280) {
-        appendSentence(about, controlAttrs.description.slice(0, 220).replace(/\s+\S*$/, "") + "…");
-        appendFold(about, "Full description", [controlAttrs.description]);
-      } else {
-        appendSentence(about, controlAttrs.description);
-      }
+    if (focus && focus.kind === "obligation") {
+      appendSentence(about, focus.item.title || focus.item.citation || "Obligation record.");
+      if (focus.item.summary) appendSentence(about, focus.item.summary);
     } else if (focus && focus.kind === "risk") {
       if (focus.item.attackSurface) appendSentence(about, "Attack surface: " + focus.item.attackSurface + ".");
       if (focus.item.mappings && focus.item.mappings.length) {
@@ -1852,9 +1848,13 @@
       } else {
         appendSentence(about, "No separate objective text is stored on this risk record.");
       }
-    } else if (focus && focus.kind === "obligation") {
-      appendSentence(about, focus.item.title || focus.item.citation || "Obligation record.");
-      if (focus.item.summary) appendSentence(about, focus.item.summary);
+    } else if (controlAttrs && controlAttrs.description) {
+      if (controlAttrs.description.length > 280) {
+        appendSentence(about, controlAttrs.description.slice(0, 220).replace(/\s+\S*$/, "") + "…");
+        appendFold(about, "Full description", [controlAttrs.description]);
+      } else {
+        appendSentence(about, controlAttrs.description);
+      }
     } else {
       appendSentence(about, "Choose a card or a menu entry in the chain to see its record.");
     }
@@ -1873,6 +1873,8 @@
       (focus.item.sectorModels || []).forEach(function (row) {
         appendSentence(meta, "Sector model " + row.name + " is mapped to " + modelName(row.srf) + " by data/sector-model-map.json. The sector name stays on this control.");
       });
+    } else if (focus && focus.kind === "obligation") {
+      appendSentence(meta, "Operating model filter: " + (modelFilter === "all" ? "All" : modelName(modelFilter)) + ".");
     } else if (controlAttrs) {
       appendSentence(meta, layerSentence(controlAttrs.layer));
       appendSentence(meta, [controlAttrs.meta, controlAttrs.ref].filter(Boolean).join(" · "));
@@ -3559,12 +3561,15 @@
     }
     var button = event.target.closest("button[data-chain-id]");
     if (!button) return;
+    event.preventDefault();
     var keep = button.dataset.chainId;
     chainFocus = keep;
-    commit(false);
+    Array.prototype.forEach.call(chainBoard.querySelectorAll("button[data-chain-id]"), function (card) {
+      card.setAttribute("aria-pressed", card.dataset.chainId === keep ? "true" : "false");
+    });
+    renderDetails();
     announceDetails();
-    var again = chainCard(keep);
-    if (again) again.focus();
+    button.focus();
   });
   chainBoard.addEventListener("change", function (event) {
     var select = event.target.closest("select.chain-pick");
