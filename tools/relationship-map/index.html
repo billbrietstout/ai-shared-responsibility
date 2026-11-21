@@ -69,7 +69,7 @@
           </p>
           <p class="preview-requirements">
             Looking for security requirements? A separate catalog is not in the data yet.
-            <button id="entry-requirement" class="link-button" type="button" aria-pressed="false">Why obligations stand in for them</button>
+            <button id="entry-requirement" class="link-button" type="button">Why obligations stand in for them</button>
           </p>
 
         </details>
@@ -84,18 +84,44 @@
             <button id="map-retry" class="map-error__retry" type="button">Retry</button>
           </div>
 
+          <div id="chain-settings" class="chain-settings" aria-label="Chain settings">
+            <div id="map-filters" class="map-filters" tabindex="-1">
+              <h3 class="visually-hidden">Filters</h3>
+              <fieldset class="model-filter">
+                <legend>Operating model</legend>
+                <div id="model-filter-list" class="model-filter__list">
+                  <label class="model-option">
+                    <input type="radio" name="operating-model" value="all" checked />
+                    <span>All</span>
+                  </label>
+                </div>
+              </fieldset>
+
+              <fieldset class="model-filter layer-filter">
+                <legend>Layer</legend>
+                <div id="layer-filter-list" class="model-filter__list"></div>
+              </fieldset>
+
+              <label class="tapestry-toggle" for="show-tapestry">
+                <input id="show-tapestry" type="checkbox" />
+                <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
+              </label>
+
+              <details class="filter-help">
+                <summary>About these filters</summary>
+                <p id="model-note" class="filter-note"></p>
+                <p class="filter-note">The layer filter narrows the finder and the lists. It does not remove controls from a chain that is already open.</p>
+              </details>
+            </div>
+            <p id="filter-summary" class="filter-summary" role="status"></p>
+          </div>
+
           <details id="options" class="options">
             <summary class="options__summary">
               <span id="options-label" class="options__label">Show options</span>
               <svg class="options__chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </summary>
           <div id="map-tools" class="map-tools">
-            <div class="entry-points" role="group" aria-label="Ways to start">
-              <button id="entry-threat" type="button" aria-pressed="false">Explore a risk</button>
-              <button id="entry-obligation" type="button" aria-pressed="false">Explore an obligation</button>
-              <button id="entry-control" type="button" aria-pressed="false">Explore a control</button>
-              <button id="entry-account" type="button" aria-pressed="false">Explore accountability</button>
-            </div>
             <form id="find-form" class="find-form" role="search">
               <label class="find-form__label" for="node-search">Find a risk, obligation, control, or persona</label>
               <div class="find-form__row">
@@ -119,43 +145,7 @@
               <p id="map-help" class="map-help">
                 Type a name or a few words about a risk, an obligation, a control, or a persona. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.
               </p>
-              <div id="map-filters" class="map-filters" tabindex="-1">
-                <h3 class="visually-hidden">Filters</h3>
-                <fieldset class="model-filter">
-                  <legend>Operating model</legend>
-                  <div id="model-filter-list" class="model-filter__list">
-                    <label class="model-option">
-                      <input type="radio" name="operating-model" value="all" checked />
-                      <span>All</span>
-                    </label>
-                  </div>
-                </fieldset>
-
-                <fieldset class="model-filter layer-filter">
-                  <legend>Layer</legend>
-                  <div id="layer-filter-list" class="model-filter__list"></div>
-                </fieldset>
-
-                <label class="tapestry-toggle" for="show-tapestry">
-                  <input id="show-tapestry" type="checkbox" />
-                  <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
-                </label>
-
-                <details class="filter-help">
-                  <summary>About these filters</summary>
-                  <p id="model-note" class="filter-note"></p>
-                  <p class="filter-note">The layer filter narrows the finder and the lists. It does not remove controls from a chain that is already open.</p>
-                </details>
-              </div>
-              <p id="filter-summary" class="filter-summary" role="status"></p>
-              <button id="toggle-filters" class="toggle-filters" type="button" aria-expanded="false" aria-controls="map-filters">Change filters</button>
               <p id="search-note" class="search-note" aria-live="polite"></p>
-              <div id="map-loading" class="load-placeholder" aria-hidden="true">
-                <span class="load-placeholder__bar"></span>
-                <span class="load-placeholder__bar"></span>
-                <span class="load-placeholder__bar"></span>
-                <span class="load-placeholder__bar load-placeholder__bar--short"></span>
-              </div>
               <div id="search-results" class="search-listbox" role="listbox" aria-label="Matches" hidden></div>
               <button id="show-all-results" class="show-all-results" type="button" hidden></button>
             </form>
@@ -199,17 +189,24 @@
             </div>
           </section>
 
-          <section id="chain-workspace" class="chain-workspace" aria-labelledby="chain-workspace-heading" hidden data-llm="roca-chain">
+          <section id="chain-workspace" class="chain-workspace" aria-labelledby="chain-workspace-heading" data-llm="roca-chain">
             <div class="chain-workspace__bar">
               <h2 id="chain-workspace-heading"><abbr title="Risk, Obligation, Control, Accountable">ROCA</abbr> chain</h2>
               <div class="chain-workspace__actions" role="toolbar" aria-label="Chain controls">
-                <button id="clear-chain-selection" type="button"><span class="label-wide">Clear selection</span><span class="label-narrow">Back to list</span></button>
+                <button id="clear-chain-selection" type="button">Clear selection</button>
               </div>
             </div>
             <div class="chain-wrap">
               <div id="context-board" class="context-board" hidden></div>
-              <div id="chain" class="chain" hidden>
+              <div id="chain" class="chain">
                 <h3 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h3>
+                <p id="chain-help" class="chain-help">Choose a risk, an obligation, a control, or a persona in any menu. Each menu lists every item in its column. A choice shows the linked items in the other columns. Details for that choice sit beside the columns on a wide screen and below them on a narrow one.</p>
+                <div id="map-loading" class="load-placeholder" aria-hidden="true">
+                  <span class="load-placeholder__bar"></span>
+                  <span class="load-placeholder__bar"></span>
+                  <span class="load-placeholder__bar"></span>
+                  <span class="load-placeholder__bar load-placeholder__bar--short"></span>
+                </div>
                 <div class="chain-legend-wrap">
                   <ul class="chain-legend" id="chain-legend" aria-label="Line types">
                     <li>
