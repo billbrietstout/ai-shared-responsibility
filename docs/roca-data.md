@@ -97,7 +97,7 @@ An item is an orphan when a link is missing.
 - A control is an orphan when it is in neither the direct column nor the transitive column, or it reaches no obligation, or it names no accountable persona.
 - A persona is an orphan when no control it is accountable for is on a complete chain.
 
-The persona list is `personas[]` and `sector_specializations[]` in `data/personas.json`. The check counts every control file under `data/`, including common controls and tapestry controls. The map does not draw tapestry records on an SRF chain. This check still reports a tapestry control when a link is missing.
+The persona list is `personas[]` and `sector_specializations[]` in `data/personas.json`. The check counts every control file under `data/`. Tapestry records use the same rule as `isTapestryRecord` in `tools/relationship-map/app.js`: a persona with provenance `proposed-extension`, and a control that `controlIsTapestry` would mark, including the TAP-* controls. Those records are not in the SRF orphan counts. The report prints them on a separate line.
 
 A control that is also a row in `thresholds/gap-register.json` is still an orphan when a link is missing. The report marks that line `in gap register`.
 
