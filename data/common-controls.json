@@ -53,7 +53,7 @@
     "implementing_persona_note"
   ],
   "principles_note": "principles lists informative IDs from data/ai-agentic-principles.json and data/security-principles.json. They create no governed_by edges.",
-  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of July 27, 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs.",
+  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of July 27, 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs. EU AI Act Articles 10, 12, 15, 26, and 72 on the L2 controls repeat citations already in the sector control files and were not checked again against the consolidated text. GDPR Article 5 and the ISO/IEC 42001 Annex A numbers come from the controls' source request and were not checked against the standards.",
   "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' with an optional short gloss in parentheses. 'N/A' means no EU AI Act nexus. 'TBD:' prefix marks an unverified mapping.",
   "controls": [
     {
@@ -100,6 +100,324 @@
         "window": "annual-review",
         "breach_action": "suspend-ai-system-access-until-acknowledged; notify-policy-owner"
       }
+    },
+    {
+      "id": "SRF-COM-L2-001",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "design",
+      "title": "Training, Fine-Tuning, and RAG Data Provenance and Authority to Use",
+      "description": "Before a dataset is used to train a model, fine-tune a model, or fill a retrieval-augmented generation (RAG) corpus, the Data Provider must put a record on file. The record names the dataset's source, its license or contract terms, the consent or other legal basis that covers any personal data in it, and the uses its owner permits, including use for AI training. For a third-party dataset, the record also names the internal owner who answers for that source. The Data Provider must update the record when the source, the terms, or the intended use changes, and must keep it as long as the dataset, or any model or corpus built from it, stays in use. A dataset without a current record must not enter a training run or a RAG corpus. When the record shows that the permitted use does not cover the intended use, the Data Provider must get authorization from the data owner before use starts. EU AI Act Article 10 data governance duties apply only to high-risk AI systems, so that citation applies where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-RC-023 (Intellectual Property and Copyright)",
+        "nist_ai_rmf": "MAP 4.1 (legal and technology risks of third-party data are mapped); GOVERN 6.1 (third-party policies are in place)",
+        "eu_ai_act": "Article 10 (data and data governance; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.7.3 and A.7.5",
+        "owasp_llm": "LLM03: Supply Chain",
+        "aicm": "DSP-20 (Data Provenance and Transparency)"
+      },
+      "threshold": {
+        "metric": "dataset_provenance_record_coverage",
+        "description": "Percentage of datasets in use for training, fine-tuning, or RAG that have a current record of source, license, consent where personal data is involved, and permitted use. Counted from the dataset inventory: datasets with a complete record divided by datasets in use. A dataset with no inventory entry counts as a miss. The annual window is the loosest window among the sector controls this control was distilled from, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: provenance is a records artifact. Where data pipeline events are captured, api_activity events at data ingestion endpoints can show which datasets were ingested and when, to compare against the provenance records.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "suspend-use-of-undocumented-data; notify-data-owner"
+      },
+      "principles": [
+        "training-data-curation-is-foundational"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-002",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "lifecycle_stage": "operate",
+      "title": "Classification and Labeling of AI-Accessible Data",
+      "description": "Every data store that an AI system can read at runtime must carry a current sensitivity label that the data owner assigned or approved. This covers RAG corpora, grounding databases, and APIs that tools call. The Data Provider must label a store before an AI system gets access to it, and must label each store connected later before the AI system first reads it. Retrieval and tool calls must respect the label: an AI system must not read an unlabeled store, and must not return content from a store to a person or system that the label does not permit. When the data owner raises a store's sensitivity level, the Data Provider must re-evaluate which AI systems keep access to it. The label scheme is the organization's own, for example public, internal, confidential, and restricted. EU AI Act Article 10 applies only where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-006 (Data Quality & Classification/Sensitivity)",
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented)",
+        "eu_ai_act": "Article 10 (data and data governance; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "aicm": "DSP-04 (Data Classification); DSP-03 (Data Inventory)",
+        "cis": "CIS Control 3: Data Protection"
+      },
+      "threshold": {
+        "metric": "ai_accessible_store_label_coverage",
+        "description": "Percentage of data stores that AI systems accessed in the review window that appear in the classification register with a current label. A store accessed by an AI system but missing from the register counts as a miss. The quarterly window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity",
+          "attribute": "Cross-reference api_activity events (resource.uid or dst_endpoint.resource) against the data classification register to identify unlabeled stores being accessed by AI systems.",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "quarterly",
+        "breach_action": "quarantine-unlabeled-store-from-ai-access; notify-data-owner"
+      },
+      "principles": [
+        "classification-labels-propagate",
+        "cis18-3"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-003",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "validate",
+      "title": "Data Quality, Representativeness, and Bias Assessment",
+      "description": "Before a model is deployed, the Data Provider must assess its training and test data against documented targets for quality (completeness, valid value ranges, and consistency) and for coverage of the population the system will serve. The Data Provider must also check the data for bias. That check covers two things: groups that are under-represented in the data, and any feature that lets a model infer a protected trait indirectly. A postal code that tracks race is one example, and a first name that tracks sex is another; the protected trait itself does not have to appear in the data. The assessment must name each gap it finds and record what was done: fix the data, restrict the use, or accept the gap with a named approver. The assessment is kept with the model documentation. The Data Provider must repeat it when the training data changes in a material way and on the organization's review cycle. In production, the Data Provider must also compare input quality (missing and out-of-range values) with the same targets, and for systems that make or inform decisions about people, check outputs across protected groups on that cycle. EU AI Act Article 10 applies only where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-019 (Data Quality and Drift)",
+        "nist_ai_rmf": "MAP 2.3 (data collection and selection considerations are documented); MEASURE 2.11 (fairness and bias are evaluated and documented)",
+        "eu_ai_act": "Article 10 (data and data governance, including examination for bias; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.7.4, A.7.6, and A.5.4",
+        "aicm": "DSP-24 (Data Differentiation and Relevance)"
+      },
+      "threshold": {
+        "metric": "data_quality_and_bias_assessment_currency",
+        "description": "Percentage of in-scope AI systems whose training and test data have a completed, documented quality, coverage, and bias assessment dated within the review window. An in-scope system with no assessment on file counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: the assessment is a records artifact. No OCSF class carries data quality or bias findings.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "notify-data-owner; schedule-assessment; document-gap"
+      }
+    },
+    {
+      "id": "SRF-COM-L2-004",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "operate",
+      "title": "Input and Data Drift Monitoring",
+      "description": "For each AI system in production, the Data Provider must compare the distribution of production inputs with a reference distribution recorded at training or deployment. The comparison uses a statistical measure such as the Population Stability Index (PSI) or an equivalent. The reference distribution is stored with the model or corpus version it belongs to and covers every input feature that is monitored. The organization sets a drift threshold per model tier. When drift passes the threshold, the Data Provider must open a review that decides whether to retrain, re-validate, restrict use, or accept the drift with a named approver, and must record the outcome. For a RAG corpus, the same comparison applies to the content that retrieval returns. Where EU AI Act Article 72 applies, this monitoring can feed the provider's post-market monitoring plan.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-019 (Data Quality and Drift); AIR-DET-004 (AI System Observability)",
+        "nist_ai_rmf": "MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented)",
+        "eu_ai_act": "Article 72 (post-market monitoring; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.6",
+        "aicm": "MDS-10 (Model Continuous Monitoring)"
+      },
+      "threshold": {
+        "metric": "input_drift_score",
+        "description": "Highest drift score (PSI or an equivalent measure) across the monitored input features in the monitoring window, compared with the tier threshold. Conventional PSI readings are below 0.1 for stable, 0.1 to 0.25 for investigate, and above 0.25 for re-validate; they are a starting point, and the organization sets alert levels per tier. The window and the threshold are set per model tier, which is the loosest setting among the source controls.",
+        "evidence": {
+          "ocsf_class": "ai_operation",
+          "attribute": "message_context: input feature distributions observable from ai_operation events at inference time can be aggregated to compute the drift score against the stored reference distribution.",
+          "ocsf_version": "1.8.0",
+          "ocsf_class_status": "unverified-proposal"
+        },
+        "operator": "<=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "alert-data-provider; open-drift-review; notify-model-owner"
+      }
+    },
+    {
+      "id": "SRF-COM-L2-005",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "lifecycle_stage": "operate",
+      "title": "AI Decision and Interaction Log Retention",
+      "description": "The organization must keep logs of AI interactions: prompts, outputs, decisions, operator overrides, and the version of the model that produced each output. Before deployment, the Data Provider must set the retention period for each AI use case. The period is the longest one that any records schedule, contract, or law applying to that use case requires, and the Data Provider must review it when those requirements change. Logs must sit in tamper-evident storage, meaning that any change or deletion after writing can be detected, and must be retrievable on request by the deployer, an auditor, or a regulator. For use cases that make or inform high-stakes decisions, a named reviewer must also read the logs on a cadence the organization sets, looking for anomalous patterns. EU AI Act Article 12 requires automated logs for high-risk AI systems, and Article 26 requires deployers of those systems to keep the logs under their control for at least six months. Both apply only where in scope, and this control sets no retention number of its own.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.8 (risks associated with transparency and accountability are examined and documented)",
+        "eu_ai_act": "Article 12 (record-keeping; where in scope); Article 26 (deployer obligations, including log retention; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.8"
+      },
+      "threshold": {
+        "metric": "ai_log_retention_compliance",
+        "description": "Percentage of in-scope AI use cases whose logs are kept for the configured retention period in tamper-evident storage, as confirmed by the records owner or an audit of the storage configuration. A use case with no configured retention period counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). Log storage metadata: retention policy applied.",
+          "attribute": "metadata.retention_days",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "extend-retention-period; halt-log-deletion-pending-review; notify-records-owner"
+      },
+      "principles": [
+        "immutable-tamper-evident-logging",
+        "cis18-8"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-006",
+      "layer": "L2",
+      "component": "Privacy Controls & Policies",
+      "lifecycle_stage": "operate",
+      "title": "Data Boundary, Minimization, and Egress Control",
+      "description": "An AI system must receive only the data it needs for its stated purpose. The Data Provider must define a boundary for each dataset by environment, network zone, and sensitivity level, and must record which AI systems may read data inside it. Data must not cross that boundary without the data owner's approval on record. Data must also not reach an AI service provider for any purpose, including the provider's own model training, without that approval. The Data Provider must check each AI service's data-sharing settings at onboarding and after any change to the service's terms. Production data must stay out of development, test, and staging environments unless those environments meet the same controls as production. Agent and RAG context stores may hold personal data only for the current session or the approved retention period. The Data Provider must log each boundary crossing and each egress, and review any that lack approval. EU AI Act Article 10 applies only where in scope. GDPR Article 5 applies where in scope, that is, where the organization processes personal data covered by the GDPR.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.10 (privacy risk is examined and documented)",
+        "eu_ai_act": "Article 10 (data and data governance, including data minimization; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "gdpr": "Article 5 (principles for processing personal data, including purpose limitation and data minimization; where in scope)",
+        "owasp_llm": "LLM02: Sensitive Information Disclosure",
+        "aicm": "DSP-04 (Data Classification)"
+      },
+      "threshold": {
+        "metric": "data_boundary_verification_currency",
+        "description": "Percentage of in-scope AI systems whose data boundary, egress controls, and provider training-sharing settings were verified within the review window. A system with no verification on record counts as a miss. The annual window is the loosest window among the source controls, and the target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "network_activity (4001) or audit_activity (3002). Egress events must log source environment, destination, data classification, and detection method.",
+          "attribute": "dst_endpoint.zone; src_endpoint.zone; observables",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "restrict-access-until-verified; notify-data-owner; open-security-incident"
+      },
+      "principles": [
+        "least-privilege",
+        "nist-p3"
+      ]
+    },
+    {
+      "id": "SRF-COM-L2-007",
+      "layer": "L2",
+      "component": "AI Training Data",
+      "lifecycle_stage": "operate",
+      "title": "Integrity of Training, RAG, and Agent Memory Data",
+      "description": "Before data is used to train or fine-tune a model or is loaded into a RAG corpus, the Data Provider must check it for poisoning. Poisoning means records that were altered or injected on purpose to change model behavior, for example planted backdoor triggers, mislabeled examples, or hidden instructions in documents. The checks compare the data with its recorded source and hash, and screen for records that depart from the rest of the dataset. Agent memory and context stores, including episodic memory, working memory, vector stores, and any other mutable store an agent reads or writes, must accept writes only from actors on an authorized list. The Data Provider must log writes, flag unauthorized or unusual ones, and verify store integrity before an agent uses the content. When a check fails, the data or store is quarantined from use. Where the telemetry for memory stores runs at L3 or L4, the Data Provider stays accountable for the integrity of the data in the store. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "data-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "data-provider",
+        "AI-PaaS": "data-provider",
+        "Agent-PaaS": "data-provider",
+        "IaaS": "data-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-SEC-027 (Agent State Persistence Poisoning)",
+        "nist_ai_rmf": "MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity, including measures against data poisoning; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM04: Data and Model Poisoning",
+        "aicm": "DSP-21 (Data Poisoning Prevention & Detection)"
+      },
+      "threshold": {
+        "metric": "data_integrity_check_coverage",
+        "description": "Percentage of in-scope training datasets, RAG corpora, and agent memory stores that have an active integrity or poisoning check, measured when each system is promoted to production. A source with no check counts as a miss. The target percentage is set per model tier, and the per-system window is the loosest among the source controls.",
+        "evidence": {
+          "ocsf_class": "api_activity",
+          "attribute": "Monitor api_activity events on memory store endpoints (write operations). Cross-reference actor identity (actor.user.uid or actor.process.name) against the authorized write-access list for the store, and flag a write from an unlisted actor.",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-system",
+        "breach_action": "block-promotion; quarantine-affected-data-or-store; notify-data-owner"
+      },
+      "principles": [
+        "memory-is-attack-surface",
+        "iso-integrity",
+        "training-data-curation-is-foundational"
+      ]
     }
   ]
 }
