@@ -2229,6 +2229,10 @@ async function testControlGrouping(browser, base) {
   const common = "SRF-COM-L1-001";
   const l1 = layerGroups("L1");
   check("the first L1 group is labeled L1 AI Business & Usage \u00b7 All sectors (common) and holds SRF-COM-L1-001", l1.length > 1 && l1[0].label === LAYER_NAME.L1 + " \u00b7 All sectors (common)" && l1[0].options.some((o) => o.id === "control:common:" + common), JSON.stringify(l1.map((g) => g.label)));
+  const l3 = layerGroups("L3");
+  const l3ids = ["001", "002", "003", "004", "005", "006", "007", "008"].map((n) => "control:common:SRF-COM-L3-" + n);
+  const l3got = (l3[0] && l3[0].options.map((o) => o.id)) || [];
+  check("the first L3 group is labeled L3 AI Application \u00b7 All sectors (common) and holds the 8 common controls", l3.length > 1 && l3[0].label === LAYER_NAME.L3 + " \u00b7 All sectors (common)" && l3got.length === 8 && l3ids.every((id) => l3got.indexOf(id) !== -1), JSON.stringify(l3[0] && { label: l3[0].label, ids: l3got }));
   const sectors = l1.slice(1).map((g) => g.label.slice((LAYER_NAME.L1 + " \u00b7 ").length));
   check("L1 sector groups follow A to Z by sector name", JSON.stringify(sectors) === JSON.stringify(sectors.slice().sort(byText)) && sectors.indexOf("Finance") !== -1, JSON.stringify(sectors));
   check("every group is named with a layer and a sector", groups.every((g) => / \u00b7 /.test(g.label)), JSON.stringify(groups.map((g) => g.label)));
