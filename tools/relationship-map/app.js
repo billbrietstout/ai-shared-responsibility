@@ -154,12 +154,11 @@
   var detailsKind = document.getElementById("details-kind");
   var detailsMeta = document.getElementById("details-meta");
   var detailsModelNote = document.getElementById("details-model-note");
-  var detailsSummary = document.getElementById("details-summary");
+  var detailsSummary = copyStatus;
   var detailsList = document.getElementById("details-connections");
   var detailsChain = document.getElementById("details-chain");
   var connectionsHeading = document.getElementById("connections-heading");
   var clearChainBtn = document.getElementById("clear-chain-selection");
-  var entryGap = document.getElementById("entry-gap");
   var layerFrames = document.getElementById("layer-frames");
   var mapPage = document.querySelector(".map-page");
   var chainHeading = document.getElementById("chain-heading");
@@ -183,7 +182,7 @@
   var wordMatch = null;
   var detailsEl = document.querySelector(".details");
   var detailsId = document.getElementById("details-id");
-  var detailsLive = document.getElementById("details-live");
+  var detailsLive = copyStatus;
   var detailsSlot = document.getElementById("chain-details-slot");
 
   var graph = null;
@@ -2737,7 +2736,7 @@
     chainEl.hidden = !chainOn;
     placeDetailsPanel(chainOn);
     detailsEl.hidden = !chainOn;
-    chainWorkspaceHeading.textContent = contextOn ? "Layers" : "ROCA chain";
+    setChainWorkspaceHeading(contextOn);
     if (jumpChain) jumpChain.hidden = !chainOn;
     if (contextBoard) contextBoard.hidden = !contextOn;
     chainWrap.classList.toggle("chain-wrap--chain", chainOn);
@@ -2787,7 +2786,20 @@
       var button = document.getElementById("entry-" + key);
       if (button) button.setAttribute("aria-pressed", entry === key ? "true" : "false");
     });
-    if (entryGap) entryGap.hidden = entry !== "requirement";
+  }
+
+  function setChainWorkspaceHeading(contextOn) {
+    if (!chainWorkspaceHeading) return;
+    if (contextOn) {
+      chainWorkspaceHeading.textContent = "Layers";
+      return;
+    }
+    chainWorkspaceHeading.textContent = "";
+    var abbr = document.createElement("abbr");
+    abbr.title = "Risk, Obligation, Control, Accountable";
+    abbr.textContent = "ROCA";
+    chainWorkspaceHeading.appendChild(abbr);
+    chainWorkspaceHeading.appendChild(document.createTextNode(" chain"));
   }
 
   /* Every mode opens the same ROCA chain. The mode sets only which column
@@ -3145,8 +3157,6 @@
   var optionsLabel = document.getElementById("options-label");
   function syncOptionsCue() {
     if (!optionsEl) return;
-    var summary = optionsEl.querySelector(".options__summary");
-    if (summary) summary.setAttribute("aria-expanded", optionsEl.open ? "true" : "false");
     if (optionsLabel) optionsLabel.textContent = optionsEl.open ? "Hide options" : "Show options";
   }
   if (optionsEl) {
