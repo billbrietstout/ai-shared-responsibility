@@ -1067,7 +1067,7 @@ async function testCopyChain(browser, base) {
   check("the copy button is hidden until a chain is open", await hiddenBefore.$eval("#copy-chain", (el) => el.hidden));
   await hiddenBefore.close();
   const live = await page.$eval("#copy-status", (el) => ({ role: el.getAttribute("role"), live: el.getAttribute("aria-live") }));
-  check("the copy message sits in a polite live region", live.role === "status" && live.live === "polite", JSON.stringify(live));
+  check("the copy message sits in a status region", live.role === "status" && live.live === null, JSON.stringify(live));
   const inHeader = await page.$eval("#copy-chain", (el) => !!el.closest(".details__actions") && el.textContent === "Copy chain as Markdown");
   check("the button is in the node details action row", inHeader);
 
@@ -1237,22 +1237,19 @@ async function testPhoneHeaderAndIntro(browser, base) {
   const intro = await desk.evaluate(() => {
     const p = document.getElementById("hero-summary");
     const sentences = p.textContent.trim().split(/(?<=[.?!])\s+/).filter(Boolean);
+    const preview = document.querySelector(".map-preview details");
     return {
       paragraphs: document.querySelectorAll(".map-hero__inner > p").length,
       sentences: sentences.length,
       entries: Array.from(document.querySelectorAll(".entry-points button")).map((b) => b.textContent.trim()),
       reqInPreview: !!document.querySelector(".map-preview #entry-requirement"),
-      gapInPreview: !!document.querySelector(".map-preview #entry-gap")
+      gapInPreview: !!document.querySelector(".map-preview #entry-gap"),
+      previewNote: (preview.querySelector(".preview-requirements") || {}).textContent || ""
     };
   });
   check("the intro is one paragraph of at most two sentences", intro.paragraphs === 1 && intro.sentences <= 2, JSON.stringify(intro));
   check("the main choices are risk, obligation, control, and accountability", JSON.stringify(intro.entries) === JSON.stringify(["Explore a risk", "Explore an obligation", "Explore a control", "Explore accountability"]), JSON.stringify(intro.entries));
-  check("the requirements note lives in the Preview disclosure", intro.reqInPreview && intro.gapInPreview, JSON.stringify(intro));
-  await desk.evaluate(() => { document.querySelector(".map-preview details").open = true; });
-  await clickNow(desk, "#entry-requirement");
-  await sleep(300);
-  const gap = await desk.evaluate(() => ({ shown: !document.getElementById("entry-gap").hidden, visible: document.getElementById("entry-gap").getClientRects().length > 0 }));
-  check("the requirements button shows the explanation in place", gap.shown && gap.visible, JSON.stringify(gap));
+  check("the requirements note lives in the Preview disclosure", intro.reqInPreview && !intro.gapInPreview && /Looking for security requirements/.test(intro.previewNote), JSON.stringify(intro));
   await desk.close();
 }
 
@@ -1539,9 +1536,9 @@ const readPanel = (page) => page.evaluate(() => {
     text: document.getElementById("details-chain").innerText,
     sections: Array.from(document.querySelectorAll("#details-chain h3")).map((h) => h.textContent),
     obligationItems: document.querySelectorAll("#details-obligations ul > li, .details-section ul > li strong").length,
-    live: document.getElementById("details-live").textContent,
-    liveRole: document.getElementById("details-live").getAttribute("role"),
-    livePolite: document.getElementById("details-live").getAttribute("aria-live"),
+    live: document.getElementById("copy-status").textContent,
+    liveRole: document.getElementById("copy-status").getAttribute("role"),
+    livePolite: document.getElementById("copy-status").getAttribute("aria-live"),
     labelledBy: el.getAttribute("aria-labelledby")
   };
 });
@@ -1590,7 +1587,7 @@ async function testRocaSelects(browser, base, width, height) {
 
   const panel0 = await readPanel(page);
   check("the details panel sits beside the four columns on desktop, below on a phone, and is not squeezed" + at, panel0.visible && panel0.inSlot && panel0.belowColumns && panel0.width >= (width === 1280 ? 280 : 300), JSON.stringify(panel0));
-  check("the details panel has a heading, a polite live region, and a labelled region" + at, panel0.headingTag === "H2" && panel0.liveRole === "status" && panel0.livePolite === "polite" && panel0.labelledBy === "details-heading");
+  check("the details panel has a heading, a status region, and a labelled region" + at, panel0.headingTag === "H2" && panel0.liveRole === "status" && panel0.livePolite === null && panel0.labelledBy === "details-heading");
 
   const lens = (r) => ROCA_KEYS.map((k) => r[k].options + "/" + r[k].headingName + "/" + r[k].first).join("|");
   const lens0 = lens(roca);
@@ -2232,16 +2229,16 @@ async function testOptionsCue(browser, base) {
       return { open: opt.open, text: sum.textContent.replace(/\s+/g, " ").trim(), expanded: sum.getAttribute("aria-expanded"), chevron: chev.checkVisibility() && box.width > 0, transform: getComputedStyle(chev).transform, active: document.activeElement === sum };
     });
     const closed = await read();
-    check("collapsed Options reads Show options with a visible chevron and aria-expanded false" + at, !closed.open && closed.text === "Show options" && closed.expanded === "false" && closed.chevron, JSON.stringify(closed));
+    check("collapsed Options reads Show options with a visible chevron and no aria-expanded" + at, !closed.open && closed.text === "Show options" && closed.expanded === null && closed.chevron, JSON.stringify(closed));
     await page.focus("#options > summary");
     await page.keyboard.press("Enter");
     await sleep(400);
     const open = await read();
-    check("Enter on the focused summary opens Options, reads Hide options, and rotates the chevron" + at, open.open && open.text === "Hide options" && open.expanded === "true" && open.transform !== closed.transform && open.active, JSON.stringify(open));
+    check("Enter on the focused summary opens Options, reads Hide options, and rotates the chevron" + at, open.open && open.text === "Hide options" && open.expanded === null && open.transform !== closed.transform && open.active, JSON.stringify(open));
     await page.keyboard.press("Space");
     await sleep(400);
     const again = await read();
-    check("Space closes Options and restores Show options" + at, !again.open && again.text === "Show options" && again.expanded === "false" && again.transform === closed.transform, JSON.stringify(again));
+    check("Space closes Options and restores Show options" + at, !again.open && again.text === "Show options" && again.expanded === null && again.transform === closed.transform, JSON.stringify(again));
     await page.close();
   }
 }
