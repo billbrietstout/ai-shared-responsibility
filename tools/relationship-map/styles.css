@@ -1664,11 +1664,33 @@ body.coverage-mode .page-hero__lede {
 .options__summary {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  list-style: none;
   min-height: 44px;
   padding: 8px var(--sp-4);
   font-weight: 700;
   color: var(--ink);
   cursor: pointer;
+}
+
+.options__summary::-webkit-details-marker {
+  display: none;
+}
+
+.options__chevron {
+  flex: 0 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.options[open] > .options__summary .options__chevron {
+  transform: rotate(180deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .options__chevron {
+    transition: none;
+  }
 }
 
 .options__summary:focus-visible {
@@ -1757,5 +1779,53 @@ body.coverage-mode .page-hero__lede {
 @media (max-width: 800px) {
   .options > .map-tools {
     padding: var(--sp-3);
+  }
+}
+
+.chain-empty-state {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px dashed var(--slate-300);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.chain-empty-state__title {
+  margin: 0 0 var(--sp-1);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.chain-empty-state__text {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.chain-board--empty .chain-svg {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .chain-wrap--chain {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 300px);
+    gap: var(--sp-4);
+    align-items: start;
+  }
+
+  .chain-wrap--chain > #chain {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .chain-wrap--chain > .chain-details-slot {
+    grid-column: 2;
+    grid-row: 1;
+    margin-top: 0;
+    min-width: 0;
   }
 }

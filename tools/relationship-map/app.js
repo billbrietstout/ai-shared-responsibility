@@ -979,8 +979,7 @@
       nodes.push(node);
     });
     nodes.sort(function (a, b) {
-      if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
-      return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
+      return compareControlNodes(a, b);
     });
     var links = threat.obligations || [];
     if (!links.length) {
@@ -1014,6 +1013,7 @@
       });
     });
     nodes.forEach(function (node) { chain.controls.push(controlCard(node.id, node.attrs)); });
+    sortChainControls(chain);
     pushControlGaps(chain, threat, nodes.length);
     addPersonaCards(chain, nodes);
     return chain;
@@ -1109,6 +1109,7 @@
       });
     });
     chain.controls.push(controlCard(nodeId, attrs));
+    sortChainControls(chain);
     addPersonaCards(chain, [{ id: nodeId, attrs: attrs }]);
     return chain;
   }
@@ -1135,8 +1136,7 @@
       if (named) nodes.push({ id: nodeId, attrs: attrs });
     });
     nodes.sort(function (a, b) {
-      if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
-      return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
+      return compareControlNodes(a, b);
     });
     var riskIds = {};
     chain.risks.forEach(function (card) { riskIds[card.id] = true; });
@@ -1303,8 +1303,7 @@
     if (!card && reqId && catalog.reqs[reqId]) card = obligationCardFrom(obligationId, { req: catalog.reqs[reqId], citation: "" }, false);
     if (!card) return chain;
     nodes.sort(function (a, b) {
-      if (a.attrs.layer !== b.attrs.layer) return a.attrs.layer < b.attrs.layer ? -1 : 1;
-      return a.attrs.name < b.attrs.name ? -1 : a.attrs.name > b.attrs.name ? 1 : 0;
+      return compareControlNodes(a, b);
     });
     card.controlCount = nodes.length;
     card.basisChips.push("Cited by " + unit(nodes.length, "control", "controls") + " on this chain." + (card.instrumentLevel ? " No article record matched." : ""));
@@ -1459,7 +1458,7 @@
       var ids = key === "risk" ? riskChoiceIds() : key === "control" ? suggestedIds() : personaChoiceIds();
       fillSelect(select, ids, ALL_LABEL[key] + " (" + ids.length + ")", function (attrs) {
         return attrs.meta && attrs.kind === "control" ? attrs.name + " (" + attrs.meta + ")" : attrs.name;
-      }, key === "accountable");
+      }, key === "accountable", key === "control");
       if (current && ids.indexOf(current) === -1 && graph.hasNode(current)) {
         var held2 = document.createElement("option");
         held2.value = current;
@@ -1557,6 +1556,15 @@
     svg.setAttribute("class", "chain-svg");
     svg.setAttribute("aria-hidden", "true");
     chainBoard.appendChild(svg);
+    var noControls = !chain.blank && !chain.controls.length;
+    if (noControls) {
+      var empty = makeEl("div", "chain-empty-state");
+      empty.setAttribute("role", "status");
+      empty.appendChild(makeEl("p", "chain-empty-state__title", "No controls mapped yet"));
+      empty.appendChild(makeEl("p", "chain-empty-state__text", "No control in the data links to this pick for the selected operating model. Choose another item in any menu."));
+      chainBoard.appendChild(empty);
+    }
+    chainBoard.classList.toggle("chain-board--empty", noControls);
     var columnsWrap = makeEl("div", "chain-columns");
     chainBoard.appendChild(columnsWrap);
     var notes = [];
@@ -2000,7 +2008,11 @@
         var through = makeEl("p", "", "Obligation through these controls:");
         sources.appendChild(through);
         var sub = makeEl("ul", "");
-        item.sources.forEach(function (source) {
+        item.sources.slice().sort(function (x, y) {
+          if (x.nodeId && y.nodeId && graph.hasNode(x.nodeId) && graph.hasNode(y.nodeId)) return compareControlIds(x.nodeId, y.nodeId);
+          if (!!x.nodeId !== !!y.nodeId) return x.nodeId ? -1 : 1;
+          return textOrder(x.name, y.name);
+        }).forEach(function (source) {
           var row = makeEl("li", "");
           if (source.vertical && source.ref) row.appendChild(makeLink("/" + source.vertical + "/controls/#" + source.ref, source.name));
           else row.appendChild(document.createTextNode(source.name));
@@ -2224,6 +2236,7 @@
       var ak = KIND_ORDER.indexOf(a.kind);
       var bk = KIND_ORDER.indexOf(b.kind);
       if (ak !== bk) return ak - bk;
+      if (a.kind === "control" && b.kind === "control") return compareControlIds(a.id, b.id);
       return a.name < b.name ? -1 : a.name > b.name ? 1 : 0;
     });
     detailsList.textContent = "";
@@ -2320,14 +2333,57 @@
     return every.sort(compareControlIds);
   }
 
-  function compareControlIds(a, b) {
-    var x = graph.getNodeAttributes(a);
-    var y = graph.getNodeAttributes(b);
-    var ln = LAYERS.indexOf(x.layer) - LAYERS.indexOf(y.layer);
+  /* Display order for every control list: layer L1 to L5, then controls with no
+    sector, then sector-specific controls by sector name, then name. A control is
+    sector-specific when its record names a sector operating model. */
+  function controlSector(item) {
+    return item && item.sectorModels && item.sectorModels.length ? String(item.meta || "") : "";
+  }
+
+  function layerRank(layerId) {
+    var i = LAYERS.indexOf(layerId);
+    return i === -1 ? 99 : i;
+  }
+
+  function textOrder(a, b) {
+    return String(a).localeCompare(String(b), "en", { sensitivity: "base" });
+  }
+
+  function compareSectors(a, b) {
+    if (!a || !b) return a ? 1 : b ? -1 : 0;
+    return textOrder(a, b);
+  }
+
+  function compareControls(x, y) {
+    var ln = layerRank(x.layer) - layerRank(y.layer);
     if (ln) return ln;
-    if (x.name !== y.name) return x.name < y.name ? -1 : 1;
-    if (x.meta !== y.meta) return String(x.meta) < String(y.meta) ? -1 : 1;
-    return a < b ? -1 : a > b ? 1 : 0;
+    var sn = compareSectors(controlSector(x), controlSector(y));
+    if (sn) return sn;
+    var nn = textOrder(x.name, y.name);
+    if (nn) return nn;
+    var mn = textOrder(x.meta || "", y.meta || "");
+    if (mn) return mn;
+    return x.id < y.id ? -1 : x.id > y.id ? 1 : 0;
+  }
+
+  function compareControlNodes(a, b) {
+    function plain(node) {
+      return { id: node.id, layer: node.attrs.layer, name: node.attrs.name, meta: node.attrs.meta, sectorModels: node.attrs.sectorModels };
+    }
+    return compareControls(plain(a), plain(b));
+  }
+
+  function controlWithId(id) {
+    var attrs = graph.getNodeAttributes(id);
+    return { id: id, layer: attrs.layer, name: attrs.name, meta: attrs.meta, sectorModels: attrs.sectorModels };
+  }
+
+  function compareControlIds(a, b) {
+    return compareControls(controlWithId(a), controlWithId(b));
+  }
+
+  function sortChainControls(chain) {
+    chain.controls.sort(compareControls);
   }
 
   function layerName(layerId) {
@@ -2562,7 +2618,7 @@
     return ids;
   }
 
-  function fillSelect(select, ids, placeholder, label, flat) {
+  function fillSelect(select, ids, placeholder, label, flat, bySector) {
     select.textContent = "";
     var first = document.createElement("option");
     first.value = "";
@@ -2572,15 +2628,18 @@
     var order = [];
     ids.forEach(function (id) {
       var attrs = graph.getNodeAttributes(id);
-      var key = flat ? "" : attrs.layer || "";
+      var layer = attrs.layer || "";
+      var sector = bySector ? controlSector(attrs) : "";
+      var key = flat ? "" : layer + "|" + sector;
       if (!groups[key]) {
         if (flat) {
           groups[key] = select;
         } else {
           groups[key] = document.createElement("optgroup");
-          groups[key].label = key ? layerName(key) : "No layer recorded";
+          var base = layer ? layerName(layer) : "No layer recorded";
+          groups[key].label = sector ? base + " \u00b7 " + sector : base;
         }
-        order.push(key);
+        order.push({ key: key, layer: layer, sector: sector });
       }
       var option = document.createElement("option");
       option.value = id;
@@ -2589,11 +2648,9 @@
       groups[key].appendChild(option);
     });
     order.sort(function (x, y) {
-      var xi = LAYERS.indexOf(x) === -1 ? 99 : LAYERS.indexOf(x);
-      var yi = LAYERS.indexOf(y) === -1 ? 99 : LAYERS.indexOf(y);
-      return xi - yi;
+      return (layerRank(x.layer) - layerRank(y.layer)) || compareSectors(x.sector, y.sector);
     });
-    if (!flat) order.forEach(function (key) { select.appendChild(groups[key]); });
+    if (!flat) order.forEach(function (group) { select.appendChild(groups[group.key]); });
   }
 
   function renderSummary() {
@@ -2665,7 +2722,7 @@
     } else if (view === "chain") {
       helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. " +
         "Each menu lists every item in its column. A choice shows the items linked to it in the other columns. " +
-        "Details for the choice appear below the columns.";
+        "Details for the choice appear beside the columns on a wide screen and below them on a narrow one.";
     } else {
       helpEl.textContent = "Type a name or a few words about " + (modeSearch ? modeSearch.noun : "a risk, an obligation, a control, or a persona") + ". Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
     }
@@ -3052,6 +3109,17 @@
   }
 
   var optionsEl = document.getElementById("options");
+  var optionsLabel = document.getElementById("options-label");
+  function syncOptionsCue() {
+    if (!optionsEl) return;
+    var summary = optionsEl.querySelector(".options__summary");
+    if (summary) summary.setAttribute("aria-expanded", optionsEl.open ? "true" : "false");
+    if (optionsLabel) optionsLabel.textContent = optionsEl.open ? "Hide options" : "Show options";
+  }
+  if (optionsEl) {
+    optionsEl.addEventListener("toggle", syncOptionsCue);
+    syncOptionsCue();
+  }
 
   function openOptions() {
     if (optionsEl && !optionsEl.open) optionsEl.open = true;
@@ -3159,11 +3227,7 @@
         if (attrs.kind !== "control" || attrs.layer !== layerId || !nodeAllowed(attrs)) return;
         controls.push(id);
       });
-      controls.sort(function (a, b) {
-        var an = graph.getNodeAttribute(a, "name");
-        var bn = graph.getNodeAttribute(b, "name");
-        return an < bn ? -1 : an > bn ? 1 : 0;
-      });
+      controls.sort(compareControlIds);
       var details = makeEl("details", "context-controls-fold");
       details.appendChild(makeEl("summary", "", controls.length + (controls.length === 1 ? " control" : " controls")));
       var wrap = makeEl("div", "context-controls");
