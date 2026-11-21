@@ -1671,6 +1671,16 @@
     return reg && reg.short ? reg.short : instrumentId;
   }
 
+  function obligationGroupLabel(instrumentId, count) {
+    var name = instrumentShortName(instrumentId);
+    if (!name && instrumentId && catalog && catalog.regsById[instrumentId]) {
+      var reg = catalog.regsById[instrumentId];
+      name = reg.short || reg.name || instrumentId;
+    }
+    if (!name) name = instrumentId || "Unnamed instrument";
+    return name + " (" + count + ")";
+  }
+
   function instrumentSearchText(instrumentId) {
     var reg = catalog && catalog.regsById[instrumentId];
     if (!reg) return instrumentId;
@@ -1700,13 +1710,48 @@
     return match ? parseInt(match[1], 10) : null;
   }
 
+  var ROMAN_VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+
+  function romanToInt(token) {
+    var upper = String(token || "").toUpperCase();
+    if (!upper || !/^[IVXLCDM]+$/.test(upper)) return null;
+    var total = 0;
+    var prev = 0;
+    var i;
+    for (i = upper.length - 1; i >= 0; i -= 1) {
+      var val = ROMAN_VALUES[upper.charAt(i)] || 0;
+      if (!val) return null;
+      if (val < prev) total -= val;
+      else total += val;
+      prev = val;
+    }
+    return total;
+  }
+
+  function leadingAnnexNumber(citation) {
+    var match = String(citation || "").match(/^Annex\s+([IVXLCDM]+|\d+)/i);
+    if (!match) return null;
+    if (/^\d+$/.test(match[1])) return parseInt(match[1], 10);
+    return romanToInt(match[1]);
+  }
+
+  function euAiActCitationRank(citation) {
+    var text = String(citation || "");
+    var article = leadingArticleNumber(text);
+    if (article !== null) return { kind: 0, major: article, text: text };
+    var annex = leadingAnnexNumber(text);
+    if (annex !== null) return { kind: 1, major: annex, text: text };
+    return { kind: 2, major: 0, text: text };
+  }
+
   function compareCitation(a, b, instrumentId) {
     var left = String(a || "");
     var right = String(b || "");
     if (instrumentId === "eu-ai-act") {
-      var ea = leadingArticleNumber(left);
-      var eb = leadingArticleNumber(right);
-      if (ea !== null && eb !== null && ea !== eb) return ea - eb;
+      var ra = euAiActCitationRank(left);
+      var rb = euAiActCitationRank(right);
+      if (ra.kind !== rb.kind) return ra.kind - rb.kind;
+      if (ra.kind <= 1 && ra.major !== rb.major) return ra.major - rb.major;
     }
     if (instrumentId === "nist-ai-rmf") {
       var fa = (left.match(/^(GOVERN|MAP|MEASURE|MANAGE)/i) || [""])[0].toUpperCase();
@@ -1952,7 +1997,7 @@
         return compareCitation(a.citation, b.citation, instrumentId) || textOrder(a.id, b.id);
       });
       var group = document.createElement("optgroup");
-      group.label = (instrumentShortName(instrumentId) || "Other") + " (" + members.length + ")";
+      group.label = obligationGroupLabel(instrumentId, members.length);
       group.dataset.instrumentId = instrumentId;
       members.forEach(function (card) {
         var option = document.createElement("option");
@@ -1969,7 +2014,7 @@
       });
       if (!target) {
         target = document.createElement("optgroup");
-        target.label = (instrumentShortName(holdId) || "Other") + " (1)";
+        target.label = obligationGroupLabel(holdId, 1);
         target.dataset.instrumentId = holdId;
         select.appendChild(target);
       }
@@ -3993,7 +4038,9 @@
       chainCsvRows: chainCsvRows,
       chainCsvText: chainCsvText,
       csvEscape: csvEscape,
-      matches: matches
+      matches: matches,
+      compareCitation: compareCitation,
+      obligationGroupLabel: obligationGroupLabel
     };
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {

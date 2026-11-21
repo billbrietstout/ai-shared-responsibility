@@ -1640,6 +1640,37 @@ async function testObligationInstrumentMenu(browser, base) {
     return m ? Number(m[1]) : null;
   }).filter((n) => n !== null);
   check("EU AI Act obligations sort articles in natural order", articles.length >= 3 && articles.every((n, i) => i === 0 || articles[i - 1] <= n), JSON.stringify(articles.slice(0, 12)));
+  if (eu && eu.options.length) {
+    const kinds = eu.options.map((text) => {
+      if (/^Article\s+\d+/i.test(text)) return "article";
+      if (/^Annex\s+/i.test(text)) return "annex";
+      return "other";
+    });
+    const firstAnnex = kinds.indexOf("annex");
+    const lastArticle = kinds.lastIndexOf("article");
+    check("EU AI Act lists every Article before any Annex", firstAnnex === -1 || (lastArticle !== -1 && lastArticle < firstAnnex), JSON.stringify({ firstAnnex: firstAnnex, lastArticle: lastArticle, head: kinds.slice(0, 6), around: kinds.slice(Math.max(0, firstAnnex - 2), firstAnnex + 3) }));
+    if (firstAnnex !== -1) {
+      const annexNums = eu.options.slice(firstAnnex).map((text) => {
+        const m = text.match(/^Annex\s+([IVXLCDM]+|\d+)/i);
+        if (!m) return null;
+        if (/^\d+$/.test(m[1])) return Number(m[1]);
+        const roman = { I: 1, V: 5, X: 10, L: 50, C: 100 };
+        let total = 0;
+        let prev = 0;
+        for (let i = m[1].length - 1; i >= 0; i -= 1) {
+          const val = roman[m[1][i]] || 0;
+          if (val < prev) total -= val;
+          else total += val;
+          prev = val;
+        }
+        return total;
+      }).filter((n) => n !== null);
+      check("EU AI Act annexes sort in natural order after the articles", annexNums.length >= 2 && annexNums.every((n, i) => i === 0 || annexNums[i - 1] <= n), JSON.stringify(annexNums));
+    }
+  }
+  const singletonNames = ["DoDI", "FDA", "IEC", "ISO"];
+  const namedSingletons = groups.filter((g) => /\(\d+\)$/.test(g.label) && Number((/\((\d+)\)$/.exec(g.label) || [])[1]) === 1);
+  check("single-obligation instruments keep their own named groups, not Other", groups.every((g) => !/^Other \(\d+\)$/.test(g.label)) && singletonNames.every((needle) => namedSingletons.some((g) => g.label.indexOf(needle) === 0)), JSON.stringify(namedSingletons.map((g) => g.label).slice(0, 16)));
   const nist = groups.find((g) => g.label.indexOf("NIST AI RMF") === 0);
   const nistOpts = nist ? nist.options : [];
   const pos = (needle) => nistOpts.findIndex((t) => t.indexOf(needle) !== -1);
