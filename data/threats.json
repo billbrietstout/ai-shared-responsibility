@@ -2,8 +2,8 @@
   "$schema_version": "0.2",
   "srf_version": "1.0",
   "updated": "2026-11-21",
-  "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers. obligations[] is a risk-to-obligation link. A derived_via_control link is stored only when a related control's citation matches a current obligation. That basis means the link was reached through the control, and the source lists the control id and the citation. basis official_text means the cited provision's wording covers the risk. The source then names the URL, the article and paragraph, and a short excerpt. No link is stored without one of those bases. Seven draft L1 rows add business and usage risks. Their definitions are cited to the MIT AI Risk Repository and to OECD/LEGAL/0449 and the OECD AI Incidents Monitor. The draft rows are for review and are not a claim that the catalog is closed.",
-  "id_convention": "AI Exchange entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Entries that exist only in the OWASP GenAI Data Security Risks taxonomy are keyed dsgaiNN (lowercase), matching the published DSGAI identifier. Threat names for AI Exchange rows are taken verbatim from the AI Exchange AI security matrix; names for DSGAI-only rows are taken verbatim from the DSGAI 2026 taxonomy. impact and attack_surface for DSGAI-only rows are derived from the published DSGAI summary, because that taxonomy does not use the AI Exchange field names. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. This file cites DSGAI identifiers; it does not copy DSGAI mitigation text. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json. DSGAI07 (governance, lifecycle, and classification as an enabling condition) and DSGAI08 (regulatory non-compliance as an outcome) have no rows: they are not attack techniques. Classification and provenance duties already sit on the Data Provider persona at L2. Draft L1 business and usage rows are keyed by a short slug (overreliance, outofpurpose, inventorygap, missingoversight, ailititeracy, unclearaccountability, misleadingclaims). Those slugs are not external catalog ids. Their names are SRF labels for the sourced risk. The MIT and OECD fields cite the published taxonomy labels and the retrieved monitor pages.",
+  "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers. obligations[] is a risk-to-obligation link. A derived_via_control link is stored only when a related control's citation matches a current obligation. That basis means the link was reached through the control, and the source lists the control id and the citation. basis official_text means the cited provision's wording covers the risk. The source then names the URL, the article and paragraph, and a short excerpt. A named_citation link is derived. The requirement states a duty that addresses the risk. The text does not state the harm, and the link does not run through a control. No link is stored without one of those bases. Eleven draft L1 rows add business and usage risks. L1-tagged requirements that state one of those risks are linked on the row. Their definitions are cited to the MIT AI Risk Repository and to OECD/LEGAL/0449 and the OECD AI Incidents Monitor. The draft rows are for review and are not a claim that the catalog is closed.",
+  "id_convention": "AI Exchange entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Entries that exist only in the OWASP GenAI Data Security Risks taxonomy are keyed dsgaiNN (lowercase), matching the published DSGAI identifier. Threat names for AI Exchange rows are taken verbatim from the AI Exchange AI security matrix; names for DSGAI-only rows are taken verbatim from the DSGAI 2026 taxonomy. impact and attack_surface for DSGAI-only rows are derived from the published DSGAI summary, because that taxonomy does not use the AI Exchange field names. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. This file cites DSGAI identifiers; it does not copy DSGAI mitigation text. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json. DSGAI07 (governance, lifecycle, and classification as an enabling condition) and DSGAI08 (regulatory non-compliance as an outcome) have no rows: they are not attack techniques. Classification and provenance duties already sit on the Data Provider persona at L2. Draft L1 business and usage rows are keyed by a short slug (overreliance, outofpurpose, inventorygap, missingoversight, ailititeracy, unclearaccountability, misleadingclaims, highriskuse, noimpactassessment, uncontestable, unreportedincidents). Those slugs are not external catalog ids. Their names are SRF labels for the sourced risk. The MIT and OECD fields cite the published taxonomy labels and the retrieved monitor pages.",
   "accountability_convention": "One accountable persona per threat per operating model. The responsibility object quotes the customer and provider cell values verbatim from /data/matrix.json for the threat's primary SRF layer. Where the matrix says shared, this file still names a single accountable lead and records the counterparty obligation in the note, because shared is not a valid final answer.",
   "verification": {
     "date": "2026-08-27",
@@ -11,7 +11,7 @@
     "policy": "TBD or null is acceptable; invented IDs are not.",
     "business_usage_draft": {
       "date": "2026-11-21",
-      "method": "MIT domain numbers, subdomain names, and causal levels checked against Slattery et al., Patterns, 30 March 2026 (DOI 10.1016/j.patter.2026.101517) and https://airisk.mit.edu/risks. OECD principle wording checked against OECD/LEGAL/0449 at legalinstruments.oecd.org. AIM titles and URLs checked by retrieving the incident pages named on each row. A monitor-level citation means no incident page for that risk was retrieved."
+      "method": "MIT domain numbers, subdomain names, and causal levels checked against Slattery et al., Patterns, 30 March 2026 (DOI 10.1016/j.patter.2026.101517) and https://airisk.mit.edu/risks. OECD principle wording checked against OECD/LEGAL/0449 at legalinstruments.oecd.org. AIM titles and URLs checked by retrieving the incident pages named on each row. A monitor-level citation means no incident page for that risk was retrieved. On 2026-11-21 the domain names were checked again against https://airisk.mit.edu/risks. Subdomain 6.5 on that page is Governance failure. An earlier draft label for 6.5 is not on that page."
     }
   },
   "sources": {
@@ -60,7 +60,7 @@
       "license_note": "Incident pages say the information displayed should not be reported as the official views of the OECD or of its member countries. This file cites incident URLs and titles that were retrieved. It does not copy incident narratives. Where no incident page was retrieved for a row, the citation is the monitor URL only."
     }
   },
-  "count": 38,
+  "count": 42,
   "threats": [
     {
       "id": "directpromptinjection",
@@ -6836,7 +6836,7 @@
         "L1",
         "L3"
       ],
-      "layer_rationale": "A person treats model output as enough for a decision that person still has to make. That decision sits at L1, AI Business & Usage. The application at L3 shows the output. The rule that requires a check before reliance is SRF-COM-L1-002, and AI System Users own that control in every operating model.",
+      "layer_rationale": "A person treats model output as enough for a decision that person still has to make. That decision sits at L1, AI Business & Usage. The application at L3 shows the output. SRF-COM-L1-002 requires a check before reliance, and AI System Users own that control in every operating model. GOVERN 4.1 calls for a critical-thinking practice in AI use. That link is a named citation: the control does not cite GOVERN 4.1, and the subcategory states a duty rather than the harm.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-users",
@@ -6889,51 +6889,13 @@
       ],
       "obligations": [
         {
-          "requirement": "eu-ai-act.art-26",
-          "basis": "derived_via_control",
+          "requirement": "nist-ai-rmf.govern-4-1",
+          "basis": "named_citation",
           "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-002",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 26 (deployer obligations; where in scope)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-1-2",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-002",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.manage-4-3",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-002",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "oecd-ai-principles.1-2",
-          "basis": "official_text",
-          "source": {
-            "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
-            "citation": "Principle 1.2(b)",
-            "excerpt": "AI actors should implement mechanisms and safeguards, such as capacity for human agency and oversight, including to address risks arising from uses outside of intended purpose, intentional misuse, or unintentional misuse"
+            "citation": "GOVERN 4.1",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "document": "nist-ai-rmf",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
           }
         }
       ]
@@ -6950,7 +6912,7 @@
       "affected_layers": [
         "L1"
       ],
-      "layer_rationale": "A person uses an AI system the organization already lists, for a purpose the acceptable use policy does not permit. The policy and the duty to stay inside it sit at L1. dsgai03 is the separate risk of sending data to AI services that are not in the inventory.",
+      "layer_rationale": "A person uses an AI system for a purpose the organization did not allow, or for a purpose the provider did not intend. That choice sits at L1. The acceptable-use controls require permitted purposes. Principle 1.2(b) states the harm of uses outside the intended purpose, so that link is official text. dsgai03 is the related case of a system the organization does not know about. This row is use of a known system outside its purpose.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-users",
@@ -7006,19 +6968,6 @@
       ],
       "obligations": [
         {
-          "requirement": "eu-ai-act.art-13",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L1-HOR-002",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 13 (Transparency); Article 4 (AI literacy)"
-              }
-            ]
-          }
-        },
-        {
           "requirement": "eu-ai-act.art-26",
           "basis": "derived_via_control",
           "source": {
@@ -7037,164 +6986,6 @@
                 "control": "srf.control.finance.SRF-L1-DEV-003",
                 "mapping_key": "eu_ai_act",
                 "citation": "Article 26 (Deployer obligations)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "eu-ai-act.art-4",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L1-HOR-002",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 13 (Transparency); Article 4 (AI literacy)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "hipaa-security-rule.164-308",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L1-HOR-002",
-                "mapping_key": "hipaa",
-                "citation": "45 CFR §164.308(a)(5): Security awareness training"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-1-2",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-002",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
-              },
-              {
-                "control": "srf.control.common.SRF-COM-L1-003",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); GOVERN 1.4 (the risk management process and its outcomes are set through transparent policies and procedures); GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)"
-              },
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-003",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
-              },
-              {
-                "control": "srf.control.healthcare.SRF-L1-HOR-002",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (characteristics of trustworthy AI are integrated into organizational policies); GOVERN 2.2 (personnel receive AI risk management training)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-1-4",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-003",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); GOVERN 1.4 (the risk management process and its outcomes are set through transparent policies and procedures); GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-1-5",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-003",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); GOVERN 1.4 (the risk management process and its outcomes are set through transparent policies and procedures); GOVERN 1.5 (ongoing monitoring and periodic review of the risk management process are planned)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-2-1",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-003",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-2-2",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L1-HOR-002",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (characteristics of trustworthy AI are integrated into organizational policies); GOVERN 2.2 (personnel receive AI risk management training)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.manage-4-3",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-002",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "onc-hti-1.b11",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L1-HOR-002",
-                "mapping_key": "onc_hti1",
-                "citation": "§170.315(b)(11)(vi): Transparency disclosures"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "onc-hti-1.b11-vi",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L1-HOR-002",
-                "mapping_key": "onc_hti1",
-                "citation": "§170.315(b)(11)(vi): Transparency disclosures"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "sr-26-2.section-vi",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-003",
-                "mapping_key": "sr26_2",
-                "citation": "Section VI (Roles and Responsibilities)"
               }
             ]
           }
@@ -7225,7 +7016,7 @@
       "affected_layers": [
         "L1"
       ],
-      "layer_rationale": "The organization runs an AI system that is missing from the inventory, or an inventory entry has no owner. The inventory is an L1 governance record. dsgai03 remains the risk of data leaving through an unsanctioned AI service. This row is the missing record that lets that service, or a listed one, go unowned.",
+      "layer_rationale": "The organization cannot name the AI systems it runs, or cannot name the owner of each one. That record sits at L1. SRF-COM-L1-004 requires an inventory entry with an owner and a risk tier before production. dsgai03 is the related case of a system that is in use and not in that inventory. Classification of a use as high-risk is a separate row.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7269,7 +7060,7 @@
         "mitre_atlas": null,
         "biml_llm24": null,
         "owasp_dsgai": null,
-        "mit_ai_risk_repository": "Domain 6 Socioeconomic and environmental harm; subdomain 6.5 Governance failure. Causal: Entity Human, Intent Unintentional, Timing Other. Domain fit: partial. The paper's subdomain text is inadequate oversight mechanisms that cannot manage AI risks. It does not name an inventory. Timing is Other because a missing entry can occur before go-live and can persist after deployment.",
+        "mit_ai_risk_repository": "Domain 6 Socioeconomic & Environmental; subdomain 6.5 Governance failure. Causal: Entity Human, Intent Unintentional, Timing Other. Domain fit: partial. The subdomain text is inadequate governance that cannot manage AI risks. This row is a missing inventory and a missing owner. The repository page has no inventory subdomain. Timing is Other because the gap can exist before deployment and after. Checked against https://airisk.mit.edu/risks on 2026-11-21.",
         "oecd_ai_principles": "Principle 1.5(b), OECD/LEGAL/0449, traceability of processes and decisions across the AI system lifecycle. The principles record is data/regulations.json id oecd-ai-principles.",
         "oecd_aim": "https://oecd.ai/en/incidents (monitor). No retrieved incident page was an inventory miss or an entry with no owner."
       },
@@ -7280,71 +7071,6 @@
         "srf.control.public-sector.SRF-L1-ACQ-001"
       ],
       "obligations": [
-        {
-          "requirement": "eu-ai-act.annex-iii",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-004",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "eu-ai-act.art-17",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.insurance.SRF-L1-DEV-002",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 17 (quality management system, inventory of high-risk systems)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "eu-ai-act.art-49",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-004",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "eu-ai-act.art-6",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-004",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-1-1",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.public-sector.SRF-L1-ACQ-001",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.1 (policies, processes, procedures, and practices across the organization); MAP 1.1 (context is established for the AI risk assessment)"
-              }
-            ]
-          }
-        },
         {
           "requirement": "nist-ai-rmf.govern-1-6",
           "basis": "derived_via_control",
@@ -7369,32 +7095,6 @@
           }
         },
         {
-          "requirement": "nist-ai-rmf.map-1-1",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.public-sector.SRF-L1-ACQ-001",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.1 (policies, processes, procedures, and practices across the organization); MAP 1.1 (context is established for the AI risk assessment)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.map-1-5",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-004",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.6 (mechanisms are in place to inventory AI systems); MAP 1.5 (organizational risk tolerances are determined and documented)"
-              }
-            ]
-          }
-        },
-        {
           "requirement": "omb-m-25-21.3b-v",
           "basis": "derived_via_control",
           "source": {
@@ -7405,41 +7105,6 @@
                 "citation": "Section 3(a)(v) (Update AI Use Case Inventories)"
               }
             ]
-          }
-        },
-        {
-          "requirement": "sr-26-2.section-iii",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-002",
-                "mapping_key": "sr26_2",
-                "citation": "Section VI (Model Inventory); Section III (model materiality)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "sr-26-2.section-vi",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-002",
-                "mapping_key": "sr26_2",
-                "citation": "Section VI (Model Inventory); Section III (model materiality)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "oecd-ai-principles.1-5",
-          "basis": "official_text",
-          "source": {
-            "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
-            "citation": "Principle 1.5(b)",
-            "excerpt": "To this end, AI actors should ensure traceability, including in relation to datasets, processes and decisions made during the AI system lifecycle, to enable analysis of the AI system’s outputs and responses to inquiry, appropriate to the context and consistent with the state of the art."
           }
         }
       ],
@@ -7460,7 +7125,7 @@
         "L1",
         "L3"
       ],
-      "layer_rationale": "The organization lets an AI system take a high-impact action with no person required to approve it. The decision to require that person sits at L1. The runtime approval gate is SRF-COM-L3-003, owned by the application developer, so it does not close this L1 cell. The linked L1 control is finance SRF-L1-DEV-004, and it applies only on Agent-PaaS.",
+      "layer_rationale": "The organization lets an AI system take a high-impact action with no person required to approve it. The decision to require that person sits at L1. The runtime approval gate is SRF-COM-L3-003, owned by the application developer, so it does not close this L1 cell. The linked L1 control is finance SRF-L1-DEV-004, and it applies only on Agent-PaaS. Principle 1.4(b) states undue harm and the override, so that link is official text. Principle 1.2 states the oversight safeguard and names a different harm, so that link is a named citation.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7489,7 +7154,7 @@
             "customer": "customer-owned",
             "provider": "provider-managed"
           },
-          "note": "Accountable persona is ai-system-governance, the owner of srf.control.finance.SRF-L1-DEV-004 in this model. The customer owns L1 in this operating model. On Agent-PaaS the linked control is the written agent authorization policy, which names the person who must halt the agent."
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.finance.SRF-L1-DEV-004 in this model. The customer owns L1 in this operating model."
         },
         "IaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7508,7 +7173,7 @@
         "biml_llm24": null,
         "owasp_dsgai": null,
         "mit_ai_risk_repository": "Domain 5 Human-computer interaction; subdomain 5.2 Loss of human agency and autonomy. Causal: Entity Human, Intent Other, Timing Other. Domain fit: the subdomain text is humans delegating key decisions to AI, or AI decisions that diminish human control. Intent and timing are Other because the row covers both an expected removal of a person and an unexpected one, and the omission can be set before deployment and show up after.",
-        "oecd_ai_principles": "Principle 1.2(b) and Principle 1.4(b), OECD/LEGAL/0449. 1.2(b) names human agency and oversight. 1.4(b) names override, repair, and decommission. The principles record is data/regulations.json id oecd-ai-principles.",
+        "oecd_ai_principles": "Principle 1.4(b), OECD/LEGAL/0449, states undue harm and the override, so that obligation link is official text. Principle 1.2 states the oversight safeguard and names use outside the intended purpose, so that link is a named citation. The principles record is data/regulations.json id oecd-ai-principles.",
         "oecd_aim": "https://oecd.ai/en/incidents/2026-10-27-bd26 (Anthropic Study Reveals AI Steers Expert Decisions in 86% of Cases). Retrieved 2026-11-21. The monitor page says the study found analysts followed AI recommendations even when the preference was randomly assigned, and it treats that as a question about human oversight. The page says it is not the official view of the OECD or of its member countries."
       },
       "related_controls": [
@@ -7529,19 +7194,6 @@
           }
         },
         {
-          "requirement": "nist-ai-rmf.govern-1-3",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-004",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 1.3 (level of risk management activity is set by risk tolerance); GOVERN 3.2 (policies define human-AI configurations and oversight)"
-              }
-            ]
-          }
-        },
-        {
           "requirement": "nist-ai-rmf.govern-3-2",
           "basis": "derived_via_control",
           "source": {
@@ -7555,25 +7207,13 @@
           }
         },
         {
-          "requirement": "sr-26-2.section-iii",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-004",
-                "mapping_key": "sr26_2",
-                "citation": "Section III footnote 3 (generative and agentic AI out of scope; MRM principles applied by analogy)"
-              }
-            ]
-          }
-        },
-        {
           "requirement": "oecd-ai-principles.1-2",
-          "basis": "official_text",
+          "basis": "named_citation",
           "source": {
+            "citation": "Principle 1.2",
             "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
-            "citation": "Principle 1.2(b)",
-            "excerpt": "AI actors should implement mechanisms and safeguards, such as capacity for human agency and oversight, including to address risks arising from uses outside of intended purpose, intentional misuse, or unintentional misuse"
+            "document": "oecd-ai-principles",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
           }
         },
         {
@@ -7599,7 +7239,7 @@
       "affected_layers": [
         "L1"
       ],
-      "layer_rationale": "Staff who build, run, or use an AI system do not have the training their role needs before they use it. EU AI Act Article 4 places that measure on providers and deployers. The duty sits at L1 with AI System Governance. The published MIT domain taxonomy has no literacy subdomain. The nearest subdomain is 5.1 Overreliance and unsafe use, because that text is about users relying on AI without the judgment the use requires. SRF-COM-L1-001 cites Article 4, and the act it measures is policy acknowledgment, so it is not linked here. The linked control is SRF-COM-L1-009.",
+      "layer_rationale": "Staff who build, run, or use an AI system do not have the training their role needs before they use it. EU AI Act Article 4 places that measure on providers and deployers. The duty sits at L1 with AI System Governance. The MIT domain taxonomy has no literacy subdomain. The nearest subdomain is 5.1 Overreliance and unsafe use. SRF-COM-L1-001 cites Article 4, and the act it measures is policy acknowledgment, so it is not linked. The linked control is SRF-COM-L1-009. GOVERN 3.1 asks for a diverse team, so it is not linked here.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7679,32 +7319,6 @@
           }
         },
         {
-          "requirement": "nist-ai-rmf.govern-3-1",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.public-sector.SRF-L1-ACQ-008",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 3.1 (AI risk and benefit management is reflected in workforce and capacity planning); GOVERN 3.2 (AI risk awareness training is provided)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "nist-ai-rmf.govern-3-2",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.public-sector.SRF-L1-ACQ-008",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 3.1 (AI risk and benefit management is reflected in workforce and capacity planning); GOVERN 3.2 (AI risk awareness training is provided)"
-              }
-            ]
-          }
-        },
-        {
           "requirement": "omb-m-25-21.4b-iv",
           "basis": "derived_via_control",
           "source": {
@@ -7731,7 +7345,7 @@
       "affected_layers": [
         "L1"
       ],
-      "layer_rationale": "No named person owns AI risk for the organization, or the governance body that should name that person is not in place. That assignment sits at L1. OECD AI Principle 1.5 says AI actors are accountable for the proper functioning of AI systems based on their roles and the context. The nearest MIT subdomain is 7.4 Lack of transparency or interpretability. Its text includes the difficulty of holding actors accountable. The subdomain is mainly about explaining model decisions, so the domain fit is partial.",
+      "layer_rationale": "No named person owns AI risk for the organization, or the governance body that should name that person is not in place. That assignment sits at L1. Principle 1.5 states the duty to be accountable. The text does not state the harm of a missing name, so the link is a named citation. The public-sector control names the Chief AI Officer and the agency board. A national governance statute is not the same duty, and it is not linked.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7782,35 +7396,10 @@
       "related_controls": [
         "srf.control.common.SRF-COM-L1-005",
         "srf.control.finance.SRF-L1-DEV-001",
-        "srf.control.insurance.SRF-L1-MON-002"
+        "srf.control.insurance.SRF-L1-MON-002",
+        "srf.control.public-sector.SRF-L1-ACQ-003"
       ],
       "obligations": [
-        {
-          "requirement": "eu-ai-act.art-17",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.common.SRF-COM-L1-005",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 17 (quality management system; where in scope)"
-              }
-            ]
-          }
-        },
-        {
-          "requirement": "eu-ai-act.art-9",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.finance.SRF-L1-DEV-001",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 9 (Risk management system)"
-              }
-            ]
-          }
-        },
         {
           "requirement": "nist-ai-rmf.govern-2-1",
           "basis": "derived_via_control",
@@ -7825,6 +7414,11 @@
                 "control": "srf.control.insurance.SRF-L1-MON-002",
                 "mapping_key": "nist_ai_rmf",
                 "citation": "GOVERN 2.1 (roles, responsibilities, and lines of communication are documented); GOVERN 2.3 (executive leadership takes responsibility)"
+              },
+              {
+                "control": "srf.control.public-sector.SRF-L1-ACQ-003",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 1.1 (policies, processes, procedures documented and in effect); GOVERN 2.1 (roles and responsibilities for AI risk management are designated)"
               }
             ]
           }
@@ -7853,14 +7447,27 @@
           }
         },
         {
-          "requirement": "nist-ai-rmf.map-1-5",
+          "requirement": "omb-m-25-21.3a-i",
           "basis": "derived_via_control",
           "source": {
             "controls": [
               {
-                "control": "srf.control.finance.SRF-L1-DEV-001",
-                "mapping_key": "nist_ai_rmf",
-                "citation": "GOVERN 2.3 (executive leadership takes responsibility for AI risk decisions); MAP 1.5 (organizational risk tolerances are determined and documented)"
+                "control": "srf.control.public-sector.SRF-L1-ACQ-003",
+                "mapping_key": "m_25_21",
+                "citation": "Section 3(a)(i) (Chief AI Officers); Section 3(a)(ii) (Agency AI Governance Board)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.3a-ii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L1-ACQ-003",
+                "mapping_key": "m_25_21",
+                "citation": "Section 3(a)(i) (Chief AI Officers); Section 3(a)(ii) (Agency AI Governance Board)"
               }
             ]
           }
@@ -7879,12 +7486,23 @@
           }
         },
         {
-          "requirement": "oecd-ai-principles.1-5",
-          "basis": "official_text",
+          "requirement": "australia-ai-ethics-principles.accountability",
+          "basis": "named_citation",
           "source": {
-            "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
-            "citation": "Principle 1.5(a)",
-            "excerpt": "AI actors should be accountable for the proper functioning of AI systems and for the respect of the above principles, based on their roles, the context, and consistent with the state of the art."
+            "citation": "Accountability",
+            "url": "https://www.industry.gov.au/publications/australias-artificial-intelligence-ethics-framework/australias-ai-ethics-principles",
+            "document": "australia-ai-ethics-principles",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "oecd-ai-principles.1-5",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Principle 1.5",
+            "url": "https://oecd.ai/en/dashboards/ai-principles/P9",
+            "document": "oecd-ai-principles",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
           }
         }
       ]
@@ -7902,7 +7520,7 @@
         "L1",
         "L5"
       ],
-      "layer_rationale": "The organization tells a customer the AI system can do something the system cannot do, or it hides a limit that would change the customer's decision to use it. The claim is an L1 business act. A model card, where one exists, sits at L5 with the AI Model Provider. This row keeps AI System Governance accountable for the claim the organization makes. MIT subdomain 3.1 describes incorrect information an AI system generates. This row is a human claim about the system, so the domain fit is partial. No current control measures that claim, so each operating model is a gap.",
+      "layer_rationale": "The organization tells a customer the AI system can do something the system cannot do, or it hides a limit that would change the customer's decision to use it. The claim is an L1 business act. A model card, where one exists, sits at L5 with the AI Model Provider. This row keeps AI System Governance accountable for the claim the organization makes. Principle 1.3 states a disclosure duty. It does not state this harm, and no control cites it, so the link is a named citation. No current control measures the claim, so each operating model is a gap.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-system-governance",
@@ -7951,25 +7569,679 @@
         "biml_llm24": null,
         "owasp_dsgai": null,
         "mit_ai_risk_repository": "Domain 3 Misinformation; subdomain 3.1 False or misleading information. Causal: Entity Human, Intent Intentional, Timing Other. Domain fit: partial. The subdomain text is AI systems that generate or spread incorrect or deceptive information. This row is a human claim to a customer about the system. Timing is Other because the claim can be made before deployment and while the system is in use.",
-        "oecd_ai_principles": "Principle 1.3(i), OECD/LEGAL/0449, meaningful information on capabilities and limitations. The principles record is data/regulations.json id oecd-ai-principles.",
+        "oecd_ai_principles": "Principle 1.3, OECD/LEGAL/0449. The text states a disclosure duty about capabilities and limitations. It does not state the harm of a misleading claim, so the obligation link is a named citation. The principles record is data/regulations.json id oecd-ai-principles.",
         "oecd_aim": "https://oecd.ai/en/incidents (monitor). No retrieved incident page was a provider's claim to a customer about its own AI system's capabilities. Retrieved pages about misleading output were system-generated text, which is a different failure."
       },
       "related_controls": [],
       "obligations": [
         {
           "requirement": "oecd-ai-principles.1-3",
-          "basis": "official_text",
+          "basis": "named_citation",
           "source": {
+            "citation": "Principle 1.3",
             "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
-            "citation": "Principle 1.3(i)",
-            "excerpt": "to foster a general understanding of AI systems, including their capabilities and limitations"
+            "document": "oecd-ai-principles",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "highriskuse",
+      "name": "Prohibited or unclassified high-risk use",
+      "ai_exchange": null,
+      "dsgai": null,
+      "source_url": "https://airisk.mit.edu/risks",
+      "impact": "Legal use class",
+      "attack_surface": "Deployment decision",
+      "srf_layer": "L1",
+      "affected_layers": [
+        "L1",
+        "L5"
+      ],
+      "layer_rationale": "The organization runs a use the law prohibits, or it does not record that a use is high-risk or high-impact, so the duties that follow that class never start. That decision sits at L1. SRF-COM-L1-004 records the legal risk class on the inventory entry. The public-sector designation and discontinuation controls apply on the models those controls list. Article 5, Article 25, and Article 51 have no related control that cites them, so those links are named citations.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The L1 matrix cell is shared for the customer and provider-managed for the provider. This failure is the customer's use and governance of AI, so the customer is the accountable party."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The customer owns L1 in this operating model."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The customer owns L1 in this operating model."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-004 in this model. The customer owns L1 in this operating model."
+        }
+      },
+      "mappings": {
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null,
+        "owasp_dsgai": null,
+        "mit_ai_risk_repository": "Domain 5 Human-computer interaction; subdomain 5.1 Overreliance and unsafe use. Causal: Entity Human, Intent Other, Timing Other. Domain fit: partial. The subdomain text covers inappropriate use in critical situations. It does not list prohibited practices or a missed high-risk class. Intent is Other because a prohibited use can be deliberate and a missed class can be an omission. Timing is Other because the class is set before deployment and the use continues after. Checked against https://airisk.mit.edu/risks on 2026-11-21.",
+        "oecd_ai_principles": "No OECD principle states a prohibited-practice list or a high-risk class. AIM is cited at monitor level. The principles record is data/regulations.json id oecd-ai-principles.",
+        "oecd_aim": "https://oecd.ai/en/incidents (monitor). No incident page was retrieved for this row. The monitor says its pages are not the official views of the OECD or of its member countries."
+      },
+      "related_controls": [
+        "srf.control.common.SRF-COM-L1-004",
+        "srf.control.public-sector.SRF-L1-ACQ-002",
+        "srf.control.public-sector.SRF-L1-MON-005"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.annex-iii",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-004",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-49",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-004",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-004",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 6 (classification of high-risk AI systems; where in scope); Article 49 (registration; where in scope); Annex III (high-risk use cases; where in scope)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.4a",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L1-ACQ-002",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(a) (Determining High-Impact AI); Section 6 (categories presumed high-impact)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.4a-i",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L1-MON-005",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(a)(i) (Implementing Risk Management Practices and Termination of Non-Compliant AI); Section 4(a)(ii) (Authorizing Waivers from Minimum Practices)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "omb-m-25-21.6",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.public-sector.SRF-L1-ACQ-002",
+                "mapping_key": "m_25_21",
+                "citation": "Section 4(a) (Determining High-Impact AI); Section 6 (categories presumed high-impact)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-25",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 25(1) to (5)",
+            "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+            "document": "eu-ai-act",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-5",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 5",
+            "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689",
+            "document": "eu-ai-act",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-51",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 51(1) to (3)",
+            "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+            "document": "eu-ai-act",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        }
+      ],
+      "related_risks": [
+        "inventorygap"
+      ]
+    },
+    {
+      "id": "noimpactassessment",
+      "name": "No impact assessment before deployment",
+      "ai_exchange": null,
+      "dsgai": null,
+      "source_url": "https://airisk.mit.edu/risks",
+      "impact": "Harm to affected people",
+      "attack_surface": "Before production use",
+      "srf_layer": "L1",
+      "affected_layers": [
+        "L1"
+      ],
+      "layer_rationale": "The organization puts an AI system into production without a recorded assessment of who it affects and what harm it can cause. That gate sits at L1. SRF-COM-L1-007 requires the assessment before go-live and before a major change. The GDPR, Canadian, and health-IT assessment duties are named citations because no related control cites those records.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-007 in this model. The L1 matrix cell is shared for the customer and provider-managed for the provider. This failure is the customer's use and governance of AI, so the customer is the accountable party."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-007 in this model. The customer owns L1 in this operating model."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-007 in this model. The customer owns L1 in this operating model."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-007 in this model. The customer owns L1 in this operating model."
+        }
+      },
+      "mappings": {
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null,
+        "owasp_dsgai": null,
+        "mit_ai_risk_repository": "Domain 6 Socioeconomic & Environmental; subdomain 6.5 Governance failure. Causal: Entity Human, Intent Unintentional, Timing Pre-deployment. Domain fit: partial. The subdomain text is governance that does not keep pace with AI. This row is a missing assessment before deployment. Checked against https://airisk.mit.edu/risks on 2026-11-21.",
+        "oecd_ai_principles": "No OECD principle states an impact assessment before deployment. AIM is cited at monitor level. The principles record is data/regulations.json id oecd-ai-principles.",
+        "oecd_aim": "https://oecd.ai/en/incidents (monitor). No incident page was retrieved for this row. The monitor says its pages are not the official views of the OECD or of its member countries."
+      },
+      "related_controls": [
+        "srf.control.common.SRF-COM-L1-007",
+        "srf.control.manufacturing.SRF-L1-DES-008"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-27",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-007",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 27 (fundamental rights impact assessment for deployers; where in scope)"
+              },
+              {
+                "control": "srf.control.manufacturing.SRF-L1-DES-008",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 27 (fundamental rights impact assessment for deployers)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-1-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-007",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 1.1 (the intended purpose, context of use, and prospective settings of the AI system are understood and documented); MAP 5.1 (the likelihood and magnitude of each identified impact are identified and documented)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.map-5-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-007",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 1.1 (the intended purpose, context of use, and prospective settings of the AI system are understood and documented); MAP 5.1 (the likelihood and magnitude of each identified impact are identified and documented)"
+              },
+              {
+                "control": "srf.control.manufacturing.SRF-L1-DES-008",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MAP 5.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "canada-directive-adm.aia",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Algorithmic Impact Assessment",
+            "url": "https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32592",
+            "document": "canada-directive-adm",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "gdpr.art-35",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 35",
+            "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+            "document": "gdpr",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "onc-hti-1.b11-vi",
+          "basis": "named_citation",
+          "source": {
+            "citation": "45 CFR 170.315(b)(11)(vi)",
+            "url": "https://www.ecfr.gov/current/title-45/section-170.315",
+            "document": "onc-hti-1",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "uncontestable",
+      "name": "Decisions people cannot contest or get explained",
+      "ai_exchange": null,
+      "dsgai": null,
+      "source_url": "https://airisk.mit.edu/risks",
+      "impact": "Ability to challenge a decision",
+      "attack_surface": "Decision issued to a person",
+      "srf_layer": "L1",
+      "affected_layers": [
+        "L1",
+        "L3"
+      ],
+      "layer_rationale": "A person subject to a decision an AI system informs cannot get a plain explanation of the system's role, or a way to challenge the decision. That duty sits at L1. The insurance appeal-process control covers AI-SaaS, AI-PaaS, and Agent-PaaS, and it cites Article 86. IaaS has no control that measures this duty, so that model is a gap. SRF-COM-L3-005 states the same duty and is owned by the application developer, so it does not close the L1 cell.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.insurance.SRF-L1-DEV-004 in this model. The L1 matrix cell is shared for the customer and provider-managed for the provider. This failure is the customer's use and governance of AI, so the customer is the accountable party."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.insurance.SRF-L1-DEV-004 in this model. The customer owns L1 in this operating model."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.insurance.SRF-L1-DEV-004 in this model. The customer owns L1 in this operating model."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "No related control applies in this operating model. The persona stays ai-system-governance, and the cell records no_linked_control_in_model.",
+          "no_linked_control_in_model": true
+        }
+      },
+      "mappings": {
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null,
+        "owasp_dsgai": null,
+        "mit_ai_risk_repository": "Domain 7 AI system safety, failures, and limitations; subdomain 7.4 Lack of transparency or interpretability. Causal: Entity Human, Intent Unintentional, Timing Post-deployment. Domain fit: partial. The subdomain text is the difficulty of explaining a decision. This row adds the missing explanation and the missing way to challenge the decision. Checked against https://airisk.mit.edu/risks on 2026-11-21.",
+        "oecd_ai_principles": "Principle 1.3, OECD/LEGAL/0449, includes an explanation and a way to challenge an output. The link is a named citation because the text states a duty. The principles record is data/regulations.json id oecd-ai-principles.",
+        "oecd_aim": "https://oecd.ai/en/incidents (monitor). No incident page was retrieved for this row. The monitor says its pages are not the official views of the OECD or of its member countries."
+      },
+      "related_controls": [
+        "srf.control.insurance.SRF-L1-DEV-004"
+      ],
+      "obligations": [
+        {
+          "requirement": "eu-ai-act.art-86",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.insurance.SRF-L1-DEV-004",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 86 (right to explanation of individual decision-making for high-risk AI systems)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "australia-ai-ethics-principles.contestability",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Contestability",
+            "url": "https://www.industry.gov.au/publications/australias-artificial-intelligence-ethics-framework/australias-ai-ethics-principles",
+            "document": "australia-ai-ethics-principles",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "canada-directive-adm.transparency",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Notice and explanations",
+            "url": "https://www.tbs-sct.canada.ca/pol/doc-eng.aspx?id=32592",
+            "document": "canada-directive-adm",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-13",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 13(1) to (3)",
+            "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+            "document": "eu-ai-act",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "gdpr.art-22",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Article 22",
+            "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+            "document": "gdpr",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        },
+        {
+          "requirement": "oecd-ai-principles.1-3",
+          "basis": "named_citation",
+          "source": {
+            "citation": "Principle 1.3",
+            "url": "https://legalinstruments.oecd.org/en/instruments/OECD-LEGAL-0449",
+            "document": "oecd-ai-principles",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
+          }
+        }
+      ]
+    },
+    {
+      "id": "unreportedincidents",
+      "name": "Incidents not reported or monitored after deployment",
+      "ai_exchange": null,
+      "dsgai": null,
+      "source_url": "https://airisk.mit.edu/risks",
+      "impact": "Detection of harm after deployment",
+      "attack_surface": "Production use",
+      "srf_layer": "L1",
+      "affected_layers": [
+        "L1"
+      ],
+      "layer_rationale": "After deployment, serious incidents and errors are not detected, recorded, or reported to the people who have to act. That procedure sits at L1. SRF-COM-L1-008 is the incident procedure. SRF-COM-L1-010 requires the post-deployment monitoring plan, and Article 72 is linked through that plan. Article 43 is cited on the same control for modified high-risk systems and is not linked, because it is a conformity procedure. The defense incident control is included because it cites the CMMC and SP 800-171 incident requirements.",
+      "accountability": {
+        "AI-SaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "shared",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-008 in this model. The L1 matrix cell is shared for the customer and provider-managed for the provider. This failure is the customer's use and governance of AI, so the customer is the accountable party."
+        },
+        "AI-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-008 in this model. The customer owns L1 in this operating model."
+        },
+        "Agent-PaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-008 in this model. The customer owns L1 in this operating model."
+        },
+        "IaaS": {
+          "accountable_persona": "ai-system-governance",
+          "accountable_party": "customer",
+          "responsibility": {
+            "customer": "customer-owned",
+            "provider": "provider-managed"
+          },
+          "note": "Accountable persona is ai-system-governance, the owner of srf.control.common.SRF-COM-L1-008 in this model. The customer owns L1 in this operating model."
+        }
+      },
+      "mappings": {
+        "owasp_llm_top10": null,
+        "mitre_atlas": null,
+        "biml_llm24": null,
+        "owasp_dsgai": null,
+        "mit_ai_risk_repository": "Domain 7 AI system safety, failures, and limitations; subdomain 7.3 Lack of capability or robustness. Causal: Entity Human, Intent Unintentional, Timing Post-deployment. Domain fit: partial. The subdomain text is a system that fails in use. This row is the missing report and the missing monitoring of that failure. Checked against https://airisk.mit.edu/risks on 2026-11-21.",
+        "oecd_ai_principles": "No OECD principle states incident reporting after deployment. AIM is cited at monitor level. The principles record is data/regulations.json id oecd-ai-principles.",
+        "oecd_aim": "https://oecd.ai/en/incidents (monitor). No incident page was retrieved for this row. The monitor says its pages are not the official views of the OECD or of its member countries."
+      },
+      "related_controls": [
+        "srf.control.common.SRF-COM-L1-008",
+        "srf.control.common.SRF-COM-L1-010",
+        "srf.control.healthcare.SRF-L1-PMS-002",
+        "srf.control.manufacturing.SRF-L1-OPS-005",
+        "srf.control.defense.SRF-L1-OPS-008"
+      ],
+      "obligations": [
+        {
+          "requirement": "cmmc-2-0.ir-l2-3-6-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L1-OPS-008",
+                "mapping_key": "cmmc_2_0",
+                "citation": "IR.L2-3.6.1 (operational incident-handling capability); IR.L2-3.6.2 (track, document, and report incidents)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "cmmc-2-0.ir-l2-3-6-2",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L1-OPS-008",
+                "mapping_key": "cmmc_2_0",
+                "citation": "IR.L2-3.6.1 (operational incident-handling capability); IR.L2-3.6.2 (track, document, and report incidents)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-72",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-010",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 43 (conformity assessment of substantially modified systems; where in scope); Article 72 (post-market monitoring; where in scope)"
+              },
+              {
+                "control": "srf.control.manufacturing.SRF-L1-OPS-005",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 73 (serious incident reporting); Article 72 (post-market monitoring)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "eu-ai-act.art-73",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-008",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 73 (reporting of serious incidents; where in scope)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L1-PMS-002",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 73 (Reporting of serious incidents)"
+              },
+              {
+                "control": "srf.control.manufacturing.SRF-L1-OPS-005",
+                "mapping_key": "eu_ai_act",
+                "citation": "Article 73 (serious incident reporting); Article 72 (post-market monitoring)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-4-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-008",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 4.1 (post-deployment monitoring plans are implemented, including incident response and recovery); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
+              },
+              {
+                "control": "srf.control.common.SRF-COM-L1-010",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "GOVERN 1.7 (processes are in place for decommissioning and phasing out AI systems safely); MANAGE 4.1 (post-deployment monitoring plans are implemented, including change management and decommissioning)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.manage-4-3",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.common.SRF-COM-L1-008",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 4.1 (post-deployment monitoring plans are implemented, including incident response and recovery); MANAGE 4.3 (incidents and errors are communicated to relevant AI actors, including affected communities)"
+              },
+              {
+                "control": "srf.control.healthcare.SRF-L1-PMS-002",
+                "mapping_key": "nist_ai_rmf",
+                "citation": "MANAGE 4.3 (incidents and errors are communicated to relevant AI actors and authorities)"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-sp-800-171.3-6-1",
+          "basis": "derived_via_control",
+          "source": {
+            "controls": [
+              {
+                "control": "srf.control.defense.SRF-L1-OPS-008",
+                "mapping_key": "nist_800_171",
+                "citation": "3.6.1"
+              }
+            ]
+          }
+        },
+        {
+          "requirement": "nist-ai-rmf.govern-1-5",
+          "basis": "named_citation",
+          "source": {
+            "citation": "GOVERN 1.5",
+            "url": "https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-1.pdf",
+            "document": "nist-ai-rmf",
+            "note": "Derived. The requirement states a duty that addresses this risk. The cited text does not state the harm. No related control cites this requirement."
           }
         }
       ]
     }
   ],
   "layer_counts": {
-    "L1": 8,
+    "L1": 12,
     "L2": 7,
     "L3": 8,
     "L4": 8,

@@ -144,8 +144,9 @@ A risk cell sets `no_linked_control_in_model` when none of its related controls 
 | `misleadingclaims` | Misleading AI claims to customers | L1 | AI-PaaS | `ai-system-governance` |
 | `misleadingclaims` | Misleading AI claims to customers | L1 | Agent-PaaS | `ai-system-governance` |
 | `misleadingclaims` | Misleading AI claims to customers | L1 | IaaS | `ai-system-governance` |
+| `uncontestable` | Decisions people cannot contest or get explained | L1 | IaaS | `ai-system-governance` |
 
-8 cells. Class: `no_linked_control_in_model`.
+9 cells. Class: `no_linked_control_in_model`.
 
 ## Summary finding
 

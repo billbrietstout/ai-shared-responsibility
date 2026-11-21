@@ -728,8 +728,9 @@
   }
 
   function basisIsDashed(basis) {
-    return basis === "derived_via_control" || basis === "editorial" || basis === "editorial_mapping" ||
-      !(basis === "official_text" || basis === "official_legal_text" || basis === "named_citation" || basis === "named_cite");
+    return basis === "derived_via_control" || basis === "named_citation" || basis === "named_cite" ||
+      basis === "editorial" || basis === "editorial_mapping" ||
+      !(basis === "official_text" || basis === "official_legal_text");
   }
 
   /* Recorded values come from threats[].obligations[].basis. The chain shows
@@ -741,8 +742,8 @@
     official_legal_text: "official text",
     editorial: "editorial judgment",
     editorial_mapping: "editorial judgment",
-    named_citation: "named citation",
-    named_cite: "named citation"
+    named_citation: "derived from the cited duty",
+    named_cite: "derived from the cited duty"
   };
   var BASIS_GLOSS = {
     derived_via_control: "The legal text is not the source of this link. It runs through a shared control.",
@@ -750,8 +751,8 @@
     official_legal_text: "Taken from the official text.",
     editorial: "The legal text is not the source of this link.",
     editorial_mapping: "The legal text is not the source of this link.",
-    named_citation: "The record names this citation.",
-    named_cite: "The record names this citation."
+    named_citation: "The cited text states a duty. It does not state this harm. The link does not run through a control.",
+    named_cite: "The cited text states a duty. It does not state this harm. The link does not run through a control."
   };
 
   function basisSentence(basis) {
