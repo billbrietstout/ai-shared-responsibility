@@ -33,7 +33,7 @@
  *                   or the SRF model named for a sector model in the sector map
  *   control-policy  controls[].policy_level or controls[].policy, when the value
  *                   matches a policy level (no control has this field today)
- *   risk-control    threats[].related_controls (solid). Also dashed when
+ *   risk-control    threats[].related_controls (solid). Also a longer dash when
  *                   citationsForControl matches a requirement in
  *                   threats[].obligations[]. One pair is one line, and the
  *                   direct line wins.
@@ -44,8 +44,9 @@
  *   obligation to control  the source control on that link, or a citation match
  *                          (solid). A current-obligation citation with no article
  *                          match is dotted and marked Instrument-level.
- *   risk to control        solid from related_controls. Dashed when the control
- *                          only reaches the risk through a requirement it cites.
+ *   risk to control        solid from related_controls. A longer dash when the
+ *                          control only reaches the risk through a requirement
+ *                          it cites.
  *   control to persona     controls[].accountable_by_model for the chosen model
  *
  * Every mode opens the same four-column board: Explore a risk, Explore a
@@ -792,7 +793,7 @@
     var key = edge.from + ">" + edge.to + ">" + edge.style;
     if (chain.edges.some(function (item) { return item.from === edge.from && item.to === edge.to && item.style === edge.style; })) return;
     chain.edges.push(edge);
-    if (edge.style === "dashed") chain.dashed += 1;
+    if (edge.style === "dashed" || edge.style === "long-dashed") chain.dashed += 1;
     if (edge.style === "dotted") chain.fallbacks += 1;
   }
 
@@ -1035,17 +1036,18 @@
     return cards.some(function (item) { return !item.viaObligations || !item.viaObligations.length; });
   }
 
-  /* Direct related_controls stays one solid line. A cited-obligation link is
-   * dashed, and it is not drawn again when the solid line is already there. */
+  /* Direct related_controls stays one solid line. A cited-obligation link
+   * uses a longer dash, and it is not drawn again when the solid line is
+   * already there. */
   function addRiskControlEdge(chain, riskId, controlId, direct, vias) {
     if (!direct && (!vias || !vias.length)) return;
-    var style = direct ? "solid" : "dashed";
+    var style = direct ? "solid" : "long-dashed";
     var i;
     for (i = 0; i < chain.edges.length; i++) {
       var item = chain.edges[i];
       if (item.from !== riskId || item.to !== controlId) continue;
-      if (item.style !== "solid" && item.style !== "dashed") continue;
-      if (item.style === "dashed" && style === "solid") {
+      if (item.style !== "solid" && item.style !== "dashed" && item.style !== "long-dashed") continue;
+      if (item.style !== "solid" && style === "solid") {
         item.style = "solid";
         chain.dashed -= 1;
         delete item.via;
@@ -1053,7 +1055,7 @@
       return;
     }
     var edge = { from: riskId, to: controlId, style: style };
-    if (style === "dashed") edge.via = vias;
+    if (style === "long-dashed") edge.via = vias;
     addEdge(chain, edge);
   }
 

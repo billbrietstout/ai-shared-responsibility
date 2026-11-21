@@ -2455,7 +2455,7 @@ async function testCitedObligationLinks(browser, base) {
   const riskControlEdges = (page) => page.$$eval("#chain-svg path.chain-line", (els) => els.map((el) => ({
     from: el.getAttribute("data-from"),
     to: el.getAttribute("data-to"),
-    style: ((el.getAttribute("class") || "").match(/chain-line--(solid|dashed|dotted)/) || [])[1] || ""
+    style: ((el.getAttribute("class") || "").match(/chain-line--(long-dashed|solid|dashed|dotted)/) || [])[1] || ""
   })).filter((edge) => /^risk:/.test(edge.from || "") && /^control:/.test(edge.to || "")));
   function pair(edges, from, to) {
     return edges.filter((edge) => edge.from === from && edge.to === to);
@@ -2470,7 +2470,19 @@ async function testCitedObligationLinks(browser, base) {
   const risksShown = await controlPage.$$eval('#chain-board .chain-col[data-column="risk"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
   check("control mode lists the direct risk and the cited-obligation risk", risksShown.indexOf(solidRisk) !== -1 && risksShown.indexOf(dashedRisk) !== -1, JSON.stringify(risksShown));
   check("control mode draws the direct risk-control line solid, once", solidPair.length === 1 && solidPair[0].style === "solid", JSON.stringify(solidPair));
-  check("control mode draws the cited-obligation risk-control line dashed, once", dashedPair.length === 1 && dashedPair[0].style === "dashed", JSON.stringify(dashedPair));
+  check("control mode draws the cited-obligation risk-control line dashed, once", dashedPair.length === 1 && dashedPair[0].style === "long-dashed", JSON.stringify(dashedPair));
+  const dashPatterns = await controlPage.evaluate(() => {
+    function dash(selector) {
+      const el = document.querySelector(selector);
+      return el ? getComputedStyle(el).strokeDasharray : "";
+    }
+    return {
+      shared: dash("#chain-legend .chain-line--dashed"),
+      cited: dash("#chain-legend .chain-line--long-dashed"),
+      drawn: dash('#chain-svg path.chain-line--long-dashed[data-from="risk:dsgai05"]')
+    };
+  });
+  check("the cited-obligation class and the shared-control class use different stroke-dasharray values", dashPatterns.shared && dashPatterns.cited && dashPatterns.shared !== "none" && dashPatterns.cited !== "none" && dashPatterns.shared !== dashPatterns.cited && dashPatterns.drawn === dashPatterns.cited, JSON.stringify(dashPatterns));
   await controlPage.click('#chain-board button[data-chain-id="' + dashedRisk + '"]');
   await sleep(300);
   const dashedDetails = await controlPage.$eval("#details-chain", (el) => el.innerText);
@@ -2499,7 +2511,7 @@ async function testCitedObligationLinks(browser, base) {
   const fromRiskSolid = pair(riskEdges, dashedRisk, solidControl);
   const riskControls = await riskPage.$$eval('#chain-board .chain-col[data-column="control"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
   check("risk mode lists the cited-obligation control", riskControls.indexOf(controlId) !== -1, String(riskControls.length));
-  check("risk mode draws that control dashed and keeps the named control solid", fromRiskDashed.length === 1 && fromRiskDashed[0].style === "dashed" && fromRiskSolid.length === 1 && fromRiskSolid[0].style === "solid", JSON.stringify({ dashed: fromRiskDashed, solid: fromRiskSolid }));
+  check("risk mode draws that control dashed and keeps the named control solid", fromRiskDashed.length === 1 && fromRiskDashed[0].style === "long-dashed" && fromRiskSolid.length === 1 && fromRiskSolid[0].style === "solid", JSON.stringify({ dashed: fromRiskDashed, solid: fromRiskSolid }));
   await riskPage.click('#chain-board button[data-chain-id="' + controlId + '"]');
   await sleep(250);
   const riskDetails = await riskPage.$eval("#details-chain", (el) => el.innerText);
@@ -2518,7 +2530,7 @@ async function testCitedObligationLinks(browser, base) {
   const obligationEdges = await riskControlEdges(obligationPage);
   const obligationDashed = pair(obligationEdges, dashedRisk, controlId);
   const obligationSolid = pair(obligationEdges, solidRisk, controlId);
-  check("obligation mode draws the cited-obligation line dashed and the direct line solid", obligationDashed.length === 1 && obligationDashed[0].style === "dashed" && obligationSolid.length === 1 && obligationSolid[0].style === "solid", JSON.stringify({ dashed: obligationDashed, solid: obligationSolid }));
+  check("obligation mode draws the cited-obligation line dashed and the direct line solid", obligationDashed.length === 1 && obligationDashed[0].style === "long-dashed" && obligationSolid.length === 1 && obligationSolid[0].style === "solid", JSON.stringify({ dashed: obligationDashed, solid: obligationSolid }));
   await obligationPage.click('#chain-board button[data-chain-id="' + dashedRisk + '"]');
   await sleep(250);
   const obligationDetails = await obligationPage.$eval("#details-chain", (el) => el.innerText);
@@ -2533,7 +2545,7 @@ async function testCitedObligationLinks(browser, base) {
   const personaEdges = await riskControlEdges(personaPage);
   const personaDashed = pair(personaEdges, dashedRisk, controlId);
   const personaSolid = pair(personaEdges, solidRisk, controlId);
-  check("accountable mode draws the cited-obligation line dashed and the direct line solid", personaDashed.length === 1 && personaDashed[0].style === "dashed" && personaSolid.length === 1 && personaSolid[0].style === "solid", JSON.stringify({ dashed: personaDashed, solid: personaSolid }));
+  check("accountable mode draws the cited-obligation line dashed and the direct line solid", personaDashed.length === 1 && personaDashed[0].style === "long-dashed" && personaSolid.length === 1 && personaSolid[0].style === "solid", JSON.stringify({ dashed: personaDashed, solid: personaSolid }));
   const personaBefore = await personaPage.$eval("#chain-select-accountable", (el) => el.value);
   await personaPage.click('#chain-board button[data-chain-id="' + dashedRisk + '"]');
   await sleep(250);
