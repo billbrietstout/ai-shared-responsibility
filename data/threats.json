@@ -3,7 +3,7 @@
   "srf_version": "1.0",
   "updated": "2026-11-21",
   "description": "Threat-to-accountability crosswalk for the CoSAI AI Shared Responsibility Framework. Maps each named AI security threat to the SRF layer where it lands and the accountable persona per operating model. The SRF does not define threats, attack techniques, or severity. Every threat definition here belongs to its external source. This file adds who must authorize the mitigating activity, who owns each finding, and who signs the residual risk. Threat catalogs do not carry those answers. obligations[] is a risk-to-obligation link. A derived_via_control link is stored only when a related control's citation matches a current obligation. That basis means the link was reached through the control, and the source lists the control id and the citation. basis official_text means the cited provision's wording covers the risk. The source then names the URL, the article and paragraph, and a short excerpt. A named_citation link is derived. The requirement states a duty that addresses the risk. The text does not state the harm, and the link does not run through a control. No link is stored without one of those bases. Eleven draft L1 rows and nineteen draft L2 and L3 rows add business, information, and application risks. Fifteen draft L4 and L5 rows add platform and AI Model Provider risks. L1-tagged requirements that state one of those risks are linked on the row. Their definitions are cited to the MIT AI Risk Repository and to OECD/LEGAL/0449 and the OECD AI Incidents Monitor. The draft rows are for review and are not a claim that the catalog is closed.",
-  "id_convention": "AI Exchange entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Entries that exist only in the OWASP GenAI Data Security Risks taxonomy are keyed dsgaiNN (lowercase), matching the published DSGAI identifier. Threat names for AI Exchange rows are taken verbatim from the AI Exchange AI security matrix; names for DSGAI-only rows are taken verbatim from the DSGAI 2026 taxonomy. impact and attack_surface for DSGAI-only rows are derived from the published DSGAI summary, because that taxonomy does not use the AI Exchange field names. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. This file cites DSGAI identifiers; it does not copy DSGAI mitigation text. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json. DSGAI07 (governance, lifecycle, and classification as an enabling condition) and DSGAI08 (regulatory non-compliance as an outcome) have no rows: they are not attack techniques. Classification and provenance duties already sit on the Data Provider persona at L2. Draft L1 business and usage rows are keyed by a short slug (overreliance, outofpurpose, inventorygap, missingoversight, ailititeracy, unclearaccountability, misleadingclaims, highriskuse, noimpactassessment, uncontestable, unreportedincidents). Draft L4 and L5 rows add slugs such as weakplatformmfa, incompleteplatformqms, unscreenedmodelpersonnel, and opaquefederalmodelacq. Draft L2 and L3 rows add slugs such as incompletetechdoc, missinginforecords, nopremarketconformity, and unlabeledsyntheticout. Those slugs are not external catalog ids. Their names are SRF labels for the sourced risk. The MIT and OECD fields cite the published taxonomy labels and the retrieved monitor pages.",
+  "id_convention": "AI Exchange entries are keyed by the OWASP AI Exchange permalink slug (the stable identifier in owaspai.org/go/<slug>/ URLs). Entries that exist only in the OWASP GenAI Data Security Risks taxonomy are keyed dsgaiNN (lowercase), matching the published DSGAI identifier. Threat names for AI Exchange rows are taken verbatim from the AI Exchange AI security matrix; names for DSGAI-only rows are taken verbatim from the DSGAI 2026 taxonomy. impact and attack_surface for DSGAI-only rows are derived from the published DSGAI summary, because that taxonomy does not use the AI Exchange field names. Mappings reference external IDs exactly as published by each source; a null mapping means no defensible one-to-one mapping exists, not that none was looked for. This file cites DSGAI identifiers; it does not copy DSGAI mitigation text. Control references use canonical srf.control.<vertical>.<control-id> IDs from /ids.json. DSGAI07 (governance, lifecycle, and classification as an enabling condition) and DSGAI08 (regulatory non-compliance as an outcome) have no rows: they are not attack techniques. Classification and provenance duties already sit on the Data Provider persona at L2. Draft L1 business and usage rows are keyed by a short slug (overreliance, outofpurpose, inventorygap, missingoversight, ailititeracy, unclearaccountability, misleadingclaims, highriskuse, noimpactassessment, uncontestable, unreportedincidents). Draft L4 and L5 rows add slugs such as weakplatformmfa, incompleteplatformqms, unscreenedmodelpersonnel, and opaquefederalmodelacq. Draft L2 and L3 rows add slugs such as incompletetechdoc, missinginforecords, nopremarketconformity, and unlabeledsyntheticout. Draft L4 and L5 rows add slugs such as weakplatformmfa, incompleteplatformqms, unscreenedmodelpersonnel, and opaquefederalmodelacq. Those slugs are not external catalog ids. Their names are SRF labels for the sourced risk. The MIT and OECD fields cite the published taxonomy labels and the retrieved monitor pages.",
   "accountability_convention": "One accountable persona per threat per operating model. The responsibility object quotes the customer and provider cell values verbatim from /data/matrix.json for the threat's primary SRF layer. Where the matrix says shared, this file still names a single accountable lead and records the counterparty obligation in the note, because shared is not a valid final answer.",
   "verification": {
     "date": "2026-08-27",
@@ -10729,7 +10729,7 @@
       "affected_layers": [
         "L4"
       ],
-      "layer_rationale": "HIPAA 164.310(a)(2)(i) requires facility access controls. An on-premise or colocated AI inference stack is a facility that must limit who can reach the hardware.",
+      "layer_rationale": "An on-premise or colocated AI inference stack is a facility that must limit who can reach the hardware. This row does not link HIPAA 164.310(a)(2)(i), which covers facility access for contingency operations rather than general facility access, and no existing control specifically covers contingency operations.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "ai-platform-provider",
@@ -10738,7 +10738,8 @@
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The provider owns the managed AI platform in this model. The customer is accountable for configuration it controls, because the L4 matrix cell is shared."
+          "note": "No related control applies in this operating model. The persona stays ai-platform-provider, and the cell records no_linked_control_in_model.",
+          "no_linked_control_in_model": true
         },
         "AI-PaaS": {
           "accountable_persona": "ai-platform-provider",
@@ -10757,7 +10758,8 @@
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The provider owns orchestration and inference infrastructure. The customer owns agents it defines on that infrastructure."
+          "note": "No related control applies in this operating model. The persona stays ai-platform-provider, and the cell records no_linked_control_in_model.",
+          "no_linked_control_in_model": true
         },
         "IaaS": {
           "accountable_persona": "ai-platform-provider",
@@ -10779,24 +10781,8 @@
         "oecd_ai_principles": "No OECD principle states this harm on this row. AIM is cited at monitor level. The principles record is data/regulations.json id oecd-ai-principles.",
         "oecd_aim": "https://oecd.ai/en/incidents (monitor). No incident page was retrieved for this row."
       },
-      "related_controls": [
-        "srf.control.healthcare.SRF-L4-PMS-002"
-      ],
-      "obligations": [
-        {
-          "requirement": "hipaa-security-rule.164-310-a-2-i",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L4-PMS-002",
-                "mapping_key": "hipaa",
-                "citation": "45 CFR §164.312(a)(2)(ii): Emergency access; §164.310(a)(2)(i): Contingency plan"
-              }
-            ]
-          }
-        }
-      ]
+      "related_controls": [],
+      "obligations": []
     },
     {
       "id": "unregisteredclinicalplatform",
@@ -11077,7 +11063,7 @@
               {
                 "control": "srf.control.manufacturing.SRF-L5-DES-008",
                 "mapping_key": "eu_ai_act",
-                "citation": "Article 28 (third-party provider obligations); Article 16 (provider due diligence)"
+                "citation": "Article 16 (provider due diligence)"
               }
             ]
           }
@@ -11183,7 +11169,7 @@
         "L5",
         "L1"
       ],
-      "layer_rationale": "EU AI Act Article 28 requires Member States to designate notifying authorities for conformity assessment bodies. A model provider that relies on third-party assessment needs a valid authority chain.",
+      "layer_rationale": "EU AI Act Article 28 requires Member States to designate notifying authorities for conformity assessment bodies. A model provider that relies on third-party assessment needs a valid authority chain. This row does not link Article 28, because no existing control mapping cites it as notifying authorities. Article 16 and Article 25 do not fit this harm.",
       "accountability": {
         "AI-SaaS": {
           "accountable_persona": "model-provider",
@@ -11192,7 +11178,8 @@
             "customer": "N/A",
             "provider": "provider-managed"
           },
-          "note": "The SaaS provider supplies the model and owns provider-side model duties in this model."
+          "note": "No related control applies in this operating model. The persona stays model-provider, and the cell records no_linked_control_in_model.",
+          "no_linked_control_in_model": true
         },
         "AI-PaaS": {
           "accountable_persona": "model-provider",
@@ -11211,7 +11198,8 @@
             "customer": "shared",
             "provider": "provider-managed"
           },
-          "note": "The model provider owns the base model. The customer validates behavior under agent workloads."
+          "note": "No related control applies in this operating model. The persona stays model-provider, and the cell records no_linked_control_in_model.",
+          "no_linked_control_in_model": true
         },
         "IaaS": {
           "accountable_persona": "model-provider",
@@ -11220,7 +11208,8 @@
             "customer": "customer-owned",
             "provider": "provider-managed"
           },
-          "note": "The customer procures or builds models it runs. Third-party model vendors remain subject to contract terms the customer enforces."
+          "note": "No related control applies in this operating model. The persona stays model-provider, and the cell records no_linked_control_in_model.",
+          "no_linked_control_in_model": true
         }
       },
       "mappings": {
@@ -11232,30 +11221,8 @@
         "oecd_ai_principles": "No OECD principle states this harm on this row. AIM is cited at monitor level. The principles record is data/regulations.json id oecd-ai-principles.",
         "oecd_aim": "https://oecd.ai/en/incidents (monitor). No incident page was retrieved for this row."
       },
-      "related_controls": [
-        "srf.control.healthcare.SRF-L5-VV-002",
-        "srf.control.manufacturing.SRF-L5-DES-008"
-      ],
-      "obligations": [
-        {
-          "requirement": "eu-ai-act.art-28",
-          "basis": "derived_via_control",
-          "source": {
-            "controls": [
-              {
-                "control": "srf.control.healthcare.SRF-L5-VV-002",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 9 (Risk management); Article 28 (Transparency for providers)"
-              },
-              {
-                "control": "srf.control.manufacturing.SRF-L5-DES-008",
-                "mapping_key": "eu_ai_act",
-                "citation": "Article 28 (third-party provider obligations); Article 16 (provider due diligence)"
-              }
-            ]
-          }
-        }
-      ]
+      "related_controls": [],
+      "obligations": []
     },
     {
       "id": "unmeasuredmodelrisk",
