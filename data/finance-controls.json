@@ -94,15 +94,15 @@
       "id": "SRF-L1-DEV-003",
       "layer": "L1",
       "component": "Capabilities & Business Strategy",
-      "title": "Acceptable Use Policy with Named Business-Unit Accountable Individual",
-      "description": "Each business unit deploying AI systems must designate a named individual (not a team, role title, or org-unit) as the accountable signatory for the acceptable use policy covering that unit's AI systems. The AUP must specify permitted use cases, prohibited outputs, user categories, and escalation paths, and must address each operating model in scope. A business-unit-level signature without a named individual does not satisfy SR 26-2's governance accountability expectations and will be a finding under examiner review. The named individual must be recorded in the model inventory alongside the models they are accountable for, and updated when the individual changes (see SRF-L1-MON-003). AI System Governance issues and maintains the policy. AI System Users are accountable for following it.",
+      "title": "Business-Unit Acceptable Use Policy Acknowledgment",
+      "description": "Each business unit that deploys AI systems must ensure every AI System User in that unit signs or acknowledges the acceptable use policy before using AI systems for the unit. The policy must specify permitted use cases, prohibited outputs, user categories, and escalation paths, and must address each operating model in scope. Each acknowledgment must tie to an individual user identity, not a shared mailbox, team name, or role title, and must stay current when the policy changes. AI System Governance issues and maintains the policy. AI System Users are accountable for signing or acknowledging it and for following it.",
       "accountable_persona": "ai-system-users",
       "accountable_by_model": {
         "AI-SaaS": "ai-system-users",
         "AI-PaaS": "ai-system-users",
         "Agent-PaaS": "ai-system-users"
       },
-      "named_individual_constraint": "Must be a specific named employee. Cannot be a shared mailbox, team name, or role title. Must have sufficient seniority and authority to enforce the AUP within their business unit.",
+      "named_individual_constraint": "The accountable party is the AI System User who uses AI systems for the business unit. Each user must personally sign or acknowledge the policy. AI System Governance issues the policy. Do not treat a business-unit lead, shared mailbox, team name, or role title as the accountable signatory.",
       "operating_models": [
         "AI-SaaS",
         "AI-PaaS",
@@ -118,7 +118,7 @@
       },
       "threshold": {
         "metric": "business_unit_named_aup_signatory_coverage",
-        "description": "Percentage of business units with AI systems in production that have a current AUP acknowledgment signed by a named individual (not a team or role), linked to that individual's identity record in the HR or IAM system.",
+        "description": "Percentage of business units with AI systems in production where every active AI System User in the unit has a current policy acknowledgment on file, linked to that user's identity record in the HR or IAM system, within the annual-review window.",
         "evidence": {
           "ocsf_class": "TBD: records management artifact. Where AUP acknowledgment is captured via an IAM or GRC system, authentication events (authentication OCSF class) at the acknowledgment step can confirm a specific user identity completed the sign-off.",
           "attribute": "TBD",
