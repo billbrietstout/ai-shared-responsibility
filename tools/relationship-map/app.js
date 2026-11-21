@@ -144,6 +144,7 @@
   var retryBtn = document.getElementById("map-retry");
   var loadingEl = document.getElementById("map-loading");
   var copyBtn = document.getElementById("copy-chain");
+  var csvDownloadBtn = document.getElementById("download-chain-csv");
   var copyStatus = document.getElementById("copy-status");
   var copyFallback = document.getElementById("copy-fallback");
   var copyTimer = 0;
@@ -757,6 +758,26 @@
     named_citation: "derived from the cited duty",
     named_cite: "derived from the cited duty"
   };
+  var LINK_TYPE_BADGE = {
+    solid: "Direct",
+    dashed: "Via shared control",
+    "long-dashed": "Via cited obligation",
+    dotted: "Instrument level"
+  };
+
+  var ACCOUNTABILITY_PARTY_LABEL = {
+    provider: "provider",
+    customer: "accountable"
+  };
+
+  var SYMPTOM_ALIASES = {
+    leak: ["leakage", "exfiltration", "exfiltrat"],
+    leakage: ["leak", "exfiltration", "exfiltrat"],
+    exfiltration: ["leak", "leakage", "exfiltrat"],
+    inject: ["injection"],
+    injection: ["inject"]
+  };
+
   var BASIS_GLOSS = {
     derived_via_control: "The legal text is not the source of this link. It runs through a shared control.",
     official_text: "Taken from the official text.",
@@ -775,6 +796,88 @@
   function basisChip(basis) {
     if (!basis) return "No source citation recorded yet.";
     return "Basis: " + (BASIS_SHORT[basis] || "other") + ".";
+  }
+
+  function linkStyleForCard(item, column, chain) {
+    if (column === "obligation") {
+      if (item.instrumentLevel) return "dotted";
+      if (item.style === "dashed") return "dashed";
+      return item.style || "solid";
+    }
+    if (column === "control") {
+      if (item.viaObligations && item.viaObligations.length) return "long-dashed";
+      return "solid";
+    }
+    if (column === "risk") {
+      if (item.viaObligations && item.viaObligations.length) return "long-dashed";
+      var riskId = item.id;
+      var dashed = false;
+      var cited = false;
+      chain.edges.forEach(function (edge) {
+        if (edge.from !== riskId && edge.to !== riskId) return;
+        if (edge.style === "dashed") dashed = true;
+        if (edge.style === "long-dashed") cited = true;
+      });
+      if (dashed) return "dashed";
+      if (cited) return "long-dashed";
+      return "solid";
+    }
+    if (column === "accountable") return "solid";
+    return "";
+  }
+
+  function layerForCard(item, column) {
+    if (column === "risk" || column === "control") return item.layer || "";
+    if (column === "obligation") return "";
+    if (column === "accountable") {
+      var controlId = item.controlId;
+      if (controlId && graph && graph.hasNode(controlId)) {
+        return graph.getNodeAttribute(controlId, "layer") || "";
+      }
+      if (item.id && /^accountable:persona:/.test(item.id) && graph.hasNode("persona:" + personaPick)) {
+        var layers = graph.getNodeAttribute("persona:" + personaPick, "srfLayers") || [];
+        if (layers.length === 1) return layers[0];
+      }
+    }
+    return "";
+  }
+
+  function appendCardBadges(button, item, column, chain) {
+    var style = linkStyleForCard(item, column, chain);
+    var layer = layerForCard(item, column);
+    if (!style && !layer) return;
+    var row = makeEl("span", "chain-card__badges");
+    if (style) {
+      var linkBadge = makeEl("span", "chain-card__badge chain-card__badge--link", LINK_TYPE_BADGE[style] || style);
+      linkBadge.setAttribute("aria-label", "Link type: " + (LINK_TYPE_BADGE[style] || style));
+      row.appendChild(linkBadge);
+    }
+    if (layer) {
+      var layerBadge = makeEl("span", "chain-card__badge chain-card__badge--layer", layer);
+      layerBadge.setAttribute("aria-label", "Layer " + layer);
+      row.appendChild(layerBadge);
+    }
+    button.appendChild(row);
+  }
+
+  function personaModelRoles(personaId, chain) {
+    if (!personaId || !chain || !catalog) return "";
+    var byModel = {};
+    (chain.risks || []).forEach(function (riskItem) {
+      var threat = catalog.threats[riskItem.ref];
+      if (!threat) return;
+      MODEL_ORDER.forEach(function (modelId) {
+        if (modelFilter !== "all" && modelId !== modelFilter) return;
+        var cell = (threat.accountability || {})[modelId] || {};
+        if (cell.accountable_persona !== personaId) return;
+        var party = cell.accountable_party || "";
+        var label = ACCOUNTABILITY_PARTY_LABEL[party] || party || "accountable";
+        byModel[modelId] = label;
+      });
+    });
+    return MODEL_ORDER.filter(function (modelId) { return byModel[modelId]; }).map(function (modelId) {
+      return byModel[modelId] + " in " + modelName(modelId);
+    }).join("; ");
   }
 
   function blankChain(startKind) {
@@ -848,7 +951,7 @@
   function threatSearchText(threat) {
     var map = threat.mappings || {};
     return SEARCH_MAPPING_KEYS.map(function (key) { return map[key]; })
-      .concat([threat.impact, threat.attack_surface, threat.layer_rationale]);
+      .concat([threat.name, threat.impact, threat.attack_surface, threat.layer_rationale]);
   }
 
   /* A DSGAI record has no per-entry source URL in the AI Exchange field. It
@@ -1568,6 +1671,16 @@
     return reg && reg.short ? reg.short : instrumentId;
   }
 
+  function obligationGroupLabel(instrumentId, count) {
+    var name = instrumentShortName(instrumentId);
+    if (!name && instrumentId && catalog && catalog.regsById[instrumentId]) {
+      var reg = catalog.regsById[instrumentId];
+      name = reg.short || reg.name || instrumentId;
+    }
+    if (!name) name = instrumentId || "Unnamed instrument";
+    return name + " (" + count + ")";
+  }
+
   function instrumentSearchText(instrumentId) {
     var reg = catalog && catalog.regsById[instrumentId];
     if (!reg) return instrumentId;
@@ -1597,13 +1710,48 @@
     return match ? parseInt(match[1], 10) : null;
   }
 
+  var ROMAN_VALUES = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+
+  function romanToInt(token) {
+    var upper = String(token || "").toUpperCase();
+    if (!upper || !/^[IVXLCDM]+$/.test(upper)) return null;
+    var total = 0;
+    var prev = 0;
+    var i;
+    for (i = upper.length - 1; i >= 0; i -= 1) {
+      var val = ROMAN_VALUES[upper.charAt(i)] || 0;
+      if (!val) return null;
+      if (val < prev) total -= val;
+      else total += val;
+      prev = val;
+    }
+    return total;
+  }
+
+  function leadingAnnexNumber(citation) {
+    var match = String(citation || "").match(/^Annex\s+([IVXLCDM]+|\d+)/i);
+    if (!match) return null;
+    if (/^\d+$/.test(match[1])) return parseInt(match[1], 10);
+    return romanToInt(match[1]);
+  }
+
+  function euAiActCitationRank(citation) {
+    var text = String(citation || "");
+    var article = leadingArticleNumber(text);
+    if (article !== null) return { kind: 0, major: article, text: text };
+    var annex = leadingAnnexNumber(text);
+    if (annex !== null) return { kind: 1, major: annex, text: text };
+    return { kind: 2, major: 0, text: text };
+  }
+
   function compareCitation(a, b, instrumentId) {
     var left = String(a || "");
     var right = String(b || "");
     if (instrumentId === "eu-ai-act") {
-      var ea = leadingArticleNumber(left);
-      var eb = leadingArticleNumber(right);
-      if (ea !== null && eb !== null && ea !== eb) return ea - eb;
+      var ra = euAiActCitationRank(left);
+      var rb = euAiActCitationRank(right);
+      if (ra.kind !== rb.kind) return ra.kind - rb.kind;
+      if (ra.kind <= 1 && ra.major !== rb.major) return ra.major - rb.major;
     }
     if (instrumentId === "nist-ai-rmf") {
       var fa = (left.match(/^(GOVERN|MAP|MEASURE|MANAGE)/i) || [""])[0].toUpperCase();
@@ -1849,7 +1997,7 @@
         return compareCitation(a.citation, b.citation, instrumentId) || textOrder(a.id, b.id);
       });
       var group = document.createElement("optgroup");
-      group.label = (instrumentShortName(instrumentId) || "Other") + " (" + members.length + ")";
+      group.label = obligationGroupLabel(instrumentId, members.length);
       group.dataset.instrumentId = instrumentId;
       members.forEach(function (card) {
         var option = document.createElement("option");
@@ -1866,7 +2014,7 @@
       });
       if (!target) {
         target = document.createElement("optgroup");
-        target.label = (instrumentShortName(holdId) || "Other") + " (1)";
+        target.label = obligationGroupLabel(holdId, 1);
         target.dataset.instrumentId = holdId;
         select.appendChild(target);
       }
@@ -2001,6 +2149,11 @@
           if (item.linkBasis) {
             button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. No source citation recorded yet. The control's source record names this persona."));
           }
+        }
+        appendCardBadges(button, item, column[2], chain);
+        if (chain.startKind === "persona" && column[2] === "accountable" && item.id === "accountable:persona:" + personaPick) {
+          var roleLine = personaModelRoles(personaPick, chain);
+          if (roleLine) button.appendChild(makeEl("span", "chain-card__meta chain-card__accountability", roleLine));
         }
         if ((column[2] === "control" || column[2] === "accountable") && item.tapestry) {
           button.appendChild(makeEl("span", "chain-card__tag chain-card__badge", EXTENSION_BADGE));
@@ -2489,7 +2642,9 @@
 
   function renderDetails() {
     var canClear = !!(hasFocus() || view === "context");
-    if (copyBtn) copyBtn.hidden = !(view === "chain" && currentChain && !currentChain.blank && hasFocus());
+    var chainOpen = view === "chain" && currentChain && !currentChain.blank && hasFocus();
+    if (copyBtn) copyBtn.hidden = !chainOpen;
+    if (csvDownloadBtn) csvDownloadBtn.hidden = !chainOpen;
     var copyKey = root || personaPick || reqPick || "";
     if (copyKey !== lastCopyKey) {
       lastCopyKey = copyKey;
@@ -2892,6 +3047,23 @@
     });
   }
 
+  function symptomNeedles(q) {
+    var needles = [q];
+    var aliases = SYMPTOM_ALIASES[q];
+    if (aliases) needles = needles.concat(aliases);
+    return needles;
+  }
+
+  function searchHaystackMatches(haystack, q) {
+    if (!haystack) return false;
+    var needles = symptomNeedles(q);
+    var i;
+    for (i = 0; i < needles.length; i++) {
+      if (haystack.indexOf(needles[i]) !== -1) return true;
+    }
+    return false;
+  }
+
   function matches(query) {
     var q = query.trim().toLowerCase();
     wordMatch = null;
@@ -2902,11 +3074,11 @@
       if (attrs.kind !== "control" && attrs.kind !== "risk") return;
       if (!nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       allowed.push(id);
-      if (attrs.search.indexOf(q) !== -1) ids.push(id);
+      if (searchHaystackMatches(attrs.search, q)) ids.push(id);
     });
     obligationChoiceCards().map(function (card) { return card.id; }).concat(personaChoiceIds()).forEach(function (id) {
       allowed.push(id);
-      if (searchAttrs(id).search.indexOf(q) !== -1) ids.push(id);
+      if (searchHaystackMatches(searchAttrs(id).search, q)) ids.push(id);
     });
     var counts = {};
     if (!ids.length) {
@@ -2916,7 +3088,7 @@
         allowed.forEach(function (id) {
           var haystack = searchAttrs(id).search;
           var hit = words.filter(function (word) {
-            return haystack.indexOf(word) !== -1;
+            return searchHaystackMatches(haystack, word);
           }).length;
           if (hit >= needed) {
             counts[id] = hit;
@@ -3857,7 +4029,18 @@
       graph: graph,
       outsideFilter: function (id) { return outsideFilter(graph.getNodeAttributes(id)); },
       outsideCurrentFilter: function (id) { return outsideCurrentFilter(graph.getNodeAttributes(id)); },
-      isTapestryRecord: function (id) { return graph.hasNode(id) && isTapestryRecord(graph.getNodeAttributes(id)); }
+      isTapestryRecord: function (id) { return graph.hasNode(id) && isTapestryRecord(graph.getNodeAttributes(id)); },
+      linkTypeBadge: function (item, column, chain) {
+        return LINK_TYPE_BADGE[linkStyleForCard(item, column, chain)] || "";
+      },
+      layerBadge: layerForCard,
+      personaAccountability: personaModelRoles,
+      chainCsvRows: chainCsvRows,
+      chainCsvText: chainCsvText,
+      csvEscape: csvEscape,
+      matches: matches,
+      compareCitation: compareCitation,
+      obligationGroupLabel: obligationGroupLabel
     };
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
@@ -4107,9 +4290,104 @@
   }
 
   function resetCopyState() {
-    if (copyBtn) copyBtn.textContent = "Copy chain as Markdown";
+    if (copyBtn) copyBtn.textContent = "Copy chain";
     if (copyStatus) {
       copyStatus.textContent = "";
+      copyStatus.classList.remove("copy-status--error");
+    }
+  }
+
+  function csvEscape(value) {
+    var text = value == null ? "" : String(value);
+    if (/[",\n\r]/.test(text)) return '"' + text.replace(/"/g, '""') + '"';
+    return text;
+  }
+
+  function obligationExportName(item) {
+    if (!item) return "";
+    return item.citation && item.citation !== item.title ? item.citation + ": " + item.title : (item.title || item.citation || "");
+  }
+
+  function chainCsvRows() {
+    var chain = currentChain;
+    if (!chain) return [];
+    var rows = [];
+    var riskDefault = chain.risks.map(function (item) { return item.name; }).join("; ");
+    var obligationDefault = chain.obligations.map(obligationExportName).join("; ");
+    if (!chain.controls.length) {
+      rows.push({
+        risk: riskDefault,
+        obligation: obligationDefault,
+        control: "",
+        persona: "",
+        model: modelFilter === "all" ? "All" : modelName(modelFilter),
+        linkType: ""
+      });
+      return rows;
+    }
+    chain.controls.forEach(function (ctrl) {
+      var linkType = LINK_TYPE_BADGE[linkStyleForCard(ctrl, "control", chain)] || "";
+      var wrote = false;
+      chain.personaCards.forEach(function (pCard) {
+        if (pCard.controlId !== ctrl.id) return;
+        pCard.lines.forEach(function (line) {
+          if (line.missing) return;
+          wrote = true;
+          rows.push({
+            risk: riskDefault,
+            obligation: obligationDefault,
+            control: ctrl.name,
+            persona: line.name,
+            model: line.label,
+            linkType: linkType
+          });
+        });
+      });
+      if (!wrote) {
+        rows.push({
+          risk: riskDefault,
+          obligation: obligationDefault,
+          control: ctrl.name,
+          persona: "",
+          model: modelFilter === "all" ? "All" : modelName(modelFilter),
+          linkType: linkType
+        });
+      }
+    });
+    return rows;
+  }
+
+  function chainCsvText() {
+    var header = ["risk", "obligation", "control", "persona", "model", "link type"];
+    var lines = [header.map(csvEscape).join(",")];
+    chainCsvRows().forEach(function (row) {
+      lines.push([
+        row.risk,
+        row.obligation,
+        row.control,
+        row.persona,
+        row.model,
+        row.linkType
+      ].map(csvEscape).join(","));
+    });
+    return lines.join("\n") + "\n";
+  }
+
+  function downloadChainCsv() {
+    if (!currentChain || !csvDownloadBtn) return;
+    var csv = chainCsvText();
+    var blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var link = document.createElement("a");
+    link.href = url;
+    link.download = "roca-chain.csv";
+    link.rel = "noopener";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    if (copyStatus) {
+      copyStatus.textContent = "CSV download started.";
       copyStatus.classList.remove("copy-status--error");
     }
   }
@@ -4134,7 +4412,7 @@
       copyTimer = setTimeout(resetCopyState, 2000);
     }
     function failed() {
-      setCopyState("Copy chain as Markdown", "Could not copy. Your browser blocked clipboard access. Select the text below and copy it yourself.", true);
+      setCopyState("Copy chain", "Could not copy. Your browser blocked clipboard access. Select the text below and copy it yourself.", true);
       copyFallback.hidden = false;
       copyFallback.value = text;
       copyFallback.focus();
@@ -4157,6 +4435,7 @@
   }
 
   if (copyBtn) copyBtn.addEventListener("click", copyChain);
+  if (csvDownloadBtn) csvDownloadBtn.addEventListener("click", downloadChainCsv);
 
   function onClearClick() {
     clearSelection(true);

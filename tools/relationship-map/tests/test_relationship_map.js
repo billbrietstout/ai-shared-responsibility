@@ -1096,8 +1096,10 @@ async function testCopyChain(browser, base) {
   await hiddenBefore.close();
   const live = await page.$eval("#copy-status", (el) => ({ role: el.getAttribute("role"), live: el.getAttribute("aria-live") }));
   check("the copy message sits in a status region", live.role === "status" && live.live === null, JSON.stringify(live));
-  const inHeader = await page.$eval("#copy-chain", (el) => !!el.closest(".details__actions") && el.textContent === "Copy chain as Markdown");
-  check("the button is in the node details action row", inHeader);
+  const inChainArea = await page.$eval("#copy-chain", (el) => !!el.closest(".chain-copy-tools") && el.textContent === "Copy chain");
+  check("the Copy chain button sits in the chain copy area", inChainArea);
+  const csvBtn = await page.$eval("#download-chain-csv", (el) => !el.hidden && el.textContent === "Download CSV");
+  check("the CSV download button shows when a chain is open", csvBtn);
 
   await page.focus("#copy-chain");
   await page.keyboard.press("Enter");
@@ -1117,7 +1119,7 @@ async function testCopyChain(browser, base) {
   check("the button reads Copied and the live region says so", copied.label === "Copied" && /^Copied/.test(copied.status) && copied.active === "copy-chain", JSON.stringify({ label: copied.label, status: copied.status, active: copied.active }));
   await sleep(2300);
   const reset = await page.evaluate(() => ({ label: document.getElementById("copy-chain").textContent, status: document.getElementById("copy-status").textContent }));
-  check("after 2 seconds the label and the message reset", reset.label === "Copy chain as Markdown" && reset.status === "", JSON.stringify(reset));
+  check("after 2 seconds the label and the message reset", reset.label === "Copy chain" && reset.status === "", JSON.stringify(reset));
   await page.close();
 
   const failing = await openPage(browser, base, 1280, 900, "?type=control&node=finance:SRF-L3-DEV-001");
@@ -1130,7 +1132,7 @@ async function testCopyChain(browser, base) {
     const box = area.getBoundingClientRect();
     return { text: status.textContent, error: status.classList.contains("copy-status--error"), areaShown: !area.hidden && box.height > 0, areaText: area.value.slice(0, 20), label: document.getElementById("copy-chain").textContent, focus: document.activeElement.id };
   });
-  check("a clipboard failure shows a visible message and the text to copy by hand", /Could not copy/.test(failure.text) && failure.error && failure.areaShown && failure.areaText.indexOf("# ") === 0 && failure.label === "Copy chain as Markdown" && failure.focus === "copy-fallback", JSON.stringify(failure));
+  check("a clipboard failure shows a visible message and the text to copy by hand", /Could not copy/.test(failure.text) && failure.error && failure.areaShown && failure.areaText.indexOf("# ") === 0 && failure.label === "Copy chain" && failure.focus === "copy-fallback", JSON.stringify(failure));
   await failing.keyboard.press("Escape");
   await sleep(300);
   check("no page errors while copying", failing.__errors.length === 0, failing.__errors.join("; "));
@@ -1138,13 +1140,75 @@ async function testCopyChain(browser, base) {
 
   const phone = await openPage(browser, base, 375, 812, "?type=risk&node=directpromptinjection");
   const layout = await phone.evaluate(() => {
-    const bar = document.querySelector(".details__bar").getBoundingClientRect();
-    const title = document.getElementById("details-heading").getBoundingClientRect();
+    const bar = document.querySelector(".chain-workspace__bar").getBoundingClientRect();
     const copy = document.getElementById("copy-chain").getBoundingClientRect();
-    return { titleWidth: title.width, titleHeight: title.height, copyRight: copy.right, barRight: bar.right, width: window.innerWidth };
+    return { copyRight: copy.right, barRight: bar.right, width: window.innerWidth };
   });
-  check("on the phone the sheet title is readable and the buttons stay inside the sheet", layout.titleWidth > 200 && layout.titleHeight < 80 && layout.copyRight <= layout.width, JSON.stringify(layout));
+  check("on the phone the chain copy button stays inside the workspace", layout.copyRight <= layout.width, JSON.stringify(layout));
   await phone.close();
+}
+
+async function testChainBadgesCopySymptom(browser, base) {
+  console.log("\n## Chain badges, accountability context, CSV, and symptom search");
+  const page = await openPage(browser, base, 1280, 900, "?type=risk&node=directpromptinjection&model=AI-PaaS");
+  const badges = await page.evaluate(() => {
+    const riskLink = document.querySelector('#chain-board .chain-col[data-column="risk"] .chain-card__badge--link');
+    const riskLayer = document.querySelector('#chain-board .chain-col[data-column="risk"] .chain-card__badge--layer');
+    const controlLayer = Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="control"] .chain-card__badge--layer')).map((el) => el.textContent);
+    return {
+      riskLink: riskLink ? riskLink.textContent : "",
+      riskLayer: riskLayer ? riskLayer.textContent : "",
+      controlLayer: controlLayer
+    };
+  });
+  const linkLabels = ["Direct", "Via shared control", "Via cited obligation", "Instrument level"];
+  check("risk cards show a link-type badge label", linkLabels.indexOf(badges.riskLink) !== -1, badges.riskLink);
+  check("risk cards show a layer badge", badges.riskLayer === "L3", badges.riskLayer);
+  check("control cards show a layer badge", badges.controlLayer.length > 0 && badges.controlLayer.every((layer) => /^L[1-5]$/.test(layer)), JSON.stringify(badges.controlLayer.slice(0, 12)));
+
+  const mapping = await page.evaluate(() => {
+    const chain = window.__relationshipMap;
+    const card = { instrumentLevel: false, style: "dashed" };
+    return {
+      dashed: chain.linkTypeBadge(card, "obligation", { edges: [] }),
+      dotted: chain.linkTypeBadge({ instrumentLevel: true }, "obligation", { edges: [] }),
+      cited: chain.linkTypeBadge({ viaObligations: [{ id: "x" }] }, "control", { edges: [] })
+    };
+  });
+  check("link-type badge mapping matches the legend labels", mapping.dashed === "Via shared control" && mapping.dotted === "Instrument level" && mapping.cited === "Via cited obligation", JSON.stringify(mapping));
+
+  const personaPage = await openPage(browser, base, 1280, 900, "?type=persona&node=application-developer");
+  const accountability = await personaPage.evaluate(() => {
+    const card = document.querySelector('#chain-board button[data-chain-id="accountable:persona:application-developer"]');
+    const line = card ? card.querySelector(".chain-card__accountability") : null;
+    return line ? line.textContent : "";
+  });
+  check("the persona card states accountability per operating model", /accountable in AI-PaaS/.test(accountability) && /provider in AI-SaaS/.test(accountability), accountability);
+  await personaPage.close();
+
+  const csv = await page.evaluate(() => {
+    const api = window.__relationshipMap;
+    const escape = api.csvEscape;
+    const row = api.chainCsvRows()[0] || {};
+    const text = api.chainCsvText();
+    return {
+      header: text.split("\n")[0],
+      hasRisk: (row.risk || "").indexOf("Direct prompt injection") !== -1,
+      escapedComma: escape('Say "hello", world'),
+      escapedQuote: escape('He said "yes"')
+    };
+  });
+  check("CSV has the required columns", csv.header === "risk,obligation,control,persona,model,link type", csv.header);
+  check("CSV rows name the chain risk", csv.hasRisk, JSON.stringify(csv));
+  check("CSV escaping quotes commas", csv.escapedComma === '"Say ""hello"", world"' && csv.escapedQuote === '"He said ""yes"""', JSON.stringify({ comma: csv.escapedComma, quote: csv.escapedQuote }));
+
+  await search(page, "leak");
+  const leakHits = await idsIn(page, "#search-results [role=option][data-node-id]");
+  const exfil = leakHits.indexOf("risk:modelexfiltration") !== -1;
+  const namedLeak = threats.some((t) => t.name.toLowerCase().indexOf("leak") !== -1 && leakHits.indexOf("risk:" + t.id) !== -1);
+  check("symptom search for leak finds exfiltration or leakage risks", exfil || namedLeak, JSON.stringify(leakHits.filter((id) => id.indexOf("risk:") === 0).slice(0, 8)));
+  check("no page errors in badge and CSV tests", page.__errors.length === 0, page.__errors.join("; "));
+  await page.close();
 }
 
 async function loadWithRoutes(browser, base, width, query, handler) {
@@ -1576,6 +1640,37 @@ async function testObligationInstrumentMenu(browser, base) {
     return m ? Number(m[1]) : null;
   }).filter((n) => n !== null);
   check("EU AI Act obligations sort articles in natural order", articles.length >= 3 && articles.every((n, i) => i === 0 || articles[i - 1] <= n), JSON.stringify(articles.slice(0, 12)));
+  if (eu && eu.options.length) {
+    const kinds = eu.options.map((text) => {
+      if (/^Article\s+\d+/i.test(text)) return "article";
+      if (/^Annex\s+/i.test(text)) return "annex";
+      return "other";
+    });
+    const firstAnnex = kinds.indexOf("annex");
+    const lastArticle = kinds.lastIndexOf("article");
+    check("EU AI Act lists every Article before any Annex", firstAnnex === -1 || (lastArticle !== -1 && lastArticle < firstAnnex), JSON.stringify({ firstAnnex: firstAnnex, lastArticle: lastArticle, head: kinds.slice(0, 6), around: kinds.slice(Math.max(0, firstAnnex - 2), firstAnnex + 3) }));
+    if (firstAnnex !== -1) {
+      const annexNums = eu.options.slice(firstAnnex).map((text) => {
+        const m = text.match(/^Annex\s+([IVXLCDM]+|\d+)/i);
+        if (!m) return null;
+        if (/^\d+$/.test(m[1])) return Number(m[1]);
+        const roman = { I: 1, V: 5, X: 10, L: 50, C: 100 };
+        let total = 0;
+        let prev = 0;
+        for (let i = m[1].length - 1; i >= 0; i -= 1) {
+          const val = roman[m[1][i]] || 0;
+          if (val < prev) total -= val;
+          else total += val;
+          prev = val;
+        }
+        return total;
+      }).filter((n) => n !== null);
+      check("EU AI Act annexes sort in natural order after the articles", annexNums.length >= 2 && annexNums.every((n, i) => i === 0 || annexNums[i - 1] <= n), JSON.stringify(annexNums));
+    }
+  }
+  const singletonNames = ["DoDI", "FDA", "IEC", "ISO"];
+  const namedSingletons = groups.filter((g) => /\(\d+\)$/.test(g.label) && Number((/\((\d+)\)$/.exec(g.label) || [])[1]) === 1);
+  check("single-obligation instruments keep their own named groups, not Other", groups.every((g) => !/^Other \(\d+\)$/.test(g.label)) && singletonNames.every((needle) => namedSingletons.some((g) => g.label.indexOf(needle) === 0)), JSON.stringify(namedSingletons.map((g) => g.label).slice(0, 16)));
   const nist = groups.find((g) => g.label.indexOf("NIST AI RMF") === 0);
   const nistOpts = nist ? nist.options : [];
   const pos = (needle) => nistOpts.findIndex((t) => t.indexOf(needle) !== -1);
@@ -3031,6 +3126,7 @@ async function main() {
       ["urlState", () => testUrlState(browser, base)],
       ["legacyModeLinks", () => testLegacyModeLinks(browser, base)],
       ["copyChain", () => testCopyChain(browser, base)],
+      ["chainBadgesCopySymptom", () => testChainBadgesCopySymptom(browser, base)],
       ["rootSelects", () => testRootSelects(browser, base)],
       ["plainDetails", () => testPlainDetails(browser, base)],
       ["backButton", () => testBackButton(browser, base)],
