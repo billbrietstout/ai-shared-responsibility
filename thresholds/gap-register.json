@@ -1,10 +1,10 @@
 {
-  "generated": "2026-09-02",
+  "generated": "2026-11-21",
   "oscal_catalog": {
     "source": "https://raw.githubusercontent.com/usnistgov/oscal-content/main/nist.gov/SP800-53/rev5/json/NIST_SP-800-53_rev5_catalog.json",
     "title": "Electronic (OSCAL) Version of NIST SP 800-53 Rev 5.2.0 Controls and SP 800-53A Rev 5.2.0 Assessment Procedures",
     "version": "5.2.0",
-    "oscal_version": "1.2.2"
+    "oscal_version": "1.2.3"
   },
   "objective_fields_needing_a_home": [
     "objective.target_value",
@@ -515,7 +515,7 @@
         },
         {
           "id": "SRF-L1-DEV-003",
-          "title": "Acceptable Use Policy with Named Business-Unit Accountable Individual",
+          "title": "Business-Unit Acceptable Use Policy Acknowledgment",
           "srf_layer": "L1",
           "defined_in": "finance-controls.json",
           "threshold": {
@@ -4688,5 +4688,301 @@
         }
       ]
     }
+  },
+  "common": {
+    "source_file": "common-controls.json",
+    "control_count": 18,
+    "with_bindings": 0,
+    "without_bindings": 18,
+    "controls": [
+      {
+        "id": "SRF-COM-L1-001",
+        "title": "Acceptable Use Policy Acknowledgment by AI System Users",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "aup_user_acknowledgment_currency",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual-review",
+          "breach_action": "suspend-ai-system-access-until-acknowledged; notify-policy-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-002",
+        "title": "AI Use Within the Acceptable Use Policy",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_use_conformance_review_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual-review",
+          "breach_action": "restrict-ai-system-access-for-non-conforming-business-unit; notify-policy-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-003",
+        "title": "Acceptable Use Policy Issued, Versioned, and Reviewed",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "aup_issued_versioned_and_reviewed",
+          "operator": "==",
+          "param": "true",
+          "window": "annual-review",
+          "breach_action": "notify-policy-owner; schedule-policy-review; report-to-governance-body"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-004",
+        "title": "AI Use-Case and System Inventory with Risk Tier",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_inventory_entry_completeness",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "quarterly",
+          "breach_action": "identify-unlisted-systems; assign-owner-and-tier; notify-governance-body"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-005",
+        "title": "AI Governance Body, Named Accountable Executive, and Risk Appetite",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "governance_body_executive_and_appetite_current",
+          "operator": "==",
+          "param": "true",
+          "window": "annual-review",
+          "breach_action": "convene-governance-body; document-gap; escalate-to-board"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-006",
+        "title": "Third-Party AI Supplier Register, Due Diligence, and Contract Terms",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_supplier_register_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual-review",
+          "breach_action": "identify-suppliers-without-owner-or-assessment; freeze-new-supplier-onboarding; notify-governance-body"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-007",
+        "title": "AI Impact Assessment Before Deployment and on Material Change",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "impact_assessment_before_go_live_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-deployment",
+          "breach_action": "block-deployment; schedule-assessment; notify-governance-body"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-008",
+        "title": "AI Incident Response and Reporting",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_incident_deadline_adherence",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "escalate-to-incident-owner; submit-late-report-with-explanation; notify-governance-body"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-009",
+        "title": "AI Training and Literacy by Role",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_role_training_currency",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "identify-untrained-staff; notify-supervisor; restrict-access-until-trained"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L1-010",
+        "title": "AI Change Management, Monitoring Plan, and Decommission",
+        "srf_layer": "L1",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_lifecycle_control_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual-review",
+          "breach_action": "hold-further-changes; create-missing-plan-or-procedure; notify-governance-body"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-001",
+        "title": "Training, Fine-Tuning, and RAG Data Provenance and Authority to Use",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "dataset_provenance_record_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual-review",
+          "breach_action": "suspend-use-of-undocumented-data; notify-data-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-002",
+        "title": "Classification and Labeling of AI-Accessible Data",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_accessible_store_label_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "quarterly",
+          "breach_action": "quarantine-unlabeled-store-from-ai-access; notify-data-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-003",
+        "title": "Data Quality, Representativeness, and Bias Assessment",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "data_quality_and_bias_assessment_currency",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "notify-data-owner; schedule-assessment; document-gap"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-004",
+        "title": "Input and Data Drift Monitoring",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "input_drift_score",
+          "operator": "<=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "alert-data-provider; open-drift-review; notify-model-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-005",
+        "title": "AI Decision and Interaction Log Retention",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_log_retention_compliance",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual-review",
+          "breach_action": "extend-retention-period; halt-log-deletion-pending-review; notify-records-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-006",
+        "title": "Data Boundary, Minimization, and Egress Control",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "data_boundary_verification_currency",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "restrict-access-until-verified; notify-data-owner; open-security-incident"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-007",
+        "title": "Poisoning Checks Before Training, Fine-Tuning, or RAG Ingestion",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ingestion_poisoning_check_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-system",
+          "breach_action": "block-promotion; quarantine-affected-data; notify-data-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L2-008",
+        "title": "Runtime Protection of RAG Stores, Agent Memory, and Context Stores",
+        "srf_layer": "L2",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "runtime_store_protection_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-system",
+          "breach_action": "quarantine-affected-store; alert-store-owner; open-security-incident"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      }
+    ]
   }
 }
