@@ -1546,6 +1546,112 @@ async function testRiskWording(browser, base) {
   await page.close();
 }
 
+function testRequirementInstrumentShortNames() {
+  console.log("\n## Obligation instruments have short names");
+  const hierarchy = readData("moral-regulatory-hierarchy.json");
+  const regulations = readData("regulations.json");
+  const byId = {};
+  (regulations.items || []).forEach((item) => {
+    if (item && item.id) byId[item.id] = item;
+  });
+  const missing = [];
+  (hierarchy.requirements || []).forEach((req) => {
+    if (!req || !req.instrument) return;
+    const reg = byId[req.instrument];
+    if (!reg || !reg.short) missing.push(req.id + " -> " + req.instrument);
+  });
+  check("every requirement instrument has a short name in regulations.json", missing.length === 0, missing.slice(0, 8).join(", "));
+}
+
+async function testObligationInstrumentMenu(browser, base) {
+  console.log("\n## Obligation menu grouping, sort, badges, and search");
+  const page = await openPage(browser, base, 1280, 900, "");
+  const groups = await page.$$eval("#chain-select-obligation optgroup", (nodes) => nodes.map((g) => ({ label: g.label, options: Array.from(g.children).map((o) => o.textContent) })));
+  check("the obligation menu uses one optgroup per instrument with counts", groups.length >= 8 && groups.every((g) => /\(\d+\)$/.test(g.label)), JSON.stringify(groups.map((g) => g.label).slice(0, 12)));
+  check("priority instruments lead the obligation groups", groups.length > 2 && groups[0].label.indexOf("EU AI Act") === 0, groups[0] && groups[0].label);
+  const eu = groups.find((g) => g.label.indexOf("EU AI Act") === 0);
+  const articles = (eu ? eu.options : []).map((text) => {
+    const cite = (text.match(/^([^.:]+)/) || [])[1] || text;
+    const m = cite.match(/Article\s+(\d+)/i);
+    return m ? Number(m[1]) : null;
+  }).filter((n) => n !== null);
+  check("EU AI Act obligations sort articles in natural order", articles.length >= 3 && articles.every((n, i) => i === 0 || articles[i - 1] <= n), JSON.stringify(articles.slice(0, 12)));
+  const nist = groups.find((g) => g.label.indexOf("NIST AI RMF") === 0);
+  const nistOpts = nist ? nist.options : [];
+  const pos = (needle) => nistOpts.findIndex((t) => t.indexOf(needle) !== -1);
+  const nistRank = { GOVERN: 0, MAP: 1, MEASURE: 2, MANAGE: 3 };
+  const nistFuncs = nistOpts.map((t) => ((t.match(/^(GOVERN|MAP|MEASURE|MANAGE)/i) || [])[1] || "").toUpperCase()).map((f) => (f in nistRank ? nistRank[f] : 99));
+  check("NIST AI RMF orders functions GOVERN, MAP, MEASURE, MANAGE", nistFuncs.length >= 4 && nistFuncs.every((n, i) => i === 0 || nistFuncs[i - 1] <= n), JSON.stringify(nistFuncs));
+  const governMinor = nistOpts.map((t) => Number((/^GOVERN\s+1\.(\d+)/i.exec(t) || [])[1])).filter((n) => !Number.isNaN(n));
+  check("NIST AI RMF lists GOVERN 1.x in natural order", governMinor.length >= 2 && governMinor.every((n, i) => i === 0 || governMinor[i - 1] <= n), JSON.stringify(governMinor));
+  check("NIST AI RMF lists GOVERN 1.2 before GOVERN 1.10 when both are cited", pos("GOVERN 1.10") === -1 || (pos("GOVERN 1.2") !== -1 && pos("GOVERN 1.2") < pos("GOVERN 1.10")), String(pos("GOVERN 1.2")) + "," + String(pos("GOVERN 1.10")));
+  const statusLine = await page.$eval("#map-status", (el) => el.textContent);
+  const chainHelp = await page.$eval("#chain-help", (el) => el.textContent);
+  check("the chain prompt stays in the Chain box only", chainHelp.indexOf("The boxes then show what links to it") !== -1 && statusLine.indexOf("The boxes then show what links to it") === -1, statusLine + " | " + chainHelp.slice(0, 60));
+  const euPick = eu && eu.options.length ? await page.$$eval("#chain-select-obligation optgroup", (nodes) => {
+    const g = Array.from(nodes).find((og) => og.label.indexOf("EU AI Act") === 0);
+    return g && g.children.length ? g.children[0].value : "";
+  }) : "";
+  if (euPick) {
+    await pickValue(page, "obligation", euPick);
+    const badge = await page.$eval('#chain-board .chain-col[data-column="obligation"] .chain-card__instrument', (el) => el.textContent);
+    check("an obligation chain card prefixes the instrument", /\u00b7/.test(badge) && /EU AI Act/.test(badge), badge);
+  }
+  await search(page, "CMMC");
+  const cmmcHits = await idsIn(page, "#search-results [role=option][data-node-id]");
+  check("search CMMC matches cited obligations", cmmcHits.some((id) => /^(obligation|instrument):/.test(id)), JSON.stringify(cmmcHits.slice(0, 6)));
+  await search(page, "HIPAA");
+  const hipaaHits = await idsIn(page, "#search-results [role=option][data-node-id]");
+  check("search HIPAA matches cited obligations", hipaaHits.some((id) => /^(obligation|instrument):/.test(id)), JSON.stringify(hipaaHits.slice(0, 6)));
+  if (ARTIFACTS) {
+    await page.evaluate(() => {
+      const select = document.getElementById("chain-select-obligation");
+      const host = document.getElementById("chain");
+      if (!select || !host) return;
+      const old = document.getElementById("obligation-menu-preview");
+      if (old) old.remove();
+      const panel = document.createElement("div");
+      panel.id = "obligation-menu-preview";
+      panel.className = "obligation-menu-preview";
+      const title = document.createElement("p");
+      title.textContent = "Obligation menu (grouped)";
+      panel.appendChild(title);
+      const list = document.createElement("ul");
+      Array.from(select.querySelectorAll("optgroup")).forEach((group) => {
+        const head = document.createElement("li");
+        head.textContent = group.label;
+        head.className = "obligation-menu-preview__group";
+        list.appendChild(head);
+        Array.from(group.children).slice(0, 4).forEach((opt) => {
+          const row = document.createElement("li");
+          row.textContent = opt.textContent;
+          row.className = "obligation-menu-preview__option";
+          list.appendChild(row);
+        });
+        if (group.children.length > 4) {
+          const more = document.createElement("li");
+          more.textContent = "\u2026 " + (group.children.length - 4) + " more in this group";
+          more.className = "obligation-menu-preview__more";
+          list.appendChild(more);
+        }
+      });
+      panel.appendChild(list);
+      host.insertBefore(panel, document.getElementById("chain-board"));
+    });
+    await page.$eval("#chain", (el) => el.scrollIntoView({ block: "start" }));
+    await sleep(200);
+    await page.screenshot({ path: path.join(ARTIFACTS, "relmap-obligation-groups-1280.png") });
+    if (euPick) {
+      await page.setViewport({ width: 375, height: 900 });
+      await page.$eval("#chain-board", (el) => el.scrollIntoView({ block: "start" }));
+      await sleep(200);
+      await page.screenshot({ path: path.join(ARTIFACTS, "relmap-obligation-badge-375.png") });
+    }
+  }
+  check("no page errors in obligation instrument tests", page.__errors.length === 0, page.__errors.join(" | "));
+  await page.close();
+}
+
 async function captureModes(browser, base) {
   if (!ARTIFACTS) return;
   for (const [width, height] of [[1280, 900], [375, 812]]) {
@@ -2912,6 +3018,10 @@ async function main() {
       ["usersPersonaControls", () => testUsersPersonaControls(browser, base)],
       ["movedControlAlias", () => testMovedControlAlias(browser, base)],
       ["citedObligationLinks", () => testCitedObligationLinks(browser, base)],
+      ["obligationInstruments", () => {
+        testRequirementInstrumentShortNames();
+        return testObligationInstrumentMenu(browser, base);
+      }],
       ["personaRisks", () => testPersonaRisks(browser, base)],
       ["relatedListBullets", () => testRelatedListBullets(browser, base)],
       ["columnLabels", () => testColumnLabels(browser, base)],

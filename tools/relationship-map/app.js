@@ -379,6 +379,7 @@
       next.regsById[item.id] = item;
       if (item.mapping_key) next.regsByKey[item.mapping_key] = item;
     });
+    next.priorityInstruments = (data.requirements && data.requirements.priority_instruments) || [];
     return next;
   }
 
@@ -1400,8 +1401,13 @@
 
   function obligationCardFrom(cardId, item, instrumentLevel) {
     var source = instrumentLevel ? item.reg : item.req;
+    var instrumentId = instrumentLevel ? (item.reg && item.reg.id) : (item.req && item.req.instrument);
+    if (!instrumentId && source && source.id && String(source.id).indexOf(".") !== -1) {
+      instrumentId = String(source.id).split(".")[0];
+    }
     return {
       id: cardId,
+      instrumentId: instrumentId || "",
       citation: instrumentLevel ? (source.short || source.name) : source.citation,
       title: instrumentLevel ? source.name : source.title,
       summary: instrumentLevel ? "" : (source.summary || ""),
@@ -1439,9 +1445,6 @@
         seen[cardId] = true;
         cards.push(obligationCardFrom(cardId, item, true));
       });
-    });
-    cards.sort(function (a, b) {
-      return String(a.citation) < String(b.citation) ? -1 : String(a.citation) > String(b.citation) ? 1 : 0;
     });
     var byId = {};
     cards.forEach(function (card) { byId[card.id] = card; });
@@ -1559,6 +1562,109 @@
     return key === "risk" ? chain.risks : key === "obligation" ? chain.obligations : key === "control" ? chain.controls : chain.personaCards;
   }
 
+  function instrumentShortName(instrumentId) {
+    if (!instrumentId) return "";
+    var reg = catalog && catalog.regsById[instrumentId];
+    return reg && reg.short ? reg.short : instrumentId;
+  }
+
+  function instrumentSearchText(instrumentId) {
+    var reg = catalog && catalog.regsById[instrumentId];
+    if (!reg) return instrumentId;
+    return [reg.short, reg.name, reg.id].filter(Boolean).join(" ");
+  }
+
+  var NIST_RMF_FUNCTIONS = { GOVERN: 0, MAP: 1, MEASURE: 2, MANAGE: 3 };
+
+  function citationSortParts(citation) {
+    var parts = [];
+    String(citation || "").replace(/(\d+(?:\.\d+)*|[A-Za-z]+|\([^)]*\))/g, function (token) {
+      if (/^\d+(?:\.\d+)*$/.test(token)) {
+        token.split(".").forEach(function (bit) {
+          parts.push({ kind: "n", value: parseInt(bit, 10) });
+        });
+      } else if (/^[A-Za-z]+$/.test(token)) {
+        parts.push({ kind: "a", value: token.toUpperCase() });
+      } else {
+        parts.push({ kind: "s", value: token });
+      }
+    });
+    return parts;
+  }
+
+  function leadingArticleNumber(citation) {
+    var match = String(citation || "").match(/Article\s+(\d+)/i);
+    return match ? parseInt(match[1], 10) : null;
+  }
+
+  function compareCitation(a, b, instrumentId) {
+    var left = String(a || "");
+    var right = String(b || "");
+    if (instrumentId === "eu-ai-act") {
+      var ea = leadingArticleNumber(left);
+      var eb = leadingArticleNumber(right);
+      if (ea !== null && eb !== null && ea !== eb) return ea - eb;
+    }
+    if (instrumentId === "nist-ai-rmf") {
+      var fa = (left.match(/^(GOVERN|MAP|MEASURE|MANAGE)/i) || [""])[0].toUpperCase();
+      var fb = (right.match(/^(GOVERN|MAP|MEASURE|MANAGE)/i) || [""])[0].toUpperCase();
+      var ta = Object.prototype.hasOwnProperty.call(NIST_RMF_FUNCTIONS, fa) ? NIST_RMF_FUNCTIONS[fa] : 99;
+      var tb = Object.prototype.hasOwnProperty.call(NIST_RMF_FUNCTIONS, fb) ? NIST_RMF_FUNCTIONS[fb] : 99;
+      var fn = ta - tb;
+      if (fn) return fn;
+    }
+    var pa = citationSortParts(left);
+    var pb = citationSortParts(right);
+    var len = Math.max(pa.length, pb.length);
+    var i;
+    for (i = 0; i < len; i += 1) {
+      if (!pa[i]) return -1;
+      if (!pb[i]) return 1;
+      if (pa[i].kind === "n" && pb[i].kind === "n" && pa[i].value !== pb[i].value) return pa[i].value - pb[i].value;
+      var textCmp = textOrder(pa[i].value, pb[i].value);
+      if (textCmp) return textCmp;
+    }
+    return textOrder(left, right);
+  }
+
+  function instrumentSortRank(instrumentId) {
+    var priority = catalog.priorityInstruments || [];
+    var hit = priority.indexOf(instrumentId);
+    if (hit !== -1) return { tier: 0, order: hit, label: instrumentShortName(instrumentId) };
+    var reg = catalog.regsById[instrumentId];
+    var binding = reg && reg.source_kind === "binding" ? 0 : 1;
+    return { tier: 1, order: binding, label: instrumentShortName(instrumentId) };
+  }
+
+  function compareInstruments(a, b) {
+    var ra = instrumentSortRank(a);
+    var rb = instrumentSortRank(b);
+    if (ra.tier !== rb.tier) return ra.tier - rb.tier;
+    if (ra.tier === 0) return ra.order - rb.order;
+    if (ra.order !== rb.order) return ra.order - rb.order;
+    return textOrder(ra.label, rb.label);
+  }
+
+  function compareObligationCards(a, b) {
+    var instCmp = compareInstruments(a.instrumentId, b.instrumentId);
+    if (instCmp) return instCmp;
+    var citeCmp = compareCitation(a.citation, b.citation, a.instrumentId);
+    if (citeCmp) return citeCmp;
+    return textOrder(a.id, b.id);
+  }
+
+  function obligationRecordLabel(card) {
+    if (!card) return "";
+    var duty = boxTitle("obligation", card);
+    var short = instrumentShortName(card.instrumentId);
+    return short ? short + " \u00b7 " + duty : duty;
+  }
+
+  function obligationContextLine(card) {
+    var short = instrumentShortName(card.instrumentId);
+    return [short, card.citation].filter(Boolean).join(" \u00b7 ");
+  }
+
   function boxTitle(key, item) {
     if (key === "risk" || key === "control") return item.name;
     if (key === "obligation") return item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
@@ -1636,25 +1742,12 @@
     var current = focusKey() === key ? focusValue() : "";
     if (key === "obligation") {
       var cards = obligationChoiceCards();
-      var all = document.createElement("option");
-      all.value = "";
-      all.textContent = ALL_LABEL[key] + " (" + cards.length + ")";
-      select.appendChild(all);
-      cards.forEach(function (card) {
-        var option = document.createElement("option");
-        option.value = card.id;
-        option.textContent = optionText(key, card);
-        select.appendChild(option);
-      });
+      var held = null;
       if (current && !cards.some(function (card) { return card.id === current; })) {
-        var held = currentChain && currentChain.obligations.filter(function (card) { return card.id === current; })[0];
-        if (held) {
-          var extra = document.createElement("option");
-          extra.value = held.id;
-          extra.textContent = optionText(key, held);
-          select.appendChild(extra);
-        }
+        held = currentChain && currentChain.obligations.filter(function (card) { return card.id === current; })[0];
+        if (!held) held = obligationChoiceCache.byId[current] || null;
       }
+      fillObligationSelect(select, cards, ALL_LABEL[key] + " (" + cards.length + ")", held);
     } else {
       var ids = key === "risk" ? riskChoiceIds() : key === "control" ? suggestedIds() : personaChoiceIds();
       fillSelect(select, ids, ALL_LABEL[key] + " (" + ids.length + ")", menuLabel, key === "accountable", key === "control");
@@ -1729,9 +1822,59 @@
     if (personaPick) return personaLabel(personaPick);
     if (reqPick && currentChain) {
       var hit = currentChain.obligations.filter(function (card) { return card.id === reqPick; })[0];
-      return hit ? (hit.citation && hit.citation !== hit.title ? hit.citation + ": " + hit.title : hit.title) : "";
+      return hit ? obligationRecordLabel(hit) : "";
     }
     return "";
+  }
+
+  function fillObligationSelect(select, cards, placeholder, heldOutside) {
+    select.textContent = "";
+    var first = document.createElement("option");
+    first.value = "";
+    first.textContent = placeholder;
+    select.appendChild(first);
+    var byInstrument = {};
+    var instrumentIds = [];
+    cards.forEach(function (card) {
+      var instrumentId = card.instrumentId || "";
+      if (!byInstrument[instrumentId]) {
+        byInstrument[instrumentId] = [];
+        instrumentIds.push(instrumentId);
+      }
+      byInstrument[instrumentId].push(card);
+    });
+    instrumentIds.sort(compareInstruments);
+    instrumentIds.forEach(function (instrumentId) {
+      var members = byInstrument[instrumentId].slice().sort(function (a, b) {
+        return compareCitation(a.citation, b.citation, instrumentId) || textOrder(a.id, b.id);
+      });
+      var group = document.createElement("optgroup");
+      group.label = (instrumentShortName(instrumentId) || "Other") + " (" + members.length + ")";
+      group.dataset.instrumentId = instrumentId;
+      members.forEach(function (card) {
+        var option = document.createElement("option");
+        option.value = card.id;
+        option.textContent = optionText("obligation", card);
+        group.appendChild(option);
+      });
+      select.appendChild(group);
+    });
+    if (heldOutside) {
+      var holdId = heldOutside.instrumentId || "";
+      var target = Array.prototype.find.call(select.querySelectorAll("optgroup"), function (node) {
+        return node.dataset.instrumentId === holdId;
+      });
+      if (!target) {
+        target = document.createElement("optgroup");
+        target.label = (instrumentShortName(holdId) || "Other") + " (1)";
+        target.dataset.instrumentId = holdId;
+        select.appendChild(target);
+      }
+      var extra = document.createElement("option");
+      extra.value = heldOutside.id;
+      extra.textContent = optionText("obligation", heldOutside);
+      target.appendChild(extra);
+    }
   }
 
   function columnTitle(key, headingName) {
@@ -1822,8 +1965,9 @@
           button.appendChild(makeEl("span", "chain-card__title", item.name));
           if (item.attackSurface) button.appendChild(makeEl("span", "chain-card__meta", "Attack surface: " + item.attackSurface));
         } else if (column[2] === "obligation") {
-          var duty = item.title && item.title !== item.citation ? item.title : (item.summary || item.title || item.citation);
-          if (item.citation && item.citation !== duty) button.appendChild(makeEl("span", "chain-card__kicker", item.citation));
+          var duty = boxTitle("obligation", item);
+          var context = obligationContextLine(item);
+          if (context) button.appendChild(makeEl("span", "chain-card__kicker chain-card__instrument", context));
           button.appendChild(makeEl("span", "chain-card__title", duty));
           button.appendChild(makeEl("span", "chain-card__tag", item.instrumentLevel ? "Instrument-level" : "Implements this obligation"));
           (item.basisChips || []).forEach(function (text) {
@@ -2020,8 +2164,9 @@
 
     var about = sectionBlock("Description and objective", "details-about");
     if (focus && focus.kind === "obligation") {
-      appendSentence(about, focus.item.title || focus.item.citation || "Obligation record.");
-      if (focus.item.summary) appendSentence(about, focus.item.summary);
+      var dutyLine = boxTitle("obligation", focus.item);
+      appendSentence(about, obligationRecordLabel(focus.item) || focus.item.citation || "Obligation record.");
+      if (focus.item.summary && focus.item.summary !== dutyLine) appendSentence(about, focus.item.summary);
     } else if (focus && focus.kind === "risk") {
       if (focus.item.attackSurface) appendSentence(about, "Attack surface: " + focus.item.attackSurface + ".");
       if (focus.item.mappings && focus.item.mappings.length) {
@@ -2161,7 +2306,7 @@
     var dutyList = makeEl("ul", "");
     chain.obligations.forEach(function (item) {
       var li = makeEl("li", "");
-      li.appendChild(makeEl("strong", "", (item.citation ? item.citation + ": " : "") + item.title));
+      li.appendChild(makeEl("strong", "", obligationRecordLabel(item)));
       if (item.instrumentLevel) {
         appendSentence(li, "Instrument-level. The control cites this instrument, and no article record matched.");
         if (item.citationText) appendSentence(li, "Citation on the control: " + item.citationText);
@@ -2257,7 +2402,11 @@
     for (var i = 0; i < pools.length; i++) {
       for (var j = 0; j < pools[i].length; j++) {
         if (pools[i][j].id === chainFocus) {
-          return pools[i][j].name || pools[i][j].title || pools[i][j].controlName || "";
+          var item = pools[i][j];
+          if (item.instrumentId || (item.id && /^(obligation|instrument):/.test(item.id))) {
+            return obligationRecordLabel(item);
+          }
+          return item.name || item.title || item.controlName || "";
         }
       }
     }
@@ -2513,7 +2662,7 @@
     if (view === "chain" && currentChain && !currentChain.blank) {
       text = chainSentence(currentChain);
     } else if (view === "chain" && currentChain) {
-      text = currentChain.note || START_NOTE;
+      text = currentChain.note || "Map ready.";
     } else if (view === "context") {
       text = "Layers run from L1 to L5. Open a name to see its chain.";
     } else {
@@ -2628,7 +2777,10 @@
   var SEARCH_KINDS = [["risk", "Risks"], ["obligation", "Obligations"], ["control", "Controls"], ["persona", "Accountable personas"]];
 
   function obligationName(card) {
-    return card.citation && card.citation !== card.title ? card.citation + ": " + card.title : card.title;
+    var duty = boxTitle("obligation", card);
+    var short = instrumentShortName(card.instrumentId);
+    var name = card.citation && card.citation !== duty ? card.citation + ": " + duty : duty;
+    return short ? short + " \u00b7 " + name : name;
   }
 
   /* Search results can be graph records or obligation cards, which are not graph nodes. */
@@ -2643,7 +2795,7 @@
       meta: card.instrumentLevel ? "Instrument level" : "",
       ref: "",
       layer: "",
-      search: [card.citation, card.title, card.summary, card.citationText].filter(Boolean).join(" ").toLowerCase()
+      search: [card.citation, card.title, card.summary, card.citationText, instrumentSearchText(card.instrumentId)].filter(Boolean).join(" ").toLowerCase()
     };
   }
 
