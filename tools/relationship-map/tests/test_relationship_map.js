@@ -43,6 +43,7 @@ readData("sector-model-map.json").mappings.forEach((row) => {
   if (row.sector_model && row.srf_model) sectorMap[row.sector_model] = row.srf_model;
 });
 
+const SECTOR_LABEL = { finance: "Finance", healthcare: "Healthcare", insurance: "Insurance", "public-sector": "Public sector", defense: "Defense", manufacturing: "Manufacturing" };
 const controls = [];
 CONTROL_FILES.forEach((slug) => {
   const file = readData(slug + "-controls.json");
@@ -50,11 +51,12 @@ CONTROL_FILES.forEach((slug) => {
   file.controls.forEach((control) => {
     if (control.provenance === "proposed-extension") return;
     const core = [];
+    const sectorNamed = (control.operating_models || []).some((model) => !!sectorMap[model]);
     (control.operating_models || []).forEach((model) => {
       const srf = MODELS.indexOf(model) !== -1 ? model : sectorMap[model];
       if (srf && core.indexOf(srf) === -1) core.push(srf);
     });
-    controls.push({ nodeId: "control:" + slug + ":" + control.id, id: control.id, layer: control.layer, core: core, name: control.title, description: control.description || "" });
+    controls.push({ nodeId: "control:" + slug + ":" + control.id, id: control.id, layer: control.layer, core: core, name: control.title, description: control.description || "", persona: control.accountable_persona || "", sector: sectorNamed ? SECTOR_LABEL[slug] : "" });
   });
 });
 const inChainCore = controls.filter((c) => c.core.length);
@@ -503,11 +505,11 @@ async function testListView(browser, base) {
     return {
       detailsShown: !document.getElementById("details-body").hidden,
       workspaceShown: !document.getElementById("chain-workspace").hidden,
-      selectAbovePanel: list.height > 0 && list.bottom <= panel.top + 1,
+      selectAbovePanel: list.height > 0 && (list.right <= panel.left + 1 || list.bottom <= panel.top + 1),
       heading: document.getElementById("details-heading").textContent
     };
   });
-  check("choosing a risk in the chain opens its details below the columns", open.detailsShown && open.workspaceShown && open.selectAbovePanel && open.heading === "Direct prompt injection", JSON.stringify(open));
+  check("choosing a risk in the chain opens its details beside the columns", open.detailsShown && open.workspaceShown && open.selectAbovePanel && open.heading === "Direct prompt injection", JSON.stringify(open));
   await page.evaluate(() => window.scrollTo(0, 600));
   await sleep(100);
   const scrolledList = await page.evaluate(() => ({
@@ -684,9 +686,9 @@ async function testModeParity(browser, base, width, height) {
   await testRocaSelects(browser, base, width, height);
 
   if (width === 1280) {
-    const bare = await openPage(browser, base, 1280, 800, "?type=persona&node=ai-system-users&view=list");
+    const bare = await openNoControlsFixture(browser, base, 1280, 800);
     const gapText = await bare.evaluate(() => document.getElementById("chain-board").textContent);
-    check("a persona with no controls says so in the chain", /No control names this persona yet\./.test(gapText), gapText.slice(0, 300));
+    check("fixture: a persona with no controls says so in the chain", /No control names this persona yet\./.test(gapText), gapText.slice(0, 300));
     await bare.close();
 
     const riskPage = await openPage(browser, base, 1280, 800, "?risk=directpromptinjection");
@@ -1529,7 +1531,7 @@ const readPanel = (page) => page.evaluate(() => {
   return {
     visible: el.getClientRects().length > 0,
     inSlot: !!el.closest("#chain-details-slot"),
-    belowColumns: r.top >= board.bottom - 1,
+    belowColumns: window.innerWidth >= 1100 ? r.left >= board.right - 1 : r.top >= board.bottom - 1,
     width: r.width,
     heading: document.getElementById("details-heading").textContent,
     headingTag: document.getElementById("details-heading").tagName,
@@ -1588,7 +1590,7 @@ async function testRocaSelects(browser, base, width, height) {
   }
 
   const panel0 = await readPanel(page);
-  check("the details panel sits below the four columns and is not squeezed" + at, panel0.visible && panel0.inSlot && panel0.belowColumns && panel0.width >= (width === 1280 ? 560 : 300), JSON.stringify(panel0));
+  check("the details panel sits beside the four columns on desktop, below on a phone, and is not squeezed" + at, panel0.visible && panel0.inSlot && panel0.belowColumns && panel0.width >= (width === 1280 ? 280 : 300), JSON.stringify(panel0));
   check("the details panel has a heading, a polite live region, and a labelled region" + at, panel0.headingTag === "H2" && panel0.liveRole === "status" && panel0.livePolite === "polite" && panel0.labelledBy === "details-heading");
 
   const lens = (r) => ROCA_KEYS.map((k) => r[k].options + "/" + r[k].headingName + "/" + r[k].first).join("|");
@@ -1853,7 +1855,7 @@ async function testOptionsLayout(browser, base, width, height) {
       overflow: document.documentElement.scrollWidth - window.innerWidth
     };
   });
-  check("Options is a details element with an Options summary that opens on click" + at, info.tag === "DETAILS" && info.open === true && info.summary === "Options" && info.summaryTag === "SUMMARY", JSON.stringify(info));
+  check("Options is a details element with a summary that opens on click" + at, info.tag === "DETAILS" && info.open === true && info.summary === "Hide options" && info.summaryTag === "SUMMARY", JSON.stringify(info));
   check("the mode buttons, search, filters, Tapestry, and the layers button are inside Options" + at, info.moved.length === 0, JSON.stringify(info.moved));
   check("the left column is gone: one grid column, and the details panel sits below at the same width" + at, info.sideColumn === 1 && info.stageWidth > width - 160 && (width === 375 || (info.panelBelow && Math.abs(info.stageWidth - info.panelWidth) <= 1)), JSON.stringify(info));
   check("Options does not scroll sideways" + at, info.overflow <= 1, String(info.overflow));
@@ -1895,10 +1897,10 @@ async function testOptionsLayout(browser, base, width, height) {
     detailsWidth: document.querySelector(".details").getBoundingClientRect().width,
     overflow: document.documentElement.scrollWidth - window.innerWidth
   }));
-  check("the ROCA chain and its details use the full page width below Options" + at, (width === 375 || chain.belowOptions) && chain.panelInChain && chain.selects === 4 && chain.overflow <= 1 && (width === 1280 ? chain.board > 1000 && chain.detailsWidth > 1000 : chain.board > 300), JSON.stringify(chain));
+  check("the ROCA chain and its details sit below Options, side by side at 1280" + at, (width === 375 || chain.belowOptions) && chain.panelInChain && chain.selects === 4 && chain.overflow <= 1 && (width === 1280 ? chain.board > 700 && chain.detailsWidth >= 280 && chain.detailsWidth <= 320 : chain.board > 300), JSON.stringify(chain));
   if (width === 1280) {
     const cols = await persona.evaluate(() => Array.from(document.querySelectorAll("#chain-board .chain-col")).map((c) => Math.round(c.getBoundingClientRect().width)));
-    check("at 1280 each ROCA column is at least 200 px wide" + at, cols.length === 4 && cols.every((w) => w >= 200), cols.join());
+    check("at 1280 each ROCA column is at least 170 px wide" + at, cols.length === 4 && cols.every((w) => w >= 170), cols.join());
   }
   await persona.close();
 
@@ -2007,6 +2009,217 @@ async function testOptionsSameInEveryMode(browser, base) {
   check("the visible Options children are the same set in all four modes", sameSet && signatures.threat.length > 200, JSON.stringify(["obligation", "control", "account"].map((m) => [m, diff(signatures[m].split("\n"), signatures.threat.split("\n"))])));
 }
 
+const LAYER_NAME = {};
+readData("layers.json").layers.forEach((l) => { LAYER_NAME[l.id] = l.id + " " + l.name; });
+const byText = (a, b) => String(a).localeCompare(String(b), "en", { sensitivity: "base" });
+function controlOrder(a, b) {
+  return (LAYERS.indexOf(a.layer) - LAYERS.indexOf(b.layer))
+    || (a.sector === b.sector ? 0 : !a.sector ? -1 : !b.sector ? 1 : byText(a.sector, b.sector))
+    || byText(a.name, b.name)
+    || (a.nodeId < b.nodeId ? -1 : 1);
+}
+const groupLabel = (c) => LAYER_NAME[c.layer] + (c.sector ? " \u00b7 " + c.sector : "");
+
+async function testControlOrdering(browser, base) {
+  console.log("\n## Controls list by layer, then no sector, then sector, then name");
+  const expected = inChainCore.slice().sort(controlOrder);
+  check("data has sector-specific and no-sector controls in the same layer", LAYERS.some((l) => expected.some((c) => c.layer === l && !c.sector) && expected.some((c) => c.layer === l && c.sector)), "none");
+  const page = await startMode(browser, base, 1280, 900, "control");
+  const select = await page.$$eval("#chain-select-control optgroup", (groups) => groups.map((g) => ({ label: g.label, ids: Array.from(g.querySelectorAll("option")).map((o) => o.value) })));
+  check("the Control select lists every control in layer, sector, name order (" + expected.length + ")", JSON.stringify(select.flatMap((g) => g.ids)) === JSON.stringify(expected.map((c) => c.nodeId)), JSON.stringify(select.flatMap((g) => g.ids).slice(0, 5)) + " vs " + JSON.stringify(expected.slice(0, 5).map((c) => c.nodeId)));
+  const labels = [];
+  expected.forEach((c) => { const l = groupLabel(c); if (labels[labels.length - 1] !== l) labels.push(l); });
+  check("the Control select uses one optgroup per layer and sector, in order", JSON.stringify(select.map((g) => g.label)) === JSON.stringify(labels), JSON.stringify(select.map((g) => g.label)));
+  check("optgroup labels include L5 AI Model Provider and L5 AI Model Provider \u00b7 Healthcare", select.some((g) => g.label === "L5 AI Model Provider") && select.some((g) => g.label === "L5 AI Model Provider \u00b7 Healthcare"), JSON.stringify(select.map((g) => g.label)));
+  await page.close();
+
+  for (const [width, height] of [[1280, 900], [375, 812]]) {
+    const at = " at " + width;
+    const p2 = await openPersonaChain(browser, base, width, height);
+    await p2.evaluate(() => { document.querySelectorAll('.chain-more[data-more-column="control"]').forEach((b) => b.click()); });
+    await sleep(200);
+    const boxes = await p2.$$eval('#chain-board .chain-col[data-column="control"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
+    const listed = await p2.$$eval('#details-chain .details-related[data-node-id^="control:"]', (els) => els.map((el) => el.dataset.nodeId));
+    const known = listed.map((id) => inChainCore.find((c) => c.nodeId === id)).filter(Boolean);
+    const sorted = known.slice().sort(controlOrder).map((c) => c.nodeId);
+    check("the control list in the details panel follows the order" + at, listed.length > 10 && known.length === listed.length && JSON.stringify(listed) === JSON.stringify(sorted), JSON.stringify(listed.slice(0, 4)) + " vs " + JSON.stringify(sorted.slice(0, 4)));
+    check("the chain boxes match the first entries of that list" + at, boxes.length > 1 && JSON.stringify(boxes) === JSON.stringify(listed.slice(0, boxes.length)), JSON.stringify(boxes.slice(0, 4)));
+    check("the persona chain mixes layers and sectors so the order is exercised" + at, new Set(known.map((c) => c.layer)).size > 1 && known.some((c) => c.sector) && known.some((c) => !c.sector), "too uniform");
+    await p2.close();
+  }
+}
+
+async function testOptionsCue(browser, base) {
+  console.log("\n## Options shows a chevron and Show options / Hide options");
+  for (const [width, height] of [[1280, 800], [375, 812]]) {
+    const at = " at " + width;
+    const page = await openPage(browser, base, width, height, "");
+    const read = () => page.evaluate(() => {
+      const opt = document.getElementById("options");
+      const sum = opt.querySelector(":scope > summary");
+      const chev = sum.querySelector(".options__chevron");
+      const box = chev.getBoundingClientRect();
+      return { open: opt.open, text: sum.textContent.replace(/\s+/g, " ").trim(), expanded: sum.getAttribute("aria-expanded"), chevron: chev.checkVisibility() && box.width > 0, transform: getComputedStyle(chev).transform, active: document.activeElement === sum };
+    });
+    const closed = await read();
+    check("collapsed Options reads Show options with a visible chevron and aria-expanded false" + at, !closed.open && closed.text === "Show options" && closed.expanded === "false" && closed.chevron, JSON.stringify(closed));
+    await page.focus("#options > summary");
+    await page.keyboard.press("Enter");
+    await sleep(400);
+    const open = await read();
+    check("Enter on the focused summary opens Options, reads Hide options, and rotates the chevron" + at, open.open && open.text === "Hide options" && open.expanded === "true" && open.transform !== closed.transform && open.active, JSON.stringify(open));
+    await page.keyboard.press("Space");
+    await sleep(400);
+    const again = await read();
+    check("Space closes Options and restores Show options" + at, !again.open && again.text === "Show options" && again.expanded === "false" && again.transform === closed.transform, JSON.stringify(again));
+    await page.close();
+  }
+}
+
+async function testDetailsBesideChain(browser, base) {
+  console.log("\n## Details sit beside the chain on desktop and below it on a phone");
+  for (const [width, height] of [[1280, 900], [375, 812]]) {
+    const at = " at " + width;
+    const page = await openPersonaChain(browser, base, width, height);
+    const m = await page.evaluate(() => {
+      const r = (sel) => { const el = document.querySelector(sel); return el && el.getClientRects().length ? el.getBoundingClientRect() : null; };
+      const chain = r("#chain");
+      const details = r("#chain-details-slot .details");
+      const cols = Array.from(document.querySelectorAll("#chain-board .chain-col")).map((c) => c.getBoundingClientRect().width);
+      const panel = document.querySelector(".map-panel");
+      return {
+        chain: chain && { left: chain.left, right: chain.right, top: chain.top, bottom: chain.bottom },
+        details: details && { left: details.left, right: details.right, top: details.top },
+        cols: cols,
+        overflow: document.documentElement.scrollWidth - window.innerWidth,
+        panelOverflow: panel.scrollWidth - panel.clientWidth,
+        viewport: window.innerWidth
+      };
+    });
+    if (width >= 1100) {
+      check("details panel is to the right of the chain at the same top" + at, !!m.chain && !!m.details && m.details.left >= m.chain.right - 1 && Math.abs(m.details.top - m.chain.top) < 4 && m.details.right <= m.viewport, JSON.stringify(m));
+      check("the chain keeps four columns at least 140px wide" + at, m.cols.length === 4 && m.cols.every((w) => w >= 140), JSON.stringify(m.cols));
+    } else {
+      check("details panel is below the chain on a phone" + at, !!m.chain && !!m.details && m.details.top >= m.chain.bottom - 1, JSON.stringify(m));
+    }
+    check("no horizontal scroll" + at, m.overflow <= 0 && m.panelOverflow <= 0, JSON.stringify(m));
+    await page.close();
+  }
+}
+
+async function openNoControlsFixture(browser, base, width, height) {
+  const page = await browser.newPage();
+  await page.setViewport({ width: width, height: height });
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    if (/\/data\/[a-z-]+-controls\.json$/.test(req.url())) {
+      const file = path.join(ROOT, "data", path.basename(req.url()));
+      const body = fs.readFileSync(file, "utf8").split("ai-system-users").join("ai-system-governance");
+      req.respond({ status: 200, contentType: "application/json", body: body });
+    } else {
+      req.continue();
+    }
+  });
+  await page.goto(base + "/tools/relationship-map/index.html?type=persona&node=ai-system-users&view=list", { waitUntil: "load" });
+  await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
+  return page;
+}
+
+async function testPersonaRisks(browser, base) {
+  console.log("\n## A persona chain shows the risks of its controls and the risks that name it");
+  const personas = ["ai-system-users", "ai-system-governance", "data-provider", "application-developer", "agentic-platform-provider", "ai-platform-provider", "ai-model-serving", "model-provider"];
+  const finance = readData("finance-controls.json").controls;
+  const linked = threats.filter((t) => (t.related_controls || []).some((c) => c === "srf.control.finance.SRF-L1-DEV-003" || c === "srf.control.finance.SRF-L1-DEV-006")).map((t) => "risk:" + t.id);
+  check("data: DEV-003 and DEV-006 are linked to at least dsgai03 and dsgai16", ["risk:dsgai03", "risk:dsgai16"].every((id) => linked.indexOf(id) !== -1) && finance.some((c) => c.id === "SRF-L1-DEV-006"), JSON.stringify(linked));
+  for (const id of personas) {
+    const page = await openPersonaChain(browser, base, 1280, 900, "?type=persona&node=" + id + "&view=list");
+    await page.evaluate(() => { document.querySelectorAll('.chain-more[data-more-column="risk"]').forEach((b) => b.click()); });
+    await sleep(200);
+    const shown = await page.$$eval('#chain-board .chain-col[data-column="risk"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
+    const ownerNamed = threats.filter((t) => Object.values(t.accountability || {}).some((cell) => cell.accountable_persona === id)).map((t) => "risk:" + t.id);
+    check(id + " chain keeps every risk that names it as owner (" + ownerNamed.length + ") and shows " + shown.length, ownerNamed.every((r) => shown.indexOf(r) !== -1), JSON.stringify(ownerNamed.filter((r) => shown.indexOf(r) === -1)));
+    if (id === "ai-system-users") {
+      check("AI System Users chain shows the risks linked to DEV-003 and DEV-006", linked.every((r) => shown.indexOf(r) !== -1) && shown.length >= linked.length, JSON.stringify({ linked: linked, shown: shown }));
+    }
+    await page.close();
+  }
+}
+
+async function testRelatedListBullets(browser, base) {
+  console.log("\n## Related list bullets sit on the first line of each item");
+  for (const [width, height] of [[1280, 900], [375, 812]]) {
+    const at = " at " + width;
+    const page = await openPersonaChain(browser, base, width, height, "?type=persona&node=data-provider&view=list");
+    const m = await page.evaluate(() => {
+      const out = [];
+      document.querySelectorAll("#details-chain li > .details-related").forEach((b) => {
+        const li = b.parentElement;
+        const probe = document.createElement("span");
+        probe.style.cssText = "display:inline-block;width:0;height:0";
+        li.insertBefore(probe, li.firstChild);
+        const line = parseFloat(getComputedStyle(b).fontSize) * 1.6;
+        out.push({ wrapped: b.getBoundingClientRect().height > line * 1.5, off: probe.getBoundingClientRect().bottom - b.getBoundingClientRect().top, line: line });
+        probe.remove();
+      });
+      return out;
+    });
+    const wrapped = m.filter((x) => x.wrapped);
+    check("some related items wrap, so the bullet position is exercised" + at, wrapped.length > 0, String(m.length));
+    check("each bullet baseline is inside the first line of its item" + at, m.every((x) => x.off <= x.line), JSON.stringify(m.filter((x) => x.off > x.line).slice(0, 2)));
+    await page.close();
+  }
+}
+
+async function testEmptyControlsState(browser, base) {
+  console.log("\n## A pick with no controls shows an empty state (fixture)");
+  // Fixture: serve the control files with every ai-system-users owner swapped to
+  // ai-system-governance, so the persona has zero controls. Real data is not touched.
+  for (const [width, height] of [[1280, 900], [375, 812]]) {
+    const at = " at " + width;
+    const page = await openNoControlsFixture(browser, base, width, height);
+    const s = await page.evaluate(() => {
+      const empty = document.querySelector("#chain-board .chain-empty-state");
+      return {
+        text: empty ? empty.textContent : "",
+        visible: !!empty && empty.getClientRects().length > 0,
+        cards: document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]').length,
+        selects: document.querySelectorAll("#chain-board select.chain-pick").length,
+        overflow: document.documentElement.scrollWidth - window.innerWidth
+      };
+    });
+    check("fixture: a persona with zero controls says No controls mapped yet and keeps its four menus" + at, s.visible && /No controls mapped yet/.test(s.text) && s.cards === 0 && s.selects === 4 && s.overflow <= 0, JSON.stringify(s));
+    await page.close();
+  }
+  const page = await openPersonaChain(browser, base, 1280, 900);
+  check("a persona with controls shows no empty state", (await page.$$("#chain-board .chain-empty-state")).length === 0);
+  await page.close();
+}
+
+async function testUsersPersonaControls(browser, base) {
+  console.log("\n## AI System Users is accountable for the acceptable use controls");
+  const want = ["control:finance:SRF-L1-DEV-003", "control:finance:SRF-L1-DEV-006", "control:healthcare:SRF-L1-HOR-002"];
+  const byId = (id) => controls.find((c) => c.nodeId === id);
+  const finance = readData("finance-controls.json").controls;
+  const health = readData("healthcare-controls.json").controls;
+  const dev3 = finance.find((c) => c.id === "SRF-L1-DEV-003");
+  const hor2 = health.find((c) => c.id === "SRF-L1-HOR-002");
+  const dev6 = finance.find((c) => c.id === "SRF-L1-DEV-006");
+  const allUsers = (c) => Object.keys(c.accountable_by_model).length > 0 && Object.values(c.accountable_by_model).every((p) => p === "ai-system-users") && c.accountable_persona === "ai-system-users";
+  check("data: DEV-003 and HOR-002 name ai-system-users on each model they already mapped, with models unchanged", allUsers(dev3) && allUsers(hor2) && sameSet(Object.keys(dev3.accountable_by_model), ["AI-SaaS", "AI-PaaS", "Agent-PaaS"]) && sameSet(Object.keys(hor2.accountable_by_model), ["AI-SaaS", "Agent-PaaS", "IaaS"]) && sameSet(dev3.operating_models, ["AI-SaaS", "AI-PaaS", "Agent-PaaS"]) && sameSet(hor2.operating_models, ["SaMD-Cloud", "EHR-Embedded", "Agent-Clinical", "On-Premise"]), "unexpected");
+  check("data: both descriptions say AI System Governance still issues the policy", /AI System Governance issues and maintains the policy/.test(dev3.description) && /AI System Governance issues and maintains the policy/.test(hor2.description), "missing sentence");
+  check("data: SRF-L1-DEV-006 is an L1 sector-neutral control owned by ai-system-users on all four models", !!dev6 && dev6.layer === "L1" && allUsers(dev6) && sameSet(Object.keys(dev6.accountable_by_model), MODELS) && sameSet(dev6.operating_models, MODELS), JSON.stringify(dev6 && dev6.accountable_by_model));
+  check("data: SRF-L1-DEV-006 has no sector operating model", !!dev6 && dev6.operating_models.every((m) => MODELS.indexOf(m) !== -1), "sector model present");
+  const page = await openPersonaChain(browser, base, 1280, 900, "?type=persona&node=ai-system-users&view=list");
+  await page.evaluate(() => { document.querySelectorAll('.chain-more[data-more-column="control"]').forEach((b) => b.click()); });
+  await sleep(200);
+  const listed = await page.$$eval('#details-chain .details-related[data-node-id^="control:"]', (els) => els.map((el) => el.dataset.nodeId));
+  check("the AI System Users chain lists its controls, including all three", want.every((id) => listed.indexOf(id) !== -1) && listed.length >= 3, JSON.stringify(listed));
+  const state = await page.evaluate(() => ({ empty: document.querySelectorAll("#chain-board .chain-empty-state").length, cards: document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]').length }));
+  check("the AI System Users chain shows control boxes and no empty state", state.empty === 0 && state.cards >= 3, JSON.stringify(state));
+  check("DEV-006 appears in the L1 no-sector group of the Control select", await page.$$eval("#chain-select-control optgroup", (groups) => { const g = groups.find((x) => x.label === "L1 AI Business & Usage"); return !!g && Array.from(g.querySelectorAll("option")).some((o) => o.value === "control:finance:SRF-L1-DEV-006"); }));
+  await page.close();
+}
+
 async function main() {
   const server = await serve();
   const base = "http://127.0.0.1:" + server.address().port;
@@ -2034,6 +2247,13 @@ async function main() {
         for (const [width, height] of [[1280, 800], [375, 812]]) await testFourModes(browser, base, width, height);
       }],
       ["optionsSameInEveryMode", () => testOptionsSameInEveryMode(browser, base)],
+      ["controlOrdering", () => testControlOrdering(browser, base)],
+      ["optionsCue", () => testOptionsCue(browser, base)],
+      ["detailsBesideChain", () => testDetailsBesideChain(browser, base)],
+      ["emptyControlsState", () => testEmptyControlsState(browser, base)],
+      ["usersPersonaControls", () => testUsersPersonaControls(browser, base)],
+      ["personaRisks", () => testPersonaRisks(browser, base)],
+      ["relatedListBullets", () => testRelatedListBullets(browser, base)],
       ["columnLabels", () => testColumnLabels(browser, base)],
       ["listbox", () => testListbox(browser, base)],
       ["phoneSheet", () => testPhoneSheet(browser, base)],
