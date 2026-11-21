@@ -586,7 +586,7 @@ COMMON_LAYERS = tuple(f"L{i}" for i in range(1, 6))
 COMMON_LIFECYCLE = ("design", "validate", "operate", "change", "retire")
 COMMON_MODELS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
 COMMON_REQUIRED_KEYS = ("nist_ai_rmf", "eu_ai_act", "iso_42001")
-COMMON_OPTIONAL_KEYS = ("aicm", "owasp_llm", "cis", "mitre_atlas",
+COMMON_OPTIONAL_KEYS = ("finos_aigf", "aicm", "owasp_llm", "cis", "mitre_atlas",
                         "nist_csf_2", "nist_cyber_ai", "gdpr")
 COMMON_KEYS = set(COMMON_REQUIRED_KEYS) | set(COMMON_OPTIONAL_KEYS)
 COMMON_FIELDS_REQUIRED = ("id", "layer", "component", "title", "description",
