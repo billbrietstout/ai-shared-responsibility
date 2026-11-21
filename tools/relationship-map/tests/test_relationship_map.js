@@ -1687,6 +1687,8 @@ async function testRocaSelects(browser, base, width, height) {
   check("the last obligation in the menu shows as a highlighted box when picked" + at, lastShown && roca.obligation.pressed.join() === lastOb.value && roca.obligation.cards === 1, JSON.stringify(roca.obligation));
 
   await pickValue(page, "risk", riskPick.value);
+  const boxesRiskAnchor = await boxes(page);
+  const urlRiskAnchor = page.url();
   if (width === 375) await page.evaluate(() => { const t = document.querySelector('.chain-col__toggle[data-column="control"]'); if (t.getAttribute("aria-expanded") !== "true") t.click(); });
   await sleep(150);
   const boxId = await page.evaluate(() => document.querySelector('#chain-board .chain-col[data-column="control"] button[data-chain-id]').dataset.chainId);
@@ -1694,7 +1696,8 @@ async function testRocaSelects(browser, base, width, height) {
   await sleep(350);
   roca = await readRoca(page);
   const clicked = await readPanel(page);
-  check("clicking a box in another column makes it the focus and shows its details" + at, roca.control.value === boxId && roca.risk.value === "" && roca.control.pressed.join() === boxId && clicked.kind === "Control" && lens(roca) === lens0, JSON.stringify([roca.control.value, roca.risk.value, clicked.kind]));
+  const boxesAfterCard = await boxes(page);
+  check("clicking a card in another column highlights it and shows its details without re-anchoring the chain" + at, roca.risk.value === riskPick.value && roca.control.value === "" && roca.control.pressed.join() === boxId && clicked.kind === "Control" && lens(roca) === lens0 && (await sameLists()) && ROCA_KEYS.every((k) => boxesAfterCard[k].n === boxesRiskAnchor[k].n) && page.url() === urlRiskAnchor, JSON.stringify([roca.risk.value, roca.control.value, roca.control.pressed, clicked.kind]));
   const noToggle = await page.evaluate(() => ({
     classes: document.querySelectorAll("#chain-board [class*='chain-box']").length,
     plus: Array.from(document.querySelectorAll("#chain-board button")).filter((b) => /^[+\u2212-]$/.test(b.textContent.trim()) || /^Links to the next column/.test(b.getAttribute("aria-label") || "")).length,
@@ -1737,6 +1740,58 @@ async function testRocaSelects(browser, base, width, height) {
   check("no word is broken mid-word in the visible boxes" + at, fit.broken.length === 0, JSON.stringify(fit.broken));
   await wide.close();
   await testOrganizationalFit(browser, base, width, height);
+}
+
+async function testChainCardFocusOnly(browser, base, width, height) {
+  const at = " at " + width;
+  const page = await openPage(browser, base, width, height, "");
+  await clickNow(page, "#entry-account");
+  await sleep(500);
+  const providerPick = (await optionValues(page, "accountable")).filter((o) => /^AI Model Provider$/.test(o.text))[0];
+  check("the accountable drop-down lists AI Model Provider" + at, !!providerPick && providerPick.value, JSON.stringify(providerPick));
+  await pickValue(page, "accountable", providerPick.value);
+  const urlAnchor = page.url();
+  const accountableBefore = await page.evaluate(() => ({
+    select: document.getElementById("chain-select-accountable").value,
+    cards: Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]')).map((b) => b.dataset.chainId).join(",")
+  }));
+  await page.evaluate(() => { const b = document.querySelector('button.chain-more[data-more-column="control"]'); if (b && /^Show \d+ more$/.test(b.textContent)) b.click(); });
+  if (width === 375) await page.evaluate(() => { const t = document.querySelector('.chain-col__toggle[data-column="control"]'); if (t && t.getAttribute("aria-expanded") !== "true") t.click(); });
+  await sleep(200);
+  const boxId = await page.evaluate(() => {
+    const el = document.querySelector('#chain-board .chain-col[data-column="control"] button[data-chain-id]');
+    return el ? el.dataset.chainId : "";
+  });
+  check("the AI Model Provider chain lists at least one control card to click" + at, !!boxId, boxId);
+  await page.click('#chain-board button[data-chain-id="' + boxId.replace(/"/g, '\\"') + '"]');
+  await sleep(350);
+  const after = await page.evaluate(() => {
+    const pressedEl = document.querySelector('#chain-board button[aria-pressed="true"]');
+    return {
+      select: document.getElementById("chain-select-accountable").value,
+      cards: Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]')).map((b) => b.dataset.chainId).join(","),
+      pressed: pressedEl ? pressedEl.dataset.chainId : "",
+      kind: document.getElementById("details-kind").textContent,
+      heading: document.getElementById("details-heading").textContent
+    };
+  });
+  check("clicking a control card keeps the accountable pick and column cards" + at, after.select === accountableBefore.select && after.cards === accountableBefore.cards, JSON.stringify({ before: accountableBefore, after }));
+  check("clicking a control card shows that control in the details panel" + at, after.pressed === boxId && after.kind === "Control" && after.heading.length > 0, JSON.stringify(after));
+  check("clicking a control card does not change the URL starting point" + at, page.url() === urlAnchor, page.url());
+  const card = await page.$('#chain-board button[data-chain-id="' + boxId.replace(/"/g, '\\"') + '"]');
+  await card.focus();
+  await page.keyboard.press("Enter");
+  await sleep(250);
+  const enterFocus = await page.evaluate(() => ({
+    active: document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.chainId : "",
+    pressed: document.querySelectorAll('#chain-board button[aria-pressed="true"]').length,
+    select: document.getElementById("chain-select-accountable").value
+  }));
+  check("Enter on a chain card keeps the same accountable pick and one highlighted card" + at, enterFocus.active === boxId && enterFocus.pressed === 1 && enterFocus.select === accountableBefore.select, JSON.stringify(enterFocus));
+  await pickValue(page, "control", boxId);
+  const roca = await readRoca(page);
+  check("choosing a control in the drop-down still re-anchors the chain on that control" + at, roca.control.value === boxId && roca.accountable.value === "", JSON.stringify(ROCA_KEYS.map((k) => roca[k].value)));
+  await page.close();
 }
 
 async function testOrganizationalFit(browser, base, width, height) {
@@ -2287,6 +2342,9 @@ async function main() {
           await testLeftColumnTrim(browser, base, width, height);
           await testOptionsLayout(browser, base, width, height);
         }
+      }],
+      ["chainCardFocus", async () => {
+        for (const [width, height] of [[1280, 800], [375, 812]]) await testChainCardFocusOnly(browser, base, width, height);
       }],
       ["captureModes", () => captureModes(browser, base)]
     ];
