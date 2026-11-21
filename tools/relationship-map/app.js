@@ -154,7 +154,6 @@
   var detailsKind = document.getElementById("details-kind");
   var detailsMeta = document.getElementById("details-meta");
   var detailsModelNote = document.getElementById("details-model-note");
-  var detailsSummary = copyStatus;
   var detailsList = document.getElementById("details-connections");
   var detailsChain = document.getElementById("details-chain");
   var connectionsHeading = document.getElementById("connections-heading");
@@ -182,8 +181,18 @@
   var wordMatch = null;
   var detailsEl = document.querySelector(".details");
   var detailsId = document.getElementById("details-id");
-  var detailsLive = copyStatus;
   var detailsSlot = document.getElementById("chain-details-slot");
+  if (!copyStatus && detailsEl) {
+    copyStatus = document.createElement("p");
+    copyStatus.id = "copy-status";
+    copyStatus.className = "copy-status";
+    copyStatus.setAttribute("role", "status");
+    var detailsActions = detailsEl.querySelector(".details__actions");
+    if (detailsActions) detailsActions.insertAdjacentElement("afterend", copyStatus);
+    else detailsEl.appendChild(copyStatus);
+  }
+  var detailsSummary = copyStatus;
+  var detailsLive = copyStatus;
 
   var graph = null;
   var respLabel = {};
@@ -2182,7 +2191,7 @@
       connectionsHeading.hidden = true;
       detailsList.hidden = true;
       renderChainDetails(currentChain);
-      detailsSummary.textContent = chainSentence(currentChain);
+      if (detailsSummary) detailsSummary.textContent = chainSentence(currentChain);
       placeDetails();
       return;
     }
@@ -2197,7 +2206,7 @@
         ? "Choose an item in any menu to see its record, sources, and links."
         : "Select a risk or a control to see its record, sources, and links.";
       detailsBody.hidden = true;
-      detailsSummary.textContent = "";
+      if (detailsSummary) detailsSummary.textContent = "";
       detailsList.textContent = "";
       detailsModelNote.hidden = true;
       detailsModelNote.textContent = "";
@@ -2281,7 +2290,7 @@
     }
     var summary = attrs.name + ". " + (KIND_LABEL[attrs.kind] || attrs.kind) + ". " + rows.length + " connections.";
     if (gap) summary += " " + gap;
-    detailsSummary.textContent = summary;
+    if (detailsSummary) detailsSummary.textContent = summary;
     placeDetails();
   }
 
@@ -2744,7 +2753,7 @@
     if (contextOn) renderContext();
 
     var modeSearch = MODE_SEARCH[entry];
-    findLabel.textContent = modeSearch ? modeSearch.label : "Find a risk, obligation, control, or persona";
+    if (findLabel) findLabel.textContent = modeSearch ? modeSearch.label : "Find a risk, obligation, control, or persona";
     searchInput.placeholder = modeSearch ? modeSearch.placeholder : "Name or a few words";
     if (contextOn) {
       helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
@@ -3697,15 +3706,19 @@
 
   function setCopyState(label, message, isError) {
     clearTimeout(copyTimer);
-    copyBtn.textContent = label;
-    copyStatus.textContent = message;
-    copyStatus.classList.toggle("copy-status--error", !!isError);
+    if (copyBtn) copyBtn.textContent = label;
+    if (copyStatus) {
+      copyStatus.textContent = message;
+      copyStatus.classList.toggle("copy-status--error", !!isError);
+    }
   }
 
   function resetCopyState() {
-    copyBtn.textContent = "Copy chain as Markdown";
-    copyStatus.textContent = "";
-    copyStatus.classList.remove("copy-status--error");
+    if (copyBtn) copyBtn.textContent = "Copy chain as Markdown";
+    if (copyStatus) {
+      copyStatus.textContent = "";
+      copyStatus.classList.remove("copy-status--error");
+    }
   }
 
   function copyWithTextarea(text) {
