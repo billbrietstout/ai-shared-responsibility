@@ -11,7 +11,7 @@
  *   persona  data/personas.json                       personas[] and sector_specializations[]
  *   model    data/matrix.json                         cosai-core models, plus proposed-extension
  *                                                     models drawn only while Tapestry is on
- *   risk     data/threats.json                        threats[] (the 31 Risk records)
+ *   risk     data/threats.json                        threats[] (the Risk records)
  *   control  data/<vertical>-controls.json            controls[]
  *   policy   tools/policy-pyramid/data.json           levels[]
  *   topic    data/ai-agentic-principles.json          sections{}
@@ -728,8 +728,9 @@
   }
 
   function basisIsDashed(basis) {
-    return basis === "derived_via_control" || basis === "editorial" || basis === "editorial_mapping" ||
-      !(basis === "official_text" || basis === "official_legal_text" || basis === "named_citation" || basis === "named_cite");
+    return basis === "derived_via_control" || basis === "named_citation" || basis === "named_cite" ||
+      basis === "editorial" || basis === "editorial_mapping" ||
+      !(basis === "official_text" || basis === "official_legal_text");
   }
 
   /* Recorded values come from threats[].obligations[].basis. The chain shows
@@ -741,8 +742,8 @@
     official_legal_text: "official text",
     editorial: "editorial judgment",
     editorial_mapping: "editorial judgment",
-    named_citation: "named citation",
-    named_cite: "named citation"
+    named_citation: "derived from the cited duty",
+    named_cite: "derived from the cited duty"
   };
   var BASIS_GLOSS = {
     derived_via_control: "The legal text is not the source of this link. It runs through a shared control.",
@@ -750,8 +751,8 @@
     official_legal_text: "Taken from the official text.",
     editorial: "The legal text is not the source of this link.",
     editorial_mapping: "The legal text is not the source of this link.",
-    named_citation: "The record names this citation.",
-    named_cite: "The record names this citation."
+    named_citation: "The cited text states a duty. It does not state this harm. The link does not run through a control.",
+    named_cite: "The cited text states a duty. It does not state this harm. The link does not run through a control."
   };
 
   function basisSentence(basis) {
@@ -816,7 +817,10 @@
       owasp_llm_top10: "OWASP LLM Top 10",
       mitre_atlas: "MITRE ATLAS",
       biml_llm24: "BIML",
-      owasp_dsgai: "OWASP DSGAI"
+      owasp_dsgai: "OWASP DSGAI",
+      mit_ai_risk_repository: "MIT AI Risk Repository",
+      oecd_ai_principles: "OECD AI Principles",
+      oecd_aim: "OECD AIM"
     };
     return Object.keys(labels).map(function (key) {
       if (!map[key]) return "";
@@ -825,9 +829,10 @@
   }
 
   /* Search matches recorded identifiers and descriptions only. The OWASP LLM
-   * Top 10, MITRE ATLAS, and OWASP DSGAI mapping strings are the framework IDs
-   * on the record. BIML is left out of the search index. */
-  var SEARCH_MAPPING_KEYS = ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai"];
+   * Top 10, MITRE ATLAS, OWASP DSGAI, MIT AI Risk Repository, OECD AI
+   * Principles, and OECD AIM mapping strings are the framework IDs on the
+   * record. BIML is left out of the search index. */
+  var SEARCH_MAPPING_KEYS = ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai", "mit_ai_risk_repository", "oecd_ai_principles", "oecd_aim"];
   function threatSearchText(threat) {
     var map = threat.mappings || {};
     return SEARCH_MAPPING_KEYS.map(function (key) { return map[key]; })
@@ -837,6 +842,9 @@
   /* A DSGAI record has no per-entry source URL in the AI Exchange field. It
    * cites the DSGAI collection, which threats.json records once under sources. */
   function riskSource(threat) {
+    if (typeof threat.source_url === "string" && threat.source_url.indexOf("http") === 0) {
+      return { url: threat.source_url, label: "Risk definition" };
+    }
     if (typeof threat.ai_exchange === "string" && threat.ai_exchange.indexOf("http") === 0) {
       return { url: threat.ai_exchange, label: "Risk definition" };
     }

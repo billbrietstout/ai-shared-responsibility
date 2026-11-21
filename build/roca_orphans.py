@@ -9,6 +9,13 @@ Set mode to blocking in that file to fail when any orphan remains.
 Gap-register rows are not excused. A control that is in
 thresholds/gap-register.json and is also an orphan is counted and marked
 "in gap register".
+
+Tapestry records are not in the SRF orphan counts. The rule matches
+isTapestryRecord in tools/relationship-map/app.js: a persona whose
+provenance is proposed-extension, and a control that controlIsTapestry
+would mark (file or control provenance proposed-extension, or every
+operating model is a proposed-extension model). The report prints those
+records on a separate line.
 """
 from __future__ import annotations
 
@@ -79,6 +86,35 @@ def empty_layer_counts():
 def bump_layers(counts, layers):
     for layer in layers:
         counts[layer] = counts.get(layer, 0) + 1
+
+
+def extension_model_ids(root):
+    """Model ids the map treats as proposed-extension, from matrix.json."""
+    path = Path(root) / "data" / "matrix.json"
+    if not path.is_file():
+        return set()
+    found = set()
+    for model in load_json(path).get("models") or []:
+        if not isinstance(model, dict):
+            continue
+        if model.get("provenance") == "proposed-extension" and model.get("id"):
+            found.add(model["id"])
+    return found
+
+
+def control_is_tapestry(control, file_provenance, ext_ids):
+    """Same test as controlIsTapestry in tools/relationship-map/app.js."""
+    if file_provenance == "proposed-extension" or control.get("provenance") == "proposed-extension":
+        return True
+    listed = [model_id for model_id in (control.get("operating_models") or []) if model_id]
+    if not listed:
+        return False
+    return all(model_id in ext_ids for model_id in listed)
+
+
+def persona_is_tapestry(record):
+    """Same test the map uses before it sets attrs.tapestry on a persona."""
+    return record.get("provenance") == "proposed-extension"
 
 
 def control_slug(path):
@@ -249,6 +285,10 @@ def analyze(root):
             raise ValueError(f"duplicate persona id: {record['id']}")
         personas[record["id"]] = record
 
+    ext_ids = extension_model_ids(root)
+    tapestry_persona_ids = {
+        persona_id for persona_id, record in personas.items() if persona_is_tapestry(record)
+    }
     controls = []
     seen_full = set()
     for path in loaded["control_paths"]:
@@ -268,7 +308,11 @@ def analyze(root):
                 "layers": layer_names(control.get("layer")),
                 "cited": cited_requirement_ids(control, regs_by_key, matchers),
                 "instrument_fallback": has_instrument_fallback(control, regs_by_key, matchers),
-                "personas": named_personas(control, personas),
+                "personas": [
+                    persona_id for persona_id in named_personas(control, personas)
+                    if persona_id not in tapestry_persona_ids
+                ],
+                "tapestry": control_is_tapestry(control, doc.get("provenance"), ext_ids),
             })
 
     by_full = {row["full_id"]: row for row in controls}
@@ -306,13 +350,16 @@ def analyze(root):
 
     obligation_controls = defaultdict(set)
     for row in controls:
+        if row["tapestry"]:
+            continue
         for req_id in row["cited"]:
             obligation_controls[req_id].add(row["full_id"])
     for req_id, full_ids in source_named.items():
         if req_id not in requirements:
             continue
         for full_id in full_ids:
-            if full_id in by_full:
+            row = by_full.get(full_id)
+            if row and not row["tapestry"]:
                 obligation_controls[req_id].add(full_id)
 
     for row in controls:
@@ -376,6 +423,8 @@ def analyze(root):
 
     controls_for_persona = defaultdict(set)
     for row in controls:
+        if row["tapestry"]:
+            continue
         missing = []
         if not row["reaches_risk"]:
             missing.append(CONTROL_NO_RISK)
@@ -411,6 +460,8 @@ def analyze(root):
             })
 
     for persona_id, record in personas.items():
+        if persona_id in tapestry_persona_ids:
+            continue
         if controls_for_persona.get(persona_id):
             continue
         orphans.append({
@@ -468,6 +519,10 @@ def analyze(root):
         "gap_register_orphans": gap_orphans,
         "instrument_fallback_controls": sum(1 for row in controls if row["instrument_fallback"]),
         "not_in_related_controls": population["control"] - direct,
+        "tapestry": {
+            "controls": sum(1 for row in controls if row["tapestry"]),
+            "personas": len(tapestry_persona_ids),
+        },
     }
 
 
@@ -546,6 +601,11 @@ def render(report, mode=None, problems=None):
         noun = kind if total == 1 else kind + "s"
         orphan_bits.append(f"{total} {noun}")
     lines.append("Orphans: " + ", ".join(orphan_bits))
+    tap = report["tapestry"]
+    lines.append(
+        "Tapestry records, not in the SRF orphan counts: "
+        f"{tap['controls']} controls, {tap['personas']} personas"
+    )
     link = report["control_to_risk"]
     lines.append(
         "Control-to-risk columns: "

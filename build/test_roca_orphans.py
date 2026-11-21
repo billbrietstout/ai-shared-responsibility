@@ -20,6 +20,7 @@ from roca_orphans import (
     cited_requirement_ids,
     compare,
     main,
+    render,
 )
 
 
@@ -217,6 +218,66 @@ class FixtureTest(unittest.TestCase):
             "in_both_columns": 1,
         })
         self.assertEqual(report["gap_register_orphans"]["control"], 1)
+        self.assertEqual(report["tapestry"], {"controls": 0, "personas": 0})
+
+    def test_tapestry_records_stay_out_of_srf_orphan_counts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = chain_fixture(tmp)
+            write_json(root / "data" / "matrix.json", {
+                "models": [
+                    {"id": "AI-SaaS", "provenance": "cosai-core"},
+                    {"id": "Federated-Consortium", "provenance": "proposed-extension"},
+                ],
+            })
+            personas = json.loads((root / "data" / "personas.json").read_text(encoding="utf-8"))
+            personas["personas"].extend([
+                {
+                    "id": "sovereign-participant-node",
+                    "name": "Sovereign Participant Node",
+                    "provenance": "proposed-extension",
+                    "srf_layers": ["L1"],
+                },
+                {
+                    "id": "consortium-core-coordinator",
+                    "name": "Consortium Core Coordinator",
+                    "provenance": "proposed-extension",
+                    "srf_layers": ["L1", "L5"],
+                },
+            ])
+            write_json(root / "data" / "personas.json", personas)
+            write_json(root / "data" / "tapestry-controls.json", {
+                "provenance": "proposed-extension",
+                "controls": [{
+                    "id": "TAP-SRF-L1-CON-001",
+                    "title": "Tapestry contribution control",
+                    "layer": "L1",
+                    "mappings": {},
+                    "accountable_persona": "sovereign-participant-node",
+                    "operating_models": ["Federated-Consortium"],
+                }],
+            })
+            common = json.loads((root / "data" / "common-controls.json").read_text(encoding="utf-8"))
+            common["controls"].append({
+                "id": "C-federated-only",
+                "title": "Extension-model control",
+                "layer": "L3",
+                "mappings": {},
+                "operating_models": ["Federated-Consortium"],
+                "accountable_persona": "consortium-core-coordinator",
+            })
+            write_json(root / "data" / "common-controls.json", common)
+            report = analyze(root)
+        self.assertEqual(ids_of(report, "risk"), ["risk-orphan"])
+        self.assertEqual(ids_of(report, "obligation"), ["req-orphan"])
+        self.assertEqual(ids_of(report, "control"), ["srf.control.common.C-orphan"])
+        self.assertEqual(ids_of(report, "persona"), ["persona-orphan"])
+        self.assertEqual(report["counts"]["persona"]["total"], 1)
+        self.assertEqual(report["tapestry"], {"controls": 2, "personas": 2})
+        text = render(report)
+        self.assertIn(
+            "Tapestry records, not in the SRF orphan counts: 2 controls, 2 personas",
+            text,
+        )
 
     def test_source_named_control_reaches_the_obligation_without_a_citation(self):
         with tempfile.TemporaryDirectory() as tmp:
