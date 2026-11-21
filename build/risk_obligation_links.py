@@ -40,7 +40,7 @@ def derived_control_rows(root):
         ]
         matchers.append((req, patterns))
     controls = {}
-    for vertical in VERTICALS:
+    for vertical in VERTICALS + ("common",):
         doc = _load(root, f"data/{vertical}-controls.json")
         for control in doc["controls"]:
             controls[f"srf.control.{vertical}.{control['id']}"] = control

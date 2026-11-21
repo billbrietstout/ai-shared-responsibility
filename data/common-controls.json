@@ -1,0 +1,103 @@
+{
+  "schema_version": "0.1",
+  "srf_version": "1.0",
+  "label": "All sectors (common)",
+  "description": "Sector-neutral control schema for the CoSAI AI Shared Responsibility Framework. Holds controls that apply to every sector and do not depend on a sector regulator, supervisory letter, or lifecycle. Each control carries an accountable persona per SRF operating model and a threshold tuple. Common is not an industry vertical, so it has no vertical node and no applies_to_vertical edges.",
+  "regulatory_context": "No sector regulation scopes this file. Mappings point to horizontal sources only: NIST AI RMF 1.0, the EU AI Act, ISO/IEC 42001, and the other general frameworks named in common_mapping_keys.",
+  "scaling_rule": "The schema defines measurement methods and parameter names; it does not encode fixed values. Each organization sets parameter values per model tier.",
+  "id_convention": "SRF-COM-{layer}-{seq}",
+  "id_convention_note": "layer is L1 to L5. seq is three digits and runs per layer, starting at 001.",
+  "canonical_id_namespace": "srf.control.common.<id>",
+  "scope_node": "srf.concept.common-controls",
+  "common_status_values": [
+    "draft"
+  ],
+  "lifecycle_stage_values": [
+    "design",
+    "validate",
+    "operate",
+    "change",
+    "retire"
+  ],
+  "lifecycle_stage_note": "These values apply to common controls only. Defense and manufacturing files use lifecycle_stage with different values (for example validation and ops); do not compare across files.",
+  "operating_models_allowed": [
+    "AI-SaaS",
+    "AI-PaaS",
+    "Agent-PaaS",
+    "IaaS"
+  ],
+  "common_mapping_keys": {
+    "required": [
+      "nist_ai_rmf",
+      "eu_ai_act",
+      "iso_42001"
+    ],
+    "optional": [
+      "aicm",
+      "owasp_llm",
+      "cis",
+      "mitre_atlas",
+      "nist_csf_2",
+      "nist_cyber_ai",
+      "gdpr"
+    ]
+  },
+  "optional_fields": [
+    "principles",
+    "former_ids",
+    "eu_ai_act_risk_class",
+    "cross_layer_controls",
+    "cross_layer_note",
+    "accountable_persona_note",
+    "implementing_persona_note"
+  ],
+  "principles_note": "principles lists informative IDs from data/ai-agentic-principles.json and data/security-principles.json. They create no governed_by edges.",
+  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of 27 July 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs.",
+  "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' with an optional short gloss in parentheses. 'N/A' means no EU AI Act nexus. 'TBD:' prefix marks an unverified mapping.",
+  "controls": [
+    {
+      "id": "SRF-COM-L1-001",
+      "former_ids": [
+        "srf.control.finance.SRF-L1-DEV-006"
+      ],
+      "layer": "L1",
+      "component": "Processes & Governance",
+      "lifecycle_stage": "operate",
+      "title": "Acceptable Use Policy Acknowledgment by AI System Users",
+      "description": "Each person who uses an AI system for the organization must read the acceptable use policy and acknowledge it before first use of any AI system. Each user must acknowledge the policy again when it changes in a way that affects permitted use, prohibited use, or escalation paths. The organization must keep a record of each acknowledgment that names the user, the policy version, and the date. Access to an AI system must not start or continue for a user whose acknowledgment is missing or out of date. AI System Governance issues the policy (see SRF-L1-DEV-003). AI System Users are accountable for reading it, acknowledging it, and using AI systems within it. This control supports the deployer's duty under EU AI Act Article 4 (as amended, consolidated text of 27 July 2026) to take measures to support AI literacy. Article 4 puts that duty on providers and deployers, sets no required literacy level, and does not bind individual users. Acknowledging the policy is one measure a deployer can use; it does not meet the duty alone. The annual review window in the threshold is an SRF choice, not a legal requirement.",
+      "accountable_persona": "ai-system-users",
+      "accountable_by_model": {
+        "AI-SaaS": "ai-system-users",
+        "AI-PaaS": "ai-system-users",
+        "Agent-PaaS": "ai-system-users",
+        "IaaS": "ai-system-users"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "GOVERN 1.2 (trustworthy AI characteristics are integrated into policies)",
+        "eu_ai_act": "Article 4 (AI literacy; this control supports the deployer's duty to take measures to support AI literacy, which sets no required level)",
+        "iso_42001": "ISO/IEC 42001:2023, Clause 7.3",
+        "aicm": "GRC-09 (Acceptable Use of the AI Service)"
+      },
+      "threshold": {
+        "metric": "aup_user_acknowledgment_currency",
+        "description": "Percentage of active AI system users whose acknowledgment matches the current version of the acceptable use policy, recorded in the HR, IAM, or GRC system. The annual review window is an SRF choice, not a legal requirement.",
+        "evidence": {
+          "ocsf_class": "TBD: records management artifact. Where acknowledgment is captured through an IAM or GRC system, authentication events at the acknowledgment step can confirm which user completed it.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual-review",
+        "breach_action": "suspend-ai-system-access-until-acknowledged; notify-policy-owner"
+      }
+    }
+  ]
+}

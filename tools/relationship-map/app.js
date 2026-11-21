@@ -91,6 +91,7 @@
   ];
   var LAYERS = ["L1", "L2", "L3", "L4", "L5"];
   var VERTICAL_RANK = {
+    common: -1,
     finance: 0,
     insurance: 1,
     "public-sector": 2,
@@ -100,6 +101,7 @@
     tapestry: 6
   };
   var CONTROL_FILES = [
+    ["common", "All sectors (common)", "/data/common-controls.json"],
     ["finance", "Finance", "/data/finance-controls.json"],
     ["healthcare", "Healthcare", "/data/healthcare-controls.json"],
     ["insurance", "Insurance", "/data/insurance-controls.json"],
@@ -108,6 +110,13 @@
     ["manufacturing", "Manufacturing", "/data/manufacturing-controls.json"],
     ["tapestry", "Tapestry", "/data/tapestry-controls.json"]
   ];
+  var controlAliases = {};
+
+  function controlPageUrl(vertical, ref) {
+    if (vertical === "common") return "/data/common-controls.json";
+    return "/" + vertical + "/controls/#" + ref;
+  }
+
   var GAP_NOTE = "This control isn't in any operating model filter yet.";
 
   var chainEmpty = document.getElementById("chain-empty");
@@ -532,7 +541,7 @@
         addNode(id, {
           kind: "control",
           name: control.title,
-          label: file.short + " " + String(control.id || "").replace(/^SRF-/, ""),
+          label: file.short + " " + String(control.id || "").replace(/^SRF-(COM-)?/, ""),
           ref: control.id,
           fullId: fullId,
           meta: file.name,
@@ -553,6 +562,15 @@
           provenance: tapestry ? "proposed-extension" : (control.provenance || "")
         });
         catalog.byFull[fullId] = id;
+        (control.former_ids || []).forEach(function (oldId) {
+          controlAliases[oldId] = id;
+          var tail = String(oldId).replace(/^srf\.control\./, "");
+          var dot = tail.indexOf(".");
+          if (dot !== -1) {
+            controlAliases[tail.slice(0, dot) + ":" + tail.slice(dot + 1)] = id;
+            controlAliases[tail.slice(dot + 1)] = id;
+          }
+        });
         if (control.layer) link(id, "layer:" + control.layer, { type: "control-layer" });
         if (control.accountable_persona) {
           link(id, "persona:" + control.accountable_persona, { type: "control-persona" });
@@ -849,7 +867,7 @@
       meta: attrs.meta || "",
       layer: attrs.layer || "",
       vertical: attrs.vertical || "",
-      url: "/" + attrs.vertical + "/controls/#" + attrs.ref,
+      url: controlPageUrl(attrs.vertical, attrs.ref),
       sectorModels: attrs.sectorModels || [],
       fullId: attrs.fullId,
       evidenceText: attrs.evidenceText || "",
@@ -2017,7 +2035,7 @@
           return textOrder(x.name, y.name);
         }).forEach(function (source) {
           var row = makeEl("li", "");
-          if (source.vertical && source.ref) row.appendChild(makeLink("/" + source.vertical + "/controls/#" + source.ref, source.name));
+          if (source.vertical && source.ref) row.appendChild(makeLink(controlPageUrl(source.vertical, source.ref), source.name));
           else row.appendChild(document.createTextNode(source.name));
           if (source.citation) row.appendChild(document.createTextNode(". Citation: " + source.citation));
           if (!source.inChain) row.appendChild(document.createTextNode(". This control is not in the selected operating model."));
@@ -2944,6 +2962,9 @@
     var raw = String(token || "").trim();
     var hits = [];
     if (!raw) return { id: "", hits: hits };
+    if (controlAliases[raw] && graph.hasNode(controlAliases[raw])) {
+      return { id: controlAliases[raw], hits: [controlAliases[raw]] };
+    }
     if (raw.indexOf(":") !== -1 && graph.hasNode("control:" + raw)) {
       return { id: "control:" + raw, hits: ["control:" + raw] };
     }
@@ -3962,6 +3983,7 @@
         if (file.slug === "insurance") file.short = "INS";
         if (file.slug === "defense") file.short = "DEF";
         if (file.slug === "finance") file.short = "FIN";
+        if (file.slug === "common") file.short = "COM";
       });
       var models = buildGraph(data);
       renderModelRadios(models);

@@ -28,7 +28,7 @@ if (!CHROME) {
 
 const MODELS = ["AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS"];
 const LAYERS = ["L1", "L2", "L3", "L4", "L5"];
-const CONTROL_FILES = ["finance", "healthcare", "insurance", "public-sector", "defense", "manufacturing"];
+const CONTROL_FILES = ["common", "finance", "healthcare", "insurance", "public-sector", "defense", "manufacturing"];
 const FRAMEWORK_KEYS = ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai"];
 const ARTIFACTS = process.env.RELMAP_ARTIFACTS || "";
 
@@ -2129,8 +2129,10 @@ async function testPersonaRisks(browser, base) {
   console.log("\n## A persona chain shows the risks of its controls and the risks that name it");
   const personas = ["ai-system-users", "ai-system-governance", "data-provider", "application-developer", "agentic-platform-provider", "ai-platform-provider", "ai-model-serving", "model-provider"];
   const finance = readData("finance-controls.json").controls;
-  const linked = threats.filter((t) => (t.related_controls || []).some((c) => c === "srf.control.finance.SRF-L1-DEV-003" || c === "srf.control.finance.SRF-L1-DEV-006")).map((t) => "risk:" + t.id);
-  check("data: DEV-003 and DEV-006 are linked to at least dsgai03 and dsgai16", ["risk:dsgai03", "risk:dsgai16"].every((id) => linked.indexOf(id) !== -1) && finance.some((c) => c.id === "SRF-L1-DEV-006"), JSON.stringify(linked));
+  const common = readData("common-controls.json").controls;
+  const linked = threats.filter((t) => (t.related_controls || []).some((c) => c === "srf.control.finance.SRF-L1-DEV-003" || c === "srf.control.common.SRF-COM-L1-001")).map((t) => "risk:" + t.id);
+  check("data: DEV-003 and SRF-COM-L1-001 are linked to at least dsgai03 and dsgai16", ["risk:dsgai03", "risk:dsgai16"].every((id) => linked.indexOf(id) !== -1) && common.some((c) => c.id === "SRF-COM-L1-001"), JSON.stringify(linked));
+  check("data: no threat still names the old finance id SRF-L1-DEV-006", !threats.some((t) => JSON.stringify(t).indexOf("srf.control.finance.SRF-L1-DEV-006") !== -1) && !finance.some((c) => c.id === "SRF-L1-DEV-006"), "old id still present");
   for (const id of personas) {
     const page = await openPersonaChain(browser, base, 1280, 900, "?type=persona&node=" + id + "&view=list");
     await page.evaluate(() => { document.querySelectorAll('.chain-more[data-more-column="risk"]').forEach((b) => b.click()); });
@@ -2139,7 +2141,7 @@ async function testPersonaRisks(browser, base) {
     const ownerNamed = threats.filter((t) => Object.values(t.accountability || {}).some((cell) => cell.accountable_persona === id)).map((t) => "risk:" + t.id);
     check(id + " chain keeps every risk that names it as owner (" + ownerNamed.length + ") and shows " + shown.length, ownerNamed.every((r) => shown.indexOf(r) !== -1), JSON.stringify(ownerNamed.filter((r) => shown.indexOf(r) === -1)));
     if (id === "ai-system-users") {
-      check("AI System Users chain shows the risks linked to DEV-003 and DEV-006", linked.every((r) => shown.indexOf(r) !== -1) && shown.length >= linked.length, JSON.stringify({ linked: linked, shown: shown }));
+      check("AI System Users chain shows the risks linked to DEV-003 and SRF-COM-L1-001", linked.every((r) => shown.indexOf(r) !== -1) && shown.length >= linked.length, JSON.stringify({ linked: linked, shown: shown }));
     }
     await page.close();
   }
@@ -2197,18 +2199,18 @@ async function testEmptyControlsState(browser, base) {
 
 async function testUsersPersonaControls(browser, base) {
   console.log("\n## AI System Users is accountable for the acceptable use controls");
-  const want = ["control:finance:SRF-L1-DEV-003", "control:finance:SRF-L1-DEV-006", "control:healthcare:SRF-L1-HOR-002"];
+  const want = ["control:finance:SRF-L1-DEV-003", "control:common:SRF-COM-L1-001", "control:healthcare:SRF-L1-HOR-002"];
   const byId = (id) => controls.find((c) => c.nodeId === id);
   const finance = readData("finance-controls.json").controls;
   const health = readData("healthcare-controls.json").controls;
   const dev3 = finance.find((c) => c.id === "SRF-L1-DEV-003");
   const hor2 = health.find((c) => c.id === "SRF-L1-HOR-002");
-  const dev6 = finance.find((c) => c.id === "SRF-L1-DEV-006");
+  const dev6 = readData("common-controls.json").controls.find((c) => c.id === "SRF-COM-L1-001");
   const allUsers = (c) => Object.keys(c.accountable_by_model).length > 0 && Object.values(c.accountable_by_model).every((p) => p === "ai-system-users") && c.accountable_persona === "ai-system-users";
   check("data: DEV-003 and HOR-002 name ai-system-users on each model they already mapped, with models unchanged", allUsers(dev3) && allUsers(hor2) && sameSet(Object.keys(dev3.accountable_by_model), ["AI-SaaS", "AI-PaaS", "Agent-PaaS"]) && sameSet(Object.keys(hor2.accountable_by_model), ["AI-SaaS", "Agent-PaaS", "IaaS"]) && sameSet(dev3.operating_models, ["AI-SaaS", "AI-PaaS", "Agent-PaaS"]) && sameSet(hor2.operating_models, ["SaMD-Cloud", "EHR-Embedded", "Agent-Clinical", "On-Premise"]), "unexpected");
   check("data: both descriptions say AI System Governance still issues the policy", /AI System Governance issues and maintains the policy/.test(dev3.description) && /AI System Governance issues and maintains the policy/.test(hor2.description), "missing sentence");
-  check("data: SRF-L1-DEV-006 is an L1 sector-neutral control owned by ai-system-users on all four models", !!dev6 && dev6.layer === "L1" && allUsers(dev6) && sameSet(Object.keys(dev6.accountable_by_model), MODELS) && sameSet(dev6.operating_models, MODELS), JSON.stringify(dev6 && dev6.accountable_by_model));
-  check("data: SRF-L1-DEV-006 has no sector operating model", !!dev6 && dev6.operating_models.every((m) => MODELS.indexOf(m) !== -1), "sector model present");
+  check("data: SRF-COM-L1-001 is an L1 sector-neutral control owned by ai-system-users on all four models", !!dev6 && dev6.layer === "L1" && allUsers(dev6) && sameSet(Object.keys(dev6.accountable_by_model), MODELS) && sameSet(dev6.operating_models, MODELS), JSON.stringify(dev6 && dev6.accountable_by_model));
+  check("data: SRF-COM-L1-001 has no sector operating model", !!dev6 && dev6.operating_models.every((m) => MODELS.indexOf(m) !== -1), "sector model present");
   const page = await openPersonaChain(browser, base, 1280, 900, "?type=persona&node=ai-system-users&view=list");
   await page.evaluate(() => { document.querySelectorAll('.chain-more[data-more-column="control"]').forEach((b) => b.click()); });
   await sleep(200);
@@ -2216,8 +2218,20 @@ async function testUsersPersonaControls(browser, base) {
   check("the AI System Users chain lists its controls, including all three", want.every((id) => listed.indexOf(id) !== -1) && listed.length >= 3, JSON.stringify(listed));
   const state = await page.evaluate(() => ({ empty: document.querySelectorAll("#chain-board .chain-empty-state").length, cards: document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]').length }));
   check("the AI System Users chain shows control boxes and no empty state", state.empty === 0 && state.cards >= 3, JSON.stringify(state));
-  check("DEV-006 appears in the L1 no-sector group of the Control select", await page.$$eval("#chain-select-control optgroup", (groups) => { const g = groups.find((x) => x.label === "L1 AI Business & Usage"); return !!g && Array.from(g.querySelectorAll("option")).some((o) => o.value === "control:finance:SRF-L1-DEV-006"); }));
+  check("SRF-COM-L1-001 appears in the L1 no-sector group of the Control select", await page.$$eval("#chain-select-control optgroup", (groups) => { const g = groups.find((x) => x.label === "L1 AI Business & Usage"); return !!g && Array.from(g.querySelectorAll("option")).some((o) => o.value === "control:common:SRF-COM-L1-001"); }));
   await page.close();
+}
+
+async function testMovedControlAlias(browser, base) {
+  console.log("\n## An old control link resolves to the moved control");
+  const common = readData("common-controls.json").controls.find((c) => c.id === "SRF-COM-L1-001");
+  check("data: SRF-COM-L1-001 lists the old finance id in former_ids", !!common && (common.former_ids || []).indexOf("srf.control.finance.SRF-L1-DEV-006") !== -1, JSON.stringify(common && common.former_ids));
+  for (const query of ["?control=SRF-L1-DEV-006", "?control=finance:SRF-L1-DEV-006", "?control=SRF-COM-L1-001"]) {
+    const page = await openPage(browser, base, 1280, 900, query);
+    const root = await page.evaluate(() => document.getElementById("map-status").dataset.root);
+    check(query + " opens control:common:SRF-COM-L1-001", root === "control:common:SRF-COM-L1-001", String(root));
+    await page.close();
+  }
 }
 
 async function main() {
@@ -2252,6 +2266,7 @@ async function main() {
       ["detailsBesideChain", () => testDetailsBesideChain(browser, base)],
       ["emptyControlsState", () => testEmptyControlsState(browser, base)],
       ["usersPersonaControls", () => testUsersPersonaControls(browser, base)],
+      ["movedControlAlias", () => testMovedControlAlias(browser, base)],
       ["personaRisks", () => testPersonaRisks(browser, base)],
       ["relatedListBullets", () => testRelatedListBullets(browser, base)],
       ["columnLabels", () => testColumnLabels(browser, base)],

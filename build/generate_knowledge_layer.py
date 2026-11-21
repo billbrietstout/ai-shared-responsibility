@@ -94,6 +94,9 @@ def juris_id(jid):        return f"srf.jurisdiction.{jid}"
 def moral_id(dim):        return f"srf.moral.{dim}"
 def requirement_id(rid):  return f"ext.requirement.{rid}"
 def vertical_id(vslug):   return f"srf.vertical.{vslug}"
+COMMON_SCOPE_ID = "srf.concept.common-controls"
+COMMON_SLUG = "common"
+COMMON_URL = f"{SITE}/data/common-controls.json"
 FRAMEWORK_ID = "srf.framework.cosai-srf"
 
 VERTICALS = [
@@ -244,7 +247,8 @@ def build_glossary_outputs(terms):
 # ─────────────────────────────────────────────────────────────────────────────
 
 def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
-                   controls_by_vertical, moral=None, tapestry=None, threats=None):
+                   controls_by_vertical, moral=None, tapestry=None, threats=None,
+                   common=None):
     nodes = {}   # id -> node
     edges = []
     related = {} # id -> set of neighbour ids
@@ -546,13 +550,29 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
         return nid
 
     # controls
-    for vertical, payload in controls_by_vertical.items():
+    # The common file is not a vertical: it gets a scope node and a
+    # part_of_common_scope edge, never srf.vertical.* or belongs_to_vertical.
+    control_sources = dict(controls_by_vertical)
+    if common:
+        control_sources[COMMON_SLUG] = common
+        add_node(COMMON_SCOPE_ID, "All sectors (common) controls", "concept",
+                 COMMON_URL, subtype="common-scope")
+    for vertical, payload in control_sources.items():
+        is_common = vertical == COMMON_SLUG
         for c in payload["controls"]:
             nid = control_id(vertical, c["id"])
             add_node(nid, f'{c["id"]}: {c["title"]}', "control",
-                     f"{SITE}/{vertical}/controls/#{c['id']}",
+                     COMMON_URL if is_common
+                     else f"{SITE}/{vertical}/controls/#{c['id']}",
                      subtype=vertical)
-            add_edge(nid, "belongs_to_vertical", vertical_id(vertical))
+            if is_common:
+                nodes[nid]["lifecycle_stage"] = c["lifecycle_stage"]
+                nodes[nid]["common_status"] = c["common_status"]
+                if c.get("former_ids"):
+                    nodes[nid]["former_ids"] = list(c["former_ids"])
+                add_edge(nid, "part_of_common_scope", COMMON_SCOPE_ID)
+            else:
+                add_edge(nid, "belongs_to_vertical", vertical_id(vertical))
             add_edge(nid, "applies_to_layer", layer_id(c["layer"]))
             persona = c.get("accountable_persona")
             by_model = c.get("accountable_by_model")
@@ -725,7 +745,23 @@ def build_ontology(terms, layers, personas, matrix, regs, jurisdictions,
 # 4. Canonical ID registry
 # ─────────────────────────────────────────────────────────────────────────────
 
-def build_ids(nodes, terms):
+def build_aliases(common):
+    """Old canonical id -> new canonical id for controls that moved.
+
+    A moved control keeps its former id in former_ids. The alias lets a
+    consumer holding the old id reach the new record. The old id is no
+    longer a node.
+    """
+    rows = []
+    for c in (common or {}).get("controls", []):
+        for old in c.get("former_ids", []):
+            rows.append({"alias": old,
+                         "canonical_id": control_id(COMMON_SLUG, c["id"]),
+                         "reason": "moved to the common controls file"})
+    rows.sort(key=lambda r: r["alias"])
+    return rows
+
+def build_ids(nodes, terms, aliases=None):
     entries = []
     for nid, node in nodes.items():
         entries.append({
@@ -752,7 +788,7 @@ def build_ids(nodes, terms):
                        "name, and a URL. IDs are namespaced: srf.layer.*, "
                        "srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, "
                        "srf.jurisdiction.*, srf.moral.*, srf.vertical.*, "
-                       "srf.control.<vertical>.*, ext.framework.*, "
+                       "srf.control.<vertical>.*, srf.control.common.*, ext.framework.*, "
                        "ext.requirement.*, ext.threat.*.",
         "srf_version": SRF_VERSION,
         "updated": UPDATED,
@@ -766,7 +802,7 @@ def build_ids(nodes, terms):
             "srf.jurisdiction": "A jurisdiction that issues a regulation or standard",
             "srf.moral": "A moral-orientation dimension (actor, action, outcome)",
             "srf.vertical": "An industry vertical that owns a control schema",
-            "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
+            "srf.control": "A control, srf.control.<vertical>.<control-id> or srf.control.common.<control-id> for a sector-neutral control",
             "ext.framework": "An external standard or regulation",
             "ext.requirement": "A concrete requirement inside an external instrument",
             "ext.threat": "A catalog risk from threats.json. The definition belongs to the external source.",
@@ -774,6 +810,7 @@ def build_ids(nodes, terms):
         },
         "count": len(entries),
         "ids": entries,
+        "aliases": aliases or [],
         "glossary_xref": xref,
     }
 
@@ -866,6 +903,9 @@ def main():
     tapestry_path = os.path.join(DATA, "tapestry-controls.json")
     tapestry = (json.load(open(tapestry_path, encoding="utf-8"))
                 if os.path.exists(tapestry_path) else None)
+    common_path = os.path.join(DATA, "common-controls.json")
+    common = (json.load(open(common_path, encoding="utf-8"))
+              if os.path.exists(common_path) else None)
     threats_path = os.path.join(DATA, "threats.json")
     threats = (json.load(open(threats_path, encoding="utf-8"))
                if os.path.exists(threats_path) else None)
@@ -873,8 +913,9 @@ def main():
     registry, index, per_term = build_glossary_outputs(terms)
     nodes, edges, nodes_out, edges_out = build_ontology(
         terms, layers, personas, matrix, regs, jurisdictions,
-        controls_by_vertical, moral=moral, tapestry=tapestry, threats=threats)
-    ids = build_ids(nodes, terms)
+        controls_by_vertical, moral=moral, tapestry=tapestry, threats=threats,
+        common=common)
+    ids = build_ids(nodes, terms, build_aliases(common))
     exp_g, exp_o, exp_f = build_exports(
         terms, nodes, edges, layers, personas, matrix)
 
@@ -884,6 +925,7 @@ def main():
         "ontology_edges": len(edges),
         "canonical_ids": ids["count"],
         "controls": sum(len(p["controls"]) for p in controls_by_vertical.values()),
+        "common_controls": len((common or {}).get("controls", [])),
         "tapestry_controls": len((tapestry or {}).get("controls", [])),
         "accountable_for_domain_edges": sum(
             1 for e in edges if e["rel"] == "accountable_for_domain"),

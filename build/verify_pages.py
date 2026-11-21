@@ -74,6 +74,7 @@ VERTICAL_HEADINGS = {
     "Financial Services": "finance", "Healthcare": "healthcare",
     "Insurance": "insurance", "Public Sector": "public-sector",
     "Defense / DoD": "defense", "Manufacturing": "manufacturing",
+    "All sectors (common)": "common",
 }
 full_path = os.path.join(ROOT, "llms-full.txt")
 if os.path.exists(full_path):
