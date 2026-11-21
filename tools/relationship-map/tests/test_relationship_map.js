@@ -1083,8 +1083,9 @@ async function testCopyChain(browser, base) {
     return found && found.core.indexOf("AI-PaaS") !== -1;
   });
   const controlLines = (copied.text.split("## Controls\n")[1] || "").split("\n## ")[0].split("\n").filter((l) => l.indexOf("- ") === 0);
-  check("the Markdown lists every control for AI-PaaS (" + expectedControls.length + ")", controlLines.length === expectedControls.length && expectedControls.length > 0, controlLines.length + " vs " + expectedControls.length);
-  check("the Markdown lists obligations and the accountable persona", /## Obligations\n- /.test(copied.text) && /## Accountable persona\n- Application Developer \(AI-PaaS\)/.test(copied.text), copied.text.slice(-600));
+  const shownControls = await page.evaluate(() => Number(document.getElementById("map-status").dataset.chainControls));
+  check("the Markdown lists every control on the chain, including the controls the risk names (" + expectedControls.length + " named, " + shownControls + " on the chain)", controlLines.length === shownControls && shownControls >= expectedControls.length && expectedControls.length > 0, controlLines.length + " vs " + shownControls + " named " + expectedControls.length);
+  check("the Markdown lists obligations and the accountable personas", /## Obligations\n- /.test(copied.text) && /## Accountable persona\n/.test(copied.text) && /- Application Developer \(AI-PaaS\), named on \d+ controls/.test(copied.text), copied.text.slice(-700));
   check("the button reads Copied and the live region says so", copied.label === "Copied" && /^Copied/.test(copied.status) && copied.active === "copy-chain", JSON.stringify({ label: copied.label, status: copied.status, active: copied.active }));
   await sleep(2300);
   const reset = await page.evaluate(() => ({ label: document.getElementById("copy-chain").textContent, status: document.getElementById("copy-status").textContent }));
@@ -1410,8 +1411,8 @@ async function testDisclosures(browser, base) {
     const details = document.querySelector(".legend-help");
     return { items: items, open: details.open, full: Array.from(details.querySelectorAll("li")).map((li) => li.textContent.trim()), titles: document.querySelectorAll("#chain-legend [title]").length };
   });
-  check("the line-type legend uses the three short labels", legend.items.join("|") === "Solid: direct basis|Dashed: via shared control|Dotted: instrument level", legend.items.join("|"));
-  check("the full sentences are in a closed disclosure, not in title attributes", !legend.open && legend.titles === 0 && legend.full.length === 3 && /The record names this link/.test(legend.full[0]) && /The legal text does not name the risk/.test(legend.full[1]) && /No article record matched/.test(legend.full[2]), JSON.stringify(legend));
+  check("the line-type legend uses the four short labels", legend.items.join("|") === "Solid: direct basis|Dashed: via shared control|Dashed: via a cited obligation|Dotted: instrument level", legend.items.join("|"));
+  check("the full sentences are in a closed disclosure, not in title attributes", !legend.open && legend.titles === 0 && legend.full.length === 4 && /The record names this link/.test(legend.full[0]) && /The legal text does not name the risk/.test(legend.full[1]) && /risk record does not name the control/.test(legend.full[2]) && /No article record matched/.test(legend.full[3]), JSON.stringify(legend));
   await chain.focus(".legend-help summary");
   await chain.keyboard.press("Enter");
   check("Enter opens the line-type explanation", await chain.$eval(".legend-help", (el) => el.open && el.querySelector("li").checkVisibility()));
@@ -2428,6 +2429,160 @@ async function testControlGrouping(browser, base) {
   await page.close();
 }
 
+async function testCitedObligationLinks(browser, base) {
+  console.log("\n## A cited obligation chains a risk to a control");
+  const controlId = "control:common:SRF-COM-L5-001";
+  const solidRisk = "risk:modelinversionandmembership";
+  const dashedRisk = "risk:dsgai05";
+  const solidControl = "control:common:SRF-COM-L2-001";
+  const viaText = "Linked through the cited obligation Annex IV: Technical documentation.";
+  const l5 = readData("common-controls.json").controls.find((c) => c.id === "SRF-COM-L5-001");
+  const inversion = threats.find((t) => t.id === "modelinversionandmembership");
+  const gate = threats.find((t) => t.id === "dsgai05");
+  const citation = (l5 && l5.mappings && l5.mappings.eu_ai_act) || "";
+  check("data: model inversion names SRF-COM-L5-001 and DSGAI05 does not", !!inversion && !!gate && (inversion.related_controls || []).indexOf("srf.control.common.SRF-COM-L5-001") !== -1 && (gate.related_controls || []).indexOf("srf.control.common.SRF-COM-L5-001") === -1);
+  check("data: DSGAI05 lists Annex IV and the control citation names Annex IV", !!gate && (gate.obligations || []).some((o) => o.requirement === "eu-ai-act.annex-iv") && /Annex IV/.test(citation));
+  check("data: model inversion lists Article 53, so that pair is direct and transitive", !!inversion && (inversion.obligations || []).some((o) => o.requirement === "eu-ai-act.art-53") && /Article 53\b/.test(citation));
+  check("data: DSGAI05 names SRF-COM-L2-001 directly", !!gate && (gate.related_controls || []).indexOf("srf.control.common.SRF-COM-L2-001") !== -1);
+
+  async function expandColumn(page, column) {
+    await page.evaluate((key) => {
+      const button = document.querySelector('button.chain-more[data-more-column="' + key + '"]');
+      if (button && /^Show \d+ more$/.test(button.textContent)) button.click();
+    }, column);
+    await sleep(500);
+  }
+  const riskControlEdges = (page) => page.$$eval("#chain-svg path.chain-line", (els) => els.map((el) => ({
+    from: el.getAttribute("data-from"),
+    to: el.getAttribute("data-to"),
+    style: ((el.getAttribute("class") || "").match(/chain-line--(long-dashed|solid|dashed|dotted)/) || [])[1] || ""
+  })).filter((edge) => /^risk:/.test(edge.from || "") && /^control:/.test(edge.to || "")));
+  function pair(edges, from, to) {
+    return edges.filter((edge) => edge.from === from && edge.to === to);
+  }
+
+  const controlPage = await openPage(browser, base, 1280, 900, "?type=control&node=common:SRF-COM-L5-001&view=list");
+  await sleep(400);
+  const selectsBefore = await controlPage.$$eval("#chain-board select", (els) => els.map((el) => el.options.length));
+  const controlEdges = await riskControlEdges(controlPage);
+  const solidPair = pair(controlEdges, solidRisk, controlId);
+  const dashedPair = pair(controlEdges, dashedRisk, controlId);
+  const risksShown = await controlPage.$$eval('#chain-board .chain-col[data-column="risk"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
+  check("control mode lists the direct risk and the cited-obligation risk", risksShown.indexOf(solidRisk) !== -1 && risksShown.indexOf(dashedRisk) !== -1, JSON.stringify(risksShown));
+  check("control mode draws the direct risk-control line solid, once", solidPair.length === 1 && solidPair[0].style === "solid", JSON.stringify(solidPair));
+  check("control mode draws the cited-obligation risk-control line dashed, once", dashedPair.length === 1 && dashedPair[0].style === "long-dashed", JSON.stringify(dashedPair));
+  const dashPatterns = await controlPage.evaluate(() => {
+    function dash(selector) {
+      const el = document.querySelector(selector);
+      return el ? getComputedStyle(el).strokeDasharray : "";
+    }
+    return {
+      shared: dash("#chain-legend .chain-line--dashed"),
+      cited: dash("#chain-legend .chain-line--long-dashed"),
+      drawn: dash('#chain-svg path.chain-line--long-dashed[data-from="risk:dsgai05"]')
+    };
+  });
+  check("the cited-obligation class and the shared-control class use different stroke-dasharray values", dashPatterns.shared && dashPatterns.cited && dashPatterns.shared !== "none" && dashPatterns.cited !== "none" && dashPatterns.shared !== dashPatterns.cited && dashPatterns.drawn === dashPatterns.cited, JSON.stringify(dashPatterns));
+  await controlPage.click('#chain-board button[data-chain-id="' + dashedRisk + '"]');
+  await sleep(300);
+  const dashedDetails = await controlPage.$eval("#details-chain", (el) => el.innerText);
+  const afterClick = await controlPage.evaluate(() => ({
+    value: document.getElementById("chain-select-control").value,
+    options: Array.from(document.querySelectorAll("#chain-board select")).map((el) => el.options.length),
+    status: document.getElementById("map-status").textContent,
+    risks: document.getElementById("map-status").dataset.chainRisks,
+    controls: document.getElementById("map-status").dataset.chainControls,
+    obligations: document.getElementById("map-status").dataset.chainObligations
+  }));
+  check("the cited-obligation card names Annex IV in the details panel", dashedDetails.indexOf(viaText) !== -1, dashedDetails.slice(0, 500));
+  check("clicking that card keeps the control menu and the drop-down counts", afterClick.value === controlId && afterClick.options.join() === selectsBefore.join(), JSON.stringify(afterClick));
+  check("the status line counts the risks, obligations, and controls on the chain", new RegExp("Showing " + afterClick.risks + " risks?, " + afterClick.obligations + " obligations?, " + afterClick.controls + " controls?, and ").test(afterClick.status), afterClick.status);
+  await controlPage.click('#chain-board button[data-chain-id="' + solidRisk + '"]');
+  await sleep(200);
+  const solidDetails = await controlPage.$eval("#details-chain", (el) => el.innerText);
+  check("the direct card does not say it was reached through a cited obligation", solidDetails.indexOf("Linked through the cited obligation") === -1, solidDetails.slice(0, 400));
+  check("no page errors in control mode", controlPage.__errors.length === 0, controlPage.__errors.join("; "));
+  await controlPage.close();
+
+  const riskPage = await openPage(browser, base, 1280, 900, "?type=risk&node=dsgai05&view=list");
+  await expandColumn(riskPage, "control");
+  const riskEdges = await riskControlEdges(riskPage);
+  const fromRiskDashed = pair(riskEdges, dashedRisk, controlId);
+  const fromRiskSolid = pair(riskEdges, dashedRisk, solidControl);
+  const riskControls = await riskPage.$$eval('#chain-board .chain-col[data-column="control"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
+  check("risk mode lists the cited-obligation control", riskControls.indexOf(controlId) !== -1, String(riskControls.length));
+  check("risk mode draws that control dashed and keeps the named control solid", fromRiskDashed.length === 1 && fromRiskDashed[0].style === "long-dashed" && fromRiskSolid.length === 1 && fromRiskSolid[0].style === "solid", JSON.stringify({ dashed: fromRiskDashed, solid: fromRiskSolid }));
+  await riskPage.click('#chain-board button[data-chain-id="' + controlId + '"]');
+  await sleep(250);
+  const riskDetails = await riskPage.$eval("#details-chain", (el) => el.innerText);
+  check("risk mode names Annex IV on the control reached through it", riskDetails.indexOf(viaText) !== -1, riskDetails.slice(0, 400));
+  await riskPage.close();
+
+  const bothPage = await openPage(browser, base, 1280, 900, "?type=risk&node=modelinversionandmembership&view=list");
+  await expandColumn(bothPage, "control");
+  const bothEdges = pair(await riskControlEdges(bothPage), solidRisk, controlId);
+  check("a pair that is both direct and transitive is one solid line", bothEdges.length === 1 && bothEdges[0].style === "solid", JSON.stringify(bothEdges));
+  await bothPage.close();
+
+  const obligationPage = await openPage(browser, base, 1280, 900, "?type=obligation&node=obligation:eu-ai-act.annex-iv&view=list");
+  await expandColumn(obligationPage, "risk");
+  await expandColumn(obligationPage, "control");
+  const obligationEdges = await riskControlEdges(obligationPage);
+  const obligationDashed = pair(obligationEdges, dashedRisk, controlId);
+  const obligationSolid = pair(obligationEdges, solidRisk, controlId);
+  check("obligation mode draws the cited-obligation line dashed and the direct line solid", obligationDashed.length === 1 && obligationDashed[0].style === "long-dashed" && obligationSolid.length === 1 && obligationSolid[0].style === "solid", JSON.stringify({ dashed: obligationDashed, solid: obligationSolid }));
+  await obligationPage.click('#chain-board button[data-chain-id="' + dashedRisk + '"]');
+  await sleep(250);
+  const obligationDetails = await obligationPage.$eval("#details-chain", (el) => el.innerText);
+  check("obligation mode names Annex IV on the risk reached through it", obligationDetails.indexOf("Linked through the cited obligation") !== -1 && obligationDetails.indexOf("Annex IV: Technical documentation") !== -1, obligationDetails.slice(0, 500));
+  const obligationSelect = await obligationPage.$eval("#chain-select-obligation", (el) => el.value);
+  check("clicking the risk leaves the obligation drop-down on Annex IV", obligationSelect === "obligation:eu-ai-act.annex-iv", obligationSelect);
+  await obligationPage.close();
+
+  const personaPage = await openPage(browser, base, 1280, 900, "?type=persona&node=model-provider&view=list");
+  await expandColumn(personaPage, "risk");
+  await expandColumn(personaPage, "control");
+  const personaEdges = await riskControlEdges(personaPage);
+  const personaDashed = pair(personaEdges, dashedRisk, controlId);
+  const personaSolid = pair(personaEdges, solidRisk, controlId);
+  check("accountable mode draws the cited-obligation line dashed and the direct line solid", personaDashed.length === 1 && personaDashed[0].style === "long-dashed" && personaSolid.length === 1 && personaSolid[0].style === "solid", JSON.stringify({ dashed: personaDashed, solid: personaSolid }));
+  const personaBefore = await personaPage.$eval("#chain-select-accountable", (el) => el.value);
+  await personaPage.click('#chain-board button[data-chain-id="' + dashedRisk + '"]');
+  await sleep(250);
+  const personaAfter = await personaPage.evaluate(() => ({
+    value: document.getElementById("chain-select-accountable").value,
+    text: document.getElementById("details-chain").innerText
+  }));
+  check("accountable mode names Annex IV and clicking the risk does not change the persona menu", personaAfter.value === personaBefore && personaAfter.value === "persona:model-provider" && personaAfter.text.indexOf("Linked through the cited obligation") !== -1 && personaAfter.text.indexOf("Annex IV: Technical documentation") !== -1, JSON.stringify({ value: personaAfter.value, hit: personaAfter.text.indexOf("Annex IV: Technical documentation") }));
+  check("no page errors on the cited-obligation chains", personaPage.__errors.length === 0, personaPage.__errors.join("; "));
+  await personaPage.close();
+
+  const tapOn = await openPage(browser, base, 1280, 900, "?type=risk&node=dsgai05&view=list&tapestry=1");
+  await expandColumn(tapOn, "control");
+  const tapEdges = await riskControlEdges(tapOn);
+  const tapCards = await tapOn.$$eval("#chain-board button[data-chain-id]", (els) => els.map((el) => el.dataset.chainId));
+  const shortDash = await tapOn.$$eval("#chain-svg path.chain-line--dashed", (els) => els.filter((el) => (el.getAttribute("class") || "").indexOf("long-dashed") === -1).length);
+  check("Show Tapestry keeps the solid line, the short shared-control dash, and the longer cited-obligation dash", pair(tapEdges, dashedRisk, solidControl).length === 1 && pair(tapEdges, dashedRisk, solidControl)[0].style === "solid" && pair(tapEdges, dashedRisk, controlId).length === 1 && pair(tapEdges, dashedRisk, controlId)[0].style === "long-dashed" && shortDash > 0, JSON.stringify({ solid: pair(tapEdges, dashedRisk, solidControl), cited: pair(tapEdges, dashedRisk, controlId), shortDash: shortDash }));
+  check("cited-obligation links leave Tapestry controls out of this SRF chain", tapCards.every((id) => id.indexOf("control:tapestry:") !== 0), tapCards.filter((id) => id.indexOf("tapestry") !== -1).join(","));
+  await tapOn.close();
+
+  const tapControl = await openPage(browser, base, 1280, 900, "?type=control&node=tapestry:TAP-SRF-L1-CON-001&view=list&tapestry=1");
+  await sleep(400);
+  const tapLine = await tapControl.evaluate(() => {
+    const lines = Array.from(document.querySelectorAll("#chain-svg path.chain-line")).map((el) => el.getAttribute("class") || "");
+    const cards = Array.from(document.querySelectorAll("#chain-board button[data-chain-id]")).map((el) => el.dataset.chainId);
+    return {
+      solid: lines.filter((name) => name.indexOf("chain-line--solid") !== -1).length,
+      long: lines.filter((name) => name.indexOf("chain-line--long-dashed") !== -1).length,
+      risks: cards.filter((id) => id.indexOf("risk:") === 0),
+      persona: cards.some((id) => id.indexOf("accountable:") === 0),
+      checked: document.getElementById("show-tapestry").checked
+    };
+  });
+  check("a Tapestry control keeps a solid persona line and is not chained by a cited obligation", tapLine.checked && tapLine.solid >= 1 && tapLine.long === 0 && tapLine.risks.length === 0 && tapLine.persona, JSON.stringify(tapLine));
+  await tapControl.close();
+}
+
 async function testMovedControlAlias(browser, base) {
   console.log("\n## An old control link resolves to the moved control");
   const common = readData("common-controls.json").controls.find((c) => c.id === "SRF-COM-L1-001");
@@ -2436,6 +2591,135 @@ async function testMovedControlAlias(browser, base) {
     const page = await openPage(browser, base, 1280, 900, query);
     const root = await page.evaluate(() => document.getElementById("map-status").dataset.root);
     check(query + " opens control:common:SRF-COM-L1-001", root === "control:common:SRF-COM-L1-001", String(root));
+    await page.close();
+  }
+}
+
+const EXTENSION_BADGE = "Proposed AI Alliance extension, not SRF v1.0";
+
+async function testTapestryToggle(browser, base) {
+  console.log("\n## Show Tapestry changes menus and the chain in every mode");
+  const tapFile = readData("tapestry-controls.json");
+  const tapControls = tapFile.controls.filter((control) => control.layer);
+  const tapPersonas = readData("personas.json").personas.filter((persona) => persona.provenance === "proposed-extension");
+  const tapSpecs = (readData("personas.json").sector_specializations || []).filter((spec) => spec.provenance === "proposed-extension");
+  const tapIds = tapControls.map((control) => "control:tapestry:" + control.id);
+  const personaIds = tapPersonas.concat(tapSpecs).map((persona) => "persona:" + persona.id);
+  const sample = "control:tapestry:TAP-SRF-L1-CON-001";
+  check("data has Tapestry controls and proposed-extension personas", tapIds.length > 0 && personaIds.length > 0 && tapIds.indexOf(sample) !== -1, tapIds.length + " controls, " + personaIds.length + " personas");
+
+  const named = {};
+  threats.forEach((threat) => (threat.related_controls || []).forEach((id) => { named[id] = true; }));
+  const srfFull = controls.map((control) => "srf.control." + control.slug + "." + control.id);
+  const tapFull = tapFile.controls.map((control) => "srf.control.tapestry." + control.id);
+  const srfUnlinked = srfFull.filter((id) => !named[id]).length;
+  const tapUnlinked = tapFull.filter((id) => !named[id]).length;
+
+  async function menus(page) {
+    return page.evaluate(() => {
+      function read(key) {
+        const select = document.getElementById("chain-select-" + key);
+        return {
+          values: Array.from(select.options).map((option) => option.value).filter(Boolean),
+          texts: Array.from(select.options).map((option) => option.textContent),
+          groups: Array.from(select.querySelectorAll("optgroup")).map((group) => group.label)
+        };
+      }
+      return {
+        risk: read("risk"),
+        obligation: read("obligation"),
+        control: read("control"),
+        accountable: read("accountable"),
+        status: document.getElementById("map-status").textContent,
+        checked: document.getElementById("show-tapestry").checked,
+        coverage: document.getElementById("coverage-body").textContent
+      };
+    });
+  }
+
+  for (const mode of ["threat", "obligation", "control", "account"]) {
+    const page = await startMode(browser, base, 1280, 900, mode);
+    const off = await menus(page);
+    const offChain = await page.evaluate(() => Array.from(document.querySelectorAll("#chain-board [data-extension='1'], #details-meta.is-extension")).map((el) => el.textContent));
+    check(mode + " starts with Tapestry off and no extension badge", !off.checked && offChain.length === 0 && off.status.indexOf("are included") === -1, off.status);
+    check(mode + " menus omit Tapestry controls and personas while the box is off", tapIds.every((id) => off.control.values.indexOf(id) === -1) && personaIds.every((id) => off.accountable.values.indexOf(id) === -1) && off.control.texts.join(" ").indexOf(EXTENSION_BADGE) === -1, off.control.values.filter((id) => id.indexOf("tapestry") !== -1).join(","));
+
+    await openOptionsPanel(page);
+    await page.$eval("#show-tapestry", (el) => { if (!el.checked) el.click(); });
+    await sleep(400);
+    const on = await menus(page);
+    const addedControls = on.control.values.filter((id) => off.control.values.indexOf(id) === -1);
+    const addedPersonas = on.accountable.values.filter((id) => off.accountable.values.indexOf(id) === -1);
+    check(mode + " checking the box adds each Tapestry control to the Control menu", sameSet(addedControls, tapIds), JSON.stringify(diff(addedControls, tapIds)));
+    check(mode + " checking the box adds each proposed-extension persona to the Accountable menu", sameSet(addedPersonas, personaIds), JSON.stringify(diff(addedPersonas, personaIds)));
+    check(mode + " checking the box leaves the Risk and Obligation menus unchanged", sameSet(on.risk.values, off.risk.values) && sameSet(on.obligation.values, off.obligation.values));
+    const tapestryGroups = on.control.groups.filter((label) => label.indexOf("Tapestry") !== -1);
+    check(mode + " Tapestry control groups and persona options carry the extension badge", tapestryGroups.length > 0 && tapestryGroups.every((label) => label.indexOf(EXTENSION_BADGE) !== -1) && personaIds.every((id) => {
+      const option = on.accountable.texts[on.accountable.values.indexOf(id) + 1];
+      return option && option.indexOf(EXTENSION_BADGE) !== -1;
+    }), JSON.stringify(tapestryGroups.slice(0, 2)));
+    check(mode + " status counts the included Tapestry controls and personas", on.status.indexOf(tapIds.length + " Tapestry controls and " + personaIds.length + " Tapestry personas are included.") !== -1, on.status);
+
+    const srfSentence = srfUnlinked + " of " + srfFull.length + " controls are not named by any risk record.";
+    const tapSentence = tapUnlinked + " of " + tapFull.length + " Tapestry controls are not named by any risk record.";
+    const mixed = (srfUnlinked + tapUnlinked) + " of " + (srfFull.length + tapFull.length) + " controls are not named";
+    check(mode + " keeps Tapestry out of the SRF missing-mapping count", on.coverage.indexOf(srfSentence) !== -1 && on.coverage.indexOf(tapSentence) !== -1 && on.coverage.indexOf(mixed) === -1, on.coverage.slice(on.coverage.indexOf("not named"), on.coverage.indexOf("not named") + 500));
+
+    await pickValue(page, "control", sample);
+    const chain = await page.evaluate((id) => {
+      const card = document.querySelector('#chain-board button[data-chain-id="' + id + '"]');
+      const owner = document.querySelector('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]');
+      return {
+        control: card ? card.textContent : "",
+        owner: owner ? owner.textContent : "",
+        extensionCards: document.querySelectorAll("#chain-board [data-extension='1']").length,
+        details: document.getElementById("details-meta").textContent,
+        detailsBody: document.getElementById("details-chain").textContent,
+        select: document.getElementById("chain-select-control").value
+      };
+    }, sample);
+    check(mode + " chain shows the Tapestry control and its persona with the badge", chain.select === sample && chain.extensionCards >= 2 && chain.control.indexOf(EXTENSION_BADGE) !== -1 && chain.owner.indexOf(EXTENSION_BADGE) !== -1 && chain.details === EXTENSION_BADGE && chain.detailsBody.indexOf(EXTENSION_BADGE) !== -1, JSON.stringify(chain).slice(0, 500));
+
+    const beforeClick = await menus(page);
+    if (await page.$('#chain-board button[data-chain-id="' + sample + '"]')) {
+      await page.click('#chain-board button[data-chain-id="' + sample + '"]');
+      await sleep(300);
+    }
+    const afterClick = await menus(page);
+    const pressed = await page.evaluate((id) => {
+      const card = document.querySelector('#chain-board button[data-chain-id="' + id + '"]');
+      return {
+        pressed: card ? card.getAttribute("aria-pressed") : "",
+        select: document.getElementById("chain-select-control").value
+      };
+    }, sample);
+    check(mode + " clicking the Tapestry card focuses it and does not change the menus", pressed.pressed === "true" && pressed.select === sample && afterClick.control.values.join() === beforeClick.control.values.join() && afterClick.accountable.values.join() === beforeClick.accountable.values.join() && afterClick.risk.values.join() === beforeClick.risk.values.join() && afterClick.obligation.values.join() === beforeClick.obligation.values.join(), afterClick.control.values.length + " vs " + beforeClick.control.values.length);
+
+    if (mode === "account") {
+      const personaId = personaIds.slice().sort()[0];
+      await pickValue(page, "accountable", personaId);
+      const personaChain = await page.evaluate((id) => {
+        const cards = Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]')).map((card) => card.dataset.chainId);
+        const more = document.querySelector('#chain-board button.chain-more[data-more-column="control"]');
+        const extra = more ? Number((/^Show (\d+) more$/.exec(more.textContent) || [])[1] || 0) : 0;
+        const owner = document.querySelector('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]');
+        return {
+          shown: cards.length + extra,
+          tapestry: cards.filter((cardId) => cardId.indexOf("control:tapestry:") === 0).length + extra,
+          owner: owner ? owner.textContent : "",
+          select: document.getElementById("chain-select-accountable").value
+        };
+      }, personaId);
+      check("accountable mode puts that persona's Tapestry controls on the chain with the badge", personaChain.select === personaId && personaChain.shown > 0 && personaChain.tapestry === personaChain.shown && personaChain.owner.indexOf(EXTENSION_BADGE) !== -1, JSON.stringify(personaChain));
+    }
+
+    await openOptionsPanel(page);
+    await page.$eval("#show-tapestry", (el) => { if (el.checked) el.click(); });
+    await sleep(400);
+    const again = await menus(page);
+    const gone = await page.evaluate(() => document.querySelectorAll("#chain-board [data-extension='1'], #chain-board button[data-chain-id^='control:tapestry:']").length);
+    check(mode + " unchecking the box removes Tapestry controls, personas, and chain badges", !again.checked && tapIds.every((id) => again.control.values.indexOf(id) === -1) && personaIds.every((id) => again.accountable.values.indexOf(id) === -1) && gone === 0 && again.status.indexOf("are included") === -1 && sameSet(again.control.values, off.control.values) && sameSet(again.accountable.values, off.accountable.values), again.status);
+    check(mode + " throws no page error", page.__errors.length === 0, page.__errors.join("; "));
     await page.close();
   }
 }
@@ -2473,6 +2757,7 @@ async function main() {
       ["emptyControlsState", () => testEmptyControlsState(browser, base)],
       ["usersPersonaControls", () => testUsersPersonaControls(browser, base)],
       ["movedControlAlias", () => testMovedControlAlias(browser, base)],
+      ["citedObligationLinks", () => testCitedObligationLinks(browser, base)],
       ["personaRisks", () => testPersonaRisks(browser, base)],
       ["relatedListBullets", () => testRelatedListBullets(browser, base)],
       ["columnLabels", () => testColumnLabels(browser, base)],
@@ -2494,6 +2779,7 @@ async function main() {
           await testOptionsLayout(browser, base, width, height);
         }
       }],
+      ["tapestryToggle", () => testTapestryToggle(browser, base)],
       ["chainCardFocus", async () => {
         for (const [width, height] of [[1280, 800], [375, 812]]) {
           await testChainCardFocusOnly(browser, base, width, height);

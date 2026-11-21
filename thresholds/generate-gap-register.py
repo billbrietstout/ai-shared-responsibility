@@ -309,6 +309,7 @@ def main():
     common_ctls = load_common_controls()
     common_entries = [classify_vertical_control(c, src, idx) for c, src in common_ctls]
     common_bound = [e for e in common_entries if e["bindings"]]
+    register["control_coverage_gaps"] = load_control_coverage_gaps()
     register["common"] = {
         "source_file": common_ctls[0][1] if common_ctls else None,
         "control_count": len(common_entries),
@@ -350,6 +351,55 @@ def render_common_section(w, vd):
           + "; ".join(f"{layer}: {len(ids)}"
                       for layer, ids in sorted(by_layer.items())) + ".")
         w("")
+
+
+SRF_MODELS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
+
+
+def load_control_coverage_gaps():
+    """Risk cells whose related controls do not name an owner in that model.
+
+    The flag is no_linked_control_in_model on data/threats.json. The cell still
+    names one accountable persona. The gap is the missing control.
+    """
+    path = HERE.parent / "data" / "threats.json"
+    doc = json.loads(path.read_text())
+    gaps = []
+    for threat in doc.get("threats", []):
+        for model in SRF_MODELS:
+            cell = (threat.get("accountability") or {}).get(model) or {}
+            if not cell.get("no_linked_control_in_model"):
+                continue
+            gaps.append({
+                "threat_id": threat["id"],
+                "name": threat.get("name"),
+                "srf_layer": threat.get("srf_layer"),
+                "operating_model": model,
+                "accountable_persona": cell.get("accountable_persona"),
+                "gap_class": "no_linked_control_in_model",
+            })
+    return gaps
+
+
+def render_coverage_section(w, gaps):
+    w("## Risks with no linked control in an operating model")
+    w("")
+    w("A risk cell sets `no_linked_control_in_model` when none of its related "
+      "controls names an accountable persona in that operating model. The cell "
+      "still names one persona. The gap is the missing control.")
+    w("")
+    if not gaps:
+        w("No risk cell sets `no_linked_control_in_model`.")
+        w("")
+        return
+    w("| Risk | Name | Layer | Operating model | Accountable persona |")
+    w("| --- | --- | --- | --- | --- |")
+    for gap in gaps:
+        w(f"| `{gap['threat_id']}` | {gap['name']} | {gap['srf_layer']} | "
+          f"{gap['operating_model']} | `{gap['accountable_persona']}` |")
+    w("")
+    w(f"{len(gaps)} cells. Class: `no_linked_control_in_model`.")
+    w("")
 
 
 def render_markdown(reg):
@@ -445,6 +495,7 @@ def render_markdown(reg):
               + "; ".join(f"{layer}: {len(ids)}"
                           for layer, ids in sorted(by_layer.items())) + ".")
             w("")
+    render_coverage_section(w, reg.get("control_coverage_gaps") or [])
     w("## Summary finding")
     w("")
     n = len(reg["controls"])

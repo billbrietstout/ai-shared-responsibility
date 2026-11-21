@@ -130,6 +130,25 @@ Unbound thresholds by layer: L1: 11; L2: 10; L3: 11; L4: 12; L5: 9.
 
 Unbound thresholds by layer: L1: 10; L2: 8; L3: 10; L4: 9; L5: 8.
 
+## Risks with no linked control in an operating model
+
+A risk cell sets `no_linked_control_in_model` when none of its related controls names an accountable persona in that operating model. The cell still names one persona. The gap is the missing control.
+
+| Risk | Name | Layer | Operating model | Accountable persona |
+| --- | --- | --- | --- | --- |
+| `devmodelleak` | Direct development-time model leak | L5 | AI-SaaS | `model-provider` |
+| `missingoversight` | Missing human oversight | L1 | AI-SaaS | `ai-system-governance` |
+| `missingoversight` | Missing human oversight | L1 | AI-PaaS | `ai-system-governance` |
+| `missingoversight` | Missing human oversight | L1 | IaaS | `ai-system-governance` |
+| `misleadingclaims` | Misleading AI claims to customers | L1 | AI-SaaS | `ai-system-governance` |
+| `misleadingclaims` | Misleading AI claims to customers | L1 | AI-PaaS | `ai-system-governance` |
+| `misleadingclaims` | Misleading AI claims to customers | L1 | Agent-PaaS | `ai-system-governance` |
+| `misleadingclaims` | Misleading AI claims to customers | L1 | IaaS | `ai-system-governance` |
+| `highriskuse` | Prohibited or unclassified high-risk use | L1 | IaaS | `ai-system-governance` |
+| `uncontestable` | Decisions people cannot contest or get explained | L1 | IaaS | `ai-system-governance` |
+
+10 cells. Class: `no_linked_control_in_model`.
+
 ## Summary finding
 
 Of 6 threshold controls, 6 resolve to live anchor controls in rev 5; the catalog's breadth is not the problem. The gap is uniformly one of parameter typing: no rev 5 ODP can express a measured objective. The best any binding achieves is `cadence_only`, where a frequency ODP can carry how often something is reviewed or tested but not what value it must hold, over what window, with what tolerated shortfall.

@@ -39,11 +39,11 @@ Three rows record an alternative Bill can switch to without rewriting the defini
 
 ## Risk records and obligation links
 
-The 31 rows in `data/threats.json` are the Risk records. The generator emits one `ext.threat.*` node per row, a `mitigated_by` edge to each related control, a `risk_owner` edge to the accountable persona for each of the four SRF models, and a `triggers_obligation` edge for each `obligations[]` entry. The edge carries the same `basis` as the row, and the citation list in `obligation_source` (the edge field is not named `source`, because `source` is the edge's start node). There is no separate path file. A ROCA path is the join of these edges.
+The 42 rows in `data/threats.json` are the Risk records (L1 12, L2 7, L3 8, L4 8, L5 7). Eleven of the L1 rows are a draft of business and usage risks. The generator emits one `ext.threat.*` node per row, a `mitigated_by` edge to each related control, a `risk_owner` edge to the accountable persona for each of the four SRF models, and a `triggers_obligation` edge for each `obligations[]` entry. The edge carries the same `basis` as the row, and the citation list in `obligation_source` (the edge field is not named `source`, because `source` is the edge's start node). There is no separate path file. A ROCA path is the join of these edges.
 
-`obligations[]` has 314 links. 309 use `basis` `derived_via_control`. The source lists the related control, the mapping key, and the citation string that matched a requirement. That link means the control that addresses the risk cites that requirement. It does not mean the legal text names the risk.
+`obligations[]` has 363 links. 333 use `basis` `derived_via_control`. The source lists the related control, the mapping key, and the citation string that matched a requirement. That link means the control that addresses the risk cites that requirement. It does not mean the legal text names the risk.
 
-Five links use `basis` `official_text`. Each one is EU AI Act Article 15(5). The source quotes the sentence that names data poisoning, model poisoning of pre-trained components used in training, adversarial examples or model evasion, and confidentiality attacks. The quote is from the consolidated text of Regulation (EU) 2024/1689 dated 2026-07-27. The five risks are evasion, supply-chain model poisoning, disclosure in output, model inversion and membership inference, and model exfiltration by input-output harvesting. No link uses `named_citation`. A candidate with no control citation that matches a current obligation, and no article sentence that names the risk, was not stored. Catalog instruments are not obligations, so an OWASP or AICM citation does not become a link. `schemas/threats.schema.json` requires `basis` and `source`. `build/verify_knowledge_layer.py` rejects a derived link whose citation does not match the requirement. An `official_text` link must carry a URL and a citation.
+Five links use `basis` `official_text`. Each one is EU AI Act Article 15(5). The source quotes the sentence that names data poisoning, model poisoning of pre-trained components used in training, adversarial examples or model evasion, and confidentiality attacks. The quote is from the consolidated text of Regulation (EU) 2024/1689 dated 2026-07-27. The five risks are evasion, supply-chain model poisoning, disclosure in output, model inversion and membership inference, and model exfiltration by input-output harvesting. Two more `official_text` links quote OECD/LEGAL/0449. Principle 1.2(b) on `outofpurpose` names uses outside the intended purpose. Principle 1.4(b) on `missingoversight` names undue harm and the override. Twenty-three links use `basis` `named_citation`. Each one names a requirement that states a duty for that risk. The text does not state the harm, and no related control cites that requirement. The chain draws that link dashed. A requirement that is only an institutional procedure, or a bundle that does not name one harm, is still not stored. Catalog instruments are not obligations, so an OWASP or AICM citation does not become a link. `schemas/threats.schema.json` requires `basis` and `source`. `build/verify_knowledge_layer.py` rejects a derived link whose citation does not match the requirement. An `official_text` link must carry a URL and a citation.
 
 ## Article records and the instrument fallback
 
@@ -76,4 +76,41 @@ The three joint-accountability controls now have one owner per model:
 - Finance `SRF-L4-MON-003` is `ai-platform-provider` on AI-PaaS and Agent-PaaS, where matrix.json marks L4 provider-managed, and `ai-model-serving` on IaaS, where the customer runs the instances and the persona text assigns confidential-computing execution to AI Model Serving.
 - Finance `SRF-L5-MON-001` is `ai-platform-provider` on AI-PaaS and Agent-PaaS, and `ai-model-serving` on IaaS. Signing the artifact stays on `SRF-L5-DEV-002`, owned by `model-provider`.
 
-18 risk-owner cells were set to the persona of a linked control that applies in that model, preferring a control at the risk's layer. At that edit, 4 cells had no linked control in that model (`modelinversionandmembership` and `devmodelleak` and `dsgai05` on AI-SaaS, and `dsgai11` on IaaS). Those four kept their persona and set `no_linked_control_in_model`. Later controls closed the `dsgai05` AI-SaaS gap and the `dsgai11` IaaS gap, so those two cells no longer set `no_linked_control_in_model`. SRF-COM-L5-001 and SRF-COM-L5-004 close the `modelinversionandmembership` AI-SaaS gap, because both apply in AI-SaaS and name `model-provider`, which is that cell's persona. One cell still has no linked control in that model: `devmodelleak` on AI-SaaS. 9 of the original 31 mismatched cells already matched after the sector map and the control-owner edits, so the persona was left as it was. The previous persona and note for each changed cell are in `owner_alignment`.
+18 risk-owner cells were set to the persona of a linked control that applies in that model, preferring a control at the risk's layer. At that edit, 4 cells had no linked control in that model (`modelinversionandmembership` and `devmodelleak` and `dsgai05` on AI-SaaS, and `dsgai11` on IaaS). Those four kept their persona and set `no_linked_control_in_model`. Later controls closed the `dsgai05` AI-SaaS gap and the `dsgai11` IaaS gap, so those two cells no longer set `no_linked_control_in_model`. SRF-COM-L5-001 and SRF-COM-L5-004 close the `modelinversionandmembership` AI-SaaS gap, because both apply in AI-SaaS and name `model-provider`, which is that cell's persona. One cell from that edit still has no linked control in that model: `devmodelleak` on AI-SaaS. The draft L1 rows add nine more cells with `no_linked_control_in_model`: `missingoversight` on AI-SaaS, AI-PaaS, and IaaS, `misleadingclaims` on all four models, `uncontestable` on IaaS, and `highriskuse` on IaaS. `thresholds/gap-register.md` lists every cell that sets the flag. 9 of the original 31 mismatched cells already matched after the sector map and the control-owner edits, so the persona was left as it was. The previous persona and note for each changed cell are in `owner_alignment`.
+
+## Orphan check
+
+Bill's rule for the relationship map is that every risk, obligation, control, and accountable persona sits in at least one complete ROCA chain. A chain runs from a risk to an obligation, from that obligation to a control, and from that control to an accountable persona.
+
+`build/roca_orphans.py` reads the same links the map builds in `tools/relationship-map/app.js`.
+
+- Risk to obligation: `threats[].obligations[]` in `data/threats.json`. An obligation is a `requirements[]` row in `data/moral-regulatory-hierarchy.json`.
+- Obligation to control: a control citation that matches the requirement, using the same match as `citationsForControl`, or the control named in `threats[].obligations[].source.controls[]`.
+- Risk to control, direct column: the control id is in `threats[].related_controls`.
+- Risk to control, transitive column: the control cites an obligation that some risk links. A control can appear in both columns. The two columns are counted separately.
+- Control to persona: `accountable_by_model` or `accountable_persona` on controls in `data/*-controls.json`, including `data/common-controls.json`. A persona named for any of the four operating models (AI-SaaS, AI-PaaS, Agent-PaaS, and IaaS) counts.
+
+An item is an orphan when a link is missing.
+
+- A risk is an orphan when it has no obligation, or no obligation that reaches a control with an accountable persona.
+- An obligation is an orphan when no risk links it, or it reaches no control.
+- A control is an orphan when it is in neither the direct column nor the transitive column, or it reaches no obligation, or it names no accountable persona.
+- A persona is an orphan when no control it is accountable for is on a complete chain.
+
+The persona list is `personas[]` and `sector_specializations[]` in `data/personas.json`. The check counts every control file under `data/`. Tapestry records use the same rule as `isTapestryRecord` in `tools/relationship-map/app.js`: a persona with provenance `proposed-extension`, and a control that `controlIsTapestry` would mark, including the TAP-* controls. Those records are not in the SRF orphan counts. The report prints them on a separate line.
+
+A control that is also a row in `thresholds/gap-register.json` is still an orphan when a link is missing. The report marks that line `in gap register`.
+
+An item is counted in each layer it names. The total counts the item once. Layer here is the SRF layer on the record (`L1` through `L5`).
+
+Run the check from the repository root:
+
+```
+python3 build/roca_orphans.py
+```
+
+The command prints each orphan, grouped by type and layer, with the id and the missing link. `thresholds/orphan-baseline.json` holds the orphan counts by type and layer, and the direct and transitive control-to-risk counts. The run fails when an orphan count is above that baseline, and when the script itself errors. Orphans at or below the baseline do not fail the run.
+
+`mode` in that file is `report-only`. Set `mode` to `blocking` to fail the run when any orphan remains. Use that setting when the counts reach 0.
+
+`python3 build/test_roca_orphans.py` runs the fixture tests. `python3 build/roca_orphans.py --print-baseline` prints a baseline document for the current data. Replace `thresholds/orphan-baseline.json` with that output when the accepted counts change, and keep `mode` as `report-only` until the counts are 0.

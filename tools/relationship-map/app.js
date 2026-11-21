@@ -11,7 +11,7 @@
  *   persona  data/personas.json                       personas[] and sector_specializations[]
  *   model    data/matrix.json                         cosai-core models, plus proposed-extension
  *                                                     models drawn only while Tapestry is on
- *   risk     data/threats.json                        threats[] (the 31 Risk records)
+ *   risk     data/threats.json                        threats[] (the Risk records)
  *   control  data/<vertical>-controls.json            controls[]
  *   policy   tools/policy-pyramid/data.json           levels[]
  *   topic    data/ai-agentic-principles.json          sections{}
@@ -33,7 +33,10 @@
  *                   or the SRF model named for a sector model in the sector map
  *   control-policy  controls[].policy_level or controls[].policy, when the value
  *                   matches a policy level (no control has this field today)
- *   risk-control    threats[].related_controls
+ *   risk-control    threats[].related_controls (solid). Also a longer dash when
+ *                   citationsForControl matches a requirement in
+ *                   threats[].obligations[]. One pair is one line, and the
+ *                   direct line wins.
  *
  * Chain provenance is drawn on the four-column board:
  *   risk to obligation     threats[].obligations[] (dashed when the basis is
@@ -41,19 +44,24 @@
  *   obligation to control  the source control on that link, or a citation match
  *                          (solid). A current-obligation citation with no article
  *                          match is dotted and marked Instrument-level.
+ *   risk to control        solid from related_controls. A longer dash when the
+ *                          control only reaches the risk through a requirement
+ *                          it cites.
  *   control to persona     controls[].accountable_by_model for the chosen model
  *
  * Every mode opens the same four-column board: Explore a risk, Explore a
  * control, and Explore accountability. The mode sets which column holds the
  * choice list. ?view=full and ?view=full&node= open this board when the query
  * names a risk, control, persona, or node that can build a chain, and the
- * empty start state otherwise. ?tapestry=1 includes proposed-extension
- * records in the layer view. Tapestry records stay out of an SRF chain.
+ * empty start state otherwise. ?tapestry=1 and the Show Tapestry checkbox
+ * include proposed-extension controls and personas in the column menus, the
+ * ROCA chain, and the layer view. Each of those records is marked
+ * "Proposed AI Alliance extension, not SRF v1.0". With the box off, those
+ * records stay out of the SRF chain and out of the SRF missing-mapping count.
  *
  * A control is Tapestry when its file or record provenance is proposed-extension,
  * or when every operating model it names is a proposed-extension model.
  * A persona is Tapestry when its provenance is proposed-extension.
- * Tapestry records stay out of an SRF chain.
  * Operating-model strings that are not matrix models and are not in the sector
  * map are not drawn.
  */
@@ -119,6 +127,7 @@
   }
 
   var GAP_NOTE = "This control isn't in any operating model filter yet.";
+  var EXTENSION_BADGE = "Proposed AI Alliance extension, not SRF v1.0";
 
   var chainEmpty = document.getElementById("chain-empty");
   var chainWorkspaceHeading = document.getElementById("chain-workspace-heading");
@@ -216,6 +225,7 @@
   var personaPick = "";
   var reqPick = "";
   var catalog = null;
+  var citationCache = {};
   var currentChain = null;
   var chainFocus = "";
   var linkHits = null;
@@ -284,6 +294,10 @@
       if (!extIds[listed[i]]) return false;
     }
     return true;
+  }
+
+  function isTapestryRecord(attrs) {
+    return !!(attrs && attrs.tapestry);
   }
 
   function policyNodeFor(control, policyLookup) {
@@ -372,6 +386,7 @@
     var Graph = window.graphology && window.graphology.UndirectedGraph;
     if (typeof Graph !== "function") throw new Error("Graphology did not load.");
     graph = new Graph();
+    citationCache = {};
     skippedModels = {};
     missingLinks = [];
     coreIds = {};
@@ -704,8 +719,10 @@
   }
 
   function controlInChain(attrs) {
-    if (!attrs || attrs.kind !== "control" || attrs.tapestry) return false;
+    if (!attrs || attrs.kind !== "control") return false;
+    if (isTapestryRecord(attrs) && !showTapestry) return false;
     if (!nodeAllowed(attrs)) return false;
+    if (isTapestryRecord(attrs)) return modelFilter === "all";
     if (!(attrs.coreModels && attrs.coreModels.length)) return false;
     if (modelFilter === "all") return true;
     return attrs.coreModels.indexOf(modelFilter) !== -1;
@@ -719,8 +736,9 @@
   }
 
   function basisIsDashed(basis) {
-    return basis === "derived_via_control" || basis === "editorial" || basis === "editorial_mapping" ||
-      !(basis === "official_text" || basis === "official_legal_text" || basis === "named_citation" || basis === "named_cite");
+    return basis === "derived_via_control" || basis === "named_citation" || basis === "named_cite" ||
+      basis === "editorial" || basis === "editorial_mapping" ||
+      !(basis === "official_text" || basis === "official_legal_text");
   }
 
   /* Recorded values come from threats[].obligations[].basis. The chain shows
@@ -732,8 +750,8 @@
     official_legal_text: "official text",
     editorial: "editorial judgment",
     editorial_mapping: "editorial judgment",
-    named_citation: "named citation",
-    named_cite: "named citation"
+    named_citation: "derived from the cited duty",
+    named_cite: "derived from the cited duty"
   };
   var BASIS_GLOSS = {
     derived_via_control: "The legal text is not the source of this link. It runs through a shared control.",
@@ -741,8 +759,8 @@
     official_legal_text: "Taken from the official text.",
     editorial: "The legal text is not the source of this link.",
     editorial_mapping: "The legal text is not the source of this link.",
-    named_citation: "The record names this citation.",
-    named_cite: "The record names this citation."
+    named_citation: "The cited text states a duty. It does not state this harm. The link does not run through a control.",
+    named_cite: "The cited text states a duty. It does not state this harm. The link does not run through a control."
   };
 
   function basisSentence(basis) {
@@ -776,7 +794,7 @@
     var key = edge.from + ">" + edge.to + ">" + edge.style;
     if (chain.edges.some(function (item) { return item.from === edge.from && item.to === edge.to && item.style === edge.style; })) return;
     chain.edges.push(edge);
-    if (edge.style === "dashed") chain.dashed += 1;
+    if (edge.style === "dashed" || edge.style === "long-dashed") chain.dashed += 1;
     if (edge.style === "dotted") chain.fallbacks += 1;
   }
 
@@ -807,7 +825,10 @@
       owasp_llm_top10: "OWASP LLM Top 10",
       mitre_atlas: "MITRE ATLAS",
       biml_llm24: "BIML",
-      owasp_dsgai: "OWASP DSGAI"
+      owasp_dsgai: "OWASP DSGAI",
+      mit_ai_risk_repository: "MIT AI Risk Repository",
+      oecd_ai_principles: "OECD AI Principles",
+      oecd_aim: "OECD AIM"
     };
     return Object.keys(labels).map(function (key) {
       if (!map[key]) return "";
@@ -816,9 +837,10 @@
   }
 
   /* Search matches recorded identifiers and descriptions only. The OWASP LLM
-   * Top 10, MITRE ATLAS, and OWASP DSGAI mapping strings are the framework IDs
-   * on the record. BIML is left out of the search index. */
-  var SEARCH_MAPPING_KEYS = ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai"];
+   * Top 10, MITRE ATLAS, OWASP DSGAI, MIT AI Risk Repository, OECD AI
+   * Principles, and OECD AIM mapping strings are the framework IDs on the
+   * record. BIML is left out of the search index. */
+  var SEARCH_MAPPING_KEYS = ["owasp_llm_top10", "mitre_atlas", "owasp_dsgai", "mit_ai_risk_repository", "oecd_ai_principles", "oecd_aim"];
   function threatSearchText(threat) {
     var map = threat.mappings || {};
     return SEARCH_MAPPING_KEYS.map(function (key) { return map[key]; })
@@ -828,6 +850,9 @@
   /* A DSGAI record has no per-entry source URL in the AI Exchange field. It
    * cites the DSGAI collection, which threats.json records once under sources. */
   function riskSource(threat) {
+    if (typeof threat.source_url === "string" && threat.source_url.indexOf("http") === 0) {
+      return { url: threat.source_url, label: "Risk definition" };
+    }
     if (typeof threat.ai_exchange === "string" && threat.ai_exchange.indexOf("http") === 0) {
       return { url: threat.ai_exchange, label: "Risk definition" };
     }
@@ -880,7 +905,8 @@
       fullId: attrs.fullId,
       evidenceText: attrs.evidenceText || "",
       evidenceDetail: attrs.evidenceDetail || "",
-      crossLayerNote: attrs.crossLayerNote || ""
+      crossLayerNote: attrs.crossLayerNote || "",
+      tapestry: isTapestryRecord(attrs)
     };
   }
 
@@ -900,13 +926,23 @@
         });
       }
     });
+    if (!lines.length && showTapestry && isTapestryRecord(attrs) && attrs.accountablePersona) {
+      lines.push({
+        model: "",
+        label: "Accountable persona",
+        personaId: attrs.accountablePersona,
+        name: personaLabel(attrs.accountablePersona),
+        missing: false
+      });
+    }
     return {
       id: "accountable:" + nodeId,
       controlId: nodeId,
       controlName: attrs.name,
       lines: lines,
       sectorPersona: attrs.accountablePersona || "",
-      linkBasis: true
+      linkBasis: true,
+      tapestry: isTapestryRecord(attrs)
     };
   }
 
@@ -926,10 +962,12 @@
   }
 
   function citationsForControl(attrs) {
+    var cacheKey = attrs && attrs.fullId;
+    if (cacheKey && citationCache[cacheKey]) return citationCache[cacheKey];
     var articles = [];
     var seenReq = {};
     var matched = {};
-    var keys = Object.keys(attrs.mappings || {});
+    var keys = Object.keys((attrs && attrs.mappings) || {});
     keys.forEach(function (key) {
       if (key === "mapping_status_note") return;
       var citation = attrs.mappings[key];
@@ -960,7 +998,73 @@
       return String(a.req.citation) < String(b.req.citation) ? -1 : String(a.req.citation) > String(b.req.citation) ? 1 : 0;
     });
     fallbacks.sort(function (a, b) { return a.reg.name < b.reg.name ? -1 : a.reg.name > b.reg.name ? 1 : 0; });
-    return { articles: articles, fallbacks: fallbacks };
+    var cited = { articles: articles, fallbacks: fallbacks };
+    if (cacheKey) citationCache[cacheKey] = cited;
+    return cited;
+  }
+
+  /* A requirement the control cites and the risk lists. The risk record does
+   * not have to name the control. */
+  function viasBetween(threat, attrs) {
+    var cited = {};
+    citationsForControl(attrs).articles.forEach(function (item) {
+      cited[item.req.id] = item.req;
+    });
+    var hits = [];
+    var seen = {};
+    (threat.obligations || []).forEach(function (link) {
+      var req = cited[link.requirement];
+      if (!req || seen[req.id]) return;
+      seen[req.id] = true;
+      hits.push({ id: req.id, citation: req.citation || "", title: req.title || "" });
+    });
+    return hits;
+  }
+
+  function noteVia(card, vias) {
+    if (!card || !vias || !vias.length) return;
+    if (!card.viaObligations) card.viaObligations = [];
+    vias.forEach(function (via) {
+      if (card.viaObligations.some(function (item) { return item.id === via.id; })) return;
+      card.viaObligations.push(via);
+    });
+  }
+
+  function viaSentence(vias) {
+    var names = vias.map(function (via) {
+      if (via.citation && via.title) return via.citation + ": " + via.title;
+      return via.citation || via.title || via.id;
+    });
+    if (names.length === 1) return "Linked through the cited obligation " + names[0] + ".";
+    return "Linked through the cited obligations " + names.join("; ") + ".";
+  }
+
+  function directRiskControl(chain) {
+    var cards = chain.startKind === "risk" ? chain.controls : chain.risks;
+    return cards.some(function (item) { return !item.viaObligations || !item.viaObligations.length; });
+  }
+
+  /* Direct related_controls stays one solid line. A cited-obligation link
+   * uses a longer dash, and it is not drawn again when the solid line is
+   * already there. */
+  function addRiskControlEdge(chain, riskId, controlId, direct, vias) {
+    if (!direct && (!vias || !vias.length)) return;
+    var style = direct ? "solid" : "long-dashed";
+    var i;
+    for (i = 0; i < chain.edges.length; i++) {
+      var item = chain.edges[i];
+      if (item.from !== riskId || item.to !== controlId) continue;
+      if (item.style !== "solid" && item.style !== "dashed" && item.style !== "long-dashed") continue;
+      if (item.style !== "solid" && style === "solid") {
+        item.style = "solid";
+        chain.dashed -= 1;
+        delete item.via;
+      }
+      return;
+    }
+    var edge = { from: riskId, to: controlId, style: style };
+    if (style === "long-dashed") edge.via = vias;
+    addEdge(chain, edge);
   }
 
   function pushControlGaps(chain, threat, controlCount) {
@@ -998,11 +1102,13 @@
     chain.risks.push(riskCard(threat));
     var nodes = [];
     var seen = {};
-    (threat.related_controls || []).forEach(function (fullId) {
-      var node = controlRecord(fullId);
-      if (!node || seen[node.id] || !controlInChain(node.attrs)) return;
-      seen[node.id] = true;
-      nodes.push(node);
+    graph.forEachNode(function (id, controlAttrs) {
+      if (!controlInChain(controlAttrs) || seen[id]) return;
+      var direct = (threat.related_controls || []).indexOf(controlAttrs.fullId) !== -1;
+      var vias = direct ? [] : viasBetween(threat, controlAttrs);
+      if (!direct && !vias.length) return;
+      seen[id] = true;
+      nodes.push({ id: id, attrs: controlAttrs, direct: direct, vias: vias });
     });
     nodes.sort(function (a, b) {
       return compareControlNodes(a, b);
@@ -1038,7 +1144,12 @@
         if (source.inChain && seen[source.nodeId]) addEdge(chain, { from: cardId, to: source.nodeId, style: "solid" });
       });
     });
-    nodes.forEach(function (node) { chain.controls.push(controlCard(node.id, node.attrs)); });
+    nodes.forEach(function (node) {
+      var card = controlCard(node.id, node.attrs);
+      if (node.vias.length) card.viaObligations = node.vias.slice();
+      chain.controls.push(card);
+      addRiskControlEdge(chain, nodeId, node.id, node.direct, node.vias);
+    });
     sortChainControls(chain);
     pushControlGaps(chain, threat, nodes.length);
     addPersonaCards(chain, nodes);
@@ -1047,16 +1158,26 @@
 
   function chainFromControl(nodeId, attrs) {
     var chain = blankChain("control");
-    var threats = [];
+    var rows = [];
     Object.keys(catalog.threats).forEach(function (id) {
       var threat = catalog.threats[id];
-      if ((threat.related_controls || []).indexOf(attrs.fullId) !== -1) threats.push(threat);
+      var direct = (threat.related_controls || []).indexOf(attrs.fullId) !== -1;
+      var vias = viasBetween(threat, attrs);
+      if (!direct && !vias.length) return;
+      rows.push({ threat: threat, direct: direct, vias: direct ? [] : vias });
     });
-    threats.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
-    if (!threats.length) {
+    rows.sort(function (a, b) { return a.threat.name < b.threat.name ? -1 : a.threat.name > b.threat.name ? 1 : 0; });
+    if (!rows.length) {
       chain.gaps.push({ column: "risk", text: "No risk record names this control." });
     }
-    threats.forEach(function (threat) { chain.risks.push(riskCard(threat)); });
+    var threats = [];
+    rows.forEach(function (row) {
+      var card = riskCard(row.threat);
+      if (row.vias.length) card.viaObligations = row.vias.slice();
+      chain.risks.push(card);
+      threats.push(row.threat);
+      addRiskControlEdge(chain, card.id, nodeId, row.direct, row.vias);
+    });
     var cited = citationsForControl(attrs);
     if (!cited.articles.length && !cited.fallbacks.length) {
       chain.gaps.push({ column: "obligation", text: "No obligation is linked to this control." });
@@ -1148,10 +1269,12 @@
       var named = modelsFor(attrs).some(function (modelId) {
         return (attrs.accountableByModel || {})[modelId] === id;
       });
+      if (!named && isTapestryRecord(attrs) && attrs.accountablePersona === id) named = true;
       if (named) nodes.push({ id: nodeId, attrs: attrs });
     });
-    var controlFullIds = {};
-    nodes.forEach(function (node) { controlFullIds[node.attrs.fullId] = true; });
+    nodes.sort(function (a, b) {
+      return compareControlNodes(a, b);
+    });
     var threats = [];
     Object.keys(catalog.threats).forEach(function (threatId) {
       var threat = catalog.threats[threatId];
@@ -1159,25 +1282,38 @@
         if (modelFilter !== "all" && modelId !== modelFilter) return false;
         return ((threat.accountability || {})[modelId] || {}).accountable_persona === id;
       });
-      var viaControl = (threat.related_controls || []).some(function (fullId) { return controlFullIds[fullId]; });
-      if (named || viaControl) threats.push(threat);
+      var linked = nodes.some(function (node) {
+        var direct = (threat.related_controls || []).indexOf(node.attrs.fullId) !== -1;
+        return direct || viasBetween(threat, node.attrs).length;
+      });
+      if (named || linked) threats.push(threat);
     });
     threats.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
-    threats.forEach(function (threat) { chain.risks.push(riskCard(threat)); });
-    nodes.sort(function (a, b) {
-      return compareControlNodes(a, b);
+    var riskCards = {};
+    threats.forEach(function (threat) {
+      var card = riskCard(threat);
+      riskCards[card.id] = card;
+      chain.risks.push(card);
     });
     var riskIds = {};
     chain.risks.forEach(function (card) { riskIds[card.id] = true; });
     var obligationCards = {};
     nodes.forEach(function (node) {
-      chain.controls.push(controlCard(node.id, node.attrs));
-      addEdge(chain, { from: node.id, to: "accountable:persona:" + id, style: "solid" });
+      var card = controlCard(node.id, node.attrs);
       threats.forEach(function (threat) {
-        if ((threat.related_controls || []).indexOf(node.attrs.fullId) !== -1 && riskIds["risk:" + threat.id]) {
-          addEdge(chain, { from: "risk:" + threat.id, to: node.id, style: "solid" });
+        var riskId = "risk:" + threat.id;
+        if (!riskIds[riskId]) return;
+        var direct = (threat.related_controls || []).indexOf(node.attrs.fullId) !== -1;
+        var vias = direct ? [] : viasBetween(threat, node.attrs);
+        if (!direct && !vias.length) return;
+        if (vias.length) {
+          noteVia(card, vias);
+          noteVia(riskCards[riskId], vias);
         }
+        addRiskControlEdge(chain, riskId, node.id, direct, vias);
       });
+      chain.controls.push(card);
+      addEdge(chain, { from: node.id, to: "accountable:persona:" + id, style: "solid" });
       var cited = citationsForControl(node.attrs);
       cited.articles.forEach(function (item) {
         var cardId = "obligation:" + item.req.id;
@@ -1240,18 +1376,20 @@
     } else if (!chain.obligations.length) {
       chain.gaps.push({ column: "obligation", text: "No obligation is linked to these controls." });
     }
+    var extensionPersona = graph.hasNode("persona:" + id) && isTapestryRecord(graph.getNodeAttributes("persona:" + id));
     chain.personaCards.push({
       id: "accountable:persona:" + id,
       controlId: "persona:" + id,
       controlName: personaLabel(id),
       lines: [{
         model: modelFilter,
-        label: modelFilter === "all" ? "Selected models" : modelName(modelFilter),
+        label: extensionPersona ? "Accountable persona" : (modelFilter === "all" ? "Selected models" : modelName(modelFilter)),
         personaId: id,
         name: personaLabel(id),
         missing: false
       }],
-      sectorPersona: ""
+      sectorPersona: "",
+      tapestry: extensionPersona
     });
     chain.personaCount = 1;
     return chain;
@@ -1347,12 +1485,27 @@
     });
     threats.sort(function (a, b) { return a.threat.name < b.threat.name ? -1 : a.threat.name > b.threat.name ? 1 : 0; });
     threats.forEach(function (row) {
-      chain.risks.push(riskCard(row.threat));
+      var card = riskCard(row.threat);
+      chain.risks.push(card);
       if (row.direct) addEdge(chain, { from: "risk:" + row.threat.id, to: obligationId, style: basisIsDashed(row.direct.basis) ? "dashed" : "solid" });
-      row.viaControl.forEach(function (node) { addEdge(chain, { from: "risk:" + row.threat.id, to: node.id, style: "solid" }); });
+      nodes.forEach(function (node) {
+        var direct = (row.threat.related_controls || []).indexOf(node.attrs.fullId) !== -1;
+        var vias = direct ? [] : viasBetween(row.threat, node.attrs);
+        if (!direct && !vias.length) return;
+        if (vias.length) {
+          noteVia(card, vias);
+          if (!node.viaObligations) node.viaObligations = [];
+          vias.forEach(function (via) {
+            if (!node.viaObligations.some(function (item) { return item.id === via.id; })) node.viaObligations.push(via);
+          });
+        }
+        addRiskControlEdge(chain, "risk:" + row.threat.id, node.id, direct, vias);
+      });
     });
     nodes.forEach(function (node) {
-      chain.controls.push(controlCard(node.id, node.attrs));
+      var control = controlCard(node.id, node.attrs);
+      if (node.viaObligations && node.viaObligations.length) control.viaObligations = node.viaObligations.slice();
+      chain.controls.push(control);
       addEdge(chain, { from: obligationId, to: node.id, style: node.instrumentLevel ? "dotted" : "solid" });
     });
     if (!nodes.length) chain.gaps.push({ column: "control", text: "No control cites this obligation for the selected operating model." });
@@ -1363,7 +1516,7 @@
   function buildChain(nodeId) {
     if (!graph.hasNode(nodeId)) return null;
     var attrs = graph.getNodeAttributes(nodeId);
-    if (attrs.tapestry) return null;
+    if (isTapestryRecord(attrs) && !showTapestry) return null;
     if (attrs.kind === "risk") return chainFromRisk(nodeId, attrs);
     if (attrs.kind === "control") {
       if (!controlInChain(attrs)) return null;
@@ -1427,9 +1580,25 @@
   }
 
   function personaChoiceIds() {
-    return CORE_PERSONAS.filter(function (id) {
+    var ids = CORE_PERSONAS.filter(function (id) {
       return graph.hasNode("persona:" + id) && graph.getNodeAttribute("persona:" + id, "provenance") !== "proposed-extension";
     }).map(function (id) { return "persona:" + id; });
+    if (!showTapestry) return ids;
+    var extra = [];
+    graph.forEachNode(function (id, attrs) {
+      if (attrs.kind === "persona" && isTapestryRecord(attrs) && ids.indexOf(id) === -1) extra.push(id);
+    });
+    extra.sort(function (a, b) {
+      var an = graph.getNodeAttribute(a, "name");
+      var bn = graph.getNodeAttribute(b, "name");
+      return an < bn ? -1 : an > bn ? 1 : 0;
+    });
+    return ids.concat(extra);
+  }
+
+  function menuLabel(attrs) {
+    if (attrs && isTapestryRecord(attrs)) return attrs.name + ", " + EXTENSION_BADGE;
+    return attrs ? attrs.name : "";
   }
 
   function riskChoiceIds() {
@@ -1485,14 +1654,12 @@
       }
     } else {
       var ids = key === "risk" ? riskChoiceIds() : key === "control" ? suggestedIds() : personaChoiceIds();
-      fillSelect(select, ids, ALL_LABEL[key] + " (" + ids.length + ")", function (attrs) {
-        return attrs.name;
-      }, key === "accountable", key === "control");
+      fillSelect(select, ids, ALL_LABEL[key] + " (" + ids.length + ")", menuLabel, key === "accountable", key === "control");
       if (current && ids.indexOf(current) === -1 && graph.hasNode(current)) {
         var held2 = document.createElement("option");
         held2.value = current;
         held2.dataset.nodeId = current;
-        held2.textContent = graph.getNodeAttribute(current, "name");
+        held2.textContent = menuLabel(graph.getNodeAttributes(current));
         select.appendChild(held2);
       }
     }
@@ -1690,6 +1857,10 @@
             button.appendChild(makeEl("span", "chain-card__meta", "Control to persona. No source citation recorded yet. The control's source record names this persona."));
           }
         }
+        if ((column[2] === "control" || column[2] === "accountable") && item.tapestry) {
+          button.appendChild(makeEl("span", "chain-card__tag chain-card__badge", EXTENSION_BADGE));
+          button.dataset.extension = "1";
+        }
         colBody.appendChild(button);
       });
       if (collapsible) {
@@ -1765,6 +1936,8 @@
       var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", "M " + x1 + " " + y1 + " C " + mid + " " + y1 + ", " + mid + " " + y2 + ", " + x2 + " " + y2);
       path.setAttribute("class", "chain-line chain-line--" + edge.style);
+      path.setAttribute("data-from", edge.from);
+      path.setAttribute("data-to", edge.to);
       svg.appendChild(path);
     });
   }
@@ -1888,6 +2061,9 @@
     } else {
       appendSentence(meta, "Operating model filter: " + (modelFilter === "all" ? "All" : modelName(modelFilter)) + ".");
     }
+    if (focus && (focus.kind === "control" || focus.kind === "accountable") && focus.item.tapestry) {
+      appendSentence(meta, EXTENSION_BADGE);
+    }
 
     var account = sectionBlock("Accountability", "details-accountability");
     if (chain.startKind === "persona") {
@@ -1896,7 +2072,9 @@
           var row = makeEl("p", "");
           row.appendChild(document.createTextNode(line.label + ": "));
           row.appendChild(makeLink("/personas/#" + line.personaId, line.name));
-          row.appendChild(document.createTextNode(". The control record names this persona for " + line.label + "."));
+          row.appendChild(document.createTextNode(item.tapestry
+            ? ". The control record names this persona."
+            : ". The control record names this persona for " + line.label + "."));
           account.appendChild(row);
         });
       });
@@ -1970,7 +2148,11 @@
       relatedList.appendChild(makeEl("li", "", emptyText));
     }
     related.appendChild(relatedList);
-    if ((chain.startKind === "risk" || chain.startKind === "control") && chain.risks.length) {
+    var focusedVia = focus && (focus.kind === "risk" || focus.kind === "control") && focus.item.viaObligations && focus.item.viaObligations.length
+      ? focus.item.viaObligations : null;
+    if (focusedVia) {
+      appendSentence(related, viaSentence(focusedVia));
+    } else if ((chain.startKind === "risk" || chain.startKind === "control") && directRiskControl(chain)) {
       appendSentence(related, NO_CONTROL_BASIS);
     }
 
@@ -2183,8 +2365,12 @@
         else focusKind = "Control";
       }
       detailsKind.textContent = focusKind || (rootAttrs ? (KIND_LABEL[rootAttrs.kind] || rootAttrs.kind) : reqPick ? "Obligation" : "Accountable");
-      detailsMeta.hidden = true;
-      detailsMeta.textContent = "";
+      var extensionFocus = false;
+      var focusItem = focusedChainItem(currentChain);
+      if (focusItem && (focusItem.kind === "control" || focusItem.kind === "accountable") && focusItem.item.tapestry) extensionFocus = true;
+      detailsMeta.hidden = !extensionFocus;
+      detailsMeta.textContent = extensionFocus ? EXTENSION_BADGE : "";
+      detailsMeta.classList.toggle("is-extension", extensionFocus);
       detailsModelNote.hidden = true;
       detailsModelNote.textContent = "";
       connectionsHeading.hidden = true;
@@ -2224,7 +2410,7 @@
     var meta = [];
     if (attrs.meta) meta.push(attrs.meta);
     if (attrs.layer) meta.push(layerSentence(attrs.layer) || attrs.layer);
-    if (attrs.provenance === "proposed-extension") meta.push("Proposed extension. Not part of SRF v1.0.");
+    if (attrs.provenance === "proposed-extension" || isTapestryRecord(attrs)) meta.push(EXTENSION_BADGE);
     if (meta.length) {
       detailsMeta.hidden = false;
       detailsMeta.textContent = meta.join(" · ");
@@ -2232,6 +2418,7 @@
       detailsMeta.hidden = true;
       detailsMeta.textContent = "";
     }
+    detailsMeta.classList.toggle("is-extension", meta.indexOf(EXTENSION_BADGE) !== -1);
     var gap = outsideFilter(attrs) ? GAP_NOTE : "";
     detailsModelNote.hidden = !gap;
     detailsModelNote.textContent = gap;
@@ -2303,6 +2490,24 @@
     return counts;
   }
 
+  function tapestryInclusionNote() {
+    if (!showTapestry || !graph) return "";
+    var controls = 0;
+    var personas = 0;
+    suggestedIds().forEach(function (id) {
+      if (isTapestryRecord(graph.getNodeAttributes(id))) controls += 1;
+    });
+    personaChoiceIds().forEach(function (id) {
+      if (isTapestryRecord(graph.getNodeAttributes(id))) personas += 1;
+    });
+    if (!controls && !personas) return "";
+    var parts = [];
+    if (controls) parts.push(unit(controls, "Tapestry control", "Tapestry controls"));
+    if (personas) parts.push(unit(personas, "Tapestry persona", "Tapestry personas"));
+    var joined = parts.length > 1 ? parts[0] + " and " + parts[1] : parts[0];
+    return " " + joined + (controls + personas === 1 ? " is included." : " are included.");
+  }
+
   function publish() {
     var allowed = countNodes(function (id, attrs) { return nodeAllowed(attrs); });
     var text = "";
@@ -2322,6 +2527,7 @@
     } else {
       text = "Choose a risk, an obligation, a control, or a persona to see its chain.";
     }
+    text += tapestryInclusionNote();
     statusEl.textContent = text;
     statusEl.dataset.view = view;
     statusEl.dataset.model = modelFilter;
@@ -2357,7 +2563,7 @@
     var every = [];
     graph.forEachNode(function (id, attrs) {
       if (attrs.kind !== "control" || !nodeAllowed(attrs) || !layerAllowed(attrs)) return;
-      if (modelFilter === "all" && !(attrs.coreModels && attrs.coreModels.length)) return;
+      if (modelFilter === "all" && !(attrs.coreModels && attrs.coreModels.length) && !isTapestryRecord(attrs)) return;
       if (!attrs.layer) return;
       every.push(id);
     });
@@ -2681,13 +2887,21 @@
       var option = document.createElement("option");
       option.value = id;
       option.dataset.nodeId = id;
+      if (isTapestryRecord(attrs)) {
+        option.dataset.extension = "1";
+        if (!flat) groups[key].dataset.extension = "1";
+      }
       option.textContent = label(attrs);
       groups[key].appendChild(option);
     });
     order.sort(function (x, y) {
       return (layerRank(x.layer) - layerRank(y.layer)) || compareSectors(x.sector, y.sector);
     });
-    if (!flat) order.forEach(function (group) { select.appendChild(groups[group.key]); });
+    if (!flat) order.forEach(function (group) {
+      var node = groups[group.key];
+      if (node.dataset.extension && node.label.indexOf(EXTENSION_BADGE) === -1) node.label += " · " + EXTENSION_BADGE;
+      select.appendChild(node);
+    });
   }
 
   function renderSummary() {
@@ -2952,7 +3166,7 @@
 
   function blockedNote(id) {
     var attrs = graph.getNodeAttributes(id);
-    if (attrs.tapestry) return "This is a Tapestry record. Tapestry records stay out of an SRF chain.";
+    if (isTapestryRecord(attrs) && !showTapestry) return "This is a Tapestry record. Turn on Show Tapestry to include it in the chain.";
     return outsideFilter(attrs)
       ? GAP_NOTE + " Choose All to see it in a chain."
       : "This control does not list " + modelName(modelFilter) + ". Choose All under Operating model to see it.";
@@ -3039,7 +3253,9 @@
       return;
     }
     var attrs = graph.getNodeAttributes(node);
-    if (attrs.kind === "persona" && CORE_PERSONAS.indexOf(attrs.ref) !== -1 && attrs.provenance !== "proposed-extension") {
+    if (isTapestryRecord(attrs)) showTapestry = true;
+    var corePersona = attrs.kind === "persona" && CORE_PERSONAS.indexOf(attrs.ref) !== -1 && attrs.provenance !== "proposed-extension";
+    if (corePersona || (attrs.kind === "persona" && isTapestryRecord(attrs))) {
       personaPick = attrs.ref;
       entry = "account";
       view = "chain";
@@ -3122,9 +3338,11 @@
       }
     } else {
       var asked = personaParam;
-      if (CORE_PERSONAS.indexOf(asked) !== -1 && graph.hasNode("persona:" + asked)) {
+      if (graph.hasNode("persona:" + asked)) {
         var personaAttrs = graph.getNodeAttributes("persona:" + asked);
-        if (personaAttrs.provenance !== "proposed-extension") {
+        if (isTapestryRecord(personaAttrs)) showTapestry = true;
+        var corePersona = CORE_PERSONAS.indexOf(asked) !== -1 && personaAttrs.provenance !== "proposed-extension";
+        if (corePersona || isTapestryRecord(personaAttrs)) {
           personaPick = asked;
           openColumn = "accountable";
           entry = "account";
@@ -3273,8 +3491,8 @@
         if (attrs.kind !== "persona") return;
         if (attrs.tapestry && !showTapestry) return;
         if ((attrs.srfLayers || []).indexOf(layerId) === -1) return;
-        if (CORE_PERSONAS.indexOf(attrs.ref) === -1) return;
-        people.appendChild(nodeButton(id, attrs.name));
+        if (CORE_PERSONAS.indexOf(attrs.ref) === -1 && !isTapestryRecord(attrs)) return;
+        people.appendChild(nodeButton(id, isTapestryRecord(attrs) ? attrs.name + ", " + EXTENSION_BADGE : attrs.name));
       });
       if (people.childNodes.length) body.appendChild(people);
       var controls = [];
@@ -3287,7 +3505,9 @@
       details.appendChild(makeEl("summary", "", controls.length + (controls.length === 1 ? " control" : " controls")));
       var wrap = makeEl("div", "context-controls");
       controls.forEach(function (id) {
-        wrap.appendChild(nodeButton(id, graph.getNodeAttribute(id, "name")));
+        var controlName = graph.getNodeAttribute(id, "name");
+        if (isTapestryRecord(graph.getNodeAttributes(id))) controlName += ", " + EXTENSION_BADGE;
+        wrap.appendChild(nodeButton(id, controlName));
       });
       details.appendChild(wrap);
       body.appendChild(details);
@@ -3416,6 +3636,14 @@
     if (root && graph.hasNode(root) && !nodeAllowed(graph.getNodeAttributes(root))) {
       root = null;
       selected = null;
+      chainFocus = "";
+    }
+    if (!showTapestry && personaPick && graph.hasNode("persona:" + personaPick) && isTapestryRecord(graph.getNodeAttributes("persona:" + personaPick))) {
+      personaPick = "";
+      if (!root) {
+        selected = null;
+        chainFocus = "";
+      }
     }
     commit(push);
   }
@@ -3471,7 +3699,8 @@
   function start() {
     window.__relationshipMap = {
       graph: graph,
-      outsideFilter: function (id) { return outsideFilter(graph.getNodeAttributes(id)); }
+      outsideFilter: function (id) { return outsideFilter(graph.getNodeAttributes(id)); },
+      isTapestryRecord: function (id) { return graph.hasNode(id) && isTapestryRecord(graph.getNodeAttributes(id)); }
     };
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
@@ -3639,7 +3868,7 @@
       if (!button || !graph || !graph.hasNode(button.dataset.nodeId)) return;
       var id = button.dataset.nodeId;
       var attrs = graph.getNodeAttributes(id);
-      if (attrs.kind === "persona" && CORE_PERSONAS.indexOf(attrs.ref) !== -1) {
+      if (attrs.kind === "persona" && (CORE_PERSONAS.indexOf(attrs.ref) !== -1 || isTapestryRecord(attrs))) {
         openPersona(attrs.ref, true);
         return;
       }
@@ -3880,7 +4109,15 @@
     });
     var controlCount = 0;
     var unlinked = 0;
+    var tapestryListed = 0;
+    var tapestryUnlinked = 0;
     Object.keys(catalog.byFull).forEach(function (fullId) {
+      var nodeId = catalog.byFull[fullId];
+      if (graph.hasNode(nodeId) && isTapestryRecord(graph.getNodeAttributes(nodeId))) {
+        tapestryListed += 1;
+        if (!named[fullId]) tapestryUnlinked += 1;
+        return;
+      }
       controlCount += 1;
       if (!named[fullId]) unlinked += 1;
     });
@@ -3896,6 +4133,9 @@
       unlinked + " of " + controlCount + " controls are not named by any risk record. That is a missing mapping, not a confirmed gap.",
       uncited + " of " + Object.keys(catalog.reqs).length + " obligation records are not cited by a risk obligation link. That is a missing mapping, not a confirmed absence of a control."
     ];
+    if (tapestryListed) {
+      missing.push(tapestryUnlinked + " of " + tapestryListed + " Tapestry controls are not named by any risk record. Tapestry controls stay out of the count above.");
+    }
     (catalog.emptyCrosswalk || []).forEach(function (row) {
       missing.push(row.name + " (" + row.id + ") has an empty srf_crosswalk. That is a missing mapping.");
     });
