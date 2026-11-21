@@ -499,23 +499,28 @@ def main():
             "nineteen draft L2 and L3 rows add business, information, and application risks. "
             "Fifteen draft L4 and L5 rows add platform and AI Model Provider risks.",
         )
+    l45_fragment = (
+        " Draft L4 and L5 rows add slugs such as weakplatformmfa, "
+        "incompleteplatformqms, unscreenedmodelpersonnel, and opaquefederalmodelacq."
+    )
     conv = doc.get("id_convention", "")
-    marker = "unlabeledsyntheticout."
-    if marker in conv and "weakplatformaccountability" not in conv:
-        doc["id_convention"] = conv.replace(
-            marker,
-            "unlabeledsyntheticout. Draft L4 and L5 rows add slugs such as weakplatformmfa, "
-            "incompleteplatformqms, unscreenedmodelpersonnel, and opaquefederalmodelacq.",
-            1,
-        )
+    while conv.count(l45_fragment) > 1:
+        conv = conv.replace(l45_fragment, "", 1)
+    if l45_fragment not in conv:
+        tail = " Those slugs are not external catalog ids."
+        if tail in conv:
+            conv = conv.replace(tail, l45_fragment + tail, 1)
+        else:
+            conv = conv.rstrip() + "." + l45_fragment
+    doc["id_convention"] = conv
     # Remove accidental duplicate id_convention fragments from an earlier edit.
     while "Draft L2 and L3 rows add slugs such as incompletetechdoc" in doc.get("id_convention", ""):
-        fragment = (
+        l23_fragment = (
             " Draft L2 and L3 rows add slugs such as incompletetechdoc, missinginforecords, "
             "nopremarketconformity, and unlabeledsyntheticout."
         )
-        if doc["id_convention"].count(fragment) > 1:
-            doc["id_convention"] = doc["id_convention"].replace(fragment, "", 1)
+        if doc["id_convention"].count(l23_fragment) > 1:
+            doc["id_convention"] = doc["id_convention"].replace(l23_fragment, "", 1)
         else:
             break
     verification = doc.setdefault("verification", {})
