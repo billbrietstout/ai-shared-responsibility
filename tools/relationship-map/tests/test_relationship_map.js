@@ -2440,6 +2440,135 @@ async function testMovedControlAlias(browser, base) {
   }
 }
 
+const EXTENSION_BADGE = "Proposed AI Alliance extension, not SRF v1.0";
+
+async function testTapestryToggle(browser, base) {
+  console.log("\n## Show Tapestry changes menus and the chain in every mode");
+  const tapFile = readData("tapestry-controls.json");
+  const tapControls = tapFile.controls.filter((control) => control.layer);
+  const tapPersonas = readData("personas.json").personas.filter((persona) => persona.provenance === "proposed-extension");
+  const tapSpecs = (readData("personas.json").sector_specializations || []).filter((spec) => spec.provenance === "proposed-extension");
+  const tapIds = tapControls.map((control) => "control:tapestry:" + control.id);
+  const personaIds = tapPersonas.concat(tapSpecs).map((persona) => "persona:" + persona.id);
+  const sample = "control:tapestry:TAP-SRF-L1-CON-001";
+  check("data has Tapestry controls and proposed-extension personas", tapIds.length > 0 && personaIds.length > 0 && tapIds.indexOf(sample) !== -1, tapIds.length + " controls, " + personaIds.length + " personas");
+
+  const named = {};
+  threats.forEach((threat) => (threat.related_controls || []).forEach((id) => { named[id] = true; }));
+  const srfFull = controls.map((control) => "srf.control." + control.slug + "." + control.id);
+  const tapFull = tapFile.controls.map((control) => "srf.control.tapestry." + control.id);
+  const srfUnlinked = srfFull.filter((id) => !named[id]).length;
+  const tapUnlinked = tapFull.filter((id) => !named[id]).length;
+
+  async function menus(page) {
+    return page.evaluate(() => {
+      function read(key) {
+        const select = document.getElementById("chain-select-" + key);
+        return {
+          values: Array.from(select.options).map((option) => option.value).filter(Boolean),
+          texts: Array.from(select.options).map((option) => option.textContent),
+          groups: Array.from(select.querySelectorAll("optgroup")).map((group) => group.label)
+        };
+      }
+      return {
+        risk: read("risk"),
+        obligation: read("obligation"),
+        control: read("control"),
+        accountable: read("accountable"),
+        status: document.getElementById("map-status").textContent,
+        checked: document.getElementById("show-tapestry").checked,
+        coverage: document.getElementById("coverage-body").textContent
+      };
+    });
+  }
+
+  for (const mode of ["threat", "obligation", "control", "account"]) {
+    const page = await startMode(browser, base, 1280, 900, mode);
+    const off = await menus(page);
+    const offChain = await page.evaluate(() => Array.from(document.querySelectorAll("#chain-board [data-extension='1'], #details-meta.is-extension")).map((el) => el.textContent));
+    check(mode + " starts with Tapestry off and no extension badge", !off.checked && offChain.length === 0 && off.status.indexOf("are included") === -1, off.status);
+    check(mode + " menus omit Tapestry controls and personas while the box is off", tapIds.every((id) => off.control.values.indexOf(id) === -1) && personaIds.every((id) => off.accountable.values.indexOf(id) === -1) && off.control.texts.join(" ").indexOf(EXTENSION_BADGE) === -1, off.control.values.filter((id) => id.indexOf("tapestry") !== -1).join(","));
+
+    await openOptionsPanel(page);
+    await page.$eval("#show-tapestry", (el) => { if (!el.checked) el.click(); });
+    await sleep(400);
+    const on = await menus(page);
+    const addedControls = on.control.values.filter((id) => off.control.values.indexOf(id) === -1);
+    const addedPersonas = on.accountable.values.filter((id) => off.accountable.values.indexOf(id) === -1);
+    check(mode + " checking the box adds each Tapestry control to the Control menu", sameSet(addedControls, tapIds), JSON.stringify(diff(addedControls, tapIds)));
+    check(mode + " checking the box adds each proposed-extension persona to the Accountable menu", sameSet(addedPersonas, personaIds), JSON.stringify(diff(addedPersonas, personaIds)));
+    check(mode + " checking the box leaves the Risk and Obligation menus unchanged", sameSet(on.risk.values, off.risk.values) && sameSet(on.obligation.values, off.obligation.values));
+    const tapestryGroups = on.control.groups.filter((label) => label.indexOf("Tapestry") !== -1);
+    check(mode + " Tapestry control groups and persona options carry the extension badge", tapestryGroups.length > 0 && tapestryGroups.every((label) => label.indexOf(EXTENSION_BADGE) !== -1) && personaIds.every((id) => {
+      const option = on.accountable.texts[on.accountable.values.indexOf(id) + 1];
+      return option && option.indexOf(EXTENSION_BADGE) !== -1;
+    }), JSON.stringify(tapestryGroups.slice(0, 2)));
+    check(mode + " status counts the included Tapestry controls and personas", on.status.indexOf(tapIds.length + " Tapestry controls and " + personaIds.length + " Tapestry personas are included.") !== -1, on.status);
+
+    const srfSentence = srfUnlinked + " of " + srfFull.length + " controls are not named by any risk record.";
+    const tapSentence = tapUnlinked + " of " + tapFull.length + " Tapestry controls are not named by any risk record.";
+    const mixed = (srfUnlinked + tapUnlinked) + " of " + (srfFull.length + tapFull.length) + " controls are not named";
+    check(mode + " keeps Tapestry out of the SRF missing-mapping count", on.coverage.indexOf(srfSentence) !== -1 && on.coverage.indexOf(tapSentence) !== -1 && on.coverage.indexOf(mixed) === -1, on.coverage.slice(on.coverage.indexOf("not named"), on.coverage.indexOf("not named") + 500));
+
+    await pickValue(page, "control", sample);
+    const chain = await page.evaluate((id) => {
+      const card = document.querySelector('#chain-board button[data-chain-id="' + id + '"]');
+      const owner = document.querySelector('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]');
+      return {
+        control: card ? card.textContent : "",
+        owner: owner ? owner.textContent : "",
+        extensionCards: document.querySelectorAll("#chain-board [data-extension='1']").length,
+        details: document.getElementById("details-meta").textContent,
+        detailsBody: document.getElementById("details-chain").textContent,
+        select: document.getElementById("chain-select-control").value
+      };
+    }, sample);
+    check(mode + " chain shows the Tapestry control and its persona with the badge", chain.select === sample && chain.extensionCards >= 2 && chain.control.indexOf(EXTENSION_BADGE) !== -1 && chain.owner.indexOf(EXTENSION_BADGE) !== -1 && chain.details === EXTENSION_BADGE && chain.detailsBody.indexOf(EXTENSION_BADGE) !== -1, JSON.stringify(chain).slice(0, 500));
+
+    const beforeClick = await menus(page);
+    if (await page.$('#chain-board button[data-chain-id="' + sample + '"]')) {
+      await page.click('#chain-board button[data-chain-id="' + sample + '"]');
+      await sleep(300);
+    }
+    const afterClick = await menus(page);
+    const pressed = await page.evaluate((id) => {
+      const card = document.querySelector('#chain-board button[data-chain-id="' + id + '"]');
+      return {
+        pressed: card ? card.getAttribute("aria-pressed") : "",
+        select: document.getElementById("chain-select-control").value
+      };
+    }, sample);
+    check(mode + " clicking the Tapestry card focuses it and does not change the menus", pressed.pressed === "true" && pressed.select === sample && afterClick.control.values.join() === beforeClick.control.values.join() && afterClick.accountable.values.join() === beforeClick.accountable.values.join() && afterClick.risk.values.join() === beforeClick.risk.values.join() && afterClick.obligation.values.join() === beforeClick.obligation.values.join(), afterClick.control.values.length + " vs " + beforeClick.control.values.length);
+
+    if (mode === "account") {
+      const personaId = personaIds.slice().sort()[0];
+      await pickValue(page, "accountable", personaId);
+      const personaChain = await page.evaluate((id) => {
+        const cards = Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]')).map((card) => card.dataset.chainId);
+        const more = document.querySelector('#chain-board button.chain-more[data-more-column="control"]');
+        const extra = more ? Number((/^Show (\d+) more$/.exec(more.textContent) || [])[1] || 0) : 0;
+        const owner = document.querySelector('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]');
+        return {
+          shown: cards.length + extra,
+          tapestry: cards.filter((cardId) => cardId.indexOf("control:tapestry:") === 0).length + extra,
+          owner: owner ? owner.textContent : "",
+          select: document.getElementById("chain-select-accountable").value
+        };
+      }, personaId);
+      check("accountable mode puts that persona's Tapestry controls on the chain with the badge", personaChain.select === personaId && personaChain.shown > 0 && personaChain.tapestry === personaChain.shown && personaChain.owner.indexOf(EXTENSION_BADGE) !== -1, JSON.stringify(personaChain));
+    }
+
+    await openOptionsPanel(page);
+    await page.$eval("#show-tapestry", (el) => { if (el.checked) el.click(); });
+    await sleep(400);
+    const again = await menus(page);
+    const gone = await page.evaluate(() => document.querySelectorAll("#chain-board [data-extension='1'], #chain-board button[data-chain-id^='control:tapestry:']").length);
+    check(mode + " unchecking the box removes Tapestry controls, personas, and chain badges", !again.checked && tapIds.every((id) => again.control.values.indexOf(id) === -1) && personaIds.every((id) => again.accountable.values.indexOf(id) === -1) && gone === 0 && again.status.indexOf("are included") === -1 && sameSet(again.control.values, off.control.values) && sameSet(again.accountable.values, off.accountable.values), again.status);
+    check(mode + " throws no page error", page.__errors.length === 0, page.__errors.join("; "));
+    await page.close();
+  }
+}
+
 async function main() {
   const server = await serve();
   const base = "http://127.0.0.1:" + server.address().port;
@@ -2494,6 +2623,7 @@ async function main() {
           await testOptionsLayout(browser, base, width, height);
         }
       }],
+      ["tapestryToggle", () => testTapestryToggle(browser, base)],
       ["chainCardFocus", async () => {
         for (const [width, height] of [[1280, 800], [375, 812]]) {
           await testChainCardFocusOnly(browser, base, width, height);
