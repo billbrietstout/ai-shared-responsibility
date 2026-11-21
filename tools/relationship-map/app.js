@@ -49,15 +49,18 @@
  *                          it cites.
  *   control to persona     controls[].accountable_by_model for the chosen model
  *
- * Every mode opens the same four-column board: Explore a risk, Explore a
- * control, and Explore accountability. The mode sets which column holds the
- * choice list. ?view=full and ?view=full&node= open this board when the query
- * names a risk, control, persona, or node that can build a chain, and the
- * empty start state otherwise. ?tapestry=1 and the Show Tapestry checkbox
- * include proposed-extension controls and personas in the column menus, the
- * ROCA chain, and the layer view. Each of those records is marked
- * "Proposed AI Alliance extension, not SRF v1.0". With the box off, those
- * records stay out of the SRF chain and out of the SRF missing-mapping count.
+ * The page opens on the four-column ROCA chain. Each column menu lists every
+ * item of that kind. Choosing one shows the linked items in the other columns.
+ * A card click focuses that card. It does not change the column menus.
+ * Older links use ?mode=risk|obligation|control|accountable, ?explore=, or
+ * ?anchor=. They open this same chain with that item selected. ?view=full and
+ * ?view=full&node= do the same when the query names a risk, control, persona,
+ * or node that can build a chain, and the empty chain otherwise.
+ * ?tapestry=1 and the Show Tapestry checkbox include proposed-extension
+ * controls and personas in the column menus, the ROCA chain, and the layer
+ * view. Each of those records is marked "Proposed AI Alliance extension, not
+ * SRF v1.0". With the box off, those records stay out of the SRF chain and
+ * out of the SRF missing-mapping count.
  *
  * A control is Tapestry when its file or record provenance is proposed-extension,
  * or when every operating model it names is a proposed-extension model.
@@ -156,7 +159,6 @@
   var tapestryInput = document.getElementById("show-tapestry");
   var contextBtn = document.getElementById("show-context");
   var contextBoard = document.getElementById("context-board");
-  var helpEl = document.getElementById("map-help");
   var detailsHeading = document.getElementById("details-heading");
   var detailsEmpty = document.getElementById("details-empty");
   var detailsBody = document.getElementById("details-body");
@@ -176,13 +178,11 @@
   var chainWorkspace = document.getElementById("chain-workspace");
   var mapPanel = document.querySelector(".map-panel");
   var summaryEl = document.getElementById("filter-summary");
-  var finderEl = document.querySelector(".map-stage");
   var coverageMode = new URLSearchParams(location.search).get("page") === "coverage";
   var restoringHistory = false;
   var openColumn = "risk";
   var expandedColumns = {};
   var COLUMN_LIMIT = 8;
-  var opener = null;
   var activeIndex = -1;
   var listClosed = false;
   var narrowQuery = window.matchMedia("(max-width: 800px)");
@@ -215,13 +215,12 @@
     tapestryPersonas: 0,
     mappedFromSector: 0
   };
-  var view = "search";
+  var view = "chain";
   var root = null;
   var selected = null;
   var showTapestry = false;
   var modelFilter = "all";
   var layerFilter = "all";
-  var entry = "";
   var personaPick = "";
   var reqPick = "";
   var catalog = null;
@@ -1707,16 +1706,13 @@
       root = value;
       selected = value;
       chainFocus = value;
-      entry = key === "risk" ? "threat" : "control";
       if (graph.hasNode(value) && graph.getNodeAttribute(value, "tapestry")) showTapestry = true;
     } else if (key === "obligation") {
       reqPick = value;
       chainFocus = value;
-      entry = "obligation";
     } else {
       personaPick = value.replace(/^persona:/, "");
       chainFocus = "accountable:persona:" + personaPick;
-      entry = "account";
     }
     view = "chain";
     openColumn = key;
@@ -1775,7 +1771,7 @@
     } else if (modelFilter === "all") {
       notes.push("All shows one accountable persona for each operating model. The model name is on that persona. Choose one model to see only that persona.");
     }
-    if (chain.startKind === "control" || (chain.blank && entry === "control")) notes.push(CONTROL_SOURCE_NOTE);
+    if (chain.startKind === "control") notes.push(CONTROL_SOURCE_NOTE);
     chainModelNote.textContent = notes.filter(Boolean).join(" ");
     var columns = [
       ["Risk", chain.risks, "risk"],
@@ -2338,7 +2334,7 @@
   }
 
   function renderDetails() {
-    var canClear = !!(selected || hasFocus() || view === "chain" || view === "context");
+    var canClear = !!(hasFocus() || view === "context");
     if (copyBtn) copyBtn.hidden = !(view === "chain" && currentChain && !currentChain.blank && hasFocus());
     var copyKey = root || personaPick || reqPick || "";
     if (copyKey !== lastCopyKey) {
@@ -2515,13 +2511,6 @@
       text = chainSentence(currentChain);
     } else if (view === "chain" && currentChain) {
       text = currentChain.note || START_NOTE;
-    } else if (view === "search") {
-      var offered = countNodes(function (id, attrs) { return nodeAllowed(attrs) && layerAllowed(attrs); });
-      text = unit(offered.risk || 0, "risk", "risks") + " and " + unit(offered.control || 0, "control", "controls") + " can be opened.";
-      if (modelFilter === "all" && !showTapestry && stats.tapestryControls) {
-        text += " " + unit(stats.tapestryControls, "Tapestry control is hidden.", "Tapestry controls are hidden.");
-      }
-      text += " Choose a risk, an obligation, a control, or a persona to see its chain.";
     } else if (view === "context") {
       text = "Layers run from L1 to L5. Open a name to see its chain.";
     } else {
@@ -2542,7 +2531,6 @@
     statusEl.dataset.tapestryControls = String(stats.tapestryControls);
     statusEl.dataset.tapestryPersonas = String(stats.tapestryPersonas);
     statusEl.dataset.allowedControls = String(allowed.control || 0);
-    statusEl.dataset.mode = entry;
     statusEl.dataset.skippedModels = Object.keys(skippedModels).sort().join(",");
     statusEl.dataset.missingLinks = String(missingLinks.length);
     statusEl.dataset.mappedFromSector = String(stats.mappedFromSector || 0);
@@ -2749,30 +2737,19 @@
     });
   }
 
-  var MODE_SEARCH = {
-    threat: { kind: "risk", label: "Find a risk", placeholder: "Risk name or a few words", noun: "a risk", none: "No matching risk." },
-    obligation: { kind: "obligation", label: "Find an obligation", placeholder: "Obligation citation or a few words", noun: "an obligation", none: "No matching obligation." },
-    control: { kind: "control", label: "Find a control", placeholder: "Control name or a few words", noun: "a control", none: "No matching control." },
-    account: { kind: "persona", label: "Find an accountable persona", placeholder: "Persona name", noun: "an accountable persona", none: "No matching persona." }
-  };
-
   function matches(query) {
     var q = query.trim().toLowerCase();
     wordMatch = null;
     if (!q) return [];
     var ids = [];
     var allowed = [];
-    var only = MODE_SEARCH[entry] ? MODE_SEARCH[entry].kind : "";
     graph.forEachNode(function (id, attrs) {
       if (attrs.kind !== "control" && attrs.kind !== "risk") return;
-      if (only && attrs.kind !== only) return;
       if (!nodeAllowed(attrs) || !layerAllowed(attrs)) return;
       allowed.push(id);
       if (attrs.search.indexOf(q) !== -1) ids.push(id);
     });
-    obligationChoiceCards().map(function (card) { return card.id; }).concat(personaChoiceIds()).filter(function (id) {
-      return !only || searchAttrs(id).kind === only;
-    }).forEach(function (id) {
+    obligationChoiceCards().map(function (card) { return card.id; }).concat(personaChoiceIds()).forEach(function (id) {
       allowed.push(id);
       if (searchAttrs(id).search.indexOf(q) !== -1) ids.push(id);
     });
@@ -2827,7 +2804,7 @@
       return ids;
     }
     if (!ids.length) {
-      searchNote.textContent = MODE_SEARCH[entry] ? MODE_SEARCH[entry].none : "No matching risk, obligation, control, or persona.";
+      searchNote.textContent = "No matching risk, obligation, control, or persona.";
       return ids;
     }
     var parts = [];
@@ -2906,19 +2883,11 @@
 
   function renderSummary() {
     if (!summaryEl || !graph) return;
-    if (entry === "requirement") {
-      summaryEl.textContent = "";
-      return;
-    }
-    var counts = [];
-    if (entry !== "threat") counts.push(unit(suggestedIds().length, "control", "controls"));
-    if (entry !== "control") {
-      var threatCount = riskIds().filter(function (id) {
-        return layerAllowed(graph.getNodeAttributes(id));
-      }).length;
-      counts.push(unit(threatCount, "risk", "risks"));
-    }
-    summaryEl.textContent = (modelFilter === "all" ? "All operating models" : modelName(modelFilter)) + ", " + (layerFilter === "all" ? "all layers" : layerFilter) + ": " + counts.join(", ");
+    var controlCount = suggestedIds().length;
+    var threatCount = riskIds().filter(function (id) {
+      return layerAllowed(graph.getNodeAttributes(id));
+    }).length;
+    summaryEl.textContent = (modelFilter === "all" ? "All operating models" : modelName(modelFilter)) + ", " + (layerFilter === "all" ? "all layers" : layerFilter) + ": " + unit(controlCount, "control", "controls") + ", " + unit(threatCount, "risk", "risks");
   }
 
   function syncToggles() {
@@ -2965,21 +2934,6 @@
     chainWrap.classList.toggle("chain-wrap--context", contextOn);
     if (contextOn) renderContext();
 
-    var modeSearch = MODE_SEARCH[entry];
-    if (findLabel) findLabel.textContent = modeSearch ? modeSearch.label : "Find a risk, obligation, control, or persona";
-    searchInput.placeholder = modeSearch ? modeSearch.placeholder : "Name or a few words";
-    if (helpEl) {
-      if (contextOn) {
-        helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
-      } else if (view === "chain") {
-        helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. " +
-          "Each menu lists every item in its column. A choice shows the items linked to it in the other columns. " +
-          "Details for the choice appear beside the columns on a wide screen and below them on a narrow one.";
-      } else {
-        helpEl.textContent = "Type a name or a few words about " + (modeSearch ? modeSearch.noun : "a risk, an obligation, a control, or a persona") + ". Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
-      }
-    }
-
     if (chainEmpty) {
       if (view === "chain" && !currentChain) {
         chainEmpty.hidden = false;
@@ -2989,28 +2943,16 @@
         chainEmpty.textContent = "";
       }
     }
-    var panelOpen = !!(chainOn || contextOn || selected || personaPick);
-    mapPage.classList.toggle("is-panel-open", panelOpen);
-    syncEntry();
     renderSummary();
     syncSheet();
   }
 
   function syncSheet() {
-    var open = mapPage.classList.contains("is-panel-open") && narrowQuery.matches;
-    document.body.classList.toggle("sheet-open", open);
+    document.body.classList.remove("sheet-open");
     SHEET_INERT.forEach(function (selector) {
       Array.prototype.forEach.call(document.querySelectorAll(selector), function (el) {
-        if (open) el.setAttribute("inert", "");
-        else el.removeAttribute("inert");
+        el.removeAttribute("inert");
       });
-    });
-  }
-
-  function syncEntry() {
-    ["threat", "obligation", "requirement", "control", "account"].forEach(function (key) {
-      var button = document.getElementById("entry-" + key);
-      if (button) button.setAttribute("aria-pressed", entry === key ? "true" : "false");
     });
   }
 
@@ -3028,27 +2970,6 @@
     chainWorkspaceHeading.appendChild(document.createTextNode(" chain"));
   }
 
-  /* Every mode opens the same ROCA chain. The mode sets only which column
-     opens first on a phone: Risk, Control, or Accountable. */
-  var ENTRY_COLUMN = { threat: "risk", obligation: "obligation", control: "control", account: "accountable" };
-
-  function chooseEntry(next) {
-    entry = next;
-    root = null;
-    selected = null;
-    personaPick = "";
-    reqPick = "";
-    chainFocus = "";
-    linkHits = null;
-    linkNote = "";
-    searchInput.value = "";
-    expandedColumns = {};
-    view = ENTRY_COLUMN[next] ? "chain" : "search";
-    openColumn = ENTRY_COLUMN[next] || "risk";
-    commit(true);
-    if (view === "chain") revealChain();
-  }
-
   function fillLayerFrames() {
     if (!layerFrames || !graph) return;
     layerFrames.textContent = "";
@@ -3063,10 +2984,8 @@
   }
 
   function openPersona(id, moveFocus) {
-    if (moveFocus) rememberOpener();
     openColumn = "accountable";
     personaPick = id;
-    entry = "account";
     view = "chain";
     root = null;
     reqPick = "";
@@ -3126,8 +3045,8 @@
     return params.toString().replace(/%3A/g, ":");
   }
 
-  /* Opening a chain adds a history entry so Back returns to the list.
-     Filter, model, and close changes replace the current entry. */
+  /* Opening a chain adds a history entry so Back returns to the previous chain.
+     Filter and model changes replace the current entry. */
   function historyKey(params) {
     var node = params.get("node") || params.get("risk") || params.get("control") || params.get("persona") || "";
     var type = params.get("type") || (params.get("risk") ? "risk" : params.get("control") ? "control" : params.get("persona") ? "persona" : "");
@@ -3249,7 +3168,7 @@
      start state and do not report an error. */
   function openChainFromNode(node) {
     if (!node || !graph.hasNode(node)) {
-      view = "search";
+      view = "chain";
       return;
     }
     var attrs = graph.getNodeAttributes(node);
@@ -3257,8 +3176,8 @@
     var corePersona = attrs.kind === "persona" && CORE_PERSONAS.indexOf(attrs.ref) !== -1 && attrs.provenance !== "proposed-extension";
     if (corePersona || (attrs.kind === "persona" && isTapestryRecord(attrs))) {
       personaPick = attrs.ref;
-      entry = "account";
       view = "chain";
+      openColumn = "accountable";
       chainFocus = "accountable:persona:" + attrs.ref;
       return;
     }
@@ -3267,10 +3186,65 @@
       selected = node;
       chainFocus = node;
       view = "chain";
-      entry = attrs.kind === "risk" ? "threat" : "control";
+      openColumn = attrs.kind === "risk" ? "risk" : "control";
       return;
     }
-    view = "search";
+    view = "chain";
+  }
+
+  /* ?mode=, ?explore=, and ?anchor= are older links. They select the same
+     item on the chain the page opens with. A column name with no item leaves
+     every menu on All and opens that column on a narrow screen. */
+  var LEGACY_COLUMN = {
+    risk: "risk",
+    threat: "risk",
+    obligation: "obligation",
+    control: "control",
+    accountable: "accountable",
+    account: "accountable",
+    persona: "accountable"
+  };
+
+  function legacyColumn(raw) {
+    return LEGACY_COLUMN[String(raw || "").trim().toLowerCase()] || "";
+  }
+
+  function applyLegacyQuery(params) {
+    var mode = legacyColumn(params.get("mode"));
+    var exploreRaw = String(params.get("explore") || "").trim();
+    var exploreColumn = legacyColumn(exploreRaw);
+    var column = mode || exploreColumn;
+    if (column) openColumn = column;
+    var anchor = String(params.get("anchor") || "").trim();
+    if (!anchor && exploreRaw && !exploreColumn) anchor = exploreRaw;
+    var hasItem = !!(params.get("type") || params.get("node") || params.get("risk") || params.get("control") || params.get("persona"));
+    if (anchor && !hasItem) {
+      if (/^(obligation|instrument):/.test(anchor)) {
+        params.set("type", "obligation");
+        params.set("node", anchor);
+      } else if (anchor.indexOf("persona:") === 0) {
+        params.set("type", "persona");
+        params.set("node", anchor.slice("persona:".length));
+      } else if (anchor.indexOf("risk:") === 0) {
+        params.set("type", "risk");
+        params.set("node", anchor.slice("risk:".length));
+      } else if (anchor.indexOf("control:") === 0) {
+        params.set("type", "control");
+        params.set("node", anchor.slice("control:".length));
+      } else if (column === "accountable") {
+        params.set("type", "persona");
+        params.set("node", anchor);
+      } else if (column) {
+        params.set("type", column);
+        params.set("node", anchor);
+      } else {
+        params.set("risk", anchor);
+      }
+      hasItem = true;
+    }
+    if (column && params.get("node") && !params.get("type") && !params.get("risk") && !params.get("control") && !params.get("persona")) {
+      params.set("type", column === "accountable" ? "persona" : column);
+    }
   }
 
   function applyFromLocation() {
@@ -3287,10 +3261,10 @@
     chainFocus = "";
     personaPick = "";
     reqPick = "";
-    entry = "";
     var viewParam = params.get("view");
-    view = viewParam === "context" ? "context" : "search";
+    view = viewParam === "context" ? "context" : "chain";
     openColumn = "risk";
+    applyLegacyQuery(params);
     var controlParam = params.get("control");
     var riskParam = params.get("risk");
     var personaParam = params.get("persona") || "";
@@ -3299,7 +3273,6 @@
     if (typeParam === "obligation" && nodeParam && viewParam !== "full") {
       if (/^(obligation|instrument):/.test(nodeParam)) {
         reqPick = nodeParam;
-        entry = "obligation";
         openColumn = "obligation";
         view = "chain";
         chainFocus = nodeParam;
@@ -3333,8 +3306,7 @@
         selected = opened;
         chainFocus = opened;
         view = "chain";
-        entry = openedAttrs.kind === "risk" ? "threat" : "control";
-        openColumn = ENTRY_COLUMN[entry];
+        openColumn = openedAttrs.kind === "risk" ? "risk" : "control";
       }
     } else {
       var asked = personaParam;
@@ -3345,7 +3317,6 @@
         if (corePersona || isTapestryRecord(personaAttrs)) {
           personaPick = asked;
           openColumn = "accountable";
-          entry = "account";
           view = "chain";
           chainFocus = "accountable:persona:" + asked;
         }
@@ -3362,14 +3333,6 @@
 
   function scrollPanelTo(target) {
     if (!target) return;
-    if (mapPanel && narrowQuery.matches && mapPage.classList.contains("is-panel-open")) {
-      var bar = mapPanel.querySelector(".chain-workspace__bar:not([hidden])") || mapPanel.querySelector(".details__bar");
-      var offset = (bar && bar.getClientRects().length ? bar.getBoundingClientRect().height : 0) + 8;
-      var delta = target.getBoundingClientRect().top - mapPanel.getBoundingClientRect().top - offset;
-      mapPanel.scrollTop += delta;
-      target.focus({ preventScroll: true });
-      return;
-    }
     scrollToTarget(target);
   }
 
@@ -3377,8 +3340,7 @@
     if (!currentChain) return;
     updateChrome();
     if (chainEl.hidden) return;
-    if (mapPanel && narrowQuery.matches) mapPanel.scrollTop = 0;
-    else chainWorkspace.scrollIntoView({ block: "start", behavior: "auto" });
+    chainWorkspace.scrollIntoView({ block: "start", behavior: "auto" });
     chainHeading.focus({ preventScroll: true });
     drawChainLines();
   }
@@ -3406,7 +3368,6 @@
   function revealDetails(moveFocus) {
     updateChrome();
     if (!moveFocus) return;
-    if (mapPanel && narrowQuery.matches) mapPanel.scrollTop = 0;
     detailsHeading.setAttribute("tabindex", "-1");
     detailsHeading.focus({ preventScroll: true });
   }
@@ -3416,10 +3377,9 @@
     if (!graph.hasNode(id)) return;
     var attrs = graph.getNodeAttributes(id);
     if (attrs.kind !== "risk" && attrs.kind !== "control") return;
-    if (moveFocus) rememberOpener();
-    entry = attrs.kind === "risk" ? "threat" : "control";
+    var column = attrs.kind === "risk" ? "risk" : "control";
     if (root !== id) {
-      openColumn = ENTRY_COLUMN[entry];
+      openColumn = column;
       expandedColumns = {};
     }
     root = id;
@@ -3440,7 +3400,6 @@
     if (!graph) return;
     var obligation = /^(obligation|instrument):/.test(id);
     if (obligation || (id.indexOf("persona:") === 0 && graph.hasNode(id))) {
-      if (moveFocus) rememberOpener();
       setFocus(obligation ? "obligation" : "accountable", id);
       if (moveFocus) revealChain();
       return;
@@ -3546,7 +3505,6 @@
 
   function showContext(push) {
     view = "context";
-    entry = "";
     root = null;
     selected = null;
     chainFocus = "";
@@ -3557,63 +3515,22 @@
     commit(push);
   }
 
-  function showSearch(push) {
-    view = "search";
-    root = null;
-    selected = null;
-    chainFocus = "";
-    personaPick = "";
-    linkHits = null;
-    linkNote = "";
-    searchInput.value = "";
-    commit(push);
-  }
-
-  /* Clear steps back one level: first the chain focus (the four menus stay
-     full), then the mode itself. */
+  /* Clear returns the four menus to All and keeps the chain on the page. */
   function clearSelection(push) {
-    if (view === "chain" && hasFocus()) {
+    if (view === "context") {
+      view = "chain";
+      clearFocus();
       linkHits = null;
       linkNote = "";
-      clearFocus();
       commit(!!push);
       return;
     }
-    if (view === "chain" || view === "context") {
-      entry = "";
-      showSearch(!!push);
-      return;
-    }
-    selected = null;
+    if (!hasFocus()) return;
+    linkHits = null;
+    linkNote = "";
+    clearFocus();
+    view = "chain";
     commit(!!push);
-  }
-
-  function closePanel(push) {
-    entry = "";
-    showSearch(push);
-    restoreOpener();
-  }
-
-  function rememberOpener() {
-    var el = document.activeElement;
-    if (el && finderEl && finderEl.contains(el) && el !== document.body) {
-      opener = { el: el, id: el.dataset ? el.dataset.nodeId : "" };
-    } else if (!opener) {
-      opener = { el: searchInput, id: "" };
-    }
-  }
-
-  function restoreOpener() {
-    openOptions();
-    var target = null;
-    if (opener) {
-      if (opener.el && opener.el.isConnected && opener.el.getClientRects().length) target = opener.el;
-      else if (opener.id) target = finderEl.querySelector('[data-node-id="' + opener.id + '"]');
-    }
-    if (!target || !target.getClientRects().length) target = searchInput;
-    target.focus({ preventScroll: true });
-    target.scrollIntoView({ block: "nearest" });
-    opener = null;
   }
 
   function setModel(id, push) {
@@ -3827,6 +3744,7 @@
     if (!select) return;
     var key = select.dataset.column;
     setFocus(key, select.value);
+    if (select.value && chainHeading) chainHeading.scrollIntoView({ block: "start", behavior: "auto" });
     var again = document.getElementById("chain-select-" + key);
     if (again) again.focus({ preventScroll: true });
   });
@@ -3875,12 +3793,15 @@
       activateNode(id, true);
     });
   }
-  document.getElementById("entry-threat").addEventListener("click", function () { chooseEntry("threat"); });
-  var obligationButton = document.getElementById("entry-obligation");
-  if (obligationButton) obligationButton.addEventListener("click", function () { chooseEntry("obligation"); });
-  document.getElementById("entry-requirement").addEventListener("click", function () { chooseEntry("requirement"); });
-  document.getElementById("entry-control").addEventListener("click", function () { chooseEntry("control"); });
-  document.getElementById("entry-account").addEventListener("click", function () { chooseEntry("account"); });
+  var requirementButton = document.getElementById("entry-requirement");
+  if (requirementButton) requirementButton.addEventListener("click", function () {
+    var toggle = document.querySelector('.chain-col__toggle[data-column="obligation"]');
+    if (toggle && toggle.getAttribute("aria-expanded") !== "true") toggle.click();
+    var select = document.getElementById("chain-select-obligation");
+    if (!select) return;
+    select.scrollIntoView({ block: "center", behavior: "auto" });
+    select.focus({ preventScroll: true });
+  });
   function selectedKindLabel() {
     if (root && graph.hasNode(root)) return KIND_LABEL[graph.getNodeAttribute(root, "kind")] || "Item";
     return reqPick ? "Obligation" : "Persona";
@@ -3997,19 +3918,8 @@
 
   if (copyBtn) copyBtn.addEventListener("click", copyChain);
 
-  var filtersToggle = document.getElementById("toggle-filters");
-  if (filtersToggle) filtersToggle.addEventListener("click", function () {
-    var open = findForm.classList.toggle("filters-open");
-    filtersToggle.setAttribute("aria-expanded", open ? "true" : "false");
-    filtersToggle.textContent = open ? "Hide filters" : "Change filters";
-  });
-
   function onClearClick() {
-    if (narrowQuery.matches) closePanel(true);
-    else {
-      clearSelection(true);
-      if (view === "search") restoreOpener();
-    }
+    clearSelection(true);
   }
   if (clearChainBtn) clearChainBtn.addEventListener("click", onClearClick);
   var lastNarrow = narrowQuery.matches;
@@ -4028,7 +3938,6 @@
     if (!target || target.closest("[hidden]") || !target.getClientRects().length) return;
     event.preventDefault();
     if (id === "node-search") {
-      if (narrowQuery.matches && mapPage.classList.contains("is-panel-open")) closePanel(true);
       revealSearch();
       return;
     }
@@ -4074,9 +3983,8 @@
       searchNote.textContent = "";
       return;
     }
-    if (view === "search" && !selected) return;
-    if (narrowQuery.matches) closePanel(true);
-    else clearSelection(true);
+    if (!hasFocus() && view !== "context") return;
+    clearSelection(true);
   });
   window.addEventListener("popstate", onPopState);
 
