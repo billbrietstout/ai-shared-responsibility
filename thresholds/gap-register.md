@@ -86,13 +86,13 @@ Best case across bindings: `cadence_only`. Objective can bind to an ODP: **no**.
 
 ## Findings by industry vertical
 
-The six industry vertical control sets (`data/*-controls.json`, also published as OSCAL profiles under `/export/`) each declare a measured threshold per control (260 sector controls). The all-sectors common set (`data/common-controls.json`, 26 common controls) is included here too. This section records, per source file, how many of those thresholds have a proposed 800-53 binding and classifies the bindings that exist. Controls without bindings are the backlog for the COSAiS overlay effort: generative and agentic thresholds should bind to NISTIR 8605B (Generative AI) and 8605D (Agentic AI) as those overlays publish, since both are 800-53 overlays that carry organization-defined parameters; predictive-AI thresholds map to 8605A. Until then they are classified `no_binding` here rather than bound to invented anchors.
+The six industry vertical control sets (`data/*-controls.json`, also published as OSCAL profiles under `/export/`) each declare a measured threshold per control (260 sector controls). The all-sectors common set (`data/common-controls.json`, 41 common controls) is included here too. This section records, per source file, how many of those thresholds have a proposed 800-53 binding and classifies the bindings that exist. Controls without bindings are the backlog for the COSAiS overlay effort: generative and agentic thresholds should bind to NISTIR 8605B (Generative AI) and 8605D (Agentic AI) as those overlays publish, since both are 800-53 overlays that carry organization-defined parameters; predictive-AI thresholds map to 8605A. Until then they are classified `no_binding` here rather than bound to invented anchors.
 
 ### All sectors (common) (common-controls.json)
 
-26 controls; 0 with 800-53 bindings, 26 classified `no_binding`.
+41 controls; 0 with 800-53 bindings, 41 classified `no_binding`.
 
-Unbound thresholds by layer: L1: 10; L2: 8; L3: 8.
+Unbound thresholds by layer: L1: 10; L2: 8; L3: 8; L4: 9; L5: 6.
 
 ### Finance (finance-controls.json)
 
@@ -138,7 +138,7 @@ Of 6 threshold controls, 6 resolve to live anchor controls in rev 5; the catalog
 
 1. **For the AI overlay (SP 800-53 Control Overlays for Securing AI Systems):** where an overlay control governs continuously measurable AI behavior (inventory coverage, guardrail coverage at inference, override responsiveness, attestation currency, drift within declared bounds), define ODPs structured as measured objectives rather than freeform strings: target value, comparison, evaluation window, and tolerated shortfall. The `objective` object of the AI SRF threshold schema is a candidate shape.
 2. **For OSCAL:** parameters currently admit labels, guidelines, and fixed selections. A typed parameter constraint (numeric with unit and window semantics) would let profiles carry operational thresholds natively, and would let a resolved threshold emit `set-parameter` values that provably match the live alerting configuration.
-3. **For the COSAiS overlay series (NISTIR 8605, 8605A-D):** the sector vertical and common sections above enumerate 260 sector measured thresholds plus 26 common thresholds with no 800-53 binding yet. Where an overlay control covers the same behavior (guardrail coverage, drift bounds, oversight responsiveness), the overlay's ODPs are the natural home for these objectives; typed measured-objective ODPs in 8605B (Generative AI) and 8605D (Agentic AI) would let the vertical OSCAL profiles bind directly as the overlays publish.
+3. **For the COSAiS overlay series (NISTIR 8605, 8605A-D):** the sector vertical and common sections above enumerate 260 sector measured thresholds plus 41 common thresholds with no 800-53 binding yet. Where an overlay control covers the same behavior (guardrail coverage, drift bounds, oversight responsiveness), the overlay's ODPs are the natural home for these objectives; typed measured-objective ODPs in 8605B (Generative AI) and 8605D (Agentic AI) would let the vertical OSCAL profiles bind directly as the overlays publish.
 4. **For the AI RMF Critical Infrastructure profile:** each prioritized outcome could name the measurable indicator that would make it auditable. The healthcare drift control (AISRF-MODEL-002) is a worked example of a profile-driven addition with a concrete SLI bound to `ca-7`, whose `ca-07_odp.01` (system-level metrics) is exactly the right hook but is untyped today.
 
 ---

@@ -1793,6 +1793,122 @@ async function testChainCardFocusOnly(browser, base, width, height) {
   await page.close();
 }
 
+const CHAIN_CARD_MODES = [
+  ["risk", "threat", "risk"],
+  ["obligation", "obligation", "obligation"],
+  ["control", "control", "control"],
+  ["accountable", "account", "accountable"]
+];
+const CHAIN_CARD_KIND = { risk: "Risk", obligation: "Obligation", control: "Control", accountable: "Accountable" };
+
+async function chainColumnSnapshot(page) {
+  return page.evaluate(() => {
+    const out = {};
+    document.querySelectorAll("#chain-board .chain-col").forEach((col) => {
+      const select = col.querySelector("select.chain-pick");
+      out[col.dataset.column] = {
+        value: select.value,
+        options: Array.from(select.options).map((option) => option.value + "\t" + option.textContent),
+        cards: Array.from(col.querySelectorAll("button[data-chain-id]")).map((card) => card.dataset.chainId)
+      };
+    });
+    return out;
+  });
+}
+
+async function clickChainCard(page, id) {
+  const handle = await page.evaluateHandle((cardId) => {
+    return Array.from(document.querySelectorAll("#chain-board button[data-chain-id]")).find((el) => el.dataset.chainId === cardId) || null;
+  }, id);
+  const card = handle.asElement();
+  if (!card) {
+    await handle.dispose();
+    return false;
+  }
+  await card.evaluate((node) => node.scrollIntoView({ block: "center", inline: "nearest" }));
+  await card.click();
+  await handle.dispose();
+  return true;
+}
+
+async function testChainCardFocusKeepsColumns(browser, base, width, height) {
+  const at = " at " + width;
+  for (const [mode, entry, anchorKey] of CHAIN_CARD_MODES) {
+    const page = await startMode(browser, base, width, height, entry);
+    const options = (await optionValues(page, anchorKey)).slice(1);
+    let picked = null;
+    for (const opt of options) {
+      await page.select("#chain-select-" + anchorKey, opt.value);
+      await sleep(120);
+      const counts = await page.evaluate(() => {
+        const n = {};
+        document.querySelectorAll("#chain-board .chain-col").forEach((col) => {
+          n[col.dataset.column] = col.querySelectorAll("button[data-chain-id]").length;
+        });
+        return n;
+      });
+      if (ROCA_KEYS.every((key) => counts[key] > 0)) {
+        picked = opt;
+        break;
+      }
+    }
+    check(mode + " mode has a chain with a card in every column" + at, !!picked, picked ? picked.value : "none");
+    if (!picked) {
+      await page.close();
+      continue;
+    }
+    const before = await chainColumnSnapshot(page);
+    const urlBefore = page.url();
+    await page.evaluate(() => {
+      window.__chainSelectChanges = [];
+      document.getElementById("chain-board").addEventListener("change", (event) => {
+        const select = event.target && event.target.closest ? event.target.closest("select.chain-pick") : null;
+        if (select) window.__chainSelectChanges.push(select.id + "=" + select.value);
+      });
+    });
+    for (const column of ROCA_KEYS) {
+      if (width === 375) {
+        await page.evaluate((key) => {
+          const toggle = document.querySelector('.chain-col__toggle[data-column="' + key + '"]');
+          if (toggle && toggle.getAttribute("aria-expanded") !== "true") toggle.click();
+        }, column);
+      }
+      const cardId = before[column].cards[0];
+      const title = await page.evaluate((id) => {
+        const card = Array.from(document.querySelectorAll("#chain-board button[data-chain-id]")).find((el) => el.dataset.chainId === id);
+        const node = card ? card.querySelector(".chain-card__title") : null;
+        return node ? node.textContent : "";
+      }, cardId);
+      const clicked = await clickChainCard(page, cardId);
+      await sleep(200);
+      const after = await chainColumnSnapshot(page);
+      const changed = ROCA_KEYS.filter((key) => JSON.stringify(before[key]) !== JSON.stringify(after[key]));
+      const focus = await page.evaluate((id) => {
+        const card = Array.from(document.querySelectorAll("#chain-board button[data-chain-id]")).find((el) => el.dataset.chainId === id);
+        const about = document.getElementById("details-about");
+        return {
+          pressed: !!(card && card.getAttribute("aria-pressed") === "true"),
+          kind: document.getElementById("details-kind").textContent,
+          heading: document.getElementById("details-heading").textContent,
+          bodyHidden: document.getElementById("details-body").hidden,
+          emptyHidden: document.getElementById("details-empty").hidden,
+          inSlot: !!document.querySelector("#chain-details-slot > .details"),
+          idLine: document.getElementById("details-id").hidden ? "" : document.getElementById("details-id").textContent,
+          about: about && about.parentElement ? about.parentElement.innerText : "",
+          selectChanges: (window.__chainSelectChanges || []).slice()
+        };
+      }, cardId);
+      const article = column === "obligation" || column === "accountable" ? "an" : "a";
+      check(mode + " mode: clicking " + article + " " + column + " card keeps every column and every drop-down list" + at, clicked && changed.length === 0 && page.url() === urlBefore && focus.selectChanges.length === 0, JSON.stringify({ changed: changed, url: page.url(), selectChanges: focus.selectChanges }));
+      check(mode + " mode: clicking " + article + " " + column + " card focuses it and shows its details" + at, focus.pressed && focus.kind === CHAIN_CARD_KIND[column] && focus.heading.length > 0 && focus.bodyHidden === false && focus.emptyHidden === true && focus.inSlot, JSON.stringify(focus));
+      if (column === "obligation") {
+        check(mode + " mode: an obligation card shows that obligation in the details" + at, title.length > 0 && focus.about.indexOf(title) !== -1 && focus.idLine === "" && focus.heading.length > 0, JSON.stringify({ title: title, heading: focus.heading, idLine: focus.idLine, about: focus.about.slice(0, 240) }));
+      }
+    }
+    await page.close();
+  }
+}
+
 async function testOrganizationalFit(browser, base, width, height) {
   const at = " at " + width;
   const ids = ["ai-system-users", "ai-system-governance", "data-provider", "application-developer", "agentic-platform-provider", "ai-platform-provider", "ai-model-serving", "ai-model-provider"];
@@ -2288,6 +2404,14 @@ async function testControlGrouping(browser, base) {
   const l3ids = ["001", "002", "003", "004", "005", "006", "007", "008"].map((n) => "control:common:SRF-COM-L3-" + n);
   const l3got = (l3[0] && l3[0].options.map((o) => o.id)) || [];
   check("the first L3 group is labeled L3 AI Application \u00b7 All sectors (common) and holds the 8 common controls", l3.length > 1 && l3[0].label === LAYER_NAME.L3 + " \u00b7 All sectors (common)" && l3got.length === 8 && l3ids.every((id) => l3got.indexOf(id) !== -1), JSON.stringify(l3[0] && { label: l3[0].label, ids: l3got }));
+  const l4 = layerGroups("L4");
+  const l4ids = ["001", "002", "003", "004", "005", "006", "007", "008", "009"].map((n) => "control:common:SRF-COM-L4-" + n);
+  const l4got = (l4[0] && l4[0].options.map((o) => o.id)) || [];
+  check("the first L4 group is labeled L4 AI Platform \u00b7 All sectors (common) and holds the 9 common controls", l4.length > 1 && l4[0].label === LAYER_NAME.L4 + " \u00b7 All sectors (common)" && l4got.length === 9 && l4ids.every((id) => l4got.indexOf(id) !== -1), JSON.stringify(l4[0] && { label: l4[0].label, ids: l4got }));
+  const l5 = layerGroups("L5");
+  const l5ids = ["001", "002", "003", "004", "005", "006"].map((n) => "control:common:SRF-COM-L5-" + n);
+  const l5got = (l5[0] && l5[0].options.map((o) => o.id)) || [];
+  check("the first L5 group is labeled L5 AI Model Provider \u00b7 All sectors (common) and holds the 6 common controls", l5.length > 1 && l5[0].label === LAYER_NAME.L5 + " \u00b7 All sectors (common)" && l5got.length === 6 && l5ids.every((id) => l5got.indexOf(id) !== -1), JSON.stringify(l5[0] && { label: l5[0].label, ids: l5got }));
   const sectors = l1.slice(1).map((g) => g.label.slice((LAYER_NAME.L1 + " \u00b7 ").length));
   check("L1 sector groups follow A to Z by sector name", JSON.stringify(sectors) === JSON.stringify(sectors.slice().sort(byText)) && sectors.indexOf("Finance") !== -1, JSON.stringify(sectors));
   check("every group is named with a layer and a sector", groups.every((g) => / \u00b7 /.test(g.label)), JSON.stringify(groups.map((g) => g.label)));
@@ -2374,7 +2498,10 @@ async function main() {
         }
       }],
       ["chainCardFocus", async () => {
-        for (const [width, height] of [[1280, 800], [375, 812]]) await testChainCardFocusOnly(browser, base, width, height);
+        for (const [width, height] of [[1280, 800], [375, 812]]) {
+          await testChainCardFocusOnly(browser, base, width, height);
+          await testChainCardFocusKeepsColumns(browser, base, width, height);
+        }
       }],
       ["captureModes", () => captureModes(browser, base)]
     ];

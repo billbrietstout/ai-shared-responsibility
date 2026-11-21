@@ -4691,9 +4691,9 @@
   },
   "common": {
     "source_file": "common-controls.json",
-    "control_count": 26,
+    "control_count": 41,
     "with_bindings": 0,
-    "without_bindings": 26,
+    "without_bindings": 41,
     "controls": [
       {
         "id": "SRF-COM-L1-001",
@@ -5106,6 +5106,246 @@
           "param": "tier-defined",
           "window": "per-system",
           "breach_action": "hold-release-until-disclosure-and-labels-are-in-place; notify-application-developer"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-001",
+        "title": "Model gateway authentication and authorization, including agent identities",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "model_endpoint_auth_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "reject-call; log-rejected-call; alert-accountable-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-002",
+        "title": "Guardrail configuration baseline, change control, and bypass monitoring",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "guardrail_baseline_change_and_bypass_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "revert-unapproved-change; alert-ai-platform-provider; review-guardrail-baseline"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-003",
+        "title": "Audit logging and runtime anomaly monitoring",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_request_log_and_alert_review_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "quarterly",
+          "breach_action": "alert-ai-platform-provider; review-open-alert"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-004",
+        "title": "Encryption of AI data and model weights at rest and in transit",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "ai_data_and_weight_encryption_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "quarterly",
+          "breach_action": "isolate-unencrypted-store-or-channel; alert-ai-platform-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-005",
+        "title": "Model serving availability and capacity target",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "serving_availability_capacity_and_failover_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "monthly",
+          "breach_action": "escalate-to-ai-platform-provider; run-failover; open-availability-incident"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-006",
+        "title": "Model artifact integrity verification at load",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "signed_safe_artifact_load_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-load",
+          "breach_action": "reject-model-load; alert-ai-model-serving"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-007",
+        "title": "Model version pinning, staged rollout, and rollback",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "measured_rollback_time",
+          "operator": "<=",
+          "param": "tier-defined",
+          "window": "per-rollout",
+          "breach_action": "halt-rollout; restore-last-approved-version; notify-ai-model-serving"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-008",
+        "title": "Inference endpoint isolation, tenant separation, and egress control",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "tenant_isolation_and_default_deny_egress_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "continuous",
+          "breach_action": "block-egress; log-denied-flow; alert-accountable-owner"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L4-009",
+        "title": "Platform security assessment and vulnerability management",
+        "srf_layer": "L4",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "platform_assessment_and_patch_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "block-production-until-assessed; patch-on-cadence; notify-ai-platform-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-001",
+        "title": "Model card and model documentation",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "model_card_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "block-release-until-model-card-complete; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-002",
+        "title": "Model artifact signing and provenance at release",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "signed_release_and_ai_bill_of_materials_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "block-release-until-signed; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-003",
+        "title": "Vulnerability disclosure and patch time limits",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "vulnerability_notice_and_fix_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-vulnerability",
+          "breach_action": "notify-deployers; ship-fix; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-004",
+        "title": "Pre-release safety, security, and fairness evaluation",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "prerelease_evaluation_and_baseline_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-release",
+          "breach_action": "block-release-until-evaluated; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-005",
+        "title": "Model change, drift, and performance notice to deployers",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "deployer_notice_within_recorded_period",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "notify-deployers; hold-version-change; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-006",
+        "title": "Independent model validation",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "independent_validation_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "block-use-until-validated; notify-ai-system-governance"
         },
         "bindings": [],
         "best_case": "no_binding",
