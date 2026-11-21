@@ -28,6 +28,7 @@ VERTICAL_HEADINGS = {
     "Public Sector": "public-sector",
     "Defense / DoD": "defense",
     "Manufacturing": "manufacturing",
+    "All sectors (common)": "common",
 }
 
 HEADING = re.compile(r"^#{2,5} ")

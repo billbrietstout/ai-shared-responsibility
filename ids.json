@@ -1,6 +1,6 @@
 {
   "$schema_version": "1.0",
-  "description": "Canonical ID registry. Every concept, layer, role, operating model, jurisdiction, moral dimension, requirement, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.jurisdiction.*, srf.moral.*, srf.vertical.*, srf.control.<vertical>.*, ext.framework.*, ext.requirement.*, ext.threat.*.",
+  "description": "Canonical ID registry. Every concept, layer, role, operating model, jurisdiction, moral dimension, requirement, and control has one stable id, a human name, and a URL. IDs are namespaced: srf.layer.*, srf.opmodel.*, srf.role.*, srf.concept.*, srf.data.*, srf.jurisdiction.*, srf.moral.*, srf.vertical.*, srf.control.<vertical>.*, srf.control.common.*, ext.framework.*, ext.requirement.*, ext.threat.*.",
   "srf_version": "1.0",
   "updated": "2026-09-02",
   "namespaces": {
@@ -13,12 +13,12 @@
     "srf.jurisdiction": "A jurisdiction that issues a regulation or standard",
     "srf.moral": "A moral-orientation dimension (actor, action, outcome)",
     "srf.vertical": "An industry vertical that owns a control schema",
-    "srf.control": "A vertical control, srf.control.<vertical>.<control-id>",
+    "srf.control": "A control, srf.control.<vertical>.<control-id> or srf.control.common.<control-id> for a sector-neutral control",
     "ext.framework": "An external standard or regulation",
     "ext.requirement": "A concrete requirement inside an external instrument",
     "ext.threat": "A catalog risk from threats.json. The definition belongs to the external source."
   },
-  "count": 644,
+  "count": 645,
   "ids": [
     {
       "id": "ext.framework.ai-safe2",
@@ -2002,6 +2002,13 @@
       "url": "https://aisharedresponsibility.com/glossary/#autonomy-level"
     },
     {
+      "id": "srf.concept.common-controls",
+      "name": "All sectors (common) controls",
+      "type": "concept",
+      "subtype": "common-scope",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
+    },
+    {
       "id": "srf.concept.control",
       "name": "Control",
       "type": "concept",
@@ -2112,6 +2119,13 @@
       "type": "concept",
       "subtype": "vocabulary",
       "url": "https://aisharedresponsibility.com/glossary/#shared-responsibility"
+    },
+    {
+      "id": "srf.control.common.SRF-COM-L1-001",
+      "name": "SRF-COM-L1-001: Acceptable Use Policy Acknowledgment by AI System Users",
+      "type": "control",
+      "subtype": "common",
+      "url": "https://aisharedresponsibility.com/data/common-controls.json"
     },
     {
       "id": "srf.control.defense.SRF-L1-ACQ-001",
@@ -2518,13 +2532,6 @@
       "type": "control",
       "subtype": "finance",
       "url": "https://aisharedresponsibility.com/finance/controls/#SRF-L1-DEV-005"
-    },
-    {
-      "id": "srf.control.finance.SRF-L1-DEV-006",
-      "name": "SRF-L1-DEV-006: Acceptable Use Policy Acknowledgment by AI System Users",
-      "type": "control",
-      "subtype": "finance",
-      "url": "https://aisharedresponsibility.com/finance/controls/#SRF-L1-DEV-006"
     },
     {
       "id": "srf.control.finance.SRF-L1-ECH-001",
@@ -4527,6 +4534,13 @@
       "type": "concept",
       "subtype": "vertical",
       "url": "https://aisharedresponsibility.com/public-sector/"
+    }
+  ],
+  "aliases": [
+    {
+      "alias": "srf.control.finance.SRF-L1-DEV-006",
+      "canonical_id": "srf.control.common.SRF-COM-L1-001",
+      "reason": "moved to the common controls file"
     }
   ],
   "glossary_xref": [

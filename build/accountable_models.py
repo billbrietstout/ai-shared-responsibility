@@ -13,6 +13,8 @@ VERTICALS = (
     "finance", "healthcare", "insurance",
     "public-sector", "defense", "manufacturing",
 )
+COMMON = "common"
+CONTROL_SOURCES = VERTICALS + (COMMON,)
 FORBIDDEN_OWNER_FIELDS = ("co_accountable_persona", "accountability_split")
 
 
