@@ -2556,6 +2556,31 @@ async function testCitedObligationLinks(browser, base) {
   check("accountable mode names Annex IV and clicking the risk does not change the persona menu", personaAfter.value === personaBefore && personaAfter.value === "persona:model-provider" && personaAfter.text.indexOf("Linked through the cited obligation") !== -1 && personaAfter.text.indexOf("Annex IV: Technical documentation") !== -1, JSON.stringify({ value: personaAfter.value, hit: personaAfter.text.indexOf("Annex IV: Technical documentation") }));
   check("no page errors on the cited-obligation chains", personaPage.__errors.length === 0, personaPage.__errors.join("; "));
   await personaPage.close();
+
+  const tapOn = await openPage(browser, base, 1280, 900, "?type=risk&node=dsgai05&view=list&tapestry=1");
+  await expandColumn(tapOn, "control");
+  const tapEdges = await riskControlEdges(tapOn);
+  const tapCards = await tapOn.$$eval("#chain-board button[data-chain-id]", (els) => els.map((el) => el.dataset.chainId));
+  const shortDash = await tapOn.$$eval("#chain-svg path.chain-line--dashed", (els) => els.filter((el) => (el.getAttribute("class") || "").indexOf("long-dashed") === -1).length);
+  check("Show Tapestry keeps the solid line, the short shared-control dash, and the longer cited-obligation dash", pair(tapEdges, dashedRisk, solidControl).length === 1 && pair(tapEdges, dashedRisk, solidControl)[0].style === "solid" && pair(tapEdges, dashedRisk, controlId).length === 1 && pair(tapEdges, dashedRisk, controlId)[0].style === "long-dashed" && shortDash > 0, JSON.stringify({ solid: pair(tapEdges, dashedRisk, solidControl), cited: pair(tapEdges, dashedRisk, controlId), shortDash: shortDash }));
+  check("cited-obligation links leave Tapestry controls out of this SRF chain", tapCards.every((id) => id.indexOf("control:tapestry:") !== 0), tapCards.filter((id) => id.indexOf("tapestry") !== -1).join(","));
+  await tapOn.close();
+
+  const tapControl = await openPage(browser, base, 1280, 900, "?type=control&node=tapestry:TAP-SRF-L1-CON-001&view=list&tapestry=1");
+  await sleep(400);
+  const tapLine = await tapControl.evaluate(() => {
+    const lines = Array.from(document.querySelectorAll("#chain-svg path.chain-line")).map((el) => el.getAttribute("class") || "");
+    const cards = Array.from(document.querySelectorAll("#chain-board button[data-chain-id]")).map((el) => el.dataset.chainId);
+    return {
+      solid: lines.filter((name) => name.indexOf("chain-line--solid") !== -1).length,
+      long: lines.filter((name) => name.indexOf("chain-line--long-dashed") !== -1).length,
+      risks: cards.filter((id) => id.indexOf("risk:") === 0),
+      persona: cards.some((id) => id.indexOf("accountable:") === 0),
+      checked: document.getElementById("show-tapestry").checked
+    };
+  });
+  check("a Tapestry control keeps a solid persona line and is not chained by a cited obligation", tapLine.checked && tapLine.solid >= 1 && tapLine.long === 0 && tapLine.risks.length === 0 && tapLine.persona, JSON.stringify(tapLine));
+  await tapControl.close();
 }
 
 async function testMovedControlAlias(browser, base) {
