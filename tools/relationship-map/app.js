@@ -1116,17 +1116,6 @@
 
   function chainFromPersona(id) {
     var chain = blankChain("persona");
-    var threats = [];
-    Object.keys(catalog.threats).forEach(function (threatId) {
-      var threat = catalog.threats[threatId];
-      var named = MODEL_ORDER.some(function (modelId) {
-        if (modelFilter !== "all" && modelId !== modelFilter) return false;
-        return ((threat.accountability || {})[modelId] || {}).accountable_persona === id;
-      });
-      if (named) threats.push(threat);
-    });
-    threats.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
-    threats.forEach(function (threat) { chain.risks.push(riskCard(threat)); });
     var nodes = [];
     graph.forEachNode(function (nodeId, attrs) {
       if (!controlInChain(attrs)) return;
@@ -1135,6 +1124,20 @@
       });
       if (named) nodes.push({ id: nodeId, attrs: attrs });
     });
+    var controlFullIds = {};
+    nodes.forEach(function (node) { controlFullIds[node.attrs.fullId] = true; });
+    var threats = [];
+    Object.keys(catalog.threats).forEach(function (threatId) {
+      var threat = catalog.threats[threatId];
+      var named = MODEL_ORDER.some(function (modelId) {
+        if (modelFilter !== "all" && modelId !== modelFilter) return false;
+        return ((threat.accountability || {})[modelId] || {}).accountable_persona === id;
+      });
+      var viaControl = (threat.related_controls || []).some(function (fullId) { return controlFullIds[fullId]; });
+      if (named || viaControl) threats.push(threat);
+    });
+    threats.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+    threats.forEach(function (threat) { chain.risks.push(riskCard(threat)); });
     nodes.sort(function (a, b) {
       return compareControlNodes(a, b);
     });

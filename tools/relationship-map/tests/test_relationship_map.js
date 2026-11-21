@@ -2125,6 +2125,51 @@ async function openNoControlsFixture(browser, base, width, height) {
   return page;
 }
 
+async function testPersonaRisks(browser, base) {
+  console.log("\n## A persona chain shows the risks of its controls and the risks that name it");
+  const personas = ["ai-system-users", "ai-system-governance", "data-provider", "application-developer", "agentic-platform-provider", "ai-platform-provider", "ai-model-serving", "model-provider"];
+  const finance = readData("finance-controls.json").controls;
+  const linked = threats.filter((t) => (t.related_controls || []).some((c) => c === "srf.control.finance.SRF-L1-DEV-003" || c === "srf.control.finance.SRF-L1-DEV-006")).map((t) => "risk:" + t.id);
+  check("data: DEV-003 and DEV-006 are linked to at least dsgai03 and dsgai16", ["risk:dsgai03", "risk:dsgai16"].every((id) => linked.indexOf(id) !== -1) && finance.some((c) => c.id === "SRF-L1-DEV-006"), JSON.stringify(linked));
+  for (const id of personas) {
+    const page = await openPersonaChain(browser, base, 1280, 900, "?type=persona&node=" + id + "&view=list");
+    await page.evaluate(() => { document.querySelectorAll('.chain-more[data-more-column="risk"]').forEach((b) => b.click()); });
+    await sleep(200);
+    const shown = await page.$$eval('#chain-board .chain-col[data-column="risk"] button[data-chain-id]', (els) => els.map((el) => el.dataset.chainId));
+    const ownerNamed = threats.filter((t) => Object.values(t.accountability || {}).some((cell) => cell.accountable_persona === id)).map((t) => "risk:" + t.id);
+    check(id + " chain keeps every risk that names it as owner (" + ownerNamed.length + ") and shows " + shown.length, ownerNamed.every((r) => shown.indexOf(r) !== -1), JSON.stringify(ownerNamed.filter((r) => shown.indexOf(r) === -1)));
+    if (id === "ai-system-users") {
+      check("AI System Users chain shows the risks linked to DEV-003 and DEV-006", linked.every((r) => shown.indexOf(r) !== -1) && shown.length >= linked.length, JSON.stringify({ linked: linked, shown: shown }));
+    }
+    await page.close();
+  }
+}
+
+async function testRelatedListBullets(browser, base) {
+  console.log("\n## Related list bullets sit on the first line of each item");
+  for (const [width, height] of [[1280, 900], [375, 812]]) {
+    const at = " at " + width;
+    const page = await openPersonaChain(browser, base, width, height, "?type=persona&node=data-provider&view=list");
+    const m = await page.evaluate(() => {
+      const out = [];
+      document.querySelectorAll("#details-chain li > .details-related").forEach((b) => {
+        const li = b.parentElement;
+        const probe = document.createElement("span");
+        probe.style.cssText = "display:inline-block;width:0;height:0";
+        li.insertBefore(probe, li.firstChild);
+        const line = parseFloat(getComputedStyle(b).fontSize) * 1.6;
+        out.push({ wrapped: b.getBoundingClientRect().height > line * 1.5, off: probe.getBoundingClientRect().bottom - b.getBoundingClientRect().top, line: line });
+        probe.remove();
+      });
+      return out;
+    });
+    const wrapped = m.filter((x) => x.wrapped);
+    check("some related items wrap, so the bullet position is exercised" + at, wrapped.length > 0, String(m.length));
+    check("each bullet baseline is inside the first line of its item" + at, m.every((x) => x.off <= x.line), JSON.stringify(m.filter((x) => x.off > x.line).slice(0, 2)));
+    await page.close();
+  }
+}
+
 async function testEmptyControlsState(browser, base) {
   console.log("\n## A pick with no controls shows an empty state (fixture)");
   // Fixture: serve the control files with every ai-system-users owner swapped to
@@ -2207,6 +2252,8 @@ async function main() {
       ["detailsBesideChain", () => testDetailsBesideChain(browser, base)],
       ["emptyControlsState", () => testEmptyControlsState(browser, base)],
       ["usersPersonaControls", () => testUsersPersonaControls(browser, base)],
+      ["personaRisks", () => testPersonaRisks(browser, base)],
+      ["relatedListBullets", () => testRelatedListBullets(browser, base)],
       ["columnLabels", () => testColumnLabels(browser, base)],
       ["listbox", () => testListbox(browser, base)],
       ["phoneSheet", () => testPhoneSheet(browser, base)],
