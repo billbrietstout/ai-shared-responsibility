@@ -171,7 +171,7 @@
                   <fieldset class="model-filter">
                     <legend class="model-filter__legend">
                       <span>Operating model</span>
-                      <button type="button" class="info-bubble__btn" id="model-info-btn" aria-expanded="false" aria-controls="model-info-text">About sector models</button>
+                      <button type="button" class="info-bubble__btn" id="model-info-btn" aria-expanded="false" aria-controls="model-info-text" aria-describedby="model-info-text">About sector models</button>
                     </legend>
                     <p id="model-info-text" class="info-bubble__panel" role="tooltip" hidden></p>
                     <div id="model-filter-list" class="model-filter__list">
@@ -187,12 +187,14 @@
                     <div id="layer-filter-list" class="model-filter__list"></div>
                   </fieldset>
 
-                  <label class="tapestry-toggle" for="show-tapestry">
-                    <input id="show-tapestry" type="checkbox" />
-                    <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
-                  </label>
+                  <div class="chain-settings__meta">
+                    <label class="tapestry-toggle" for="show-tapestry">
+                      <input id="show-tapestry" type="checkbox" />
+                      <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
+                    </label>
+                    <p id="scope-summary" class="scope-summary" role="status" aria-live="polite"></p>
+                  </div>
                 </div>
-                <p id="scope-summary" class="scope-summary" role="status" aria-live="polite"></p>
                 <p id="filter-summary" class="filter-summary visually-hidden" role="status"></p>
               </div>
             </div>
@@ -200,7 +202,13 @@
               <div id="context-board" class="context-board" hidden></div>
               <div id="chain" class="chain">
                 <h3 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h3>
-                <p id="chain-help" class="chain-help">Choose a risk, an obligation, a control, or a persona in any menu. Each menu lists every item in its column. A choice shows the linked items in the other columns. Details for that choice sit beside the columns on a wide screen and below them on a narrow one.</p>
+                <p class="chain-help">
+                  <span id="chain-help" class="chain-help__prompt">Choose a risk, an obligation, a control, or an accountable persona in any menu. The boxes then show what links to it.</span>
+                  <button type="button" class="info-bubble__btn" id="chain-help-info-btn" aria-expanded="false" aria-controls="chain-help-info-text" aria-describedby="chain-help-info-text">More about the chain menus</button>
+                </p>
+                <div id="chain-help-info-text" class="info-bubble__panel" role="tooltip" hidden>
+                  <p>Each menu lists every item in its column. A choice shows the linked items in the other columns. Details for that choice sit beside the columns on a wide screen and below them on a narrow one.</p>
+                </div>
                 <div id="map-loading" class="load-placeholder" aria-hidden="true">
                   <span class="load-placeholder__bar"></span>
                   <span class="load-placeholder__bar"></span>
@@ -210,7 +218,7 @@
                 <div class="chain-legend-wrap">
                   <p class="chain-legend-bar">
                     <span class="chain-legend-bar__label">Line types</span>
-                    <button type="button" class="info-bubble__btn" id="legend-info-btn" aria-expanded="false" aria-controls="legend-info-text">What the lines mean</button>
+                    <button type="button" class="info-bubble__btn" id="legend-info-btn" aria-expanded="false" aria-controls="legend-info-text" aria-describedby="legend-info-text">What the lines mean</button>
                   </p>
                   <div id="legend-info-text" class="info-bubble__panel" role="tooltip" hidden>
                     <ul class="info-bubble__list">
@@ -276,6 +284,6 @@
 
     <site-footer></site-footer>
     <script defer src="/shared/vendor/graphology-0.26.0.umd.min.js"></script>
-    <script defer src="app.js?v=compact-scope-1"></script>
+    <script defer src="app.js?v=compact-scope-2"></script>
   </body>
 </html>

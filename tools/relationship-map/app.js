@@ -1766,8 +1766,6 @@
     var notes = [];
     if (chain.note) {
       notes.push(chain.note);
-    } else if (chain.blank) {
-      notes.push(START_NOTE);
     } else if (chain.startKind === "persona") {
       notes.push("These are the controls that name this persona as accountable, with their risks and obligations.");
     } else if (chain.startKind === "obligation") {
@@ -3640,7 +3638,6 @@
     var panelId = btn.getAttribute("aria-controls");
     var panel = panelId ? document.getElementById(panelId) : null;
     btn.setAttribute("aria-expanded", "false");
-    btn.removeAttribute("aria-describedby");
     if (panel) panel.hidden = true;
   }
 
@@ -3653,13 +3650,14 @@
       if (other !== btn) closeInfoBubble(other);
     });
     btn.setAttribute("aria-expanded", "true");
-    btn.setAttribute("aria-describedby", panelId);
     panel.hidden = false;
   }
 
   function wireInfoBubble(btn) {
     if (!btn || btn.dataset.infoWired === "1") return;
     btn.dataset.infoWired = "1";
+    var panelId = btn.getAttribute("aria-controls");
+    if (panelId && !btn.getAttribute("aria-describedby")) btn.setAttribute("aria-describedby", panelId);
     btn.addEventListener("focus", function () { openInfoBubble(btn); });
     btn.addEventListener("blur", function () {
       window.setTimeout(function () {

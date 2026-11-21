@@ -182,8 +182,9 @@ async function testFullControlList(browser, base) {
   const everyShown = await idsIn(page, "#chain-select-control option[data-node-id]");
   const dAll = diff(everyShown, inChainCore.map((c) => c.nodeId));
   check("All models and All layers lists every control that sits in an operating model (" + inChainCore.length + ")", everyShown.length === inChainCore.length && dAll.missing.length === 0 && dAll.extra.length === 0, JSON.stringify(dAll));
+  const blankHelp = await page.$eval("#chain-help", (el) => el.textContent);
   const blankNote = await page.$eval("#chain-model-note", (el) => el.textContent);
-  check("the blank chain asks you to choose a column and does not yet name the control source", /Choose a risk, an obligation, a control, or an accountable persona/.test(blankNote) && blankNote.indexOf("sector catalogs") === -1, blankNote);
+  check("the blank chain asks you to choose a column and does not yet name the control source", /Choose a risk, an obligation, a control, or an accountable persona/.test(blankHelp) && blankHelp.indexOf("The boxes then show what links to it") !== -1 && blankNote.indexOf("sector catalogs") === -1 && blankNote.indexOf("Choose a risk") === -1, blankHelp + " | " + blankNote);
   await page.select("#chain-select-control", everyShown[0]);
   await sleep(400);
   check("a control chain says the controls come from the sector catalogs", await page.$eval("#chain-model-note", (el) => /sector catalogs/.test(el.textContent) && /CoSAI Risk Map controls\.yaml/.test(el.textContent) && el.getClientRects().length > 0));
@@ -497,7 +498,7 @@ async function testListView(browser, base) {
       summaryBeforeResults: order("#filter-summary", "#search-results"),
       chainShown: !document.getElementById("chain").hidden,
       chainSelects: document.querySelectorAll("#chain-board select").length,
-      prompt: document.getElementById("chain-help").textContent,
+      prompt: document.getElementById("chain-help").textContent.trim(),
       emptyShown: !document.getElementById("details-empty").hidden,
       panelTop: rect(".map-panel").top, stageBottom: rect(".map-stage").bottom, panelWidth: rect(".map-panel").width, stageWidth: rect(".map-stage").width,
       wrapHeight: Math.round(document.querySelector(".chain-wrap").getBoundingClientRect().height)
@@ -507,7 +508,7 @@ async function testListView(browser, base) {
   check("the summary line gives the filters and both counts", first.summary === "All operating models, all layers: " + inChainCore.length + " controls, " + threats.length + " risks", first.summary);
   check("the scope line sits in the ROCA settings row", first.settingsInChain && first.scope === "All models \u00b7 All layers \u00b7 Tapestry off", JSON.stringify({ scope: first.scope, settingsInChain: first.settingsInChain }));
   check("filters stay outside collapsed Options", !first.filtersBeforeResults);
-  check("the chain is open on load, with its prompt, and the details panel starts empty", first.chainShown && first.chainSelects === 4 && /Choose a risk, an obligation, a control, or a persona/.test(first.prompt) && first.emptyShown && first.panelTop >= first.stageBottom - 1 && Math.abs(first.panelWidth - first.stageWidth) <= 1 && first.panelWidth > 1000, JSON.stringify(first));
+  check("the chain is open on load, with its prompt, and the details panel starts empty", first.chainShown && first.chainSelects === 4 && /Choose a risk, an obligation, a control, or an accountable persona/.test(first.prompt) && first.emptyShown && first.panelTop >= first.stageBottom - 1 && Math.abs(first.panelWidth - first.stageWidth) <= 1 && first.panelWidth > 1000, JSON.stringify(first));
   check("the blank chain has room for the four menus", first.wrapHeight > 120, String(first.wrapHeight));
 
   await pickModel(page, "AI-SaaS");
@@ -612,7 +613,7 @@ async function testModeParity(browser, base, width, height) {
       selects: Array.from(document.querySelectorAll("#chain-board select")).map((s) => ({ id: s.id, disabled: s.disabled, options: s.options.length - 1, root: s.dataset.root === "true" })),
       inOptions: document.querySelectorAll("#options select").length,
       cards: document.querySelectorAll("#chain-board button[data-chain-id]").length,
-      help: document.getElementById("chain-help").textContent,
+      help: document.getElementById("chain-help").textContent.trim(),
       slot: !!document.querySelector("#chain-details-slot > .details"),
       overflow: document.documentElement.scrollWidth - window.innerWidth
     }));
@@ -659,7 +660,7 @@ async function testModeParity(browser, base, width, height) {
     check("no page errors in " + mode + " mode" + at, page.__errors.length === 0, page.__errors.join("; "));
     await page.close();
   }
-  check("the chain help is the same line on every load" + at, helps.threat === helps.control && helps.control === helps.account && helps.account === helps.obligation && /^Choose a risk, an obligation, a control, or a persona in any menu\./.test(helps.threat), JSON.stringify(helps));
+  check("the chain help is the same line on every load" + at, helps.threat === helps.control && helps.control === helps.account && helps.account === helps.obligation && /^Choose a risk, an obligation, a control, or an accountable persona in any menu\. The boxes then show what links to it\./.test(helps.threat), JSON.stringify(helps));
   check("all four modes list the columns in the same order" + at, signatures.threat === signatures.control && signatures.control === signatures.account && signatures.account === signatures.obligation);
   check("all four modes start with identical select counts" + at, startCounts.threat === startCounts.control && startCounts.control === startCounts.account && startCounts.account === startCounts.obligation, JSON.stringify(startCounts));
   console.log("  select option counts at start" + at + ": " + startCounts.threat);
@@ -1485,6 +1486,8 @@ async function testInfoBubbles(browser, base) {
     active: document.activeElement === el
   }));
   check("Escape closes the bubble and keeps focus on the button", afterEsc.expanded === "false" && afterEsc.hidden && afterEsc.active, JSON.stringify(afterEsc));
+  const describedAfterEsc = await page.$eval(btn, (el) => el.getAttribute("aria-describedby"));
+  check("aria-describedby stays on the button after Escape", describedAfterEsc === "model-info-text", describedAfterEsc);
   await page.focus(btn);
   await sleep(80);
   await page.evaluate(() => document.getElementById("clear-chain-selection").focus());
@@ -2133,9 +2136,20 @@ async function testOptionsLayout(browser, base, width, height) {
       settingsInWorkspace: document.getElementById("chain-workspace").contains(document.getElementById("map-filters"))
     };
   });
-  check("the operating model, layer, and scope filters sit in the ROCA workspace" + at, rows.settingsInWorkspace, JSON.stringify(rows));
-  if (width === 1280) check("at 1280 the operating model and layer filters share a row above the chain board" + at, Math.abs(rows.modelTop - rows.layerTop) <= 40 && rows.layerLeft > rows.modelLeft + 20 && rows.boardTop > rows.scopeTop, JSON.stringify(rows));
-  else check("at 375 the chain settings stack above the chain board" + at, rows.boardTop > rows.tapestryTop && rows.modelLeft >= 0, JSON.stringify(rows));
+  const settingsBox = await page.evaluate(() => {
+    const el = document.getElementById("chain-settings");
+    const r = el.getBoundingClientRect();
+    const modelList = document.getElementById("model-filter-list");
+    const ml = modelList.getBoundingClientRect();
+    const firstRadio = modelList.querySelector("input");
+    const lastRadio = modelList.querySelector("input:last-of-type");
+    const rowWrap = firstRadio && lastRadio ? Math.abs(firstRadio.getBoundingClientRect().top - lastRadio.getBoundingClientRect().top) < 36 : false;
+    return { settingsHeight: Math.round(r.height), modelListWraps: rowWrap, fullWidth: r.width > 600 };
+  });
+  check("the operating model, layer, and scope filters sit in the ROCA workspace" + at, rows.settingsInWorkspace && (width === 375 || settingsBox.fullWidth), JSON.stringify({ rows: rows, settingsBox: settingsBox }));
+  if (width === 1280) {
+    check("at 1280 the settings block is about three short rows and the model list wraps horizontally" + at, settingsBox.settingsHeight <= 200 && settingsBox.modelListWraps && rows.layerTop > rows.modelTop + 12 && rows.boardTop > rows.tapestryTop, JSON.stringify({ rows: rows, settingsBox: settingsBox }));
+  } else check("at 375 the chain settings stack above the chain board" + at, rows.boardTop > rows.tapestryTop && rows.modelLeft >= 0, JSON.stringify(rows));
 
   await page.click("#options > summary");
   await sleep(200);
