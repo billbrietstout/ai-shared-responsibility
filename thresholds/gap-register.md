@@ -146,8 +146,28 @@ A risk cell sets `no_linked_control_in_model` when none of its related controls 
 | `misleadingclaims` | Misleading AI claims to customers | L1 | IaaS | `ai-system-governance` |
 | `highriskuse` | Prohibited or unclassified high-risk use | L1 | IaaS | `ai-system-governance` |
 | `uncontestable` | Decisions people cannot contest or get explained | L1 | IaaS | `ai-system-governance` |
+| `incompletetechdoc` | Incomplete technical documentation for AI information | L2 | Agent-PaaS | `data-provider` |
+| `incompletetechdoc` | Incomplete technical documentation for AI information | L2 | IaaS | `data-provider` |
+| `unmappedaidata` | AI data benefits, costs, and dependencies not mapped | L2 | Agent-PaaS | `data-provider` |
+| `privacylessacquisition` | Federal AI acquisition without privacy safeguards | L2 | IaaS | `ai-system-governance` |
+| `missingato` | AI information service used without authorization to operate | L2 | Agent-PaaS | `ai-system-governance` |
+| `missingato` | AI information service used without authorization to operate | L2 | IaaS | `ai-system-governance` |
+| `untrustworthyclinicalsources` | Clinical decision support built on untrustworthy source configuration | L2 | AI-PaaS | `data-provider` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | AI-SaaS | `ai-system-governance` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | AI-PaaS | `ai-system-governance` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | Agent-PaaS | `ai-system-governance` |
+| `unlawfultrainingdata` | Training data without lawful basis or provider security assessment | L2 | IaaS | `ai-system-governance` |
+| `nopremarketconformity` | High-risk AI application lacks conformity assessment | L3 | Agent-PaaS | `application-developer` |
+| `weakappaccess` | AI application access not limited to authorized users | L3 | AI-SaaS | `application-developer` |
+| `weakappaccess` | AI application access not limited to authorized users | L3 | AI-PaaS | `application-developer` |
+| `weakappaccess` | AI application access not limited to authorized users | L3 | IaaS | `application-developer` |
+| `incompletevendorai` | Procured AI application lacks required documentation package | L3 | IaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | AI-SaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | AI-PaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | Agent-PaaS | `ai-system-governance` |
+| `unlabeledsyntheticout` | Synthetic AI output not labeled or watermarked | L3 | IaaS | `ai-system-governance` |
 
-10 cells. Class: `no_linked_control_in_model`.
+30 cells. Class: `no_linked_control_in_model`.
 
 ## Summary finding
 
