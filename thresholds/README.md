@@ -48,6 +48,7 @@ Optional properties `persistence_scope`, `enforcement_plane`, `fail_closed`, and
 | `examples/healthcare.profile.yaml` | Overrides three controls, adds drift monitoring; cites FDA AI/ML SaMD guidance (PCCP), HIPAA Security Rule |
 | `generate-gap-register.py` | Resolves every `oscal_bindings` entry against the NIST 800-53 rev 5 OSCAL catalog and classifies parameter gaps |
 | `gap-register.md`, `gap-register.json` | Generated gap register; drafted as feedback for the NIST 800-53 AI overlay effort |
+| `orphan-baseline.json` | Orphan counts the ROCA check compares against. The rule and the local command are in `docs/roca-data.md`. |
 
 ## Gap register
 
