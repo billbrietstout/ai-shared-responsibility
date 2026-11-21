@@ -53,7 +53,7 @@
     <main id="main" class="map-page" data-llm="relationship-map">
       <nav id="map-jump" class="map-jump" aria-label="On this page">
         <a href="#node-search" data-jump>Find</a>
-        <a href="#map-filters" data-jump>Filters</a>
+        <a href="#chain-settings" data-jump>Filters</a>
         <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
       </nav>
 
@@ -82,38 +82,6 @@
           <div id="map-error-box" class="map-error" hidden>
             <p id="map-error" class="map-error__text" role="alert"></p>
             <button id="map-retry" class="map-error__retry" type="button">Retry</button>
-          </div>
-
-          <div id="chain-settings" class="chain-settings" aria-label="Chain settings">
-            <div id="map-filters" class="map-filters" tabindex="-1">
-              <h3 class="visually-hidden">Filters</h3>
-              <fieldset class="model-filter">
-                <legend>Operating model</legend>
-                <div id="model-filter-list" class="model-filter__list">
-                  <label class="model-option">
-                    <input type="radio" name="operating-model" value="all" checked />
-                    <span>All</span>
-                  </label>
-                </div>
-              </fieldset>
-
-              <fieldset class="model-filter layer-filter">
-                <legend>Layer</legend>
-                <div id="layer-filter-list" class="model-filter__list"></div>
-              </fieldset>
-
-              <label class="tapestry-toggle" for="show-tapestry">
-                <input id="show-tapestry" type="checkbox" />
-                <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
-              </label>
-
-              <details class="filter-help">
-                <summary>About these filters</summary>
-                <p id="model-note" class="filter-note"></p>
-                <p class="filter-note">The layer filter narrows the finder and the lists. It does not remove controls from a chain that is already open.</p>
-              </details>
-            </div>
-            <p id="filter-summary" class="filter-summary" role="status"></p>
           </div>
 
           <details id="options" class="options">
@@ -177,7 +145,7 @@
             </div>
             <p id="copy-status" class="copy-status" role="status"></p>
             <textarea id="copy-fallback" class="copy-fallback" readonly rows="8" aria-label="Chain as Markdown. Select all and copy." hidden></textarea>
-            <p id="details-empty">Select a risk or a control to see its record, sources, and links.</p>
+            <p id="details-empty">Choose a column item to see its record, sources, and links.</p>
             <div id="details-body" hidden>
               <p id="details-kind"></p>
               <p id="details-id" class="details-id" hidden></p>
@@ -190,10 +158,42 @@
           </section>
 
           <section id="chain-workspace" class="chain-workspace" aria-labelledby="chain-workspace-heading" data-llm="roca-chain">
-            <div class="chain-workspace__bar">
-              <h2 id="chain-workspace-heading"><abbr title="Risk, Obligation, Control, Accountable">ROCA</abbr> chain</h2>
-              <div class="chain-workspace__actions" role="toolbar" aria-label="Chain controls">
-                <button id="clear-chain-selection" type="button">Clear selection</button>
+            <div class="chain-workspace__head">
+              <div class="chain-workspace__bar">
+                <h2 id="chain-workspace-heading"><abbr title="Risk, Obligation, Control, Accountable">ROCA</abbr> chain</h2>
+                <div class="chain-workspace__actions" role="group" aria-label="Chain controls">
+                  <button id="clear-chain-selection" type="button">Clear selection</button>
+                </div>
+              </div>
+              <div id="chain-settings" class="chain-settings chain-settings--roca" aria-label="Chain settings">
+                <div id="map-filters" class="map-filters" tabindex="-1">
+                  <h3 class="visually-hidden">Filters</h3>
+                  <fieldset class="model-filter">
+                    <legend class="model-filter__legend">
+                      <span>Operating model</span>
+                      <button type="button" class="info-bubble__btn" id="model-info-btn" aria-expanded="false" aria-controls="model-info-text">About sector models</button>
+                    </legend>
+                    <p id="model-info-text" class="info-bubble__panel" role="tooltip" hidden></p>
+                    <div id="model-filter-list" class="model-filter__list">
+                      <label class="model-option">
+                        <input type="radio" name="operating-model" value="all" checked />
+                        <span>All</span>
+                      </label>
+                    </div>
+                  </fieldset>
+
+                  <fieldset class="model-filter layer-filter">
+                    <legend>Layer</legend>
+                    <div id="layer-filter-list" class="model-filter__list"></div>
+                  </fieldset>
+
+                  <label class="tapestry-toggle" for="show-tapestry">
+                    <input id="show-tapestry" type="checkbox" />
+                    <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
+                  </label>
+                </div>
+                <p id="scope-summary" class="scope-summary" role="status" aria-live="polite"></p>
+                <p id="filter-summary" class="filter-summary visually-hidden" role="status"></p>
               </div>
             </div>
             <div class="chain-wrap">
@@ -208,6 +208,18 @@
                   <span class="load-placeholder__bar load-placeholder__bar--short"></span>
                 </div>
                 <div class="chain-legend-wrap">
+                  <p class="chain-legend-bar">
+                    <span class="chain-legend-bar__label">Line types</span>
+                    <button type="button" class="info-bubble__btn" id="legend-info-btn" aria-expanded="false" aria-controls="legend-info-text">What the lines mean</button>
+                  </p>
+                  <div id="legend-info-text" class="info-bubble__panel" role="tooltip" hidden>
+                    <ul class="info-bubble__list">
+                      <li>Solid. The record names this link. An obligation line is solid when the basis is the official text.</li>
+                      <li>Dashed. Shared control. The legal text does not name the risk.</li>
+                      <li>Dashed. Cited obligation. The control cites a requirement the risk lists, and the risk record does not name the control.</li>
+                      <li>Dotted. Instrument-level. No article record matched.</li>
+                    </ul>
+                  </div>
                   <ul class="chain-legend" id="chain-legend" aria-label="Line types">
                     <li>
                       <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
@@ -234,15 +246,6 @@
                       <span>Dotted: instrument level</span>
                     </li>
                   </ul>
-                  <details class="legend-help esc-close">
-                    <summary>What the lines mean</summary>
-                    <ul>
-                      <li>Solid. The record names this link. An obligation line is solid when the basis is the official text.</li>
-                      <li>Dashed. Shared control. The legal text does not name the risk.</li>
-                      <li>Dashed. Cited obligation. The control cites a requirement the risk lists, and the risk record does not name the control.</li>
-                      <li>Dotted. Instrument-level. No article record matched.</li>
-                    </ul>
-                  </details>
                 </div>
                 <p id="chain-model-note" class="chain-model-note"></p>
                 <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
@@ -273,6 +276,6 @@
 
     <site-footer></site-footer>
     <script defer src="/shared/vendor/graphology-0.26.0.umd.min.js"></script>
-    <script defer src="app.js?v=a11y-status-2"></script>
+    <script defer src="app.js?v=compact-scope-1"></script>
   </body>
 </html>
