@@ -4,7 +4,7 @@ import json, os, re, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from accountable_models import (
-    FORBIDDEN_OWNER_FIELDS, applicable_models, canonical_ids,
+    CONTROL_SOURCES, FORBIDDEN_OWNER_FIELDS, applicable_models, canonical_ids,
     sector_to_srf, specialization_map, to_canonical,
 )
 from obligation_kind import REQUIRED_CATALOGS, SOURCE_KINDS, current_obligation
@@ -86,8 +86,7 @@ check(not dup_keys, f"mapping_key values unique (bad: {dup_keys})")
 
 unmapped_keys = set()
 placeholder = __import__("re").compile(r"^\s*(TBD|N/?A|None|-)\b", __import__("re").I)
-for vertical in ("finance", "healthcare", "insurance",
-                 "public-sector", "defense", "manufacturing"):
+for vertical in CONTROL_SOURCES:
     for c in J(f"data/{vertical}-controls.json")["controls"]:
         for mkey, citation in (c.get("mappings") or {}).items():
             if mkey == "mapping_status_note":
@@ -134,7 +133,7 @@ missing_persona = []
 bad_persona = []
 multi_persona = []
 bad_layer = []
-for vertical in VERTICALS:
+for vertical in CONTROL_SOURCES:
     for c in J(f"data/{vertical}-controls.json")["controls"]:
         cid = f"{vertical}:{c['id']}"
         ap = c.get("accountable_persona")
@@ -171,7 +170,7 @@ _model_edges = {
     for e in edges["edges"] if e["rel"] == "accountable_to"
 }
 bad_by_model = []
-for vertical in VERTICALS:
+for vertical in CONTROL_SOURCES:
     for c in J(f"data/{vertical}-controls.json")["controls"]:
         cid = f"{vertical}:{c['id']}"
         src = f"srf.control.{vertical}.{c['id']}"
@@ -369,6 +368,8 @@ for e in edges["edges"]:
     if e["rel"] != "governed_by":
         continue
     vslug = e["source"].split(".")[2]
+    if vslug == "common":
+        continue
     evidence_verticals.setdefault(e["target"], set()).add(vslug)
 bad_derived = []
 for i in regs["items"]:
@@ -474,7 +475,7 @@ threat_doc = J("data/threats.json")
 req_ids = {r["id"] for r in J("data/moral-regulatory-hierarchy.json")["requirements"]}
 control_ids = set()
 controls_by_full = {}
-for vertical in VERTICALS:
+for vertical in CONTROL_SOURCES:
     for c in J(f"data/{vertical}-controls.json")["controls"]:
         full = f"srf.control.{vertical}.{c['id']}"
         control_ids.add(full)
@@ -577,6 +578,116 @@ for jid in ("oecd", "uk", "china", "singapore", "canada",
             "japan", "australia", "south-korea", "brazil", "india",
             "us-california"):
     check(f"srf.jurisdiction.{jid}" in node_ids, f"jurisdiction node present ({jid})")
+
+# 6h. Common (sector-neutral) controls. Common is not a vertical: no vertical
+# node, no applies_to_vertical or belongs_to_vertical edge, and no governed_by
+# edge from principles. The schema is stricter than the sector files.
+COMMON_LAYERS = tuple(f"L{i}" for i in range(1, 6))
+COMMON_LIFECYCLE = ("design", "validate", "operate", "change", "retire")
+COMMON_MODELS = ("AI-SaaS", "AI-PaaS", "Agent-PaaS", "IaaS")
+COMMON_REQUIRED_KEYS = ("nist_ai_rmf", "eu_ai_act", "iso_42001")
+COMMON_OPTIONAL_KEYS = ("finos_aigf", "aicm", "owasp_llm", "cis", "mitre_atlas",
+                        "nist_csf_2", "nist_cyber_ai", "gdpr")
+COMMON_KEYS = set(COMMON_REQUIRED_KEYS) | set(COMMON_OPTIONAL_KEYS)
+COMMON_FIELDS_REQUIRED = ("id", "layer", "component", "title", "description",
+                          "accountable_persona", "accountable_by_model",
+                          "operating_models", "mappings", "threshold",
+                          "lifecycle_stage", "common_status")
+COMMON_FIELDS_OPTIONAL = ("principles", "former_ids", "eu_ai_act_risk_class",
+                          "cross_layer_controls", "cross_layer_note",
+                          "accountable_persona_note", "implementing_persona_note")
+COMMON_STATUS = ("draft",)
+common_doc = J("data/common-controls.json")
+common_list = common_doc["controls"]
+bad_common = []
+common_seen = set()
+per_layer_seq = {}
+common_principles = (
+    {p["id"] for p in J("data/ai-agentic-principles.json")["principles"]}
+    | {p["id"] for p in J("data/security-principles.json")["principles"]})
+for c in common_list:
+    cid = c.get("id", "?")
+    allowed = set(COMMON_FIELDS_REQUIRED) | set(COMMON_FIELDS_OPTIONAL)
+    for f in COMMON_FIELDS_REQUIRED:
+        if f not in c:
+            bad_common.append(f"{cid}:missing-{f}")
+    for f in c:
+        if f not in allowed:
+            bad_common.append(f"{cid}:field-not-allowed:{f}")
+    m = re.fullmatch(r"SRF-COM-(L[1-5])-(\d{3})", str(cid))
+    if not m:
+        bad_common.append(f"{cid}:id-convention")
+    else:
+        if m.group(1) != c.get("layer"):
+            bad_common.append(f"{cid}:id-layer-mismatch")
+        per_layer_seq.setdefault(m.group(1), []).append(int(m.group(2)))
+    if cid in common_seen:
+        bad_common.append(f"{cid}:duplicate")
+    common_seen.add(cid)
+    if c.get("layer") not in COMMON_LAYERS:
+        bad_common.append(f"{cid}:layer")
+    if c.get("lifecycle_stage") not in COMMON_LIFECYCLE:
+        bad_common.append(f"{cid}:lifecycle_stage:{c.get('lifecycle_stage')}")
+    if c.get("common_status") not in COMMON_STATUS:
+        bad_common.append(f"{cid}:common_status:{c.get('common_status')}")
+    if sorted(c.get("operating_models") or []) != sorted(
+            set(c.get("operating_models") or [])) or not set(
+            c.get("operating_models") or []) <= set(COMMON_MODELS) or not c.get(
+            "operating_models"):
+        bad_common.append(f"{cid}:operating_models")
+    maps = c.get("mappings") or {}
+    for k in maps:
+        if k not in COMMON_KEYS:
+            bad_common.append(f"{cid}:mapping-key-not-allowed:{k}")
+    for k in COMMON_REQUIRED_KEYS:
+        if not isinstance(maps.get(k), str) or not maps[k].strip():
+            bad_common.append(f"{cid}:mapping-missing:{k}")
+    for p in c.get("principles") or []:
+        if p not in common_principles:
+            bad_common.append(f"{cid}:unknown-principle:{p}")
+    for old in c.get("former_ids") or []:
+        if not re.fullmatch(r"srf\.control\.[a-z-]+\.[A-Za-z0-9-]+", old):
+            bad_common.append(f"{cid}:former_id-format:{old}")
+check(common_list, f"common controls present ({len(common_list)})")
+check(not bad_common, f"common controls follow the common schema (bad: {bad_common[:6]})")
+bad_seq = [layer for layer, seqs in per_layer_seq.items()
+           if sorted(seqs) != list(range(1, len(seqs) + 1))]
+check(not bad_seq, f"common seq runs 001.. per layer (bad: {bad_seq})")
+check(common_doc.get("id_convention") == "SRF-COM-{layer}-{seq}",
+      "common file declares id_convention SRF-COM-{layer}-{seq}")
+check("srf.concept.common-controls" in node_ids, "common scope node present")
+check(not [n for n in node_ids if n.startswith("srf.vertical.common")],
+      "common has no srf.vertical node")
+common_nodes = {f"srf.control.common.{c['id']}" for c in common_list}
+check(common_nodes <= node_ids, "every common control has a node")
+vert_bad = [e for e in edges["edges"]
+            if e["rel"] in ("belongs_to_vertical", "applies_to_vertical")
+            and (e["source"] in common_nodes or e["target"] in common_nodes)]
+check(not vert_bad, "common controls carry no vertical edges")
+scope_bad = [n for n in common_nodes
+             if (n, "part_of_common_scope", "srf.concept.common-controls")
+             not in {(e["source"], e["rel"], e["target"]) for e in edges["edges"]}]
+check(not scope_bad, f"common controls link to the scope node (bad: {scope_bad})")
+check(not [e for e in edges["edges"] if e["rel"] == "governed_by"
+           and e["target"].startswith(("srf.principle", "ext.principle"))],
+      "principles create no governed_by edges")
+check(not [e for e in edges["edges"] if e["rel"] in ("refines_common",)],
+      "no control-to-control link edges in this release")
+
+# Aliases: an old canonical id resolves to a live node, and is no longer a node.
+alias_rows = ids.get("aliases", [])
+alias_bad = []
+for a in alias_rows:
+    if a.get("canonical_id") not in node_ids:
+        alias_bad.append(f"{a.get('alias')}:target-missing")
+    if a.get("alias") in node_ids:
+        alias_bad.append(f"{a.get('alias')}:alias-is-still-a-node")
+declared_aliases = {(old, f"srf.control.common.{c['id']}")
+                    for c in common_list for old in c.get("former_ids") or []}
+if declared_aliases != {(a["alias"], a["canonical_id"]) for a in alias_rows}:
+    alias_bad.append("ids.json aliases differ from former_ids")
+check(not alias_bad, f"every ids.json alias targets an existing node (bad: {alias_bad[:4]})")
+check(len(alias_rows) >= 1, f"aliases present ({len(alias_rows)})")
 
 # 7. related[] only references real nodes
 bad_r = [n["id"] for n in nodes["nodes"]
