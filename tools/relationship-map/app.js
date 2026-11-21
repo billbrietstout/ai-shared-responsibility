@@ -191,8 +191,7 @@
     if (detailsActions) detailsActions.insertAdjacentElement("afterend", copyStatus);
     else detailsEl.appendChild(copyStatus);
   }
-  var detailsSummary = copyStatus;
-  var detailsLive = copyStatus;
+  /* Node details announcements and copy feedback share one status region. */
 
   var graph = null;
   var respLabel = {};
@@ -1511,10 +1510,10 @@
   }
 
   function announceDetails() {
-    if (!detailsLive) return;
+    if (!copyStatus) return;
     var kind = detailsKind ? detailsKind.textContent : "";
     var name = detailsHeading ? detailsHeading.textContent : "";
-    detailsLive.textContent = "Details updated: " + (kind ? kind + ", " : "") + name + ".";
+    copyStatus.textContent = "Details updated: " + (kind ? kind + ", " : "") + name + ".";
   }
 
   function clearFocus() {
@@ -2191,7 +2190,7 @@
       connectionsHeading.hidden = true;
       detailsList.hidden = true;
       renderChainDetails(currentChain);
-      if (detailsSummary) detailsSummary.textContent = chainSentence(currentChain);
+      if (copyStatus) copyStatus.textContent = chainSentence(currentChain);
       placeDetails();
       return;
     }
@@ -2206,7 +2205,7 @@
         ? "Choose an item in any menu to see its record, sources, and links."
         : "Select a risk or a control to see its record, sources, and links.";
       detailsBody.hidden = true;
-      if (detailsSummary) detailsSummary.textContent = "";
+      if (copyStatus) copyStatus.textContent = "";
       detailsList.textContent = "";
       detailsModelNote.hidden = true;
       detailsModelNote.textContent = "";
@@ -2290,7 +2289,7 @@
     }
     var summary = attrs.name + ". " + (KIND_LABEL[attrs.kind] || attrs.kind) + ". " + rows.length + " connections.";
     if (gap) summary += " " + gap;
-    if (detailsSummary) detailsSummary.textContent = summary;
+    if (copyStatus) copyStatus.textContent = summary;
     placeDetails();
   }
 
@@ -2755,22 +2754,26 @@
     var modeSearch = MODE_SEARCH[entry];
     if (findLabel) findLabel.textContent = modeSearch ? modeSearch.label : "Find a risk, obligation, control, or persona";
     searchInput.placeholder = modeSearch ? modeSearch.placeholder : "Name or a few words";
-    if (contextOn) {
-      helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
-    } else if (view === "chain") {
-      helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. " +
-        "Each menu lists every item in its column. A choice shows the items linked to it in the other columns. " +
-        "Details for the choice appear beside the columns on a wide screen and below them on a narrow one.";
-    } else {
-      helpEl.textContent = "Type a name or a few words about " + (modeSearch ? modeSearch.noun : "a risk, an obligation, a control, or a persona") + ". Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
+    if (helpEl) {
+      if (contextOn) {
+        helpEl.textContent = "Layers show personas and controls by L1 to L5. Open a name to see its ROCA chain.";
+      } else if (view === "chain") {
+        helpEl.textContent = "Four columns: Risk, Obligation, Control, and Accountable. " +
+          "Each menu lists every item in its column. A choice shows the items linked to it in the other columns. " +
+          "Details for the choice appear beside the columns on a wide screen and below them on a narrow one.";
+      } else {
+        helpEl.textContent = "Type a name or a few words about " + (modeSearch ? modeSearch.noun : "a risk, an obligation, a control, or a persona") + ". Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.";
+      }
     }
 
-    if (view === "chain" && !currentChain) {
-      chainEmpty.hidden = false;
-      chainEmpty.textContent = "This record has no chain for the selected operating model.";
-    } else {
-      chainEmpty.hidden = true;
-      chainEmpty.textContent = "";
+    if (chainEmpty) {
+      if (view === "chain" && !currentChain) {
+        chainEmpty.hidden = false;
+        chainEmpty.textContent = "This record has no chain for the selected operating model.";
+      } else {
+        chainEmpty.hidden = true;
+        chainEmpty.textContent = "";
+      }
     }
     var panelOpen = !!(chainOn || contextOn || selected || personaPick);
     mapPage.classList.toggle("is-panel-open", panelOpen);
@@ -4018,6 +4021,17 @@
       if (loadingEl) loadingEl.hidden = true;
     }).catch(function (err) {
       var detail = err && err.message ? err.message : "The site data could not be read.";
+      var name = err && err.name ? err.name : "";
+      var isDomBug = name === "TypeError" || /null|undefined|textContent|Cannot set properties/i.test(detail);
+      var isFetchFail = /Could not load |Failed to fetch|NetworkError|Load failed|JSON/i.test(detail) ||
+        name === "SyntaxError";
+      if (typeof console !== "undefined" && console.error) {
+        console.error(isDomBug ? "[relationship-map] render failed after data load:" : "[relationship-map] load failed:", err);
+      }
+      if (isDomBug && !isFetchFail) {
+        showError("The map UI failed to finish rendering. " + detail + " Reload the page. If it keeps failing, report this as a site bug.", userRetry);
+        return;
+      }
       showError("The map data did not load. " + detail + " Check your connection, then choose Retry.", userRetry);
     });
   }
