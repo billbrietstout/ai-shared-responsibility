@@ -6211,7 +6211,7 @@ Machine-readable: https://aisharedresponsibility.com/data/common-controls.json
 
 Sector-neutral controls that apply in every sector. Common is not an industry vertical. Control ids use SRF-COM-{layer}-{seq} and canonical ids use srf.control.common.<id>. Status: draft.
 
-Total controls: 35
+Total controls: 41
 
 #### L1: AI Business & Usage (10 controls)
 
@@ -6918,6 +6918,134 @@ Regulatory mappings:
   - aicm: A&A-02 (Independent Assessments); TVM-06 (Penetration Testing); TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)
 
 
+#### L5: AI Model Provider (6 controls)
+
+##### SRF-COM-L5-001: Model card and model documentation
+
+Layer: L5 (AI Model Provider) | Persona: `model-provider` | Component: Model Governance
+Lifecycle stage: design
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer.
+
+Each released model must have a model card before the model is offered. The card records the intended use, the limits, the evaluation results, and the security notes for that model version. When the model changes in a material way, the AI Model Provider updates the card within the time it records, and that time is at least 30 days. EU AI Act Articles 11, 13, and 53 and Annex IV apply only where in scope.
+
+Evidence: Percentage of released models whose model card records intended use, limits, evaluation results, and security notes before the model is offered. When the model changes in a material way, the card is updated within the time the provider records. That recorded time is at least 30 days, the longest numbered update time in the source controls. A released model with no card, or a card that misses one of those four parts, counts as a miss. A material change whose card is still unchanged after the recorded time also counts as a miss. The target percentage is set per model tier.
+Threshold: model_card_coverage >= tier-defined
+Breach action: block-release-until-model-card-complete; notify-model-provider
+
+Regulatory mappings:
+  - finos_aigf: AIR-OP-018 (Model Overreach / Expanded Use); AIR-OP-017 (Lack of Explainability)
+  - nist_ai_rmf: MEASURE 2.9 (the AI model is explained, validated, and documented)
+  - eu_ai_act: Article 11 (technical documentation; where in scope); Article 13 (transparency and provision of information; where in scope); Article 53 (obligations of providers of general-purpose AI models; where in scope); Annex IV (technical documentation; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.6.2.7 and A.8.2
+  - owasp_llm: LLM09: Misinformation
+  - aicm: MDS-03 (Model Documentation); MDS-04 (Model Documentation Requirements)
+
+##### SRF-COM-L5-002: Model artifact signing and provenance at release
+
+Layer: L5 (AI Model Provider) | Persona: `model-provider` | Component: Model Distribution
+Lifecycle stage: design
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer.
+Cross-layer note: SRF-COM-L4-006 checks a signed model artifact when the serving runtime loads it. This control sits at L5 and covers the AI Model Provider signing the released weights and listing those weights and their dependencies in an AI bill of materials.
+
+The AI Model Provider must sign the weights of each released model and list those weights and their dependencies in an AI bill of materials. A release whose weights are unsigned, or whose bill of materials omits a dependency, is not offered. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of model releases in the annual window whose weights are signed and whose weights and dependencies are listed in an AI bill of materials. A release with an unsigned weight, or with a dependency missing from the bill of materials, counts as a miss. The annual window is the longest review interval in the source controls. The target percentage is set per model tier.
+Threshold: signed_release_and_ai_bill_of_materials_coverage >= tier-defined
+Breach action: block-release-until-signed; notify-model-provider
+
+Regulatory mappings:
+  - finos_aigf: AIR-SEC-008 (Tampering With the Foundational Model)
+  - nist_ai_rmf: GOVERN 6.1 (policies address AI risks associated with third-party entities); MEASURE 2.7 (security and resilience are evaluated and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023 (edition-level)
+  - owasp_llm: LLM03: Supply Chain; LLM04: Data and Model Poisoning
+  - cis: CIS Control 16: Application Software Security
+  - aicm: MDS-08 (Model Integrity Checks); MDS-09 (Model Signing/Ownership Verification)
+
+##### SRF-COM-L5-003: Vulnerability disclosure and patch time limits
+
+Layer: L5 (AI Model Provider) | Persona: `model-provider` | Component: Model Governance
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer.
+
+The AI Model Provider must tell deployers about a model vulnerability and must ship a fix within the time the provider records. The recorded time to ship a fix is at least 30 days. EU AI Act Article 15 applies only where in scope.
+
+Evidence: Percentage of confirmed model vulnerabilities that were disclosed to deployers and fixed inside the times the provider records. The recorded time to ship a fix is at least 30 days, the longest explicit remediation time in the source controls. A vulnerability with no disclosure to deployers, or with a fix later than the recorded time, counts as a miss. The 24-hour acknowledgment and the 7-day critical remediation in one source control are shorter than this floor, so this control uses 30 days. The target percentage is set per model tier.
+Threshold: vulnerability_notice_and_fix_coverage >= tier-defined
+Breach action: notify-deployers; ship-fix; notify-model-provider
+
+Regulatory mappings:
+  - nist_ai_rmf: MANAGE 4.1 (post-deployment monitoring plans are implemented, including incident response and recovery); MEASURE 2.7 (security and resilience are evaluated and documented)
+  - eu_ai_act: Article 15 (accuracy, robustness, and cybersecurity; where in scope)
+  - iso_42001: ISO/IEC 42001:2023 (edition-level)
+  - owasp_llm: LLM03: Supply Chain; LLM04: Data and Model Poisoning
+  - cis: CIS Control 7: Continuous Vulnerability Management
+  - aicm: TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)
+
+##### SRF-COM-L5-004: Pre-release safety, security, and fairness evaluation
+
+Layer: L5 (AI Model Provider) | Persona: `model-provider` | Component: Foundation Models
+Lifecycle stage: validate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer.
+
+Before a model release is offered, it must pass a documented safety evaluation, a documented security evaluation, and a documented fairness evaluation. The AI Model Provider records a behavioral baseline for that release. EU AI Act Articles 9, 15, and 53 apply only where in scope.
+
+Evidence: Percentage of model releases that have a documented safety evaluation, a documented security evaluation, a documented fairness evaluation, and a recorded behavioral baseline before the release is offered. A release missing any of those records counts as a miss. No source control names a number of days, so the check is at each release. The target percentage is set per model tier.
+Threshold: prerelease_evaluation_and_baseline_coverage >= tier-defined
+Breach action: block-release-until-evaluated; notify-model-provider
+
+Regulatory mappings:
+  - finos_aigf: AIR-PREV-005 (System Acceptance Testing)
+  - nist_ai_rmf: MEASURE 2.3 (performance is demonstrated for conditions similar to deployment); MEASURE 2.6 (safety risks are evaluated and documented); MEASURE 2.7 (security and resilience are evaluated and documented); MEASURE 2.11 (fairness and bias are evaluated and documented)
+  - eu_ai_act: Article 9 (risk management system; where in scope); Article 15 (accuracy, robustness, and cybersecurity; where in scope); Article 53 (obligations of providers of general-purpose AI models; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.6.2.4
+  - owasp_llm: LLM01: Prompt Injection; LLM02: Sensitive Information Disclosure; LLM09: Misinformation
+  - aicm: MDS-06 (Adversarial Attack Analysis); MDS-07 (Model Hardening); GRC-10 (AI Impact Assessment); MDS-03 (Model Documentation)
+
+##### SRF-COM-L5-005: Model change, drift, and performance notice to deployers
+
+Layer: L5 (AI Model Provider) | Persona: `model-provider` | Component: Model Governance
+Lifecycle stage: operate
+Operating models: AI-SaaS, AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer.
+
+The AI Model Provider must tell deployers about a model version change and about drift in the model's performance. The notice arrives within the notice period the provider records, and it names the time the deployer has to re-validate. EU AI Act Articles 13, 43, and 72 apply only where in scope.
+
+Evidence: Percentage of model version changes and drift events for which deployers were notified within the notice period the provider records. The notice names the change or the drift and the time the deployer has to re-validate. A change or drift event with no notice, or with notice after the recorded period, counts as a miss. No source control names a number of days for that period, so the recorded period is the floor and this control sets no shorter number. The target percentage is set per model tier.
+Threshold: deployer_notice_within_recorded_period >= tier-defined
+Breach action: notify-deployers; hold-version-change; notify-model-provider
+
+Regulatory mappings:
+  - nist_ai_rmf: MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented, including change management and decommissioning); MANAGE 3.2 (pre-trained models used for development are monitored as part of regular monitoring and maintenance)
+  - eu_ai_act: Article 13 (transparency and provision of information; where in scope); Article 43 (conformity assessment; where in scope); Article 72 (post-market monitoring; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.8.5
+  - aicm: MDS-10 (Model Continuous Monitoring); STA-11 (Supply Chain Agreement Review)
+
+##### SRF-COM-L5-006: Independent model validation
+
+Layer: L5 (AI Model Provider) | Persona: `ai-system-governance` | Component: Foundation Models
+Lifecycle stage: validate
+Operating models: AI-PaaS, Agent-PaaS, IaaS
+Accountable persona note: AI System Governance is accountable on AI-PaaS, Agent-PaaS, and IaaS. AI-SaaS is absent from this control, matching finance SRF-L5-VAL-001 and insurance SRF-L5-VAL-002, because the customer owns nothing at L5 in AI-SaaS and there is no customer validation duty there.
+
+Someone independent of the team that built the model must validate the model before it is used, and again on an interval the organization records. The validation record names the independent party and the result. EU AI Act Article 43 applies only where in scope.
+
+Evidence: Percentage of in-scope models validated by someone independent of the team that built the model, before first use and again inside the interval the organization records. A model with no independent validation before first use, or with no validation inside the recorded interval, counts as a miss. The source controls require the validation before use and do not name a repeat interval, so the interval is recorded per model tier and this control sets no shorter number. The target percentage is set per model tier.
+Threshold: independent_validation_coverage >= tier-defined
+Breach action: block-use-until-validated; notify-ai-system-governance
+
+Regulatory mappings:
+  - finos_aigf: AIR-PREV-005 (System Acceptance Testing); AIR-DET-015 (Using Large Language Models for Automated Evaluation)
+  - nist_ai_rmf: MEASURE 1.3 (independent assessors are involved in TEVV)
+  - eu_ai_act: Article 43 (conformity assessment; where in scope)
+  - iso_42001: ISO/IEC 42001:2023, Annex A, A.6.2.4
+  - aicm: A&A-02 (Independent Assessments); MDS-06 (Adversarial Attack Analysis)
+
+
 ---
 
 ---
@@ -7072,7 +7200,7 @@ Six categories, each with the SRF contribution and the open gap:
 
 3. Secure development and AI supply chain. Contribution: names who attests at each handoff in the model and data supply chain and who verifies it, per operating model. Serves CoSAI, CIS, OWASP AI Exchange. Site has the Vendor Risk Assessment and the supply-chain threats in the crosswalk. Gap: an attestation handoff map as data.
 
-4. Control implementation and benchmarking. Contribution: control ownership. Every catalog says what good looks like; none say who at your company owns each control under your deployment model. The vertical schemas prove the pattern with 260 sector controls and 35 common controls, each carrying an accountable persona. Serves CIS, CSA, OWASP AI Exchange, NIST. Site has the AICM and Security Controls assessments, six vertical schemas, the OSCAL catalog, and a CIS Controls card on the compare page. Thirty-four controls across the six vertical schemas carry a control-level `cis` mapping key (CIS Controls v8.1), verified against the official 18-control list and the April 2026 AI/LLM Companion Guide. No open gap at the control level mapped; safeguard-level (N.N) mapping remains future work.
+4. Control implementation and benchmarking. Contribution: control ownership. Every catalog says what good looks like; none say who at your company owns each control under your deployment model. The vertical schemas prove the pattern with 260 sector controls and 41 common controls, each carrying an accountable persona. Serves CIS, CSA, OWASP AI Exchange, NIST. Site has the AICM and Security Controls assessments, six vertical schemas, the OSCAL catalog, and a CIS Controls card on the compare page. Thirty-four controls across the six vertical schemas carry a control-level `cis` mapping key (CIS Controls v8.1), verified against the official 18-control list and the April 2026 AI/LLM Companion Guide. No open gap at the control level mapped; safeguard-level (N.N) mapping remains future work.
 
 5. Vulnerability management and finding remediation. Contribution: routing. Severity scoring rates how bad a finding is. The SRF adds whose queue it goes in and who signs acceptance if it will not be fixed. Serves OWASP GenAI Security Project (AIVSS) and coordinated disclosure practice. Site has the finding routing reference (/data/finding-routing.json), which resolves an AIVSS- or CVSS-scored finding to an accountable persona and breach action by SRF layer and operating model, and the Incident Response Playbooks (machine-readable at /export/playbooks.json). No open gap; AIVSS's own numeric severity-band cut points remain TBD pending its full v0.8 documentation, so routing keys on the qualitative band.
 

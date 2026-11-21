@@ -4691,9 +4691,9 @@
   },
   "common": {
     "source_file": "common-controls.json",
-    "control_count": 35,
+    "control_count": 41,
     "with_bindings": 0,
-    "without_bindings": 35,
+    "without_bindings": 41,
     "controls": [
       {
         "id": "SRF-COM-L1-001",
@@ -5250,6 +5250,102 @@
           "param": "tier-defined",
           "window": "tier-defined",
           "breach_action": "block-production-until-assessed; patch-on-cadence; notify-ai-platform-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-001",
+        "title": "Model card and model documentation",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "model_card_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "block-release-until-model-card-complete; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-002",
+        "title": "Model artifact signing and provenance at release",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "signed_release_and_ai_bill_of_materials_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "annual",
+          "breach_action": "block-release-until-signed; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-003",
+        "title": "Vulnerability disclosure and patch time limits",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "vulnerability_notice_and_fix_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-vulnerability",
+          "breach_action": "notify-deployers; ship-fix; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-004",
+        "title": "Pre-release safety, security, and fairness evaluation",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "prerelease_evaluation_and_baseline_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "per-release",
+          "breach_action": "block-release-until-evaluated; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-005",
+        "title": "Model change, drift, and performance notice to deployers",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "deployer_notice_within_recorded_period",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "notify-deployers; hold-version-change; notify-model-provider"
+        },
+        "bindings": [],
+        "best_case": "no_binding",
+        "objective_can_bind": false
+      },
+      {
+        "id": "SRF-COM-L5-006",
+        "title": "Independent model validation",
+        "srf_layer": "L5",
+        "defined_in": "common-controls.json",
+        "threshold": {
+          "metric": "independent_validation_coverage",
+          "operator": ">=",
+          "param": "tier-defined",
+          "window": "tier-defined",
+          "breach_action": "block-use-until-validated; notify-ai-system-governance"
         },
         "bindings": [],
         "best_case": "no_binding",

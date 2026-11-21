@@ -53,7 +53,7 @@
     "implementing_persona_note"
   ],
   "principles_note": "principles lists informative IDs from data/ai-agentic-principles.json and data/security-principles.json. They create no governed_by edges.",
-  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of July 27, 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs. EU AI Act Articles 10, 12, 15, 26, and 72 on the L2 controls repeat citations already in the sector control files and were not checked again against the consolidated text. GDPR Article 5 and the ISO/IEC 42001 Annex A numbers come from the controls' source request and were not checked against the standards. The L1 controls' EU AI Act articles other than Article 4 (6, 17, 25, 26, 27, 43, 49, 72, 73, and Annex III), the NIST AI RMF subcategory wording on SRF-COM-L1-002 to 010 (taken from NIST AI 100-1 where the repository holds it), and the ISO/IEC 42001 clause and Annex A numbers on those controls come from the controls' source request and were not checked against the consolidated text or the standard. EU AI Act Articles 9, 13, 14, 15, and 86 on the L3 controls repeat citations already in the sector control files and were not checked again against the consolidated text. SRF-COM-L3-008 names EU AI Act Article 50 in its description only. The hierarchy has no Article 50 obligation record, so no obligation id was created and the citation stays unmatched. The ISO/IEC 42001 Annex A numbers on the L3 controls come from the source request and were not checked against the standard. EU AI Act Articles 12 and 15 on the L4 controls repeat citations already in the sector control files or in earlier common controls and were not checked again against the consolidated text. The ISO/IEC 42001 Annex A numbers on the L4 controls (A.4.5, A.6.2.4, A.6.2.5, and A.6.2.8) come from the source request and were not checked against the standard. The NIST AI RMF subcategory wording on the L4 controls repeats glosses already used in this file.",
+  "mapping_status_note": "EU AI Act Article 4 text checked against the consolidated text of July 27, 2026 (02024R1689), as recorded in data/moral-regulatory-hierarchy.json. EUR-Lex was not fetched. ISO standards are cited by number only. Do not substitute invented IDs. EU AI Act Articles 10, 12, 15, 26, and 72 on the L2 controls repeat citations already in the sector control files and were not checked again against the consolidated text. GDPR Article 5 and the ISO/IEC 42001 Annex A numbers come from the controls' source request and were not checked against the standards. The L1 controls' EU AI Act articles other than Article 4 (6, 17, 25, 26, 27, 43, 49, 72, 73, and Annex III), the NIST AI RMF subcategory wording on SRF-COM-L1-002 to 010 (taken from NIST AI 100-1 where the repository holds it), and the ISO/IEC 42001 clause and Annex A numbers on those controls come from the controls' source request and were not checked against the consolidated text or the standard. EU AI Act Articles 9, 13, 14, 15, and 86 on the L3 controls repeat citations already in the sector control files and were not checked again against the consolidated text. SRF-COM-L3-008 names EU AI Act Article 50 in its description only. The hierarchy has no Article 50 obligation record, so no obligation id was created and the citation stays unmatched. The ISO/IEC 42001 Annex A numbers on the L3 controls come from the source request and were not checked against the standard. EU AI Act Articles 12 and 15 on the L4 controls repeat citations already in the sector control files or in earlier common controls and were not checked again against the consolidated text. The ISO/IEC 42001 Annex A numbers on the L4 controls (A.4.5, A.6.2.4, A.6.2.5, and A.6.2.8) come from the source request and were not checked against the standard. The NIST AI RMF subcategory wording on the L4 controls repeats glosses already used in this file. EU AI Act Articles 9, 11, 13, 15, 43, 53, and 72 and Annex IV on the L5 controls repeat citations already in the sector control files or in earlier common controls and were not checked again against the consolidated text. Article 55 is not cited on these controls. The hierarchy has no Article 55 obligation record, so no obligation id was created. The ISO/IEC 42001 Annex A numbers on the L5 controls (A.6.2.4, A.6.2.7, A.8.2, and A.8.5) come from the source request and were not checked against the standard. ISO/IEC 42001 citations that say edition-level name the standard and not an annex control. The NIST AI RMF subcategory wording on the L5 controls repeats glosses already used in this file, except MANAGE 3.2, whose gloss is the first sentence of that subcategory in NIST AI 100-1.",
   "eu_ai_act_citation_format": "EU AI Act citations use the form 'Article N' with an optional short gloss in parentheses. 'N/A' means no EU AI Act nexus. 'TBD:' prefix marks an unverified mapping.",
   "controls": [
     {
@@ -1618,6 +1618,279 @@
       "principles": [
         "permanent-vulnerability-operations-capability"
       ]
+    },
+    {
+      "id": "SRF-COM-L5-001",
+      "layer": "L5",
+      "component": "Model Governance",
+      "lifecycle_stage": "design",
+      "title": "Model card and model documentation",
+      "description": "Each released model must have a model card before the model is offered. The card records the intended use, the limits, the evaluation results, and the security notes for that model version. When the model changes in a material way, the AI Model Provider updates the card within the time it records, and that time is at least 30 days. EU AI Act Articles 11, 13, and 53 and Annex IV apply only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-OP-018 (Model Overreach / Expanded Use); AIR-OP-017 (Lack of Explainability)",
+        "nist_ai_rmf": "MEASURE 2.9 (the AI model is explained, validated, and documented)",
+        "eu_ai_act": "Article 11 (technical documentation; where in scope); Article 13 (transparency and provision of information; where in scope); Article 53 (obligations of providers of general-purpose AI models; where in scope); Annex IV (technical documentation; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.7 and A.8.2",
+        "owasp_llm": "LLM09: Misinformation",
+        "aicm": "MDS-03 (Model Documentation); MDS-04 (Model Documentation Requirements)"
+      },
+      "threshold": {
+        "metric": "model_card_coverage",
+        "description": "Percentage of released models whose model card records intended use, limits, evaluation results, and security notes before the model is offered. When the model changes in a material way, the card is updated within the time the provider records. That recorded time is at least 30 days, the longest numbered update time in the source controls. A released model with no card, or a card that misses one of those four parts, counts as a miss. A material change whose card is still unchanged after the recorded time also counts as a miss. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The model card record stores the model version, the issue date, and whether the four parts are present.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "block-release-until-model-card-complete; notify-model-provider"
+      },
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-002",
+      "layer": "L5",
+      "component": "Model Distribution",
+      "lifecycle_stage": "design",
+      "title": "Model artifact signing and provenance at release",
+      "description": "The AI Model Provider must sign the weights of each released model and list those weights and their dependencies in an AI bill of materials. A release whose weights are unsigned, or whose bill of materials omits a dependency, is not offered. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-SEC-008 (Tampering With the Foundational Model)",
+        "nist_ai_rmf": "GOVERN 6.1 (policies address AI risks associated with third-party entities); MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM03: Supply Chain; LLM04: Data and Model Poisoning",
+        "cis": "CIS Control 16: Application Software Security",
+        "aicm": "MDS-08 (Model Integrity Checks); MDS-09 (Model Signing/Ownership Verification)"
+      },
+      "threshold": {
+        "metric": "signed_release_and_ai_bill_of_materials_coverage",
+        "description": "Percentage of model releases in the annual window whose weights are signed and whose weights and dependencies are listed in an AI bill of materials. A release with an unsigned weight, or with a dependency missing from the bill of materials, counts as a miss. The annual window is the longest review interval in the source controls. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "api_activity. A release record stores the artifact hash, the signature result, and the bill of materials identifier.",
+          "attribute": "api.operation; status_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "annual",
+        "breach_action": "block-release-until-signed; notify-model-provider"
+      },
+      "principles": [
+        "provenance-via-signed-manifests-sbom"
+      ],
+      "cross_layer_note": "SRF-COM-L4-006 checks a signed model artifact when the serving runtime loads it. This control sits at L5 and covers the AI Model Provider signing the released weights and listing those weights and their dependencies in an AI bill of materials.",
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-003",
+      "layer": "L5",
+      "component": "Model Governance",
+      "lifecycle_stage": "operate",
+      "title": "Vulnerability disclosure and patch time limits",
+      "description": "The AI Model Provider must tell deployers about a model vulnerability and must ship a fix within the time the provider records. The recorded time to ship a fix is at least 30 days. EU AI Act Article 15 applies only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MANAGE 4.1 (post-deployment monitoring plans are implemented, including incident response and recovery); MEASURE 2.7 (security and resilience are evaluated and documented)",
+        "eu_ai_act": "Article 15 (accuracy, robustness, and cybersecurity; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023 (edition-level)",
+        "owasp_llm": "LLM03: Supply Chain; LLM04: Data and Model Poisoning",
+        "cis": "CIS Control 7: Continuous Vulnerability Management",
+        "aicm": "TVM-07 (Vulnerability Remediation Schedule); TVM-09 (Vulnerability Management Reporting)"
+      },
+      "threshold": {
+        "metric": "vulnerability_notice_and_fix_coverage",
+        "description": "Percentage of confirmed model vulnerabilities that were disclosed to deployers and fixed inside the times the provider records. The recorded time to ship a fix is at least 30 days, the longest explicit remediation time in the source controls. A vulnerability with no disclosure to deployers, or with a fix later than the recorded time, counts as a miss. The 24-hour acknowledgment and the 7-day critical remediation in one source control are shorter than this floor, so this control uses 30 days. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "vulnerability_finding (2002). A disclosure record stores the finding, the date deployers were told, and the date the fix shipped.",
+          "attribute": "finding.severity_id; time",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-vulnerability",
+        "breach_action": "notify-deployers; ship-fix; notify-model-provider"
+      },
+      "principles": [
+        "cis18-7"
+      ],
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-004",
+      "layer": "L5",
+      "component": "Foundation Models",
+      "lifecycle_stage": "validate",
+      "title": "Pre-release safety, security, and fairness evaluation",
+      "description": "Before a model release is offered, it must pass a documented safety evaluation, a documented security evaluation, and a documented fairness evaluation. The AI Model Provider records a behavioral baseline for that release. EU AI Act Articles 9, 15, and 53 apply only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-005 (System Acceptance Testing)",
+        "nist_ai_rmf": "MEASURE 2.3 (performance is demonstrated for conditions similar to deployment); MEASURE 2.6 (safety risks are evaluated and documented); MEASURE 2.7 (security and resilience are evaluated and documented); MEASURE 2.11 (fairness and bias are evaluated and documented)",
+        "eu_ai_act": "Article 9 (risk management system; where in scope); Article 15 (accuracy, robustness, and cybersecurity; where in scope); Article 53 (obligations of providers of general-purpose AI models; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.4",
+        "owasp_llm": "LLM01: Prompt Injection; LLM02: Sensitive Information Disclosure; LLM09: Misinformation",
+        "aicm": "MDS-06 (Adversarial Attack Analysis); MDS-07 (Model Hardening); GRC-10 (AI Impact Assessment); MDS-03 (Model Documentation)"
+      },
+      "threshold": {
+        "metric": "prerelease_evaluation_and_baseline_coverage",
+        "description": "Percentage of model releases that have a documented safety evaluation, a documented security evaluation, a documented fairness evaluation, and a recorded behavioral baseline before the release is offered. A release missing any of those records counts as a miss. No source control names a number of days, so the check is at each release. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The evaluation record stores the release, the three evaluation results, and the behavioral baseline.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "per-release",
+        "breach_action": "block-release-until-evaluated; notify-model-provider"
+      },
+      "principles": [
+        "hazardous-capability-eval-is-a-release-gate"
+      ],
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-005",
+      "layer": "L5",
+      "component": "Model Governance",
+      "lifecycle_stage": "operate",
+      "title": "Model change, drift, and performance notice to deployers",
+      "description": "The AI Model Provider must tell deployers about a model version change and about drift in the model's performance. The notice arrives within the notice period the provider records, and it names the time the deployer has to re-validate. EU AI Act Articles 13, 43, and 72 apply only where in scope.",
+      "accountable_persona": "model-provider",
+      "accountable_by_model": {
+        "AI-SaaS": "model-provider",
+        "AI-PaaS": "model-provider",
+        "Agent-PaaS": "model-provider",
+        "IaaS": "model-provider"
+      },
+      "operating_models": [
+        "AI-SaaS",
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "nist_ai_rmf": "MEASURE 2.4 (the deployed AI system is monitored for changes); MANAGE 4.1 (post-deployment monitoring plans are implemented, including change management and decommissioning); MANAGE 3.2 (pre-trained models used for development are monitored as part of regular monitoring and maintenance)",
+        "eu_ai_act": "Article 13 (transparency and provision of information; where in scope); Article 43 (conformity assessment; where in scope); Article 72 (post-market monitoring; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.8.5",
+        "aicm": "MDS-10 (Model Continuous Monitoring); STA-11 (Supply Chain Agreement Review)"
+      },
+      "threshold": {
+        "metric": "deployer_notice_within_recorded_period",
+        "description": "Percentage of model version changes and drift events for which deployers were notified within the notice period the provider records. The notice names the change or the drift and the time the deployer has to re-validate. A change or drift event with no notice, or with notice after the recorded period, counts as a miss. No source control names a number of days for that period, so the recorded period is the floor and this control sets no shorter number. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "audit_activity (3002). A notice record stores the version change or drift event, the deployers notified, and the date.",
+          "attribute": "time; activity_id",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "notify-deployers; hold-version-change; notify-model-provider"
+      },
+      "principles": [
+        "provenance-continuously-monitored"
+      ],
+      "accountable_persona_note": "The L5 AI-SaaS cell in the responsibility matrix is N/A because the customer owns nothing at L5, and this control still binds the AI Model Provider in AI-SaaS because that provider is not the customer."
+    },
+    {
+      "id": "SRF-COM-L5-006",
+      "layer": "L5",
+      "component": "Foundation Models",
+      "lifecycle_stage": "validate",
+      "title": "Independent model validation",
+      "description": "Someone independent of the team that built the model must validate the model before it is used, and again on an interval the organization records. The validation record names the independent party and the result. EU AI Act Article 43 applies only where in scope.",
+      "accountable_persona": "ai-system-governance",
+      "accountable_by_model": {
+        "AI-PaaS": "ai-system-governance",
+        "Agent-PaaS": "ai-system-governance",
+        "IaaS": "ai-system-governance"
+      },
+      "operating_models": [
+        "AI-PaaS",
+        "Agent-PaaS",
+        "IaaS"
+      ],
+      "common_status": "draft",
+      "mappings": {
+        "finos_aigf": "AIR-PREV-005 (System Acceptance Testing); AIR-DET-015 (Using Large Language Models for Automated Evaluation)",
+        "nist_ai_rmf": "MEASURE 1.3 (independent assessors are involved in TEVV)",
+        "eu_ai_act": "Article 43 (conformity assessment; where in scope)",
+        "iso_42001": "ISO/IEC 42001:2023, Annex A, A.6.2.4",
+        "aicm": "A&A-02 (Independent Assessments); MDS-06 (Adversarial Attack Analysis)"
+      },
+      "threshold": {
+        "metric": "independent_validation_coverage",
+        "description": "Percentage of in-scope models validated by someone independent of the team that built the model, before first use and again inside the interval the organization records. A model with no independent validation before first use, or with no validation inside the recorded interval, counts as a miss. The source controls require the validation before use and do not name a repeat interval, so the interval is recorded per model tier and this control sets no shorter number. The target percentage is set per model tier.",
+        "evidence": {
+          "ocsf_class": "TBD: this is a records artifact, not streaming telemetry. The validation record stores the model version, the independent party, and the date.",
+          "attribute": "TBD",
+          "ocsf_version": "1.8.0"
+        },
+        "operator": ">=",
+        "param": "tier-defined",
+        "window": "tier-defined",
+        "breach_action": "block-use-until-validated; notify-ai-system-governance"
+      },
+      "accountable_persona_note": "AI System Governance is accountable on AI-PaaS, Agent-PaaS, and IaaS. AI-SaaS is absent from this control, matching finance SRF-L5-VAL-001 and insurance SRF-L5-VAL-002, because the customer owns nothing at L5 in AI-SaaS and there is no customer validation duty there."
     }
   ]
 }
