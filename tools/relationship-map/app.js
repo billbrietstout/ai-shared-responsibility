@@ -3560,24 +3560,9 @@
     var button = event.target.closest("button[data-chain-id]");
     if (!button) return;
     var keep = button.dataset.chainId;
-    var column = button.closest(".chain-col");
-    if (column) {
-      var colKey = column.dataset.column;
-      var focusId = keep;
-      if (colKey === "accountable" && currentChain) {
-        var card = currentChain.personaCards.filter(function (item) { return item.id === keep; })[0];
-        var real = card ? card.lines.filter(function (line) { return !line.missing; }) : [];
-        var personaId = real.length === 1 && real[0].personaId ? real[0].personaId : (keep.indexOf("accountable:persona:") === 0 ? keep.slice(20) : "");
-        if (personaId) focusId = "persona:" + personaId;
-        else focusId = "";
-      }
-      if (focusId) {
-        setFocus(colKey, focusId);
-      } else {
-        chainFocus = keep;
-        commit(false);
-      }
-    }
+    chainFocus = keep;
+    commit(false);
+    announceDetails();
     var again = chainCard(keep);
     if (again) again.focus();
   });
