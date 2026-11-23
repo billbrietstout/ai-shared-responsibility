@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.join(ROOT, "build"))
 
 import generate_sources as gs  # noqa: E402
 import regulation_citations as rc  # noqa: E402
+import source_url_policy as sup  # noqa: E402
 
 
 class SourcesCatalogTest(unittest.TestCase):
@@ -70,6 +71,22 @@ class SourcesCatalogTest(unittest.TestCase):
         html = open(html_path, encoding="utf-8").read()
         self.assertIn("overflow-wrap: anywhere", html)
         self.assertIn(".src-item__title a", html)
+
+    def test_catalog_urls_policy(self):
+        entries = self.catalog.get("entries") or []
+        errors = sup.validate_catalog_urls(entries)
+        self.assertEqual(errors, [], msg="\n".join(errors[:20]))
+
+    def test_allowlist_entries_have_reasons(self):
+        allow = sup.load_allowlist()
+        for section in ("bare_homepage", "shared_url"):
+            for item in allow.get(section) or []:
+                self.assertTrue(
+                    (item.get("reason") or "").strip(),
+                    msg=f"{section} entry missing reason: {item.get('url')}",
+                )
+                self.assertTrue(item.get("url"), msg=f"{section} entry missing url")
+                self.assertTrue(item.get("anchors"), msg=f"{section} entry missing anchors")
 
     def test_multi_cite_cells_one_link_per_cite(self):
         reg = rc.load_regulations()
