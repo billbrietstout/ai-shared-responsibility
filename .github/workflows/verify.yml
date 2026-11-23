@@ -36,6 +36,17 @@ jobs:
       - name: Sources catalog tests
         run: python3 build/test_sources_catalog.py
 
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install browser test deps for /sources overflow
+        working-directory: tools/relationship-map/tests
+        run: npm ci
+
+      - name: /sources/ mobile overflow (375px)
+        run: node scripts/test_sources_overflow.js
+
       - name: Attack inventory
         run: python3 build/verify_attack_inventory.py
 

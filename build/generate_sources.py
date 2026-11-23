@@ -409,6 +409,8 @@ def render_html(entries: list[dict]) -> str:
         max-width: 900px;
         margin: 0 auto;
         padding: var(--sp-8) var(--sp-6) var(--sp-12);
+        min-width: 0;
+        overflow-x: clip;
       }}
       .src-intro {{
         font-size: var(--text-sm);
@@ -443,12 +445,15 @@ def render_html(entries: list[dict]) -> str:
         border-radius: var(--radius-md);
         padding: var(--sp-4) var(--sp-5);
         background: var(--surface);
+        min-width: 0;
+        overflow-wrap: anywhere;
       }}
       .src-item__head {{
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
         gap: var(--sp-3);
+        min-width: 0;
       }}
       .src-item__perma {{
         flex-shrink: 0;
@@ -465,9 +470,16 @@ def render_html(entries: list[dict]) -> str:
         font-size: var(--text-base);
         font-weight: 600;
         color: var(--slate-900);
+        flex: 1 1 auto;
         min-width: 0;
+        overflow-wrap: anywhere;
       }}
-      .src-item__title a {{ color: var(--cosai-blue); text-decoration: none; }}
+      .src-item__title a {{
+        color: var(--cosai-blue);
+        text-decoration: none;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }}
       .src-item__title a:hover {{ text-decoration: underline; }}
       .src-item__meta {{
         font-size: var(--text-xs);

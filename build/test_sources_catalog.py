@@ -63,6 +63,14 @@ class SourcesCatalogTest(unittest.TestCase):
         for e in self.catalog.get("entries") or []:
             self.assertIn(f'id="{e["anchor"]}"', html, msg=e["anchor"])
 
+    def test_sources_page_wraps_long_title_links(self):
+        html_path = os.path.join(ROOT, "sources", "index.html")
+        if not os.path.isfile(html_path):
+            self.skipTest("sources/index.html not generated yet")
+        html = open(html_path, encoding="utf-8").read()
+        self.assertIn("overflow-wrap: anywhere", html)
+        self.assertIn(".src-item__title a", html)
+
     def test_multi_cite_cells_one_link_per_cite(self):
         reg = rc.load_regulations()
         pin = rc.load_pinpoints()
