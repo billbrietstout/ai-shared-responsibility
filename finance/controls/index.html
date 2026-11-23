@@ -542,6 +542,7 @@
 
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
+    <script src="/shared/regulation-mappings.js"></script>
     <script>
 (function () {
   "use strict";
@@ -565,9 +566,11 @@
   };
 
   // ── Fetch data ─────────────────────────────────────────────────────────
-  fetch("/data/finance-controls.json")
-    .then(r => r.json())
-    .then(data => {
+  Promise.all([
+    RegulationMappings.load(),
+    fetch("/data/finance-controls.json").then((r) => r.json()),
+  ])
+    .then(([, data]) => {
       allControls = data.controls;
       updateCounts();
       render();
@@ -656,12 +659,7 @@
 
     const opModels = (c.operating_models || []).map(m => `<code>${escHtml(m)}</code>`).join(" ");
 
-    const mappingRows = Object.entries(c.mappings || {})
-      .filter(([,v]) => v && !v.startsWith("TBD"))
-      .map(([k,v]) => `<div class="detail-field">
-        <div class="detail-field__label">${escHtml(k.replace(/_/g," "))}</div>
-        <div class="detail-field__value">${escHtml(v)}</div>
-      </div>`).join("");
+    const mappingRows = RegulationMappings.renderMappingRows(c.mappings, escHtml);
 
     const thresholdHTML = t.metric ? `
       <div class="threshold-block">

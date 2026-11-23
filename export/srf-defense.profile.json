@@ -3,7 +3,7 @@
   "uuid": "02106ad0-9d1c-5526-9266-c99a86ff43e8",
   "metadata": {
    "title": "CoSAI AI SRF — Defense Vertical Profile (Proposed Extension)",
-   "last-modified": "2026-07-28T22:58:14+00:00",
+   "last-modified": "2026-11-23T19:47:41+00:00",
    "version": "0.1.0",
    "oscal-version": "1.2.2",
    "props": [
@@ -31,6 +31,11 @@
      "name": "regulatory-driver",
      "ns": "https://aisharedresponsibility.com/ns/oscal",
      "value": "cc_srg"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "cis"
     },
     {
      "name": "regulatory-driver",
@@ -81,47 +86,52 @@
     {
      "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
      "rel": "reference",
-     "text": "CSA AI Controls Matrix"
+     "text": "CSA AICM"
     },
     {
      "href": "#c5d89a8d-2be1-526a-977f-3cc51013206f",
      "rel": "reference",
-     "text": "DoD Cloud Computing SRGs (Mission Owner SRG and CSP SRG V1R2, January 2025)"
+     "text": "DoD CC SRG"
+    },
+    {
+     "href": "#4cfc3edb-2b2b-5005-b908-1108c74eb9f2",
+     "rel": "reference",
+     "text": "CIS Controls"
     },
     {
      "href": "#c749265b-4f91-5a8d-a8d0-366cdfd9ea2b",
      "rel": "reference",
-     "text": "Cybersecurity Maturity Model Certification (CMMC) 2.0"
+     "text": "CMMC 2.0"
     },
     {
      "href": "#27bd17b5-97b5-5d65-8009-3cf0b5c3faff",
      "rel": "reference",
-     "text": "DoD Responsible AI Strategy and Implementation Pathway"
+     "text": "DoD RAI Strategy"
     },
     {
      "href": "#8613c5f9-9d01-5ebc-8cc6-19adffb697fe",
      "rel": "reference",
-     "text": "DoDI 5000.89 — Test and Evaluation"
+     "text": "DoDI 5000.89"
     },
     {
      "href": "#289aed16-d1f7-58b5-b179-0353578d8705",
      "rel": "reference",
-     "text": "DoDI 5000.90 — Cybersecurity for Acquisition Decision Authorities"
+     "text": "DoDI 5000.90"
     },
     {
      "href": "#6ad9542e-0cd4-52bb-9a0e-4902b8f6b3ab",
      "rel": "reference",
-     "text": "NIST SP 800-171 — Protecting Controlled Unclassified Information"
+     "text": "NIST 800-171"
     },
     {
      "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
      "rel": "reference",
-     "text": "NIST AI Risk Management Framework"
+     "text": "NIST AI RMF"
     },
     {
      "href": "#c403b49d-9023-519a-a9f4-fefbab79a3ce",
      "rel": "reference",
-     "text": "OWASP Top 10 for Large Language Model Applications"
+     "text": "OWASP LLM Top 10"
     }
    ],
    "remarks": "DoD AI governance is anchored by the DoD Responsible AI Strategy and Implementation Pathway (June 2022), which established five RAI principles: Responsible, Equitable, Traceable, Reliable, Governable (RETR-G). DoDI 5000.90 (December 2020) governs cybersecurity risk management by acquisition decision authorities and program managers, including supply chain risk; it contains no AI-specific requirements. DoDI 5000.89 (November 2020) sets test and evaluation policy that AI TEVV planning operationalizes. AI-specific artifacts such as transparency cards derive from the RAI S&I Pathway and the CDAO RAI Toolkit, not from a 5000-series instruction. CMMC 2.0 (32 CFR Part 170, effective December 2024) governs contractor cybersecurity posture for CUI but does not address AI governance; this schema adds the AI layer CMMC lacks. Cloud deployments require a DISA Provisional Authorization (PA) at the required IL; the CC SRG defines what the CSP must implement. This schema covers the component and contractor side of those splits. IL6 systems operate in classified cloud environments (AWS C2S, Azure Government Secret, Oracle NSR) where commercial paths do not apply. Industry vertical schemas are independently proposed extensions and are not part of the official CoSAI release. Mapping IDs marked TBD are unverified and are carried verbatim as props, never as links; do not substitute invented IDs. Generated from data/*-controls.json."
@@ -518,24 +528,24 @@
   "back-matter": {
    "resources": [
     {
-     "uuid": "97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
-     "title": "CSA AI Controls Matrix",
+     "uuid": "4cfc3edb-2b2b-5005-b908-1108c74eb9f2",
+     "title": "CIS Controls",
      "props": [
       {
        "name": "framework-key",
        "ns": "https://aisharedresponsibility.com/ns/oscal",
-       "value": "aicm"
+       "value": "cis"
       }
      ],
      "rlinks": [
       {
-       "href": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
+       "href": "https://www.cisecurity.org/controls"
       }
      ]
     },
     {
      "uuid": "c749265b-4f91-5a8d-a8d0-366cdfd9ea2b",
-     "title": "Cybersecurity Maturity Model Certification (CMMC) 2.0",
+     "title": "CMMC 2.0",
      "props": [
       {
        "name": "framework-key",
@@ -550,8 +560,24 @@
      ]
     },
     {
+     "uuid": "97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
+     "title": "CSA AICM",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "aicm"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://cloudsecurityalliance.org/artifacts/ai-controls-matrix"
+      }
+     ]
+    },
+    {
      "uuid": "c5d89a8d-2be1-526a-977f-3cc51013206f",
-     "title": "DoD Cloud Computing SRGs (Mission Owner SRG and CSP SRG V1R2, January 2025)",
+     "title": "DoD CC SRG",
      "props": [
       {
        "name": "framework-key",
@@ -567,7 +593,7 @@
     },
     {
      "uuid": "27bd17b5-97b5-5d65-8009-3cf0b5c3faff",
-     "title": "DoD Responsible AI Strategy and Implementation Pathway",
+     "title": "DoD RAI Strategy",
      "props": [
       {
        "name": "framework-key",
@@ -583,7 +609,7 @@
     },
     {
      "uuid": "8613c5f9-9d01-5ebc-8cc6-19adffb697fe",
-     "title": "DoDI 5000.89 — Test and Evaluation",
+     "title": "DoDI 5000.89",
      "props": [
       {
        "name": "framework-key",
@@ -599,7 +625,7 @@
     },
     {
      "uuid": "289aed16-d1f7-58b5-b179-0353578d8705",
-     "title": "DoDI 5000.90 — Cybersecurity for Acquisition Decision Authorities",
+     "title": "DoDI 5000.90",
      "props": [
       {
        "name": "framework-key",
@@ -614,24 +640,8 @@
      ]
     },
     {
-     "uuid": "c00b1cec-7990-5779-b1cf-10a2e792f026",
-     "title": "NIST AI Risk Management Framework",
-     "props": [
-      {
-       "name": "framework-key",
-       "ns": "https://aisharedresponsibility.com/ns/oscal",
-       "value": "nist_ai_rmf"
-      }
-     ],
-     "rlinks": [
-      {
-       "href": "https://www.nist.gov/itl/ai-risk-management-framework"
-      }
-     ]
-    },
-    {
      "uuid": "6ad9542e-0cd4-52bb-9a0e-4902b8f6b3ab",
-     "title": "NIST SP 800-171 — Protecting Controlled Unclassified Information",
+     "title": "NIST 800-171",
      "props": [
       {
        "name": "framework-key",
@@ -646,8 +656,24 @@
      ]
     },
     {
+     "uuid": "c00b1cec-7990-5779-b1cf-10a2e792f026",
+     "title": "NIST AI RMF",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "nist_ai_rmf"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.nist.gov/itl/ai-risk-management-framework"
+      }
+     ]
+    },
+    {
      "uuid": "c403b49d-9023-519a-a9f4-fefbab79a3ce",
-     "title": "OWASP Top 10 for Large Language Model Applications",
+     "title": "OWASP LLM Top 10",
      "props": [
       {
        "name": "framework-key",
@@ -657,7 +683,7 @@
      ],
      "rlinks": [
       {
-       "href": "https://owasp.org/www-project-top-10-for-large-language-model-applications/"
+       "href": "https://genai.owasp.org/llm-top-10/"
       }
      ]
     }

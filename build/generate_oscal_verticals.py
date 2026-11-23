@@ -36,6 +36,8 @@ import re
 import sys
 import uuid
 
+from regulation_citations import load_regulations
+
 NS = "https://aisharedresponsibility.com/ns/oscal"
 SITE = "https://aisharedresponsibility.com"
 OSCAL_VERSION = "1.2.2"
@@ -73,7 +75,8 @@ VERTICALS = [
 # resources. A resource is only emitted when at least one verified (non-TBD,
 # non-N/A) mapping cites it, except in profiles, where every framework the
 # vertical maps against is listed as a regulatory driver.
-FRAMEWORKS = {
+# Baseline titles and URLs; merged with data/regulations.json at generation time.
+FRAMEWORKS_BASE = {
     "finos_aigf": ("FINOS AI Governance Framework",
                    "https://air-governance-framework.finos.org/"),
     "aicm": ("CSA AI Controls Matrix",
@@ -137,6 +140,26 @@ FRAMEWORKS = {
     "nist_cyber_ai": ("NIST Cyber AI Profile (in development)",
                       "https://www.nist.gov/cyberframework"),
 }
+
+FRAMEWORKS = dict(FRAMEWORKS_BASE)
+
+
+def merge_frameworks_from_regulations(root: pathlib.Path) -> None:
+    """Refresh FRAMEWORKS URLs and short titles from data/regulations.json."""
+    global FRAMEWORKS
+    merged = dict(FRAMEWORKS_BASE)
+    reg_path = root / "data" / "regulations.json"
+    if reg_path.is_file():
+        for key, meta in load_regulations(str(reg_path)).items():
+            title = meta["short"]
+            url = meta["url"] or merged.get(key, (title, ""))[1]
+            merged[key] = (title, url)
+    FRAMEWORKS = merged
+
+
+def link_text(mapping_key: str, citation: str) -> str:
+    title = FRAMEWORKS.get(mapping_key, (mapping_key.replace("_", " ").title(), ""))[0]
+    return f"{title}, {citation}"
 
 EU_CITATION_RE = re.compile(
     r"^(Article\s+\d+(?:\(\w+\))*|Annex\s+[IVXLC]+)\s*(\(.*\))?$"
@@ -283,7 +306,11 @@ def convert_control(ctl, vshort, vslug, stage_field, registry):
                 continue
             rid = registry.ref(mkey)
             for c in citations:
-                links.append({"href": f"#{rid}", "rel": "reference", "text": c})
+                links.append({
+                    "href": f"#{rid}",
+                    "rel": "reference",
+                    "text": link_text(mkey, c),
+                })
             continue
         rid = registry.ref(mkey)
         if rid:
@@ -299,7 +326,11 @@ def convert_control(ctl, vshort, vslug, stage_field, registry):
                                  "dodi_5000_89", "cc_srg", "cmmc_2_0")
                      else [str(mval)])
             for cite in cites:
-                links.append({"href": f"#{rid}", "rel": "reference", "text": cite})
+                links.append({
+                    "href": f"#{rid}",
+                    "rel": "reference",
+                    "text": link_text(mkey, cite),
+                })
         else:
             props.append(prop(f"mapping-{kebab(mkey)}", mval))
 
@@ -513,6 +544,7 @@ def main():
     args = ap.parse_args()
     root = pathlib.Path(args.root) if args.root else \
         pathlib.Path(__file__).resolve().parent.parent
+    merge_frameworks_from_regulations(root)
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
 
     catalog, docs, index, _ = build_catalog(root, now)

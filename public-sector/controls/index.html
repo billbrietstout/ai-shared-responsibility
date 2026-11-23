@@ -516,6 +516,7 @@
 
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
+    <script src="/shared/regulation-mappings.js"></script>
     <script>
     (function () {
       var STAGE_LABELS = {
@@ -555,9 +556,12 @@
           .replace(/"/g, '&quot;');
       }
 
-      fetch('/data/public-sector-controls.json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
+      Promise.all([
+        RegulationMappings.load(),
+        fetch('/data/public-sector-controls.json').then(function(r) { return r.json(); }),
+      ])
+        .then(function(parts) {
+          var data = parts[1];
           allControls = data.controls;
           initCounts();
           renderControls();
@@ -646,10 +650,7 @@
       }
 
       function mappingTags(mappings) {
-        return Object.entries(mappings)
-          .filter(function(kv) { var v = kv[1]; return v && !String(v).startsWith('N/A') && !String(v).startsWith('TBD'); })
-          .map(function(kv) { return '<span class="mapping-tag">' + escHtml(kv[0].replace(/_/g, ' ').toUpperCase()) + '</span>'; })
-          .join('');
+        return RegulationMappings.renderMappingTags(mappings, escHtml);
       }
 
       function operatingTags(models) {
