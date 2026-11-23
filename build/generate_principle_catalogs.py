@@ -629,11 +629,27 @@ GAP_RE = re.compile(r"^\*\*(Gap[^:]*):\*\*\s*(.*?)\s*$")
 EDITORIAL_POSITION = "editorial-position"
 EDITORIAL_CITE = "editorial position"
 MD_SOURCE_LINK = re.compile(r"\[([A-Z][A-Z0-9-]+)\]\([^|\)]+\)")
+ANCHOR_IN_ROW = re.compile(r'<a id="src-([A-Z][A-Z0-9-]+)"></a>')
 
 
-def denude_md_source_links(text: str) -> str:
-    """Strip synthesis markdown source links before catalog statements are stored."""
-    return MD_SOURCE_LINK.sub(r"\1", text)
+def denude_md_source_links(
+    text: str,
+    title_to_code: dict[str, str] | None = None,
+    unique_url_to_code: dict[str, str] | None = None,
+) -> str:
+    """Strip synthesis markdown links to source codes before statements are stored."""
+
+    def repl(m: re.Match[str]) -> str:
+        label, url = m.group(1), m.group(2)
+        if label and re.fullmatch(r"[A-Z][A-Z0-9-]+", label):
+            return label
+        if title_to_code and label in title_to_code:
+            return title_to_code[label]
+        if unique_url_to_code and url in unique_url_to_code:
+            return unique_url_to_code[url]
+        return m.group(0)
+
+    return re.sub(r"\[([^\]]+)\]\(([^\)]+)\)", repl, text)
 # A source row is Code, Title, Organization, Date, Link.
 # Conference talk rows may add a Claims cell after the link. That cell repeats
 # principle statements that cite the talk. It is not parsed into the catalog,
@@ -707,21 +723,59 @@ def clean_note_lines(lines):
     return "\n".join(lines).strip()
 
 
+def parse_source_row(line: str):
+    if not line.startswith("| ") or line.startswith("|---"):
+        return None
+    anchor = ANCHOR_IN_ROW.search(line)
+    if anchor:
+        parts = [p.strip() for p in line.strip().strip("|").split("|")]
+        if len(parts) < 5:
+            return None
+        code = anchor.group(1)
+        title_cell = parts[1]
+        title_m = re.match(r"\[(.+?)\]\(", title_cell)
+        title = title_m.group(1) if title_m else title_cell
+        return (
+            code,
+            title.strip(),
+            parts[2].strip(),
+            parts[3].strip(),
+            parts[4].strip(),
+        )
+    matched = SRC_ROW_RE.match(line)
+    if not matched:
+        return None
+    code = matched.group(1) or matched.group(2) or matched.group(3)
+    return (
+        code,
+        matched.group(4).strip(),
+        matched.group(5).strip(),
+        matched.group(6).strip(),
+        matched.group(7).strip(),
+    )
+
+
 def parse_synthesis():
     with open(os.path.join(ROOT, SYNTH_SRC), encoding="utf-8") as fh:
         md = fh.read()
 
     wp_map = load_source_wp_map()
     sources = {}
-    for anchor_code, link_code, plain_code, title, org, date, link in SRC_ROW_RE.findall(
-        md
-    ):
-        code = anchor_code or link_code or plain_code
-        entry = {"title": title.strip(), "org": org.strip(),
-                 "date": date.strip(), "url": link.strip()}
+    for line in md.split("\n"):
+        row = parse_source_row(line)
+        if not row:
+            continue
+        code, title, org, date, link = row
         meta = wp_map.get(code)
         if not meta:
             fail(f"source {code!r} has no entry in {SOURCE_WP_MAP}")
+        catalog_title = meta.get("title") or meta.get("monitor_title") or title
+        entry = {
+            "title": catalog_title.strip(),
+            "org": org.strip(),
+            "date": date.strip(),
+            "url": link.strip(),
+        }
         entry["wp_id"] = meta.get("wp_id")
         if meta.get("monitor_issue") is not None:
             entry["monitor_issue"] = meta["monitor_issue"]
@@ -743,6 +797,16 @@ def parse_synthesis():
         fail(f"{SOURCE_WP_MAP} has unused codes not in the synthesis: "
              f"{sorted(missing)}")
 
+    title_to_code = {entry["title"]: key for key, entry in sources.items()}
+    url_counts: dict[str, int] = {}
+    for entry in sources.values():
+        url_counts[entry["url"]] = url_counts.get(entry["url"], 0) + 1
+    unique_url_to_code = {
+        entry["url"]: key
+        for key, entry in sources.items()
+        if url_counts[entry["url"]] == 1
+    }
+
     sections = {}
     order = []
     cur = None
@@ -755,7 +819,9 @@ def parse_synthesis():
         nonlocal bullet_buf, mode
         if bullet_buf and cur:
             joined = "\n".join(bullet_buf).strip()
-            sections[cur]["bullets"].append(denude_md_source_links(joined))
+            sections[cur]["bullets"].append(
+                denude_md_source_links(joined, title_to_code, unique_url_to_code)
+            )
         bullet_buf = []
         if mode == "bullet":
             mode = None
@@ -766,10 +832,16 @@ def parse_synthesis():
         if gap_lines is None:
             sections[cur]["gap"] = None
         else:
-            sections[cur]["gap"] = denude_md_source_links(clean_note_lines(gap_lines))
+            sections[cur]["gap"] = denude_md_source_links(
+                clean_note_lines(gap_lines),
+                title_to_code,
+                unique_url_to_code,
+            )
         if editorial_lines is not None:
             sections[cur]["editorial_position"] = denude_md_source_links(
-                clean_note_lines(editorial_lines)
+                clean_note_lines(editorial_lines),
+                title_to_code,
+                unique_url_to_code,
             )
 
     for line in md.split("\n"):
@@ -838,12 +910,13 @@ def parse_synthesis():
     return sources, sections, order
 
 
-def split_citation(bullet, known_codes):
+def split_citation(bullet, sources):
     """Split a bullet into (statement, [source codes]).
 
     Citations are a trailing parenthesized group naming source codes. Some
     carry prose alongside the code ('cross-referenced with OWASP-STATE'), so
     match known codes inside the group rather than assuming a bare list.
+    Title markdown links in the group resolve by matching the link URL.
     """
     m = re.search(r"\(([^()]*)\)\s*$", bullet)
     if not m:
@@ -851,7 +924,21 @@ def split_citation(bullet, known_codes):
     inner = m.group(1).strip()
     if inner.lower() == EDITORIAL_CITE:
         return bullet[:m.start()].strip().rstrip(",;"), [EDITORIAL_POSITION]
-    codes = [c for c in re.findall(r"[A-Z][A-Z0-9-]+", inner) if c in known_codes]
+    codes = [c for c in re.findall(r"[A-Z][A-Z0-9-]+", inner) if c in sources]
+    if not codes:
+        title_to_code = {meta["title"]: key for key, meta in sources.items()}
+        url_counts: dict[str, int] = {}
+        for meta in sources.values():
+            url_counts[meta["url"]] = url_counts.get(meta["url"], 0) + 1
+        for link in re.finditer(r"\[([^\]]+)\]\(([^\)]+)\)", inner):
+            label, url = link.group(1), link.group(2)
+            if label in title_to_code:
+                codes.append(title_to_code[label])
+            elif url_counts.get(url, 0) == 1:
+                for key, meta in sources.items():
+                    if meta["url"] == url:
+                        codes.append(key)
+                        break
     if not codes:
         return bullet.strip(), []
     return bullet[:m.start()].strip().rstrip(",;"), codes

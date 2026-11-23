@@ -909,11 +909,14 @@ class TalkClaimsColumnTest(unittest.TestCase):
         body = re.search(r"<tbody>(.*)</tbody>", table.group(1), re.S).group(1)
         order = []
         claims = {}
-        for row in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S):
+        for m in re.finditer(
+            r'<tr id="src-([A-Z][A-Z0-9-]+)"[^>]*>(.*?)</tr>', body, re.S
+        ):
+            code = m.group(1)
+            row = m.group(2)
             cells = re.findall(r"<td([^>]*)>(.*?)</td>", row, re.S)
-            self.assertEqual(len(cells), 6, row[:80])
-            code = re.sub(r"<[^>]+>", "", cells[0][1]).strip()
-            attrs, inner = cells[5]
+            self.assertEqual(len(cells), 5, row[:80])
+            attrs, inner = cells[4]
             self.assertIn('data-label="Claims"', attrs)
             if "<li>" in inner:
                 self.assertNotIn("claim-missing", attrs)
@@ -940,13 +943,13 @@ class TalkClaimsColumnTest(unittest.TestCase):
         claims = {}
         order = []
         for line in text[start:end].splitlines():
-            parsed = mod.SRC_ROW_RE.match(line)
-            if not parsed:
+            row = mod.parse_source_row(line)
+            if not row:
                 continue
+            code, _title, _org, _date, link = row
             parts = [part.strip() for part in line.strip().strip("|").split("|")]
             self.assertGreaterEqual(len(parts), 6, line)
-            code = parsed.group(1) or parsed.group(2) or parsed.group(3)
-            self.assertEqual(parsed.group(7), parts[4])
+            self.assertEqual(link, parts[4])
             cell = parts[5]
             if cell == mod.MISSING_TALK_CLAIM:
                 items = []
