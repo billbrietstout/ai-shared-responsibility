@@ -1,8 +1,10 @@
 # AI Security Lifecycle Plan: Handoff Summary
 
-Working brief for extending the SRF's reach across the AI security lifecycle, prompted by an observed adoption signal and the April 2026 launch of MOSAIC. Context, category analysis, MOSAIC mapping, and build guidance below. Follow CLAUDE.md writing rules (no em dashes, no AI filler phrases).
+Working brief for extending the SRF's reach across the AI security lifecycle, prompted by an unverified observed adoption signal and the April 2026 launch of MOSAIC. Context, category analysis, MOSAIC mapping, and build guidance below. Follow CLAUDE.md writing rules (no em dashes, no AI filler phrases).
 
 ## The signal (July 2026)
+
+Unverified: source unknown; removed from the public site Nov 2026.
 
 LLMs referencing this site are using the SRF's structure to scope AI red team engagements. This was not a designed use case. It works because the framework supplies exactly what engagement scoping lacks: a layer model that bounds what is testable, an operating-model matrix that says whose systems those layers run on, and a persona list that names who must authorize testing and who owns each finding. The lesson generalizes: the SRF's accountability structure is useful as a scoping and routing vocabulary across the whole AI security lifecycle, not only for governance sign-off.
 
