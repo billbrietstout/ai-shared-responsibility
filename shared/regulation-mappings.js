@@ -30,12 +30,22 @@
     "cc_srg",
     "cmmc_2_0",
     "nist_ai_rmf",
+    "hipaa",
   ]);
 
   let regByKey = null;
   let pinpointByKey = null;
   let anchorAllow = null;
   let loadPromise = null;
+
+  function ecfrHipaaSectionUrl(citation, inst) {
+    const m = String(citation || "").match(/(?:45\s*CFR\s*)?§\s*164\.(\d{3})\b/i);
+    if (!m) return null;
+    const section = m[1];
+    const allow = inst.verified_sections;
+    if (allow && !allow.includes(section)) return null;
+    return "https://www.ecfr.gov/current/title-45/section-164." + section;
+  }
 
   function eurlexAnchor(citation) {
     const cite = String(citation || "").trim();
@@ -72,6 +82,10 @@
       const allow = anchorAllow && anchorAllow[key];
       if (allow && !allow.has(anchor)) return doc;
       return base + "#" + anchor;
+    }
+    if (resolver === "ecfr") {
+      const url = ecfrHipaaSectionUrl(citation, inst);
+      return url || doc;
     }
     return doc;
   }

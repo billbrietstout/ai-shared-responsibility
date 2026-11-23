@@ -44,6 +44,7 @@ MULTI_CITE_KEYS = frozenset(
         "cc_srg",
         "cmmc_2_0",
         "nist_ai_rmf",
+        "hipaa",
     }
 )
 
@@ -54,6 +55,11 @@ EU_ANNEX_RE = re.compile(r"^Annex\s+([IVXLC]+)", re.IGNORECASE)
 
 EU_CITATION_GRAMMAR = re.compile(
     r"^(Article\s+\d+(?:\(\w+\))*|Annex\s+[IVXLC]+)\s*(\(.*\))?$"
+)
+
+ECFR_HIPAA_SECTION_RE = re.compile(
+    r"(?:45\s*CFR\s*)?§\s*164\.(\d{3})\b",
+    re.IGNORECASE,
 )
 
 
@@ -88,6 +94,18 @@ def _anchor_allowlist(inst: dict) -> set[str] | None:
             data = json.load(open(fpath, encoding="utf-8"))
             return set(data.get("anchors") or [])
     return None
+
+
+def ecfr_hipaa_section_url(citation: str, inst: dict) -> str | None:
+    """Map a HIPAA CFR citation token to an eCFR section URL (no paragraph fragment)."""
+    m = ECFR_HIPAA_SECTION_RE.search(citation or "")
+    if not m:
+        return None
+    section = m.group(1)
+    allow = inst.get("verified_sections")
+    if allow is not None and section not in allow:
+        return None
+    return f"https://www.ecfr.gov/current/title-45/section-164.{section}"
 
 
 def eurlex_anchor_id(citation: str) -> str | None:
@@ -141,6 +159,12 @@ def citation_pinpoint_url(
         if allow is not None and anchor not in allow:
             return doc
         return f"{base}#{anchor}"
+
+    if resolver == "ecfr":
+        url = ecfr_hipaa_section_url(citation, inst)
+        if url:
+            return url
+        return doc
 
     return doc
 

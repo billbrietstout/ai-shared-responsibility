@@ -34,6 +34,38 @@ class RegulationCitationsTest(unittest.TestCase):
         self.assertIn("#art_9)", line)
         self.assertIn("CELEX:32024R1689", line)
 
+    def test_gdpr_article_5_pinpoint(self):
+        value = (
+            "Article 5 (principles for processing personal data, including purpose "
+            "limitation and data minimization; where in scope)"
+        )
+        url = rc.citation_pinpoint_url("gdpr", value, self.reg, self.pinpoints)
+        self.assertIn("CELEX:32016R0679", url)
+        self.assertIn("#art_5", url)
+
+    def test_gdpr_anchor_fixture_matches_allowlist(self):
+        inst = self.pinpoints["instruments"]["gdpr"]
+        fixture_path = os.path.join(ROOT, inst["anchor_fixture"])
+        anchors = json.load(open(fixture_path, encoding="utf-8"))["anchors"]
+        self.assertEqual(set(inst["verified_anchors"]), set(anchors))
+        self.assertIn("art_5", anchors)
+
+    def test_hipaa_ecfr_section_url(self):
+        value = "45 CFR §164.308(a)(1)(ii)(B): Risk management"
+        url = rc.citation_pinpoint_url("hipaa", value, self.reg, self.pinpoints)
+        self.assertEqual(url, "https://www.ecfr.gov/current/title-45/section-164.308")
+        multi = (
+            "45 CFR §164.312(a)(1): Access control; §164.308(a)(3): Workforce access"
+        )
+        url = rc.mapping_pinpoint_url("hipaa", multi, self.reg, self.pinpoints)
+        self.assertEqual(url, "https://www.ecfr.gov/current/title-45/section-164.312")
+
+    def test_eu_ai_act_anchor_fixture_subset_of_allowlist(self):
+        inst = self.pinpoints["instruments"]["eu_ai_act"]
+        fixture_path = os.path.join(ROOT, inst["anchor_fixture"])
+        anchors = json.load(open(fixture_path, encoding="utf-8"))["anchors"]
+        self.assertTrue(set(anchors).issubset(set(inst["verified_anchors"])))
+
     def test_nist_rmf_fallback_document_url(self):
         value = "GOVERN 2.3 (executive leadership takes responsibility for AI risk decisions)"
         url = rc.mapping_pinpoint_url("nist_ai_rmf", value, self.reg, self.pinpoints)
@@ -54,14 +86,6 @@ class RegulationCitationsTest(unittest.TestCase):
         url = rc.mapping_pinpoint_url("eu_ai_act", value, self.reg, self.pinpoints)
         self.assertIn("#art_10", url)
 
-    def test_gdpr_falls_back_to_document_url(self):
-        value = (
-            "Article 5 (principles for processing personal data, including purpose "
-            "limitation and data minimization; where in scope)"
-        )
-        url = rc.citation_pinpoint_url("gdpr", value, self.reg, self.pinpoints)
-        self.assertEqual(url, self.reg["gdpr"]["url"])
-
     def test_iso_catalog_no_fragment(self):
         value = "ISO/IEC 42001:2023 (edition-level)"
         url = rc.citation_pinpoint_url("iso_42001", value, self.reg, self.pinpoints)
@@ -72,6 +96,10 @@ class RegulationCitationsTest(unittest.TestCase):
         self.assertEqual(rc.eurlex_anchor_id("Article 10(2)(f) (Bias examination)"), "art_10")
         self.assertEqual(rc.eurlex_anchor_id("Annex IV (technical documentation)"), "anx_IV")
 
+    @unittest.skipUnless(
+        os.environ.get("CITATION_NET_TESTS") == "1",
+        "Set CITATION_NET_TESTS=1 to run live HEAD checks on pinpoint bases",
+    )
     def test_pinpoint_bases_respond_http(self):
         """HEAD-check each instrument html_base used for pinpoints (fragment stripped)."""
         seen = set()
