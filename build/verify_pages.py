@@ -6,8 +6,11 @@ from html.parser import HTMLParser
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from regulation_citations import (  # noqa: E402
     RAW_MAPPING_LINE,
+    READER_HTML_TEMPLATE_LEAKS,
+    READER_MAPPING_LEAK,
     load_regulations,
     mapping_lines_sorted,
+    reader_mapping_texts_for_control,
 )
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,6 +22,8 @@ from controls_browser_reader import (
     INDUSTRY_CONTROLS,
     READER_BANNED,
     READER_CSS,
+    REGULATION_MAPPINGS_JS,
+    REGULATION_READER_MARKERS,
     REQUIRED_SNIPPET,
 )
 valid = {e["id"] for e in json.load(open(os.path.join(ROOT, "ids.json")))["ids"]}
@@ -190,8 +195,43 @@ for rel in INDUSTRY_CONTROLS:
     for pat in FORBIDDEN_RE:
         if pat.search(src):
             reader_violations.append(f"{rel}: forbidden pattern {pat.pattern[:48]}")
+    for pat in READER_HTML_TEMPLATE_LEAKS:
+        if pat.search(src):
+            reader_violations.append(f"{rel}: mapping template leak {pat.pattern[:40]}")
+    visible = re.sub(r"<style[\s\S]*?</style>", "", src, flags=re.I)
+    visible = re.sub(r"<script[\s\S]*?</script>", "", visible, flags=re.I)
+    if READER_MAPPING_LEAK.search(visible):
+        reader_violations.append(f"{rel}: regulatory mapping leak in page template")
 check(not reader_violations,
       f"controls browsers hide internal codes ({len(reader_violations)} issues; {reader_violations[:6]})")
+
+rm_path = os.path.join(ROOT, "shared", REGULATION_MAPPINGS_JS)
+if os.path.isfile(rm_path):
+    rm_src = open(rm_path, encoding="utf-8").read()
+    missing_rm = [m for m in REGULATION_READER_MARKERS if m not in rm_src]
+    check(not missing_rm,
+          f"{REGULATION_MAPPINGS_JS} implements reader mapping rules (missing {missing_rm})")
+else:
+    check(False, f"missing shared/{REGULATION_MAPPINGS_JS}")
+
+reg_by_key = load_regulations()
+DATA_SLUGS = (
+    "finance", "healthcare", "insurance", "public-sector", "defense",
+    "manufacturing", "common",
+)
+mapping_render_leaks = []
+for slug in DATA_SLUGS:
+    data_path = os.path.join(ROOT, "data", f"{slug}-controls.json")
+    if not os.path.isfile(data_path):
+        continue
+    payload = json.load(open(data_path, encoding="utf-8"))
+    for control in payload.get("controls") or []:
+        for text in reader_mapping_texts_for_control(control, reg_by_key):
+            if READER_MAPPING_LEAK.search(text):
+                mapping_render_leaks.append(f"{slug}/{control.get('id')}: {text[:72]}")
+check(not mapping_render_leaks,
+      f"reader regulatory mapping text has no N/A/TBD/Do-not leaks "
+      f"({len(mapping_render_leaks)} hits; {mapping_render_leaks[:4]})")
 
 print(f"\nPages checked: {len(pages)}")
 print(f"{'PASSED' if not fail else 'FAILED'}: {len(fail)} failure(s).")

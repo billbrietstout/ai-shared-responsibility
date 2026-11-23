@@ -147,6 +147,20 @@
     return v === "" || v === "N/A" || v.startsWith("TBD");
   }
 
+  function omitFromReader(value) {
+    return String(value || "").trim() === "N/A";
+  }
+
+  function isMappingPending(value) {
+    const v = String(value || "").trim();
+    if (!v || v === "N/A") return false;
+    if (/^TBD\b/i.test(v)) return true;
+    if (/Do not substitute/i.test(v)) return true;
+    if (/^TODO\b/i.test(v)) return true;
+    if (/verify against source documents/i.test(v)) return true;
+    return false;
+  }
+
   function formatPlain(key, value) {
     const label = instrumentLabel(key);
     const v = String(value || "").trim();
@@ -154,15 +168,32 @@
     return `${label}, ${v}`;
   }
 
-  function renderMappingTags(mappings, escHtml) {
-    if (!mappings) return "";
+  function readerMappingText(key, value) {
+    const label = instrumentLabel(key);
+    const v = String(value || "").trim();
+    if (isMappingPending(v)) {
+      return `${label} (mapping pending)`;
+    }
+    return formatPlain(key, value);
+  }
+
+  function readerEntries(mappings) {
+    if (!mappings) return [];
     const skip = new Set(["mapping_status_note"]);
-    return Object.entries(mappings)
-      .filter(([k, v]) => !skip.has(k) && v != null && v !== "")
+    return Object.entries(mappings).filter(([k, v]) => {
+      if (skip.has(k) || v == null || String(v).trim() === "") return false;
+      if (omitFromReader(v)) return false;
+      return true;
+    });
+  }
+
+  function renderMappingTags(mappings, escHtml) {
+    return readerEntries(mappings)
       .map(([k, v]) => {
-        const text = formatPlain(k, v);
-        const url = !isPlaceholder(v) ? mappingPinpointUrl(k, v) : "";
-        if (url && !isPlaceholder(v)) {
+        const pending = isMappingPending(v);
+        const text = readerMappingText(k, v);
+        const url = pending ? documentUrl(k) : mappingPinpointUrl(k, v);
+        if (url) {
           return (
             `<a class="mapping-tag mapping-tag--linked" href="${escHtml(url)}" ` +
             `target="_blank" rel="noopener">${escHtml(text)}</a>`
@@ -174,17 +205,14 @@
   }
 
   function renderMappingRows(mappings, escHtml) {
-    if (!mappings) return "";
-    const skip = new Set(["mapping_status_note"]);
-    return Object.entries(mappings)
-      .filter(([k, v]) => !skip.has(k) && v != null && String(v).trim() !== "")
+    return readerEntries(mappings)
       .map(([k, v]) => {
-        const text = formatPlain(k, v);
-        const url = !isPlaceholder(v) ? mappingPinpointUrl(k, v) : "";
-        const valueHtml =
-          url && !isPlaceholder(v)
-            ? `<a href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(text)}</a>`
-            : escHtml(text);
+        const pending = isMappingPending(v);
+        const text = readerMappingText(k, v);
+        const url = pending ? documentUrl(k) : mappingPinpointUrl(k, v);
+        const valueHtml = url
+          ? `<a class="mapping-tag mapping-tag--linked" href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(text)}</a>`
+          : escHtml(text);
         return `<div class="detail-field">
           <div class="detail-field__label">Regulation</div>
           <div class="detail-field__value">${valueHtml}</div>

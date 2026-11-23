@@ -174,3 +174,6 @@ FORBIDDEN_RE = [
 REQUIRED_SNIPPET = "controls-browser-display.js"
 READER_CSS = "controls-browser-reader.css"
 READER_BANNED = re.compile(r"responsibility split|\bshape\b", re.IGNORECASE)
+
+REGULATION_MAPPINGS_JS = "regulation-mappings.js"
+REGULATION_READER_MARKERS = ("omitFromReader", "(mapping pending)")
