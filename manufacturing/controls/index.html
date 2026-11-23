@@ -6,11 +6,12 @@
     <title>Manufacturing Controls Browser - AI Shared Responsibility - CoSAI SRF</title>
     <meta
       name="description"
-      content="Browse all 45 manufacturing controls in the CoSAI SRF. Filter by SRF layer, lifecycle stage, OT applicability, EU AI Act risk class, operating model, responsibility split, and accountable persona."
+      content="Browse all 45 manufacturing controls in the CoSAI SRF. Filter by SRF layer, lifecycle stage, OT applicability, EU AI Act risk class, operating model, responsibility, and accountable persona."
     />
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/manufacturing/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="/shared/controls-browser-reader.css" />
     <style>
       .browser-layout {
         display: grid;
@@ -408,7 +409,7 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <site-nav current="industries"></site-nav>
 
-    <div id="main" class="page-body">
+    <div id="main" class="page-body controls-browser">
 
       <div class="controls-hero" data-llm="summary">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -421,7 +422,7 @@
         <h1 class="controls-hero__title">Manufacturing controls browser</h1>
         <p class="controls-hero__sub">
           Browse all 45 controls in the manufacturing schema. Filter by SRF layer, lifecycle
-          stage, OT applicability, EU AI Act risk class, operating model, responsibility split,
+          stage, OT applicability, EU AI Act risk class, operating model, responsibility,
           or accountable persona.
         </p>
       </div>
@@ -501,7 +502,7 @@
           <hr class="filter-divider" />
 
           <div class="filter-group">
-            <span class="filter-group__label">Responsibility split</span>
+            <span class="filter-group__label">Responsibility</span>
             <button class="filter-btn" data-filter="split" data-value="manufacturer" tabindex="0">Manufacturer</button>
             <button class="filter-btn" data-filter="split" data-value="equipment-oem" tabindex="0">Equipment OEM</button>
             <button class="filter-btn" data-filter="split" data-value="ai-vendor" tabindex="0">AI Vendor</button>
@@ -513,12 +514,12 @@
 
           <div class="filter-group">
             <span class="filter-group__label">Persona</span>
-            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">ai-system-governance</button>
-            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">data-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">application-developer</button>
-            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">agentic-platform-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">ai-platform-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">model-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">AI Governance</button>
+            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">Data Provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">App Developer</button>
+            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">Agentic Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">AI Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">AI Model Provider</button>
           </div>
 
           <hr class="filter-divider" />
@@ -557,9 +558,12 @@
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
     <script src="/shared/regulation-mappings.js"></script>
+    <script src="/shared/controls-browser-display.js"></script>
     <script>
     (function () {
       'use strict';
+
+      var CBD = window.ControlsBrowserDisplay;
 
       // ── Utilities ────────────────────────────────────────────────────
       function escHtml(str) {
@@ -584,10 +588,11 @@
       // ── Load data ─────────────────────────────────────────────────────
       Promise.all([
         RegulationMappings.load(),
+        CBD.ready(),
         fetch('/data/manufacturing-controls.json').then(function (r) { return r.json(); }),
       ])
         .then(function (parts) {
-          var data = parts[1];
+          var data = parts[2];
           allControls = data.controls || [];
           initCounts();
           render();
@@ -618,12 +623,8 @@
         if (filters.split && c.responsibility_split !== filters.split) return false;
         if (filters.persona && c.accountable_persona !== filters.persona) return false;
         if (filters.paramtype && (!c.threshold || c.threshold.param_type !== filters.paramtype)) return false;
-        if (searchQuery) {
-          var q = searchQuery.toLowerCase();
-          var haystack = [c.id, c.title, c.description, c.accountable_persona,
-            c.lifecycle_stage, c.responsibility_split, c.ot_applicability,
-            c.eu_ai_act_risk_class].join(' ').toLowerCase();
-          if (haystack.indexOf(q) === -1) return false;
+        if (searchQuery && !CBD.matchesSearch(c, searchQuery)) {
+          return false;
         }
         return true;
       }
@@ -679,7 +680,8 @@
 
       function renderSplitChip(split) {
         var cls = 'split-chip--' + (split || 'shared').replace(/\//g, '-');
-        return '<span class="split-chip ' + cls + '">' + escHtml(split) + '</span>';
+        var splitLabel = split === 'shared' ? 'Shared' : CBD.formatSlugPhrase(split);
+        return '<span class="split-chip ' + cls + '">' + escHtml(splitLabel) + '</span>';
       }
 
       function renderOtBadge(ot) {
@@ -690,7 +692,8 @@
       function renderRiskBadge(risk) {
         var map = { 'high-risk': 'high-risk', 'limited-risk': 'limited-risk', 'minimal-risk': 'minimal-risk', 'N/A': 'na' };
         var cls = 'risk-badge--' + (map[risk] || 'na');
-        return '<span class="risk-badge ' + cls + '">' + escHtml(risk) + '</span>';
+        var riskLabel = risk === 'N/A' ? 'N/A' : CBD.formatSlugPhrase(risk);
+        return '<span class="risk-badge ' + cls + '">' + escHtml(riskLabel) + '</span>';
       }
 
       function renderLayerBadge(layer) {
@@ -715,7 +718,7 @@
           '</div>' +
           '<div class="control-card__id">' + escHtml(c.id) + '<button class="control-card__permalink" onclick="navigator.clipboard.writeText(location.origin+location.pathname+\'#control-\'+\'' + escHtml(c.id) + '\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'#\',1200)" title="Copy permalink">#</button></div>' +
           '<div class="control-card__title">' + escHtml(c.title) + '</div>' +
-          '<div class="control-card__persona">' + escHtml(c.accountable_persona) + ' &middot; ' + escHtml(c.lifecycle_stage) + '</div>' +
+          '<div class="control-card__persona">' + escHtml(CBD.personaLabel(c.accountable_persona)) + ' &middot; ' + escHtml(CBD.formatSlugPhrase(c.lifecycle_stage)) + '</div>' +
           '</div>' +
           '<span class="card-expand"><span class="card-expand__show">Details</span><span class="card-expand__hide">Hide</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span>' +
           '</div>' +
@@ -727,17 +730,17 @@
           '</div>' +
           '<div class="detail-section">' +
           '<div class="detail-section__label">Threshold</div>' +
-          '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(t.metric) + '</span></div>' +
-          '<div class="threshold-row"><span class="threshold-label">Operator</span><span class="threshold-value">' + escHtml(t.operator) + ' ' + escHtml(t.param) + '</span></div>' +
-          '<div class="threshold-row"><span class="threshold-label">Type</span><span class="threshold-value">' + escHtml(t.param_type) + '</span></div>' +
-          '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(t.window) + '</span></div>' +
+          '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(CBD.formatMetric(t.metric)) + '</span></div>' +
+          '<div class="threshold-row"><span class="threshold-label">Operator</span><span class="threshold-value">' + escHtml(t.operator) + '</span></div>' +
+          '<div class="threshold-row"><span class="threshold-label">Type</span><span class="threshold-value">' + escHtml(CBD.formatParamType(t.param_type)) + '</span></div>' +
+          '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(CBD.formatWindow(t.window)) + '</span></div>' +
           (t.description ? '<p style="margin-top:8px;font-size:0.8rem;color:var(--slate-500);">' + escHtml(t.description) + '</p>' : '') +
-          (t.breach_action ? '<p style="margin-top:4px;font-size:0.8rem;color:var(--slate-500);"><strong>On breach:</strong> ' + escHtml(t.breach_action) + '</p>' : '') +
+          (t.breach_action ? '<p style="margin-top:4px;font-size:0.8rem;color:var(--slate-500);"><strong>On breach:</strong> ' + escHtml(CBD.formatBreachAction(t.breach_action)) + '</p>' : '') +
           '</div>' +
           '<div class="detail-section">' +
           '<div class="detail-section__label">Evidence (OCSF v1.8.0)</div>' +
-          (t.evidence ? '<div class="ocsf-chip">OCSF</div><p>' + escHtml(t.evidence.ocsf_class) + '</p>' +
-            (t.evidence.attribute && t.evidence.attribute !== 'TBD' ? '<p style="font-size:0.8rem;color:var(--slate-500);">Attribute: <code>' + escHtml(t.evidence.attribute) + '</code></p>' : '') : '') +
+          (t.evidence ? '<p class="evidence-prose">OCSF v1.8.0 · ' + escHtml(CBD.formatEvidencePointer(t.evidence.ocsf_class)) + '</p>' +
+            (t.evidence.attribute && t.evidence.attribute !== 'TBD' ? '<p class="evidence-prose">' + escHtml(t.evidence.attribute) + '</p>' : '') : '') +
           '<div class="detail-section__label" style="margin-top:12px;">Operating models</div>' +
           '<div class="operating-tags">' + opTags + '</div>' +
           (slTags ? '<div class="detail-section__label" style="margin-top:12px;">IEC 62443 SLs</div><div class="sl-tags">' + slTags + '</div>' : '') +

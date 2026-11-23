@@ -11,6 +11,7 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/insurance/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="/shared/controls-browser-reader.css" />
     <style>
 
       /* ── Layout ───────────────────────────────────────────────────── */
@@ -377,7 +378,7 @@
       </div>
     </header>
 
-    <main id="main" class="page-body" data-llm="insurance-controls-browser">
+    <main id="main" class="page-body controls-browser" data-llm="insurance-controls-browser">
 
       <!-- Status notice -->
       <div role="note" style="background:var(--dm-bg-fffbeb);border:1px solid var(--dm-bd-fbbf24);border-radius:10px;padding:14px 20px;margin-top:24px;font-size:0.875rem;color:var(--dm-fg-78350f);line-height:1.55;">
@@ -436,11 +437,11 @@
 
           <div class="filter-group">
             <span class="filter-group__label">Persona</span>
-            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance">ai-system-governance</button>
-            <button class="filter-btn" data-filter="persona" data-value="data-provider">data-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="application-developer">application-developer</button>
-            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider">ai-platform-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="model-provider">model-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance">AI Governance</button>
+            <button class="filter-btn" data-filter="persona" data-value="data-provider">Data Provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="application-developer">App Developer</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider">AI Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="model-provider">AI Model Provider</button>
           </div>
 
           <hr class="filter-divider" />
@@ -479,8 +480,10 @@
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
     <script src="/shared/regulation-mappings.js"></script>
+    <script src="/shared/controls-browser-display.js"></script>
     <script>
     (function () {
+      const CBD = window.ControlsBrowserDisplay;
       const STAGE_LABELS = {
         'design-development':   'DEV',
         'validation-testing':   'VAL',
@@ -515,9 +518,11 @@
       // ── Fetch schema ─────────────────────────────────────────────────
       Promise.all([
         RegulationMappings.load(),
+        CBD.ready(),
         fetch('/data/insurance-controls.json').then(r => r.json()),
       ])
-        .then(([, data]) => {
+        .then((parts) => {
+          const data = parts[2];
           allControls = data.controls;
           initCounts();
           renderControls();
@@ -547,14 +552,8 @@
           if (activeFilters.model && !(c.operating_models || []).includes(activeFilters.model)) return false;
           if (activeFilters.persona && c.accountable_persona !== activeFilters.persona) return false;
           if (activeFilters.paramtype && c.threshold.param_type !== activeFilters.paramtype) return false;
-          if (searchQuery) {
-            const q = searchQuery.toLowerCase();
-            return (
-              c.id.toLowerCase().includes(q) ||
-              c.title.toLowerCase().includes(q) ||
-              c.description.toLowerCase().includes(q) ||
-              c.component.toLowerCase().includes(q)
-            );
+          if (searchQuery && !CBD.matchesSearch(c, searchQuery)) {
+            return false;
           }
           return true;
         });
@@ -621,7 +620,7 @@
       function controlCardHTML(c) {
         const t = c.threshold;
         const ocsfText = t.evidence && t.evidence.ocsf_class
-          ? t.evidence.ocsf_class.split(':')[0].trim()
+          ? CBD.formatEvidencePointer(t.evidence.ocsf_class)
           : 'Document artifact';
 
         return '<article class="control-card" id="control-' + escHtml(c.id) + '">' +
@@ -635,7 +634,7 @@
               '<div class="control-card__id">' + escHtml(c.id) + '<button class="control-card__permalink" onclick="navigator.clipboard.writeText(location.origin+location.pathname+\'#control-\'+\'' + escHtml(c.id) + '\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'#\',1200)" title="Copy permalink">#</button></div>' +
               '<div class="control-card__title">' + escHtml(c.title) + '</div>' +
               '<div class="control-card__persona">' +
-                escHtml(c.component) + ' · <code>' + escHtml(c.accountable_persona) + '</code>' +
+                escHtml(c.component) + ' · ' + escHtml(CBD.personaLabel(c.accountable_persona)) +
               '</div>' +
             '</div>' +
             '<span class="card-expand"><span class="card-expand__show">Details</span><span class="card-expand__hide">Hide</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span>' +
@@ -663,17 +662,16 @@
               '<div>' +
                 '<div class="detail-section">' +
                   '<div class="detail-section__label">Threshold</div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(t.metric) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(CBD.formatMetric(t.metric)) + '</span></div>' +
                   '<div class="threshold-row"><span class="threshold-label">Operator</span><span class="threshold-value">' + escHtml(t.operator) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Param</span><span class="threshold-value">' + escHtml(t.param) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(t.window) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Breach</span><span class="threshold-value" style="max-width:200px;white-space:normal">' + escHtml(t.breach_action) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(CBD.formatWindow(t.window)) + '</span></div>' +
+                  '<div class="threshold-row threshold-row--breach"><span class="threshold-label">Breach</span><span class="threshold-value">' + escHtml(CBD.formatBreachAction(t.breach_action)) + '</span></div>' +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
                   '<div class="detail-section__label">OCSF evidence pointer</div>' +
-                  '<div class="ocsf-chip">OCSF v1.8.0 · ' + escHtml(ocsfText) + '</div>' +
+                  '<p class="evidence-prose">OCSF v1.8.0 · ' + escHtml(ocsfText) + '</p>' +
                   (t.evidence && t.evidence.attribute && t.evidence.attribute !== 'TBD'
-                    ? '<p style="font-size:var(--text-xs);color:var(--slate-500);margin:0;font-family:ui-monospace,monospace">' + escHtml(t.evidence.attribute) + '</p>'
+                    ? '<p class="evidence-prose">' + escHtml(t.evidence.attribute) + '</p>'
                     : '') +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +

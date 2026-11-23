@@ -6,11 +6,12 @@
     <title>Public Sector Controls Browser - AI Shared Responsibility - CoSAI SRF</title>
     <meta
       name="description"
-      content="Browse all 40 public-sector controls in the CoSAI SRF. Filter by SRF layer, federal AI lifecycle stage, operating model, accountable persona, and FedRAMP CRM responsibility split."
+      content="Browse all 40 public-sector controls in the CoSAI SRF. Filter by SRF layer, federal AI lifecycle stage, operating model, accountable persona, and FedRAMP CRM responsibility."
     />
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/public-sector/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="/shared/controls-browser-reader.css" />
     <style>
       .browser-layout {
         display: grid;
@@ -359,7 +360,7 @@
   "@type": "Dataset",
   "name": "CoSAI SRF Public Sector Controls \u2014 Full Schema",
   "url": "https://aisharedresponsibility.com/public-sector/controls/",
-  "description": "The CoSAI SRF public-sector schema: 40 controls for federal civilian agencies (FCEB) across L1-L5. Every control carries an agency/vendor responsibility split. Regulatory crosswalk: OMB M-25-21 (September 22, 2026 deadline), OMB M-25-22, FedRAMP 20x KSIs, NIST AI RMF. One named persona accountable per control.",
+  "description": "The CoSAI SRF public-sector schema: 40 controls for federal civilian agencies (FCEB) across L1-L5. Every control names agency and vendor responsibilities. Regulatory crosswalk: OMB M-25-21 (September 22, 2026 deadline), OMB M-25-22, FedRAMP 20x KSIs, NIST AI RMF. One named persona accountable per control.",
   "publisher": {
     "@type": "Organization",
     "name": "AI Shared Responsibility",
@@ -387,7 +388,7 @@
     <a class="skip-link" href="#main">Skip to content</a>
     <site-nav current="industries"></site-nav>
 
-    <div id="main" class="page-body">
+    <div id="main" class="page-body controls-browser">
 
       <div class="controls-hero" data-llm="summary">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -401,7 +402,7 @@
         <p class="controls-hero__sub">
           Browse all 40 controls in the public-sector schema. Filter by SRF layer,
           federal AI lifecycle stage, operating model, accountable persona, or FedRAMP CRM
-          responsibility split.
+          FedRAMP CRM responsibility.
         </p>
       </div>
 
@@ -462,7 +463,7 @@
           <hr class="filter-divider" />
 
           <div class="filter-group">
-            <span class="filter-group__label">Responsibility split</span>
+            <span class="filter-group__label">Responsibility</span>
             <button class="filter-btn" data-filter="split" data-value="agency" tabindex="0">Agency</button>
             <button class="filter-btn" data-filter="split" data-value="shared" tabindex="0">Shared</button>
             <button class="filter-btn" data-filter="split" data-value="csp" tabindex="0">CSP</button>
@@ -473,12 +474,12 @@
 
           <div class="filter-group">
             <span class="filter-group__label">Persona</span>
-            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">ai-system-governance</button>
-            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">data-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">application-developer</button>
-            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">agentic-platform-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">ai-platform-provider</button>
-            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">model-provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-system-governance" tabindex="0">AI Governance</button>
+            <button class="filter-btn" data-filter="persona" data-value="data-provider" tabindex="0">Data Provider</button>
+            <button class="filter-btn" data-filter="persona" data-value="application-developer" tabindex="0">App Developer</button>
+            <button class="filter-btn" data-filter="persona" data-value="agentic-platform-provider" tabindex="0">Agentic Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="ai-platform-provider" tabindex="0">AI Platform</button>
+            <button class="filter-btn" data-filter="persona" data-value="model-provider" tabindex="0">AI Model Provider</button>
           </div>
 
           <hr class="filter-divider" />
@@ -517,8 +518,10 @@
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
     <script src="/shared/regulation-mappings.js"></script>
+    <script src="/shared/controls-browser-display.js"></script>
     <script>
     (function () {
+      var CBD = window.ControlsBrowserDisplay;
       var STAGE_LABELS = {
         'acquisition-integration':     'ACQ',
         'pre-deployment-validation':   'VAL',
@@ -558,10 +561,11 @@
 
       Promise.all([
         RegulationMappings.load(),
+        CBD.ready(),
         fetch('/data/public-sector-controls.json').then(function(r) { return r.json(); }),
       ])
         .then(function(parts) {
-          var data = parts[1];
+          var data = parts[2];
           allControls = data.controls;
           initCounts();
           renderControls();
@@ -590,14 +594,8 @@
           if (activeFilters.persona && c.accountable_persona !== activeFilters.persona) return false;
           if (activeFilters.paramtype && c.threshold.param_type !== activeFilters.paramtype) return false;
           if (activeFilters.split && c.responsibility_split !== activeFilters.split) return false;
-          if (searchQuery) {
-            var q = searchQuery.toLowerCase();
-            return (
-              c.id.toLowerCase().indexOf(q) !== -1 ||
-              c.title.toLowerCase().indexOf(q) !== -1 ||
-              c.description.toLowerCase().indexOf(q) !== -1 ||
-              c.component.toLowerCase().indexOf(q) !== -1
-            );
+          if (searchQuery && !CBD.matchesSearch(c, searchQuery)) {
+            return false;
           }
           return true;
         });
@@ -665,7 +663,7 @@
       function controlCardHTML(c) {
         var t = c.threshold;
         var ocsfText = t.evidence && t.evidence.ocsf_class
-          ? t.evidence.ocsf_class.split(':')[0].trim()
+          ? CBD.formatEvidencePointer(t.evidence.ocsf_class)
           : 'Document artifact';
 
         return '<article class="control-card" id="control-' + escHtml(c.id) + '">' +
@@ -680,7 +678,7 @@
               '<div class="control-card__id">' + escHtml(c.id) + '<button class="control-card__permalink" onclick="navigator.clipboard.writeText(location.origin+location.pathname+\'#control-\'+\'' + escHtml(c.id) + '\');this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'#\',1200)" title="Copy permalink">#</button></div>' +
               '<div class="control-card__title">' + escHtml(c.title) + '</div>' +
               '<div class="control-card__persona">' +
-                escHtml(c.component) + ' &middot; <code>' + escHtml(c.accountable_persona) + '</code>' +
+                escHtml(c.component) + ' &middot; ' + escHtml(CBD.personaLabel(c.accountable_persona)) +
               '</div>' +
             '</div>' +
             '<span class="card-expand"><span class="card-expand__show">Details</span><span class="card-expand__hide">Hide</span><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg></span>' +
@@ -697,7 +695,7 @@
                   '<p>' + escHtml(STAGE_FULL[c.public_sector_stage] || c.public_sector_stage) + '</p>' +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
-                  '<div class="detail-section__label">FedRAMP CRM responsibility split</div>' +
+                  '<div class="detail-section__label">FedRAMP CRM responsibility</div>' +
                   '<p>' + splitChipHTML(c.responsibility_split) + '</p>' +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
@@ -712,17 +710,16 @@
               '<div>' +
                 '<div class="detail-section">' +
                   '<div class="detail-section__label">Threshold</div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(t.metric) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Metric</span><span class="threshold-value">' + escHtml(CBD.formatMetric(t.metric)) + '</span></div>' +
                   '<div class="threshold-row"><span class="threshold-label">Operator</span><span class="threshold-value">' + escHtml(t.operator) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Param</span><span class="threshold-value">' + escHtml(t.param) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(t.window) + '</span></div>' +
-                  '<div class="threshold-row"><span class="threshold-label">Breach</span><span class="threshold-value" style="max-width:200px;white-space:normal">' + escHtml(t.breach_action) + '</span></div>' +
+                  '<div class="threshold-row"><span class="threshold-label">Window</span><span class="threshold-value">' + escHtml(CBD.formatWindow(t.window)) + '</span></div>' +
+                  '<div class="threshold-row threshold-row--breach"><span class="threshold-label">Breach</span><span class="threshold-value">' + escHtml(CBD.formatBreachAction(t.breach_action)) + '</span></div>' +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +
                   '<div class="detail-section__label">OCSF evidence pointer</div>' +
-                  '<div class="ocsf-chip">OCSF v1.8.0 &middot; ' + escHtml(ocsfText) + '</div>' +
+                  '<p class="evidence-prose">OCSF v1.8.0 · ' + escHtml(ocsfText) + '</p>' +
                   (t.evidence && t.evidence.attribute && t.evidence.attribute !== 'TBD'
-                    ? '<p style="font-size:var(--text-xs);color:var(--slate-500);margin:0;font-family:ui-monospace,monospace">' + escHtml(t.evidence.attribute) + '</p>'
+                    ? '<p class="evidence-prose">' + escHtml(t.evidence.attribute) + '</p>'
                     : '') +
                 '</div>' +
                 '<div class="detail-section" style="margin-top:var(--sp-4)">' +

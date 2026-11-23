@@ -11,6 +11,7 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/tapestry/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="/shared/controls-browser-reader.css" />
     <style>
       /* ── Layout ───────────────────────────────────────────────────── */
       .browser-layout {
@@ -329,7 +330,7 @@
   <body>
     <site-nav current="framework"></site-nav>
 
-    <div class="page-body">
+    <div class="page-body controls-browser">
 
       <div class="controls-hero" data-llm="summary">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -342,7 +343,7 @@
         <h1 class="controls-hero__title">Federated consortium accountability controls</h1>
         <p class="controls-hero__sub" id="hero-sub">Loading&hellip;</p>
         <p style="font-size:var(--text-xs);color:var(--slate-500);margin-top:var(--sp-3);max-width:70ch;">
-          A federation of peer institutions cannot use the customer-and-provider split that
+          A federation of peer institutions cannot use the customer-and-provider roles that
           the other control sets on this site assume. Every layer here divides into two
           governing domains instead: a Shared Commons that stays open and independently
           usable, and Participant Sovereign Assets that each participant controls unless it
@@ -514,9 +515,12 @@
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
     <script src="/shared/regulation-mappings.js"></script>
+    <script src="/shared/controls-browser-display.js"></script>
     <script>
 (function () {
   "use strict";
+
+  const CBD = window.ControlsBrowserDisplay;
 
   let schema = null;
   let allControls = [];
@@ -555,9 +559,11 @@
 
   Promise.all([
     RegulationMappings.load(),
+    CBD.ready(),
     fetch("/data/tapestry-controls.json").then(r => r.json()),
   ])
-    .then(([, data]) => {
+    .then((parts) => {
+      const data = parts[2];
       schema = data;
       allControls = data.controls;
       buildTierTable();
@@ -654,10 +660,8 @@
       if (filters.stage !== "all" && c.lifecycle_stage !== filters.stage) return false;
       if (filters.tier !== "all" && c.threshold.disclosure_tier !== filters.tier) return false;
       if (filters.status !== "all" && c.implementation_status !== filters.status) return false;
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        return [c.id, c.title, c.description, c.component, c.accountable_persona]
-          .join(" ").toLowerCase().includes(q);
+      if (searchQuery && !CBD.matchesSearch(c, searchQuery)) {
+        return false;
       }
       return true;
     });
@@ -775,7 +779,7 @@
             </div>
             <div class="detail-field">
               <div class="detail-field__label">Accountable persona</div>
-              <div class="detail-field__value"><code>${escHtml(c.accountable_persona)}</code></div>
+              <div class="detail-field__value">${escHtml(CBD.personaLabel(c.accountable_persona))}</div>
             </div>
             <div class="detail-field">
               <div class="detail-field__label">Bears on the commons</div>
@@ -783,7 +787,7 @@
             </div>
             <div class="detail-field">
               <div class="detail-field__label">Property class</div>
-              <div class="detail-field__value"><code>${escHtml(c.property_class)}</code></div>
+              <div class="detail-field__value">${escHtml(CBD.formatSlugPhrase(c.property_class))}</div>
             </div>
             ${mappingRows}
           </div>
@@ -800,15 +804,15 @@
               <div class="detail-grid">
                 <div class="detail-field">
                   <div class="detail-field__label">Metric</div>
-                  <div class="detail-field__value"><code>${escHtml(t.metric)}</code></div>
+                  <div class="detail-field__value">${escHtml(CBD.formatMetric(t.metric))}</div>
                 </div>
                 <div class="detail-field">
-                  <div class="detail-field__label">Operator / param</div>
-                  <div class="detail-field__value"><code>${escHtml(t.operator)} ${escHtml(t.param)}</code></div>
+                  <div class="detail-field__label">Operator</div>
+                  <div class="detail-field__value">${escHtml(t.operator)}</div>
                 </div>
                 <div class="detail-field">
                   <div class="detail-field__label">Breach action</div>
-                  <div class="detail-field__value"><code>${escHtml(t.breach_action)}</code></div>
+                  <div class="detail-field__value">${escHtml(CBD.formatBreachAction(t.breach_action))}</div>
                 </div>
               </div>
             </div>

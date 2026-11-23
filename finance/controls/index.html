@@ -11,6 +11,7 @@
     <meta name="color-scheme" content="light dark" />
     <link rel="canonical" href="https://aisharedresponsibility.com/finance/controls/" />
     <link rel="stylesheet" href="/shared/styles.css" />
+    <link rel="stylesheet" href="/shared/controls-browser-reader.css" />
     <style>
 
       /* ── Layout ───────────────────────────────────────────────────── */
@@ -407,7 +408,7 @@
   <body>
     <site-nav current="industries"></site-nav>
 
-    <div class="page-body">
+    <div class="page-body controls-browser">
 
       <div class="controls-hero" data-llm="summary">
         <nav class="breadcrumb" aria-label="Breadcrumb">
@@ -543,9 +544,12 @@
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
     <script src="/shared/regulation-mappings.js"></script>
+    <script src="/shared/controls-browser-display.js"></script>
     <script>
 (function () {
   "use strict";
+
+  const CBD = window.ControlsBrowserDisplay;
 
   // ── State ──────────────────────────────────────────────────────────────
   let allControls = [];
@@ -568,9 +572,11 @@
   // ── Fetch data ─────────────────────────────────────────────────────────
   Promise.all([
     RegulationMappings.load(),
+    CBD.ready(),
     fetch("/data/finance-controls.json").then((r) => r.json()),
   ])
-    .then(([, data]) => {
+    .then((parts) => {
+      const data = parts[2];
       allControls = data.controls;
       updateCounts();
       render();
@@ -587,14 +593,8 @@
       if (filters.stage !== "all" && c.mrm_stage !== filters.stage) return false;
       if (filters.persona !== "all" && c.accountable_persona !== filters.persona) return false;
       if (filters.opmodel !== "all" && !c.operating_models.includes(filters.opmodel)) return false;
-      if (searchQuery) {
-        const q = searchQuery.toLowerCase();
-        return (
-          c.id.toLowerCase().includes(q) ||
-          c.title.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q) ||
-          c.component.toLowerCase().includes(q)
-        );
+      if (searchQuery && !CBD.matchesSearch(c, searchQuery)) {
+        return false;
       }
       return true;
     });
@@ -667,25 +667,25 @@
         <div class="threshold-block__body">
           <div class="detail-field">
             <div class="detail-field__label">Metric</div>
-            <div class="detail-field__value"><code>${escHtml(t.metric)}</code></div>
+            <div class="detail-field__value">${escHtml(CBD.formatMetric(t.metric))}</div>
           </div>
           <div class="detail-field">
-            <div class="detail-field__label">Operator / Param</div>
-            <div class="detail-field__value"><code>${escHtml(t.operator)} ${escHtml(String(t.param))}</code></div>
+            <div class="detail-field__label">Operator</div>
+            <div class="detail-field__value">${escHtml(t.operator)}</div>
           </div>
           <div class="detail-field">
             <div class="detail-field__label">Window</div>
-            <div class="detail-field__value"><code>${escHtml(t.window)}</code></div>
+            <div class="detail-field__value">${escHtml(CBD.formatWindow(t.window))}</div>
           </div>
           ${t.param_type ? `<div class="detail-field">
             <div class="detail-field__label">Param type</div>
-            <div class="detail-field__value"><code>${escHtml(t.param_type)}</code></div>
+            <div class="detail-field__value">${escHtml(CBD.formatParamType(t.param_type))}</div>
           </div>` : ""}
         </div>
       </div>` : "";
 
     const evidenceClass = ev.ocsf_class && !ev.ocsf_class.startsWith("TBD")
-      ? `<code>${escHtml(ev.ocsf_class)}</code> ${osfcWarning(ev.ocsf_class)}`
+      ? `${escHtml(CBD.formatEvidencePointer(ev.ocsf_class))} ${osfcWarning(ev.ocsf_class)}`
       : `<span style="color:var(--slate-400);font-style:italic">No OCSF mapping yet</span>`;
 
     const evidenceHTML = `
@@ -734,7 +734,7 @@
             </div>
             <div class="detail-field">
               <div class="detail-field__label">Accountable persona</div>
-              <div class="detail-field__value"><code>${escHtml(c.accountable_persona)}</code></div>
+              <div class="detail-field__value">${escHtml(CBD.personaLabel(c.accountable_persona))}</div>
             </div>
             <div class="detail-field">
               <div class="detail-field__label">Operating models</div>
@@ -747,7 +747,7 @@
             ${mappingRows}
             ${t.breach_action ? `<div class="detail-field" style="grid-column:1/-1">
               <div class="detail-field__label">Breach action</div>
-              <div class="detail-field__value">${escHtml(t.breach_action)}</div>
+              <div class="detail-field__value">${escHtml(CBD.formatBreachAction(t.breach_action))}</div>
             </div>` : ""}
           </div>
           ${thresholdHTML}

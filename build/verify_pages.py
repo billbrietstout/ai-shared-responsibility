@@ -11,6 +11,16 @@ from regulation_citations import (  # noqa: E402
 )
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BUILD = os.path.join(ROOT, "build")
+if BUILD not in sys.path:
+    sys.path.insert(0, BUILD)
+from controls_browser_reader import (
+    FORBIDDEN_RE,
+    INDUSTRY_CONTROLS,
+    READER_BANNED,
+    READER_CSS,
+    REQUIRED_SNIPPET,
+)
 valid = {e["id"] for e in json.load(open(os.path.join(ROOT, "ids.json")))["ids"]}
 valid |= {"srf.framework.cosai-srf"}
 
@@ -160,6 +170,28 @@ check(not bad_concepts, f"all llm:concepts resolve to ids.json (bad: {bad_concep
 check(not no_marker, f"all content pages have >=1 chunk marker (missing: {no_marker})")
 check(not stray, f"every data-llm is on a section/header tag (stray: {stray[:5]})")
 check(not parse_err, f"section/header tags balanced (bad: {parse_err[:5]})")
+
+# 7. Industry controls browsers: reader view must not surface internal slugs or constants.
+reader_violations = []
+for rel in INDUSTRY_CONTROLS:
+    path = os.path.join(ROOT, rel)
+    if not os.path.isfile(path):
+        reader_violations.append(f"{rel}: missing")
+        continue
+    src = open(path, encoding="utf-8").read()
+    if REQUIRED_SNIPPET not in src:
+        reader_violations.append(f"{rel}: missing {REQUIRED_SNIPPET}")
+    if READER_CSS not in src:
+        reader_violations.append(f"{rel}: missing {READER_CSS}")
+    visible = re.sub(r"<style[\s\S]*?</style>", "", src, flags=re.I)
+    visible = re.sub(r"<script[\s\S]*?</script>", "", visible, flags=re.I)
+    if READER_BANNED.search(visible):
+        reader_violations.append(f"{rel}: banned reader phrase (split/shape)")
+    for pat in FORBIDDEN_RE:
+        if pat.search(src):
+            reader_violations.append(f"{rel}: forbidden pattern {pat.pattern[:48]}")
+check(not reader_violations,
+      f"controls browsers hide internal codes ({len(reader_violations)} issues; {reader_violations[:6]})")
 
 print(f"\nPages checked: {len(pages)}")
 print(f"{'PASSED' if not fail else 'FAILED'}: {len(fail)} failure(s).")
