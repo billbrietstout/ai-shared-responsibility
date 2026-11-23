@@ -204,6 +204,58 @@ def is_placeholder_value(value: str) -> bool:
     return v == "" or v == "N/A" or v.startswith("TBD")
 
 
+def omit_from_reader(value: str) -> bool:
+    return (value or "").strip() == "N/A"
+
+
+def is_mapping_pending(value: str) -> bool:
+    v = (value or "").strip()
+    if not v or v == "N/A":
+        return False
+    if re.match(r"^TBD\b", v, re.I):
+        return True
+    if "Do not substitute" in v:
+        return True
+    if re.match(r"^TODO\b", v, re.I):
+        return True
+    if re.search(r"verify against source documents", v, re.I):
+        return True
+    return False
+
+
+READER_MAPPING_LEAK = re.compile(r":\s*N/A\b|TBD:\s|Do not substitute", re.IGNORECASE)
+
+READER_HTML_TEMPLATE_LEAKS = [
+    re.compile(r"TBD:\s*verify against source"),
+    re.compile(r"All mappings TBD or N/A"),
+]
+
+
+def reader_mapping_text(
+    mapping_key: str, value: str, reg_by_key: dict[str, dict]
+) -> str | None:
+    v = (value or "").strip()
+    if not v or is_skipped_key(mapping_key):
+        return None
+    if omit_from_reader(v):
+        return None
+    if is_mapping_pending(v):
+        return f"{instrument_label(mapping_key, reg_by_key)} (mapping pending)"
+    return format_plain(mapping_key, value, reg_by_key)
+
+
+def reader_mapping_texts_for_control(
+    control: dict, reg_by_key: dict[str, dict]
+) -> list[str]:
+    mappings = control.get("mappings") or {}
+    out: list[str] = []
+    for key, val in mappings.items():
+        text = reader_mapping_text(key, str(val), reg_by_key)
+        if text:
+            out.append(text)
+    return out
+
+
 def format_plain(mapping_key: str, value: str, reg_by_key: dict[str, dict]) -> str:
     """Return text like 'EU AI Act, Article 9 (Risk management system)'."""
     label = instrument_label(mapping_key, reg_by_key)

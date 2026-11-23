@@ -6,11 +6,26 @@ from html.parser import HTMLParser
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from regulation_citations import (  # noqa: E402
     RAW_MAPPING_LINE,
+    READER_HTML_TEMPLATE_LEAKS,
+    READER_MAPPING_LEAK,
     load_regulations,
     mapping_lines_sorted,
+    reader_mapping_texts_for_control,
 )
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BUILD = os.path.join(ROOT, "build")
+if BUILD not in sys.path:
+    sys.path.insert(0, BUILD)
+from controls_browser_reader import (
+    FORBIDDEN_RE,
+    INDUSTRY_CONTROLS,
+    READER_BANNED,
+    READER_CSS,
+    REGULATION_MAPPINGS_JS,
+    REGULATION_READER_MARKERS,
+    REQUIRED_SNIPPET,
+)
 valid = {e["id"] for e in json.load(open(os.path.join(ROOT, "ids.json")))["ids"]}
 valid |= {"srf.framework.cosai-srf"}
 
@@ -160,6 +175,63 @@ check(not bad_concepts, f"all llm:concepts resolve to ids.json (bad: {bad_concep
 check(not no_marker, f"all content pages have >=1 chunk marker (missing: {no_marker})")
 check(not stray, f"every data-llm is on a section/header tag (stray: {stray[:5]})")
 check(not parse_err, f"section/header tags balanced (bad: {parse_err[:5]})")
+
+# 7. Industry controls browsers: reader view must not surface internal slugs or constants.
+reader_violations = []
+for rel in INDUSTRY_CONTROLS:
+    path = os.path.join(ROOT, rel)
+    if not os.path.isfile(path):
+        reader_violations.append(f"{rel}: missing")
+        continue
+    src = open(path, encoding="utf-8").read()
+    if REQUIRED_SNIPPET not in src:
+        reader_violations.append(f"{rel}: missing {REQUIRED_SNIPPET}")
+    if READER_CSS not in src:
+        reader_violations.append(f"{rel}: missing {READER_CSS}")
+    visible = re.sub(r"<style[\s\S]*?</style>", "", src, flags=re.I)
+    visible = re.sub(r"<script[\s\S]*?</script>", "", visible, flags=re.I)
+    if READER_BANNED.search(visible):
+        reader_violations.append(f"{rel}: banned reader phrase (split/shape)")
+    for pat in FORBIDDEN_RE:
+        if pat.search(src):
+            reader_violations.append(f"{rel}: forbidden pattern {pat.pattern[:48]}")
+    for pat in READER_HTML_TEMPLATE_LEAKS:
+        if pat.search(src):
+            reader_violations.append(f"{rel}: mapping template leak {pat.pattern[:40]}")
+    visible = re.sub(r"<style[\s\S]*?</style>", "", src, flags=re.I)
+    visible = re.sub(r"<script[\s\S]*?</script>", "", visible, flags=re.I)
+    if READER_MAPPING_LEAK.search(visible):
+        reader_violations.append(f"{rel}: regulatory mapping leak in page template")
+check(not reader_violations,
+      f"controls browsers hide internal codes ({len(reader_violations)} issues; {reader_violations[:6]})")
+
+rm_path = os.path.join(ROOT, "shared", REGULATION_MAPPINGS_JS)
+if os.path.isfile(rm_path):
+    rm_src = open(rm_path, encoding="utf-8").read()
+    missing_rm = [m for m in REGULATION_READER_MARKERS if m not in rm_src]
+    check(not missing_rm,
+          f"{REGULATION_MAPPINGS_JS} implements reader mapping rules (missing {missing_rm})")
+else:
+    check(False, f"missing shared/{REGULATION_MAPPINGS_JS}")
+
+reg_by_key = load_regulations()
+DATA_SLUGS = (
+    "finance", "healthcare", "insurance", "public-sector", "defense",
+    "manufacturing", "common",
+)
+mapping_render_leaks = []
+for slug in DATA_SLUGS:
+    data_path = os.path.join(ROOT, "data", f"{slug}-controls.json")
+    if not os.path.isfile(data_path):
+        continue
+    payload = json.load(open(data_path, encoding="utf-8"))
+    for control in payload.get("controls") or []:
+        for text in reader_mapping_texts_for_control(control, reg_by_key):
+            if READER_MAPPING_LEAK.search(text):
+                mapping_render_leaks.append(f"{slug}/{control.get('id')}: {text[:72]}")
+check(not mapping_render_leaks,
+      f"reader regulatory mapping text has no N/A/TBD/Do-not leaks "
+      f"({len(mapping_render_leaks)} hits; {mapping_render_leaks[:4]})")
 
 print(f"\nPages checked: {len(pages)}")
 print(f"{'PASSED' if not fail else 'FAILED'}: {len(fail)} failure(s).")
