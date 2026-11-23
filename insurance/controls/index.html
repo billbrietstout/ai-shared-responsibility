@@ -478,6 +478,7 @@
 
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
+    <script src="/shared/regulation-mappings.js"></script>
     <script>
     (function () {
       const STAGE_LABELS = {
@@ -512,9 +513,11 @@
       }
 
       // ── Fetch schema ─────────────────────────────────────────────────
-      fetch('/data/insurance-controls.json')
-        .then(r => r.json())
-        .then(data => {
+      Promise.all([
+        RegulationMappings.load(),
+        fetch('/data/insurance-controls.json').then(r => r.json()),
+      ])
+        .then(([, data]) => {
           allControls = data.controls;
           initCounts();
           renderControls();
@@ -599,10 +602,7 @@
       }
 
       function mappingTags(mappings) {
-        return Object.entries(mappings)
-          .filter(([, v]) => v && !String(v).startsWith('N/A') && !String(v).startsWith('TBD'))
-          .map(([k]) => '<span class="mapping-tag">' + escHtml(k.replace(/_/g, ' ').toUpperCase()) + '</span>')
-          .join('');
+        return RegulationMappings.renderMappingTags(mappings, escHtml);
       }
 
       function operatingTags(models) {

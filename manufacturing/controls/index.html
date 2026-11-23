@@ -556,6 +556,7 @@
 
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
+    <script src="/shared/regulation-mappings.js"></script>
     <script>
     (function () {
       'use strict';
@@ -581,9 +582,12 @@
       var searchQuery = '';
 
       // ── Load data ─────────────────────────────────────────────────────
-      fetch('/data/manufacturing-controls.json')
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
+      Promise.all([
+        RegulationMappings.load(),
+        fetch('/data/manufacturing-controls.json').then(function (r) { return r.json(); }),
+      ])
+        .then(function (parts) {
+          var data = parts[1];
           allControls = data.controls || [];
           initCounts();
           render();
@@ -663,15 +667,7 @@
       // ── Mapping display ───────────────────────────────────────────────
       function renderMappings(mappings) {
         if (!mappings) return '';
-        var SKIP = ['N/A', 'TBD', 'n/a', 'tbd', 'mapping_status_note'];
-        var tags = '';
-        Object.keys(mappings).forEach(function (key) {
-          if (SKIP.indexOf(key) !== -1) return;
-          var val = mappings[key];
-          if (!val || val === 'N/A' || val.indexOf('TBD') !== -1) return;
-          tags += '<span class="mapping-tag">' + escHtml(fmtLabel(key)) + ': ' + escHtml(val) + '</span>';
-        });
-        return tags;
+        return RegulationMappings.renderMappingTags(mappings, escHtml);
       }
 
       function renderIec62443Sls(sls) {

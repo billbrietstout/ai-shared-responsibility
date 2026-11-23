@@ -3,7 +3,7 @@
   "uuid": "407b54ff-672d-5f71-85da-afa2c36d6d00",
   "metadata": {
    "title": "CoSAI AI SRF — Healthcare Vertical Profile (Proposed Extension)",
-   "last-modified": "2026-09-02T20:00:57+00:00",
+   "last-modified": "2026-11-23T19:37:28+00:00",
    "version": "0.1.0",
    "oscal-version": "1.2.2",
    "props": [
@@ -26,6 +26,11 @@
      "name": "regulatory-driver",
      "ns": "https://aisharedresponsibility.com/ns/oscal",
      "value": "aicm"
+    },
+    {
+     "name": "regulatory-driver",
+     "ns": "https://aisharedresponsibility.com/ns/oscal",
+     "value": "cis"
     },
     {
      "name": "regulatory-driver",
@@ -86,52 +91,57 @@
     {
      "href": "#97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
      "rel": "reference",
-     "text": "CSA AI Controls Matrix"
+     "text": "CSA AICM"
+    },
+    {
+     "href": "#4cfc3edb-2b2b-5005-b908-1108c74eb9f2",
+     "rel": "reference",
+     "text": "CIS Controls"
     },
     {
      "href": "#51bbabe9-02b8-5813-994d-891f4c95ef21",
      "rel": "reference",
-     "text": "EU Artificial Intelligence Act (Regulation (EU) 2024/1689)"
+     "text": "EU AI Act"
     },
     {
      "href": "#5c236a56-0fd8-52fc-880b-5e213d233a3f",
      "rel": "reference",
-     "text": "FDA Predetermined Change Control Plan Guidance"
+     "text": "FDA PCCP"
     },
     {
      "href": "#df7383c9-314e-55e0-97c8-40d19485fcd7",
      "rel": "reference",
-     "text": "FDA Total Product Lifecycle for AI/ML-Based SaMD"
+     "text": "FDA TPLC"
     },
     {
      "href": "#8d9146e5-7a72-5eac-a274-e74a728227e7",
      "rel": "reference",
-     "text": "HIPAA (Health Insurance Portability and Accountability Act)"
+     "text": "HIPAA"
     },
     {
      "href": "#8670371b-4bcd-57ff-860c-f76b86fe9aef",
      "rel": "reference",
-     "text": "IEC 62304 — Medical Device Software Lifecycle Processes"
+     "text": "IEC 62304"
     },
     {
      "href": "#9b4bdb6c-5956-583c-a67b-554142092ad9",
      "rel": "reference",
-     "text": "ISO 14971 — Application of Risk Management to Medical Devices"
+     "text": "ISO 14971"
     },
     {
      "href": "#c00b1cec-7990-5779-b1cf-10a2e792f026",
      "rel": "reference",
-     "text": "NIST AI Risk Management Framework"
+     "text": "NIST AI RMF"
     },
     {
      "href": "#8e4fc90b-6135-5c7a-81da-30efe01e36ad",
      "rel": "reference",
-     "text": "ONC HTI-1 Final Rule (45 CFR 170.315)"
+     "text": "ONC HTI-1"
     },
     {
      "href": "#c403b49d-9023-519a-a9f4-fefbab79a3ce",
      "rel": "reference",
-     "text": "OWASP Top 10 for Large Language Model Applications"
+     "text": "OWASP LLM Top 10"
     }
    ],
    "remarks": "The FDA's January 2025 draft guidance on lifecycle management for AI-enabled device software functions (TPLC) and the August 2025 final guidance on Predetermined Change Control Plans establish the primary governance framework for AI-enabled medical devices. PCCP crosswalk references in this schema follow the five guiding principles published by FDA, Health Canada, and MHRA in 2023. ONC's HTI-1 Final Rule (effective January 2025) adds algorithmic transparency requirements for AI embedded in certified health IT. The EU AI Act classifies clinical AI as high-risk with full compliance obligations from August 2026. This schema operationalizes those frameworks across all five SRF layers. Industry vertical schemas are independently proposed extensions and are not part of the official CoSAI release. Mapping IDs marked TBD are unverified and are carried verbatim as props, never as links; do not substitute invented IDs. Generated from data/*-controls.json."
@@ -444,8 +454,24 @@
   "back-matter": {
    "resources": [
     {
+     "uuid": "4cfc3edb-2b2b-5005-b908-1108c74eb9f2",
+     "title": "CIS Controls",
+     "props": [
+      {
+       "name": "framework-key",
+       "ns": "https://aisharedresponsibility.com/ns/oscal",
+       "value": "cis"
+      }
+     ],
+     "rlinks": [
+      {
+       "href": "https://www.cisecurity.org/controls"
+      }
+     ]
+    },
+    {
      "uuid": "97cd3d25-cf40-53a0-9616-8ce8875cdc2f",
-     "title": "CSA AI Controls Matrix",
+     "title": "CSA AICM",
      "props": [
       {
        "name": "framework-key",
@@ -461,7 +487,7 @@
     },
     {
      "uuid": "51bbabe9-02b8-5813-994d-891f4c95ef21",
-     "title": "EU Artificial Intelligence Act (Regulation (EU) 2024/1689)",
+     "title": "EU AI Act",
      "props": [
       {
        "name": "framework-key",
@@ -477,7 +503,7 @@
     },
     {
      "uuid": "5c236a56-0fd8-52fc-880b-5e213d233a3f",
-     "title": "FDA Predetermined Change Control Plan Guidance",
+     "title": "FDA PCCP",
      "props": [
       {
        "name": "framework-key",
@@ -493,7 +519,7 @@
     },
     {
      "uuid": "df7383c9-314e-55e0-97c8-40d19485fcd7",
-     "title": "FDA Total Product Lifecycle for AI/ML-Based SaMD",
+     "title": "FDA TPLC",
      "props": [
       {
        "name": "framework-key",
@@ -509,7 +535,7 @@
     },
     {
      "uuid": "8d9146e5-7a72-5eac-a274-e74a728227e7",
-     "title": "HIPAA (Health Insurance Portability and Accountability Act)",
+     "title": "HIPAA",
      "props": [
       {
        "name": "framework-key",
@@ -519,13 +545,13 @@
      ],
      "rlinks": [
       {
-       "href": "https://www.hhs.gov/hipaa/index.html"
+       "href": "https://www.hhs.gov/hipaa/for-professionals/security/"
       }
      ]
     },
     {
      "uuid": "8670371b-4bcd-57ff-860c-f76b86fe9aef",
-     "title": "IEC 62304 — Medical Device Software Lifecycle Processes",
+     "title": "IEC 62304",
      "props": [
       {
        "name": "framework-key",
@@ -541,7 +567,7 @@
     },
     {
      "uuid": "9b4bdb6c-5956-583c-a67b-554142092ad9",
-     "title": "ISO 14971 — Application of Risk Management to Medical Devices",
+     "title": "ISO 14971",
      "props": [
       {
        "name": "framework-key",
@@ -557,7 +583,7 @@
     },
     {
      "uuid": "c00b1cec-7990-5779-b1cf-10a2e792f026",
-     "title": "NIST AI Risk Management Framework",
+     "title": "NIST AI RMF",
      "props": [
       {
        "name": "framework-key",
@@ -573,7 +599,7 @@
     },
     {
      "uuid": "8e4fc90b-6135-5c7a-81da-30efe01e36ad",
-     "title": "ONC HTI-1 Final Rule (45 CFR 170.315)",
+     "title": "ONC HTI-1",
      "props": [
       {
        "name": "framework-key",
@@ -589,7 +615,7 @@
     },
     {
      "uuid": "c403b49d-9023-519a-a9f4-fefbab79a3ce",
-     "title": "OWASP Top 10 for Large Language Model Applications",
+     "title": "OWASP LLM Top 10",
      "props": [
       {
        "name": "framework-key",
