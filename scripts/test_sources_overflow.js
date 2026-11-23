@@ -90,7 +90,10 @@ async function main() {
       );
     }
     await page.evaluate(() => {
-      const el = document.getElementById("src-12") || document.querySelector('a[href*="74296"]');
+      const el =
+        document.getElementById("src-5") ||
+        document.getElementById("src-12") ||
+        document.querySelector('a[href*="n221p.pdf"]');
       if (el) el.scrollIntoView({ block: "center" });
     });
     await new Promise((r) => setTimeout(r, 300));
