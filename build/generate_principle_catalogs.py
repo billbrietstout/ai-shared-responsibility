@@ -628,13 +628,23 @@ GAP_RE = re.compile(r"^\*\*(Gap[^:]*):\*\*\s*(.*?)\s*$")
 # Not a row in the source table and not a paper code.
 EDITORIAL_POSITION = "editorial-position"
 EDITORIAL_CITE = "editorial position"
+MD_SOURCE_LINK = re.compile(r"\[([A-Z][A-Z0-9-]+)\]\([^|\)]+\)")
+
+
+def denude_md_source_links(text: str) -> str:
+    """Strip synthesis markdown source links before catalog statements are stored."""
+    return MD_SOURCE_LINK.sub(r"\1", text)
 # A source row is Code, Title, Organization, Date, Link.
 # Conference talk rows may add a Claims cell after the link. That cell repeats
 # principle statements that cite the talk. It is not parsed into the catalog,
 # so the statements stay the only copy. A talk with no citing statement shows
 # MISSING_TALK_CLAIM in the cell. The trailing .* lets that cell hold pipes.
 SRC_ROW_RE = re.compile(
-    r"^\| ([A-Z][A-Z0-9-]+) \| (.+?) \| (.+?) \| (.+?) \| (\S+) \|.*$", re.M)
+    r'^\| (?:<a id="src-([A-Z][A-Z0-9-]+)"></a>)?'
+    r'(?:\[([A-Z][A-Z0-9-]+)\]\([^|\)]+\)|([A-Z][A-Z0-9-]+)) \| '
+    r"(.+?) \| (.+?) \| (.+?) \| (\S+) \|.*$",
+    re.M,
+)
 
 # Claims column text when no principle cites the talk. Do not invent a claim.
 MISSING_TALK_CLAIM = "Not yet recorded"
@@ -703,7 +713,10 @@ def parse_synthesis():
 
     wp_map = load_source_wp_map()
     sources = {}
-    for code, title, org, date, link in SRC_ROW_RE.findall(md):
+    for anchor_code, link_code, plain_code, title, org, date, link in SRC_ROW_RE.findall(
+        md
+    ):
+        code = anchor_code or link_code or plain_code
         entry = {"title": title.strip(), "org": org.strip(),
                  "date": date.strip(), "url": link.strip()}
         meta = wp_map.get(code)
@@ -741,7 +754,8 @@ def parse_synthesis():
     def flush_bullet():
         nonlocal bullet_buf, mode
         if bullet_buf and cur:
-            sections[cur]["bullets"].append("\n".join(bullet_buf).strip())
+            joined = "\n".join(bullet_buf).strip()
+            sections[cur]["bullets"].append(denude_md_source_links(joined))
         bullet_buf = []
         if mode == "bullet":
             mode = None
@@ -752,9 +766,11 @@ def parse_synthesis():
         if gap_lines is None:
             sections[cur]["gap"] = None
         else:
-            sections[cur]["gap"] = clean_note_lines(gap_lines)
+            sections[cur]["gap"] = denude_md_source_links(clean_note_lines(gap_lines))
         if editorial_lines is not None:
-            sections[cur]["editorial_position"] = clean_note_lines(editorial_lines)
+            sections[cur]["editorial_position"] = denude_md_source_links(
+                clean_note_lines(editorial_lines)
+            )
 
     for line in md.split("\n"):
         m = SECTION_RE.match(line)

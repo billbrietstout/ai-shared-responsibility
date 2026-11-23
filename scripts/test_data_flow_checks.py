@@ -808,15 +808,16 @@ class TalkClaimsColumnTest(unittest.TestCase):
         )
         parsed = mod.SRC_ROW_RE.match(with_claim)
         self.assertIsNotNone(parsed)
-        self.assertEqual(parsed.group(1), "UNPROMPTED2-X")
-        self.assertEqual(parsed.group(3), "Event name")
-        self.assertEqual(parsed.group(5), "https://unpromptedcon.org")
+        code = parsed.group(1) or parsed.group(2) or parsed.group(3)
+        self.assertEqual(code, "UNPROMPTED2-X")
+        self.assertEqual(parsed.group(5), "Event name")
+        self.assertEqual(parsed.group(7), "https://unpromptedcon.org")
         plain = (
             "| CIS-AGENTS | Title | Org | April 20, 2026 | "
             "https://example.com/a |"
         )
         parsed = mod.SRC_ROW_RE.match(plain)
-        self.assertEqual(parsed.group(5), "https://example.com/a")
+        self.assertEqual(parsed.group(7), "https://example.com/a")
 
     def test_published_tables_repeat_recorded_claims_only(self):
         mod = self.catalog_module()
@@ -908,7 +909,7 @@ class TalkClaimsColumnTest(unittest.TestCase):
         body = re.search(r"<tbody>(.*)</tbody>", table.group(1), re.S).group(1)
         order = []
         claims = {}
-        for row in re.findall(r"<tr>(.*?)</tr>", body, re.S):
+        for row in re.findall(r"<tr[^>]*>(.*?)</tr>", body, re.S):
             cells = re.findall(r"<td([^>]*)>(.*?)</td>", row, re.S)
             self.assertEqual(len(cells), 6, row[:80])
             code = re.sub(r"<[^>]+>", "", cells[0][1]).strip()
@@ -944,8 +945,8 @@ class TalkClaimsColumnTest(unittest.TestCase):
                 continue
             parts = [part.strip() for part in line.strip().strip("|").split("|")]
             self.assertGreaterEqual(len(parts), 6, line)
-            code = parts[0]
-            self.assertEqual(parsed.group(5), parts[4])
+            code = parsed.group(1) or parsed.group(2) or parsed.group(3)
+            self.assertEqual(parsed.group(7), parts[4])
             cell = parts[5]
             if cell == mod.MISSING_TALK_CLAIM:
                 items = []
