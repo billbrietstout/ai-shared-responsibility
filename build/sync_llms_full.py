@@ -3,19 +3,19 @@
 data/<vertical>-controls.json.
 
 llms-full.txt is hand-maintained prose, but each control block ends with a
-verbatim copy of that control's mappings object. Those copies drifted from the
-source data: citation text was revised, separators changed, and whole mapping
-keys were added without the copies following. An agent that retrieves
-llms-full.txt should get the same citations as one that reads /data, so this
-script treats the JSON as authoritative and rewrites only the mapping lines.
-Everything else in the file is left byte for byte alone.
+readable rendering of that control's mappings object (markdown links to
+instruments in data/regulations.json). Citation text still comes from the JSON;
+only mapping_key prefixes are replaced with instrument short names and URLs.
 
-Run after editing any vertical control schema, then run build/verify_pages.py.
+Run after editing any vertical control schema or regulations.json, then run
+build/verify_pages.py.
 """
 import json
 import os
 import re
 import sys
+
+from regulation_citations import load_regulations, mapping_lines_sorted
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TARGET = os.path.join(ROOT, "llms-full.txt")
@@ -34,7 +34,7 @@ VERTICAL_HEADINGS = {
 HEADING = re.compile(r"^#{2,5} ")
 SECTION = re.compile(r"^### (.+?)\s*$")
 CONTROL = re.compile(r"^##### (SRF-[A-Z0-9-]+):")
-MAPPING_LINE = re.compile(r"^  - [a-z0-9_]+: ")
+MAPPING_LINE = re.compile(r"^  - ")
 MAPPINGS_HEAD = "Regulatory mappings:"
 
 
@@ -46,12 +46,6 @@ def load_controls():
             payload = json.load(fh)
         out[slug] = {c["id"]: c for c in payload["controls"]}
     return out
-
-
-def mapping_lines(control):
-    mappings = control.get("mappings") or {}
-    return [f"  - {key}: {value}" for key, value in mappings.items()
-            if key != "mapping_status_note"]
 
 
 def find_blocks(lines):
@@ -78,6 +72,7 @@ def find_blocks(lines):
 
 
 def main():
+    reg_by_key = load_regulations()
     with open(TARGET, encoding="utf-8") as fh:
         lines = fh.read().split("\n")
 
@@ -91,9 +86,8 @@ def main():
         return 1
 
     rewritten = inserted = 0
-    # Walk backwards so earlier line numbers stay valid as we splice.
     for start, end, vertical, cid in reversed(blocks):
-        wanted = mapping_lines(controls[vertical][cid])
+        wanted = mapping_lines_sorted(controls[vertical][cid], reg_by_key)
         body = lines[start:end]
         head = next((i for i, l in enumerate(body)
                      if l.strip() == MAPPINGS_HEAD), None)

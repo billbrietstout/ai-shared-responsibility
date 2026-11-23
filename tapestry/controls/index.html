@@ -513,6 +513,7 @@
 
     <site-footer></site-footer>
     <script src="/shared/components.js"></script>
+    <script src="/shared/regulation-mappings.js"></script>
     <script>
 (function () {
   "use strict";
@@ -552,9 +553,11 @@
     return String(slug).charAt(0).toUpperCase() + String(slug).slice(1);
   }
 
-  fetch("/data/tapestry-controls.json")
-    .then(r => r.json())
-    .then(data => {
+  Promise.all([
+    RegulationMappings.load(),
+    fetch("/data/tapestry-controls.json").then(r => r.json()),
+  ])
+    .then(([, data]) => {
       schema = data;
       allControls = data.controls;
       buildTierTable();
@@ -699,11 +702,7 @@
     const tier = tierById(t.disclosure_tier);
     const pclass = (schema.property_classes || {})[c.property_class] || {};
 
-    const mappingRows = Object.entries(c.mappings || {})
-      .map(([k, v]) => `<div class="detail-field" style="grid-column:1/-1">
-        <div class="detail-field__label">${escHtml(k.replace(/_/g, " "))}</div>
-        <div class="detail-field__value">${escHtml(v)}</div>
-      </div>`).join("");
+    const mappingRows = RegulationMappings.renderMappingRows(c.mappings, escHtml);
 
     const jb = c.jurisdiction_binding;
     const jurisHTML = jb ? `
