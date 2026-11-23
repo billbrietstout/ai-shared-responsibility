@@ -265,19 +265,66 @@ def format_plain(mapping_key: str, value: str, reg_by_key: dict[str, dict]) -> s
     return f"{label}, {v}"
 
 
+def _markdown_cite_segments(
+    mapping_key: str,
+    value: str,
+    reg_by_key: dict[str, dict],
+    pinpoints: dict | None = None,
+) -> list[str]:
+    """One markdown link segment per citation token (multi-cite cells)."""
+    label = instrument_label(mapping_key, reg_by_key)
+    cites = split_citations(mapping_key, value)
+    pinpoints = pinpoints if pinpoints is not None else load_pinpoints()
+    parts = []
+    for cite in cites:
+        text = f"{label}, {cite}"
+        url = citation_pinpoint_url(mapping_key, cite, reg_by_key, pinpoints)
+        if url:
+            parts.append(f"[{text}]({url})")
+        else:
+            parts.append(text)
+    return parts
+
+
 def format_markdown_line(
     mapping_key: str,
     value: str,
     reg_by_key: dict[str, dict],
     pinpoints: dict | None = None,
 ) -> str:
-    text = format_plain(mapping_key, value, reg_by_key)
-    if is_placeholder_value((value or "").strip()):
-        return f"  - {text}"
-    url = mapping_pinpoint_url(mapping_key, value, reg_by_key, pinpoints)
-    if url:
-        return f"  - [{text}]({url})"
-    return f"  - {text}"
+    v = (value or "").strip()
+    if is_placeholder_value(v):
+        return f"  - {format_plain(mapping_key, value, reg_by_key)}"
+    parts = _markdown_cite_segments(mapping_key, value, reg_by_key, pinpoints)
+    if len(parts) <= 1:
+        return f"  - {parts[0]}" if parts else f"  - {instrument_label(mapping_key, reg_by_key)}"
+    return f"  - {'; '.join(parts)}"
+
+
+def format_html_items(
+    mapping_key: str,
+    value: str,
+    reg_by_key: dict[str, dict],
+    esc_html,
+    pinpoints: dict | None = None,
+) -> list[str]:
+    v = (value or "").strip()
+    if is_placeholder_value(v):
+        label = esc_html(instrument_label(mapping_key, reg_by_key))
+        return [f'<span class="mapping-tag">{label}: {esc_html(v)}</span>']
+    pinpoints = pinpoints if pinpoints is not None else load_pinpoints()
+    items = []
+    for cite in split_citations(mapping_key, value):
+        text = esc_html(f"{instrument_label(mapping_key, reg_by_key)}, {cite}")
+        url = citation_pinpoint_url(mapping_key, cite, reg_by_key, pinpoints)
+        if url:
+            items.append(
+                f'<a class="mapping-tag mapping-tag--linked" href="{esc_html(url)}" '
+                f'target="_blank" rel="noopener">{text}</a>'
+            )
+        else:
+            items.append(f'<span class="mapping-tag">{text}</span>')
+    return items
 
 
 def format_html_item(
@@ -287,21 +334,9 @@ def format_html_item(
     esc_html,
     pinpoints: dict | None = None,
 ) -> str:
-    text = format_plain(mapping_key, value, reg_by_key)
-    url = mapping_pinpoint_url(mapping_key, value, reg_by_key, pinpoints)
-    body = esc_html(text)
-    if url and not is_placeholder_value((value or "").strip()):
-        return (
-            f'<a class="mapping-tag mapping-tag--linked" href="{esc_html(url)}" '
-            f'target="_blank" rel="noopener">{body}</a>'
-        )
-    if url:
-        label = esc_html(instrument_label(mapping_key, reg_by_key))
-        return (
-            f'<span class="mapping-tag">{label}: '
-            f'{esc_html((value or "").strip())}</span>'
-        )
-    return f'<span class="mapping-tag">{body}</span>'
+    return "".join(
+        format_html_items(mapping_key, value, reg_by_key, esc_html, pinpoints)
+    )
 
 
 def mapping_lines_for_control(

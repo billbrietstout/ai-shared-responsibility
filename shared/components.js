@@ -28,6 +28,7 @@ const FOOTER_LINKS = [
   { label: "Compare",       href: "/compare/" },
   { label: "Data & agents", href: "/developers/" },
   { label: "Regulations",   href: "/regulations/" },
+  { label: "Sources",       href: "/sources/" },
   { label: "Presentation",  href: "/presentation/unprompted-oct2026/" },
   { label: "About",         href: "/about/" },
   { label: "Changelog",     href: "/changelog/" },

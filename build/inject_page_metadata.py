@@ -106,6 +106,12 @@ def classify(rel):
         return "comparison", ["srf.framework.cosai-srf"] + ext_frameworks()
     if top == "regulations" and len(seg) == 1:
         return "regulations", ext_frameworks()
+    if rel == "sources":
+        return "reference", [
+            "srf.framework.cosai-srf",
+            "ext.framework.nist-ai-rmf",
+            "ext.framework.eu-ai-act",
+        ]
     if rel == "regulations/discovery":
         # Canonical copy is /tools/regulation-discovery/; this path redirects.
         return "redirect", []

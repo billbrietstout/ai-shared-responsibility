@@ -33,6 +33,20 @@ jobs:
       - name: Regulation citation format tests
         run: python3 build/test_regulation_citations.py
 
+      - name: Sources catalog tests
+        run: python3 build/test_sources_catalog.py
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+
+      - name: Install browser test deps for /sources overflow
+        working-directory: tools/relationship-map/tests
+        run: npm ci
+
+      - name: /sources/ mobile overflow (375px)
+        run: node scripts/test_sources_overflow.js
+
       - name: Attack inventory
         run: python3 build/verify_attack_inventory.py
 
@@ -51,9 +65,11 @@ jobs:
       - name: Regeneration drift gate
         run: |
           python3 build/generate_knowledge_layer.py
+          python3 build/generate_sources.py
           python3 build/generate_whitepaper_inventory.py
           python3 build/inject_page_metadata.py
           python3 build/inject_chunk_markers.py
+          python3 build/sync_llms_full.py
           if ! git diff --quiet; then
             echo "::error::Generated artifacts or page markers are out of date. Run the build/ scripts locally and commit the result."
             git --no-pager diff --stat
