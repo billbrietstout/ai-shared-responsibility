@@ -115,6 +115,26 @@ the verifier fails on any undeclared miss or on a stale declaration. Regulation
 `srf.vertical.*`. Prefer `/ontology/edges.json` for multi-hop queries; do not
 hand-edit a parallel edges file under `/data/`.
 
+## Cited sources catalog
+
+`generate_sources.py` aggregates regulations, security-principles frameworks,
+agentic synthesis sources, and prior-art references into:
+
+| Output | Purpose |
+|---|---|
+| `data/sources.json` | Unified source list with stable anchor ids |
+| `/sources/index.html` | Reader-facing grouped catalog with JSON-LD ItemList |
+| `export/sources.csl.json` | CSL-JSON for reference managers |
+| `export/sources.bib` | BibTeX export |
+
+```bash
+python3 build/generate_sources.py
+python3 build/test_sources_catalog.py
+```
+
+Run after editing `data/regulations.json`, `data/security-principles.json`,
+`data/ai-agentic-principles.json`, or `framework/prior-art/index.html`.
+
 ## Regenerate
 
 ```bash

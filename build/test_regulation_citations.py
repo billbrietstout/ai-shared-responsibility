@@ -79,12 +79,24 @@ class RegulationCitationsTest(unittest.TestCase):
         self.assertEqual(line, "  - EU AI Act: N/A")
         self.assertNotIn("](", line)
 
-    def test_multi_cite_uses_first_pinpoint(self):
+    def test_multi_cite_markdown_one_link_per_cite(self):
+        value = (
+            "45 CFR §164.308(b): Business associate contracts; "
+            "45 CFR §164.502(e): Disclosures to business associates"
+        )
+        line = rc.format_markdown_line("hipaa", value, self.reg, self.pinpoints)
+        self.assertIn("](https://www.ecfr.gov/current/title-45/section-164.308)", line)
+        self.assertIn("](https://www.ecfr.gov/current/title-45/section-164.502)", line)
+        self.assertEqual(line.count("]("), 2)
+
+    def test_eu_multi_cite_markdown(self):
         value = (
             "Article 10 (data governance); Article 9 (Risk management system)"
         )
-        url = rc.mapping_pinpoint_url("eu_ai_act", value, self.reg, self.pinpoints)
-        self.assertIn("#art_10", url)
+        line = rc.format_markdown_line("eu_ai_act", value, self.reg, self.pinpoints)
+        self.assertIn("#art_10)", line)
+        self.assertIn("#art_9)", line)
+        self.assertEqual(line.count("]("), 2)
 
     def test_iso_catalog_no_fragment(self):
         value = "ISO/IEC 42001:2023 (edition-level)"

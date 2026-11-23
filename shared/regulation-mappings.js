@@ -187,32 +187,55 @@
     });
   }
 
+  function citationSegments(key, value) {
+    const v = String(value || "").trim();
+    if (isMappingPending(v)) {
+      return [{ text: readerMappingText(key, value), url: documentUrl(key), pending: true }];
+    }
+    if (isPlaceholder(v)) {
+      const label = instrumentLabel(key);
+      return [{ text: `${label}: ${v}`, url: "", pending: false }];
+    }
+    return splitCitations(key, v).map((cite) => {
+      const text = `${instrumentLabel(key)}, ${cite}`;
+      const url = citationPinpointUrl(key, cite);
+      return { text, url, pending: false };
+    });
+  }
+
   function renderMappingTags(mappings, escHtml) {
     return readerEntries(mappings)
-      .map(([k, v]) => {
-        const pending = isMappingPending(v);
-        const text = readerMappingText(k, v);
-        const url = pending ? documentUrl(k) : mappingPinpointUrl(k, v);
-        if (url) {
-          return (
-            `<a class="mapping-tag mapping-tag--linked" href="${escHtml(url)}" ` +
-            `target="_blank" rel="noopener">${escHtml(text)}</a>`
-          );
-        }
-        return `<span class="mapping-tag">${escHtml(text)}</span>`;
-      })
+      .flatMap(([k, v]) =>
+        citationSegments(k, v).map((seg) => {
+          const linkable = seg.url && (seg.pending || !isPlaceholder(v));
+          if (linkable) {
+            return (
+              `<a class="mapping-tag mapping-tag--linked" href="${escHtml(seg.url)}" ` +
+              `target="_blank" rel="noopener">${escHtml(seg.text)}</a>`
+            );
+          }
+          return `<span class="mapping-tag">${escHtml(seg.text)}</span>`;
+        })
+      )
       .join("");
   }
 
   function renderMappingRows(mappings, escHtml) {
     return readerEntries(mappings)
       .map(([k, v]) => {
-        const pending = isMappingPending(v);
-        const text = readerMappingText(k, v);
-        const url = pending ? documentUrl(k) : mappingPinpointUrl(k, v);
-        const valueHtml = url
-          ? `<a class="mapping-tag mapping-tag--linked" href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(text)}</a>`
-          : escHtml(text);
+        const segs = citationSegments(k, v);
+        const valueHtml = segs
+          .map((seg) => {
+            const linkable = seg.url && (seg.pending || !isPlaceholder(v));
+            if (linkable) {
+              return (
+                `<a class="mapping-tag mapping-tag--linked" href="${escHtml(seg.url)}" ` +
+                `target="_blank" rel="noopener">${escHtml(seg.text)}</a>`
+              );
+            }
+            return escHtml(seg.text);
+          })
+          .join("; ");
         return `<div class="detail-field">
           <div class="detail-field__label">Regulation</div>
           <div class="detail-field__value">${valueHtml}</div>
