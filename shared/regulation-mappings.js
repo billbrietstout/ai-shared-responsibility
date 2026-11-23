@@ -1,6 +1,7 @@
 /**
  * Readable, linked regulatory mapping citations for vertical control pages.
- * Loads mapping_key → { short, url } from /data/regulations.json once.
+ * Loads mapping_key → { short, url } from /data/regulations.json and pinpoint
+ * rules from /data/regulation-pinpoints.json once.
  */
 (function (global) {
   const LOCAL_LABELS = {
@@ -10,17 +11,92 @@
     work_group_charter: "Work group charter",
   };
 
+  const MULTI_CITE_KEYS = new Set([
+    "eu_ai_act",
+    "finos_aigf",
+    "sr26_2",
+    "aicm",
+    "m_25_21",
+    "m_25_22",
+    "fedramp_20x_ksi",
+    "naic_model_bulletin",
+    "naic_eval_tool",
+    "co_reg_10_1_1",
+    "nydfs_cl7",
+    "owasp_llm",
+    "dod_rai_strategy",
+    "dodi_5000_90",
+    "dodi_5000_89",
+    "cc_srg",
+    "cmmc_2_0",
+    "nist_ai_rmf",
+  ]);
+
   let regByKey = null;
+  let pinpointByKey = null;
+  let anchorAllow = null;
   let loadPromise = null;
 
+  function eurlexAnchor(citation) {
+    const cite = String(citation || "").trim();
+    let m = cite.match(/^Article\s+(\d+)/i);
+    if (m) return "art_" + m[1];
+    m = cite.match(/^Annex\s+([IVXLC]+)/i);
+    if (m) return "anx_" + m[1].toUpperCase();
+    return null;
+  }
+
+  function splitCitations(key, value) {
+    const v = String(value || "").trim();
+    if (!v) return [];
+    if (MULTI_CITE_KEYS.has(key) && v.includes("; ")) {
+      return v.split("; ").map((p) => p.trim()).filter(Boolean);
+    }
+    return [v];
+  }
+
+  function documentUrl(key) {
+    const hit = regByKey && regByKey[key];
+    return (hit && hit.url) || "";
+  }
+
+  function citationPinpointUrl(key, citation) {
+    const inst = (pinpointByKey && pinpointByKey[key]) || {};
+    const doc = documentUrl(key);
+    const resolver = inst.resolver || "document_only";
+    if (resolver === "iso_catalog" || resolver === "document_only") return doc;
+    if (resolver === "eurlex") {
+      const base = (inst.html_base || doc).replace(/#$/, "");
+      const anchor = eurlexAnchor(citation);
+      if (!anchor) return doc;
+      const allow = anchorAllow && anchorAllow[key];
+      if (allow && !allow.has(anchor)) return doc;
+      return base + "#" + anchor;
+    }
+    return doc;
+  }
+
+  function mappingPinpointUrl(key, value) {
+    const cites = splitCitations(key, value);
+    if (!cites.length) return documentUrl(key);
+    const doc = documentUrl(key);
+    for (let i = 0; i < cites.length; i++) {
+      const url = citationPinpointUrl(key, cites[i]);
+      if (url && url !== doc) return url;
+    }
+    return citationPinpointUrl(key, cites[0]);
+  }
+
   function loadRegulations() {
-    if (regByKey) return Promise.resolve(regByKey);
+    if (regByKey && pinpointByKey) return Promise.resolve(regByKey);
     if (loadPromise) return loadPromise;
-    loadPromise = fetch("/data/regulations.json")
-      .then((r) => r.json())
-      .then((data) => {
+    loadPromise = Promise.all([
+      fetch("/data/regulations.json").then((r) => r.json()),
+      fetch("/data/regulation-pinpoints.json").then((r) => r.json()),
+    ])
+      .then(([regData, pinData]) => {
         regByKey = {};
-        (data.items || []).forEach((item) => {
+        (regData.items || []).forEach((item) => {
           if (item.mapping_key) {
             regByKey[item.mapping_key] = {
               short: item.short || item.name,
@@ -28,10 +104,19 @@
             };
           }
         });
+        pinpointByKey = (pinData && pinData.instruments) || {};
+        anchorAllow = {};
+        Object.keys(pinpointByKey).forEach((key) => {
+          const inst = pinpointByKey[key];
+          if (inst.verified_anchors) {
+            anchorAllow[key] = new Set(inst.verified_anchors);
+          }
+        });
         return regByKey;
       })
       .catch(() => {
-        regByKey = {};
+        regByKey = regByKey || {};
+        pinpointByKey = pinpointByKey || {};
         return regByKey;
       });
     return loadPromise;
@@ -62,7 +147,7 @@
       .filter(([k, v]) => !skip.has(k) && v != null && v !== "")
       .map(([k, v]) => {
         const text = formatPlain(k, v);
-        const url = regByKey && regByKey[k] && regByKey[k].url;
+        const url = !isPlaceholder(v) ? mappingPinpointUrl(k, v) : "";
         if (url && !isPlaceholder(v)) {
           return (
             `<a class="mapping-tag mapping-tag--linked" href="${escHtml(url)}" ` +
@@ -81,7 +166,7 @@
       .filter(([k, v]) => !skip.has(k) && v != null && String(v).trim() !== "")
       .map(([k, v]) => {
         const text = formatPlain(k, v);
-        const url = regByKey && regByKey[k] && regByKey[k].url;
+        const url = !isPlaceholder(v) ? mappingPinpointUrl(k, v) : "";
         const valueHtml =
           url && !isPlaceholder(v)
             ? `<a href="${escHtml(url)}" target="_blank" rel="noopener">${escHtml(text)}</a>`
@@ -99,5 +184,6 @@
     renderMappingTags,
     renderMappingRows,
     formatPlain,
+    mappingPinpointUrl,
   };
 })(typeof window !== "undefined" ? window : globalThis);

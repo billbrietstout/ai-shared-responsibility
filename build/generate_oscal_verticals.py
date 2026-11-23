@@ -36,7 +36,13 @@ import re
 import sys
 import uuid
 
-from regulation_citations import load_regulations
+from regulation_citations import (
+    citation_pinpoint_url,
+    document_url,
+    load_pinpoints,
+    load_regulations,
+    split_citations,
+)
 
 NS = "https://aisharedresponsibility.com/ns/oscal"
 SITE = "https://aisharedresponsibility.com"
@@ -205,23 +211,47 @@ def parse_eu_ai_act(value):
 
 
 class ResourceRegistry:
-    """Lazily-built back-matter resources, one per framework key."""
+    """Lazily-built back-matter resources keyed by pinpoint URL when available."""
 
-    def __init__(self):
+    def __init__(self, reg_by_key, pinpoints):
+        self.reg_by_key = reg_by_key
+        self.pinpoints = pinpoints
         self.used = {}
+
+    def _store(self, cache_key, resource):
+        if cache_key not in self.used:
+            self.used[cache_key] = resource
+        return self.used[cache_key]["uuid"]
 
     def ref(self, key):
         if key not in FRAMEWORKS:
             return None
-        if key not in self.used:
-            title, url = FRAMEWORKS[key]
-            self.used[key] = {
+        title, _ignored = FRAMEWORKS[key]
+        url = document_url(key, self.reg_by_key) or _ignored
+        return self._store(
+            ("doc", key),
+            {
                 "uuid": det_uuid("resource", key),
                 "title": title,
                 "props": [prop("framework-key", key)],
                 "rlinks": [{"href": url}],
-            }
-        return self.used[key]["uuid"]
+            },
+        )
+
+    def ref_for_citation(self, key, cite):
+        if key not in FRAMEWORKS:
+            return None
+        url = citation_pinpoint_url(key, cite, self.reg_by_key, self.pinpoints)
+        title = link_text(key, cite)
+        return self._store(
+            ("cite", key, url),
+            {
+                "uuid": det_uuid("resource", key, url, cite),
+                "title": title,
+                "props": [prop("framework-key", key), prop("citation", cite)],
+                "rlinks": [{"href": url}],
+            },
+        )
 
     def resources(self, keys=None):
         if keys is None:
@@ -304,33 +334,25 @@ def convert_control(ctl, vshort, vslug, stage_field, registry):
                 props.append(prop(f"mapping-{kebab(mkey)}", mval,
                                   **{"class": "unresolved"}))
                 continue
-            rid = registry.ref(mkey)
             for c in citations:
-                links.append({
-                    "href": f"#{rid}",
-                    "rel": "reference",
-                    "text": link_text(mkey, c),
-                })
+                rid = registry.ref_for_citation(mkey, c)
+                if rid:
+                    links.append({
+                        "href": f"#{rid}",
+                        "rel": "reference",
+                        "text": link_text(mkey, c),
+                    })
             continue
-        rid = registry.ref(mkey)
-        if rid:
-            # finos_aigf and sr26_2 follow the same '; '-separated citation
-            # convention as eu_ai_act (documented in the vertical file's
-            # *_citation_format headers); one link per citation.
-            cites = ([x.strip() for x in mval.split("; ")]
-                     if mkey in ("finos_aigf", "sr26_2", "aicm", "m_25_21",
-                                 "m_25_22", "fedramp_20x_ksi",
-                                 "naic_model_bulletin", "naic_eval_tool",
-                                 "co_reg_10_1_1", "nydfs_cl7", "owasp_llm",
-                                 "dod_rai_strategy", "dodi_5000_90",
-                                 "dodi_5000_89", "cc_srg", "cmmc_2_0")
-                     else [str(mval)])
+        cites = split_citations(mkey, str(mval))
+        if cites and mkey in FRAMEWORKS:
             for cite in cites:
-                links.append({
-                    "href": f"#{rid}",
-                    "rel": "reference",
-                    "text": link_text(mkey, cite),
-                })
+                rid = registry.ref_for_citation(mkey, cite)
+                if rid:
+                    links.append({
+                        "href": f"#{rid}",
+                        "rel": "reference",
+                        "text": link_text(mkey, cite),
+                    })
         else:
             props.append(prop(f"mapping-{kebab(mkey)}", mval))
 
@@ -371,7 +393,10 @@ def convert_control(ctl, vshort, vslug, stage_field, registry):
 
 
 def build_catalog(root, now):
-    registry = ResourceRegistry()
+    reg_path = root / "data" / "regulations.json"
+    reg_by_key = load_regulations(str(reg_path))
+    pinpoints = load_pinpoints()
+    registry = ResourceRegistry(reg_by_key, pinpoints)
     layers = {}
     layer_meta = json.load(open(root / "data/layers.json"))
     layer_list = layer_meta["layers"] if isinstance(layer_meta, dict) else layer_meta
@@ -455,8 +480,8 @@ def build_catalog(root, now):
     return catalog, vertical_docs, control_index, registry
 
 
-def build_profile(vslug, vtitle, data, index, now):
-    registry = ResourceRegistry()
+def build_profile(vslug, vtitle, data, index, now, reg_by_key, pinpoints):
+    registry = ResourceRegistry(reg_by_key, pinpoints)
     mapping_keys = set()
     for ctl in data["controls"]:
         mapping_keys.update(k for k in ctl.get("mappings", {})
@@ -548,13 +573,17 @@ def main():
     now = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
 
     catalog, docs, index, _ = build_catalog(root, now)
+    reg_by_key = load_regulations(str(root / "data" / "regulations.json"))
+    pinpoints = load_pinpoints()
     out = root / "export" / CATALOG_FILE
     write_stable(out, catalog)
     print(f"wrote {out.relative_to(root)} "
           f"({sum(len(v) for v in index.values())} controls)")
 
     for vslug, vshort, vtitle, _ in VERTICALS:
-        profile = build_profile(vslug, vtitle, docs[vslug], index[vslug], now)
+        profile = build_profile(
+            vslug, vtitle, docs[vslug], index[vslug], now, reg_by_key, pinpoints
+        )
         pout = root / "export" / f"srf-{vslug}.profile.json"
         write_stable(pout, profile)
         print(f"wrote {pout.relative_to(root)} ({len(index[vslug])} controls)")
