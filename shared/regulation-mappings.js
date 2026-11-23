@@ -5,7 +5,7 @@
 (function (global) {
   const LOCAL_LABELS = {
     anti_capture_principle: "Anti-capture principle",
-    layers_split: "Layers split",
+    layers_split: "Layer assignment (federated consortium)",
     tap_adr: "Tapestry ADR",
     work_group_charter: "Work group charter",
   };

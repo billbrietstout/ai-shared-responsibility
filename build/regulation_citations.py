@@ -18,7 +18,7 @@ REGULATIONS_PATH = os.path.join(ROOT, "data", "regulations.json")
 # Vertical-only mapping keys with no regulations.json entry.
 _LOCAL_LABELS = {
     "anti_capture_principle": "Anti-capture principle",
-    "layers_split": "Layers split",
+    "layers_split": "Layer assignment (federated consortium)",
     "tap_adr": "Tapestry ADR",
     "work_group_charter": "Work group charter",
 }
