@@ -4515,7 +4515,7 @@
     if (!layerList) return;
     layerList.textContent = "";
     var all = [{ id: "all", name: "All", full: "All layers" }].concat(layers.map(function (layer) {
-      return { id: layer.id, name: layer.id + " " + (layer.id === "L5" ? layer.name : (layer.short || layer.name)), full: layer.id + " " + layer.name };
+      return { id: layer.id, name: layer.id + " " + layer.name, full: layer.id + " " + layer.name };
     }));
     all.forEach(function (layer) {
       var label = document.createElement("label");
