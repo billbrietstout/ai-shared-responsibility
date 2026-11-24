@@ -182,6 +182,9 @@ async function testFullControlList(browser, base) {
   const everyShown = await idsIn(page, "#chain-select-control option[data-node-id]");
   const dAll = diff(everyShown, inChainCore.map((c) => c.nodeId));
   check("All models and All layers lists every control that sits in an operating model (" + inChainCore.length + ")", everyShown.length === inChainCore.length && dAll.missing.length === 0 && dAll.extra.length === 0, JSON.stringify(dAll));
+  if (!everyShown.length) {
+    throw new Error("Expected at least one #chain-select-control option[data-node-id], got 0 (expected " + inChainCore.length + ")");
+  }
   const blankHelp = await page.$eval("#chain-help", (el) => el.textContent);
   const blankNote = await page.$eval("#chain-model-note", (el) => el.textContent);
   check("the blank chain asks you to choose a column and does not yet name the control source", /Choose a risk, an obligation, a control, or an accountable persona/.test(blankHelp) && blankHelp.indexOf("The boxes then show what links to it") !== -1 && blankNote.indexOf("sector catalogs") === -1 && blankNote.indexOf("Choose a risk") === -1, blankHelp + " | " + blankNote);
