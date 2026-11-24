@@ -57,80 +57,14 @@
         <a id="jump-chain" href="#chain-heading" data-jump hidden>Chain</a>
       </nav>
 
-      <div id="preview-more" class="map-preview">
-        <span class="map-preview__label">Preview</span>
-        <details class="map-preview__details esc-close">
-          <summary>What preview means</summary>
-          <p>
-            This map is a preview. Risk-to-obligation links are in the data.
-            Each link is indirect: it runs through a control that addresses the
-            risk and cites the obligation. The link does not mean the legal text
-            names the risk.
-          </p>
-          <p class="preview-requirements">
-            Looking for security requirements? A separate catalog is not in the data yet.
-            <button id="entry-requirement" class="link-button" type="button">Why obligations stand in for them</button>
-          </p>
-
-        </details>
-      </div>
-
       <div class="map-layout">
         <section class="map-stage" aria-labelledby="map-heading" data-llm="map">
-          <h2 id="map-heading" class="visually-hidden">Map</h2>
+          <h2 id="map-heading" class="visually-hidden">Map status</h2>
 
           <div id="map-error-box" class="map-error" hidden>
             <p id="map-error" class="map-error__text" role="alert"></p>
             <button id="map-retry" class="map-error__retry" type="button">Retry</button>
           </div>
-
-          <details id="options" class="options">
-            <summary class="options__summary">
-              <span id="options-label" class="options__label">Show options</span>
-              <svg class="options__chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </summary>
-          <div id="map-tools" class="map-tools">
-            <form id="find-form" class="find-form" role="search">
-              <label class="find-form__label" for="node-search">Find a risk, obligation, control, or persona</label>
-              <div class="find-form__row">
-                <input
-                  id="node-search"
-                  class="find-form__input"
-                  type="search"
-                  name="q"
-                  autocomplete="off"
-                  spellcheck="false"
-                  placeholder="Name or a few words"
-                  role="combobox"
-                  aria-autocomplete="list"
-                  aria-haspopup="listbox"
-                  aria-expanded="false"
-                  aria-controls="search-results"
-                  aria-describedby="map-help"
-                />
-                <button class="find-form__submit" type="submit">Find</button>
-              </div>
-              <p id="map-help" class="map-help">
-                Type a name or a few words about a risk, an obligation, a control, or a persona. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.
-              </p>
-              <p id="search-note" class="search-note" aria-live="polite"></p>
-              <div id="search-results" class="search-listbox" role="listbox" aria-label="Matches" hidden></div>
-              <button id="show-all-results" class="show-all-results" type="button" hidden></button>
-            </form>
-
-            <div class="view-actions">
-              <button id="show-context" type="button">Show layers</button>
-            </div>
-            <section class="layer-frames" aria-labelledby="layer-frames-heading" data-llm="security-domains">
-              <h2 id="layer-frames-heading">Security domains</h2>
-              <details class="filter-help layer-frames__fold">
-                <summary>Read the five layer descriptions</summary>
-                <p>These sentences describe the five layers. The names on the records stay the same.</p>
-                <dl id="layer-frames"></dl>
-              </details>
-            </section>
-          </div>
-          </details>
 
           <p id="map-status" class="map-status" role="status"><span class="visually-hidden">Loading map data.</span></p>
         </section>
@@ -161,39 +95,76 @@
                   <button id="clear-chain-selection" type="button">Clear selection</button>
                 </div>
               </div>
-              <div id="chain-settings" class="chain-settings chain-settings--roca" aria-label="Chain settings">
-                <div id="map-filters" class="map-filters" tabindex="-1">
+
+              <div id="chain-settings" class="unified-controls" aria-label="Find and filter controls">
+                <div id="map-tools" class="unified-controls__find">
+                  <form id="find-form" class="find-form" role="search">
+                    <label class="find-form__label" for="node-search">Find a risk, obligation, control, or persona</label>
+                    <div class="find-form__row">
+                      <input
+                        id="node-search"
+                        class="find-form__input"
+                        type="search"
+                        name="q"
+                        autocomplete="off"
+                        spellcheck="false"
+                        placeholder="Name or a few words"
+                        role="combobox"
+                        aria-autocomplete="list"
+                        aria-haspopup="listbox"
+                        aria-expanded="false"
+                        aria-controls="search-results"
+                        aria-describedby="map-help"
+                      />
+                      <button class="find-form__submit" type="submit">Find</button>
+                    </div>
+                    <p id="map-help" class="visually-hidden">
+                      Type a name or a few words about a risk, an obligation, a control, or a persona. Use the arrow keys to move through the matches, Enter to open one, and Escape to close the list.
+                    </p>
+                    <p id="search-note" class="search-note" aria-live="polite"></p>
+                    <div id="search-results" class="search-listbox" role="listbox" aria-label="Matches" hidden></div>
+                    <button id="show-all-results" class="show-all-results" type="button" hidden></button>
+                  </form>
+                </div>
+
+                <div id="map-filters" class="unified-controls__filters" tabindex="-1">
                   <h3 class="visually-hidden">Filters</h3>
-                  <fieldset class="model-filter">
-                    <legend class="model-filter__legend">
-                      <span>Operating model</span>
-                      <button type="button" class="info-bubble__btn" id="model-info-btn" aria-expanded="false" aria-controls="model-info-text" aria-describedby="model-info-text">About sector models</button>
-                    </legend>
-                    <p id="model-info-text" class="info-bubble__panel" role="tooltip" hidden></p>
-                    <div id="model-filter-list" class="model-filter__list">
-                      <label class="model-option">
-                        <input type="radio" name="operating-model" value="all" checked />
+                  <fieldset class="filter-group model-filter">
+                    <legend class="filter-group__legend">Operating model</legend>
+                    <div id="model-filter-list" class="filter-chip-list">
+                      <label class="filter-chip">
+                        <input type="checkbox" name="operating-model" value="all" checked />
                         <span>All</span>
                       </label>
                     </div>
                   </fieldset>
 
-                  <fieldset class="model-filter layer-filter">
-                    <legend>Layer</legend>
-                    <div id="layer-filter-list" class="model-filter__list"></div>
+                  <fieldset class="filter-group layer-filter">
+                    <legend class="filter-group__legend">Layer</legend>
+                    <div id="layer-filter-list" class="filter-chip-list"></div>
                   </fieldset>
+                </div>
 
-                  <div class="chain-settings__meta">
+                <div class="unified-controls__footer">
+                  <div class="unified-controls__tapestry">
                     <label class="tapestry-toggle" for="show-tapestry">
                       <input id="show-tapestry" type="checkbox" />
-                      <span>Show Tapestry (proposed AI Alliance extension, not SRF v1.0)</span>
+                      <span>Show Tapestry <span class="tapestry-toggle__sub">(proposed AI Alliance extension, not SRF v1.0)</span></span>
                     </label>
-                    <p id="scope-summary" class="scope-summary" role="status" aria-live="polite"></p>
+                  </div>
+
+                  <div class="unified-controls__status">
+                    <div id="active-filter-pills" class="filter-pills" aria-label="Active filters"></div>
+                    <button id="clear-filters" class="clear-filters-btn" type="button" hidden>Clear filters</button>
+                    <p id="scope-counts" class="scope-counts" role="status" aria-live="polite"></p>
                   </div>
                 </div>
+
+                <p id="scope-summary" class="scope-summary visually-hidden" role="status" aria-live="polite"></p>
                 <p id="filter-summary" class="filter-summary visually-hidden" role="status"></p>
               </div>
             </div>
+
             <div class="chain-copy-tools">
               <div class="chain-copy-tools__actions" role="group" aria-label="Copy chain">
                 <button id="copy-chain" type="button" hidden>Copy chain</button>
@@ -202,64 +173,82 @@
               <p id="copy-status" class="copy-status copy-status--chain" role="status"></p>
               <textarea id="copy-fallback" class="copy-fallback" readonly rows="8" aria-label="Chain as Markdown. Select all and copy." hidden></textarea>
             </div>
+
             <div class="chain-wrap">
               <div id="context-board" class="context-board" hidden></div>
               <div id="chain" class="chain">
-                <h3 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h3>
-                <p class="chain-help">
-                  <span id="chain-help" class="chain-help__prompt">Choose a risk, an obligation, a control, or an accountable persona in any menu. The boxes then show what links to it.</span>
-                  <button type="button" class="info-bubble__btn" id="chain-help-info-btn" aria-expanded="false" aria-controls="chain-help-info-text" aria-describedby="chain-help-info-text">More about the chain menus</button>
-                </p>
-                <div id="chain-help-info-text" class="info-bubble__panel" role="tooltip" hidden>
-                  <p>Each menu lists every item in its column. A choice shows the linked items in the other columns. Details for that choice sit beside the columns on a wide screen and below them on a narrow one.</p>
+                <div class="chain-header-bar">
+                  <h3 id="chain-heading" class="chain-heading" tabindex="-1">Chain</h3>
+                  <div class="chain-meta-toggles" role="group" aria-label="Legend and notes">
+                    <details id="legend-fold" class="chain-fold chain-fold--legend esc-close">
+                      <summary class="chain-fold__summary">Line types</summary>
+                      <div class="chain-fold__panel">
+                        <ul class="chain-legend" id="chain-legend" aria-label="Line types">
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--solid" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Solid: direct basis.</strong> The record names this link. An obligation line is solid when the basis is the official text.</span>
+                          </li>
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--dashed" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Dashed: via shared control.</strong> The legal text does not name the risk.</span>
+                          </li>
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--long-dashed" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Dashed: via a cited obligation.</strong> The control cites a requirement the risk lists, and the risk record does not name the control.</span>
+                          </li>
+                          <li>
+                            <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
+                              <line class="chain-line chain-line--dotted" x1="0" y1="4" x2="48" y2="4"></line>
+                            </svg>
+                            <span><strong>Dotted: instrument level.</strong> No article record matched.</span>
+                          </li>
+                        </ul>
+                      </div>
+                    </details>
+
+                    <details id="notes-fold" class="chain-fold chain-fold--notes esc-close">
+                      <summary class="chain-fold__summary">Notes &amp; help</summary>
+                      <div class="chain-fold__panel">
+                        <p id="chain-help" class="chain-fold__text">
+                          Choose a risk, an obligation, a control, or an accountable persona in any menu. The boxes then show what links to it. Details for that choice sit beside the columns on a wide screen and below them on a narrow one.
+                        </p>
+                        <p id="chain-model-note" class="chain-model-note"></p>
+                        <p id="model-info-text" class="chain-fold__text"></p>
+                        <div class="chain-fold__section">
+                          <h4>Preview notice</h4>
+                          <p>
+                            This map is a preview. Risk-to-obligation links are in the data. Each link is indirect: it runs through a control that addresses the risk and cites the obligation. The link does not mean the legal text names the risk.
+                          </p>
+                          <p class="preview-requirements">
+                            Looking for security requirements? A separate catalog is not in the data yet.
+                            <button id="entry-requirement" class="link-button" type="button">Jump to obligations menu</button>
+                          </p>
+                        </div>
+                        <div class="chain-fold__section" data-llm="security-domains">
+                          <div class="chain-fold__section-head">
+                            <h4>Security domains (L1 to L5)</h4>
+                            <button id="show-context" class="chain-fold__action" type="button">Show layers view</button>
+                          </div>
+                          <dl id="layer-frames" class="layer-frames__dl"></dl>
+                        </div>
+                      </div>
+                    </details>
+                  </div>
                 </div>
+
                 <div id="map-loading" class="load-placeholder" aria-hidden="true">
                   <span class="load-placeholder__bar"></span>
                   <span class="load-placeholder__bar"></span>
                   <span class="load-placeholder__bar"></span>
                   <span class="load-placeholder__bar load-placeholder__bar--short"></span>
                 </div>
-                <div class="chain-legend-wrap">
-                  <p class="chain-legend-bar">
-                    <span class="chain-legend-bar__label">Line types</span>
-                    <button type="button" class="info-bubble__btn" id="legend-info-btn" aria-expanded="false" aria-controls="legend-info-text" aria-describedby="legend-info-text">What the lines mean</button>
-                  </p>
-                  <div id="legend-info-text" class="info-bubble__panel" role="tooltip" hidden>
-                    <ul class="info-bubble__list">
-                      <li>Solid. The record names this link. An obligation line is solid when the basis is the official text.</li>
-                      <li>Dashed. Shared control. The legal text does not name the risk.</li>
-                      <li>Dashed. Cited obligation. The control cites a requirement the risk lists, and the risk record does not name the control.</li>
-                      <li>Dotted. Instrument-level. No article record matched.</li>
-                    </ul>
-                  </div>
-                  <ul class="chain-legend" id="chain-legend" aria-label="Line types">
-                    <li>
-                      <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
-                        <line class="chain-line chain-line--solid" x1="0" y1="4" x2="48" y2="4"></line>
-                      </svg>
-                      <span>Solid: direct basis</span>
-                    </li>
-                    <li>
-                      <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
-                        <line class="chain-line chain-line--dashed" x1="0" y1="4" x2="48" y2="4"></line>
-                      </svg>
-                      <span>Dashed: via shared control</span>
-                    </li>
-                    <li>
-                      <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
-                        <line class="chain-line chain-line--long-dashed" x1="0" y1="4" x2="48" y2="4"></line>
-                      </svg>
-                      <span>Dashed: via a cited obligation</span>
-                    </li>
-                    <li>
-                      <svg class="legend-swatch" viewBox="0 0 48 8" aria-hidden="true" focusable="false">
-                        <line class="chain-line chain-line--dotted" x1="0" y1="4" x2="48" y2="4"></line>
-                      </svg>
-                      <span>Dotted: instrument level</span>
-                    </li>
-                  </ul>
-                </div>
-                <p id="chain-model-note" class="chain-model-note"></p>
+
                 <div id="chain-board" class="chain-board" role="group" aria-label="Risk, obligation, control, and accountable"></div>
               </div>
               <div id="chain-details-slot" class="chain-details-slot"></div>
@@ -268,26 +257,27 @@
           </section>
         </div>
       </div>
-    <p class="coverage-link"><a href="?page=coverage">Data coverage and known gaps</a>, for people who maintain the records.</p>
-    <section id="coverage" class="coverage" aria-labelledby="coverage-heading" data-llm="coverage" hidden>
-      <p class="coverage-back"><a href="./">Back to the explorer</a></p>
-      <h2 id="coverage-heading">Coverage</h2>
-      <p>
-        These labels describe the records. A missing link is not a failed
-        control, and an unassessed pointer is not a test result.
-      </p>
-      <div id="coverage-body" class="load-placeholder load-placeholder--coverage" aria-busy="true">
-        <span class="visually-hidden">Loading coverage.</span>
-        <span class="load-placeholder__bar" aria-hidden="true"></span>
-        <span class="load-placeholder__bar" aria-hidden="true"></span>
-        <span class="load-placeholder__bar" aria-hidden="true"></span>
-        <span class="load-placeholder__bar load-placeholder__bar--short" aria-hidden="true"></span>
-      </div>
-    </section>
+
+      <p class="coverage-link"><a href="?page=coverage">Data coverage and known gaps</a>, for people who maintain the records.</p>
+      <section id="coverage" class="coverage" aria-labelledby="coverage-heading" data-llm="coverage" hidden>
+        <p class="coverage-back"><a href="./">Back to the explorer</a></p>
+        <h2 id="coverage-heading">Coverage</h2>
+        <p>
+          These labels describe the records. A missing link is not a failed
+          control, and an unassessed pointer is not a test result.
+        </p>
+        <div id="coverage-body" class="load-placeholder load-placeholder--coverage" aria-busy="true">
+          <span class="visually-hidden">Loading coverage.</span>
+          <span class="load-placeholder__bar" aria-hidden="true"></span>
+          <span class="load-placeholder__bar" aria-hidden="true"></span>
+          <span class="load-placeholder__bar" aria-hidden="true"></span>
+          <span class="load-placeholder__bar load-placeholder__bar--short" aria-hidden="true"></span>
+        </div>
+      </section>
     </main>
 
     <site-footer></site-footer>
     <script defer src="/shared/vendor/graphology-0.26.0.umd.min.js"></script>
-    <script defer src="app.js?v=compact-scope-2"></script>
+    <script defer src="app.js?v=usability-2026-11-24"></script>
   </body>
 </html>

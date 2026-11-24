@@ -109,22 +109,48 @@ async function openPage(browser, base, width, height, query) {
 
 const idsIn = (page, selector) => page.$$eval(selector, (els) => els.map((el) => el.dataset.nodeId || el.dataset.chainId));
 
-const openOptionsPanel = (page) => page.evaluate(() => { const o = document.getElementById("options"); if (o) o.open = true; });
+// Find and the filter chips are always visible, so there is no Options accordion to open.
+const openOptionsPanel = async () => {};
 
-async function pickModel(page, model) {
-  const sel = 'input[name="operating-model"][value="' + model + '"]';
+// Operating model and Layer are multi-select checkboxes. "All" clears the specific picks,
+// so each pick starts from All and then adds the requested value.
+async function clickChip(page, name, value) {
+  const sel = 'input[name="' + name + '"][value="' + value + '"]';
   await page.$eval(sel, (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await page.click(sel);
   await sleep(200);
 }
-async function pickLayer(page, layer) {
-  const sel = 'input[name="layer"][value="' + layer + '"]';
-  await page.$eval(sel, (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
-  await page.click(sel);
-  await sleep(200);
+async function pickChips(page, name, values) {
+  const allChecked = await page.$eval('input[name="' + name + '"][value="all"]', (el) => el.checked);
+  if (!allChecked) await clickChip(page, name, "all");
+  for (const value of values) {
+    if (value !== "all") await clickChip(page, name, value);
+  }
 }
+const pickModel = (page, model) => pickChips(page, "operating-model", [model]);
+const pickLayer = (page, layer) => pickChips(page, "layer", [layer]);
+
+// The four ROCA menus are custom comboboxes (app.js choiceCombobox). Each option carries
+// data-node-id (the item id) and data-value (the value a pick sets; empty for the reset row).
+const menuIds = (page, key) => page.$$eval("#chain-combo-panel-" + key + " .chain-combo__option[data-node-id]", (els) => els.map((el) => el.dataset.nodeId));
+const menuOptions = (page, key) => page.$$eval("#chain-combo-panel-" + key + " .chain-combo__option", (els) => els.map((el) => ({ value: el.dataset.value || "", text: el.textContent })));
+const menuStates = (page) => page.evaluate(() => Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((t) => {
+  const panel = t.parentNode.querySelector(".chain-combo__panel");
+  return { id: t.id, disabled: t.disabled, options: panel.querySelectorAll(".chain-combo__option[data-node-id]").length, value: t.dataset.value || "" };
+}));
+// Picks a menu row the same way a user does: the row click runs the combobox choose handler.
+async function chooseMenu(page, key, value) {
+  await page.evaluate((k, v) => {
+    const panel = document.getElementById("chain-combo-panel-" + k);
+    const row = Array.from(panel.querySelectorAll(".chain-combo__option")).find((el) => (el.dataset.value || "") === v);
+    if (!row) throw new Error("No " + k + " menu row for value " + JSON.stringify(v));
+    row.click();
+  }, key, value);
+  await sleep(350);
+}
+
 async function clickNow(page, selector) {
-  await page.$eval(selector, (el) => { const o = el.closest("details#options"); if (o) o.open = true; });
+  await page.$eval(selector, (el) => { const f = el.closest("details"); if (f) f.open = true; });
   await page.$eval(selector, (el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await page.click(selector);
 }
@@ -179,7 +205,7 @@ async function testFullControlList(browser, base) {
   console.log("\n## Explore a control lists every control for the chosen model");
   const page = await openPage(browser, base, 1280, 900, "");
   await openEntry(page, "control");
-  const everyShown = await idsIn(page, "#chain-select-control option[data-node-id]");
+  const everyShown = await menuIds(page, "control");
   const dAll = diff(everyShown, inChainCore.map((c) => c.nodeId));
   check("All models and All layers lists every control that sits in an operating model (" + inChainCore.length + ")", everyShown.length === inChainCore.length && dAll.missing.length === 0 && dAll.extra.length === 0, JSON.stringify(dAll));
   if (!everyShown.length) {
@@ -188,17 +214,18 @@ async function testFullControlList(browser, base) {
   const blankHelp = await page.$eval("#chain-help", (el) => el.textContent);
   const blankNote = await page.$eval("#chain-model-note", (el) => el.textContent);
   check("the blank chain asks you to choose a column and does not yet name the control source", /Choose a risk, an obligation, a control, or an accountable persona/.test(blankHelp) && blankHelp.indexOf("The boxes then show what links to it") !== -1 && blankNote.indexOf("sector catalogs") === -1 && blankNote.indexOf("Choose a risk") === -1, blankHelp + " | " + blankNote);
-  await page.select("#chain-select-control", everyShown[0]);
+  await chooseMenu(page, "control", everyShown[0]);
   await sleep(400);
-  check("a control chain says the controls come from the sector catalogs", await page.$eval("#chain-model-note", (el) => /sector catalogs/.test(el.textContent) && /CoSAI Risk Map controls\.yaml/.test(el.textContent) && el.getClientRects().length > 0));
-  await page.select("#chain-select-control", "");
+  // The note lives in the Notes & help fold, which is collapsed by default. Closed details content is laid out, so check the fold state.
+  check("a control chain says the controls come from the sector catalogs, in a collapsed Notes & help", await page.$eval("#chain-model-note", (el) => /sector catalogs/.test(el.textContent) && /CoSAI Risk Map controls\.yaml/.test(el.textContent) && el.closest("details").open === false));
+  await chooseMenu(page, "control", "");
   await sleep(200);
 
   for (const model of MODELS) {
     await pickModel(page, model);
     await openEntry(page, "control");
     const expected = inChainCore.filter((c) => c.core.indexOf(model) !== -1).map((c) => c.nodeId);
-    const shown = await idsIn(page, "#chain-select-control option[data-node-id]");
+    const shown = await menuIds(page, "control");
     const d = diff(shown, expected);
     check(model + " lists all " + expected.length + " controls, no sample", shown.length === expected.length && d.missing.length === 0 && d.extra.length === 0, JSON.stringify(d));
     const summary = await page.$eval("#filter-summary", (el) => el.textContent);
@@ -217,27 +244,27 @@ async function testLayerFilter(browser, base) {
   check("layer filter offers All plus L1 to L5", sameSet(radios, ["all"].concat(LAYERS)), JSON.stringify(radios));
   const label = await page.$eval('fieldset.layer-filter legend', (el) => el.textContent.trim());
   check("layer filter sits in its own fieldset labeled Layer", label === "Layer", label);
-  const l5 = await page.$$eval('#layer-filter-list .model-option span', (els) => els.map((el) => el.textContent.trim()));
+  const l5 = await page.$$eval('#layer-filter-list .filter-chip span', (els) => els.map((el) => el.textContent.trim()));
   check("layer names come from data/layers.json (L5 is AI Model Provider)", l5.indexOf("L5 AI Model Provider") !== -1 && l5.indexOf("L1 AI Business & Usage") !== -1, JSON.stringify(l5));
 
   await pickLayer(page, "L3");
   check("choosing L3 puts layer=L3 in the URL", /[?&]layer=L3/.test(page.url()), page.url());
   await openEntry(page, "control");
   const expectedL3 = inChainCore.filter((c) => c.layer === "L3").map((c) => c.nodeId);
-  const shownL3 = await idsIn(page, "#chain-select-control option[data-node-id]");
+  const shownL3 = await menuIds(page, "control");
   const d1 = diff(shownL3, expectedL3);
   check("L3 with All models lists every L3 control that sits in an operating model (" + expectedL3.length + ")", shownL3.length === expectedL3.length && d1.missing.length === 0 && d1.extra.length === 0, JSON.stringify(d1));
 
   await openEntry(page, "threat");
   const expectedRisks = threats.filter((t) => t.srf_layer === "L3").map((t) => "risk:" + t.id);
-  const shownRisks = await idsIn(page, "#chain-select-risk option[data-node-id]");
+  const shownRisks = await menuIds(page, "risk");
   const d2 = diff(shownRisks, expectedRisks);
   check("L3 limits the threat list to threats at L3 (" + expectedRisks.length + ")", shownRisks.length === expectedRisks.length && d2.missing.length === 0 && d2.extra.length === 0, JSON.stringify(d2));
 
   await pickModel(page, "AI-PaaS");
   await openEntry(page, "control");
   const expectedPaaS = inChainCore.filter((c) => c.layer === "L3" && c.core.indexOf("AI-PaaS") !== -1).map((c) => c.nodeId);
-  const shownPaaS = await idsIn(page, "#chain-select-control option[data-node-id]");
+  const shownPaaS = await menuIds(page, "control");
   const d3 = diff(shownPaaS, expectedPaaS);
   check("AI-PaaS with L3 lists the AI-PaaS controls at L3 (" + expectedPaaS.length + ")", shownPaaS.length === expectedPaaS.length && d3.missing.length === 0 && d3.extra.length === 0, JSON.stringify(d3));
   const paasSummary = await page.$eval("#filter-summary", (el) => el.textContent);
@@ -337,7 +364,8 @@ async function testWording(browser, base) {
 
 const inView = (page, selector) => page.$eval(selector, (el) => {
   const r = el.getBoundingClientRect();
-  return r.height > 0 && r.top >= 0 && r.top < window.innerHeight * 0.5;
+  // The unified controls block sits above the chain, so the heading lands in the top 60% of an 800px window.
+  return r.height > 0 && r.top >= 0 && r.top < window.innerHeight * 0.6;
 });
 const activeId = (page) => page.evaluate(() => document.activeElement.id || document.activeElement.tagName);
 
@@ -356,14 +384,14 @@ async function testNavigation(browser, base) {
       settingsVisible: document.getElementById("chain-settings") && document.getElementById("chain-settings").checkVisibility(),
       scopeVisible: document.getElementById("scope-summary") && document.getElementById("scope-summary").checkVisibility(),
       searchVisible: document.getElementById("node-search").checkVisibility(),
-      searchBeforeDomains: order("#find-form", ".layer-frames"),
+      searchBeforeDomains: order("#find-form", "#layer-frames"),
       skipped: skipped,
       targets: targets.filter((href) => href && href[0] === "#").map((href) => ({ href: href, exists: !!document.getElementById(href.slice(1)) })),
       skipLinks: document.querySelectorAll("a.skip-link").length
     };
   });
   check("the chain and its settings are on the first screen at 1280x800", initial.settingsVisible && initial.scopeVisible && initial.chainTop > 0 && initial.chainTop < 800, JSON.stringify(initial));
-  check("search stays inside collapsed Options until that section is opened", !initial.searchVisible && initial.searchBeforeDomains);
+  check("search is on the first screen, above the layer notes, without opening anything", initial.searchVisible && initial.searchBeforeDomains);
   check("visible headings never skip a level", initial.skipped === 0, String(initial.skipped));
   check("there is a skip link to the content and one to search", initial.skipLinks >= 2, String(initial.skipLinks));
   check("every in-page link on the first view has a target", initial.targets.length >= 4 && initial.targets.every((t) => t.exists), JSON.stringify(initial.targets.filter((t) => !t.exists)));
@@ -413,7 +441,7 @@ async function testNavigation(browser, base) {
   }));
   check("choosing a risk moves focus to the chain heading", opened.active === "chain-heading" && opened.text === "Direct prompt injection", JSON.stringify(opened));
   check("choosing a risk opens the ROCA chain with the details panel inside it", !opened.workspaceHidden && !opened.chainHidden && opened.inSlot, JSON.stringify(opened));
-  check("the chain heading is in the first half of the window after choosing", await inView(page, "#chain-heading"));
+  check("the chain heading is in the top 60% of the window after choosing", await inView(page, "#chain-heading"), String(await page.$eval("#chain-heading", (el) => Math.round(el.getBoundingClientRect().top))));
   const explored = await page.evaluate(() => ({
     workspaceHidden: document.getElementById("chain-workspace").hidden,
     chainHidden: document.getElementById("chain").hidden,
@@ -431,7 +459,7 @@ async function testNavigation(browser, base) {
   await sleep(900);
   await clickNow(page, "#clear-chain-selection");
   await sleep(500);
-  const cleared1 = await page.evaluate(() => ({ chainHidden: document.getElementById("chain").hidden, root: document.getElementById("chain-select-risk").value }));
+  const cleared1 = await page.evaluate(() => ({ chainHidden: document.getElementById("chain").hidden, root: (document.getElementById("chain-select-risk").dataset.value || "") }));
   check("the first Clear selection empties the risk menu and keeps the chain open", !cleared1.chainHidden && cleared1.root === "", JSON.stringify(cleared1));
   await clickNow(page, "#clear-chain-selection");
   await sleep(900);
@@ -443,11 +471,11 @@ async function testNavigation(browser, base) {
   }));
   check("a second Clear selection is not needed: the chain stays open and Clear is disabled", cleared.clearDisabled && !cleared.chainHidden && !cleared.workspaceHidden, JSON.stringify(cleared));
 
-  await page.select("#chain-select-accountable", (await optionValues(page, "accountable"))[1].value);
+  await chooseMenu(page, "accountable", (await optionValues(page, "accountable"))[1].value);
   await sleep(900);
   const persona = await page.evaluate(() => ({ active: document.activeElement.id, text: document.getElementById("chain-heading").textContent, workspaceHidden: document.getElementById("chain-workspace").hidden }));
   check("choosing a persona in the Accountable menu opens its chain and keeps focus on the menu", persona.active === "chain-select-accountable" && /^Chain for /.test(persona.text) && !persona.workspaceHidden, JSON.stringify(persona));
-  check("the persona chain heading is in the first half of the window", await inView(page, "#chain-heading"));
+  check("the persona chain heading is in the top 60% of the window", await inView(page, "#chain-heading"));
   check("no page errors on desktop", page.__errors.length === 0, page.__errors.join("; "));
   await page.close();
 
@@ -500,7 +528,7 @@ async function testListView(browser, base) {
       filtersBeforeResults: order("#map-filters", "#search-results"),
       summaryBeforeResults: order("#filter-summary", "#search-results"),
       chainShown: !document.getElementById("chain").hidden,
-      chainSelects: document.querySelectorAll("#chain-board select").length,
+      chainSelects: document.querySelectorAll("#chain-board button.chain-combo__trigger").length,
       prompt: document.getElementById("chain-help").textContent.trim(),
       emptyShown: !document.getElementById("details-empty").hidden,
       panelTop: rect(".map-panel").top, stageBottom: rect(".map-stage").bottom, panelWidth: rect(".map-panel").width, stageWidth: rect(".map-stage").width,
@@ -527,7 +555,7 @@ async function testListView(browser, base) {
   await pickModel(page, "all");
   await pickLayer(page, "all");
   await openEntry(page, "threat");
-  await page.select("#chain-select-risk", "risk:directpromptinjection");
+  await chooseMenu(page, "risk", "risk:directpromptinjection");
   await sleep(600);
   const open = await page.evaluate(() => {
     const panel = document.querySelector("#chain-details-slot > .details").getBoundingClientRect();
@@ -568,18 +596,18 @@ async function testGraphRemoved(browser, base) {
   check("no graph element, button, skip link, or legend is in the page", gone.ids.length === 0 && gone.classes === 0, JSON.stringify(gone));
   check("the Sigma script is not loaded", !gone.sigmaScript && !gone.sigmaGlobal);
   check("no visible text mentions the relationship graph", gone.text.length === 0, JSON.stringify(gone.text));
-  check("the Options section has no Risk or Control drop-down", await page.evaluate(() => document.querySelectorAll("#options select").length === 0));
+  check("the unified controls block has no native select for Risk or Control", await page.evaluate(() => document.querySelectorAll("#chain-settings select").length === 0));
   await page.close();
 
   for (const query of ["?risk=directpromptinjection&view=graph", "?risk=directpromptinjection&graph=1", "?risk=directpromptinjection&view=full&graph=1&neighbors=1"]) {
     const legacy = await openPage(browser, base, 1280, 800, query);
-    const state = await legacy.evaluate(() => ({ chainShown: !document.getElementById("chain").hidden, root: document.getElementById("map-status").dataset.root, selects: document.querySelectorAll("#chain-board select").length }));
+    const state = await legacy.evaluate(() => ({ chainShown: !document.getElementById("chain").hidden, root: document.getElementById("map-status").dataset.root, selects: document.querySelectorAll("#chain-board button.chain-combo__trigger").length }));
     check("the old link " + query + " lands on the ROCA chain", state.chainShown && state.root === "risk:directpromptinjection" && state.selects === 4, JSON.stringify(state));
     check("the old link " + query + " throws no page error", legacy.__errors.length === 0, legacy.__errors.join("; "));
     await legacy.close();
   }
   const bare = await openPage(browser, base, 1280, 800, "?graph=1");
-  check("a bare graph=1 link opens the chain, not a graph", await bare.evaluate(() => !document.getElementById("chain-workspace").hidden && !document.getElementById("graph") && document.getElementById("chain-select-risk").value === ""));
+  check("a bare graph=1 link opens the chain, not a graph", await bare.evaluate(() => !document.getElementById("chain-workspace").hidden && !document.getElementById("graph") && (document.getElementById("chain-select-risk").dataset.value || "") === ""));
   await bare.close();
 }
 
@@ -613,15 +641,15 @@ async function testModeParity(browser, base, width, height) {
       workspace: !document.getElementById("chain-workspace").hidden,
       chain: !document.getElementById("chain").hidden,
       heading: document.getElementById("chain-workspace-heading").textContent,
-      selects: Array.from(document.querySelectorAll("#chain-board select")).map((s) => ({ id: s.id, disabled: s.disabled, options: s.options.length - 1, root: s.dataset.root === "true" })),
-      inOptions: document.querySelectorAll("#options select").length,
+      selects: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((s) => ({ id: s.id, disabled: s.disabled, options: s.parentNode.querySelectorAll(".chain-combo__option[data-node-id]").length, root: s.dataset.root === "true" })),
+      inFilterBlock: document.querySelectorAll("#chain-settings select").length,
       cards: document.querySelectorAll("#chain-board button[data-chain-id]").length,
       help: document.getElementById("chain-help").textContent.trim(),
       slot: !!document.querySelector("#chain-details-slot > .details"),
       overflow: document.documentElement.scrollWidth - window.innerWidth
     }));
     check(mode + " mode starts on the ROCA chain" + at, start.workspace && start.chain && start.heading === "ROCA chain", JSON.stringify(start));
-    check(mode + " mode shows all four column selects and none in Options" + at, start.selects.map((s) => s.id).join() === "chain-select-risk,chain-select-obligation,chain-select-control,chain-select-accountable" && start.inOptions === 0, JSON.stringify(start.selects));
+    check(mode + " mode shows all four column menus and no select in the filter block" + at, start.selects.map((s) => s.id).join() === "chain-select-risk,chain-select-obligation,chain-select-control,chain-select-accountable" && start.inFilterBlock === 0, JSON.stringify(start.selects));
     check(mode + " mode starts with all four selects enabled and full" + at, start.selects.every((s) => !s.disabled && s.options > 5), JSON.stringify(start.selects));
     check(mode + " mode starts with no boxes until something is picked" + at, start.cards === 0, String(start.cards));
     check("no sideways scroll when " + mode + " mode opens" + at, start.overflow <= 1, String(start.overflow));
@@ -634,7 +662,7 @@ async function testModeParity(browser, base, width, height) {
       const cols = Array.from(document.querySelectorAll("#chain-board .chain-col")).map((c) => c.dataset.column);
       return {
         cols: cols,
-        selects: Array.from(document.querySelectorAll("#chain-board select")).map((s) => ({ id: s.id, disabled: s.disabled, options: s.options.length - 1, value: s.value })),
+        selects: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((s) => ({ id: s.id, disabled: s.disabled, options: s.parentNode.querySelectorAll(".chain-combo__option[data-node-id]").length, value: (s.dataset.value || "") })),
         status: document.getElementById("map-status").textContent,
         details: document.getElementById("details-kind").textContent,
         slot: !!document.querySelector("#chain-details-slot > .details"),
@@ -649,13 +677,13 @@ async function testModeParity(browser, base, width, height) {
     check(mode + " mode status line counts all four columns" + at, /^Showing \d+ risks?, \d+ obligations?, \d+ controls?, and \d+ accountable personas?/.test(after.status) && !/ 0 (risks?|obligations?|controls?), /.test(after.status), after.status);
     if (width === 1280) check(mode + " mode draws connector lines" + at, after.lines > 0, String(after.lines));
     check("no sideways scroll after a pick in " + mode + " mode" + at, after.overflow <= 1, String(after.overflow));
-    const sizes = () => page.evaluate(() => Array.from(document.querySelectorAll("#chain-board select")).map((sel) => sel.options.length + ":" + sel.options[0].textContent));
+    const sizes = () => page.evaluate(() => Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((sel) => sel.parentNode.querySelectorAll(".chain-combo__option").length + ":" + sel.parentNode.querySelector(".chain-combo__option").textContent));
     const sizeBefore = await sizes();
     for (const key of ["risk", "obligation", "control", "accountable"]) {
       const opts = (await optionValues(page, key)).filter((o) => o.value);
       if (opts.length < 2) continue;
       await pickValue(page, key, opts[1].value);
-      const now = await page.evaluate(() => Array.from(document.querySelectorAll("#chain-board select")).map((sel) => ({ id: sel.id, value: sel.value, disabled: sel.disabled })));
+      const now = await page.evaluate(() => Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((sel) => ({ id: sel.id, value: (sel.dataset.value || ""), disabled: sel.disabled })));
       const boxCount = await page.$$eval('#chain-board .chain-col[data-column="' + key + '"] button[data-chain-id]', (els) => els.length);
       check(mode + " mode: a " + key + " pick leaves every menu length and count unchanged" + at, (await sizes()).join("|") === sizeBefore.join("|"), (await sizes()).join("|") + " vs " + sizeBefore.join("|"));
       check(mode + " mode: a " + key + " pick becomes the only pick and shows one box in its column" + at, now.filter((x) => x.value).map((x) => x.id).join() === "chain-select-" + key && now.every((x) => !x.disabled) && boxCount === 1, JSON.stringify(now) + " " + boxCount);
@@ -685,7 +713,7 @@ async function testModeParity(browser, base, width, height) {
       accountableText: document.querySelector('#chain-board .chain-col[data-column="accountable"]').textContent,
       status: document.getElementById("map-status").textContent,
       note: document.getElementById("chain-model-note").textContent,
-      legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
+      legend: document.getElementById("legend-fold").open === false && document.querySelectorAll("#chain-legend li").length === 4,
       columnLinks: document.querySelectorAll(".chain-jump").length,
       oldRows: document.querySelectorAll("#chain-board li.control-row, #chain-board .control-rows, #chain-board .chain-box").length,
       overflow: document.documentElement.scrollWidth > window.innerWidth + 1
@@ -697,7 +725,7 @@ async function testModeParity(browser, base, width, height) {
   check("the persona is in the Accountable column" + at, /AI Platform Provider/.test(chain.accountableText) && chain.cols.accountable.cards === 1);
   check("the persona status line counts every column above zero" + at, !!counts && counts.slice(1).every((n) => +n > 0), chain.status);
   check("persona chains show the persona line" + at, chain.note === "These are the controls that name this persona as accountable, with their risks and obligations.", chain.note);
-  if (width === 1280) check("the chain shows the line legend and no column jump links" + at, chain.legend && chain.columnLinks === 0, JSON.stringify([chain.legend, chain.columnLinks]));
+  if (width === 1280) check("the chain keeps the line legend collapsed and has no column jump links" + at, chain.legend && chain.columnLinks === 0, JSON.stringify([chain.legend, chain.columnLinks]));
   check("long columns are collapsed with a Show more control" + at, chain.cols.control.cards <= 8 && chain.cols.control.more.some((t) => /^Show \d+ more$/.test(t)), JSON.stringify(chain.cols.control));
   await page.evaluate(() => { const b = document.querySelector('button.chain-more[data-more-column="control"]'); if (b && /^Show \d+ more$/.test(b.textContent)) b.click(); });
   await sleep(300);
@@ -718,12 +746,12 @@ async function testModeParity(browser, base, width, height) {
     const riskChain = await riskPage.evaluate(() => ({
       note: document.getElementById("chain-model-note").textContent,
       heading: document.getElementById("chain-workspace-heading").textContent,
-      legend: document.querySelector(".chain-legend-wrap").checkVisibility(),
+      legend: document.getElementById("legend-fold").open === false && document.querySelectorAll("#chain-legend li").length === 4,
       columnLinks: document.querySelectorAll(".chain-jump").length,
       label: document.getElementById("chain-board").getAttribute("aria-label")
     }));
     check("a risk chain shows the generic model note and the ROCA chain heading", riskChain.note.indexOf("All shows one accountable persona for each operating model") !== -1 && riskChain.heading === "ROCA chain", JSON.stringify(riskChain));
-    check("a risk chain keeps the line-type legend and its board label and has no column jump links", riskChain.legend && riskChain.columnLinks === 0 && riskChain.label === "Risk, obligation, control, and accountable", JSON.stringify(riskChain));
+    check("a risk chain keeps the collapsed line-type legend and its board label and has no column jump links", riskChain.legend && riskChain.columnLinks === 0 && riskChain.label === "Risk, obligation, control, and accountable", JSON.stringify(riskChain));
     await riskPage.close();
   }
 }
@@ -849,7 +877,7 @@ async function testColumnLabels(browser, base) {
       check(at + " puts the label inside each heading", heads.every((h) => h.label === WORD[h.key].toLowerCase() && h.labelInHeading), JSON.stringify(heads.map((h) => [h.key, h.label, h.labelInHeading])));
       const nameRe = (key) => new RegExp("^" + WORD[key] + ": " + NAME[key] + " \\(\\d+\\)$");
       check(at + " gives each heading one accessible name with the label and count", heads.every((h) => nameRe(h.key).test(h.headingName)), JSON.stringify(heads.map((h) => h.headingName)));
-      const optionCounts = await page.$$eval("#chain-board select", (els) => els.map((el) => el.options.length - 1));
+      const optionCounts = await page.$$eval("#chain-board button.chain-combo__trigger", (els) => els.map((el) => el.parentNode.querySelectorAll(".chain-combo__option[data-node-id]").length));
       check(at + " keeps each heading count equal to its select's option count", ORDER.every((k, n) => new RegExp("\\(" + optionCounts[n] + "\\)$").test(heads.find((h) => h.key === k).headingName)), JSON.stringify(heads.map((h) => h.headingName)) + " | " + optionCounts.join());
       if (width === 375) {
         const named = heads.every((h) => h.toggleName === h.headingName && (h.toggleExpanded === "true" || h.toggleExpanded === "false"));
@@ -873,7 +901,7 @@ async function testPhoneSheet(browser, base) {
   const deskCols = await desk.evaluate(() => ({
     toggles: document.querySelectorAll(".chain-col__toggle").length,
     bodiesShown: Array.from(document.querySelectorAll(".chain-col__body")).filter((b) => !b.hidden).length,
-    preview: getComputedStyle(document.querySelector(".map-preview")).display
+    preview: getComputedStyle(document.getElementById("notes-fold")).display
   }));
   check("on desktop all four chain columns are open and have no toggles", deskCols.toggles === 0 && deskCols.bodiesShown === 4, JSON.stringify(deskCols));
   await desk.close();
@@ -883,14 +911,14 @@ async function testPhoneSheet(browser, base) {
     summary: getComputedStyle(document.getElementById("hero-summary")).display,
     paragraphs: document.querySelectorAll(".map-hero__inner > p").length,
     readMore: !!document.getElementById("read-more"),
-    preview: getComputedStyle(document.querySelector(".map-preview")).display
+    preview: /This is a preview/.test(document.getElementById("hero-summary").textContent)
   }));
-  check("the hero is one paragraph with no Read more button and the Preview label stays", hero.summary !== "none" && hero.paragraphs === 1 && !hero.readMore && hero.preview !== "none", JSON.stringify(hero));
+  check("the hero is one paragraph with no Read more button and still says it is a preview", hero.summary !== "none" && hero.paragraphs === 1 && !hero.readMore && hero.preview, JSON.stringify(hero));
   const loaded = await sheetState(page);
   check("the chain is in the page on a phone, not a covering sheet", loaded.shown && !loaded.sheetOpen && !loaded.stageInert && loaded.top > 0, JSON.stringify(loaded));
-  check("chain settings are visible without opening Options", await page.evaluate(() => {
+  check("chain settings and Find are visible on a phone without opening anything", await page.evaluate(() => {
     const visible = (id) => document.getElementById(id).checkVisibility();
-    return visible("chain-settings") && visible("show-tapestry") && visible("model-filter-list") && visible("layer-filter-list") && !document.getElementById("options").open && !visible("node-search");
+    return visible("chain-settings") && visible("show-tapestry") && visible("model-filter-list") && visible("layer-filter-list") && visible("node-search");
   }));
 
   await search(page, "direct prompt injection");
@@ -913,7 +941,7 @@ async function testPhoneSheet(browser, base) {
   await sleep(200);
   check("the section toggle keeps focus after it opens", await page.evaluate(() => document.activeElement.classList.contains("chain-col__toggle")));
   await page.keyboard.press("Tab");
-  check("the open section's menu is next in the tab order", await page.evaluate(() => document.activeElement.tagName === "SELECT"));
+  check("the open section's menu is next in the tab order", await page.evaluate(() => document.activeElement.classList.contains("chain-combo__trigger")));
   await page.keyboard.press("Tab");
   check("the open section's card follows its menu", await page.evaluate(() => document.activeElement.classList.contains("chain-card")));
 
@@ -921,7 +949,7 @@ async function testPhoneSheet(browser, base) {
   await sleep(400);
   const afterEsc = await page.evaluate(() => ({
     chainHidden: document.getElementById("chain").hidden,
-    value: document.getElementById("chain-select-risk").value,
+    value: (document.getElementById("chain-select-risk").dataset.value || ""),
     inert: document.querySelector(".map-stage").hasAttribute("inert")
   }));
   check("Escape clears the selection and keeps the chain on the page", !afterEsc.chainHidden && afterEsc.value === "" && !afterEsc.inert, JSON.stringify(afterEsc));
@@ -931,7 +959,7 @@ async function testPhoneSheet(browser, base) {
   await sleep(600);
   await clickNow(page, "#clear-chain-selection");
   await sleep(500);
-  check("Clear selection keeps the chain on the page", await page.evaluate(() => !document.getElementById("chain").hidden && document.getElementById("chain-select-risk").value === ""));
+  check("Clear selection keeps the chain on the page", await page.evaluate(() => !document.getElementById("chain").hidden && (document.getElementById("chain-select-risk").dataset.value || "") === ""));
 
   await page.setViewport({ width: 1280, height: 800 });
   await sleep(300);
@@ -1023,7 +1051,7 @@ async function testUrlState(browser, base) {
   const before = await bare.evaluate(() => history.length);
   await pickModel(bare, "AI-PaaS");
   await openEntry(bare, "threat");
-  await bare.select("#chain-select-risk", "risk:directpromptinjection");
+  await chooseMenu(bare, "risk", "risk:directpromptinjection");
   await sleep(500);
   const afterSelect = await bare.evaluate(() => ({ search: location.search, length: history.length }));
   const params = new URLSearchParams(afterSelect.search);
@@ -1232,20 +1260,21 @@ async function testRootSelects(browser, base) {
   for (const [mode, key, minOptions] of [["threat", "risk", 20], ["control", "control", 50], ["account", "accountable", 6]]) {
     const info = await page.evaluate((k) => {
       const sel = document.getElementById("chain-select-" + k);
+      const panel = document.getElementById("chain-combo-panel-" + k);
       return {
         tag: sel.tagName,
-        options: sel.querySelectorAll("option[value]:not([value=''])").length,
-        groups: sel.querySelectorAll("optgroup").length,
-        label: sel.getAttribute("aria-labelledby") && document.getElementById(sel.getAttribute("aria-labelledby")).textContent,
-        all: document.querySelectorAll("#chain-board select").length
+        options: panel.querySelectorAll(".chain-combo__option[data-node-id]").length,
+        groups: panel.querySelectorAll(".chain-combo__group").length,
+        label: (sel.getAttribute("aria-labelledby") || "").split(" ").map((id) => (document.getElementById(id) || { textContent: "" }).textContent).join(" ").trim(),
+        all: document.querySelectorAll("#chain-board button.chain-combo__trigger").length
       };
     }, key);
-    check(mode + " mode: the " + key + " menu is a labeled select and the chain has four", info.tag === "SELECT" && !!info.label && info.all === 4, JSON.stringify(info));
+    check(mode + " mode: the " + key + " menu is a labeled combobox and the chain has four", info.tag === "BUTTON" && !!info.label && info.all === 4, JSON.stringify(info));
     check(mode + " mode: the " + key + " menu lists every choice", info.options >= minOptions, JSON.stringify(info));
     if (key !== "accountable") check(mode + " mode: the " + key + " menu groups choices by layer", info.groups >= 2, JSON.stringify(info));
   }
   await page.focus("#chain-select-risk");
-  await page.select("#chain-select-risk", "risk:directpromptinjection");
+  await chooseMenu(page, "risk", "risk:directpromptinjection");
   await sleep(200);
   const after = await page.evaluate(() => ({ url: location.search, title: document.getElementById("details-heading").textContent }));
   check("choosing a risk in the drop-down opens its chain and updates the URL", /node=directpromptinjection/.test(after.url) && /type=risk/.test(after.url) && after.title === "Direct prompt injection", JSON.stringify(after));
@@ -1279,11 +1308,11 @@ async function testBackButton(browser, base) {
   const page = await openPage(browser, base, 1280, 900, "");
   await openEntry(page, "threat");
   const start = await page.evaluate(() => history.length);
-  await page.select("#chain-select-risk", "risk:directpromptinjection");
+  await chooseMenu(page, "risk", "risk:directpromptinjection");
   await sleep(300);
   const opened = await page.evaluate(() => ({ len: history.length, search: location.search, root: document.getElementById("map-status").dataset.root }));
   check("opening a trace adds one history entry", opened.len === start + 1 && /node=directpromptinjection/.test(opened.search), JSON.stringify(opened));
-  await clickNow(page, '#model-filter-list input[type="radio"]:not([value="all"])');
+  await pickModel(page, "IaaS");
   await sleep(300);
   const afterFilter = await page.evaluate(() => ({ len: history.length, search: location.search }));
   check("a model change replaces the entry instead of adding one", afterFilter.len === start + 1 && /model=/.test(afterFilter.search), JSON.stringify(afterFilter));
@@ -1329,19 +1358,19 @@ async function testPhoneHeaderAndIntro(browser, base) {
   const intro = await desk.evaluate(() => {
     const p = document.getElementById("hero-summary");
     const sentences = p.textContent.trim().split(/(?<=[.?!])\s+/).filter(Boolean);
-    const preview = document.querySelector(".map-preview details");
+    const note = document.querySelector("#notes-fold .preview-requirements");
     return {
       paragraphs: document.querySelectorAll(".map-hero__inner > p").length,
       sentences: sentences.length,
       entries: Array.from(document.querySelectorAll(".entry-points button")).map((b) => b.textContent.trim()),
-      reqInPreview: !!document.querySelector(".map-preview #entry-requirement"),
-      gapInPreview: !!document.querySelector(".map-preview #entry-gap"),
-      previewNote: (preview.querySelector(".preview-requirements") || {}).textContent || ""
+      reqInNotes: !!(note && note.querySelector("#entry-requirement")),
+      gapInNotes: !!document.querySelector("#notes-fold #entry-gap"),
+      previewNote: note ? note.textContent : ""
     };
   });
   check("the intro is one paragraph of at most two sentences", intro.paragraphs === 1 && intro.sentences <= 2, JSON.stringify(intro));
   check("the page has no separate Explore buttons", intro.entries.length === 0, JSON.stringify(intro.entries));
-  check("the requirements note lives in the Preview disclosure", intro.reqInPreview && !intro.gapInPreview && /Looking for security requirements/.test(intro.previewNote), JSON.stringify(intro));
+  check("the requirements note lives in the Notes & help fold", intro.reqInNotes && !intro.gapInNotes && /Looking for security requirements/.test(intro.previewNote), JSON.stringify(intro));
   await desk.close();
 }
 
@@ -1448,7 +1477,7 @@ async function testLoadResilience(browser, base) {
     models: Array.from(document.querySelectorAll('input[name="operating-model"]')).map((el) => el.value).join(),
     selected: document.getElementById("map-status").dataset.selected,
     model: document.querySelector('input[name="operating-model"]:checked').value,
-    risks: document.querySelectorAll("#chain-select-risk option[data-node-id]").length
+    risks: document.querySelectorAll("#chain-combo-panel-risk .chain-combo__option[data-node-id]").length
   }));
   check("Retry re-runs initialization without a page reload and applies the URL state", recovered.errorHidden && recovered.selected === "risk:directpromptinjection" && recovered.model === "AI-PaaS", JSON.stringify(recovered));
   check("Retry does not duplicate filter options or list items", recovered.models === ["all"].concat(MODELS).join() && recovered.risks === threats.length, JSON.stringify(recovered));
@@ -1470,22 +1499,23 @@ async function testLoadResilience(browser, base) {
 }
 
 async function testDisclosures(browser, base) {
-  console.log("\n## Disclosures: preview and line types");
+  console.log("\n## Disclosures: Notes & help holds the preview notice and line types");
   const page = await openPage(browser, base, 1280, 900, "");
-  const preview = await page.evaluate(() => {
-    const wrap = document.querySelector(".map-preview");
-    const details = wrap.querySelector("details");
-    return { label: wrap.querySelector(".map-preview__label").textContent.trim(), open: details.open, summary: details.querySelector("summary").textContent.trim(), text: details.querySelector("p").textContent, wrapHeight: wrap.getBoundingClientRect().height, standaloneNote: !!document.querySelector("aside.map-preview") };
+  const notes = await page.evaluate(() => {
+    const fold = document.getElementById("notes-fold");
+    const section = fold.querySelector(".chain-fold__section p");
+    return { open: fold.open, summary: fold.querySelector(":scope > summary").textContent.trim(), text: section ? section.textContent : "", inChainSettings: !!document.getElementById("chain-settings").querySelector("#notes-fold") };
   });
-  check("the Preview note is a compact inline label with a closed disclosure", preview.label === "Preview" && preview.open === false && preview.summary.length > 0 && preview.wrapHeight < 80 && !preview.standaloneNote, JSON.stringify(preview));
-  check("the disclosure holds the full caveat text unchanged", norm(preview.text) === PREVIEW_TEXT, preview.text);
-  await page.focus(".map-preview__details summary");
+  check("the Notes & help fold starts closed and holds the preview notice", notes.open === false && notes.summary === "Notes & help" && /This map is a preview/.test(notes.text) && !notes.inChainSettings, JSON.stringify({ open: notes.open, summary: notes.summary }));
+  check("the preview notice text is the full caveat, unchanged", norm(notes.text) === PREVIEW_TEXT, notes.text);
+  await page.focus("#notes-fold > summary");
   await page.keyboard.press("Enter");
-  check("Enter on the Preview summary opens the caveat", await page.$eval(".map-preview__details", (el) => el.open && el.querySelector("p").checkVisibility()));
+  await sleep(150);
+  check("Enter on the Notes & help summary opens the notes", await page.$eval("#notes-fold", (el) => el.open && el.querySelector("#chain-help").getClientRects().length > 0));
   await page.keyboard.press("Escape");
-  check("Escape closes it and keeps focus on the summary", await page.evaluate(() => !document.querySelector(".map-preview__details").open && document.activeElement.tagName === "SUMMARY"));
+  await sleep(150);
+  check("Escape closes Notes & help and keeps focus on its summary", await page.evaluate(() => !document.getElementById("notes-fold").open && document.activeElement.tagName === "SUMMARY"));
 
-  await page.evaluate(() => { document.getElementById("options").open = true; });
   const gone = await page.evaluate(() => ({
     panel: !!document.getElementById("entry-account-panel"),
     fold: !!document.querySelector(".illustrative-fold, table.illustrative, .auth-principle"),
@@ -1498,70 +1528,43 @@ async function testDisclosures(browser, base) {
 
   const chain = await openPage(browser, base, 1280, 900, "?type=risk&node=directpromptinjection&view=list");
   const legend = await chain.evaluate(() => {
-    const items = Array.from(document.querySelectorAll("#chain-legend li")).map((li) => li.textContent.trim());
-    const btn = document.getElementById("legend-info-btn");
-    const panel = document.getElementById("legend-info-text");
+    const fold = document.getElementById("legend-fold");
     return {
-      items: items,
-      expanded: btn.getAttribute("aria-expanded"),
-      panelHidden: panel.hidden,
-      full: Array.from(panel.querySelectorAll("li")).map((li) => li.textContent.trim()),
+      items: Array.from(document.querySelectorAll("#chain-legend li strong")).map((el) => el.textContent.trim()),
+      sentences: Array.from(document.querySelectorAll("#chain-legend li span")).map((el) => el.textContent.trim()),
+      open: fold.open,
+      summary: fold.querySelector("summary").textContent.trim(),
       titles: document.querySelectorAll("#chain-legend [title]").length
     };
   });
-  check("the line-type legend uses the four short labels", legend.items.join("|") === "Solid: direct basis|Dashed: via shared control|Dashed: via a cited obligation|Dotted: instrument level", legend.items.join("|"));
-  check("the full sentences live in a closed info panel, not in title attributes", legend.expanded === "false" && legend.panelHidden && legend.titles === 0 && legend.full.length === 4 && /The record names this link/.test(legend.full[0]) && /The legal text does not name the risk/.test(legend.full[1]) && /risk record does not name the control/.test(legend.full[2]) && /No article record matched/.test(legend.full[3]), JSON.stringify(legend));
-  await chain.focus("#legend-info-btn");
-  check("focus opens the line-type info bubble", await chain.$eval("#legend-info-btn", (el) => el.getAttribute("aria-expanded") === "true" && !document.getElementById("legend-info-text").hidden));
+  check("the line-type legend uses the four labels", legend.items.join("|") === "Solid: direct basis.|Dashed: via shared control.|Dashed: via a cited obligation.|Dotted: instrument level.", legend.items.join("|"));
+  check("the line-type legend starts collapsed behind a Line types toggle", legend.open === false && legend.summary === "Line types" && legend.titles === 0, JSON.stringify(legend));
+  check("each line type has its own explanation sentence", /The record names this link/.test(legend.sentences[0]) && /The legal text does not name the risk/.test(legend.sentences[1]) && /risk record does not name the control/.test(legend.sentences[2]) && /No article record matched/.test(legend.sentences[3]), JSON.stringify(legend.sentences));
+  await chain.click("#legend-fold > summary");
+  await sleep(100);
+  check("opening Line types shows the legend", await chain.$eval("#legend-fold", (el) => el.open && el.querySelector("#chain-legend").getClientRects().length > 0));
   await chain.keyboard.press("Escape");
+  await sleep(100);
   const afterEsc = await chain.evaluate(() => ({
-    expanded: document.getElementById("legend-info-btn").getAttribute("aria-expanded"),
-    tag: document.activeElement.id,
+    open: document.getElementById("legend-fold").open,
     workspaceHidden: document.getElementById("chain-workspace").hidden
   }));
-  check("Escape closes the explanation first and does not close the chain", afterEsc.expanded === "false" && afterEsc.tag === "legend-info-btn" && !afterEsc.workspaceHidden, JSON.stringify(afterEsc));
+  check("Escape closes Line types and does not close the chain", afterEsc.open === false && !afterEsc.workspaceHidden, JSON.stringify(afterEsc));
   check("no page errors with the disclosures", chain.__errors.length === 0, chain.__errors.join("; "));
   await chain.close();
 
-  const phone = await openPage(browser, base, 375, 812, "");
-  const phoneState = await phone.evaluate(() => {
-    const label = document.querySelector(".map-preview__label").getBoundingClientRect();
-    const summary = document.querySelector(".map-preview__details summary").getBoundingClientRect();
-    return { labelVisible: label.height > 0, summaryVisible: summary.height > 0, sameRow: Math.abs(label.top - summary.top) < 20 };
-  });
-  check("at 375 the Preview label and its disclosure are visible on one row", phoneState.labelVisible && phoneState.summaryVisible && phoneState.sameRow, JSON.stringify(phoneState));
-  await phone.close();
 }
 
 async function testInfoBubbles(browser, base) {
-  console.log("\n## Info bubbles: focus, Escape, blur, aria-expanded");
+  console.log("\n## Notes & help: one fold, no info bubbles");
   const page = await openPage(browser, base, 1280, 900, "");
-  const btn = "#model-info-btn";
-  const closed = await page.$eval(btn, (el) => ({ expanded: el.getAttribute("aria-expanded"), hidden: document.getElementById("model-info-text").hidden }));
-  check("the sector-model info bubble starts closed", closed.expanded === "false" && closed.hidden, JSON.stringify(closed));
-  await page.focus(btn);
-  const open = await page.$eval(btn, (el) => ({
-    expanded: el.getAttribute("aria-expanded"),
-    describedby: el.getAttribute("aria-describedby") === "model-info-text",
-    panel: !document.getElementById("model-info-text").hidden
+  const state = await page.evaluate(() => ({
+    bubbles: document.querySelectorAll(".info-bubble__btn, #model-info-btn, #legend-info-btn, #chain-help-info-btn").length,
+    notesOpen: document.getElementById("notes-fold").open,
+    modelNoteInNotes: !!document.getElementById("notes-fold").querySelector("#chain-model-note"),
+    chainHelpInNotes: !!document.getElementById("notes-fold").querySelector("#chain-help")
   }));
-  check("focus opens the bubble and sets aria-expanded and aria-describedby", open.expanded === "true" && open.describedby && open.panel, JSON.stringify(open));
-  await page.keyboard.press("Escape");
-  const afterEsc = await page.$eval(btn, (el) => ({
-    expanded: el.getAttribute("aria-expanded"),
-    hidden: document.getElementById("model-info-text").hidden,
-    active: document.activeElement === el
-  }));
-  check("Escape closes the bubble and keeps focus on the button", afterEsc.expanded === "false" && afterEsc.hidden && afterEsc.active, JSON.stringify(afterEsc));
-  const describedAfterEsc = await page.$eval(btn, (el) => el.getAttribute("aria-describedby"));
-  check("aria-describedby stays on the button after Escape", describedAfterEsc === "model-info-text", describedAfterEsc);
-  await page.focus(btn);
-  await sleep(80);
-  await page.evaluate(() => document.getElementById("clear-chain-selection").focus());
-  await sleep(80);
-  const afterBlur = await page.$eval(btn, (el) => el.getAttribute("aria-expanded"));
-  check("blur closes the bubble", afterBlur === "false", afterBlur);
-  check("no page errors in info bubble tests", page.__errors.length === 0, page.__errors.join("; "));
+  check("no info bubble buttons remain, and the model note and chain help sit in Notes & help", state.bubbles === 0 && state.modelNoteInNotes && state.chainHelpInNotes && state.notesOpen === false, JSON.stringify(state));
   await page.close();
 }
 
@@ -1633,8 +1636,12 @@ function testRequirementInstrumentShortNames() {
 async function testObligationInstrumentMenu(browser, base) {
   console.log("\n## Obligation menu grouping, sort, badges, and search");
   const page = await openPage(browser, base, 1280, 900, "");
-  const groups = await page.$$eval("#chain-select-obligation optgroup", (nodes) => nodes.map((g) => ({ label: g.label, options: Array.from(g.children).map((o) => o.textContent) })));
-  check("the obligation menu uses one optgroup per instrument with counts", groups.length >= 8 && groups.every((g) => /\(\d+\)$/.test(g.label)), JSON.stringify(groups.map((g) => g.label).slice(0, 12)));
+  // Each instrument is a .chain-combo__group with a "name" and "(count)" label span.
+  const groups = await page.$$eval("#chain-combo-panel-obligation .chain-combo__group", (nodes) => nodes.map((g) => ({
+    label: g.querySelector(".chain-combo__group-name").textContent + " " + g.querySelector(".chain-combo__group-count").textContent,
+    options: Array.from(g.querySelectorAll(".chain-combo__option")).map((o) => o.textContent)
+  })));
+  check("the obligation menu uses one group per instrument with counts", groups.length >= 8 && groups.every((g) => /\(\d+\)$/.test(g.label)), JSON.stringify(groups.map((g) => g.label).slice(0, 12)));
   check("priority instruments lead the obligation groups", groups.length > 2 && groups[0].label.indexOf("EU AI Act") === 0, groups[0] && groups[0].label);
   const eu = groups.find((g) => g.label.indexOf("EU AI Act") === 0);
   const articles = (eu ? eu.options : []).map((text) => {
@@ -1686,9 +1693,10 @@ async function testObligationInstrumentMenu(browser, base) {
   const statusLine = await page.$eval("#map-status", (el) => el.textContent);
   const chainHelp = await page.$eval("#chain-help", (el) => el.textContent);
   check("the chain prompt stays in the Chain box only", chainHelp.indexOf("The boxes then show what links to it") !== -1 && statusLine.indexOf("The boxes then show what links to it") === -1, statusLine + " | " + chainHelp.slice(0, 60));
-  const euPick = eu && eu.options.length ? await page.$$eval("#chain-select-obligation optgroup", (nodes) => {
-    const g = Array.from(nodes).find((og) => og.label.indexOf("EU AI Act") === 0);
-    return g && g.children.length ? g.children[0].value : "";
+  const euPick = eu && eu.options.length ? await page.$$eval("#chain-combo-panel-obligation .chain-combo__group", (nodes) => {
+    const g = Array.from(nodes).find((og) => og.querySelector(".chain-combo__group-name").textContent.indexOf("EU AI Act") === 0);
+    const first = g && g.querySelector(".chain-combo__option");
+    return first ? first.dataset.value : "";
   }) : "";
   if (euPick) {
     await pickValue(page, "obligation", euPick);
@@ -1703,7 +1711,7 @@ async function testObligationInstrumentMenu(browser, base) {
   check("search HIPAA matches cited obligations", hipaaHits.some((id) => /^(obligation|instrument):/.test(id)), JSON.stringify(hipaaHits.slice(0, 6)));
   if (ARTIFACTS) {
     await page.evaluate(() => {
-      const select = document.getElementById("chain-select-obligation");
+      const select = document.getElementById("chain-combo-panel-obligation");
       const host = document.getElementById("chain");
       if (!select || !host) return;
       const old = document.getElementById("obligation-menu-preview");
@@ -1715,20 +1723,21 @@ async function testObligationInstrumentMenu(browser, base) {
       title.textContent = "Obligation menu (grouped)";
       panel.appendChild(title);
       const list = document.createElement("ul");
-      Array.from(select.querySelectorAll("optgroup")).forEach((group) => {
+      Array.from(select.querySelectorAll(".chain-combo__group")).forEach((group) => {
+        const rows = Array.from(group.querySelectorAll(".chain-combo__option"));
         const head = document.createElement("li");
-        head.textContent = group.label;
+        head.textContent = group.querySelector(".chain-combo__group-name").textContent + " " + group.querySelector(".chain-combo__group-count").textContent;
         head.className = "obligation-menu-preview__group";
         list.appendChild(head);
-        Array.from(group.children).slice(0, 4).forEach((opt) => {
+        rows.slice(0, 4).forEach((opt) => {
           const row = document.createElement("li");
           row.textContent = opt.textContent;
           row.className = "obligation-menu-preview__option";
           list.appendChild(row);
         });
-        if (group.children.length > 4) {
+        if (rows.length > 4) {
           const more = document.createElement("li");
-          more.textContent = "\u2026 " + (group.children.length - 4) + " more in this group";
+          more.textContent = "\u2026 " + (rows.length - 4) + " more in this group";
           more.className = "obligation-menu-preview__more";
           list.appendChild(more);
         }
@@ -1758,24 +1767,21 @@ async function captureModes(browser, base) {
       const page = await startMode(browser, base, width, height, mode);
       const pick = await modePick(page, setup);
       await pickValue(page, setup.key, pick);
-      await page.evaluate(() => { document.getElementById("options").open = false; });
       await sleep(400);
       const name = { threat: "risk", obligation: "obligation", control: "control", account: "accountability" }[mode];
       if (width === 1280) {
         await page.setViewport({ width: 1280, height: 1100 });
-        await page.$eval("#options", (el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
+        await page.$eval("#chain-settings", (el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
         await page.evaluate(() => window.scrollBy(0, -100));
         await sleep(300);
-        if (process.env.RELMAP_DEBUG) console.log(JSON.stringify(await page.evaluate(() => ({ y: scrollY, o: document.getElementById("options").getBoundingClientRect().toJSON(), ws: document.getElementById("chain-workspace").getBoundingClientRect().top }))));
       }
       await page.screenshot({ path: path.join(ARTIFACTS, "relmap-" + name + "-" + width + ".png") });
       await page.close();
     }
     const open = await openPage(browser, base, width, height, "");
-    await open.evaluate(() => { document.getElementById("options").open = true; });
-    await open.$eval("#options", (el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
+    await open.$eval("#chain-settings", (el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
     await sleep(300);
-    await open.screenshot({ path: path.join(ARTIFACTS, "relmap-options-open-" + width + ".png") });
+    await open.screenshot({ path: path.join(ARTIFACTS, "relmap-controls-" + width + ".png") });
     await open.close();
   }
 }
@@ -1793,24 +1799,25 @@ async function openPersonaChain(browser, base, width, height, query) {
 const readRoca = (page) => page.evaluate(() => {
   const out = {};
   document.querySelectorAll("#chain-board .chain-col").forEach((col) => {
-    const select = col.querySelector("select.chain-pick");
+    const trigger = col.querySelector("button.chain-combo__trigger");
+    const panel = col.querySelector(".chain-combo__panel");
     const heading = col.querySelector("h3");
-    const rect = select ? select.getBoundingClientRect() : null;
+    const rect = trigger ? trigger.getBoundingClientRect() : null;
     out[col.dataset.column] = {
-      exists: !!select,
-      className: select ? select.className : "",
-      labelledBy: select ? select.getAttribute("aria-labelledby") : "",
+      exists: !!trigger,
+      className: trigger ? trigger.className : "",
+      labelledBy: trigger ? trigger.getAttribute("aria-labelledby") : "",
       headingId: heading.id,
       headingName: heading.getAttribute("aria-label"),
-      first: select ? select.options[0].textContent : "",
-      options: select ? select.options.length - 1 : -1,
-      value: select ? select.value : "",
+      first: panel ? (panel.querySelector(".chain-combo__option[data-value='']") || { textContent: "" }).textContent : "",
+      options: panel ? panel.querySelectorAll(".chain-combo__option[data-node-id]").length : -1,
+      value: trigger ? trigger.dataset.value || "" : "",
       cards: col.querySelectorAll("button[data-chain-id]").length,
       pressed: Array.from(col.querySelectorAll('button[data-chain-id][aria-pressed="true"]')).map((b) => b.dataset.chainId),
       more: Array.from(col.querySelectorAll("button.chain-more")).map((b) => b.textContent),
       rect: rect ? { left: rect.left, top: rect.top, width: rect.width, height: rect.height } : null,
-      disabled: select ? select.disabled : true,
-      display: select ? getComputedStyle(select).display : ""
+      disabled: trigger ? trigger.disabled : true,
+      display: trigger ? getComputedStyle(trigger).display : ""
     };
   });
   return out;
@@ -1840,12 +1847,11 @@ const readPanel = (page) => page.evaluate(() => {
 });
 
 async function pickValue(page, key, value) {
-  await page.select("#chain-select-" + key, value);
-  await sleep(350);
+  await chooseMenu(page, key, value);
 }
 
 async function optionValues(page, key) {
-  return page.$$eval("#chain-select-" + key + " option", (opts) => opts.map((o) => ({ value: o.value, text: o.textContent })));
+  return menuOptions(page, key);
 }
 
 async function testRocaSelects(browser, base, width, height) {
@@ -1855,18 +1861,19 @@ async function testRocaSelects(browser, base, width, height) {
   const total = {};
   ROCA_KEYS.forEach((k) => { total[k] = roca[k].options; });
 
-  check("each ROCA column has one native select" + at, ROCA_KEYS.every((k) => roca[k] && roca[k].exists) && (await page.$$eval("#chain-board select", (els) => els.length)) === 4);
+  check("each ROCA column has one native select" + at, ROCA_KEYS.every((k) => roca[k] && roca[k].exists) && (await page.$$eval("#chain-board button.chain-combo__trigger", (els) => els.length)) === 4);
   check("all four selects are enabled and list every item of their kind" + at, ROCA_KEYS.every((k) => !roca[k].disabled) && total.risk >= 20 && total.obligation >= 50 && total.control >= 50 && total.accountable >= 6, JSON.stringify(total));
-  check("the selects reuse the left-column drop-down style" + at, ROCA_KEYS.every((k) => /\bpick-select\b/.test(roca[k].className)) && ROCA_KEYS.every((k) => roca[k].rect.height >= 44));
+  check("the selects are the custom combobox triggers with 44px targets" + at, ROCA_KEYS.every((k) => /\bchain-combo__trigger\b/.test(roca[k].className)) && ROCA_KEYS.every((k) => roca[k].rect.height >= 44));
   const snapshot = await page.accessibility.snapshot({ interestingOnly: false });
   const named = [];
   (function walk(node) {
     if (!node) return;
-    if (node.role === "combobox" && /^(Why|What|How|Who): /.test(node.name || "")) named.push(node.name);
+    if ((node.role === "combobox" || node.role === "button") && /^(Why|What|How|Who): /.test(node.name || "")) named.push(node.name);
     (node.children || []).forEach(walk);
   })(snapshot);
-  check("the selects have the accessible names Why, What, How, Who with counts" + at, ROCA_KEYS.every((k, i) => named[i] === ROCA_WORD[k] + ": " + ROCA_NAME[k] + " (" + total[k] + ")"), JSON.stringify(named));
-  check("each select is tied to its column heading by aria-labelledby" + at, ROCA_KEYS.every((k) => roca[k].labelledBy === roca[k].headingId && roca[k].headingName === ROCA_WORD[k] + ": " + ROCA_NAME[k] + " (" + total[k] + ")"), JSON.stringify(roca));
+  // The trigger is named by its column heading and then by the current pick, so the name starts with the heading text.
+  check("the selects have the accessible names Why, What, How, Who with counts" + at, ROCA_KEYS.every((k) => named.some((n) => n.indexOf(ROCA_WORD[k] + ": " + ROCA_NAME[k] + " (" + total[k] + ")") === 0)), JSON.stringify(named));
+  check("each select is tied to its column heading by aria-labelledby" + at, ROCA_KEYS.every((k) => roca[k].labelledBy.split(" ")[0] === roca[k].headingId && roca[k].headingName === ROCA_WORD[k] + ": " + ROCA_NAME[k] + " (" + total[k] + ")"), JSON.stringify(roca));
   check("every select starts with its All option and a count" + at, ROCA_KEYS.every((k) => roca[k].first === ROCA_ALL[k] + " (" + total[k] + ")"), JSON.stringify(ROCA_KEYS.map((k) => roca[k].first)));
   check("the persona select shows the chosen persona and the other selects show All" + at, roca.accountable.value === "persona:ai-platform-provider" && ["risk", "obligation", "control"].every((k) => roca[k].value === ""), JSON.stringify(ROCA_KEYS.map((k) => roca[k].value)));
   const labels = await page.$$eval("#chain-board .chain-col h3 .chain-col__label", (els) => els.map((el) => el.textContent));
@@ -2042,7 +2049,7 @@ async function testChainCardFocusOnly(browser, base, width, height) {
   await pickValue(page, "accountable", providerPick.value);
   const urlAnchor = page.url();
   const accountableBefore = await page.evaluate(() => ({
-    select: document.getElementById("chain-select-accountable").value,
+    select: (document.getElementById("chain-select-accountable").dataset.value || ""),
     cards: Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]')).map((b) => b.dataset.chainId).join(",")
   }));
   await page.evaluate(() => { const b = document.querySelector('button.chain-more[data-more-column="control"]'); if (b && /^Show \d+ more$/.test(b.textContent)) b.click(); });
@@ -2058,7 +2065,7 @@ async function testChainCardFocusOnly(browser, base, width, height) {
   const after = await page.evaluate(() => {
     const pressedEl = document.querySelector('#chain-board button[aria-pressed="true"]');
     return {
-      select: document.getElementById("chain-select-accountable").value,
+      select: (document.getElementById("chain-select-accountable").dataset.value || ""),
       cards: Array.from(document.querySelectorAll('#chain-board .chain-col[data-column="accountable"] button[data-chain-id]')).map((b) => b.dataset.chainId).join(","),
       pressed: pressedEl ? pressedEl.dataset.chainId : "",
       kind: document.getElementById("details-kind").textContent,
@@ -2075,7 +2082,7 @@ async function testChainCardFocusOnly(browser, base, width, height) {
   const enterFocus = await page.evaluate(() => ({
     active: document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.chainId : "",
     pressed: document.querySelectorAll('#chain-board button[aria-pressed="true"]').length,
-    select: document.getElementById("chain-select-accountable").value
+    select: (document.getElementById("chain-select-accountable").dataset.value || "")
   }));
   check("Enter on a chain card keeps the same accountable pick and one highlighted card" + at, enterFocus.active === boxId && enterFocus.pressed === 1 && enterFocus.select === accountableBefore.select, JSON.stringify(enterFocus));
   await pickValue(page, "control", boxId);
@@ -2096,10 +2103,10 @@ async function chainColumnSnapshot(page) {
   return page.evaluate(() => {
     const out = {};
     document.querySelectorAll("#chain-board .chain-col").forEach((col) => {
-      const select = col.querySelector("select.chain-pick");
+      const trigger = col.querySelector("button.chain-combo__trigger");
       out[col.dataset.column] = {
-        value: select.value,
-        options: Array.from(select.options).map((option) => option.value + "\t" + option.textContent),
+        value: trigger.dataset.value || "",
+        options: Array.from(col.querySelectorAll(".chain-combo__option")).map((option) => (option.dataset.value || "") + "\t" + option.textContent),
         cards: Array.from(col.querySelectorAll("button[data-chain-id]")).map((card) => card.dataset.chainId)
       };
     });
@@ -2129,7 +2136,7 @@ async function testChainCardFocusKeepsColumns(browser, base, width, height) {
     const options = (await optionValues(page, anchorKey)).slice(1);
     let picked = null;
     for (const opt of options) {
-      await page.select("#chain-select-" + anchorKey, opt.value);
+      await chooseMenu(page, anchorKey, opt.value);
       await sleep(120);
       const counts = await page.evaluate(() => {
         const n = {};
@@ -2150,13 +2157,6 @@ async function testChainCardFocusKeepsColumns(browser, base, width, height) {
     }
     const before = await chainColumnSnapshot(page);
     const urlBefore = page.url();
-    await page.evaluate(() => {
-      window.__chainSelectChanges = [];
-      document.getElementById("chain-board").addEventListener("change", (event) => {
-        const select = event.target && event.target.closest ? event.target.closest("select.chain-pick") : null;
-        if (select) window.__chainSelectChanges.push(select.id + "=" + select.value);
-      });
-    });
     for (const column of ROCA_KEYS) {
       if (width === 375) {
         await page.evaluate((key) => {
@@ -2186,11 +2186,10 @@ async function testChainCardFocusKeepsColumns(browser, base, width, height) {
           inSlot: !!document.querySelector("#chain-details-slot > .details"),
           idLine: document.getElementById("details-id").hidden ? "" : document.getElementById("details-id").textContent,
           about: about && about.parentElement ? about.parentElement.innerText : "",
-          selectChanges: (window.__chainSelectChanges || []).slice()
         };
       }, cardId);
       const article = column === "obligation" || column === "accountable" ? "an" : "a";
-      check(mode + " mode: clicking " + article + " " + column + " card keeps every column and every drop-down list" + at, clicked && changed.length === 0 && page.url() === urlBefore && focus.selectChanges.length === 0, JSON.stringify({ changed: changed, url: page.url(), selectChanges: focus.selectChanges }));
+      check(mode + " mode: clicking " + article + " " + column + " card keeps every column and every menu" + at, clicked && changed.length === 0 && page.url() === urlBefore, JSON.stringify({ changed: changed, url: page.url() }));
       check(mode + " mode: clicking " + article + " " + column + " card focuses it and shows its details" + at, focus.pressed && focus.kind === CHAIN_CARD_KIND[column] && focus.heading.length > 0 && focus.bodyHidden === false && focus.emptyHidden === true && focus.inSlot, JSON.stringify(focus));
       if (column === "obligation") {
         check(mode + " mode: an obligation card shows that obligation in the details" + at, title.length > 0 && focus.about.indexOf(title) !== -1 && focus.idLine === "" && focus.heading.length > 0, JSON.stringify({ title: title, heading: focus.heading, idLine: focus.idLine, about: focus.about.slice(0, 240) }));
@@ -2238,7 +2237,7 @@ async function testLeftColumnTrim(browser, base, width, height) {
   const left = await page.evaluate(() => {
     const shown = (sel) => { const el = document.querySelector(sel); return !!el && el.getClientRects().length > 0; };
     return {
-      selectsInOptions: document.querySelectorAll("#options select").length,
+      selectsInFilterBlock: document.querySelectorAll("#chain-settings select").length,
       oldIds: ["risk-pick", "control-pick", "risk-suggestions", "suggestions", "suggestions-wrap", "control-source-note"].filter((id) => document.getElementById(id)),
       modes: document.querySelectorAll(".entry-points button").length === 0,
       search: !!document.getElementById("node-search"),
@@ -2248,18 +2247,18 @@ async function testLeftColumnTrim(browser, base, width, height) {
       layers: document.querySelectorAll('#layer-filter-list input[name="layer"]').length,
       tapestry: !!document.getElementById("show-tapestry"),
       layersBtn: !!document.getElementById("show-context"),
-      legend: shown(".chain-legend-wrap"),
+      legend: document.querySelectorAll("#chain-legend li").length === 4,
       note2: document.getElementById("chain-model-note").textContent
     };
   });
-  check("Options has no Risk or Control drop-down and no control source note" + at, left.selectsInOptions === 0 && left.oldIds.length === 0, JSON.stringify(left));
+  check("the filter block has no Risk or Control drop-down and no control source note" + at, left.selectsInFilterBlock === 0 && left.oldIds.length === 0, JSON.stringify(left));
   check("search, Show layers, the model filter, the layer filter, and Show Tapestry are still on the page" + at, left.search && left.removed.length === 0 && !left.illustrative && left.model >= 4 && left.layers >= 5 && left.tapestry && left.layersBtn && left.modes, JSON.stringify(left));
   check("the line legend and the persona note stay" + at, left.legend && /These are the controls that name this persona as accountable/.test(left.note2), JSON.stringify(left));
   await page.close();
 
   const riskPage = await openPage(browser, base, width, height, "?risk=directpromptinjection");
   const riskState = await riskPage.evaluate(() => ({
-    selects: document.querySelectorAll("#chain-board select").length,
+    selects: document.querySelectorAll("#chain-board button.chain-combo__trigger").length,
     cards: document.querySelectorAll("#chain-board button[data-chain-id]").length,
     detailsInChain: !!document.querySelector("#chain-details-slot > .details")
   }));
@@ -2278,7 +2277,7 @@ async function testLeftColumnTrim(browser, base, width, height) {
 
   const controlPage = await openPage(browser, base, width, height, "?type=control&node=finance:SRF-L3-DEV-001&model=iaas&view=list");
   const controlState = await controlPage.evaluate(() => ({
-    selects: document.querySelectorAll("#chain-board select").length,
+    selects: document.querySelectorAll("#chain-board button.chain-combo__trigger").length,
     cards: document.querySelectorAll("#chain-board button[data-chain-id]").length,
     lines: document.querySelectorAll("#chain-svg path.chain-line").length,
     hasRisks: document.querySelectorAll('#chain-board .chain-col[data-column="risk"] button[data-chain-id]').length
@@ -2288,104 +2287,54 @@ async function testLeftColumnTrim(browser, base, width, height) {
 }
 
 async function testOptionsLayout(browser, base, width, height) {
+  // The unified controls block (Find, Operating model, Layer, Tapestry, pills, counts) is always visible above the chain menus.
   const at = " at " + width;
   const page = await openPage(browser, base, width, height, "");
   const first = await page.evaluate(() => {
-    const opt = document.getElementById("options");
-    return { open: opt.open, search: document.getElementById("node-search").checkVisibility(), explore: document.querySelectorAll(".entry-points button").length, status: document.getElementById("map-status").checkVisibility(), summary: opt.querySelector(":scope > summary").checkVisibility(), settings: document.getElementById("show-tapestry").checkVisibility() && document.getElementById("model-filter-list").checkVisibility() };
-  });
-  check("Options is collapsed on first load, and the chain settings stay visible" + at, first.open === false && !first.search && first.explore === 0 && first.status && first.summary && first.settings, JSON.stringify(first));
-  await page.evaluate(() => { sessionStorage.setItem("relmap-options-open", "open"); });
-  await page.reload({ waitUntil: "load" });
-  await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
-  check("a stored open state is ignored: Options is still collapsed after a reload" + at, await page.evaluate(() => document.getElementById("options").open === false));
-  await page.click("#options > summary");
-  await sleep(200);
-  const info = await page.evaluate(() => {
-    const opt = document.getElementById("options");
-    const sum = opt ? opt.querySelector(":scope > summary") : null;
-    const inside = (id) => !!opt && opt.contains(document.getElementById(id));
-    const rect = (sel) => document.querySelector(sel).getBoundingClientRect();
+    const settings = document.getElementById("chain-settings");
     return {
-      tag: opt && opt.tagName, open: opt && opt.open, summary: sum && sum.textContent.trim(), summaryTag: sum && sum.tagName,
-      moved: ["node-search", "show-context"].filter((id) => !inside(id)),
-      outside: ["model-filter-list", "layer-filter-list", "show-tapestry", "map-filters"].filter((id) => inside(id)),
-      layerFrames: !!opt && !!opt.querySelector(".layer-frames"),
-      sideColumn: getComputedStyle(document.querySelector(".map-layout")).gridTemplateColumns.split(" ").length,
-      stageWidth: rect(".map-stage").width, panelWidth: rect(".map-panel").width, viewport: window.innerWidth,
-      panelBelow: rect(".map-panel").top >= rect(".map-stage").bottom - 1,
-      overflow: document.documentElement.scrollWidth - window.innerWidth
+      accordion: document.querySelectorAll("details#options").length,
+      settings: settings.checkVisibility(),
+      search: document.getElementById("node-search").checkVisibility(),
+      filters: document.getElementById("map-filters").checkVisibility(),
+      clearHidden: document.getElementById("clear-filters").hidden,
+      status: document.getElementById("map-status").checkVisibility(),
+      explore: document.querySelectorAll(".entry-points button").length,
+      settingsBeforeBoard: !!(settings.compareDocumentPosition(document.getElementById("chain-board")) & Node.DOCUMENT_POSITION_FOLLOWING)
     };
   });
-  check("Options is a details element with a summary that opens on click" + at, info.tag === "DETAILS" && info.open === true && info.summary === "Hide options" && info.summaryTag === "SUMMARY", JSON.stringify(info));
-  check("search and Show layers stay inside Options" + at, info.moved.length === 0, JSON.stringify(info.moved));
-  check("the chain settings sit outside Options" + at, info.outside.length === 0, JSON.stringify(info.outside));
-  check("the left column is gone: one grid column, and the details panel sits below at the same width" + at, info.sideColumn === 1 && info.stageWidth > width - 160 && (width === 375 || (info.panelBelow && Math.abs(info.stageWidth - info.panelWidth) <= 1)), JSON.stringify(info));
-  check("Options does not scroll sideways" + at, info.overflow <= 1, String(info.overflow));
+  check("the Find box and filters are visible on first load, with no accordion" + at, first.accordion === 0 && first.settings && first.search && first.filters && first.clearHidden && first.status && first.explore === 0 && first.settingsBeforeBoard, JSON.stringify(first));
+  check("the operating model, layer, Tapestry, and count controls sit inside the unified block" + at, await page.evaluate(() => {
+    const block = document.getElementById("chain-settings");
+    return ["map-filters", "show-tapestry", "scope-counts", "node-search"].every((id) => block.contains(document.getElementById(id)));
+  }), "");
   await page.evaluate(() => window.scrollTo(0, 0));
   const rows = await page.evaluate(() => {
     const top = (sel) => Math.round(document.querySelector(sel).getBoundingClientRect().top);
-    const left = (sel) => Math.round(document.querySelector(sel).getBoundingClientRect().left);
     return {
-      actionTop: top("#show-context"),
-      modelTop: top('[name="operating-model"]'),
-      layerTop: top('[name="layer"]'),
+      searchTop: top("#node-search"),
+      modelTop: top('input[name="operating-model"]'),
+      layerTop: top('input[name="layer"]'),
       tapestryTop: top("#show-tapestry"),
-      chainTop: top("#chain-workspace"),
       boardTop: top("#chain-board"),
-      scopeTop: top("#scope-summary"),
-      actionLeft: left("#show-context"),
-      modelLeft: left("#model-filter-list"),
-      layerLeft: left("#layer-filter-list"),
-      settingsInWorkspace: document.getElementById("chain-workspace").contains(document.getElementById("map-filters"))
+      overflow: document.documentElement.scrollWidth - window.innerWidth
     };
   });
-  const settingsBox = await page.evaluate(() => {
-    const el = document.getElementById("chain-settings");
-    const r = el.getBoundingClientRect();
-    const modelList = document.getElementById("model-filter-list");
-    const ml = modelList.getBoundingClientRect();
-    const firstRadio = modelList.querySelector("input");
-    const lastRadio = modelList.querySelector("input:last-of-type");
-    const rowWrap = firstRadio && lastRadio ? Math.abs(firstRadio.getBoundingClientRect().top - lastRadio.getBoundingClientRect().top) < 36 : false;
-    return { settingsHeight: Math.round(r.height), modelListWraps: rowWrap, fullWidth: r.width > 600 };
-  });
-  check("the operating model, layer, and scope filters sit in the ROCA workspace" + at, rows.settingsInWorkspace && (width === 375 || settingsBox.fullWidth), JSON.stringify({ rows: rows, settingsBox: settingsBox }));
-  if (width === 1280) {
-    check("at 1280 the settings block is about three short rows and the model list wraps horizontally" + at, settingsBox.settingsHeight <= 200 && settingsBox.modelListWraps && rows.layerTop > rows.modelTop + 12 && rows.boardTop > rows.tapestryTop, JSON.stringify({ rows: rows, settingsBox: settingsBox }));
-  } else check("at 375 the chain settings stack above the chain board" + at, rows.boardTop > rows.tapestryTop && rows.modelLeft >= 0, JSON.stringify(rows));
+  check("the Find box comes before the filters, and the filters before the chain board" + at, rows.searchTop <= rows.modelTop && rows.modelTop <= rows.boardTop && rows.layerTop <= rows.boardTop && rows.tapestryTop < rows.boardTop, JSON.stringify(rows));
+  check("the unified block does not scroll sideways" + at, rows.overflow <= 1, String(rows.overflow));
 
-  await page.click("#options > summary");
-  await sleep(200);
-  const closed = await page.evaluate(() => ({ open: document.getElementById("options").open, search: document.getElementById("node-search").checkVisibility() ? 1 : 0, status: document.getElementById("map-status").checkVisibility() ? 1 : 0, stored: sessionStorage.getItem("relmap-options-open") }));
-  check("clicking the open Options summary collapses it and hides the controls" + at, closed.open === false && closed.search === 0 && closed.status === 1, JSON.stringify(closed));
-  await page.click("#options > summary");
-  await sleep(200);
-  await page.reload({ waitUntil: "load" });
-  await page.waitForSelector('#map-status[data-ready="true"]', { timeout: 60000 });
-  check("an Options panel left open is collapsed again after a reload" + at, await page.evaluate(() => document.getElementById("options").open === false));
-  await page.focus("#options > summary");
-  await page.keyboard.press("Enter");
-  await sleep(200);
-  check("the Options summary opens from the keyboard" + at, await page.evaluate(() => document.getElementById("options").open === true));
-  await page.click("#options > summary");
-  await sleep(150);
-  await page.evaluate(() => document.querySelector('a[href="#node-search"]').click());
-  await sleep(300);
-  check("a Find link reopens a collapsed Options and focuses search" + at, await page.evaluate(() => document.getElementById("options").open && document.activeElement.id === "node-search"));
   await page.close();
 
   const persona = await openPersonaChain(browser, base, width, height);
   const chain = await persona.evaluate(() => ({
     board: document.getElementById("chain-board").getBoundingClientRect().width,
-    belowOptions: document.getElementById("chain-workspace").getBoundingClientRect().top >= document.getElementById("options").getBoundingClientRect().bottom - 1,
-    optionsOpen: document.getElementById("options").open,
-    selects: document.querySelectorAll("#chain-board select").length,
+    settingsAboveBoard: document.getElementById("chain-settings").getBoundingClientRect().bottom <= document.getElementById("chain-board").getBoundingClientRect().top + 1,
+    selects: document.querySelectorAll("#chain-board button.chain-combo__trigger").length,
     panelInChain: !!document.querySelector("#chain-details-slot > .details"),
     detailsWidth: document.querySelector(".details").getBoundingClientRect().width,
     overflow: document.documentElement.scrollWidth - window.innerWidth
   }));
-  check("the ROCA chain and its details sit below Options, side by side at 1280" + at, (width === 375 || chain.belowOptions) && chain.panelInChain && chain.selects === 4 && chain.overflow <= 1 && (width === 1280 ? chain.board > 700 && chain.detailsWidth >= 280 && chain.detailsWidth <= 320 : chain.board > 300), JSON.stringify(chain));
+  check("the ROCA chain and its details sit below the unified controls, side by side at 1280" + at, chain.settingsAboveBoard && chain.panelInChain && chain.selects === 4 && chain.overflow <= 1 && (width === 1280 ? chain.board > 700 && chain.detailsWidth >= 280 && chain.detailsWidth <= 320 : chain.board > 300), JSON.stringify(chain));
   if (width === 1280) {
     const cols = await persona.evaluate(() => Array.from(document.querySelectorAll("#chain-board .chain-col")).map((c) => Math.round(c.getBoundingClientRect().width)));
     check("at 1280 each ROCA column is at least 170 px wide" + at, cols.length === 4 && cols.every((w) => w >= 170), cols.join());
@@ -2412,13 +2361,13 @@ async function testFourModes(browser, base, width, height) {
   const closed = await info.evaluate(() => ({
     detailsShown: document.querySelector(".details").getClientRects().length > 0,
     workspaceHidden: document.getElementById("chain-workspace").hidden,
-    optionsOpen: document.getElementById("options").open,
-    buttons: Array.from(document.querySelectorAll("button, summary, a")).filter((el) => el.getClientRects().length > 0 || el.closest("#options")).map((el) => el.textContent.trim()).filter((t) => /graph/i.test(t)),
+    optionsGone: document.querySelectorAll("details#options").length === 0,
+    buttons: Array.from(document.querySelectorAll("button, summary, a")).filter((el) => el.getClientRects().length > 0).map((el) => el.textContent.trim()).filter((t) => /graph/i.test(t)),
     clearSelection: !!document.getElementById("clear-selection"),
     jump: !!document.querySelector(".chain-jump"),
     entries: Array.from(document.querySelectorAll(".entry-points button")).map((b) => b.id)
   }));
-  check("the chain is visible on load, Options is collapsed, and no Explore button is rendered" + at, !closed.workspaceHidden && !closed.optionsOpen && closed.entries.length === 0, JSON.stringify(closed));
+  check("the chain is visible on load, there is no Options accordion, and no Explore button is rendered" + at, !closed.workspaceHidden && closed.optionsGone && closed.entries.length === 0, JSON.stringify(closed));
   check("no button or link is labeled graph, and the duplicate Clear and jump links are gone" + at, closed.buttons.length === 0 && !closed.clearSelection && !closed.jump, JSON.stringify(closed));
   await info.close();
 
@@ -2432,8 +2381,8 @@ async function testFourModes(browser, base, width, height) {
     const page = await startMode(browser, base, width, height, mode);
     const start = await page.evaluate(() => ({
       pressed: Array.from(document.querySelectorAll(".entry-points button[aria-pressed='true']")).map((b) => b.id),
-      counts: Array.from(document.querySelectorAll("#chain-board select")).map((s) => s.options.length - 1),
-      disabled: Array.from(document.querySelectorAll("#chain-board select")).filter((s) => s.disabled).length,
+      counts: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((s) => s.parentNode.querySelectorAll(".chain-combo__option[data-node-id]").length),
+      disabled: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).filter((s) => s.disabled).length,
       search: document.getElementById("node-search").checkVisibility(),
       find: document.querySelector(".find-form__submit").checkVisibility()
     }));
@@ -2450,8 +2399,8 @@ async function testFourModes(browser, base, width, height) {
       chain: !document.getElementById("chain").hidden,
       inSlot: !!document.querySelector("#chain-details-slot > .details"),
       detailsShown: document.querySelector(".details").getClientRects().length > 0,
-      values: Array.from(document.querySelectorAll("#chain-board select")).map((s) => s.id.replace("chain-select-", "") + "=" + s.value),
-      counts: Array.from(document.querySelectorAll("#chain-board select")).map((s) => s.options.length - 1),
+      values: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((s) => s.id.replace("chain-select-", "") + "=" + (s.dataset.value || "")),
+      counts: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((s) => s.parentNode.querySelectorAll(".chain-combo__option[data-node-id]").length),
       pressed: document.querySelectorAll("#chain-board button[aria-pressed='true']").length,
       overflow: document.documentElement.scrollWidth - window.innerWidth
     }));
@@ -2465,24 +2414,21 @@ async function testFourModes(browser, base, width, height) {
 }
 
 async function testOptionsSameInEveryMode(browser, base) {
-  console.log("\n## Options keeps one search label, and chain settings stay outside it");
+  console.log("\n## Find keeps one label, and the unified controls stay visible");
   const page = await openPage(browser, base, 1280, 900, "");
-  const closed = await page.evaluate(() => ({
-    optionsOpen: document.getElementById("options").open,
-    settings: ["model-filter-list", "layer-filter-list", "show-tapestry"].every((id) => document.getElementById(id).checkVisibility()),
-    searchHidden: !document.getElementById("node-search").checkVisibility()
+  const shown = await page.evaluate(() => ({
+    visible: ["map-filters", "show-tapestry", "node-search"].every((id) => document.getElementById(id).checkVisibility()),
+    accordion: document.querySelectorAll("details#options").length
   }));
-  check("chain settings are visible while Options is collapsed", !closed.optionsOpen && closed.settings && closed.searchHidden, JSON.stringify(closed));
-  await page.click("#options > summary");
-  await sleep(200);
+  check("the Find box and filters are visible without opening anything", shown.visible && shown.accordion === 0, JSON.stringify(shown));
   const seen = await page.evaluate(() => ({
     label: document.querySelector('label[for="node-search"]').textContent.trim(),
     placeholder: document.getElementById("node-search").placeholder,
     help: document.getElementById("map-help").textContent,
-    text: document.getElementById("options").innerText
+    text: document.getElementById("chain-settings").textContent
   }));
   check("the find label names a risk, an obligation, a control, or a persona", seen.label === "Find a risk, obligation, control, or persona" && seen.placeholder === "Name or a few words", seen.label + " / " + seen.placeholder);
-  check("Options has no authorization text, persona list, or Start from one button", !/Authorization establishes|illustrative|handoff|Start from one|Explore a risk/i.test(seen.text) && (await page.$$("#persona-list, #start-one, .illustrative-fold, #entry-account-panel, #entry-threat")).length === 0, seen.text.slice(0, 240));
+  check("the unified block has no authorization text, persona list, or Start from one button", !/Authorization establishes|illustrative|handoff|Start from one|Explore a risk/i.test(seen.text) && (await page.$$("#persona-list, #start-one, .illustrative-fold, #entry-account-panel, #entry-threat")).length === 0, "");
   check("search help still names the four kinds", /Type a name or a few words about a risk, an obligation, a control, or a persona/.test(seen.help), seen.help);
   await page.close();
 }
@@ -2503,12 +2449,12 @@ async function testControlOrdering(browser, base) {
   const expected = inChainCore.slice().sort(controlOrder);
   check("data has common and sector controls in the same layer", LAYERS.some((l) => expected.some((c) => c.layer === l && c.slug === "common") && expected.some((c) => c.layer === l && c.slug !== "common")), "none");
   const page = await startMode(browser, base, 1280, 900, "control");
-  const select = await page.$$eval("#chain-select-control optgroup", (groups) => groups.map((g) => ({ label: g.label, ids: Array.from(g.querySelectorAll("option")).map((o) => o.value) })));
+  const select = await page.$$eval("#chain-combo-panel-control .chain-combo__group", (groups) => groups.map((g) => ({ label: g.querySelector(".chain-combo__group-name").textContent, ids: Array.from(g.querySelectorAll(".chain-combo__option[data-node-id]")).map((o) => o.dataset.value) })));
   check("the Control select lists every control in layer, sector, name order (" + expected.length + ")", JSON.stringify(select.flatMap((g) => g.ids)) === JSON.stringify(expected.map((c) => c.nodeId)), JSON.stringify(select.flatMap((g) => g.ids).slice(0, 5)) + " vs " + JSON.stringify(expected.slice(0, 5).map((c) => c.nodeId)));
   const labels = [];
   expected.forEach((c) => { const l = groupLabel(c); if (labels[labels.length - 1] !== l) labels.push(l); });
-  check("the Control select uses one optgroup per layer and sector, in order", JSON.stringify(select.map((g) => g.label)) === JSON.stringify(labels), JSON.stringify(select.map((g) => g.label)));
-  check("optgroup labels include L5 AI Model Provider \u00b7 Healthcare", select.some((g) => g.label === "L5 AI Model Provider \u00b7 Healthcare"), JSON.stringify(select.map((g) => g.label)));
+  check("the Control menu uses one group per layer and sector, in order", JSON.stringify(select.map((g) => g.label)) === JSON.stringify(labels), JSON.stringify(select.map((g) => g.label)));
+  check("group labels include L5 AI Model Provider \u00b7 Healthcare", select.some((g) => g.label === "L5 AI Model Provider \u00b7 Healthcare"), JSON.stringify(select.map((g) => g.label)));
   await page.close();
 
   for (const [width, height] of [[1280, 900], [375, 812]]) {
@@ -2528,28 +2474,28 @@ async function testControlOrdering(browser, base) {
 }
 
 async function testOptionsCue(browser, base) {
-  console.log("\n## Options shows a chevron and Show options / Hide options");
+  console.log("\n## Line types and Notes & help open from compact toggles, collapsed by default");
   for (const [width, height] of [[1280, 800], [375, 812]]) {
     const at = " at " + width;
     const page = await openPage(browser, base, width, height, "");
-    const read = () => page.evaluate(() => {
-      const opt = document.getElementById("options");
-      const sum = opt.querySelector(":scope > summary");
-      const chev = sum.querySelector(".options__chevron");
-      const box = chev.getBoundingClientRect();
-      return { open: opt.open, text: sum.textContent.replace(/\s+/g, " ").trim(), expanded: sum.getAttribute("aria-expanded"), chevron: chev.checkVisibility() && box.width > 0, transform: getComputedStyle(chev).transform, active: document.activeElement === sum };
-    });
-    const closed = await read();
-    check("collapsed Options reads Show options with a visible chevron and no aria-expanded" + at, !closed.open && closed.text === "Show options" && closed.expanded === null && closed.chevron, JSON.stringify(closed));
-    await page.focus("#options > summary");
-    await page.keyboard.press("Enter");
-    await sleep(400);
-    const open = await read();
-    check("Enter on the focused summary opens Options, reads Hide options, and rotates the chevron" + at, open.open && open.text === "Hide options" && open.expanded === null && open.transform !== closed.transform && open.active, JSON.stringify(open));
-    await page.keyboard.press("Space");
-    await sleep(400);
-    const again = await read();
-    check("Space closes Options and restores Show options" + at, !again.open && again.text === "Show options" && again.expanded === null && again.transform === closed.transform, JSON.stringify(again));
+    const read = (id) => page.evaluate((fid) => {
+      const fold = document.getElementById(fid);
+      const sum = fold.querySelector(":scope > summary");
+      return { open: fold.open, text: sum.textContent.trim(), marker: getComputedStyle(sum, "::after").content, active: document.activeElement === sum };
+    }, id);
+    for (const [id, label] of [["legend-fold", "Line types"], ["notes-fold", "Notes & help"]]) {
+      const closed = await read(id);
+      check("the " + label + " toggle starts collapsed and shows a plus marker" + at, closed.open === false && closed.text === label && /\+/.test(closed.marker), JSON.stringify(closed));
+      await page.focus("#" + id + " > summary");
+      await page.keyboard.press("Enter");
+      await sleep(250);
+      const open = await read(id);
+      check("Enter on the " + label + " toggle opens it and the marker becomes a minus" + at, open.open && open.active && /\u2212|-/.test(open.marker), JSON.stringify(open));
+      await page.keyboard.press("Space");
+      await sleep(250);
+      const again = await read(id);
+      check("Space on the " + label + " toggle closes it again" + at, again.open === false, JSON.stringify(again));
+    }
     await page.close();
   }
 }
@@ -2663,7 +2609,7 @@ async function testEmptyControlsState(browser, base) {
         text: empty ? empty.textContent : "",
         visible: !!empty && empty.getClientRects().length > 0,
         cards: document.querySelectorAll('#chain-board .chain-col[data-column="control"] button[data-chain-id]').length,
-        selects: document.querySelectorAll("#chain-board select.chain-pick").length,
+        selects: document.querySelectorAll("#chain-board button.chain-combo__trigger").length,
         overflow: document.documentElement.scrollWidth - window.innerWidth
       };
     });
@@ -2703,7 +2649,7 @@ async function testUsersPersonaControls(browser, base) {
 async function testControlGrouping(browser, base) {
   console.log("\n## Control select groups by source file");
   const page = await startMode(browser, base, 1280, 900, "control");
-  const groups = await page.$$eval("#chain-select-control optgroup", (gs) => gs.map((g) => ({ label: g.label, options: Array.from(g.querySelectorAll("option")).map((o) => ({ id: o.value, text: o.textContent })) })));
+  const groups = await page.$$eval("#chain-combo-panel-control .chain-combo__group", (gs) => gs.map((g) => ({ label: g.querySelector(".chain-combo__group-name").textContent, options: Array.from(g.querySelectorAll(".chain-combo__option[data-node-id]")).map((o) => ({ id: o.dataset.value, text: o.textContent })) })));
   const layerGroups = (layer) => groups.filter((g) => g.label.indexOf(LAYER_NAME[layer]) === 0);
   const common = "SRF-COM-L1-001";
   const l1 = layerGroups("L1");
@@ -2773,7 +2719,7 @@ async function testCitedObligationLinks(browser, base) {
 
   const controlPage = await openPage(browser, base, 1280, 900, "?type=control&node=common:SRF-COM-L5-001&view=list");
   await sleep(400);
-  const selectsBefore = await controlPage.$$eval("#chain-board select", (els) => els.map((el) => el.options.length));
+  const selectsBefore = await controlPage.$$eval("#chain-board button.chain-combo__trigger", (els) => els.map((el) => el.parentNode.querySelectorAll(".chain-combo__option").length));
   const controlEdges = await riskControlEdges(controlPage);
   const solidPair = pair(controlEdges, solidRisk, controlId);
   const dashedPair = pair(controlEdges, dashedRisk, controlId);
@@ -2797,8 +2743,8 @@ async function testCitedObligationLinks(browser, base) {
   await sleep(300);
   const dashedDetails = await controlPage.$eval("#details-chain", (el) => el.innerText);
   const afterClick = await controlPage.evaluate(() => ({
-    value: document.getElementById("chain-select-control").value,
-    options: Array.from(document.querySelectorAll("#chain-board select")).map((el) => el.options.length),
+    value: (document.getElementById("chain-select-control").dataset.value || ""),
+    options: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((el) => el.parentNode.querySelectorAll(".chain-combo__option").length),
     status: document.getElementById("map-status").textContent,
     risks: document.getElementById("map-status").dataset.chainRisks,
     controls: document.getElementById("map-status").dataset.chainControls,
@@ -2845,7 +2791,7 @@ async function testCitedObligationLinks(browser, base) {
   await sleep(250);
   const obligationDetails = await obligationPage.$eval("#details-chain", (el) => el.innerText);
   check("obligation mode names Annex IV on the risk reached through it", obligationDetails.indexOf("Linked through the cited obligation") !== -1 && obligationDetails.indexOf("Annex IV: Technical documentation") !== -1, obligationDetails.slice(0, 500));
-  const obligationSelect = await obligationPage.$eval("#chain-select-obligation", (el) => el.value);
+  const obligationSelect = await obligationPage.$eval("#chain-select-obligation", (el) => (el.dataset.value || ""));
   check("clicking the risk leaves the obligation drop-down on Annex IV", obligationSelect === "obligation:eu-ai-act.annex-iv", obligationSelect);
   await obligationPage.close();
 
@@ -2856,11 +2802,11 @@ async function testCitedObligationLinks(browser, base) {
   const personaDashed = pair(personaEdges, dashedRisk, controlId);
   const personaSolid = pair(personaEdges, solidRisk, controlId);
   check("accountable mode draws the cited-obligation line dashed and the direct line solid", personaDashed.length === 1 && personaDashed[0].style === "long-dashed" && personaSolid.length === 1 && personaSolid[0].style === "solid", JSON.stringify({ dashed: personaDashed, solid: personaSolid }));
-  const personaBefore = await personaPage.$eval("#chain-select-accountable", (el) => el.value);
+  const personaBefore = await personaPage.$eval("#chain-select-accountable", (el) => (el.dataset.value || ""));
   await personaPage.click('#chain-board button[data-chain-id="' + dashedRisk + '"]');
   await sleep(250);
   const personaAfter = await personaPage.evaluate(() => ({
-    value: document.getElementById("chain-select-accountable").value,
+    value: (document.getElementById("chain-select-accountable").dataset.value || ""),
     text: document.getElementById("details-chain").innerText
   }));
   check("accountable mode names Annex IV and clicking the risk does not change the persona menu", personaAfter.value === personaBefore && personaAfter.value === "persona:model-provider" && personaAfter.text.indexOf("Linked through the cited obligation") !== -1 && personaAfter.text.indexOf("Annex IV: Technical documentation") !== -1, JSON.stringify({ value: personaAfter.value, hit: personaAfter.text.indexOf("Annex IV: Technical documentation") }));
@@ -2898,7 +2844,7 @@ async function testLegacyModeLinks(browser, base) {
   const blank = await openPage(browser, base, 1280, 900, "?mode=risk");
   const blankState = await blank.evaluate(() => ({
     hidden: document.getElementById("chain-workspace").hidden,
-    values: Array.from(document.querySelectorAll("#chain-board select")).map((s) => s.value).join(","),
+    values: Array.from(document.querySelectorAll("#chain-board button.chain-combo__trigger")).map((s) => (s.dataset.value || "")).join(","),
     search: location.search,
     explore: document.querySelectorAll(".entry-points, #entry-threat, #entry-obligation, #entry-control, #entry-account").length
   }));
@@ -2924,7 +2870,7 @@ async function testLegacyModeLinks(browser, base) {
       const select = document.getElementById("chain-select-" + column);
       return {
         hidden: document.getElementById("chain").hidden,
-        value: select ? select.value : "",
+        value: select ? (select.dataset.value || "") : "",
         search: location.search,
         settings: document.getElementById("show-tapestry").checkVisibility() && document.getElementById("model-filter-list").checkVisibility()
       };
@@ -2937,7 +2883,7 @@ async function testLegacyModeLinks(browser, base) {
 
   const phone = await openPage(browser, base, 375, 812, "?mode=control");
   const openCol = await phone.evaluate(() => Array.from(document.querySelectorAll(".chain-col__toggle")).filter((t) => t.getAttribute("aria-expanded") === "true").map((t) => t.dataset.column).join(","));
-  check("?mode=control with no item opens the Control column on a phone and leaves the menus on All", openCol === "control" && await phone.$eval("#chain-select-control", (el) => el.value) === "", openCol);
+  check("?mode=control with no item opens the Control column on a phone and leaves the menus on All", openCol === "control" && await phone.$eval("#chain-select-control", (el) => (el.dataset.value || "")) === "", openCol);
   await phone.close();
 }
 
@@ -2976,11 +2922,12 @@ async function testTapestryToggle(browser, base) {
   async function menus(page) {
     return page.evaluate(() => {
       function read(key) {
-        const select = document.getElementById("chain-select-" + key);
+        const panel = document.getElementById("chain-combo-panel-" + key);
+        const rows = Array.from(panel.querySelectorAll(".chain-combo__option"));
         return {
-          values: Array.from(select.options).map((option) => option.value).filter(Boolean),
-          texts: Array.from(select.options).map((option) => option.textContent),
-          groups: Array.from(select.querySelectorAll("optgroup")).map((group) => group.label)
+          values: rows.map((option) => option.dataset.value).filter(Boolean),
+          texts: rows.map((option) => option.textContent),
+          groups: Array.from(panel.querySelectorAll(".chain-combo__group")).map((group) => group.querySelector(".chain-combo__group-name").textContent)
         };
       }
       return {
@@ -3033,7 +2980,7 @@ async function testTapestryToggle(browser, base) {
         extensionCards: document.querySelectorAll("#chain-board [data-extension='1']").length,
         details: document.getElementById("details-meta").textContent,
         detailsBody: document.getElementById("details-chain").textContent,
-        select: document.getElementById("chain-select-control").value
+        select: (document.getElementById("chain-select-control").dataset.value || "")
       };
     }, sample);
     check(mode + " chain shows the Tapestry control and its persona with the badge", chain.select === sample && chain.extensionCards >= 2 && chain.control.indexOf(EXTENSION_BADGE) !== -1 && chain.owner.indexOf(EXTENSION_BADGE) !== -1 && chain.details === EXTENSION_BADGE && chain.detailsBody.indexOf(EXTENSION_BADGE) !== -1, JSON.stringify(chain).slice(0, 500));
@@ -3048,7 +2995,7 @@ async function testTapestryToggle(browser, base) {
       const card = document.querySelector('#chain-board button[data-chain-id="' + id + '"]');
       return {
         pressed: card ? card.getAttribute("aria-pressed") : "",
-        select: document.getElementById("chain-select-control").value
+        select: (document.getElementById("chain-select-control").dataset.value || "")
       };
     }, sample);
     check(mode + " clicking the Tapestry card focuses it and does not change the menus", pressed.pressed === "true" && pressed.select === sample && afterClick.control.values.join() === beforeClick.control.values.join() && afterClick.accountable.values.join() === beforeClick.accountable.values.join() && afterClick.risk.values.join() === beforeClick.risk.values.join() && afterClick.obligation.values.join() === beforeClick.obligation.values.join(), afterClick.control.values.length + " vs " + beforeClick.control.values.length);
@@ -3065,7 +3012,7 @@ async function testTapestryToggle(browser, base) {
           shown: cards.length + extra,
           tapestry: cards.filter((cardId) => cardId.indexOf("control:tapestry:") === 0).length + extra,
           owner: owner ? owner.textContent : "",
-          select: document.getElementById("chain-select-accountable").value
+          select: (document.getElementById("chain-select-accountable").dataset.value || "")
         };
       }, personaId);
       check("accountable mode puts that persona's Tapestry controls on the chain with the badge", personaChain.select === personaId && personaChain.shown > 0 && personaChain.tapestry === personaChain.shown && personaChain.owner.indexOf(EXTENSION_BADGE) !== -1, JSON.stringify(personaChain));
